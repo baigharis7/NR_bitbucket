@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
 
 void main() async {
 
@@ -17,6 +18,7 @@ void main() async {
         theme: ThemeData(
           primarySwatch: Colors.amber,
         ),
+        initialRoute: '/',
         localizationsDelegates: const [
           AppLocalizationsDelegate(),
           GlobalMaterialLocalizations.delegate,
@@ -27,6 +29,10 @@ void main() async {
           Locale('en', ''), // English, no country code
           Locale('es', ''), // Spanish, no country code
         ],
+        routes: {
+          '/': (ctx) => const LoginScreen(),
+          SplashScreen.routeName: (ctx) => SplashScreen(context: ctx),
+        },
       ),
     ),
   );
