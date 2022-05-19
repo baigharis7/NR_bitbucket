@@ -40,6 +40,8 @@ import 'package:nutrenaissance_flutter/domain/repository/profile/profile_reposit
 import 'package:nutrenaissance_flutter/infrastructure/authentication/cognito_authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/environment/environment.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
+import 'package:nutrenaissance_flutter/presentation/dashboard/provider/dashboard_provider.dart';
+import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/provider/login_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
@@ -92,8 +94,13 @@ void main() async {
     saveProfileInteractor: saveProfileInteractor
   );
 
+  final dashboardProvider = DashboardProvider(
+      getAllFoodEventsInteractor: getAllFoodEventsInteractor,
+      getUserMicronutrientsInteractor: getUserMicronutrientsInteractor
+  );
 
 
+  // await dashboardProvider.init();
 
   runApp(
     MultiProvider(
@@ -101,6 +108,7 @@ void main() async {
         // TODO: el interactor es use case, uno por cada caso de uso.
         ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
+        ChangeNotifierProvider<DashboardProvider>(create: (_) => dashboardProvider),
         // ChangeNotifierProxyProvider<ClaseDeLaQueDepende, ClaseQueSeProvee>(
         //     create: (ctx) {},
         //     update: (ctx, dynamic, objetoQueSeProvee) => ClaseQueSeProvee(),
@@ -127,6 +135,7 @@ void main() async {
           SplashScreen.routeName: (ctx) => SplashScreen(context: ctx),
           LoginScreen.routeName: (_) => const LoginScreen(),
           RegistryScreen.routeName: (ctx) => RegistryScreen(),
+          DashboardScreen.routeName: (_) => const DashboardScreen(),
         },
       ),
     ),
