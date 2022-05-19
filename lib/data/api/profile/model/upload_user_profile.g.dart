@@ -1,0 +1,132 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'upload_user_profile.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+UploadUserProfile _$UploadUserProfileFromJson(Map<String, dynamic> json) =>
+    UploadUserProfile(
+      userId: json['userId'] as String?,
+      commonName: json['commonName'] as String,
+      birthDate: json['birthDate'] as int,
+      sex: json['sex'] as int,
+      occupationActivityFactor:
+          (json['occupationActivityFactor'] as num).toDouble(),
+      physicalCharacteristics: json['physicalCharacteristics'] == null
+          ? null
+          : PhysicalCharacteristics.fromJson(
+              json['physicalCharacteristics'] as Map<String, dynamic>),
+      femaleCharacteristics: json['femaleCharacteristics'] == null
+          ? null
+          : FemaleCharacteristics.fromJson(
+              json['femaleCharacteristics'] as Map<String, dynamic>),
+      medicalSituation: json['medicalSituation'] == null
+          ? null
+          : MedicalSituation.fromJson(
+              json['medicalSituation'] as Map<String, dynamic>),
+      foodAversions: (json['foodAversions'] as List<dynamic>?)
+          ?.map((e) => e as int)
+          .toList(),
+      exclusions: json['exclusions'] == null
+          ? null
+          : Exclusions.fromJson(json['exclusions'] as Map<String, dynamic>),
+      intolerances: json['intolerances'] as String?,
+      guts: json['guts'] as int?,
+      objectives:
+          (json['objectives'] as List<dynamic>).map((e) => e as int).toList(),
+      micronutrients: (json['micronutrients'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+    );
+
+Map<String, dynamic> _$UploadUserProfileToJson(UploadUserProfile instance) =>
+    <String, dynamic>{
+      'userId': instance.userId,
+      'commonName': instance.commonName,
+      'birthDate': instance.birthDate,
+      'sex': instance.sex,
+      'occupationActivityFactor': instance.occupationActivityFactor,
+      'physicalCharacteristics': instance.physicalCharacteristics?.toJson(),
+      'femaleCharacteristics': instance.femaleCharacteristics?.toJson(),
+      'medicalSituation': instance.medicalSituation?.toJson(),
+      'foodAversions': instance.foodAversions,
+      'exclusions': instance.exclusions?.toJson(),
+      'intolerances': instance.intolerances,
+      'guts': instance.guts,
+      'objectives': instance.objectives,
+      'micronutrients': instance.micronutrients,
+    };
+
+MedicalSituation _$MedicalSituationFromJson(Map<String, dynamic> json) =>
+    MedicalSituation(
+      commonDiseases: json['commonDiseases'] as String?,
+      otherDiseases: (json['otherDiseases'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+      underPharmaceuticalTreatment:
+          json['underPharmaceuticalTreatment'] as bool? ?? false,
+    );
+
+Map<String, dynamic> _$MedicalSituationToJson(MedicalSituation instance) =>
+    <String, dynamic>{
+      'commonDiseases': instance.commonDiseases,
+      'otherDiseases': instance.otherDiseases,
+      'underPharmaceuticalTreatment': instance.underPharmaceuticalTreatment,
+    };
+
+PhysicalCharacteristics _$PhysicalCharacteristicsFromJson(
+        Map<String, dynamic> json) =>
+    PhysicalCharacteristics(
+      height: json['height'] as int,
+      weight: json['weight'] as int,
+      bodyFat: json['bodyFat'] as int?,
+      waistMeasurement: json['waistMeasurement'] as int?,
+    );
+
+Map<String, dynamic> _$PhysicalCharacteristicsToJson(
+        PhysicalCharacteristics instance) =>
+    <String, dynamic>{
+      'height': instance.height,
+      'weight': instance.weight,
+      'bodyFat': instance.bodyFat,
+      'waistMeasurement': instance.waistMeasurement,
+    };
+
+FemaleCharacteristics _$FemaleCharacteristicsFromJson(
+        Map<String, dynamic> json) =>
+    FemaleCharacteristics(
+      menstruation: json['menstruation'] == null
+          ? null
+          : Menstruation.fromJson(json['menstruation'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$FemaleCharacteristicsToJson(
+        FemaleCharacteristics instance) =>
+    <String, dynamic>{
+      'menstruation': instance.menstruation?.toJson(),
+    };
+
+Menstruation _$MenstruationFromJson(Map<String, dynamic> json) => Menstruation(
+      regularity: json['regularity'] as int,
+      daysOfCycle: json['daysOfCycle'] as int?,
+      lastStartDate: json['lastStartDate'] as int?,
+    );
+
+Map<String, dynamic> _$MenstruationToJson(Menstruation instance) =>
+    <String, dynamic>{
+      'regularity': instance.regularity,
+      'daysOfCycle': instance.daysOfCycle,
+      'lastStartDate': instance.lastStartDate,
+    };
+
+Exclusions _$ExclusionsFromJson(Map<String, dynamic> json) => Exclusions(
+      exclusions: json['exclusions'] as String,
+    );
+
+Map<String, dynamic> _$ExclusionsToJson(Exclusions instance) =>
+    <String, dynamic>{
+      'exclusions': instance.exclusions,
+    };
