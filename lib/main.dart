@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
+import 'package:nutrenaissance_flutter/data/api/recommendations/recommendations_api.dart';
 import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
 import 'package:nutrenaissance_flutter/data/local/local_storage_helper_impl.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
@@ -9,6 +10,7 @@ import 'package:nutrenaissance_flutter/data/repository/login/login_repository_im
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/profile/profile_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/recommendations/recommendations_repository_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in_interactor.dart';
@@ -33,10 +35,13 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_en
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/profile/profile_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/recommendations/recommendations_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/cognito_authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/environment/environment.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
@@ -44,6 +49,8 @@ import 'package:nutrenaissance_flutter/presentation/dashboard/provider/dashboard
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/provider/login_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/recommendations/provider/recommendations_provider.dart';
+import 'package:nutrenaissance_flutter/presentation/recommendations/view/recommendations_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/view/registry_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
@@ -77,6 +84,9 @@ void main() async {
   final SaveUsernameAndEmailInteractor saveUsernameAndEmailInteractor = SaveUsernameAndEmailInteractorImpl(preferencesRepository: prefsRepository);
   final IsUserSignedInInteractor isUserSignedInInteractor = IsUserSignedInInteractorImpl(preferencesRepository: prefsRepository);
   final SaveProfileInteractor saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
+  final RecommendationsApi recommendationsApi = RecommendationsApi(fetchUserAttributesInteractor: fetchUserAttributesInteractor, getIdTokenInteractor: getIdTokenInteractor);
+  final RecommendationsRepository recommendationsRepository = RecommendationsRepositoryImpl(recommendationsApi: recommendationsApi);
+  final GetRecommendationInteractor getRecommendationInteractor = GetRecommendationInteractorImpl(recommendationsRepository: recommendationsRepository);
 
   final loginProvider = LoginProvider(
       signUpInteractor: signUpInteractor,
@@ -100,6 +110,11 @@ void main() async {
   );
 
 
+  final recommendationsProvider = RecommendationsProvider(
+      getRecommendationInteractor: getRecommendationInteractor,
+      getUserIdInteractor: getUserIdInteractor
+  );
+  // await addFoodEventProvider.init();
   // await dashboardProvider.init();
 
   runApp(
@@ -109,6 +124,7 @@ void main() async {
         ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
         ChangeNotifierProvider<DashboardProvider>(create: (_) => dashboardProvider),
+        ChangeNotifierProvider<RecommendationsProvider>(create: (_) => recommendationsProvider),
         // ChangeNotifierProxyProvider<ClaseDeLaQueDepende, ClaseQueSeProvee>(
         //     create: (ctx) {},
         //     update: (ctx, dynamic, objetoQueSeProvee) => ClaseQueSeProvee(),
@@ -136,6 +152,7 @@ void main() async {
           LoginScreen.routeName: (_) => const LoginScreen(),
           RegistryScreen.routeName: (ctx) => RegistryScreen(),
           DashboardScreen.routeName: (_) => const DashboardScreen(),
+          RecommendationsScreen.routeName: (_) => const RecommendationsScreen(),
         },
       ),
     ),
