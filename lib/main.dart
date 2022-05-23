@@ -7,6 +7,12 @@ import 'package:nutrenaissance_flutter/data/api/recommendations/recommendations_
 import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
 import 'package:nutrenaissance_flutter/data/local/local_storage_helper_impl.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/foods_and_drinks_names_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/food_event/food_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/login/login_repository_impl.dart';
@@ -198,4 +204,16 @@ void initLocalStorage() async {
   Hive.registerAdapter(FoodInfoAdapter());
   Hive.registerAdapter(EventInfoAdapter());
   Hive.registerAdapter(ParamsAdapter());
+  Hive.registerAdapter(CookingMethodsEntityAdapter());
+  Hive.registerAdapter(CookingMethodGroupEntityAdapter());
+  Hive.registerAdapter(CookingMethodsInfoEntityAdapter());
+  Hive.registerAdapter(CookingMethodInfoEntityAdapter());
+  Hive.registerAdapter(FoodsAndDrinksNamesEntityAdapter());
+  Hive.registerAdapter(FoodsAndDrinkListsEntityAdapter());
+  Hive.registerAdapter(FoodItemEntityAdapter());
+  Hive.registerAdapter(NutrientsInfoEntityAdapter());
+  Hive.registerAdapter(ObjectivesInfoEntityAdapter());
+  Hive.registerAdapter(ObjectiveInfoEntityAdapter());
+  Hive.registerAdapter(RecommendationGroupsEntityAdapter());
+  Hive.registerAdapter(RecommendationGroupEntityAdapter());
 }
