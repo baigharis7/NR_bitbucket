@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
@@ -10,11 +9,12 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 
 // TODO: ordenar variables y funciones.
 // TODO: asegurarme de que va con el async aquí.
-class LocalStorageHelperImpl extends LocalStorageHelper {
+class LocalStorageImpl extends LocalStorageRepository {
 
   Box? _profileBox;
   Box? _foodEventsBox;
@@ -93,4 +93,5 @@ class LocalStorageHelperImpl extends LocalStorageHelper {
       box.put(masterFileType, masterFile);
     });
   }
+
 }

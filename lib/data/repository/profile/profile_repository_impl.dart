@@ -1,15 +1,15 @@
 import 'package:nutrenaissance_flutter/data/api/profile/model/user_profile_response.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
-import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/profile/profile_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/profile_mappers.dart';
 
 class ProfileRepositoryImpl extends ProfileRepository {
   final ProfileApi profileApi;
-  final LocalStorageHelper localStorageHelper;
+  final LocalStorageRepository localStorageRepository;
 
-  ProfileRepositoryImpl({required this.profileApi, required this.localStorageHelper});
+  ProfileRepositoryImpl({required this.profileApi, required this.localStorageRepository});
 
   @override
   Future<UserProfileResponse> uploadProfile(UserProfileModel profile) async {
@@ -21,7 +21,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
   @override
   Future<void> saveProfile(UserProfileModel profileModel) async {
     final profileEntity = mapToProfileEntity(profileModel);
-    localStorageHelper.saveProfile(profileEntity);
+    localStorageRepository.saveProfile(profileEntity);
   }
 
   @override
@@ -32,7 +32,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
 
   @override
   Future<List<String>> getUserMicronutrients() async {
-    List<String>? micronutrients = await localStorageHelper.getProfile().then((profile) {
+    List<String>? micronutrients = await localStorageRepository.getProfile().then((profile) {
       return profile.micronutrients;
     });
     // TODO: mejorar esto, un poco cutre. Poner bien el método orEmpty().

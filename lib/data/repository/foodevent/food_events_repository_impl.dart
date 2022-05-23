@@ -1,22 +1,21 @@
 import 'package:nutrenaissance_flutter/data/api/foodevents/food_events_api.dart';
 import 'package:nutrenaissance_flutter/data/api/foodevents/model/upload_food_event.dart';
-import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
-import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/repository/foodevents/food_events_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
 
 class FoodEventsRepositoryImpl extends FoodEventsRepository {
-  final LocalStorageHelper localStorageHelper;
+  final LocalStorageRepository localStorageRepository;
   final FoodEventsApi foodEventsApi;
 
-  FoodEventsRepositoryImpl({required this.localStorageHelper, required this.foodEventsApi});
+  FoodEventsRepositoryImpl({required this.localStorageRepository, required this.foodEventsApi});
 
   @override
   Future<void> saveFoodEvent(UploadFoodEvent uploadFoodEvent) async {
     final foodEventEntity = mapToFoodEventEntity(uploadFoodEvent);
-    localStorageHelper.saveFoodEvent(foodEventEntity);
+    localStorageRepository.saveFoodEvent(foodEventEntity);
   }
 
   @override
@@ -24,11 +23,11 @@ class FoodEventsRepositoryImpl extends FoodEventsRepository {
 
   @override
   Future<List<FoodEventComplete>> getAllFoodEvents() async {
-    final List allEvents = await localStorageHelper.getAllFoodEvents();
+    final List allEvents = await localStorageRepository.getAllFoodEvents();
     return mapToFoodEventCompleteList(allEvents);
   }
 
   @override
-  Future<FoodEventComplete> getLastFoodEvent() => localStorageHelper.getLastFoodEvent();
+  Future<FoodEventComplete> getLastFoodEvent() => localStorageRepository.getLastFoodEvent();
 
 }

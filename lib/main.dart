@@ -5,8 +5,6 @@ import 'package:nutrenaissance_flutter/data/api/foodevents/food_events_api.dart'
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
 import 'package:nutrenaissance_flutter/data/api/recommendations/recommendations_api.dart';
-import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
-import 'package:nutrenaissance_flutter/data/local/local_storage_helper_impl.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
@@ -15,7 +13,8 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_i
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
-import 'package:nutrenaissance_flutter/data/repository/food_event/food_events_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/foodevent/food_events_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/localstorage/local_storage_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/login/login_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/masterfiles/master_files_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_impl.dart';
@@ -57,6 +56,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/repository/foodevents/food_events_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/masterfiles/master_files_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences.dart';
@@ -97,8 +97,8 @@ void main() async {
   final GetIdTokenInteractor getIdTokenInteractor = GetIdTokenInteractorImpl(preferencesRepository: prefsRepository);
   final FetchUserAttributesInteractor fetchUserAttributesInteractor = FetchUserAttributesInteractorImpl(loginRepository: loginRepository);
   final ProfileApi profileApi = ProfileApi(getIdTokenInteractor: getIdTokenInteractor, fetchUserAttributesInteractor: fetchUserAttributesInteractor);
-  final LocalStorageHelper localStorageHelper = LocalStorageHelperImpl();
-  final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageHelper: localStorageHelper);
+  final LocalStorageRepository localStorageRepository = LocalStorageImpl();
+  final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository);
   final SignUpInteractor signUpInteractor = SignUpInteractorImpl(loginRepository: loginRepository);
   final SendVerificationCodeInteractor sendVerificationCodeInteractor = SendVerificationCodeInteractorImpl(loginRepository: loginRepository);
   final SignInInteractor signInInteractor = SignInInteractorImpl(loginRepository: loginRepository);
@@ -108,7 +108,7 @@ void main() async {
   final IsUserSignedInInteractor isUserSignedInInteractor = IsUserSignedInInteractorImpl(preferencesRepository: prefsRepository);
   final SaveProfileInteractor saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
   final FoodEventsApi foodEventsApi = FoodEventsApi(getIdTokenInteractor: getIdTokenInteractor, fetchUserAttributesInteractor: fetchUserAttributesInteractor);
-  final FoodEventsRepository foodEventsRepository = FoodEventsRepositoryImpl(localStorageHelper: localStorageHelper, foodEventsApi: foodEventsApi, );
+  final FoodEventsRepository foodEventsRepository = FoodEventsRepositoryImpl(localStorageRepository: localStorageRepository, foodEventsApi: foodEventsApi, );
   final UploadFoodEventInteractor uploadFoodEventInteractor = UploadFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
   final SaveFoodEventInteractor saveFoodEventInteractor = SaveFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
   final RecommendationsApi recommendationsApi = RecommendationsApi(fetchUserAttributesInteractor: fetchUserAttributesInteractor, getIdTokenInteractor: getIdTokenInteractor);
