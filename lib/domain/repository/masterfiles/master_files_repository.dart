@@ -13,4 +13,6 @@ abstract class MasterFilesRepository {
       int objectivesInfoVersion,
       int recommendationGroupsVersion
   );
+  Future<void> saveMasterFile(dynamic masterFile, MasterFilesType masterFilesType);
+
 }

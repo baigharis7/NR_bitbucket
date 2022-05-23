@@ -40,4 +40,7 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
     );
   }
 
+  @override
+  Future<void> saveMasterFile(dynamic masterFile, MasterFilesType masterFilesType) => localStorageRepository.saveMasterFile(masterFilesType.index, masterFile);
+
 }

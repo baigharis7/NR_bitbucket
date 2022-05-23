@@ -39,6 +39,10 @@ import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor
 import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/manage_master_files_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/manage_master_files_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/save_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/save_master_file_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
@@ -117,8 +121,10 @@ void main() async {
   final GetAllFoodEventsInteractor getAllFoodEventsInteractor = GetAllFoodEventsInteractorImpl(foodEventsRepository: foodEventsRepository);
   final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor = GetUserMicronutrientsInteractorImpl(profileRepository: profileRepository);
   final MasterFilesApi masterFilesApi = MasterFilesApi(getIdTokenInteractor: getIdTokenInteractor, fetchUserAttributesInteractor: fetchUserAttributesInteractor);
-  final MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageHelper: localStorageHelper, masterFilesApi: masterFilesApi);
+  final MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi);
   final GetMasterFileVersionInteractor getMasterFileVersionInteractor = GetMasterFileVersionInteractorImpl(masterFilesRepository: masterFilesRepository);
+  final ManageMasterFilesInteractor manageMasterFilesInteractor = ManageMasterFilesInteractorImpl(masterFilesRepository: masterFilesRepository);
+  final SaveMasterFileInteractor saveMasterFileInteractor = SaveMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
 
   final loginProvider = LoginProvider(
       signUpInteractor: signUpInteractor,
@@ -127,7 +133,9 @@ void main() async {
       signInInteractor: signInInteractor,
       saveUsernameAndEmailInteractor: saveUsernameAndEmailInteractor,
       isUserSignedInInteractor: isUserSignedInInteractor,
-      getMasterFilesVersionInteractor: getMasterFileVersionInteractor
+      getMasterFilesVersionInteractor: getMasterFileVersionInteractor,
+      manageMasterFilesInteractor: manageMasterFilesInteractor,
+      saveMasterFileInteractor: saveMasterFileInteractor
   );
   await loginProvider.init();
 
