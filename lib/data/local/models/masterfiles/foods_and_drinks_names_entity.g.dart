@@ -3,6 +3,132 @@
 part of 'foods_and_drinks_names_entity.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class FoodsAndDrinksNamesEntityAdapter
+    extends TypeAdapter<FoodsAndDrinksNamesEntity> {
+  @override
+  final int typeId = 17;
+
+  @override
+  FoodsAndDrinksNamesEntity read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return FoodsAndDrinksNamesEntity(
+      id: fields[0] as int,
+      v: fields[1] as int,
+      data: fields[2] as FoodsAndDrinkListsEntity,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, FoodsAndDrinksNamesEntity obj) {
+    writer
+      ..writeByte(3)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.v)
+      ..writeByte(2)
+      ..write(obj.data);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FoodsAndDrinksNamesEntityAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class FoodsAndDrinkListsEntityAdapter
+    extends TypeAdapter<FoodsAndDrinkListsEntity> {
+  @override
+  final int typeId = 18;
+
+  @override
+  FoodsAndDrinkListsEntity read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return FoodsAndDrinkListsEntity(
+      foodNames: (fields[0] as List).cast<FoodItemEntity>(),
+      drinkNames: (fields[1] as List).cast<FoodItemEntity>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, FoodsAndDrinkListsEntity obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.foodNames)
+      ..writeByte(1)
+      ..write(obj.drinkNames);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FoodsAndDrinkListsEntityAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class FoodItemEntityAdapter extends TypeAdapter<FoodItemEntity> {
+  @override
+  final int typeId = 19;
+
+  @override
+  FoodItemEntity read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return FoodItemEntity(
+      id: fields[0] as int,
+      en: fields[1] as String,
+      es: fields[2] as String,
+      g: fields[3] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, FoodItemEntity obj) {
+    writer
+      ..writeByte(4)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.en)
+      ..writeByte(2)
+      ..write(obj.es)
+      ..writeByte(3)
+      ..write(obj.g);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FoodItemEntityAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 

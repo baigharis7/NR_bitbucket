@@ -1,12 +1,15 @@
+import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/hive_type_ids.dart';
 
 part 'foods_and_drinks_names_entity.g.dart';
 
 @JsonSerializable(explicitToJson: true)
+@HiveType(typeId: HiveTypeIds.foodsAndDrinksNamesEntity)
 class FoodsAndDrinksNamesEntity {
-  int id;
-  int v;
-  FoodsAndDrinkListsEntity data;
+  @HiveField(0) int id;
+  @HiveField(1) int v;
+  @HiveField(2) FoodsAndDrinkListsEntity data;
 
   FoodsAndDrinksNamesEntity({required this.id, required this.v, required this.data});
 
@@ -15,9 +18,10 @@ class FoodsAndDrinksNamesEntity {
 }
 
 @JsonSerializable(explicitToJson: true)
+@HiveType(typeId: HiveTypeIds.foodsAndDrinkListsEntity)
 class FoodsAndDrinkListsEntity {
-  List<FoodItemEntity> foodNames;
-  List<FoodItemEntity> drinkNames;
+  @HiveField(0) List<FoodItemEntity> foodNames;
+  @HiveField(1) List<FoodItemEntity> drinkNames;
 
   FoodsAndDrinkListsEntity({required this.foodNames, required this.drinkNames});
 
@@ -26,11 +30,12 @@ class FoodsAndDrinkListsEntity {
 }
 
 @JsonSerializable(explicitToJson: true)
+@HiveType(typeId: HiveTypeIds.foodItemEntity)
 class FoodItemEntity {
-  int id;
-  String en;
-  String es;
-  String g;
+  @HiveField(0) int id;
+  @HiveField(1) String en;
+  @HiveField(2) String es;
+  @HiveField(3) String g;
 
   FoodItemEntity({required this.id, required this.en, required this.es, required this.g});
 

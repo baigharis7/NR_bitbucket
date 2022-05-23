@@ -1,12 +1,15 @@
+import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/hive_type_ids.dart';
 
 part 'cooking_methods_info_entity.g.dart';
 
 @JsonSerializable(explicitToJson: true)
+@HiveType(typeId: HiveTypeIds.cookingMethodsInfoEntity)
 class CookingMethodsInfoEntity {
-  int id;
-  int v;
-  List<CookingMethodInfoEntity> data;
+  @HiveField(0) int id;
+  @HiveField(1) int v;
+  @HiveField(2) List<CookingMethodInfoEntity> data;
 
   CookingMethodsInfoEntity({required this.id, required this.v, required this.data});
 
@@ -15,10 +18,11 @@ class CookingMethodsInfoEntity {
 }
 
 @JsonSerializable(explicitToJson: true)
+@HiveType(typeId: HiveTypeIds.cookingMethodInfoEntity)
 class CookingMethodInfoEntity {
-  int id;
-  String en;
-  String es;
+  @HiveField(0) int id;
+  @HiveField(1) String en;
+  @HiveField(2) String es;
 
   CookingMethodInfoEntity({required this.id, required this.en, required this.es});
 

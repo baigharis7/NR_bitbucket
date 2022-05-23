@@ -1,12 +1,15 @@
+import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/hive_type_ids.dart';
 
 part 'recommendation_groups_entity.g.dart';
 
 @JsonSerializable(explicitToJson: true)
+@HiveType(typeId: HiveTypeIds.recommendationGroupsEntity)
 class RecommendationGroupsEntity {
-  int id;
-  int v;
-  List<RecommendationGroupEntity> data;
+  @HiveField(0) int id;
+  @HiveField(1) int v;
+  @HiveField(2) List<RecommendationGroupEntity> data;
 
   RecommendationGroupsEntity({required this.id, required this.v, required this.data});
 
@@ -15,12 +18,13 @@ class RecommendationGroupsEntity {
 }
 
 @JsonSerializable(explicitToJson: true)
+@HiveType(typeId: HiveTypeIds.recommendationGroupEntity)
 class RecommendationGroupEntity {
-  int id;
-  List<String> groups;
-  int size;
-  String en;
-  String es;
+  @HiveField(0) int id;
+  @HiveField(1) List<String> groups;
+  @HiveField(2) int size;
+  @HiveField(3) String en;
+  @HiveField(4) String es;
 
   RecommendationGroupEntity({required this.id, required this.groups, required this.size, required this.en, required this.es});
 
