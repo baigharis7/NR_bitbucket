@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in
 import 'package:nutrenaissance_flutter/domain/interactor/login/send_perrification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_username_and_email_interactor.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
@@ -16,6 +17,7 @@ class LoginProvider extends BaseProvider {
   final SignInInteractor signInInteractor;
   final SaveUsernameAndEmailInteractor saveUsernameAndEmailInteractor;
   final IsUserSignedInInteractor isUserSignedInInteractor;
+  final GetMasterFileVersionInteractor getMasterFilesVersionInteractor;
 
   LoginProvider({
     required this.signUpInteractor,
@@ -23,7 +25,8 @@ class LoginProvider extends BaseProvider {
     required this.fetchUserAttributesInteractor,
     required this.signInInteractor,
     required this.saveUsernameAndEmailInteractor,
-    required this.isUserSignedInInteractor
+    required this.isUserSignedInInteractor,
+    required this.getMasterFilesVersionInteractor
   });
 
   String? email;
@@ -168,6 +171,10 @@ class LoginProvider extends BaseProvider {
         },
         onError: (error) => onSignInError(error)
     );
+  }
+
+  void manageMasterFiles() {
+
   }
 
 }

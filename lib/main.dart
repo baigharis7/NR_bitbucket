@@ -127,6 +127,7 @@ void main() async {
       signInInteractor: signInInteractor,
       saveUsernameAndEmailInteractor: saveUsernameAndEmailInteractor,
       isUserSignedInInteractor: isUserSignedInInteractor,
+      getMasterFilesVersionInteractor: getMasterFileVersionInteractor
   );
   await loginProvider.init();
 
