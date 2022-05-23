@@ -8,7 +8,6 @@ part of 'nutrients_info_master.dart';
 
 NutrientsInfoMaster _$NutrientsInfoMasterFromJson(Map<String, dynamic> json) =>
     NutrientsInfoMaster(
-      v: json['v'] as int,
       data: (json['data'] as List<dynamic>)
           .map((e) => NutrientInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -17,7 +16,6 @@ NutrientsInfoMaster _$NutrientsInfoMasterFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$NutrientsInfoMasterToJson(
         NutrientsInfoMaster instance) =>
     <String, dynamic>{
-      'v': instance.v,
       'data': instance.data.map((e) => e.toJson()).toList(),
     };
 

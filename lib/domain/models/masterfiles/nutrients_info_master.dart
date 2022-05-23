@@ -4,10 +4,9 @@ part 'nutrients_info_master.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class NutrientsInfoMaster {
-  int v;
   List<NutrientInfo> data;
 
-  NutrientsInfoMaster({required this.v, required this.data});
+  NutrientsInfoMaster({required this.data});
 
   factory NutrientsInfoMaster.fromJson(Map<String, dynamic> json) => _$NutrientsInfoMasterFromJson(json);
   Map<String, dynamic> toJson() => _$NutrientsInfoMasterToJson(this);

@@ -1,21 +1,21 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'recommendation_groups.dart';
+part of 'recommendation_groups_master.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-RecommendationGroups _$RecommendationGroupsFromJson(
+RecommendationGroupsMaster _$RecommendationGroupsMasterFromJson(
         Map<String, dynamic> json) =>
-    RecommendationGroups(
+    RecommendationGroupsMaster(
       recommendationGroups: (json['recommendationGroups'] as List<dynamic>)
           .map((e) => RecommendationGroup.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$RecommendationGroupsToJson(
-        RecommendationGroups instance) =>
+Map<String, dynamic> _$RecommendationGroupsMasterToJson(
+        RecommendationGroupsMaster instance) =>
     <String, dynamic>{
       'recommendationGroups':
           instance.recommendationGroups.map((e) => e.toJson()).toList(),

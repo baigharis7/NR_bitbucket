@@ -1,15 +1,15 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'nutrients_objective.g.dart';
+part 'nutrients_objective_master.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class NutrientsObjective {
+class NutrientsObjectiveMaster {
   List<NutrientInfo>? nutrients;
   
-  NutrientsObjective({required this.nutrients});
+  NutrientsObjectiveMaster({required this.nutrients});
 
-  factory NutrientsObjective.fromJson(Map<String, dynamic> json) => _$NutrientsObjectiveFromJson(json);
-  Map<String, dynamic> toJson() => _$NutrientsObjectiveToJson(this);
+  factory NutrientsObjectiveMaster.fromJson(Map<String, dynamic> json) => _$NutrientsObjectiveMasterFromJson(json);
+  Map<String, dynamic> toJson() => _$NutrientsObjectiveMasterToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)

@@ -1,15 +1,15 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'recommendation_groups.g.dart';
+part 'recommendation_groups_master.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class RecommendationGroups {
+class RecommendationGroupsMaster {
   List<RecommendationGroup> recommendationGroups;
 
-  RecommendationGroups({required this.recommendationGroups});
+  RecommendationGroupsMaster({required this.recommendationGroups});
 
-  factory RecommendationGroups.fromJson(Map<String, dynamic> json) => _$RecommendationGroupsFromJson(json);
-  Map<String, dynamic> toJson() => _$RecommendationGroupsToJson(this);
+  factory RecommendationGroupsMaster.fromJson(Map<String, dynamic> json) => _$RecommendationGroupsMasterFromJson(json);
+  Map<String, dynamic> toJson() => _$RecommendationGroupsMasterToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)

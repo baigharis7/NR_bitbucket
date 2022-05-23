@@ -4,12 +4,10 @@ part 'cooking_methods_master.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class CookingMethodsMaster {
-  @JsonKey(name: 'v')
-  int v;
   @JsonKey(name: 'data')
-  List<CookingMethod> data;
+  List<CookingMethod> cookingMethods;
 
-  CookingMethodsMaster(this.v, this.data);
+  CookingMethodsMaster(this.cookingMethods);
 
   factory CookingMethodsMaster.fromJson(Map<String, dynamic> json) => _$CookingMethodsMasterFromJson(json);
   Map<String, dynamic> toJson() => _$CookingMethodsMasterToJson(this);

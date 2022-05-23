@@ -1,19 +1,21 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'nutrients_objective.dart';
+part of 'nutrients_objective_master.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-NutrientsObjective _$NutrientsObjectiveFromJson(Map<String, dynamic> json) =>
-    NutrientsObjective(
+NutrientsObjectiveMaster _$NutrientsObjectiveMasterFromJson(
+        Map<String, dynamic> json) =>
+    NutrientsObjectiveMaster(
       nutrients: (json['nutrients'] as List<dynamic>?)
           ?.map((e) => NutrientInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$NutrientsObjectiveToJson(NutrientsObjective instance) =>
+Map<String, dynamic> _$NutrientsObjectiveMasterToJson(
+        NutrientsObjectiveMaster instance) =>
     <String, dynamic>{
       'nutrients': instance.nutrients?.map((e) => e.toJson()).toList(),
     };
