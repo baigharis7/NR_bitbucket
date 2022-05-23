@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/selectable_option.dart';
-
-import '../../domain/models/common/simple_item.dart';
-import '../../domain/models/foodevents/food_event_simple.dart';
-import '../../domain/models/masterfiles/cooking_methods_info_master.dart';
-import '../../domain/models/masterfiles/cooking_methods_master.dart';
-import '../../infrastructure/helpers/i10n_helper.dart';
-import '../../infrastructure/utils/dimens.dart';
 
 class AddFoodEventItem extends StatefulWidget {
   final FoodInEvent ingredient;
@@ -34,7 +33,7 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
   List<SimpleItem> findCookingMethodsForFood(String foodGroup) {
 
     // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
-    final List<int> groupCookingMethods = widget.cookingMethodsMaster.data.firstWhere(
+    final List<int> groupCookingMethods = widget.cookingMethodsMaster.cookingMethods.firstWhere(
             (cookingMethod) => cookingMethod.group == foodGroup,
         orElse: () => CookingMethod('1.3', [0, 1, 2, 3]),
     ).methods;

@@ -1,7 +1,7 @@
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
-import 'package:nutrenaissance_flutter/domain/models/masterfiles/recommendation_groups.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/recommendation_groups_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/recommendations/recommendation.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
@@ -14,7 +14,7 @@ class RecommendationsProvider extends BaseProvider {
 
   Recommendation? _recommendation;
   bool _recommendationOrdered = false;
-  RecommendationGroups? _recommendationGroups;
+  RecommendationGroupsMaster? _recommendationGroups;
   FoodsAndDrinkListsMaster? _foodAndDrinksList;
   final List<int> _selectedFoodIds = [];
   final List<String> _selectedFoodNames = [];
@@ -23,14 +23,14 @@ class RecommendationsProvider extends BaseProvider {
   FoodsAndDrinkListsMaster? get getFoodAndDrinksList => _foodAndDrinksList;
   Recommendation? get getRecommendation => _recommendation;
   bool get isRecommendationOrdered => _recommendationOrdered;
-  RecommendationGroups? get getRecommendationGroups => _recommendationGroups;
+  RecommendationGroupsMaster? get getRecommendationGroups => _recommendationGroups;
   List<int> get getSelectedFoodIds => _selectedFoodIds;
   List<String> get getSelectedFoodNames => _selectedFoodNames;
   bool get isMultiSelectionActive => _multiSelection;
 
   void setRecommendationOrdered(bool isRecommendationOrdered) => _recommendationOrdered = isRecommendationOrdered;
   void setRecommendation(Recommendation recommendation) => _recommendation = recommendation;
-  void setRecommendationGroups(RecommendationGroups recommendationGroups) => _recommendationGroups = recommendationGroups;
+  void setRecommendationGroups(RecommendationGroupsMaster recommendationGroups) => _recommendationGroups = recommendationGroups;
   void manageSelectedFood(Map<String, dynamic> foodId) {
     getSelectedFoodIds.contains(foodId['id']) ? getSelectedFoodIds.remove(foodId['id']) : getSelectedFoodIds.add(foodId['id']);
     getSelectedFoodNames.contains(foodId['foodName']) ? getSelectedFoodNames.remove(foodId['foodName']) : getSelectedFoodNames.add(foodId['foodName']);
@@ -83,10 +83,10 @@ class RecommendationsProvider extends BaseProvider {
   void retrieveRecommendationGroups(Future<Map<String, dynamic>> recommendationGroups, Function? onSuccess) {
     launchSync(
       block: () async {
-        final RecommendationGroups recommendationGroupsMaster = RecommendationGroups.fromJson(await recommendationGroups);
+        final RecommendationGroupsMaster recommendationGroupsMaster = RecommendationGroupsMaster.fromJson(await recommendationGroups);
         return recommendationGroupsMaster;
       },
-      onSuccess: (RecommendationGroups recommendationGroups) {
+      onSuccess: (RecommendationGroupsMaster recommendationGroups) {
         setRecommendationGroups(recommendationGroups);
         onSuccess?.call();
         notifyListeners();

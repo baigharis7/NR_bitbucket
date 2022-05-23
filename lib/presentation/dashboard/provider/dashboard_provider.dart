@@ -2,7 +2,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_all_food
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
-import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_objective.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_objective_master.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
@@ -13,17 +13,17 @@ class DashboardProvider extends BaseProvider {
   DashboardProvider({required this.getAllFoodEventsInteractor, required this.getUserMicronutrientsInteractor});
 
   List<FoodEventComplete> _foodEvents = [];
-  NutrientsObjective? _nutrientsObjective;
+  NutrientsObjectiveMaster? _nutrientsObjective;
   List<String> _userMicronutrients = [];
   NutrientsInfoMaster? _nutrientsInfoMaster;
 
   List<FoodEventComplete> get getFoodEvents => _foodEvents;
-  NutrientsObjective? get getNutrientsObjective => _nutrientsObjective;
+  NutrientsObjectiveMaster? get getNutrientsObjective => _nutrientsObjective;
   List<String> get getUserMicronutrients => _userMicronutrients;
   NutrientsInfoMaster? get getNutrientsInfoMaster => _nutrientsInfoMaster;
 
   void setFoodEvents(List<FoodEventComplete> foodEvents) => _foodEvents = foodEvents;
-  void setNutrientsObjective(NutrientsObjective nutrientsObjective) => _nutrientsObjective = nutrientsObjective;
+  void setNutrientsObjective(NutrientsObjectiveMaster nutrientsObjective) => _nutrientsObjective = nutrientsObjective;
   void setUserMicronutrients(List<String> micronutrients) => _userMicronutrients = micronutrients;
   void setNutrientsInfoMaster(NutrientsInfoMaster nutrientsInfoMaster) => _nutrientsInfoMaster = nutrientsInfoMaster;
 
@@ -48,10 +48,10 @@ class DashboardProvider extends BaseProvider {
     launchSync(
         block: () async {
           final t = await nutrientsObjective;
-          final NutrientsObjective nutrientsObjectiveMaster = NutrientsObjective.fromJson(t);
+          final NutrientsObjectiveMaster nutrientsObjectiveMaster = NutrientsObjectiveMaster.fromJson(t);
           return nutrientsObjectiveMaster;
         },
-        onSuccess: (NutrientsObjective nutrientsObjective) {
+        onSuccess: (NutrientsObjectiveMaster nutrientsObjective) {
           setNutrientsObjective(nutrientsObjective);
           nextCall?.call();
         },
