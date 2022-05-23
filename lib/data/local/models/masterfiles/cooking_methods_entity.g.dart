@@ -8,7 +8,7 @@ part of 'cooking_methods_entity.dart';
 
 class CookingMethodsEntityAdapter extends TypeAdapter<CookingMethodsEntity> {
   @override
-  final int typeId = 22;
+  final int typeId = 23;
 
   @override
   CookingMethodsEntity read(BinaryReader reader) {
@@ -49,7 +49,7 @@ class CookingMethodsEntityAdapter extends TypeAdapter<CookingMethodsEntity> {
 class CookingMethodGroupEntityAdapter
     extends TypeAdapter<CookingMethodGroupEntity> {
   @override
-  final int typeId = 23;
+  final int typeId = 24;
 
   @override
   CookingMethodGroupEntity read(BinaryReader reader) {

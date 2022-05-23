@@ -17,12 +17,13 @@ class HiveTypeIds {
   static const objectivesInfoEntity = 14;
   static const objectiveInfoEntity = 15;
   static const nutrientsInfoEntity = 16;
-  static const foodsAndDrinksNamesEntity = 17;
-  static const foodsAndDrinkListsEntity = 18;
-  static const foodItemEntity = 19;
-  static const cookingMethodsInfoEntity = 20;
-  static const cookingMethodInfoEntity = 21;
-  static const cookingMethodsEntity = 22;
-  static const cookingMethodGroupEntity = 23;
+  static const nutrientInfoEntity = 17;
+  static const foodsAndDrinksNamesEntity = 18;
+  static const foodsAndDrinkListsEntity = 19;
+  static const foodItemEntity = 20;
+  static const cookingMethodsInfoEntity = 21;
+  static const cookingMethodInfoEntity = 22;
+  static const cookingMethodsEntity = 23;
+  static const cookingMethodGroupEntity = 24;
 
 }

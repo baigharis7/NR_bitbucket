@@ -7,14 +7,29 @@ part 'nutrients_info_entity.g.dart';
 @JsonSerializable(explicitToJson: true)
 @HiveType(typeId: HiveTypeIds.nutrientsInfoEntity)
 class NutrientsInfoEntity {
-  @HiveField(0) int id;
-  @HiveField(1) String name;
-  @HiveField(2) String unit; // TODO: Pensar si poner una Sealed Class. Sería un Iny entonces.
-  @HiveField(3) String es;
-  @HiveField(4) String en;
 
-  NutrientsInfoEntity({required this.id, required this.name, required this.unit, required this.es, required this.en});
+  @HiveField(0) int id;
+  @HiveField(1) int v;
+  @HiveField(2) List<NutrientInfoEntity> data;
+
+  NutrientsInfoEntity({required this.id, required this.v, required this.data});
 
   factory NutrientsInfoEntity.fromJson(Map<String, dynamic> json) => _$NutrientsInfoEntityFromJson(json);
   Map<String, dynamic> toJson() => _$NutrientsInfoEntityToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+@HiveType(typeId: HiveTypeIds.nutrientInfoEntity)
+class NutrientInfoEntity {
+
+  @HiveField(0) int id;
+  @HiveField(1) String name;
+  @HiveField(2) String unit;
+  @HiveField(3) String es;
+  @HiveField(4) String en;
+
+  NutrientInfoEntity({required this.id, required this.name, required this.unit, required this.es, required this.en});
+
+  factory NutrientInfoEntity.fromJson(Map<String, dynamic> json) => _$NutrientInfoEntityFromJson(json);
+  Map<String, dynamic> toJson() => _$NutrientInfoEntityToJson(this);
 }

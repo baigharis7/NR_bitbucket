@@ -9,7 +9,7 @@ part of 'foods_and_drinks_names_entity.dart';
 class FoodsAndDrinksNamesEntityAdapter
     extends TypeAdapter<FoodsAndDrinksNamesEntity> {
   @override
-  final int typeId = 17;
+  final int typeId = 18;
 
   @override
   FoodsAndDrinksNamesEntity read(BinaryReader reader) {
@@ -50,7 +50,7 @@ class FoodsAndDrinksNamesEntityAdapter
 class FoodsAndDrinkListsEntityAdapter
     extends TypeAdapter<FoodsAndDrinkListsEntity> {
   @override
-  final int typeId = 18;
+  final int typeId = 19;
 
   @override
   FoodsAndDrinkListsEntity read(BinaryReader reader) {
@@ -87,7 +87,7 @@ class FoodsAndDrinkListsEntityAdapter
 
 class FoodItemEntityAdapter extends TypeAdapter<FoodItemEntity> {
   @override
-  final int typeId = 19;
+  final int typeId = 20;
 
   @override
   FoodItemEntity read(BinaryReader reader) {
