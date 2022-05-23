@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:nutrenaissance_flutter/data/api/foodevents/food_events_api.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
 import 'package:nutrenaissance_flutter/data/api/recommendations/recommendations_api.dart';
 import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
@@ -16,6 +17,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendat
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/food_event/food_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/login/login_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/masterfiles/master_files_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/profile/profile_repository_impl.dart';
@@ -36,6 +38,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor
 import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
@@ -54,6 +58,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_rec
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/repository/foodevents/food_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/masterfiles/master_files_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/profile/profile_repository.dart';
@@ -111,6 +116,9 @@ void main() async {
   final GetRecommendationInteractor getRecommendationInteractor = GetRecommendationInteractorImpl(recommendationsRepository: recommendationsRepository);
   final GetAllFoodEventsInteractor getAllFoodEventsInteractor = GetAllFoodEventsInteractorImpl(foodEventsRepository: foodEventsRepository);
   final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor = GetUserMicronutrientsInteractorImpl(profileRepository: profileRepository);
+  final MasterFilesApi masterFilesApi = MasterFilesApi(getIdTokenInteractor: getIdTokenInteractor, fetchUserAttributesInteractor: fetchUserAttributesInteractor);
+  final MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageHelper: localStorageHelper, masterFilesApi: masterFilesApi);
+  final GetMasterFileVersionInteractor getMasterFileVersionInteractor = GetMasterFileVersionInteractorImpl(masterFilesRepository: masterFilesRepository);
 
   final loginProvider = LoginProvider(
       signUpInteractor: signUpInteractor,
