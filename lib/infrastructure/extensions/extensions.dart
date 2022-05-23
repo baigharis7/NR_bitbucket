@@ -100,3 +100,34 @@ extension PrefsKeysExtensions on PrefsKeys {
 extension IntExtensions on int? {
   int getHiveKey() => this!~/(1000000);
 }
+
+extension ObjectExtensions on Object? {
+  bool isNull() {
+    if (this == null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool aintNull(Function action) {
+    if (this == null) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  void doIfNull(Function action) {
+    if (this == null) {
+      action.call();
+    }
+  }
+
+  void doIfAintNull(Function action) {
+    if (this != null) {
+      action.call();
+    }
+  }
+
+}

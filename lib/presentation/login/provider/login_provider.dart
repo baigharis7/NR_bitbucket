@@ -1,10 +1,15 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/objectives_info_response.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/send_perrification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/manage_master_files_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/save_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_username_and_email_interactor.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
@@ -18,6 +23,8 @@ class LoginProvider extends BaseProvider {
   final SaveUsernameAndEmailInteractor saveUsernameAndEmailInteractor;
   final IsUserSignedInInteractor isUserSignedInInteractor;
   final GetMasterFileVersionInteractor getMasterFilesVersionInteractor;
+  final ManageMasterFilesInteractor manageMasterFilesInteractor;
+  final SaveMasterFileInteractor saveMasterFileInteractor;
 
   LoginProvider({
     required this.signUpInteractor,
@@ -26,7 +33,9 @@ class LoginProvider extends BaseProvider {
     required this.signInInteractor,
     required this.saveUsernameAndEmailInteractor,
     required this.isUserSignedInInteractor,
-    required this.getMasterFilesVersionInteractor
+    required this.getMasterFilesVersionInteractor,
+    required this.manageMasterFilesInteractor,
+    required this.saveMasterFileInteractor,
   });
 
   String? email;
@@ -174,7 +183,61 @@ class LoginProvider extends BaseProvider {
   }
 
   void manageMasterFiles() {
+    launchSync(
+        block: () async => manageMasterFilesInteractor.execute(
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethods),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethodsInfo),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.foodAndDrinksNames),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.objectivesInfo),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.recommendationGroups),
+        ),
+        onSuccess: (MasterFilesResponse masterFilesResponse) => onSuccessManageMasterFiles(masterFilesResponse),
+        onError: (Object error) => onErrorManageMasterFiles(error)
+    );
+  }
 
+  void onSuccessManageMasterFiles(MasterFilesResponse masterFilesResponse) {
+    masterFilesResponse.cookingMethodsResponse.doIfAintNull(() {
+      saveMasterFileInteractor.execute(
+          masterFilesResponse.cookingMethodsResponse,
+          MasterFilesType.cookingMethods
+      );
+    });
+    masterFilesResponse.cookingMethodsInfoResponse.doIfAintNull(() {
+      saveMasterFileInteractor.execute(
+          masterFilesResponse.cookingMethodsInfoResponse,
+          MasterFilesType.cookingMethodsInfo
+      );
+    });
+    masterFilesResponse.foodsAndDrinksNamesResponse.doIfAintNull((){
+      saveMasterFileInteractor.execute(
+        masterFilesResponse.foodsAndDrinksNamesResponse,
+        MasterFilesType.foodAndDrinksNames
+      );
+    });
+    masterFilesResponse.nutrientsInfoResponse.doIfAintNull(() {
+      saveMasterFileInteractor.execute(
+          masterFilesResponse.nutrientsInfoResponse,
+          MasterFilesType.nutrientsInfo
+      );
+    });
+    masterFilesResponse.objectivesResponse.doIfAintNull(() {
+      saveMasterFileInteractor.execute(
+          masterFilesResponse.objectivesResponse,
+          MasterFilesType.objectivesInfo
+      );
+    });
+    masterFilesResponse.cookingMethodsInfoResponse.doIfAintNull(() {
+      saveMasterFileInteractor.execute(
+          masterFilesResponse.cookingMethodsInfoResponse,
+          MasterFilesType.cookingMethodsInfo
+      );
+    });
+  }
+
+  void onErrorManageMasterFiles(Object error) {
+    // TODO: manage error.
   }
 
 }
