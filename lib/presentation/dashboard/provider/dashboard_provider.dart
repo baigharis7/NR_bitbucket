@@ -92,7 +92,7 @@ class DashboardProvider extends BaseProvider {
   // TODO: darle una vuelta a esta función, probablemente sea más eficiente generando un array con los nombres de los mN.
   String getNutrientName(String nutrientName, String currentLanguage) {
 
-    final nutrientInfo = getNutrientsInfoMaster!.data.firstWhere((info) => info.officialName == nutrientName);
+    final nutrientInfo = getNutrientsInfoMaster!.nutrientsInfo.firstWhere((info) => info.officialName == nutrientName);
     if (currentLanguage == 'es') {
       String name = nutrientInfo.es.orEmpty();
       if (name.contains(",")) name = name.split(",")[0];
