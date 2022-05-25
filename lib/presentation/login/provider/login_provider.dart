@@ -10,9 +10,15 @@ import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/manage_master_files_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/save_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_username_and_email_interactor.dart';
-import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/check_profile_existence_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/download_profile_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/token_utils.dart';
+import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
 
 // TODO: manage errors, finish flows, sort functions and variables.
 class LoginProvider extends BaseProvider {
@@ -25,6 +31,10 @@ class LoginProvider extends BaseProvider {
   final GetMasterFileVersionInteractor getMasterFilesVersionInteractor;
   final ManageMasterFilesInteractor manageMasterFilesInteractor;
   final SaveMasterFileInteractor saveMasterFileInteractor;
+  final CheckProfileExistenceInteractor checkProfileExistenceInteractor;
+  final DownloadProfileInteractor downloadProfileInteractor;
+  final GetIdTokenInteractor getIdTokenInteractor;
+  final SaveProfileInteractor saveProfileInteractor;
 
   LoginProvider({
     required this.signUpInteractor,
@@ -38,18 +48,19 @@ class LoginProvider extends BaseProvider {
     required this.saveMasterFileInteractor,
   });
 
-  String? email;
-  String? username;
-  String? password;
+  String? _email;
+  String? _username;
+  String? _password;
   bool isLogin = true;
+  bool _isProfileChecked = false;
 
-  init() async {
-    await _refreshAllStates();
-  }
+  // init() async {
+  //   await _refreshAllStates();
+  // }
 
-  _refreshAllStates() async {
-    notifyListeners();
-  }
+  // _refreshAllStates() async {
+  //   notifyListeners();
+  // }
 
   void changeLoginMode(Function action) {
     isLogin = !isLogin;
@@ -66,17 +77,17 @@ class LoginProvider extends BaseProvider {
     String? repeatPassword,
     Function? action,
   }) async {
-    this.email = email.orEmpty();
-    this.username = username.orEmpty();
-    this.password = password.orEmpty();
+    _email = email.orEmpty();
+    _username = username.orEmpty();
+    _password = password.orEmpty();
 
-    if (this.username.isEmptyOrNull()) {
+    if (_username.isEmptyOrNull()) {
       // Error: campo vacío.
-    } else if (this.password.isEmptyOrNull()) {
+    } else if (_password.isEmptyOrNull()) {
       // Error: campo vacío.
     } else if (!isLogin && repeatPassword.isEmptyOrNull()) {
       // Error campo vacío.
-    } else if (!isLogin && this.email.isEmptyOrNull()) {
+    } else if (!isLogin && _email.isEmptyOrNull()) {
       // Error campo vacío.
     } else {
       if (isLogin) {
@@ -91,9 +102,9 @@ class LoginProvider extends BaseProvider {
         } else {
           launchSync(
               block: () => signUpInteractor.execute(
-                this.username.orEmpty(),
-                this.email.orEmpty(),
-                this.password.orEmpty(),
+                _username.orEmpty(),
+                _email.orEmpty(),
+                _password.orEmpty(),
               ),
               onSuccess: (result) => onSignUpSuccess(result, action!),
               onError: (Object error) => onSignUpError(error)
@@ -116,7 +127,7 @@ class LoginProvider extends BaseProvider {
   }
 
   void onSignUpSuccess(SignUpResult result, Function action) {
-    saveUsernameAndEmail(username.orEmpty(), email.orEmpty());
+    saveUsernameAndEmail(_username.orEmpty(), _email.orEmpty());
     action.call();
   }
 
@@ -126,7 +137,7 @@ class LoginProvider extends BaseProvider {
 
   void sendVerificationCode(String confirmationCode, Function action) {
     launchSync(
-        block: () => verificationCodeInteractor.execute(confirmationCode, username.orEmpty()),
+        block: () => verificationCodeInteractor.execute(confirmationCode, _username.orEmpty()),
         onSuccess: (signUpResult) => onSendVerificationCodeSuccess(signUpResult, action),
         onError: (error) => onSendVerificationCodeError(error),
     );
@@ -143,21 +154,63 @@ class LoginProvider extends BaseProvider {
   void onFetchUserAttributesSuccess(Function? moveToNextScreen) {
     launchSync(
       block: () => isUserSignedInInteractor.execute(),
-        onSuccess: (isSignedIn) => {
+        onSuccess: (isSignedIn) {
           if (isSignedIn) {
-            moveToNextScreen?.call()
+            if (!_isProfileChecked) {
+              launchSync(
+                  block: () => checkProfileExistenceInteractor.execute(),
+                  onSuccess: (profileExists) {
+                    _isProfileChecked = true;
+                    if (!profileExists) {
+                      String? email = getEmailFromToken(getIdTokenInteractor.execute());
+                      launchSync(
+                        block: () => downloadProfileInteractor.execute(email.orEmpty()),
+                        onSuccess: (UserProfileModel? userProfileModel) {
+                          if (userProfileModel.isNull()) {
+                            // TODO: si no tiene perfil en AWS es una movida. Llevarlo a la pantalla de creación de perfil.
+                            // TODO: Mostrar diálogo que avisa de la situación y lleva a la pantalla de registro.
+                            _goToRegistry?.call();
+                          } else {
+                            launchSync(
+                              block: () => saveProfileInteractor.execute(userProfileModel!),
+                              onSuccess: (_) {
+                              },
+                              onError: () {
+                                // TODO: manage errors.
+                                const g = '';
+                                _isProfileChecked = false;
+                                },
+                            );
+                          }
+                          },
+                        onError: (error) {
+                          // TODO: manage errors.
+                          const g = '';
+                          _isProfileChecked = false;
+                        },
+                      );
+                    } else {
+                    }
+                },
+                  onError: (error) {
+                    // TODO: manage errors.
+                    const g = '';
+                  }
+              );
+            } else {
+            }
           } else {
-            performSignIn(username.orEmpty(), password.orEmpty(), moveToNextScreen)
+            performSignIn(_username.orEmpty(), _password.orEmpty(), moveToNextScreen);
           }
       },
         onError: (error) {
-          performSignIn(username.orEmpty(), password.orEmpty(), moveToNextScreen);
+          performSignIn(_username.orEmpty(), _password.orEmpty(), moveToNextScreen);
         },
     );
   }
 
   void onFetchUserAttributesError(Object error, Function? action) {
-    performSignIn(username.orEmpty(), password.orEmpty(), action);
+    performSignIn(_username.orEmpty(), _password.orEmpty(), action);
   }
 
   void saveUsernameAndEmail(String username, String email) {

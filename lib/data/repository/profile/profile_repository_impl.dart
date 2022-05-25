@@ -1,9 +1,11 @@
+import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart' as upload;
 import 'package:nutrenaissance_flutter/data/api/profile/model/user_profile_response.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/profile/profile_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/profile_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 class ProfileRepositoryImpl extends ProfileRepository {
   final ProfileApi profileApi;
@@ -25,18 +27,37 @@ class ProfileRepositoryImpl extends ProfileRepository {
   }
 
   @override
-  Future<UserProfileModel> getProfile() async {
-    // TODO: hacer el mapper bien y devolver bien, esto es para ir tirando.
-    return UserProfileModel(userId: 'userId', commonName: 'commonName', birthDate: 12313123, sex: SexType.male, occupationActivityFactor: 1.2, objectives: [3, 4, 5]);
+  Future<UserProfileModel?> getProfile() async {
+    final profileEntity = await localStorageRepository.getProfile();
+    if (profileEntity.isNull()) {
+      return null;
+    } else {
+      return mapToUserProfileModelFromProfileEntity(profileEntity!);
+    }
   }
 
   @override
   Future<List<String>> getUserMicronutrients() async {
     List<String>? micronutrients = await localStorageRepository.getProfile().then((profile) {
-      return profile.micronutrients;
+      return profile!.micronutrients;
     });
-    // TODO: mejorar esto, un poco cutre. Poner bien el método orEmpty().
-    return micronutrients ?? [];
+    return micronutrients.orEmpty();
+  }
+
+  @override
+  Future<bool> checkProfileExistence() async {
+    return await localStorageRepository.checkProfileExistence();
+  }
+
+  @override
+  Future<UserProfileModel?> downloadProfile(String email) async {
+    final profile = await profileApi.downloadProfile(email);
+    try {
+      final uploadProfile = upload.UploadUserProfile.fromJson(profile);
+      return mapToUserProfileModelFromUploadUser(uploadProfile);
+    } catch (error) {
+      return null;
+    }
   }
 
 }

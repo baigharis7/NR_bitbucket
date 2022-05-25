@@ -6,13 +6,14 @@ import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_compl
 
 abstract class LocalStorageRepository extends LocalStorageHelper {
 
-  Future<UserProfileEntity> getProfile();
+  Future<UserProfileEntity?> getProfile();
   Future<List> getAllFoodEvents();
   Future<FoodEventComplete> getLastFoodEvent();
   Future<void> saveProfile(UserProfileEntity profileEntity);
   Future<void> saveFoodEvent(FoodEventEntity foodEventEntity);
-  Future<void> saveMasterFile(int masterFileType, dynamic masterFile);
+  Future<void> saveMasterFile(MasterFilesType masterFileType, dynamic masterFile);
   Future<dynamic> getMasterFile(MasterFilesType masterFileType);
   Future<int> getMasterFileVersion(MasterFilesType masterFileType);
+  Future<bool> checkProfileExistence();
 
 }

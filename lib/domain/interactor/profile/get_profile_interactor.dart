@@ -2,5 +2,5 @@ import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.
 
 abstract class GetProfileInteractor {
   // TODO: poner UserProfileModel
-  Future<UserProfileModel> execute();
+  Future<UserProfileModel?> execute();
 }

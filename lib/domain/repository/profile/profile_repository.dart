@@ -5,6 +5,8 @@ abstract class ProfileRepository {
   Future<UserProfileResponse> uploadProfile(UserProfileModel profile);
   Future<void> saveProfile(UserProfileModel profileModel);
   // TODO: poner UserProfileModel.
-  Future<UserProfileModel> getProfile();
+  Future<UserProfileModel?> getProfile();
   Future<List<String>> getUserMicronutrients();
+  Future<bool> checkProfileExistence();
+  Future<UserProfileModel?> downloadProfile(String email);
 }

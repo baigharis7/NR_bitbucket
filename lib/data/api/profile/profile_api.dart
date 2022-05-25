@@ -22,4 +22,13 @@ class ProfileApi extends ApiHelper {
         ),
         body,
       );
+
+  Future<Map<String, dynamic>> downloadProfile(String email) =>
+      get(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '/dev/users',
+            {'email': email}
+        )
+      );
 }

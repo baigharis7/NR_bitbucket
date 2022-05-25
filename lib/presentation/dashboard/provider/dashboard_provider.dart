@@ -72,7 +72,7 @@ class DashboardProvider extends BaseProvider {
           setNutrientsInfoMaster(nutrientsInfoMaster);
           retrieveUserMicronutrients();
         },
-        onError: () {});
+        onError: (error) {});
   }
 
   void retrieveUserMicronutrients() {
