@@ -1,20 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/user_profile_response.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
-
-import '../../../domain/interactor/preferences/get_user_id_interactor.dart';
-import '../../../domain/interactor/profile/upload_profile_interactor.dart';
-import '../../../domain/models/masterfiles/food_names_master.dart';
-import '../../../domain/models/profile/activity_by_occupation_type.dart';
-import '../../../domain/models/profile/allergens.dart';
-import '../../../domain/models/profile/common_diseases.dart';
-import '../../../domain/models/profile/diet_type.dart';
-import '../../../domain/models/profile/intolerances.dart';
-import '../../../domain/models/profile/user_profile_model.dart';
-import '../../../infrastructure/utils/constants.dart';
-import '../../../infrastructure/extensions/extensions.dart';
-import '../../../infrastructure/utils/json_utils.dart';
-import '../../common/provider/base_provider.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/activity_by_occupation_type.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/allergens.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/common_diseases.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/diet_type.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/intolerances.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/json_utils.dart';
+import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 
 class RegistryProvider extends BaseProvider {
   final GetUserIdInteractor getUserIdInteractor;
@@ -335,8 +334,8 @@ class RegistryProvider extends BaseProvider {
     launchSync(
         block: () async {
           final Map<String, dynamic> foodMap = await JsonUtils(context: context).readJson('assets/dummy_foods.json');
-          final FoodAndDrinksNamesMaster foodNames = FoodAndDrinksNamesMaster.fromJson(foodMap);
-          return foodNames.foodAndDrinksNames!.data;
+          final FoodsAndDrinksNamesMaster foodNames = FoodsAndDrinksNamesMaster.fromJson(foodMap);
+          return foodNames.foodsAndDrinksNames!.data;
         },
         onSuccess: (json) {
           jsonBack.call(json);

@@ -67,8 +67,8 @@ class RecommendationsProvider extends BaseProvider {
   void retrieveFoodAndDrinks(Future<Map<String, dynamic>> foodMap, {Function? nextCall}) async {
     launchSync(
         block: () async {
-          final FoodAndDrinksNamesMaster foodNames = FoodAndDrinksNamesMaster.fromJson(await foodMap);
-          return foodNames.foodAndDrinksNames!.data;
+          final FoodsAndDrinksNamesMaster foodNames = FoodsAndDrinksNamesMaster.fromJson(await foodMap);
+          return foodNames.foodsAndDrinksNames!.data;
         },
         onSuccess: (foodAndDrinksList) {
           _foodAndDrinksList = foodAndDrinksList;
