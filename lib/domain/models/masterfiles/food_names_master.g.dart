@@ -6,23 +6,23 @@ part of 'food_names_master.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-FoodAndDrinksNamesMaster _$FoodAndDrinksNamesMasterFromJson(
+FoodsAndDrinksNamesMaster _$FoodsAndDrinksNamesMasterFromJson(
         Map<String, dynamic> json) =>
-    FoodAndDrinksNamesMaster(
-      json['foodAndDrinksNames'] == null
+    FoodsAndDrinksNamesMaster(
+      json['foodsAndDrinksNames'] == null
           ? null
-          : FoodAndDrinksNames.fromJson(
-              json['foodAndDrinksNames'] as Map<String, dynamic>),
+          : FoodsAndDrinksNames.fromJson(
+              json['foodsAndDrinksNames'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$FoodAndDrinksNamesMasterToJson(
-        FoodAndDrinksNamesMaster instance) =>
+Map<String, dynamic> _$FoodsAndDrinksNamesMasterToJson(
+        FoodsAndDrinksNamesMaster instance) =>
     <String, dynamic>{
-      'foodAndDrinksNames': instance.foodAndDrinksNames?.toJson(),
+      'foodsAndDrinksNames': instance.foodsAndDrinksNames?.toJson(),
     };
 
-FoodAndDrinksNames _$FoodAndDrinksNamesFromJson(Map<String, dynamic> json) =>
-    FoodAndDrinksNames(
+FoodsAndDrinksNames _$FoodsAndDrinksNamesFromJson(Map<String, dynamic> json) =>
+    FoodsAndDrinksNames(
       json['v'] as int?,
       json['data'] == null
           ? null
@@ -30,7 +30,8 @@ FoodAndDrinksNames _$FoodAndDrinksNamesFromJson(Map<String, dynamic> json) =>
               json['data'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$FoodAndDrinksNamesToJson(FoodAndDrinksNames instance) =>
+Map<String, dynamic> _$FoodsAndDrinksNamesToJson(
+        FoodsAndDrinksNames instance) =>
     <String, dynamic>{
       'v': instance.v,
       'data': instance.data?.toJson(),

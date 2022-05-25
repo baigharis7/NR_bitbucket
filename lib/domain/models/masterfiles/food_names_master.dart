@@ -3,27 +3,27 @@ import 'package:json_annotation/json_annotation.dart';
 part 'food_names_master.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class FoodAndDrinksNamesMaster {
-  @JsonKey(name: 'foodAndDrinksNames')
-  FoodAndDrinksNames? foodAndDrinksNames;
+class FoodsAndDrinksNamesMaster {
+  @JsonKey(name: 'foodsAndDrinksNames')
+  FoodsAndDrinksNames? foodsAndDrinksNames;
 
-  FoodAndDrinksNamesMaster(this.foodAndDrinksNames);
+  FoodsAndDrinksNamesMaster(this.foodsAndDrinksNames);
 
-  factory FoodAndDrinksNamesMaster.fromJson(Map<String, dynamic> json) => _$FoodAndDrinksNamesMasterFromJson(json);
-  Map<String, dynamic> toJson() => _$FoodAndDrinksNamesMasterToJson(this);
+  factory FoodsAndDrinksNamesMaster.fromJson(Map<String, dynamic> json) => _$FoodsAndDrinksNamesMasterFromJson(json);
+  Map<String, dynamic> toJson() => _$FoodsAndDrinksNamesMasterToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)
-class FoodAndDrinksNames {
+class FoodsAndDrinksNames {
   @JsonKey(name: 'v')
   int? v;
   @JsonKey(name: 'data')
   FoodsAndDrinkListsMaster? data;
 
-  FoodAndDrinksNames(this.v, this.data);
+  FoodsAndDrinksNames(this.v, this.data);
 
-  factory FoodAndDrinksNames.fromJson(Map<String, dynamic> json) => _$FoodAndDrinksNamesFromJson(json);
-  Map<String, dynamic> toJson() => _$FoodAndDrinksNamesToJson(this);
+  factory FoodsAndDrinksNames.fromJson(Map<String, dynamic> json) => _$FoodsAndDrinksNamesFromJson(json);
+  Map<String, dynamic> toJson() => _$FoodsAndDrinksNamesToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -57,13 +57,13 @@ class FoodItemMaster{
   Map<String, dynamic> toJson() => _$FoodItemMasterToJson(this);
 }
 
-FoodAndDrinksNames foodAndDrinksNamesFromJson(Map<String, dynamic> json) =>
-    FoodAndDrinksNames(
+FoodsAndDrinksNames foodsAndDrinksNamesFromJson(Map<String, dynamic> json) =>
+    FoodsAndDrinksNames(
       json['v'],
       json['data'],
     );
 
-Map<String, dynamic> foodAndDrinksNamesToJson(FoodAndDrinksNames instance) =>
+Map<String, dynamic> foodsAndDrinksNamesToJson(FoodsAndDrinksNames instance) =>
     <String, dynamic>{
       'v': instance.v,
       'data': instance.data?.toJson(),

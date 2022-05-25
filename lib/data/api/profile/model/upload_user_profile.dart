@@ -13,7 +13,7 @@ class UploadUserProfile {
   FemaleCharacteristics? femaleCharacteristics;
   MedicalSituation? medicalSituation;
   List<int>? foodAversions;
-  Exclusions? exclusions;
+  String? exclusions;
   String? intolerances;
   // String? symptoms; // TODO -> Consider storing it in a different table or only in local and send it with each recommendation
   int? guts;
@@ -96,16 +96,6 @@ class Menstruation {
 
   factory Menstruation.fromJson(Map<String, dynamic> json) => _$MenstruationFromJson(json);
   Map<String, dynamic> toJson() => _$MenstruationToJson(this);
-}
-
-@JsonSerializable(explicitToJson: true)
-class Exclusions {
-  String exclusions;
-
-  Exclusions({required this.exclusions});
-
-  factory Exclusions.fromJson(Map<String, dynamic> json) => _$ExclusionsFromJson(json);
-  Map<String, dynamic> toJson() => _$ExclusionsToJson(this);
 }
 
 enum SexType {

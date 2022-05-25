@@ -57,27 +57,24 @@ class NutrientInfoEntityAdapter extends TypeAdapter<NutrientInfoEntity> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return NutrientInfoEntity(
-      id: fields[0] as int,
-      name: fields[1] as String,
-      unit: fields[2] as String,
-      es: fields[3] as String,
-      en: fields[4] as String,
+      name: fields[0] as String,
+      unit: fields[1] as String,
+      es: fields[2] as String,
+      en: fields[3] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, NutrientInfoEntity obj) {
     writer
-      ..writeByte(5)
-      ..writeByte(0)
-      ..write(obj.id)
-      ..writeByte(1)
-      ..write(obj.name)
-      ..writeByte(2)
-      ..write(obj.unit)
-      ..writeByte(3)
-      ..write(obj.es)
       ..writeByte(4)
+      ..writeByte(0)
+      ..write(obj.name)
+      ..writeByte(1)
+      ..write(obj.unit)
+      ..writeByte(2)
+      ..write(obj.es)
+      ..writeByte(3)
       ..write(obj.en);
   }
 
@@ -115,7 +112,6 @@ Map<String, dynamic> _$NutrientsInfoEntityToJson(
 
 NutrientInfoEntity _$NutrientInfoEntityFromJson(Map<String, dynamic> json) =>
     NutrientInfoEntity(
-      id: json['id'] as int,
       name: json['name'] as String,
       unit: json['unit'] as String,
       es: json['es'] as String,
@@ -124,7 +120,6 @@ NutrientInfoEntity _$NutrientInfoEntityFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$NutrientInfoEntityToJson(NutrientInfoEntity instance) =>
     <String, dynamic>{
-      'id': instance.id,
       'name': instance.name,
       'unit': instance.unit,
       'es': instance.es,

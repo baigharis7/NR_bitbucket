@@ -29,9 +29,7 @@ UploadUserProfile _$UploadUserProfileFromJson(Map<String, dynamic> json) =>
       foodAversions: (json['foodAversions'] as List<dynamic>?)
           ?.map((e) => e as int)
           .toList(),
-      exclusions: json['exclusions'] == null
-          ? null
-          : Exclusions.fromJson(json['exclusions'] as Map<String, dynamic>),
+      exclusions: json['exclusions'] as String?,
       intolerances: json['intolerances'] as String?,
       guts: json['guts'] as int?,
       objectives:
@@ -52,7 +50,7 @@ Map<String, dynamic> _$UploadUserProfileToJson(UploadUserProfile instance) =>
       'femaleCharacteristics': instance.femaleCharacteristics?.toJson(),
       'medicalSituation': instance.medicalSituation?.toJson(),
       'foodAversions': instance.foodAversions,
-      'exclusions': instance.exclusions?.toJson(),
+      'exclusions': instance.exclusions,
       'intolerances': instance.intolerances,
       'guts': instance.guts,
       'objectives': instance.objectives,
@@ -120,13 +118,4 @@ Map<String, dynamic> _$MenstruationToJson(Menstruation instance) =>
       'regularity': instance.regularity,
       'daysOfCycle': instance.daysOfCycle,
       'lastStartDate': instance.lastStartDate,
-    };
-
-Exclusions _$ExclusionsFromJson(Map<String, dynamic> json) => Exclusions(
-      exclusions: json['exclusions'] as String,
-    );
-
-Map<String, dynamic> _$ExclusionsToJson(Exclusions instance) =>
-    <String, dynamic>{
-      'exclusions': instance.exclusions,
     };

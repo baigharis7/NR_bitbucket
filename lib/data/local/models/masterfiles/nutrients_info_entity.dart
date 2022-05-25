@@ -22,13 +22,12 @@ class NutrientsInfoEntity {
 @HiveType(typeId: HiveTypeIds.nutrientInfoEntity)
 class NutrientInfoEntity {
 
-  @HiveField(0) int id;
-  @HiveField(1) String name;
-  @HiveField(2) String unit;
-  @HiveField(3) String es;
-  @HiveField(4) String en;
+  @HiveField(0) String name;
+  @HiveField(1) String unit;
+  @HiveField(2) String es;
+  @HiveField(3) String en;
 
-  NutrientInfoEntity({required this.id, required this.name, required this.unit, required this.es, required this.en});
+  NutrientInfoEntity({required this.name, required this.unit, required this.es, required this.en});
 
   factory NutrientInfoEntity.fromJson(Map<String, dynamic> json) => _$NutrientInfoEntityFromJson(json);
   Map<String, dynamic> toJson() => _$NutrientInfoEntityToJson(this);
