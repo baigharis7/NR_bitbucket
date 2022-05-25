@@ -4,11 +4,9 @@ import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.da
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/num_constants.dart';
-import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/provider/login_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/view/registry_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_button_1.dart';
-import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -72,6 +70,7 @@ class _LoginScreenState extends State<LoginScreen>
     void _showMFADialog() {
       showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (ctx) => SimpleDialog(
           title: Center(
             child: Text(AppLocalizations.instance.translate('verify_your_account'),),
@@ -97,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen>
                 message: AppLocalizations.instance.translate('accept'),
                 action: () {
                   getProvider.sendVerificationCode(_mfaController.text, () {
-                    Navigator.of(ctx).popAndPushNamed(RegistryScreen.routeName);
+                    Navigator.of(ctx).popAndPushNamed(RegistryScreen.routeName, result: true);
                   });
                   _mfaController.text = '';
                 },
@@ -107,14 +106,14 @@ class _LoginScreenState extends State<LoginScreen>
               padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingSmall),
               child: CustomButton1(
                 message: AppLocalizations.instance.translate('resend_verification_code'),
-                action: () => getProvider.resendVerificationCode('', () {}, () {}),
+                action: () => getProvider.resendVerificationCode(),
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingSmall),
               child: CustomButton1(
                   message: AppLocalizations.instance.translate('cancel'),
-                  action: () => Navigator.pop(ctx)
+                  action: () => Navigator.pop(ctx, false)
               ),
             ),
             const Padding(
@@ -122,7 +121,11 @@ class _LoginScreenState extends State<LoginScreen>
             )
           ],
         ),
-      );
+      ).then((result) {
+        if (result == null) {
+          // Borrar usuario.
+        }
+      });
     }
 
     return SafeArea(
@@ -215,15 +218,17 @@ class _LoginScreenState extends State<LoginScreen>
                         message: getProvider.isLogin
                             ? AppLocalizations.instance.translate('login')
                             : AppLocalizations.instance.translate('register'),
-                        action: () => getProvider.submitData(
-                          username: _usernameController.text.orEmpty(),
-                          email: _emailController.text.orEmpty(),
-                          password: _passwordController.text.orEmpty(),
-                          repeatPassword: _repeatPasswordController.text.orEmpty(),
-                          action: getProvider.isLogin
-                              ? () => Navigator.of(context).popAndPushNamed(DashboardScreen.routeName)
-                              : () => _showMFADialog(),
-                        ),
+                          action: () => _showMFADialog(),
+                        // action: () => getProvider.submitData(
+                        //   username: _usernameController.text.orEmpty(),
+                        //   email: _emailController.text.orEmpty(),
+                        //   password: _passwordController.text.orEmpty(),
+                        //   repeatPassword: _repeatPasswordController.text.orEmpty(),
+                        //   action: getProvider.isLogin
+                        //       ? () => Navigator.of(context).popAndPushNamed(DashboardScreen.routeName)
+                        //       : () => _showMFADialog(),
+                        //   goToRegistry: () => Navigator.of(context).popAndPushNamed(RegistryScreen.routeName)
+                        // ),
                       ),
                     ),
                   ),

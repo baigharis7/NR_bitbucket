@@ -28,4 +28,7 @@ class LoginRepositoryImpl extends LoginRepository {
   @override
   Future<SignInResult> signIn(String username, String password) => authenticationService.signIn(username, password);
 
+  @override
+  Future<ResendSignUpCodeResult> resendVerificationCode(String username) => authenticationService.resendVerificationCode(username);
+
 }

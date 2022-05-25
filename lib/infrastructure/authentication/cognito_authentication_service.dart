@@ -51,13 +51,8 @@ class CognitoAuthenticationService implements AuthenticationService {
   }
 
   @override
-  void resendVerificationCode(String username, Function onResendSuccess, Function onResendError) async {
-    try {
-      await _getAuthorization().resendSignUpCode(username: "Alex1");
-      onResendSuccess.call();
-    } catch (error) {
-      onResendError.call(error);
-    }
+  Future<ResendSignUpCodeResult> resendVerificationCode(String username) async {
+      return await _getAuthorization().resendSignUpCode(username: username);
   }
 
   @override
@@ -70,7 +65,7 @@ class CognitoAuthenticationService implements AuthenticationService {
 
   @override
   Future<AuthSession> fetchUserAttributes() async {
-    return await Amplify.Auth.fetchAuthSession(
+    return await _getAuthorization().fetchAuthSession(
       options: CognitoSessionOptions(getAWSCredentials: true),
     );
   }

@@ -31,6 +31,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attrib
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/send_perrification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/send_verification_code_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor.dart';
@@ -131,6 +133,7 @@ void main() async {
   final SaveMasterFileInteractor saveMasterFileInteractor = SaveMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
   final CheckProfileExistenceInteractor checkProfileExistenceInteractor = CheckProfileExistenceInteractorImpl(profileRepository: profileRepository);
   final DownloadProfileInteractor downloadProfileInteractor = DownloadProfileInteractorImpl(profileRepository: profileRepository);
+  final ResendVerificationCodeInteractor resendVerificationCodeInteractor = ResendVerificationCodeInteractorImpl(loginRepository: loginRepository);
 
   final loginProvider = LoginProvider(
       signUpInteractor: signUpInteractor,
@@ -145,7 +148,8 @@ void main() async {
       checkProfileExistenceInteractor: checkProfileExistenceInteractor,
       downloadProfileInteractor: downloadProfileInteractor,
       getIdTokenInteractor: getIdTokenInteractor,
-      saveProfileInteractor: saveProfileInteractor
+      saveProfileInteractor: saveProfileInteractor,
+      resendVerificationCodeInteractor: resendVerificationCodeInteractor
   );
   // await loginProvider.init();
 

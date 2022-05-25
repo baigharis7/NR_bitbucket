@@ -118,13 +118,13 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
               shadowColor: Colors.pinkAccent),
           onPressed: () {
             if (_textController.text != '') {
-              final foodEvent = FoodInEvent(
+              final foodInEvent = FoodInEvent(
                   id: widget.ingredient.id,
                   qty: int.parse(_textController.text),
                   unit: 0,
                   cookingMethod: 0
               );
-              Navigator.pop(context, foodEvent);
+              Navigator.pop(context, foodInEvent);
             }
           },
           child: const Text('Ya está', style: TextStyle(color: Colors.white),),

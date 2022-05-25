@@ -3,6 +3,7 @@ import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_r
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/send_perrification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor.dart';
@@ -34,6 +35,7 @@ class LoginProvider extends BaseProvider {
   final DownloadProfileInteractor downloadProfileInteractor;
   final GetIdTokenInteractor getIdTokenInteractor;
   final SaveProfileInteractor saveProfileInteractor;
+  final ResendVerificationCodeInteractor resendVerificationCodeInteractor;
 
   LoginProvider({
     required this.signUpInteractor,
@@ -49,6 +51,7 @@ class LoginProvider extends BaseProvider {
     required this.downloadProfileInteractor,
     required this.getIdTokenInteractor,
     required this.saveProfileInteractor,
+    required this.resendVerificationCodeInteractor,
   });
 
   String? _email;
@@ -231,8 +234,16 @@ class LoginProvider extends BaseProvider {
     saveUsernameAndEmailInteractor.execute(username, email);
   }
 
-  void resendVerificationCode(String username, Function onResendSuccess, Function onResendError) {
-    // loginInteractor.resendVerificationCode('zosdam@gmail.com', onResendSuccess, onResendError);
+  void resendVerificationCode() {
+    launchSync(
+        block: () => resendVerificationCodeInteractor.execute(_username.orEmpty()),
+        onSuccess: (ResendSignUpCodeResult resendSignUpCodeResult) {
+          // TODO: poner toast.
+        },
+        onError: (Object error) {
+          // TODO: manage errors.
+        },
+    );
   }
 
   void performSignIn(String username, String password, Function? action) {
