@@ -8,6 +8,6 @@ class SaveMasterFileInteractorImpl extends SaveMasterFileInteractor {
   SaveMasterFileInteractorImpl({required this.masterFilesRepository});
 
   @override
-  void execute(masterFile, MasterFilesType masterFilesType) => masterFilesRepository.saveMasterFile(masterFile, masterFilesType);
+  void execute(masterFileResponse, MasterFilesType masterFilesType) => masterFilesRepository.saveMasterFile(masterFileResponse, masterFilesType);
 
 }

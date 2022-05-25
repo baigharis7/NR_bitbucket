@@ -19,12 +19,12 @@ class MasterFilesResponse {
 
   MasterFilesResponse(
       {
-        required this.cookingMethodsResponse,
-        required this.cookingMethodsInfoResponse,
-        required this.nutrientsInfoResponse,
-        required this.foodsAndDrinksNamesResponse,
-        required this.objectivesResponse,
-        required this.recommendationGroupsResponse,
+        this.cookingMethodsResponse,
+        this.cookingMethodsInfoResponse,
+        this.nutrientsInfoResponse,
+        this.foodsAndDrinksNamesResponse,
+        this.objectivesResponse,
+        this.recommendationGroupsResponse,
       }
   );
 

@@ -17,9 +17,9 @@ class MasterFilesApi extends ApiHelper {
   );
 
   Future<Map<String, dynamic>> manageMasterFiles(
-      int cookingMethodsInfoVersion,
       int cookingMethodsVersion,
-      int foodAndDrinksNamesVersion,
+      int cookingMethodsInfoVersion,
+      int foodsAndDrinksNamesVersion,
       int nutrientsInfoVersion,
       int objectivesInfoVersion,
       int recommendationGroupsVersion
@@ -29,12 +29,12 @@ class MasterFilesApi extends ApiHelper {
         Environment().config!.baseUrl,
         '/dev/manage-master-files',
         {
-          MasterFilesType.cookingMethodsInfo.name: cookingMethodsInfoVersion,
-          MasterFilesType.cookingMethods.name: cookingMethodsVersion,
-          MasterFilesType.foodAndDrinksNames.name: foodAndDrinksNamesVersion,
-          MasterFilesType.nutrientsInfo.name: nutrientsInfoVersion,
-          MasterFilesType.objectivesInfo.name: objectivesInfoVersion,
-          MasterFilesType.recommendationGroups.name: recommendationGroupsVersion,
+          cookingMethods: cookingMethodsVersion.toString(),
+          cookingMethodsInfo: cookingMethodsInfoVersion.toString(),
+          foodsAndDrinksNames: foodsAndDrinksNamesVersion.toString(),
+          nutrientsInfo: nutrientsInfoVersion.toString(),
+          objectivesInfo: objectivesInfoVersion.toString(),
+          recommendationGroups: recommendationGroupsVersion.toString(),
         },
       ),
     );

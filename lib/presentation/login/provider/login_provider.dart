@@ -1,6 +1,5 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_response.dart';
-import 'package:nutrenaissance_flutter/data/api/masterfiles/model/objectives_info_response.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in_interactor.dart';
@@ -46,13 +45,19 @@ class LoginProvider extends BaseProvider {
     required this.getMasterFilesVersionInteractor,
     required this.manageMasterFilesInteractor,
     required this.saveMasterFileInteractor,
+    required this.checkProfileExistenceInteractor,
+    required this.downloadProfileInteractor,
+    required this.getIdTokenInteractor,
+    required this.saveProfileInteractor,
   });
 
   String? _email;
   String? _username;
   String? _password;
   bool isLogin = true;
+  bool _areMasterFilesChecked = false;
   bool _isProfileChecked = false;
+  Function? _goToRegistry;
 
   // init() async {
   //   await _refreshAllStates();
@@ -76,10 +81,12 @@ class LoginProvider extends BaseProvider {
     String? password,
     String? repeatPassword,
     Function? action,
+    Function? goToRegistry,
   }) async {
     _email = email.orEmpty();
     _username = username.orEmpty();
     _password = password.orEmpty();
+    _goToRegistry = goToRegistry;
 
     if (_username.isEmptyOrNull()) {
       // Error: campo vacío.
@@ -174,6 +181,7 @@ class LoginProvider extends BaseProvider {
                             launchSync(
                               block: () => saveProfileInteractor.execute(userProfileModel!),
                               onSuccess: (_) {
+                                manageMasterFiles(moveToNextScreen);
                               },
                               onError: () {
                                 // TODO: manage errors.
@@ -190,6 +198,7 @@ class LoginProvider extends BaseProvider {
                         },
                       );
                     } else {
+                      manageMasterFiles(moveToNextScreen);
                     }
                 },
                   onError: (error) {
@@ -198,6 +207,11 @@ class LoginProvider extends BaseProvider {
                   }
               );
             } else {
+              if (!_areMasterFilesChecked) {
+                manageMasterFiles(moveToNextScreen);
+              } else {
+                moveToNextScreen?.call();
+              }
             }
           } else {
             performSignIn(_username.orEmpty(), _password.orEmpty(), moveToNextScreen);
@@ -235,22 +249,22 @@ class LoginProvider extends BaseProvider {
     );
   }
 
-  void manageMasterFiles() {
+  void manageMasterFiles(Function? onFinish) {
     launchSync(
         block: () async => manageMasterFilesInteractor.execute(
           await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethods),
           await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethodsInfo),
-          await getMasterFilesVersionInteractor.execute(MasterFilesType.foodAndDrinksNames),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.foodsAndDrinksNames),
           await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo),
           await getMasterFilesVersionInteractor.execute(MasterFilesType.objectivesInfo),
           await getMasterFilesVersionInteractor.execute(MasterFilesType.recommendationGroups),
         ),
-        onSuccess: (MasterFilesResponse masterFilesResponse) => onSuccessManageMasterFiles(masterFilesResponse),
-        onError: (Object error) => onErrorManageMasterFiles(error)
+        onSuccess: (MasterFilesResponse masterFilesResponse) => onSuccessManageMasterFiles(masterFilesResponse, onFinish),
+        onError: (Object error) => onErrorManageMasterFiles(error, onFinish)
     );
   }
 
-  void onSuccessManageMasterFiles(MasterFilesResponse masterFilesResponse) {
+  void onSuccessManageMasterFiles(MasterFilesResponse masterFilesResponse, Function? onFinish) {
     masterFilesResponse.cookingMethodsResponse.doIfAintNull(() {
       saveMasterFileInteractor.execute(
           masterFilesResponse.cookingMethodsResponse,
@@ -266,7 +280,7 @@ class LoginProvider extends BaseProvider {
     masterFilesResponse.foodsAndDrinksNamesResponse.doIfAintNull((){
       saveMasterFileInteractor.execute(
         masterFilesResponse.foodsAndDrinksNamesResponse,
-        MasterFilesType.foodAndDrinksNames
+        MasterFilesType.foodsAndDrinksNames
       );
     });
     masterFilesResponse.nutrientsInfoResponse.doIfAintNull(() {
@@ -281,16 +295,20 @@ class LoginProvider extends BaseProvider {
           MasterFilesType.objectivesInfo
       );
     });
-    masterFilesResponse.cookingMethodsInfoResponse.doIfAintNull(() {
+    masterFilesResponse.recommendationGroupsResponse.doIfAintNull(() {
       saveMasterFileInteractor.execute(
-          masterFilesResponse.cookingMethodsInfoResponse,
-          MasterFilesType.cookingMethodsInfo
+          masterFilesResponse.recommendationGroupsResponse,
+          MasterFilesType.recommendationGroups
       );
     });
+    _areMasterFilesChecked = true;
+    onFinish?.call();
   }
 
-  void onErrorManageMasterFiles(Object error) {
+  void onErrorManageMasterFiles(Object error, Function? onFinish) {
     // TODO: manage error.
+    _areMasterFilesChecked = true;
+    onFinish?.call();
   }
 
 }

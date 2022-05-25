@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_file
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/masterfiles/master_files_repository.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/master_files_mapper.dart';
 
 class MasterFilesRepositoryImpl extends MasterFilesRepository {
   final LocalStorageRepository localStorageRepository;
@@ -12,7 +13,7 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
   MasterFilesRepositoryImpl({required this.localStorageRepository, required this.masterFilesApi});
 
   @override
-  FoodAndDrinksNamesMaster? getFoodAndDrinksNames() {
+  FoodsAndDrinksNamesMaster? getFoodsAndDrinksNames() {
     return null;
   }
 
@@ -22,25 +23,31 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
 
   @override
   Future<MasterFilesResponse> manageMasterFiles(
-      int cookingMethodsInfoVersion,
       int cookingMethodsVersion,
-      int foodAndDrinksNamesVersion,
+      int cookingMethodsInfoVersion,
+      int foodsAndDrinksNamesVersion,
       int nutrientsInfoVersion,
       int objectivesInfoVersion,
       int recommendationGroupsVersion
   ) async {
-    return MasterFilesResponse.fromJson(
-        await masterFilesApi.manageMasterFiles(
-            cookingMethodsInfoVersion, cookingMethodsVersion,
-            foodAndDrinksNamesVersion,
-            nutrientsInfoVersion,
-            objectivesInfoVersion,
-            recommendationGroupsVersion,
-        ),
+    final response = await masterFilesApi.manageMasterFiles(
+      cookingMethodsVersion,
+      cookingMethodsInfoVersion,
+      foodsAndDrinksNamesVersion,
+      nutrientsInfoVersion,
+      objectivesInfoVersion,
+      recommendationGroupsVersion,
     );
+    if (response.isNotEmpty) {
+      return MasterFilesResponse.fromJson(response);
+    } else {
+      return MasterFilesResponse();
+    }
   }
 
   @override
-  Future<void> saveMasterFile(dynamic masterFile, MasterFilesType masterFilesType) => localStorageRepository.saveMasterFile(masterFilesType.index, masterFile);
-
+  Future<void> saveMasterFile(dynamic masterFileResponse, MasterFilesType masterFilesType) {
+    final masterFileEntity = mapToMasterFileEntity(masterFileResponse, masterFilesType);
+    return localStorageRepository.saveMasterFile(masterFilesType, masterFileEntity);
+  }
 }

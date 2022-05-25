@@ -11,6 +11,7 @@ import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_en
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 // TODO: ordenar variables y funciones.
 // TODO: asegurarme de que va con el async aquí.
@@ -18,15 +19,35 @@ class LocalStorageImpl extends LocalStorageRepository {
 
   Box? _profileBox;
   Box? _foodEventsBox;
-  Box? _masterFilesBox;
+  Box? _cookingMethodsBox;
+  Box? _cookingMethodsInfoBox;
+  Box? _foodsAndDrinksNamesBox;
+  Box? _nutrientsInfoBox;
+  Box? _objectivesInfoBox;
+  Box? _recommendationGroupsBox;
 
   Future<Box> _openProfileBox() async => openBox(_profileBox, UserProfileEntity.boxName);
   Future<Box> _openFoodEventsBox() async => openBox(_foodEventsBox, FoodEventEntity.boxName);
-  Future<Box> _openMasterFilesBox() async => openBox(_masterFilesBox, masterFilesBoxName);
+  Future<Box> _openMasterFilesBox(MasterFilesType masterFileType) async {
+    switch (masterFileType) {
+      case MasterFilesType.cookingMethods:
+        return openBox(_cookingMethodsBox, cookingMethodsBoxName);
+      case MasterFilesType.cookingMethodsInfo:
+        return openBox(_cookingMethodsInfoBox, cookingMethodsInfoBoxName);
+      case MasterFilesType.foodsAndDrinksNames:
+        return openBox(_foodsAndDrinksNamesBox, foodsAndDrinksNamesBoxName);
+      case MasterFilesType.nutrientsInfo:
+        return openBox(_nutrientsInfoBox, nutrientsInfoBoxName);
+      case MasterFilesType.objectivesInfo:
+        return openBox(_objectivesInfoBox, objectivesInfoBoxName);
+      case MasterFilesType.recommendationGroups:
+        return openBox(_recommendationGroupsBox, recommendationGroupsBoxName);
+    }
+  }
 
   Future<Box> get _getProfileBox async => await _openProfileBox();
   Future<Box> get _getFoodEventsBox async => await _openFoodEventsBox();
-  Future<Box> get _getMasterFilesBox async => await _openMasterFilesBox();
+  Future<Box> _getMasterFilesBox(MasterFilesType masterFilesType) async => await _openMasterFilesBox(masterFilesType);
 
   @override
   Future<void> saveProfile(UserProfileEntity profileEntity) async => await _getProfileBox.then((box) => box.put(Constants.PROFILE_ENTITY, profileEntity));
@@ -47,7 +68,7 @@ class LocalStorageImpl extends LocalStorageRepository {
     }
   }
   @override
-  Future<UserProfileEntity> getProfile() async => await _getProfileBox.then((box) => box.get(Constants.PROFILE_ENTITY));
+  Future<UserProfileEntity?> getProfile() async => await _getProfileBox.then((box) => box.get(Constants.PROFILE_ENTITY));
 
   @override
   Future<List> getAllFoodEvents() async {
@@ -61,37 +82,52 @@ class LocalStorageImpl extends LocalStorageRepository {
 
   @override
   Future<dynamic> getMasterFile(MasterFilesType masterFileType) async {
-    return await _getMasterFilesBox.then((box) {
+    return await _getMasterFilesBox(masterFileType).then((box) {
       return box.get(masterFileType.index);
     });
   }
 
   @override
   Future<int> getMasterFileVersion(MasterFilesType masterFileType) async {
-    final masterFile = await getMasterFile(masterFileType);
-    switch (masterFileType) {
-      case MasterFilesType.cookingMethods:
-        return (masterFile as CookingMethodsEntity).v;
-      case MasterFilesType.cookingMethodsInfo:
-        return (masterFile as CookingMethodsInfoEntity).v;
-      case MasterFilesType.foodAndDrinksNames:
-        return (masterFile as FoodsAndDrinksNamesEntity).v;
-      case MasterFilesType.nutrientsInfo:
-        return (masterFile as NutrientsInfoEntity).v;
-      case MasterFilesType.objectivesInfo:
-        return (masterFile as ObjectivesInfoEntity).v;
-      case MasterFilesType.recommendationGroups:
-        return (masterFile as RecommendationGroupsEntity).v;
-      default:
-        return -1;
+    try {
+      final masterFile = await getMasterFile(masterFileType);
+      if (masterFile == null) return -1;
+      switch (masterFileType) {
+        case MasterFilesType.cookingMethods:
+          return (masterFile as CookingMethodsEntity).v;
+        case MasterFilesType.cookingMethodsInfo:
+          return (masterFile as CookingMethodsInfoEntity).v;
+        case MasterFilesType.foodsAndDrinksNames:
+          return (masterFile as FoodsAndDrinksNamesEntity).v;
+        case MasterFilesType.nutrientsInfo:
+          return (masterFile as NutrientsInfoEntity).v;
+        case MasterFilesType.objectivesInfo:
+          return (masterFile as ObjectivesInfoEntity).v;
+        case MasterFilesType.recommendationGroups:
+          return (masterFile as RecommendationGroupsEntity).v;
+        default:
+          return -1;
+      }
+    } catch (error) {
+      rethrow;
     }
   }
 
   @override
-  Future<void> saveMasterFile(int masterFileType, dynamic masterFile) async {
-    await _openMasterFilesBox().then((box) {
-      box.put(masterFileType, masterFile);
+  Future<void> saveMasterFile(MasterFilesType masterFileType, dynamic masterFile) async {
+    await _openMasterFilesBox(masterFileType).then((box) {
+      box.put(masterFileType.index, masterFile);
     });
+  }
+
+  @override
+  Future<bool> checkProfileExistence() async {
+    final UserProfileEntity? profile = await getProfile();
+    if (profile == null) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
 }

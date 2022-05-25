@@ -23,8 +23,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin, ShowLoadingDialog, GenericProvider<LoginProvider> {
 
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _usernameController = TextEditingController(text: 'Alex1');
+  final _passwordController = TextEditingController(text: '.Holi1621!!');
   final _repeatPasswordController = TextEditingController();
   final _emailController = TextEditingController();
   final _mfaController = TextEditingController();

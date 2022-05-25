@@ -7,21 +7,22 @@ class ManageMasterFilesInteractorImpl extends ManageMasterFilesInteractor {
 
   ManageMasterFilesInteractorImpl({required this.masterFilesRepository});
 
+  @override
   Future<MasterFilesResponse> execute(
       int cookingMethodsInfoVersion,
       int cookingMethodsVersion,
-      int foodAndDrinksNamesVersion,
+      int foodsAndDrinksNamesVersion,
       int nutrientsInfoVersion,
       int objectivesInfoVersion,
       int recommendationGroupsVersion,
   ) async {
     return masterFilesRepository.manageMasterFiles(
-        cookingMethodsInfoVersion,
-        cookingMethodsVersion,
-        foodAndDrinksNamesVersion,
-        nutrientsInfoVersion,
-        objectivesInfoVersion,
-        recommendationGroupsVersion,
+      cookingMethodsVersion,
+      cookingMethodsInfoVersion,
+      foodsAndDrinksNamesVersion,
+      nutrientsInfoVersion,
+      objectivesInfoVersion,
+      recommendationGroupsVersion,
     );
   }
 

@@ -83,14 +83,15 @@ extension ListExtensions<T> on List<T> {
   }
 }
 
-extension NullableListExtensions on List? {
-  List orEmpty() {
-    if (this == null || this!.isEmpty) {
-      return <Object>[];
+extension NullableListExtensions<T> on List<T>? {
+  List<T> orEmpty() {
+    if (this == null) {
+      return <T>[];
     } else {
       return this!;
     }
   }
+
 }
 
 extension PrefsKeysExtensions on PrefsKeys {

@@ -3,16 +3,16 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_file
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 
 abstract class MasterFilesRepository {
-  FoodAndDrinksNamesMaster? getFoodAndDrinksNames();
+  FoodsAndDrinksNamesMaster? getFoodsAndDrinksNames();
   Future<int> getMasterFileVersion(MasterFilesType masterFileType);
   Future<MasterFilesResponse> manageMasterFiles(
-      int cookingMethodsInfoVersion,
       int cookingMethodsVersion,
-      int foodAndDrinksNamesVersion,
+      int cookingMethodsInfoVersion,
+      int foodsAndDrinksNamesVersion,
       int nutrientsInfoVersion,
       int objectivesInfoVersion,
       int recommendationGroupsVersion
   );
-  Future<void> saveMasterFile(dynamic masterFile, MasterFilesType masterFilesType);
+  Future<void> saveMasterFile(dynamic masterFileResponse, MasterFilesType masterFilesType);
 
 }
