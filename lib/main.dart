@@ -51,6 +51,10 @@ import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_user_c
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_user_credentials_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_username_and_email_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_username_and_email_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/check_profile_existence_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/check_profile_existence_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/download_profile_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/download_profile_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
@@ -125,6 +129,8 @@ void main() async {
   final GetMasterFileVersionInteractor getMasterFileVersionInteractor = GetMasterFileVersionInteractorImpl(masterFilesRepository: masterFilesRepository);
   final ManageMasterFilesInteractor manageMasterFilesInteractor = ManageMasterFilesInteractorImpl(masterFilesRepository: masterFilesRepository);
   final SaveMasterFileInteractor saveMasterFileInteractor = SaveMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
+  final CheckProfileExistenceInteractor checkProfileExistenceInteractor = CheckProfileExistenceInteractorImpl(profileRepository: profileRepository);
+  final DownloadProfileInteractor downloadProfileInteractor = DownloadProfileInteractorImpl(profileRepository: profileRepository);
 
   final loginProvider = LoginProvider(
       signUpInteractor: signUpInteractor,
@@ -135,9 +141,13 @@ void main() async {
       isUserSignedInInteractor: isUserSignedInInteractor,
       getMasterFilesVersionInteractor: getMasterFileVersionInteractor,
       manageMasterFilesInteractor: manageMasterFilesInteractor,
-      saveMasterFileInteractor: saveMasterFileInteractor
+      saveMasterFileInteractor: saveMasterFileInteractor,
+      checkProfileExistenceInteractor: checkProfileExistenceInteractor,
+      downloadProfileInteractor: downloadProfileInteractor,
+      getIdTokenInteractor: getIdTokenInteractor,
+      saveProfileInteractor: saveProfileInteractor
   );
-  await loginProvider.init();
+  // await loginProvider.init();
 
   final registryProvider = RegistryProvider(
     getUserIdInteractor: getUserIdInteractor,
@@ -229,6 +239,7 @@ void initLocalStorage() async {
   Hive.registerAdapter(FoodsAndDrinkListsEntityAdapter());
   Hive.registerAdapter(FoodItemEntityAdapter());
   Hive.registerAdapter(NutrientsInfoEntityAdapter());
+  Hive.registerAdapter(NutrientInfoEntityAdapter());
   Hive.registerAdapter(ObjectivesInfoEntityAdapter());
   Hive.registerAdapter(ObjectiveInfoEntityAdapter());
   Hive.registerAdapter(RecommendationGroupsEntityAdapter());
