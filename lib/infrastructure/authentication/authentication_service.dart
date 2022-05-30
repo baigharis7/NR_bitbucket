@@ -5,6 +5,6 @@ abstract class AuthenticationService {
   Future<SignUpResult> sendVerificationCode(String email, String confirmationCode);
   Future<ResendSignUpCodeResult> resendVerificationCode(String username);
   Future<SignInResult> signIn(String username, String password);
-  Future<AuthSession> fetchUserAttributes();
+  Future<CognitoAuthSession> fetchUserAttributes();
   Future<SignOutResult> signOut();
 }
