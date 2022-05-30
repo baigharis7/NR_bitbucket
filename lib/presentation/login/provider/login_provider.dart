@@ -3,8 +3,8 @@ import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_r
 import 'package:nutrenaissance_flutter/data/api/profile/model/simple_user.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/save_user_in_users_remote_database_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/send_perrification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor.dart';
@@ -12,6 +12,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/manage_master_files_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/save_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_user_credentials_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_username_and_email_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/check_profile_existence_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/download_profile_interactor.dart';
@@ -28,7 +29,7 @@ class LoginProvider extends BaseProvider {
   final FetchUserAttributesInteractor fetchUserAttributesInteractor;
   final SignInInteractor signInInteractor;
   final SaveUsernameAndEmailInteractor saveUsernameAndEmailInteractor;
-  final IsUserSignedInInteractor isUserSignedInInteractor;
+  // final IsUserSignedInInteractor isUserSignedInInteractor;
   final GetMasterFileVersionInteractor getMasterFilesVersionInteractor;
   final ManageMasterFilesInteractor manageMasterFilesInteractor;
   final SaveMasterFileInteractor saveMasterFileInteractor;
@@ -37,6 +38,7 @@ class LoginProvider extends BaseProvider {
   final GetIdTokenInteractor getIdTokenInteractor;
   final SaveProfileInteractor saveProfileInteractor;
   final ResendVerificationCodeInteractor resendVerificationCodeInteractor;
+  final SaveUserCredentialsInteractor saveUserCredentialsInteractor;
   final SaveUserInUsersRemoteDatabaseInteractor
       saveUserInUsersRemoteDatabaseInteractor;
 
@@ -46,7 +48,7 @@ class LoginProvider extends BaseProvider {
     required this.fetchUserAttributesInteractor,
     required this.signInInteractor,
     required this.saveUsernameAndEmailInteractor,
-    required this.isUserSignedInInteractor,
+    // required this.isUserSignedInInteractor,
     required this.getMasterFilesVersionInteractor,
     required this.manageMasterFilesInteractor,
     required this.saveMasterFileInteractor,
@@ -55,6 +57,7 @@ class LoginProvider extends BaseProvider {
     required this.getIdTokenInteractor,
     required this.saveProfileInteractor,
     required this.resendVerificationCodeInteractor,
+    required this.saveUserCredentialsInteractor,
     required this.saveUserInUsersRemoteDatabaseInteractor,
   });
 
@@ -180,54 +183,33 @@ class LoginProvider extends BaseProvider {
     const g = '';
   }
 
-  void onFetchUserAttributesSuccess(Function? moveToNextScreen) {
+  void onFetchUserAttributesSuccess(CognitoAuthSession session, Function? moveToNextScreen) {
     launchSync(
-      block: () => isUserSignedInInteractor.execute(),
-        onSuccess: (isSignedIn) {
-          if (isSignedIn) {
+        block: () => saveUserCredentialsInteractor.execute(session),
+        onSuccess: (_) {
+          if (session.isSignedIn) {
             if (!_isProfileChecked) {
               launchSync(
                   block: () => checkProfileExistenceInteractor.execute(),
                   onSuccess: (profileExists) {
                     _isProfileChecked = true;
                     if (!profileExists) {
-                      String? email = getEmailFromToken(getIdTokenInteractor.execute());
-                      launchSync(
-                        block: () => downloadProfileInteractor.execute(email.orEmpty()),
-                        onSuccess: (UserProfileModel? userProfileModel) {
-                          if (userProfileModel.isNull()) {
-                            // TODO: si no tiene perfil en AWS es una movida. Llevarlo a la pantalla de creación de perfil.
-                            // TODO: Mostrar diálogo que avisa de la situación y lleva a la pantalla de registro.
-                            _goToRegistry?.call();
-                          } else {
-                            launchSync(
-                              block: () => saveProfileInteractor.execute(userProfileModel!),
-                              onSuccess: (_) {
-                                manageMasterFiles(moveToNextScreen);
-                              },
-                              onError: () {
-                                // TODO: manage errors.
-                                const g = '';
-                                _isProfileChecked = false;
-                                },
-                            );
-                          }
-                          },
-                        onError: (error) {
-                          // TODO: manage errors.
-                          const g = '';
-                          _isProfileChecked = false;
-                        },
-                      );
+                      String? email =
+                          getEmailFromToken(getIdTokenInteractor.execute());
+                      if (email.isNotNull()) {
+                        downloadProfile(email.orEmpty(), moveToNextScreen);
+                      } else {
+                        // TODO: manage errors.
+                        const g = '';
+                      }
                     } else {
                       manageMasterFiles(moveToNextScreen);
                     }
-                },
+                  },
                   onError: (error) {
                     // TODO: manage errors.
                     const g = '';
-                  }
-              );
+                  });
             } else {
               if (!_areMasterFilesChecked) {
                 manageMasterFiles(moveToNextScreen);
@@ -236,17 +218,50 @@ class LoginProvider extends BaseProvider {
               }
             }
           } else {
-            performSignIn(_username.orEmpty(), _password.orEmpty(), moveToNextScreen);
+            performSignIn(
+                _username.orEmpty(), _password.orEmpty(), moveToNextScreen);
           }
-      },
-        onError: (error) {
-          performSignIn(_username.orEmpty(), _password.orEmpty(), moveToNextScreen);
         },
-    );
+        onError: (error) {
+          // TODO: manage errors.
+          const g = '';
+        });
   }
 
   void onFetchUserAttributesError(Object error, Function? action) {
     performSignIn(_username.orEmpty(), _password.orEmpty(), action);
+  void downloadProfile(String email, Function? moveToNextScreen) {
+    launchSync(
+      block: () => downloadProfileInteractor.execute(email.orEmpty()),
+      onSuccess: (UserProfileModel? userProfileModel) {
+        if (userProfileModel.isNull()) {
+          // TODO: poner diálogo que avisa de que no tiene perfil y tiene que tenerlo para usar la app.
+          _goToRegistry?.call();
+        } else {
+          saveProfileInLocal(userProfileModel!, moveToNextScreen!);
+        }
+      },
+      onError: (error) {
+        // TODO: manage errors.
+        const g = '';
+        _isProfileChecked = false;
+      },
+    );
+  }
+
+  void saveProfileInLocal(
+      UserProfileModel userProfileModel, Function? moveToNextScreen) {
+    launchSync(
+      block: () => saveProfileInteractor.execute(userProfileModel),
+      onSuccess: (_) {
+        manageMasterFiles(moveToNextScreen);
+      },
+      onError: () {
+        // TODO: manage errors.
+        const g = '';
+        _isProfileChecked = false;
+      },
+    );
   }
 
   void saveUsernameAndEmail(String username, String email) {

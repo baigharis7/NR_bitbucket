@@ -8,7 +8,7 @@ int getTokenExpirationTime(String token) => JwtDecoder.getExpirationDate(token).
 
 bool isTokenExpired(String token) => JwtDecoder.isExpired(token);
 
-String? getEmailFromToken(String? idToken) {
+dynamic decodeIdToken(String? idToken) {
   if (idToken == null) {
     return null;
   } else {
@@ -18,10 +18,27 @@ String? getEmailFromToken(String? idToken) {
         throw Exception('invalid token');
       }
       final payload = json.decode(ascii.decode(base64.decode(base64.normalize(idToken.split(".")[1]))));
-      return payload['email'];
-
+      return payload;
     } catch (error) {
-        rethrow;
+      rethrow;
     }
+  }
+}
+
+String getEmailFromToken(String? idToken) {
+  try {
+    final decodedToken = decodeIdToken(idToken);
+    return decodedToken['email'];
+  } catch (error) {
+      rethrow;
+  }
+}
+
+bool isUserConfirmedFromToken(String? idToken) {
+  try {
+    final decodedToken = decodeIdToken(idToken);
+    return decodedToken['email_verified'] as bool;
+  } catch (error) {
+      rethrow;
   }
 }
