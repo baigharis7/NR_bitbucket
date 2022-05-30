@@ -30,7 +30,7 @@ class _DashboardScreen extends State<DashboardScreen>
   Widget build(BuildContext context) {
     setProvider(Provider.of<DashboardProvider>(context));
     String currentLanguage = Localizations.localeOf(context).languageCode;
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       getProvider.retrieveFoodEvents(nextCall: () {
         final Future<Map<String, dynamic>> nutrientsObjective = JsonUtils(context: context).readJson('assets/nutrient_objective.json');
         getProvider.retrieveNutrientsObjectives(nutrientsObjective, nextCall: () {

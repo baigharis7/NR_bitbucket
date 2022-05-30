@@ -52,7 +52,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen>
   Widget build(BuildContext context) {
     setProvider(Provider.of<AddFoodEventProvider>(context));
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (getProvider.getFoodAndDrinksList == null) {
         final Future<Map<String, dynamic>> foodMap = JsonUtils(context: context).readJson('assets/dummy_foods.json');
         getProvider.retrieveFoodAndDrinks(foodMap, nextCall: () {

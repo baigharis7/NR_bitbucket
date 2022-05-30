@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.dart';
@@ -32,7 +31,7 @@ class _RecommendationsScreenState extends State<RecommendationsScreen>
     setProvider(Provider.of<RecommendationsProvider>(context));
     String currentLanguage = Localizations.localeOf(context).languageCode;
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!getProvider.isRecommendationOrdered) {
         final Future<Map<String, dynamic>> recommendationGroups = JsonUtils(context: context).readJson('assets/recommendation_groups.json');
         getProvider.orderRecommendation(recommendationGroups, onSuccess: () {
