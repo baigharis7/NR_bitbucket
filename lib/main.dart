@@ -33,6 +33,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in
 import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/save_user_in_users_remote_database_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/save_user_in_users_remote_database_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/send_perrification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/send_verification_code_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor.dart';
@@ -61,6 +63,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micron
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
@@ -102,11 +106,14 @@ void main() async {
   final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   final Preferences prefs = PreferencesImpl(sharedPreferences);
   final PreferencesRepository prefsRepository = PreferencesRepositoryImpl(prefs: prefs);
-  final SaveUserCredentialsInteractor saveUserCredentialsInteractor = SaveUserCredentialsInteractorImpl(preferencesRepository: prefsRepository);
-  final LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService, saveUserCredentialsInteractor: saveUserCredentialsInteractor);
+  final FetchUserAttributesInteractor fetchUserAttributesInteractor = FetchUserAttributesInteractorImpl(authenticationService: authenticationService);
   final GetIdTokenInteractor getIdTokenInteractor = GetIdTokenInteractorImpl(preferencesRepository: prefsRepository);
-  final FetchUserAttributesInteractor fetchUserAttributesInteractor = FetchUserAttributesInteractorImpl(loginRepository: loginRepository);
   final ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService);
+  final LoginRepository loginRepository = LoginRepositoryImpl(
+      authenticationService: authenticationService,
+      profileApi: profileApi
+  );
+  final SaveUserCredentialsInteractor saveUserCredentialsInteractor = SaveUserCredentialsInteractorImpl(preferencesRepository: prefsRepository);
   final LocalStorageRepository localStorageRepository = LocalStorageImpl();
   final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository);
   final SignUpInteractor signUpInteractor = SignUpInteractorImpl(loginRepository: loginRepository);
@@ -115,7 +122,7 @@ void main() async {
   final GetUserIdInteractor getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
   final UploadProfileInteractor uploadProfileInteractor = UploadProfileInteractorImpl(profileRepository: profileRepository);
   final SaveUsernameAndEmailInteractor saveUsernameAndEmailInteractor = SaveUsernameAndEmailInteractorImpl(preferencesRepository: prefsRepository);
-  final IsUserSignedInInteractor isUserSignedInInteractor = IsUserSignedInInteractorImpl(preferencesRepository: prefsRepository);
+  // final IsUserSignedInInteractor isUserSignedInInteractor = IsUserSignedInInteractorImpl(preferencesRepository: prefsRepository);
   final SaveProfileInteractor saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
   final FoodEventsApi foodEventsApi = FoodEventsApi(prefsRepository, authenticationService);
   final FoodEventsRepository foodEventsRepository = FoodEventsRepositoryImpl(localStorageRepository: localStorageRepository, foodEventsApi: foodEventsApi, );
@@ -134,6 +141,8 @@ void main() async {
   final CheckProfileExistenceInteractor checkProfileExistenceInteractor = CheckProfileExistenceInteractorImpl(profileRepository: profileRepository);
   final DownloadProfileInteractor downloadProfileInteractor = DownloadProfileInteractorImpl(profileRepository: profileRepository);
   final ResendVerificationCodeInteractor resendVerificationCodeInteractor = ResendVerificationCodeInteractorImpl(loginRepository: loginRepository);
+  final SaveUserInUsersRemoteDatabaseInteractor saveUserInUsersRemoteDatabaseInteractor = SaveUserInUsersRemoteDatabaseInteractorImpl(loginRepository: loginRepository);
+  final SignOutInteractor signOutInteractor = SignOutInteractorImpl(authenticationService: authenticationService);
 
   final loginProvider = LoginProvider(
       signUpInteractor: signUpInteractor,
@@ -141,7 +150,7 @@ void main() async {
       fetchUserAttributesInteractor: fetchUserAttributesInteractor,
       signInInteractor: signInInteractor,
       saveUsernameAndEmailInteractor: saveUsernameAndEmailInteractor,
-      isUserSignedInInteractor: isUserSignedInInteractor,
+      // isUserSignedInInteractor: isUserSignedInInteractor,
       getMasterFilesVersionInteractor: getMasterFileVersionInteractor,
       manageMasterFilesInteractor: manageMasterFilesInteractor,
       saveMasterFileInteractor: saveMasterFileInteractor,
@@ -149,7 +158,10 @@ void main() async {
       downloadProfileInteractor: downloadProfileInteractor,
       getIdTokenInteractor: getIdTokenInteractor,
       saveProfileInteractor: saveProfileInteractor,
-      resendVerificationCodeInteractor: resendVerificationCodeInteractor
+      resendVerificationCodeInteractor: resendVerificationCodeInteractor,
+      saveUserCredentialsInteractor: saveUserCredentialsInteractor,
+      saveUserInUsersRemoteDatabaseInteractor: saveUserInUsersRemoteDatabaseInteractor,
+      signOutInteractor: signOutInteractor
   );
   // await loginProvider.init();
 

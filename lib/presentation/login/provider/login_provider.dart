@@ -17,6 +17,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_userna
 import 'package:nutrenaissance_flutter/domain/interactor/profile/check_profile_existence_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/download_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/token_utils.dart';
@@ -41,6 +42,7 @@ class LoginProvider extends BaseProvider {
   final SaveUserCredentialsInteractor saveUserCredentialsInteractor;
   final SaveUserInUsersRemoteDatabaseInteractor
       saveUserInUsersRemoteDatabaseInteractor;
+  final SignOutInteractor signOutInteractor;
 
   LoginProvider({
     required this.signUpInteractor,
@@ -59,6 +61,7 @@ class LoginProvider extends BaseProvider {
     required this.resendVerificationCodeInteractor,
     required this.saveUserCredentialsInteractor,
     required this.saveUserInUsersRemoteDatabaseInteractor,
+    required this.signOutInteractor,
   });
 
   String? _email;
@@ -68,6 +71,10 @@ class LoginProvider extends BaseProvider {
   bool _areMasterFilesChecked = false;
   bool _isProfileChecked = false;
   Function? _goToRegistry;
+  bool _notConfirmedUserTryingToLogin = false;
+  bool _userNameAlreadyUsed = false;
+
+  bool get getNotConfirmedUserTryingToLogin => _notConfirmedUserTryingToLogin;
 
   // init() async {
   //   await _refreshAllStates();
@@ -99,19 +106,20 @@ class LoginProvider extends BaseProvider {
     _goToRegistry = goToRegistry;
 
     if (_username.isEmptyOrNull()) {
+      // TODO: manage error.
       // Error: campo vacío.
     } else if (_password.isEmptyOrNull()) {
+      // TODO: manage error.
       // Error: campo vacío.
     } else if (!isLogin && repeatPassword.isEmptyOrNull()) {
+      // TODO: manage error.
       // Error campo vacío.
     } else if (!isLogin && _email.isEmptyOrNull()) {
+      // TODO: manage error.
       // Error campo vacío.
     } else {
       if (isLogin) {
-        fetchUserAttributes(action!);
-        // performSignIn(username.orEmpty(), password.orEmpty(), action!);
-        // Comprobación de perfil y masterfiles files.
-
+        fetchUserAttributes(action!, isFromLogin: true);
       } else {
         if (password != repeatPassword) {
           // TODO: manage error.
@@ -119,24 +127,44 @@ class LoginProvider extends BaseProvider {
         } else {
           launchSync(
               block: () => signUpInteractor.execute(
-                _username.orEmpty(),
-                _email.orEmpty(),
-                _password.orEmpty(),
-              ),
+                    _username.orEmpty(),
+                    _email.orEmpty(),
+                    _password.orEmpty(),
+                  ),
               onSuccess: (result) => onSignUpSuccess(result, action!),
-              onError: (Object error) => onSignUpError(error)
-          );
+              onError: (Object error) => onSignUpError(error));
         }
       }
     }
   }
 
   void onSignInError(Object error) {
-    const g = '';
+    if (error is UserNotConfirmedException) {
+      _notConfirmedUserTryingToLogin = true;
+    } else if (error is NotAuthorizedException) {
+      // Username/email o password incorrectos o no existen.
+      // TODO: manage errors.
+      const g = '';
+    }
   }
 
+  void notConfirmedUserAsksForNewVerificationCode(Function showMfaDialog) {
+    _notConfirmedUserTryingToLogin = false;
     launchSync(
+      block: () =>
+          resendVerificationCodeInteractor.execute(_username.orEmpty()),
+      onSuccess: (ResendSignUpCodeResult resendSignUpCodeResult) {
+        showMfaDialog.call();
+      },
+      onError: (Object error) {
+        // TODO: manage errors.
+      },
     );
+  }
+
+  void notConfirmedUserCancelsReceiveConfirmationCode() {
+    _notConfirmedUserTryingToLogin = false;
+    notifyListeners();
   }
 
   void fetchUserAttributes(Function? moveToNextScreen, {bool isFromVerificationCode = false, bool isFromLogin = false}) async {
@@ -146,6 +174,8 @@ class LoginProvider extends BaseProvider {
     launchSync(
         block: () => fetchUserAttributesInteractor.execute(),
         onSuccess: (CognitoAuthSession session) async {
+          if (!isUserConfirmedFromToken(session.userPoolTokens?.idToken)) {
+            _notConfirmedUserTryingToLogin = true;
           } else if (isFromVerificationCode) {
             saveUserInRemoteUsersDatabase(session.userSub.orEmpty(), () {
               onFetchUserAttributesSuccess(session, moveToNextScreen);
@@ -165,21 +195,29 @@ class LoginProvider extends BaseProvider {
 
   void onSignUpError(Object error) {
     // TODO: manage error.
+    if (error is UsernameExistsException) {
+      // TODO: enseñar cartel de que tiene que usar otro nombre
+      const h = '';
+    }
   }
 
   void sendVerificationCode(String confirmationCode, Function action) {
     launchSync(
-        block: () => verificationCodeInteractor.execute(confirmationCode, _username.orEmpty()),
-        onSuccess: (signUpResult) => onSendVerificationCodeSuccess(signUpResult, action),
-        onError: (error) => onSendVerificationCodeError(error),
+      block: () => verificationCodeInteractor.execute(
+          confirmationCode, _username.orEmpty()),
+      onSuccess: (signUpResult) =>
+          onSendVerificationCodeSuccess(signUpResult, action),
+      onError: (error) => onSendVerificationCodeError(error),
     );
   }
 
-  void onSendVerificationCodeSuccess(SignUpResult signUpResult, action) {
-    fetchUserAttributes(action);
+  void onSendVerificationCodeSuccess(
+      SignUpResult signUpResult, Function action) {
+    fetchUserAttributes(action, isFromVerificationCode: true);
   }
 
   void onSendVerificationCodeError(Object error) {
+    // TODO: manage errors.
     const g = '';
   }
 
@@ -229,7 +267,16 @@ class LoginProvider extends BaseProvider {
   }
 
   void onFetchUserAttributesError(Object error, Function? action) {
-    performSignIn(_username.orEmpty(), _password.orEmpty(), action);
+    if (error is UserNotConfirmedException) {
+      _notConfirmedUserTryingToLogin = true;
+    } else if (error is SignedOutException) {
+      performSignIn(_username.orEmpty(), _password.orEmpty(), action);
+    } else {
+      // TODO: manage errors.
+      const g = '';
+    }
+  }
+
   void downloadProfile(String email, Function? moveToNextScreen) {
     launchSync(
       block: () => downloadProfileInteractor.execute(email.orEmpty()),
@@ -270,28 +317,28 @@ class LoginProvider extends BaseProvider {
 
   void resendVerificationCode() {
     launchSync(
-        block: () => resendVerificationCodeInteractor.execute(_username.orEmpty()),
-        onSuccess: (ResendSignUpCodeResult resendSignUpCodeResult) {
-          // TODO: poner toast.
-        },
-        onError: (Object error) {
-          // TODO: manage errors.
-        },
+      block: () =>
+          resendVerificationCodeInteractor.execute(_username.orEmpty()),
+      onSuccess: (ResendSignUpCodeResult resendSignUpCodeResult) {
+        // TODO: poner toast.
+      },
+      onError: (Object error) {
+        // TODO: manage errors.
+      },
     );
   }
 
   void performSignIn(String username, String password, Function? action) {
     launchSync(
         block: () => signInInteractor.execute(
-          username.orEmpty(),
-          password.orEmpty(),
-        ),
+              username.orEmpty(),
+              password.orEmpty(),
+            ),
         onSuccess: (SignInResult result) {
           fetchUserAttributes(action);
           action?.call();
         },
-        onError: (error) => onSignInError(error)
-    );
+        onError: (error) => onSignInError(error));
   }
 
   void manageMasterFiles(Function? onFinish) {
