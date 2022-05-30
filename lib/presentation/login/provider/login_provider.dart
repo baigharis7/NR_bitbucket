@@ -1,5 +1,6 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_response.dart';
+import 'package:nutrenaissance_flutter/data/api/profile/model/simple_user.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in_interactor.dart';
@@ -36,6 +37,8 @@ class LoginProvider extends BaseProvider {
   final GetIdTokenInteractor getIdTokenInteractor;
   final SaveProfileInteractor saveProfileInteractor;
   final ResendVerificationCodeInteractor resendVerificationCodeInteractor;
+  final SaveUserInUsersRemoteDatabaseInteractor
+      saveUserInUsersRemoteDatabaseInteractor;
 
   LoginProvider({
     required this.signUpInteractor,
@@ -52,6 +55,7 @@ class LoginProvider extends BaseProvider {
     required this.getIdTokenInteractor,
     required this.saveProfileInteractor,
     required this.resendVerificationCodeInteractor,
+    required this.saveUserInUsersRemoteDatabaseInteractor,
   });
 
   String? _email;
@@ -128,12 +132,27 @@ class LoginProvider extends BaseProvider {
     const g = '';
   }
 
-  void fetchUserAttributes(Function? moveToNextScreen) {
+    launchSync(
+    );
+  }
+
+  void fetchUserAttributes(Function? moveToNextScreen, {bool isFromVerificationCode = false, bool isFromLogin = false}) async {
+
+    if (isFromLogin) await signOutInteractor.execute();
+
     launchSync(
         block: () => fetchUserAttributesInteractor.execute(),
-        onSuccess: (_) => onFetchUserAttributesSuccess(moveToNextScreen),
-        onError: (error) => onFetchUserAttributesError(error, moveToNextScreen)
-    );
+        onSuccess: (CognitoAuthSession session) async {
+          } else if (isFromVerificationCode) {
+            saveUserInRemoteUsersDatabase(session.userSub.orEmpty(), () {
+              onFetchUserAttributesSuccess(session, moveToNextScreen);
+            });
+          } else {
+            onFetchUserAttributesSuccess(session, moveToNextScreen);
+          }
+        },
+        onError: (error) =>
+            onFetchUserAttributesError(error, moveToNextScreen));
   }
 
   void onSignUpSuccess(SignUpResult result, Function action) {
@@ -322,4 +341,19 @@ class LoginProvider extends BaseProvider {
     onFinish?.call();
   }
 
+  void saveUserInRemoteUsersDatabase(
+      String userId, Function finishFetchUserAttributes) {
+    final simpleUser = SimpleUser(
+        email: _email.orEmpty(), userName: _username.orEmpty(), userId: userId);
+    launchSync(
+        block: () =>
+            saveUserInUsersRemoteDatabaseInteractor.execute(simpleUser),
+        onSuccess: (_) {
+          finishFetchUserAttributes.call();
+        },
+        onError: () {
+          // TODO: manage errors.
+          const g = '';
+        });
+  }
 }

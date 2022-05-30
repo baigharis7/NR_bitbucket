@@ -6,5 +6,6 @@ abstract class LoginRepository {
   Future<void> fetchUserAttributes();
   Future<SignInResult> signIn(String username, String password);
   Future<ResendSignUpCodeResult> resendVerificationCode(String username);
+  Future<void> saveUserInUsersRemoteDatabase(SimpleUser simpleUser);
 
 }

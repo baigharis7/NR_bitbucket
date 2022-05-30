@@ -31,4 +31,8 @@ class LoginRepositoryImpl extends LoginRepository {
   @override
   Future<ResendSignUpCodeResult> resendVerificationCode(String username) => authenticationService.resendVerificationCode(username);
 
+
+  @override
+  Future<void> saveUserInUsersRemoteDatabase(SimpleUser simpleUser) => profileApi.saveUser(simpleUser);
+
 }
