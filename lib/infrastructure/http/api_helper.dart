@@ -2,14 +2,15 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
+import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/token_utils.dart';
 
 abstract class ApiHelper {
+  final PreferencesRepository _preferencesRepository;
+  final AuthenticationService _authenticationService;
 
-  final GetIdTokenInteractor _getIdTokenInteractor;
-  final FetchUserAttributesInteractor _fetchUserAttributesInteractor;
-
-  ApiHelper(this._getIdTokenInteractor, this._fetchUserAttributesInteractor);
+  ApiHelper(this._preferencesRepository, this._authenticationService);
 
   Future<Map<String, dynamic>> post(Uri call, dynamic body) async {
     String idToken = await _getToken();
@@ -54,10 +55,11 @@ abstract class ApiHelper {
   }
 
   Future<String> _getToken() async {
-    String idToken = _getIdTokenInteractor.execute();
+    final idToken = _preferencesRepository.getIdToken();
     if (isTokenExpired(idToken)) {
-      await _fetchUserAttributesInteractor.execute();
-      return _getIdTokenInteractor.execute();
+      final attributes = await _authenticationService.fetchUserAttributes();
+      _preferencesRepository.setUserCredentials(attributes);
+      return attributes.userPoolTokens!.idToken;
     } else {
       return idToken;
     }

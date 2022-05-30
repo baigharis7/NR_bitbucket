@@ -1,18 +1,13 @@
+import 'package:nutrenaissance_flutter/data/api/profile/model/simple_user.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
+import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/environment/environment.dart';
 import 'package:nutrenaissance_flutter/infrastructure/http/api_helper.dart';
 
 class ProfileApi extends ApiHelper {
 
-  ProfileApi({
-    required GetIdTokenInteractor getIdTokenInteractor,
-    required FetchUserAttributesInteractor fetchUserAttributesInteractor
-  }) : super(
-      getIdTokenInteractor,
-      fetchUserAttributesInteractor
-  );
+  ProfileApi(PreferencesRepository preferencesRepository, AuthenticationService authenticationService) : super(preferencesRepository, authenticationService);
 
   Future<Map<String, dynamic>> uploadProfileApi(UploadUserProfile body) =>
       post(
@@ -30,5 +25,14 @@ class ProfileApi extends ApiHelper {
           '/dev/users',
             {'email': email}
         )
+      );
+
+  Future<Map<String, dynamic>> saveUser(SimpleUser simpleUser) =>
+      post(
+        Uri.https(
+            Environment().config!.baseUrl,
+            '/dev/users'
+        ),
+        simpleUser,
       );
 }
