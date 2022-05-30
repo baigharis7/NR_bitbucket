@@ -282,61 +282,61 @@ class LoginProvider extends BaseProvider {
   void manageMasterFiles(Function? onFinish) {
     launchSync(
         block: () async => manageMasterFilesInteractor.execute(
-          await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethods),
-          await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethodsInfo),
-          await getMasterFilesVersionInteractor.execute(MasterFilesType.foodsAndDrinksNames),
-          await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo),
-          await getMasterFilesVersionInteractor.execute(MasterFilesType.objectivesInfo),
-          await getMasterFilesVersionInteractor.execute(MasterFilesType.recommendationGroups),
-        ),
-        onSuccess: (MasterFilesResponse masterFilesResponse) => onSuccessManageMasterFiles(masterFilesResponse, onFinish),
-        onError: (Object error) => onErrorManageMasterFiles(error, onFinish)
-    );
+              await getMasterFilesVersionInteractor
+                  .execute(MasterFilesType.cookingMethods),
+              await getMasterFilesVersionInteractor
+                  .execute(MasterFilesType.cookingMethodsInfo),
+              await getMasterFilesVersionInteractor
+                  .execute(MasterFilesType.foodsAndDrinksNames),
+              await getMasterFilesVersionInteractor
+                  .execute(MasterFilesType.nutrientsInfo),
+              await getMasterFilesVersionInteractor
+                  .execute(MasterFilesType.objectivesInfo),
+              await getMasterFilesVersionInteractor
+                  .execute(MasterFilesType.recommendationGroups),
+            ),
+        onSuccess: (MasterFilesResponse masterFilesResponse) =>
+            onSuccessManageMasterFiles(masterFilesResponse, onFinish),
+        onError: (Object error) => onErrorManageMasterFiles(error, onFinish));
   }
 
-  void onSuccessManageMasterFiles(MasterFilesResponse masterFilesResponse, Function? onFinish) {
+  void onSuccessManageMasterFiles(
+      MasterFilesResponse masterFilesResponse, Function? onFinish) {
     masterFilesResponse.cookingMethodsResponse.doIfAintNull(() {
       saveMasterFileInteractor.execute(
           masterFilesResponse.cookingMethodsResponse,
-          MasterFilesType.cookingMethods
-      );
+          MasterFilesType.cookingMethods);
     });
     masterFilesResponse.cookingMethodsInfoResponse.doIfAintNull(() {
       saveMasterFileInteractor.execute(
           masterFilesResponse.cookingMethodsInfoResponse,
-          MasterFilesType.cookingMethodsInfo
-      );
+          MasterFilesType.cookingMethodsInfo);
     });
-    masterFilesResponse.foodsAndDrinksNamesResponse.doIfAintNull((){
+    masterFilesResponse.foodsAndDrinksNamesResponse.doIfAintNull(() {
       saveMasterFileInteractor.execute(
-        masterFilesResponse.foodsAndDrinksNamesResponse,
-        MasterFilesType.foodsAndDrinksNames
-      );
+          masterFilesResponse.foodsAndDrinksNamesResponse,
+          MasterFilesType.foodsAndDrinksNames);
     });
     masterFilesResponse.nutrientsInfoResponse.doIfAintNull(() {
       saveMasterFileInteractor.execute(
           masterFilesResponse.nutrientsInfoResponse,
-          MasterFilesType.nutrientsInfo
-      );
+          MasterFilesType.nutrientsInfo);
     });
     masterFilesResponse.objectivesResponse.doIfAintNull(() {
-      saveMasterFileInteractor.execute(
-          masterFilesResponse.objectivesResponse,
-          MasterFilesType.objectivesInfo
-      );
+      saveMasterFileInteractor.execute(masterFilesResponse.objectivesResponse,
+          MasterFilesType.objectivesInfo);
     });
     masterFilesResponse.recommendationGroupsResponse.doIfAintNull(() {
       saveMasterFileInteractor.execute(
           masterFilesResponse.recommendationGroupsResponse,
-          MasterFilesType.recommendationGroups
-      );
+          MasterFilesType.recommendationGroups);
     });
     _areMasterFilesChecked = true;
     onFinish?.call();
   }
 
   void onErrorManageMasterFiles(Object error, Function? onFinish) {
-    // TODO: manage error.
+    // TODO: manage errors.
     _areMasterFilesChecked = true;
     onFinish?.call();
   }

@@ -50,4 +50,5 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
     final masterFileEntity = mapToMasterFileEntity(masterFileResponse, masterFilesType);
     return localStorageRepository.saveMasterFile(masterFilesType, masterFileEntity);
   }
+
 }
