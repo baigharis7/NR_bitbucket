@@ -35,7 +35,7 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
     // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
     final List<int> groupCookingMethods = widget.cookingMethodsMaster.cookingMethods.firstWhere(
             (cookingMethod) => cookingMethod.group == foodGroup,
-        orElse: () => CookingMethod('1.3', [0, 1, 2, 3]),
+        orElse: () => CookingMethod(group: '1.3', methods: [0, 1, 2, 3]),
     ).methods;
     final cookingMethodsInfo = groupCookingMethods.map((cookingMethodId) {
       String name;

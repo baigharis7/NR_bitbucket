@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-
-import '../../domain/models/foodevents/food_event_simple.dart';
-import '../../domain/models/masterfiles/food_names_master.dart';
-import '../../infrastructure/extensions/extensions.dart';
-import '../../infrastructure/helpers/i10n_helper.dart';
-import '../../infrastructure/utils/dimens.dart';
-import '../foodevent/provider/add_food_event_provider.dart';
-import 'add_food_event_item.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/presentation/foodevent/provider/add_food_event_provider.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/add_food_event_item.dart';
 
 // TODO: hacer genérico para usarlo en los eventos de comida y aversions y todo.
 // TODO: Pasarle una lista de un objeto que sea sólo id y name.
@@ -30,7 +29,7 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
   Widget build(BuildContext context) {
     String currentLanguage = Localizations.localeOf(context).languageCode;
 
-    final onlyFoodNames = widget.provider.getFoodAndDrinksList!.foodNames?.map((foodItem) {
+    final onlyFoodNames = widget.provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.map((foodItem) {
       if (currentLanguage == 'es') {
         return foodItem.es.orEmpty();
       } else {
@@ -38,7 +37,7 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
       }
     }).toList();
 
-    final onlyDrinksNames = widget.provider.getFoodAndDrinksList!.drinkNames?.map((foodItem) {
+    final onlyDrinksNames = widget.provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.drinkNames?.map((foodItem) {
       if (currentLanguage == 'es') {
         return foodItem.es.orEmpty();
       } else {
@@ -49,9 +48,9 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
     FoodInEvent? findFoodId(String foodName) {
       FoodItemMaster? foodItem;
       if (currentLanguage == 'es') {
-        foodItem = widget.provider.getFoodAndDrinksList!.foodNames?.firstWhere((food) => food.es == foodName);
+        foodItem = widget.provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.firstWhere((food) => food.es == foodName);
       } else {
-       foodItem = widget.provider.getFoodAndDrinksList!.foodNames?.firstWhere((food) => food.en == foodName);
+       foodItem = widget.provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.firstWhere((food) => food.en == foodName);
       }
       if (foodItem != null) {
         return FoodInEvent(id: foodItem.id!, qty: 0, unit: 0, cookingMethod: -1);
@@ -63,9 +62,9 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
     String? findFoodGroup(String foodName) {
       FoodItemMaster? foodItem;
       if (currentLanguage == 'es') {
-        foodItem = widget.provider.getFoodAndDrinksList!.foodNames?.firstWhere((food) => food.es == foodName);
+        foodItem = widget.provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.firstWhere((food) => food.es == foodName);
       } else {
-       foodItem = widget.provider.getFoodAndDrinksList!.foodNames?.firstWhere((food) => food.en == foodName);
+       foodItem = widget.provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.firstWhere((food) => food.en == foodName);
       }
       if (foodItem != null) {
         return foodItem.group;
@@ -75,7 +74,7 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
     }
 
     String findFoodName(FoodInEvent foodInEvent) {
-      final food = widget.provider.getFoodAndDrinksList!.foodNames?.firstWhere((foodItemMaster) => foodItemMaster.id == foodInEvent.id);
+      final food = widget.provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.firstWhere((foodItemMaster) => foodItemMaster.id == foodInEvent.id);
       if (currentLanguage == 'es') {
         return food!.es.orEmpty();
       } else {

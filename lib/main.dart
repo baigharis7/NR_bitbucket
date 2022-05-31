@@ -182,7 +182,8 @@ void main() async {
   final addFoodEventProvider = AddFoodEventProvider(
       getUserIdInteractor: getUserIdInteractor,
       saveFoodEventInteractor: saveFoodEventInteractor,
-      uploadFoodEventInteractor: uploadFoodEventInteractor
+      uploadFoodEventInteractor: uploadFoodEventInteractor,
+      getMasterFileInteractor: getMasterFileInteractor,
   );
 
   final recommendationsProvider = RecommendationsProvider(

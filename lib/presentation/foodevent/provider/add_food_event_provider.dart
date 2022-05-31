@@ -1,34 +1,49 @@
 import 'package:nutrenaissance_flutter/data/api/foodevents/model/upload_food_event.dart';
-
-import '../../../domain/interactor/foodevents/save_food_event_interactor.dart';
-import '../../../domain/interactor/foodevents/upload_food_event_interactor.dart';
-import '../../../domain/interactor/preferences/get_user_id_interactor.dart';
-import '../../../domain/models/foodevents/food_event_simple.dart';
-import '../../../domain/models/masterfiles/cooking_methods_info_master.dart';
-import '../../../domain/models/masterfiles/cooking_methods_master.dart';
-import '../../../domain/models/masterfiles/food_names_master.dart';
-import '../../common/provider/base_provider.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
 
 // TODO: Tengo que poner lo de las bebidas.
 class AddFoodEventProvider extends BaseProvider {
   final GetUserIdInteractor getUserIdInteractor;
   final SaveFoodEventInteractor saveFoodEventInteractor;
   final UploadFoodEventInteractor uploadFoodEventInteractor;
+  final GetMasterFileInteractor getMasterFileInteractor;
 
-  AddFoodEventProvider({required this.getUserIdInteractor, required this.saveFoodEventInteractor, required this.uploadFoodEventInteractor,});
+  AddFoodEventProvider({
+    required this.getUserIdInteractor,
+    required this.saveFoodEventInteractor,
+    required this.uploadFoodEventInteractor,
+    required this.getMasterFileInteractor,
+  });
 
-  FoodsAndDrinkListsMaster? _foodAndDrinksList;
+  bool _infoLoaded = false;
+  FoodsAndDrinksNamesMaster? _foodAndDrinksNames;
   CookingMethodsMaster? _cookingMethods;
   CookingMethodsInfoMaster? _cookingMethodsInfo;
   final List<FoodInEvent> _ingredients = [];
   final List<FoodInEvent> _drinks = [];
   bool onSaveFoodEventSuccess = false;
 
-  FoodsAndDrinkListsMaster? get getFoodAndDrinksList => _foodAndDrinksList;
+  bool get isInfoLoaded => _infoLoaded;
+  FoodsAndDrinksNamesMaster? get getFoodAndDrinksNames => _foodAndDrinksNames;
   CookingMethodsMaster? get getCookingMethods => _cookingMethods;
   CookingMethodsInfoMaster? get getCookingMethodsInfo => _cookingMethodsInfo;
   List<FoodInEvent> get getIngredients => _ingredients;
   List<FoodInEvent> get getDrinks => _drinks;
+
+  bool setInfoLoaded(bool infoLoaded) => _infoLoaded = infoLoaded;
+  void setFoodAndDrinksNames(FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) => _foodAndDrinksNames = foodsAndDrinksNamesMaster;
+  void setCookingMethods(CookingMethodsMaster cookingMethodsMaster) => _cookingMethods = cookingMethodsMaster;
+  void setCookingMethodsInfo(CookingMethodsInfoMaster cookingMethodsInfoMaster) => _cookingMethodsInfo = cookingMethodsInfoMaster;
 
   void addIngredient(FoodInEvent foodEntered) {
     if (getIngredients.map((e) => e.id).contains(foodEntered.id)) {
@@ -45,52 +60,65 @@ class AddFoodEventProvider extends BaseProvider {
     notifyListeners();
   }
 
+  void addDrink(FoodInEvent drinkEntered) {
+    if (getDrinks.map((e) => e.id).contains(drinkEntered.id)) {
+      final editedEventIndex = getDrinks.firstWhere((element) => element.id == drinkEntered.id);
+      getDrinks.replaceRange(getDrinks.indexOf(editedEventIndex), getDrinks.indexOf(editedEventIndex)+1, [drinkEntered]);
+    } else {
+      getDrinks.add(drinkEntered);
+    }
+    notifyListeners();
+  }
 
-  void retrieveFoodAndDrinks(Future<Map<String, dynamic>> foodMap, {Function? nextCall}) async {
+  void removeDrink(FoodInEvent drinkEntered) {
+    getDrinks.remove(drinkEntered);
+    notifyListeners();
+  }
+
+  void initialize() {
+    if (!isInfoLoaded) {
+      setInfoLoaded(true);
+      getFoodAndDrinksNames.doIfNull(retrieveFoodAndDrinks);
+      getCookingMethods.doIfNull(retrieveCookingMethods);
+      getCookingMethodsInfo.doIfNull(retrieveCookingMethodsInfo);
+    }
+  }
+
+  void retrieveFoodAndDrinks() async {
     launchSync(
-        block: () async {
-          final FoodsAndDrinksNamesMaster foodNames = FoodsAndDrinksNamesMaster.fromJson(await foodMap);
-          return foodNames.foodsAndDrinksNames!.data;
-        },
-        onSuccess: (foodAndDrinksList) {
-          _foodAndDrinksList = foodAndDrinksList;
-          nextCall?.call();
+        block: () => getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames),
+        onSuccess: (FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) {
+          setFoodAndDrinksNames(foodsAndDrinksNamesMaster);
         },
         onError: (Object error) {
           // TODO: control error.
+          const g = '';
+          setInfoLoaded(false);
         }
     );
   }
 
-  // TODO: esto hay que hacerlo con interactors y un repositorio. Cuando lo descargue de AWS.
-  void retrieveCookingMethods(Future<Map<String, dynamic>> cookingMethods, {Function? nextCall}) async {
+  void retrieveCookingMethods() async {
     launchSync(
-        block: () async {
-          final CookingMethodsMaster cookingMethodsMaster = CookingMethodsMaster.fromJson(await cookingMethods);
-          return cookingMethodsMaster;
-        },
-        onSuccess: (cookingMethods) {
-          _cookingMethods = cookingMethods;
-          nextCall?.call();
+        block: () => getMasterFileInteractor.execute(MasterFilesType.cookingMethods),
+        onSuccess: (CookingMethodsMaster cookingMethodsMaster) {
+          setCookingMethods(cookingMethodsMaster);
         },
         onError: (Object error) {
           // TODO: control error.
+          setInfoLoaded(false);
         }
     );
   }
 
-  void retrieveCookingMethodsInfo(Future<Map<String, dynamic>> cookingMethodsInfo, {Function? nextCall}) async {
+  void retrieveCookingMethodsInfo() async {
     launchSync(
-        block: () async {
-          final CookingMethodsInfoMaster cookingMethodsInfoMaster = CookingMethodsInfoMaster.fromJson(await cookingMethodsInfo);
-          return cookingMethodsInfoMaster;
-        },
-        onSuccess: (cookingMethodsInfo) {
-          _cookingMethodsInfo = cookingMethodsInfo;
-          nextCall?.call();
+        block: () => getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo),
+        onSuccess: (CookingMethodsInfoMaster cookingMethodsInfo) {
+          setCookingMethodsInfo(cookingMethodsInfo);
         },
         onError: (Object error) {
-          // TODO: control error.
+          setInfoLoaded(false);
         }
     );
   }
@@ -132,6 +160,7 @@ class AddFoodEventProvider extends BaseProvider {
         }
       },
       onError: (Object error) {
+        // TODO: manage error uploading even
         final g = error.toString();
         },
     );
