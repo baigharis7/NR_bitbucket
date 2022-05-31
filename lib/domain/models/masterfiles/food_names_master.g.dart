@@ -11,7 +11,7 @@ FoodsAndDrinksNamesMaster _$FoodsAndDrinksNamesMasterFromJson(
     FoodsAndDrinksNamesMaster(
       json['foodsAndDrinksNames'] == null
           ? null
-          : FoodsAndDrinksNames.fromJson(
+          : FoodsAndDrinkListsMaster.fromJson(
               json['foodsAndDrinksNames'] as Map<String, dynamic>),
     );
 
@@ -21,29 +21,13 @@ Map<String, dynamic> _$FoodsAndDrinksNamesMasterToJson(
       'foodsAndDrinksNames': instance.foodsAndDrinksNames?.toJson(),
     };
 
-FoodsAndDrinksNames _$FoodsAndDrinksNamesFromJson(Map<String, dynamic> json) =>
-    FoodsAndDrinksNames(
-      json['v'] as int?,
-      json['data'] == null
-          ? null
-          : FoodsAndDrinkListsMaster.fromJson(
-              json['data'] as Map<String, dynamic>),
-    );
-
-Map<String, dynamic> _$FoodsAndDrinksNamesToJson(
-        FoodsAndDrinksNames instance) =>
-    <String, dynamic>{
-      'v': instance.v,
-      'data': instance.data?.toJson(),
-    };
-
 FoodsAndDrinkListsMaster _$FoodsAndDrinkListsMasterFromJson(
         Map<String, dynamic> json) =>
     FoodsAndDrinkListsMaster(
-      (json['foodNames'] as List<dynamic>?)
+      foodNames: (json['foodNames'] as List<dynamic>?)
           ?.map((e) => FoodItemMaster.fromJson(e as Map<String, dynamic>))
           .toList(),
-      (json['drinkNames'] as List<dynamic>?)
+      drinkNames: (json['drinkNames'] as List<dynamic>?)
           ?.map((e) => FoodItemMaster.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -57,10 +41,10 @@ Map<String, dynamic> _$FoodsAndDrinkListsMasterToJson(
 
 FoodItemMaster _$FoodItemMasterFromJson(Map<String, dynamic> json) =>
     FoodItemMaster(
-      json['id'] as int?,
-      json['en'] as String?,
-      json['es'] as String?,
-      json['group'] as String?,
+      id: json['id'] as int?,
+      en: json['en'] as String?,
+      es: json['es'] as String?,
+      group: json['group'] as String?,
     );
 
 Map<String, dynamic> _$FoodItemMasterToJson(FoodItemMaster instance) =>

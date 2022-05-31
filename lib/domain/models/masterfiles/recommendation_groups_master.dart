@@ -24,4 +24,5 @@ class RecommendationGroup {
 
   factory RecommendationGroup.fromJson(Map<String, dynamic> json) => _$RecommendationGroupFromJson(json);
   Map<String, dynamic> toJson() => _$RecommendationGroupToJson(this);
+
 }

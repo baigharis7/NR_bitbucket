@@ -5,7 +5,7 @@ part 'cooking_methods_info_response.g.dart';
 @JsonSerializable(explicitToJson: true)
 class CookingMethodsInfoResponse {
   int v;
-  List<CookingMethodInfo> data;
+  List<CookingMethodInfoResponse> data;
 
   CookingMethodsInfoResponse({required this.v, required this.data});
 
@@ -14,13 +14,13 @@ class CookingMethodsInfoResponse {
 }
 
 @JsonSerializable(explicitToJson: true)
-class CookingMethodInfo {
+class CookingMethodInfoResponse {
   int id;
   String en;
   String es;
 
-  CookingMethodInfo({required this.id, required this.en, required this.es});
+  CookingMethodInfoResponse({required this.id, required this.en, required this.es});
 
-  factory CookingMethodInfo.fromJson(Map<String, dynamic> json) => _$CookingMethodInfoFromJson(json);
-  Map<String, dynamic> toJson() => _$CookingMethodInfoToJson(this);
+  factory CookingMethodInfoResponse.fromJson(Map<String, dynamic> json) => _$CookingMethodInfoResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$CookingMethodInfoResponseToJson(this);
 }

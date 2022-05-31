@@ -7,7 +7,7 @@ class CookingMethodsInfoMaster {
   @JsonKey(name: 'cookingMethodsInfo')
   List<CookingMethodInfo>? cookingMethodsInfo;
 
-  CookingMethodsInfoMaster(this.cookingMethodsInfo);
+  CookingMethodsInfoMaster({this.cookingMethodsInfo});
 
   factory CookingMethodsInfoMaster.fromJson(Map<String, dynamic> json) => _$CookingMethodsInfoMasterFromJson(json);
   Map<String, dynamic> toJson() => _$CookingMethodsInfoMasterToJson(this);
@@ -22,7 +22,7 @@ class CookingMethodInfo {
   @JsonKey(name: 'es')
   String? es;
 
-  CookingMethodInfo(this.id, this.en, this.es);
+  CookingMethodInfo({this.id, this.en, this.es});
 
   factory CookingMethodInfo.fromJson(Map<String, dynamic> json) => _$CookingMethodInfoFromJson(json);
   Map<String, dynamic> toJson() => _$CookingMethodInfoToJson(this);

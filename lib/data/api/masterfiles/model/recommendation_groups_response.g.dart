@@ -11,7 +11,8 @@ RecommendationGroupsResponse _$RecommendationGroupsResponseFromJson(
     RecommendationGroupsResponse(
       v: json['v'] as int,
       data: (json['data'] as List<dynamic>)
-          .map((e) => RecommendationGroup.fromJson(e as Map<String, dynamic>))
+          .map((e) =>
+              RecommendationGroupResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
@@ -22,8 +23,9 @@ Map<String, dynamic> _$RecommendationGroupsResponseToJson(
       'data': instance.data.map((e) => e.toJson()).toList(),
     };
 
-RecommendationGroup _$RecommendationGroupFromJson(Map<String, dynamic> json) =>
-    RecommendationGroup(
+RecommendationGroupResponse _$RecommendationGroupResponseFromJson(
+        Map<String, dynamic> json) =>
+    RecommendationGroupResponse(
       id: json['id'] as int,
       groups:
           (json['groups'] as List<dynamic>).map((e) => e as String).toList(),
@@ -32,8 +34,8 @@ RecommendationGroup _$RecommendationGroupFromJson(Map<String, dynamic> json) =>
       es: json['es'] as String,
     );
 
-Map<String, dynamic> _$RecommendationGroupToJson(
-        RecommendationGroup instance) =>
+Map<String, dynamic> _$RecommendationGroupResponseToJson(
+        RecommendationGroupResponse instance) =>
     <String, dynamic>{
       'id': instance.id,
       'groups': instance.groups,

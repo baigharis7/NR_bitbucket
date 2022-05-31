@@ -7,7 +7,7 @@ class CookingMethodsMaster {
   @JsonKey(name: 'data')
   List<CookingMethod> cookingMethods;
 
-  CookingMethodsMaster(this.cookingMethods);
+  CookingMethodsMaster({required this.cookingMethods});
 
   factory CookingMethodsMaster.fromJson(Map<String, dynamic> json) => _$CookingMethodsMasterFromJson(json);
   Map<String, dynamic> toJson() => _$CookingMethodsMasterToJson(this);
@@ -20,7 +20,7 @@ class CookingMethod {
   @JsonKey(name: 'methods')
   List<int> methods;
 
-  CookingMethod(this.group, this.methods);
+  CookingMethod({required this.group, required this.methods});
 
   factory CookingMethod.fromJson(Map<String, dynamic> json) => _$CookingMethodFromJson(json);
   Map<String, dynamic> toJson() => _$CookingMethodToJson(this);

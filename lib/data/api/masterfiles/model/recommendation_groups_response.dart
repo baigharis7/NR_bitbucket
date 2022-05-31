@@ -5,7 +5,7 @@ part 'recommendation_groups_response.g.dart';
 @JsonSerializable(explicitToJson: true)
 class RecommendationGroupsResponse {
   int v;
-  List<RecommendationGroup> data;
+  List<RecommendationGroupResponse> data;
 
   RecommendationGroupsResponse({required this.v, required this.data});
 
@@ -14,15 +14,16 @@ class RecommendationGroupsResponse {
 }
 
 @JsonSerializable(explicitToJson: true)
-class RecommendationGroup {
+class RecommendationGroupResponse {
   int id;
   List<String> groups;
   int size;
   String en;
   String es;
 
-  RecommendationGroup({required this.id, required this.groups, required this.size, required this.en, required this.es});
+  RecommendationGroupResponse({required this.id, required this.groups, required this.size, required this.en, required this.es});
 
-  factory RecommendationGroup.fromJson(Map<String, dynamic> json) => _$RecommendationGroupFromJson(json);
-  Map<String, dynamic> toJson() => _$RecommendationGroupToJson(this);
+  factory RecommendationGroupResponse.fromJson(Map<String, dynamic> json) => _$RecommendationGroupResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$RecommendationGroupResponseToJson(this);
+
 }

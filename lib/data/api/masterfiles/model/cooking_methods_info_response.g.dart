@@ -11,7 +11,8 @@ CookingMethodsInfoResponse _$CookingMethodsInfoResponseFromJson(
     CookingMethodsInfoResponse(
       v: json['v'] as int,
       data: (json['data'] as List<dynamic>)
-          .map((e) => CookingMethodInfo.fromJson(e as Map<String, dynamic>))
+          .map((e) =>
+              CookingMethodInfoResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
@@ -22,14 +23,16 @@ Map<String, dynamic> _$CookingMethodsInfoResponseToJson(
       'data': instance.data.map((e) => e.toJson()).toList(),
     };
 
-CookingMethodInfo _$CookingMethodInfoFromJson(Map<String, dynamic> json) =>
-    CookingMethodInfo(
+CookingMethodInfoResponse _$CookingMethodInfoResponseFromJson(
+        Map<String, dynamic> json) =>
+    CookingMethodInfoResponse(
       id: json['id'] as int,
       en: json['en'] as String,
       es: json['es'] as String,
     );
 
-Map<String, dynamic> _$CookingMethodInfoToJson(CookingMethodInfo instance) =>
+Map<String, dynamic> _$CookingMethodInfoResponseToJson(
+        CookingMethodInfoResponse instance) =>
     <String, dynamic>{
       'id': instance.id,
       'en': instance.en,
