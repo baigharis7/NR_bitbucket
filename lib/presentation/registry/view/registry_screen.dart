@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart';
-import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/json_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/view/diet_questions_modal.dart';
@@ -20,27 +18,8 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
   
   static const routeName = '/registry_screen';
 
-  String _chooseRightLanguage(String languageCode, dynamic dynamic){
-    String objectiveName = '';
-    if (languageCode == 'es') {
-      objectiveName = dynamic['es'];
-    } else {
-      objectiveName = dynamic['en'];
-    }
-    return objectiveName;
-  }
-
   void _showObjectivesDialog(BuildContext context) async {
     final registryProvider = Provider.of<RegistryProvider>(context, listen: false);
-
-    // TODO: cutrada que me permito para generar el JSON rápido. Cuando se guarde en Hive hacerlo bien.
-    // TODO: esta lógica la tengo que sacar.
-    final Map<String, dynamic> objectivesMap = await JsonUtils(context: context).readJson('assets/objectives_list.json');
-    String code = Localizations.localeOf(context).languageCode;
-    final List objectives = objectivesMap['objectives'].map((objective) => SimpleItem(
-        name: _chooseRightLanguage(code, objective),
-        id: int.parse(objective['id']),
-    )).toList();
 
     showDialog(context: context, builder: (ctx) {
       return SimpleDialog(
@@ -72,7 +51,7 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
                 fontSize: Dimens.fontSizeLarge
               ),),
           ),
-          ...objectives.map((objective) => SelectableOption(
+          ...getProvider.getObjectivesList(Localizations.localeOf(context).languageCode).map((objective) => SelectableOption(
                 isSelected: registryProvider.getObjectives.contains(objective.id),
                 selectedItemsList: registryProvider.getObjectives,
                 name: objective.name,
@@ -110,6 +89,9 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
   @override
   Widget build(BuildContext context) {
     setProvider(Provider.of<RegistryProvider>(context, listen: true));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getProvider.initialize();
+    });
 
     return SafeArea(
       child: Stack(
@@ -180,6 +162,7 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
                   ),
                   onTap: () => _showHealthQuestions(context),
                 ),
+
                 getProvider.getSex == SexType.female
                     ? InkWell(
                   child: Row(
@@ -200,6 +183,7 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
                   onTap: () => _showWomenHealthQuestions(context),
                 )
                     : Container(),
+
                 InkWell(
                   child: Row(
                     children: [

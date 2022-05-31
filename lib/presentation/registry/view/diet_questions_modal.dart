@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/autocomplete_list_hits.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/selectable_option.dart';
 import 'package:provider/provider.dart';
-
-import '../../../domain/models/masterfiles/food_names_master.dart';
-import '../../../infrastructure/mixins/generic_provider.dart';
-import '../../../infrastructure/mixins/show_loading_mixin.dart';
-import '../../../infrastructure/utils/dimens.dart';
-import '../../../infrastructure/helpers/i10n_helper.dart';
-import '../../../infrastructure/extensions/extensions.dart';
-import '../../widgets/autocomplete_list_hits.dart';
-import '../../widgets/selectable_option.dart';
-import '../provider/registry_provider.dart';
 
 class DietQuestionsModal extends StatefulWidget {
   const DietQuestionsModal({Key? key}) : super(key: key);
@@ -21,7 +20,7 @@ class DietQuestionsModal extends StatefulWidget {
 class _DietQuestionsModalState extends State<DietQuestionsModal>
     with ShowLoadingDialog, GenericProvider<RegistryProvider> {
 
-  void showAversionsDialog(FoodsAndDrinkListsMaster foodAndDrinks) {
+  void showAversionsDialog(FoodsAndDrinkListsMaster? foodAndDrinks) {
     showDialog(
         useSafeArea: true,
         builder: (BuildContext context) {
@@ -29,12 +28,13 @@ class _DietQuestionsModalState extends State<DietQuestionsModal>
             title: Text(AppLocalizations.instance.translate('choose_aversions')),
             children: [
               AutocompleteListHits(
-                data: foodAndDrinks,
+                data: foodAndDrinks!,
               ),
             ],
           );
         },
-        context: context);
+        context: context
+    );
   }
 
   @override
@@ -166,20 +166,13 @@ class _DietQuestionsModalState extends State<DietQuestionsModal>
                               Dimens.marginXLarge, Dimens.marginLarge, Dimens.zero),
                           child: IconButton(
                             icon: const Icon(Icons.edit),
-                            onPressed: () {
-                              getProvider.retrieveFoodAndDrinks(
-                                  context,
-                                  (FoodsAndDrinkListsMaster foodAndDrinks) => showAversionsDialog(foodAndDrinks),
-                              );
-                            },
+                            onPressed: () => showAversionsDialog(getProvider.getFoodsAndDrinksNamesMaster!.foodsAndDrinksNames),
                           ),
                         ),
                       ],
                     )
                   : ElevatedButton(
-                      onPressed: () {
-                        getProvider.retrieveFoodAndDrinks(context, (foodAndDrinks) => showAversionsDialog(foodAndDrinks));
-                      },
+                      onPressed: () => showAversionsDialog(getProvider.getFoodsAndDrinksNamesMaster!.foodsAndDrinksNames),
                       child: Text(AppLocalizations.instance.translate('choose_aversions'),
                       ),
                     ),

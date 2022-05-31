@@ -1,16 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/user_profile_response.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/objectives_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/activity_by_occupation_type.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/allergens.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/common_diseases.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/diet_type.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/intolerances.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/json_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
@@ -19,14 +22,17 @@ class RegistryProvider extends BaseProvider {
   final GetUserIdInteractor getUserIdInteractor;
   final UploadProfileInteractor uploadProfileInteractor;
   final SaveProfileInteractor saveProfileInteractor;
+  final GetMasterFileInteractor getMasterFileInteractor;
 
-  RegistryProvider({
-    required this.getUserIdInteractor,
-    required this.uploadProfileInteractor,
-    required this.saveProfileInteractor
-  });
+  RegistryProvider(
+      {required this.getUserIdInteractor,
+      required this.uploadProfileInteractor,
+      required this.saveProfileInteractor,
+      required this.getMasterFileInteractor
+      }
+  );
 
-  String userId = '';
+  bool _infoLoaded = false;
   String? _commonName;
   DateTime? _birthDate;
   double? _activityType;
@@ -52,12 +58,88 @@ class RegistryProvider extends BaseProvider {
   final List<int> _objectives = [];
   bool _areDietQuestionsChecked = false;
   bool _eatGuts = false;
+  ObjectivesInfoMaster? _objectivesInfoMaster;
+  FoodsAndDrinksNamesMaster? _foodsAndDrinksNamesMaster;
 
-  List<ActivityByOccupationType> get listActivityTypes => ActivityByOccupationType.listAllActivityTypes();
+  bool get isInfoLoaded => _infoLoaded;
+
+  List<ActivityByOccupationType> get listActivityTypes =>
+      ActivityByOccupationType.listAllActivityTypes();
+
   List<CommonDiseases> get listDiseases => CommonDiseases.listAllDiseases();
+
   List<Allergens> get listAllergens => Allergens.listAllAllergens();
+
   List<Intolerances> get listIntolerances => Intolerances.listAllIntolerances();
+
   List<DietType> get listDietTypes => DietType.listAllDietTypes();
+
+  ObjectivesInfoMaster? get getObjectivesInfo => _objectivesInfoMaster;
+
+  FoodsAndDrinksNamesMaster? get getFoodsAndDrinksNamesMaster =>
+      _foodsAndDrinksNamesMaster;
+
+  void setInfoIsLoaded(bool infoIsLoaded) => _infoLoaded = infoIsLoaded;
+
+  void initialize() {
+    if (!isInfoLoaded) {
+      setInfoIsLoaded(true);
+      getObjectivesInfo.doIfNull(retrieveObjectivesInfoMaster);
+      getFoodsAndDrinksNamesMaster.doIfNull(retrieveFoodAndDrinks);
+    }
+  }
+
+  void setObjectivesInfoMaster(ObjectivesInfoMaster objectivesInfoMaster) =>
+      _objectivesInfoMaster = objectivesInfoMaster;
+
+  void setFoodsAndDrinksNamesMaster(FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) =>
+      _foodsAndDrinksNamesMaster = foodsAndDrinksNamesMaster;
+
+  void retrieveObjectivesInfoMaster() {
+    launchSync(
+      block: () => getMasterFileInteractor.execute(MasterFilesType.objectivesInfo),
+      onSuccess: (ObjectivesInfoMaster objectivesInfoMaster) {
+        setObjectivesInfoMaster(objectivesInfoMaster);
+      },
+      onError: (error) {
+        // TODO: manage errors.
+        setInfoIsLoaded(false);
+      },
+    );
+  }
+
+  void retrieveFoodAndDrinks() async {
+    launchSync(
+        block: () => getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames),
+        onSuccess: (FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) {
+          setFoodsAndDrinksNamesMaster(foodsAndDrinksNamesMaster);
+        },
+        onError: (Object error) {
+          // TODO: manage error.
+          const g = '';
+        },
+    );
+  }
+
+  String _chooseRightLanguage(
+      String languageCode, ObjectiveInfoMaster objectiveInfoMaster) {
+    String objectiveName = '';
+    if (languageCode == 'es') {
+      objectiveName = objectiveInfoMaster.es;
+    } else {
+      objectiveName = objectiveInfoMaster.en;
+    }
+    return objectiveName;
+  }
+
+  List<SimpleItem> getObjectivesList(String currentLanguage) {
+    return getObjectivesInfo!.objectives
+        .map((objective) => SimpleItem(
+              name: _chooseRightLanguage(currentLanguage, objective),
+              id: objective.id,
+            ))
+        .toList();
+  }
 
   void setCommonName(String commonName) {
     _commonName = commonName;
@@ -81,7 +163,9 @@ class RegistryProvider extends BaseProvider {
   SexType? get getSex => _sex;
 
   void manageDiseases(int diseaseId) {
-    _diseases.contains(diseaseId) ? _diseases.remove(diseaseId) : _diseases.add(diseaseId);
+    _diseases.contains(diseaseId)
+        ? _diseases.remove(diseaseId)
+        : _diseases.add(diseaseId);
     notifyListeners();
   }
 
@@ -164,14 +248,18 @@ class RegistryProvider extends BaseProvider {
   get getEatGuts => _eatGuts;
 
   void manageAllergen(int allergen) {
-    _allergens.contains(allergen) ? _allergens.remove(allergen) : _allergens.add(allergen);
+    _allergens.contains(allergen)
+        ? _allergens.remove(allergen)
+        : _allergens.add(allergen);
     notifyListeners();
   }
 
   List<int> get getAllergens => _allergens;
 
   void manageIntolerance(int intolerance) {
-    _intolerances.contains(intolerance) ? _intolerances.remove(intolerance) : _intolerances.add(intolerance);
+    _intolerances.contains(intolerance)
+        ? _intolerances.remove(intolerance)
+        : _intolerances.add(intolerance);
     notifyListeners();
   }
 
@@ -186,7 +274,9 @@ class RegistryProvider extends BaseProvider {
   int? get getDietType => _dietType;
 
   void manageAversions(FoodItemMaster aversion) {
-    _aversions.contains(aversion) ? _aversions.remove(aversion) : _aversions.add(aversion);
+    _aversions.contains(aversion)
+        ? _aversions.remove(aversion)
+        : _aversions.add(aversion);
     notifyListeners();
   }
 
@@ -231,13 +321,15 @@ class RegistryProvider extends BaseProvider {
 
   bool areObjectivesSelected() => _objectives.isEmpty ? false : true;
 
-  List<int> addDietTypesToAllergens(){
+  List<int> addDietTypesToAllergens() {
     if (_dietType != null) _allergens.add(_dietType!);
     return _allergens;
   }
 
   void manageObjectives(int objective) {
-    _objectives.contains(objective) ? _objectives.remove(objective) : _objectives.add(objective);
+    _objectives.contains(objective)
+        ? _objectives.remove(objective)
+        : _objectives.add(objective);
     notifyListeners();
   }
 
@@ -249,9 +341,9 @@ class RegistryProvider extends BaseProvider {
     return (areGeneralQuestionsAnswered() &&
         areHealthQuestionsAnswered() &&
         areDietQuestionsAnswered() &&
-        ((getSex == SexType.female && areWomenQuestionsAnswered()) || getSex == SexType.male) &&
-        areObjectivesSelected()
-    );
+        ((getSex == SexType.female && areWomenQuestionsAnswered()) ||
+            getSex == SexType.male) &&
+        areObjectivesSelected());
   }
 
   void finishRegistry(Function moveToDashboard) {
@@ -262,9 +354,7 @@ class RegistryProvider extends BaseProvider {
               regularity: _periodRegularity!.index,
               // TODO: estos dos pueden ir a null si regularity es irregular.
               daysOfCycle: _periodDuration,
-              lastStartDate: _lastPeriodDate?.millisecondsSinceEpoch
-          )
-      );
+              lastStartDate: _lastPeriodDate?.millisecondsSinceEpoch));
     } else {
       femaleCharacteristics = null;
     }
@@ -278,17 +368,17 @@ class RegistryProvider extends BaseProvider {
       physicalCharacteristics: PhysicalCharacteristics(
           height: getHeight,
           weight: getWeight,
-          // TODO: estos dos no son necesarios. No hay por qué poner valor.
-          bodyFat: getBodyFat,
-          waistMeasurement: getWaistMeasurement
-      ),
+          bodyFat: _bodyFatChosen ? getBodyFat : null,
+          waistMeasurement:
+              _waistMeasurementChosen ? getWaistMeasurement : null),
       femaleCharacteristics: femaleCharacteristics,
       medicalSituation: MedicalSituation(
         commonDiseases: getDiseases,
         otherDiseases: [], // Añadir a pantalla
         underPharmaceuticalTreatment: isUnderTreatment,
       ),
-      foodAversions: getAversions.map((foodItemMaster) => foodItemMaster.id!).toList(),
+      foodAversions:
+          getAversions.map((foodItemMaster) => foodItemMaster.id!).toList(),
       dietType: getDietType,
       exclusions: Exclusions(exclusions: addDietTypesToAllergens()),
       intolerances: getIntolerances,
@@ -299,20 +389,18 @@ class RegistryProvider extends BaseProvider {
 
     launchSync(
       block: () => uploadProfileInteractor.execute(profile),
-      onSuccess: (UserProfileResponse resp) {
-        // TODO: cambiar esta cutrada.
-        if (resp.uploadSuccess) {
-          profile.micronutrients = resp.micronutrients;
+      onSuccess: (UserProfileResponse userProfileResponse) {
+        if (userProfileResponse.uploadSuccess) {
+          profile.micronutrients = userProfileResponse.micronutrients;
           launchSync(
               block: () => saveProfileInteractor.execute(profile),
-              onSuccess:  (_) {
+              onSuccess: (_) {
                 moveToDashboard.call();
               },
               onError: (Object error) {
                 // TODO: Manage error
                 const g = '';
-              }
-          );
+              });
         } else {
           // TODO: manage error.
           const g = '';
@@ -324,24 +412,4 @@ class RegistryProvider extends BaseProvider {
       },
     );
   }
-
-  _refreshAllStates() async {
-    notifyListeners();
-  }
-
-  // TODOD: quitar el contexto de aquí.
-  void retrieveFoodAndDrinks(BuildContext context, Function jsonBack) async {
-    launchSync(
-        block: () async {
-          final Map<String, dynamic> foodMap = await JsonUtils(context: context).readJson('assets/dummy_foods.json');
-          final FoodsAndDrinksNamesMaster foodNames = FoodsAndDrinksNamesMaster.fromJson(foodMap);
-          return foodNames.foodsAndDrinksNames!.data;
-        },
-        onSuccess: (json) {
-          jsonBack.call(json);
-        },
-        onError: () {}
-    );
-  }
-
 }

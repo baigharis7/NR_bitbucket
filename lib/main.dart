@@ -169,7 +169,8 @@ void main() async {
   final registryProvider = RegistryProvider(
     getUserIdInteractor: getUserIdInteractor,
     uploadProfileInteractor: uploadProfileInteractor,
-    saveProfileInteractor: saveProfileInteractor
+    saveProfileInteractor: saveProfileInteractor,
+    getMasterFileInteractor: getMasterFileInteractor
   );
 
   final dashboardProvider = DashboardProvider(
@@ -224,7 +225,7 @@ void main() async {
           '/': (ctx) => const LoginScreen(),
           SplashScreen.routeName: (ctx) => SplashScreen(context: ctx),
           LoginScreen.routeName: (_) => const LoginScreen(),
-          RegistryScreen.routeName: (ctx) => RegistryScreen(),
+          RegistryScreen.routeName: (_) => RegistryScreen(),
           DashboardScreen.routeName: (_) => const DashboardScreen(),
           AddFoodEventScreen.routeName: (_) => const AddFoodEventScreen(),
           RecommendationsScreen.routeName: (_) => const RecommendationsScreen(),
