@@ -1,4 +1,6 @@
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_all_food_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
@@ -9,42 +11,57 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 class DashboardProvider extends BaseProvider {
   final GetAllFoodEventsInteractor getAllFoodEventsInteractor;
   final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor;
+  final GetMasterFileInteractor getMasterFileInteractor;
 
-  DashboardProvider({required this.getAllFoodEventsInteractor, required this.getUserMicronutrientsInteractor});
+  DashboardProvider({
+    required this.getAllFoodEventsInteractor,
+    required this.getUserMicronutrientsInteractor,
+    required this.getMasterFileInteractor,
+  });
 
   List<FoodEventComplete> _foodEvents = [];
+  bool _infoLoaded = false;
   NutrientsObjectiveMaster? _nutrientsObjective;
   List<String> _userMicronutrients = [];
   NutrientsInfoMaster? _nutrientsInfoMaster;
 
   List<FoodEventComplete> get getFoodEvents => _foodEvents;
+  bool get isInfoLoaded => _infoLoaded;
   NutrientsObjectiveMaster? get getNutrientsObjective => _nutrientsObjective;
   List<String> get getUserMicronutrients => _userMicronutrients;
   NutrientsInfoMaster? get getNutrientsInfoMaster => _nutrientsInfoMaster;
 
   void setFoodEvents(List<FoodEventComplete> foodEvents) => _foodEvents = foodEvents;
+  void setInfoLoaded(bool foodEventsLoaded) => _infoLoaded = foodEventsLoaded;
   void setNutrientsObjective(NutrientsObjectiveMaster nutrientsObjective) => _nutrientsObjective = nutrientsObjective;
   void setUserMicronutrients(List<String> micronutrients) => _userMicronutrients = micronutrients;
   void setNutrientsInfoMaster(NutrientsInfoMaster nutrientsInfoMaster) => _nutrientsInfoMaster = nutrientsInfoMaster;
 
-  void retrieveFoodEvents({Function? nextCall}) {
-    if (getFoodEvents.isEmpty) {
-      launchSync(
-          block: () => getAllFoodEventsInteractor.execute(),
-          onSuccess: (List<FoodEventComplete> foodEvents) {
-            setFoodEvents(foodEvents);
-            nextCall?.call();
-            notifyListeners();
-          },
-          onError: (Object error) {
-            // TODO: manage errors.
-            const g = '';
-          }
-      );
+  void initialize(Future<Map<String, dynamic>> nutrientsObjective) {
+    if (!isInfoLoaded) {
+      setInfoLoaded(true);
+      getFoodEvents.isEmpty.doIfTrue(retrieveFoodEvents);
+      getNutrientsObjective.doIfNull(() => retrieveNutrientsObjectives(nutrientsObjective));
+      getNutrientsInfoMaster.doIfNull(retrieveNutrientsInfoFile);
     }
   }
 
-  void retrieveNutrientsObjectives(Future<Map<String, dynamic>> nutrientsObjective, {Function? nextCall}) async {
+  void retrieveFoodEvents() {
+    launchSync(
+        block: () => getAllFoodEventsInteractor.execute(),
+        onSuccess: (List<FoodEventComplete> foodEvents) {
+          setFoodEvents(foodEvents);
+          notifyListeners();
+        },
+        onError: (Object error) {
+          // TODO: manage errors.
+          const g = '';
+          setInfoLoaded(false);
+        }
+    );
+  }
+
+  void retrieveNutrientsObjectives(Future<Map<String, dynamic>> nutrientsObjective) async {
     launchSync(
         block: () async {
           final t = await nutrientsObjective;
@@ -53,26 +70,26 @@ class DashboardProvider extends BaseProvider {
         },
         onSuccess: (NutrientsObjectiveMaster nutrientsObjective) {
           setNutrientsObjective(nutrientsObjective);
-          nextCall?.call();
         },
         onError: (Object error) {
           // TODO: control error.
           const g = '';
+          setInfoLoaded(false);
         }
     );
   }
 
-  void retrieveNutrientsInfoFile(Future<Map<String, dynamic>> nutrientsInfo) {
+  void retrieveNutrientsInfoFile() {
     launchSync(
-        block: () async {
-          final NutrientsInfoMaster nutrientsInfoMaster = NutrientsInfoMaster.fromJson(await nutrientsInfo);
-          return nutrientsInfoMaster;
-        },
+        block: () => getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo),
         onSuccess: (NutrientsInfoMaster nutrientsInfoMaster) {
           setNutrientsInfoMaster(nutrientsInfoMaster);
           retrieveUserMicronutrients();
         },
-        onError: (error) {});
+        onError: (error) {
+          // TODO: manage errors.
+          setInfoLoaded(false);
+        });
   }
 
   void retrieveUserMicronutrients() {

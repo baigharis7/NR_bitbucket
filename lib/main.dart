@@ -175,7 +175,8 @@ void main() async {
 
   final dashboardProvider = DashboardProvider(
       getAllFoodEventsInteractor: getAllFoodEventsInteractor,
-      getUserMicronutrientsInteractor: getUserMicronutrientsInteractor
+      getUserMicronutrientsInteractor: getUserMicronutrientsInteractor,
+      getMasterFileInteractor: getMasterFileInteractor
   );
 
   final addFoodEventProvider = AddFoodEventProvider(

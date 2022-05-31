@@ -22,22 +22,12 @@ class _DashboardScreen extends State<DashboardScreen>
     with ShowLoadingDialog, GenericProvider<DashboardProvider>, SingleTickerProviderStateMixin {
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     setProvider(Provider.of<DashboardProvider>(context));
-    String currentLanguage = Localizations.localeOf(context).languageCode;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getProvider.retrieveFoodEvents(nextCall: () {
-        final Future<Map<String, dynamic>> nutrientsObjective = JsonUtils(context: context).readJson('assets/nutrient_objective.json');
-        getProvider.retrieveNutrientsObjectives(nutrientsObjective, nextCall: () {
-          final Future<Map<String, dynamic>> nutrientsInfo = JsonUtils(context: context).readJson('assets/nutrients_info_file.json');
-          getProvider.retrieveNutrientsInfoFile(nutrientsInfo);
-        });
-      });
+      final Future<Map<String, dynamic>> nutrientsObjective = JsonUtils(context: context).readJson('assets/nutrient_objective.json');
+      getProvider.initialize(nutrientsObjective);
     });
 
     return SafeArea(
@@ -83,67 +73,78 @@ class _DashboardScreen extends State<DashboardScreen>
                           ),
                         ),
                         // TODO: aquí poner una comprobación buena, no esta tontería.
-                        if (getProvider.getUserMicronutrients.isEmpty) const Text('You need to introduce food events'),
-                        if (getProvider.getUserMicronutrients.isNotEmpty && getProvider.getFoodEvents.length >=0)
-                          ...getProvider.getUserMicronutrients.map((micronutrient) =>
-                              Row(
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: Container(
-                                      alignment: Alignment.centerLeft,
-                                      margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginSmall),
-                                      child: Text('${getProvider.getNutrientName(micronutrient, currentLanguage)}:'),
+                        getProvider.getFoodEvents.isEmpty
+                            ? const Text('You need to introduce food events')
+                            : Column(
+                          children: [
+                            ...getProvider.getUserMicronutrients.map((micronutrient) =>
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 2,
+                                      child: Container(
+                                        alignment: Alignment.centerLeft,
+                                        margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginSmall),
+                                        child: Text('${getProvider.getNutrientName(micronutrient, Localizations.localeOf(context).languageCode)}:'),
+                                      ),
                                     ),
-                                  ),
-                                  if (getProvider.getFractionToFill(micronutrient) == 1) Container(
-                                    margin: const EdgeInsets.only(right: Dimens.marginSmall), child: const Text("!!", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),)),
-                                  Expanded(
-                                    flex: 4,
-                                    child: Container(
-                                      margin: const EdgeInsets.only(right: Dimens.marginLarge),
-                                      child: LayoutBuilder(
-                                          builder: (ctx, constraints) {
-                                            return Row(children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(color: Colors.black54, width: 1.0),
-                                                  borderRadius: BorderRadius.circular(20.00),
-                                                  color: Colors.white12,
-                                                  shape: BoxShape.rectangle,
-                                                ),
-                                                height: 15,
-                                                width: constraints.maxWidth,
-                                                child: Stack(
-                                                    children: [
-                                                      Container(
-                                                        color: Colors.white30,
-                                                        child: FractionallySizedBox(
-                                                          alignment: Alignment.centerLeft,
-                                                          widthFactor: getProvider.getFractionToFill(micronutrient),
-                                                          child: Container(
-                                                            alignment: Alignment.centerLeft,
-                                                            decoration: BoxDecoration(
-                                                              color: getProvider.getFractionToFill(micronutrient) == 1
-                                                                  ? Colors.red
-                                                                  : const Color.fromARGB(255, 3, 179, 164),
-                                                              borderRadius: BorderRadius.circular(20.00),
-                                                              shape: BoxShape.rectangle,
+                                    if (getProvider.getFractionToFill(micronutrient) == 1) Container(
+                                        margin: const EdgeInsets.only(
+                                            right: Dimens.marginSmall
+                                        ), child: const Text(
+                                      "!!",
+                                      style: TextStyle(
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                                    Expanded(
+                                      flex: 4,
+                                      child: Container(
+                                          margin: const EdgeInsets.only(right: Dimens.marginLarge),
+                                          child: LayoutBuilder(
+                                              builder: (ctx, constraints) {
+                                                return Row(children: [
+                                                  Container(
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(color: Colors.black54, width: 1.0),
+                                                      borderRadius: BorderRadius.circular(20.00),
+                                                      color: Colors.white12,
+                                                      shape: BoxShape.rectangle,
+                                                    ),
+                                                    height: 15,
+                                                    width: constraints.maxWidth,
+                                                    child: Stack(
+                                                        children: [
+                                                          Container(
+                                                            color: Colors.white30,
+                                                            child: FractionallySizedBox(
+                                                              alignment: Alignment.centerLeft,
+                                                              widthFactor: getProvider.getFractionToFill(micronutrient),
+                                                              child: Container(
+                                                                alignment: Alignment.centerLeft,
+                                                                decoration: BoxDecoration(
+                                                                  color: getProvider.getFractionToFill(micronutrient) == 1
+                                                                      ? Colors.red
+                                                                      : const Color.fromARGB(255, 3, 179, 164),
+                                                                  borderRadius: BorderRadius.circular(20.00),
+                                                                  shape: BoxShape.rectangle,
+                                                                ),
+                                                              ),
                                                             ),
-                                                          ),
-                                                        ),
-                                                    )
-                                                  ]
-                                                ),
-                                              )
-                                            ],
-                                            );
-                                          })
-                                    ),
-                                  )
-                                ],
-                              ),
-                          ),
+                                                          )
+                                                        ]
+                                                    ),
+                                                  )
+                                                ],
+                                                );
+                                              })
+                                      ),
+                                    )
+                                  ],
+                                ),
+                            ).toList()
+                          ],
+                        ),
                         Container(
                           margin: const EdgeInsets.only(bottom: Dimens.marginSmall),
                         )
