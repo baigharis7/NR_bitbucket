@@ -29,8 +29,6 @@ import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor_impl.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in_interactor.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/save_user_in_users_remote_database_interactor.dart';
@@ -41,6 +39,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor
 import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/manage_master_files_interactor.dart';
@@ -143,6 +143,7 @@ void main() async {
   final ResendVerificationCodeInteractor resendVerificationCodeInteractor = ResendVerificationCodeInteractorImpl(loginRepository: loginRepository);
   final SaveUserInUsersRemoteDatabaseInteractor saveUserInUsersRemoteDatabaseInteractor = SaveUserInUsersRemoteDatabaseInteractorImpl(loginRepository: loginRepository);
   final SignOutInteractor signOutInteractor = SignOutInteractorImpl(authenticationService: authenticationService);
+  final GetMasterFileInteractor getMasterFileInteractor = GetMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
 
   final loginProvider = LoginProvider(
       signUpInteractor: signUpInteractor,

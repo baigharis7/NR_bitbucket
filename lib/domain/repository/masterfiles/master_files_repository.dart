@@ -14,5 +14,6 @@ abstract class MasterFilesRepository {
       int recommendationGroupsVersion
   );
   Future<void> saveMasterFile(dynamic masterFileResponse, MasterFilesType masterFilesType);
+  Future<dynamic> getMasterFile(MasterFilesType masterFilesType);
 
 }
