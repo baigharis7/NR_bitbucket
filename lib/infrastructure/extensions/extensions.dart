@@ -132,3 +132,17 @@ extension ObjectExtensions on Object? {
   }
 
 }
+
+extension BoolExtensions on bool {
+  void doIfTrue(Function action) {
+    if (this) {
+      action.call();
+    }
+  }
+
+  void doIfFalse(Function action) {
+    if (!this) {
+      action.call();
+    }
+  }
+}
