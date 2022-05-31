@@ -188,7 +188,8 @@ void main() async {
 
   final recommendationsProvider = RecommendationsProvider(
       getRecommendationInteractor: getRecommendationInteractor,
-      getUserIdInteractor: getUserIdInteractor
+      getUserIdInteractor: getUserIdInteractor,
+      getMasterFileInteractor: getMasterFileInteractor
   );
   // await addFoodEventProvider.init();
   // await dashboardProvider.init();
