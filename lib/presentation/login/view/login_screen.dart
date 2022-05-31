@@ -21,10 +21,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen>
-    with
-        SingleTickerProviderStateMixin,
-        ShowLoadingDialog,
-        GenericProvider<LoginProvider> {
+    with SingleTickerProviderStateMixin, ShowLoadingDialog, GenericProvider<LoginProvider> {
+
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController(text: '.Holi1621!!');
   final _repeatPasswordController = TextEditingController(text: '.Holi1621!!');
@@ -66,193 +64,194 @@ class _LoginScreenState extends State<LoginScreen>
     _controller!.dispose();
   }
 
+  void _showExitConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: const Center(
+          child: Text('Cancel registry?'),
+        ),
+        backgroundColor: Colors.white,
+        children: [
+          Container(
+            alignment: Alignment.centerLeft,
+            margin: const EdgeInsets.symmetric(
+                horizontal: Dimens.marginLarge,
+                vertical: Dimens.marginNormal),
+            child: const Text(
+                'If you skip this step you will be able to confirm your user further.'),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              CustomButton1(
+                message: AppLocalizations.instance.translate('cancel'),
+                action: () {
+                  Navigator.pop(context);
+                },
+              ),
+              CustomButton1(
+                message: AppLocalizations.instance.translate('accept'),
+                action: () {
+                  Navigator.pop(context, true);
+                },
+              )
+            ],
+          )
+        ],
+      ),
+    ).then((exit) {
+      if (exit) Navigator.pop(context);
+    });
+  }
+
+  // TODO: Esto debería ir fuera, pero da error. Revisar.
+  void _showMFADialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => SimpleDialog(
+        title: Center(
+          child: Text(
+            AppLocalizations.instance.translate('verify_your_account'),
+          ),
+        ),
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                vertical: Dimens.paddingSmall,
+                horizontal: Dimens.paddingLarge),
+            child: Text(
+              AppLocalizations.instance
+                  .translate('verification_code_explanation'),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                vertical: Dimens.paddingSmall,
+                horizontal: Dimens.paddingNormal),
+            child: TextField(
+              decoration: InputDecoration(
+                labelText:
+                AppLocalizations.instance.translate('write_here_hint'),
+              ),
+              controller: _mfaController,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: Dimens.paddingXLarge,
+                vertical: Dimens.paddingSmall),
+            child: CustomButton1(
+              message: AppLocalizations.instance.translate('accept'),
+              action: () {
+                getProvider.sendVerificationCode(_mfaController.text, () {
+                  Navigator.of(ctx).popAndPushNamed(RegistryScreen.routeName,
+                      result: true);
+                });
+                _mfaController.text = '';
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: Dimens.paddingXLarge,
+                vertical: Dimens.paddingSmall),
+            child: CustomButton1(
+              message: AppLocalizations.instance
+                  .translate('resend_verification_code'),
+              action: () => getProvider.resendVerificationCode(),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: Dimens.paddingXLarge,
+                vertical: Dimens.paddingSmall),
+            child: CustomButton1(
+                message: AppLocalizations.instance.translate('cancel'),
+                action: () {
+                  _showExitConfirmationDialog(context);
+                }),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(bottom: Dimens.paddingLarge),
+          )
+        ],
+      ),
+    );
+  }
+
+  // TODO: esto podría ser un diálogo genérico si permanece.
+  Widget _notConfirmedUserTryingToLogin(BuildContext context) {
+    return Container(
+      color: const Color.fromARGB(148, 104, 96, 96),
+      child: SimpleDialog(
+        title: const Center(
+          child: Text(
+            'Confirmation required',
+          ),
+        ),
+        titleTextStyle: const TextStyle(
+            fontSize: Dimens.fontSizeLarge,
+            fontWeight: FontWeight.bold,
+            color: Colors.black),
+        children: [
+          Center(
+            child: Container(
+              margin: const EdgeInsets.all(Dimens.marginNormal),
+              alignment: Alignment.centerLeft,
+              color: Colors.white,
+              child: Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(
+                        left: Dimens.marginNormal,
+                        right: Dimens.marginNormal,
+                        bottom: Dimens.marginLarge
+                    ),
+                    alignment: Alignment.centerLeft,
+                    child: const Text(
+                      'Before you create your profile you need to confirm your email account.',
+                      style: TextStyle(
+                          fontSize: Dimens.fontSizeNormal,
+                          fontStyle: FontStyle.normal),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      CustomButton1(
+                        message:
+                        AppLocalizations.instance.translate('cancel'),
+                        action: () {
+                          getProvider.notConfirmedUserCancelsReceiveConfirmationCode();
+                        },
+                      ),
+                      CustomButton1(
+                        message:
+                        AppLocalizations.instance.translate('accept'),
+                        action: () {
+                          getProvider
+                              .notConfirmedUserAsksForNewVerificationCode(
+                                  () {
+                                _showMFADialog();
+                              });
+                        },
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     setProvider(Provider.of<LoginProvider>(context));
-
-    void _showExitConfirmationDialog(BuildContext context) {
-      showDialog(
-        context: context,
-        builder: (ctx) => SimpleDialog(
-          title: const Center(
-            child: Text('Cancel registry?'),
-          ),
-          backgroundColor: Colors.white,
-          children: [
-            Container(
-              alignment: Alignment.centerLeft,
-              margin: const EdgeInsets.symmetric(
-                  horizontal: Dimens.marginLarge,
-                  vertical: Dimens.marginNormal),
-              child: const Text(
-                  'If you skip this step you will be able to confirm your user further.'),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                CustomButton1(
-                  message: AppLocalizations.instance.translate('cancel'),
-                  action: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                CustomButton1(
-                  message: AppLocalizations.instance.translate('accept'),
-                  action: () {
-                    Navigator.pop(context, true);
-                  },
-                )
-              ],
-            )
-          ],
-        ),
-      ).then((exit) {
-        if (exit) Navigator.pop(context);
-      });
-    }
-
-    // TODO: Esto debería ir fuera, pero da error. Revisar.
-    void _showMFADialog() {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (ctx) => SimpleDialog(
-          title: Center(
-            child: Text(
-              AppLocalizations.instance.translate('verify_your_account'),
-            ),
-          ),
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  vertical: Dimens.paddingSmall,
-                  horizontal: Dimens.paddingLarge),
-              child: Text(
-                AppLocalizations.instance
-                    .translate('verification_code_explanation'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  vertical: Dimens.paddingSmall,
-                  horizontal: Dimens.paddingNormal),
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText:
-                      AppLocalizations.instance.translate('write_here_hint'),
-                ),
-                controller: _mfaController,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: Dimens.paddingXLarge,
-                  vertical: Dimens.paddingSmall),
-              child: CustomButton1(
-                message: AppLocalizations.instance.translate('accept'),
-                action: () {
-                  getProvider.sendVerificationCode(_mfaController.text, () {
-                    Navigator.of(ctx).popAndPushNamed(RegistryScreen.routeName,
-                        result: true);
-                  });
-                  _mfaController.text = '';
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: Dimens.paddingXLarge,
-                  vertical: Dimens.paddingSmall),
-              child: CustomButton1(
-                message: AppLocalizations.instance
-                    .translate('resend_verification_code'),
-                action: () => getProvider.resendVerificationCode(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: Dimens.paddingXLarge,
-                  vertical: Dimens.paddingSmall),
-              child: CustomButton1(
-                  message: AppLocalizations.instance.translate('cancel'),
-                  action: () {
-                    _showExitConfirmationDialog(context);
-                  }),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(bottom: Dimens.paddingLarge),
-            )
-          ],
-        ),
-      );
-    }
-
-    Widget _notConfirmedUserTryingToLogin(BuildContext context) {
-      return Container(
-        color: const Color.fromARGB(148, 104, 96, 96),
-        child: SimpleDialog(
-          title: const Center(
-            child: Text(
-              'Confirmation required',
-            ),
-          ),
-          titleTextStyle: const TextStyle(
-              fontSize: Dimens.fontSizeLarge,
-              fontWeight: FontWeight.bold,
-              color: Colors.black),
-          children: [
-            Center(
-              child: Container(
-                margin: const EdgeInsets.all(Dimens.marginNormal),
-                alignment: Alignment.centerLeft,
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(
-                          left: Dimens.marginNormal,
-                          right: Dimens.marginNormal,
-                          bottom: Dimens.marginLarge
-                      ),
-                      alignment: Alignment.centerLeft,
-                      child: const Text(
-                        'Before you create your profile you need to confirm your email account.',
-                        style: TextStyle(
-                            fontSize: Dimens.fontSizeNormal,
-                            fontStyle: FontStyle.normal),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CustomButton1(
-                          message:
-                          AppLocalizations.instance.translate('cancel'),
-                          action: () {
-                            getProvider.notConfirmedUserCancelsReceiveConfirmationCode();
-                          },
-                        ),
-                        CustomButton1(
-                          message:
-                          AppLocalizations.instance.translate('accept'),
-                          action: () {
-                            getProvider
-                                .notConfirmedUserAsksForNewVerificationCode(
-                                    () {
-                                  _showMFADialog();
-                                });
-                          },
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
 
     return SafeArea(
       child: Stack(

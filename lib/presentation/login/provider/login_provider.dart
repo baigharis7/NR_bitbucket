@@ -127,10 +127,10 @@ class LoginProvider extends BaseProvider {
         } else {
           launchSync(
               block: () => signUpInteractor.execute(
-                    _username.orEmpty(),
-                    _email.orEmpty(),
-                    _password.orEmpty(),
-                  ),
+                _username.orEmpty(),
+                _email.orEmpty(),
+                _password.orEmpty(),
+              ),
               onSuccess: (result) => onSignUpSuccess(result, action!),
               onError: (Object error) => onSignUpError(error));
         }
@@ -168,7 +168,6 @@ class LoginProvider extends BaseProvider {
   }
 
   void fetchUserAttributes(Function? moveToNextScreen, {bool isFromVerificationCode = false, bool isFromLogin = false}) async {
-
     if (isFromLogin) await signOutInteractor.execute();
 
     launchSync(
@@ -336,7 +335,7 @@ class LoginProvider extends BaseProvider {
             ),
         onSuccess: (SignInResult result) {
           fetchUserAttributes(action);
-          action?.call();
+          // action?.call();
         },
         onError: (error) => onSignInError(error));
   }
