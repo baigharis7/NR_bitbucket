@@ -9,14 +9,14 @@ abstract class BaseProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void launchSync({Function? onSuccess, Function? onError, required Function block}) async {
-    manageLoading(true);
+  void launchSync({Function? onSuccess, Function? onError, required Function block, bool showLoading = true}) async {
+    if (showLoading) manageLoading(true);
     try {
       dynamic blockResult = await block.call();
-      manageLoading(false);
+      if (showLoading) manageLoading(false);
       onSuccess?.call(blockResult);
     } catch (error) {
-      manageLoading(false);
+      if (showLoading) manageLoading(false);
       onError?.call(error);
     }
   }
