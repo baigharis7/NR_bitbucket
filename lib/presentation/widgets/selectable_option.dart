@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 // TODO: Añadir argumento de Widget para ponerle botón y poder hacerlo genérico. Aplicarlo tb en ActivityFactor.
 class SelectableOption extends StatefulWidget {

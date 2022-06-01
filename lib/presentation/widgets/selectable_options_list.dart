@@ -1,10 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
-import 'package:provider/provider.dart';
-
-import '../../infrastructure/utils/dimens.dart';
-import '../../infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 class SelectableOptionsList extends StatefulWidget {
   final List itemList;
