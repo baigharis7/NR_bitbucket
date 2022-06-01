@@ -1,46 +1,21 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/num_constants.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/splash/splash_provider.dart';
+import 'package:provider/provider.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends StatelessWidget {
   static const routeName = '/splash_screen';
-  late final BuildContext _context;
 
-  SplashScreen({Key? key, context}) : super(key: key) {
-    _context = context;
-  }
-
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
   final isLoggedIn = false;
   Animation<double>? _opacityAnimation;
 
-  @override
-  void initState() {
-    super.initState();
-    nextScreen(widget._context);
-  }
+  SplashScreen({Key? key}) : super(key: key);
 
-  void nextScreen(BuildContext context) {
-    Future.delayed(
-      const Duration(seconds: NumConstants.splashDelay),
-      () {
-        if (isLoggedIn) {
-        } else {
-          Navigator.of(context).push(_createRoute());
-        }
-      },
-    );
-  }
-
-  Route _createRoute() {
+  Route _createRoute(Widget screen) {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => const LoginScreen(),
+      pageBuilder: (context, animation, secondaryAnimation) => screen,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         _opacityAnimation = Tween(begin: 0.0, end: 1.0).animate(
           CurvedAnimation(
@@ -59,11 +34,21 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<SplashProvider>(context);
+
+    provider.init(
+        toLogin: () => Navigator.of(context).push(_createRoute(const LoginScreen())),
+        toDashboard: () => Navigator.of(context).push(_createRoute(const DashboardScreen()))
+    );
+
     return Center(
-      child: Image.asset(
-        'assets/images/logo_name_black.png',
-        fit: BoxFit.cover,
-        color: Colors.white,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge),
+        child: Image.asset(
+          'assets/images/logo_name_black.png',
+          fit: BoxFit.cover,
+          color: Colors.white,
+        ),
       ),
     );
   }

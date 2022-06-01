@@ -90,6 +90,7 @@ import 'package:nutrenaissance_flutter/presentation/recommendations/provider/rec
 import 'package:nutrenaissance_flutter/presentation/recommendations/view/recommendations_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/view/registry_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/splash/splash_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -145,6 +146,8 @@ void main() async {
   final SignOutInteractor signOutInteractor = SignOutInteractorImpl(authenticationService: authenticationService);
   final GetMasterFileInteractor getMasterFileInteractor = GetMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
 
+  final splashProvider = SplashProvider(getIdTokenInteractor: getIdTokenInteractor);
+
   final loginProvider = LoginProvider(
       signUpInteractor: signUpInteractor,
       verificationCodeInteractor: sendVerificationCodeInteractor,
@@ -198,6 +201,7 @@ void main() async {
     MultiProvider(
       providers: [
         // TODO: el interactor es use case, uno por cada caso de uso.
+        ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
         ChangeNotifierProvider<DashboardProvider>(create: (_) => dashboardProvider),
@@ -225,8 +229,8 @@ void main() async {
           Locale('es', ''), // Spanish, no country code
         ],
         routes: {
-          '/': (ctx) => const LoginScreen(),
-          SplashScreen.routeName: (ctx) => SplashScreen(context: ctx),
+          '/': (ctx) => SplashScreen(),
+          SplashScreen.routeName: (_) => SplashScreen(),
           LoginScreen.routeName: (_) => const LoginScreen(),
           RegistryScreen.routeName: (_) => RegistryScreen(),
           DashboardScreen.routeName: (_) => const DashboardScreen(),
