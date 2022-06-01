@@ -282,7 +282,7 @@ class LoginProvider extends BaseProvider {
       onSuccess: (UserProfileModel? userProfileModel) {
         if (userProfileModel.isNull()) {
           // TODO: poner diálogo que avisa de que no tiene perfil y tiene que tenerlo para usar la app.
-          _goToRegistry?.call();
+          manageMasterFiles(() => _goToRegistry?.call());
         } else {
           saveProfileInLocal(userProfileModel!, moveToNextScreen!);
         }
@@ -398,8 +398,8 @@ class LoginProvider extends BaseProvider {
 
   void onErrorManageMasterFiles(Object error, Function? onFinish) {
     // TODO: manage errors.
-    _areMasterFilesChecked = true;
-    onFinish?.call();
+    _areMasterFilesChecked = false;
+    // onFinish?.call();
   }
 
   void saveUserInRemoteUsersDatabase(
