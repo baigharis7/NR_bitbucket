@@ -52,11 +52,15 @@ class ProfileRepositoryImpl extends ProfileRepository {
   @override
   Future<UserProfileModel?> downloadProfile(String email) async {
     final profile = await profileApi.downloadProfile(email);
-    try {
-      final uploadProfile = upload.UploadUserProfile.fromJson(profile);
-      return mapToUserProfileModelFromUploadUser(uploadProfile);
-    } catch (error) {
+    if (profile.isEmpty) {
       return null;
+    } else {
+      try {
+        final uploadProfile = upload.UploadUserProfile.fromJson(profile);
+        return mapToUserProfileModelFromUploadUser(uploadProfile);
+      } catch (error) {
+        rethrow;
+      }
     }
   }
 
