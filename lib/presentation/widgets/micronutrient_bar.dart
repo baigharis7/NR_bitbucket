@@ -6,7 +6,7 @@ class MicronutrientBar extends StatelessWidget {
   final double micronutrientSoFar;
   final double rdaMicronutrient;
 
-  const MicronutrientBar(this.name, this.micronutrientSoFar, this.rdaMicronutrient);
+  const MicronutrientBar(this.name, this.micronutrientSoFar, this.rdaMicronutrient, {Key? key}): super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class MicronutrientBar extends StatelessWidget {
             SizedBox(
               width: constraints.maxWidth * 0.05,
             ),
-            Container(
+            SizedBox(
               width: constraints.maxWidth * 0.6,
               height: 10,
               child: Stack(

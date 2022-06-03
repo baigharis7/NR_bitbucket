@@ -5,7 +5,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/provider/add_food_event_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/add_food_event_item.dart';
+import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_item.dart';
 
 // TODO: hacer genérico para usarlo en los eventos de comida y aversions y todo.
 // TODO: Pasarle una lista de un objeto que sea sólo id y name.
