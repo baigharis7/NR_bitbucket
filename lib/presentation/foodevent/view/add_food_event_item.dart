@@ -31,7 +31,6 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
   final _textController = TextEditingController();
 
   List<SimpleItem> findCookingMethodsForFood(String foodGroup) {
-
     // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
     final List<int> groupCookingMethods = widget.cookingMethodsMaster.cookingMethods.firstWhere(
             (cookingMethod) => cookingMethod.group == foodGroup,
@@ -52,7 +51,7 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.ingredient.qty != 0) _textController.text = widget.ingredient.qty.toString();
+    _textController.text = widget.ingredient.qty != 0 ? widget.ingredient.qty.toString() : '0';
 
     return Column(
       children: [
@@ -95,7 +94,6 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
             children: [
               ...findCookingMethodsForFood(widget.foodGroup).map((cookingMethod) {
                 return SelectableOption(
-                    isSelected: widget.ingredient.cookingMethod == cookingMethod.id,
                     selectedItemsList: [widget.ingredient.cookingMethod],
                     name: cookingMethod.name,
                     onTap: (id) {
