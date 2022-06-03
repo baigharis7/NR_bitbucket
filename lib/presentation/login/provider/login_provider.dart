@@ -320,9 +320,11 @@ class LoginProvider extends BaseProvider {
           resendVerificationCodeInteractor.execute(_username.orEmpty()),
       onSuccess: (ResendSignUpCodeResult resendSignUpCodeResult) {
         // TODO: poner toast.
+        const g = '';
       },
       onError: (Object error) {
         // TODO: manage errors.
+        const g = '';
       },
     );
   }

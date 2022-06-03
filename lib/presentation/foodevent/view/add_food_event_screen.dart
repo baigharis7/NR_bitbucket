@@ -18,6 +18,7 @@ class AddFoodEventScreen extends StatefulWidget {
 
 class _AddFoodEventState extends State<AddFoodEventScreen>
     with ShowLoadingDialog, GenericProvider<AddFoodEventProvider> {
+
   // TODO: si esto permanece se puede convertir en un widget en un momento.
   Widget _showConfirmationDialog(BuildContext context) {
     final mediaQuerySize = MediaQuery.of(context).size;
@@ -31,7 +32,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen>
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(
-                color: const Color.fromARGB(255, 127, 0, 0), width: 3),
+                color: const Color.fromARGB(255, 127, 0, 0),
+                width: 3
+            ),
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(20.0),
           ),

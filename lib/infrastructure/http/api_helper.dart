@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/token_utils.dart';

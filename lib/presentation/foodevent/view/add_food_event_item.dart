@@ -94,14 +94,14 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
             children: [
               ...findCookingMethodsForFood(widget.foodGroup).map((cookingMethod) {
                 return SelectableOption(
-                    selectedItemsList: [widget.ingredient.cookingMethod],
+                    selectedOption: widget.ingredient.cookingMethod,
                     name: cookingMethod.name,
                     onTap: (id) {
                       setState(() {
                         widget.ingredient.cookingMethod = id;
                       });
                     },
-                    id: cookingMethod.id
+                    id: cookingMethod.id,
                 );
               })
             ],

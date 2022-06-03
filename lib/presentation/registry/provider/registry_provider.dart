@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/user_profile_response.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
@@ -24,13 +23,12 @@ class RegistryProvider extends BaseProvider {
   final SaveProfileInteractor saveProfileInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
 
-  RegistryProvider(
-      {required this.getUserIdInteractor,
-      required this.uploadProfileInteractor,
-      required this.saveProfileInteractor,
-      required this.getMasterFileInteractor
-      }
-  );
+  RegistryProvider({
+    required this.getUserIdInteractor,
+    required this.uploadProfileInteractor,
+    required this.saveProfileInteractor,
+    required this.getMasterFileInteractor
+  });
 
   bool _infoLoaded = false;
   String? _commonName;
@@ -121,8 +119,7 @@ class RegistryProvider extends BaseProvider {
     );
   }
 
-  String _chooseRightLanguage(
-      String languageCode, ObjectiveInfoMaster objectiveInfoMaster) {
+  String _chooseRightLanguage(String languageCode, ObjectiveInfoMaster objectiveInfoMaster) {
     String objectiveName = '';
     if (languageCode == 'es') {
       objectiveName = objectiveInfoMaster.es;
@@ -133,12 +130,10 @@ class RegistryProvider extends BaseProvider {
   }
 
   List<SimpleItem> getObjectivesList(String currentLanguage) {
-    return getObjectivesInfo!.objectives
-        .map((objective) => SimpleItem(
-              name: _chooseRightLanguage(currentLanguage, objective),
-              id: objective.id,
-            ))
-        .toList();
+    return getObjectivesInfo!.objectives.map((objective) => SimpleItem(
+      name: _chooseRightLanguage(currentLanguage, objective),
+      id: objective.id,
+    )).toList();
   }
 
   void setCommonName(String commonName) {

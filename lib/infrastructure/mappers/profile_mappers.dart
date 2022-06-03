@@ -242,6 +242,3 @@ DietType findDietType(int dietId) {
   final dietType = dietTypes.firstWhere((diet) => diet.id == dietId, orElse: () => Omnivorous());
   return dietType;
 }
-// UserProfileModel mapToUserProfileModel(entity.UserProfileEntity entity) {
-//   return UserProfileModel();
-// }

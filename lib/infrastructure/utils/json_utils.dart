@@ -12,7 +12,6 @@ class JsonUtils {
   }
 
   Future<Map<String, dynamic>> readJson(String source) async {
-
     String data = await _getAssetBundle().loadString(source);
     final Map<String, dynamic> jsonResult = jsonDecode(data);
 

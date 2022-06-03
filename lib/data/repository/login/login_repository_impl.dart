@@ -1,9 +1,7 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/simple_user.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_user_credentials_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart';
-import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/cognito_authentication_service.dart';
 
 class LoginRepositoryImpl extends LoginRepository {
