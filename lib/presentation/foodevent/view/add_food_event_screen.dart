@@ -73,7 +73,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen>
                       ),
                     )),
                 getProvider.getFoodAndDrinksNames != null
-                    ? AutocompleteListAddEvent(provider: getProvider)
+                    ? AutocompleteListAddEvent()
                     : Container(),
                 InkWell(
                   child: Container(

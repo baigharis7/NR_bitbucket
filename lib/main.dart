@@ -90,7 +90,7 @@ import 'package:nutrenaissance_flutter/presentation/recommendations/provider/rec
 import 'package:nutrenaissance_flutter/presentation/recommendations/view/recommendations_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/view/registry_screen.dart';
-import 'package:nutrenaissance_flutter/presentation/splash/splash_provider.dart';
+import 'package:nutrenaissance_flutter/presentation/splash/provider/splash_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -229,8 +229,8 @@ void main() async {
           Locale('es', ''), // Spanish, no country code
         ],
         routes: {
-          '/': (ctx) => SplashScreen(),
-          SplashScreen.routeName: (_) => SplashScreen(),
+          '/': (ctx) => const DashboardScreen(),
+          SplashScreen.routeName: (_) => const SplashScreen(),
           LoginScreen.routeName: (_) => const LoginScreen(),
           RegistryScreen.routeName: (_) => RegistryScreen(),
           DashboardScreen.routeName: (_) => const DashboardScreen(),

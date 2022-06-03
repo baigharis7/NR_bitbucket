@@ -34,7 +34,7 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
     // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
     final List<int> groupCookingMethods = widget.cookingMethodsMaster.cookingMethods.firstWhere(
             (cookingMethod) => cookingMethod.group == foodGroup,
-        orElse: () => CookingMethod(group: '1.3', methods: [0, 1, 2, 3]),
+        orElse: () => CookingMethod.empty(),
     ).methods;
     final cookingMethodsInfo = groupCookingMethods.map((cookingMethodId) {
       String name;
@@ -51,8 +51,8 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
 
   @override
   Widget build(BuildContext context) {
-    _textController.text = widget.ingredient.qty != 0 ? widget.ingredient.qty.toString() : '0';
-
+    if (widget.ingredient.qty != 0) _textController.text = widget.ingredient.qty.toString();
+    List<SimpleItem> cookingMethods = findCookingMethodsForFood(widget.foodGroup);
     return Column(
       children: [
         Row(
@@ -71,10 +71,10 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
                 child: TextField(
                   keyboardType: TextInputType.number,
                   controller: _textController,
-
                   decoration: InputDecoration(
                     labelText: AppLocalizations.instance.translate('write_here_hint'),
                   ),
+                  onChanged: (qty) => widget.ingredient.qty = int.parse(qty),
                 ),
               ),
             )
@@ -83,17 +83,19 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
         Container(
           alignment: Alignment.centerLeft,
           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
-          // TODO: Aquí va el tema de elegir las unidades, tengo que descubrir qué unidades hay que poner, y cómo, antes de nada
+          // TODO: Aquí va el tema de elegir las unidades, tengo que descubrir qué unidades hay que poner, y cómo, antes de nada.
           child: const Text('Units', maxLines: 3,),
         ),
         Container(
           alignment: Alignment.centerLeft,
           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
-          // TODO: Y aquí el tema de los métodos de cocinado, que sinceramente no me voy a poner ahora con ello.
           child: Column(
             children: [
-              ...findCookingMethodsForFood(widget.foodGroup).map((cookingMethod) {
-                return SelectableOption(
+              cookingMethods.isEmpty
+                  ? const Center(child: Text('This food doesn\'t have cooking methods.'))
+                  : Column(children: [
+                ...cookingMethods.map((cookingMethod) {
+                  return SelectableOption(
                     selectedOption: widget.ingredient.cookingMethod,
                     name: cookingMethod.name,
                     onTap: (id) {
@@ -102,8 +104,9 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
                       });
                     },
                     id: cookingMethod.id,
-                );
-              })
+                  );
+                }).toList()
+              ])
             ],
           )
         ),
@@ -120,7 +123,7 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
                   id: widget.ingredient.id,
                   qty: int.parse(_textController.text),
                   unit: 0,
-                  cookingMethod: 0
+                  cookingMethod: widget.ingredient.cookingMethod
               );
               Navigator.pop(context, foodInEvent);
             }
