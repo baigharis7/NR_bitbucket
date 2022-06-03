@@ -10,7 +10,7 @@ import 'package:nutrenaissance_flutter/presentation/registry/view/diet_questions
 import 'package:nutrenaissance_flutter/presentation/registry/view/general_questions_modal.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/view/health_questions_modal.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/view/women_specific_questions_modal.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/selectable_option.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/multi_selectable_option.dart';
 import 'package:provider/provider.dart';
 
 class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProvider<RegistryProvider> {
@@ -51,7 +51,7 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
                 fontSize: Dimens.fontSizeLarge
               ),),
           ),
-          ...getProvider.getObjectivesList(Localizations.localeOf(context).languageCode).map((objective) => SelectableOption(
+          ...getProvider.getObjectivesList(Localizations.localeOf(context).languageCode).map((objective) => MultiSelectableOption(
                 isSelected: registryProvider.getObjectives.contains(objective.id),
                 selectedItemsList: registryProvider.getObjectives,
                 name: objective.name,
@@ -89,9 +89,7 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
   @override
   Widget build(BuildContext context) {
     setProvider(Provider.of<RegistryProvider>(context, listen: true));
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getProvider.initialize();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => getProvider.initialize());
 
     return SafeArea(
       child: Stack(
@@ -190,7 +188,8 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
                       Container(
                         alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingNormal),
-                        child: Text(AppLocalizations.instance.translate('diet_questions'),
+                        child: Text(
+                          AppLocalizations.instance.translate('diet_questions'),
                           style: getProvider.areDietQuestionsAnswered()
                               ? const TextStyle(color: Colors.green)
                               : const TextStyle(color: Colors.black),

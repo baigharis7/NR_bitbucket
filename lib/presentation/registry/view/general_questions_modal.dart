@@ -7,9 +7,9 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart'
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_button_1.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:provider/provider.dart';
 
-import '../../../domain/models/profile/user_profile_model.dart';
 
 class GeneralQuestionsModal extends StatefulWidget {
   const GeneralQuestionsModal({Key? key}) : super(key: key);
