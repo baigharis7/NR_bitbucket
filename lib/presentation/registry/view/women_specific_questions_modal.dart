@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/date_picker_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_button_1.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:provider/provider.dart';
-
-import '../../../domain/models/profile/user_profile_model.dart';
-import '../../../infrastructure/helpers/date_picker_helper.dart';
-import '../../../infrastructure/utils/constants.dart';
-import '../../../infrastructure/utils/dimens.dart';
-import '../../../infrastructure/helpers/i10n_helper.dart';
-import '../../widgets/custom_button_1.dart';
-import '../provider/registry_provider.dart';
 
 class WomenSpecificQuestionsModal extends StatelessWidget {
   const WomenSpecificQuestionsModal({Key? key}): super(key: key);

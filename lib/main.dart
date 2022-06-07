@@ -2,14 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:nutrenaissance_flutter/data/api/foodevents/food_events_api.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
 import 'package:nutrenaissance_flutter/data/api/recommendations/recommendations_api.dart';
-import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
-import 'package:nutrenaissance_flutter/data/local/local_storage_helper_impl.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/foods_and_drinks_names_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
-import 'package:nutrenaissance_flutter/data/repository/food_event/food_events_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/foodevent/food_events_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/localstorage/local_storage_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/login/login_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/masterfiles/master_files_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/profile/profile_repository_impl.dart';
@@ -22,14 +29,24 @@ import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor_impl.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in_interactor.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/login/is_user_signed_in_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/save_user_in_users_remote_database_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/save_user_in_users_remote_database_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/send_perrification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/send_verification_code_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/manage_master_files_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/manage_master_files_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/save_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/save_master_file_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
@@ -38,16 +55,24 @@ import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_user_c
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_user_credentials_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_username_and_email_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_username_and_email_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/check_profile_existence_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/check_profile_existence_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/download_profile_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/download_profile_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/repository/foodevents/food_events_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/masterfiles/master_files_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/profile/profile_repository.dart';
@@ -65,6 +90,7 @@ import 'package:nutrenaissance_flutter/presentation/recommendations/provider/rec
 import 'package:nutrenaissance_flutter/presentation/recommendations/view/recommendations_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/view/registry_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/splash/provider/splash_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -81,30 +107,46 @@ void main() async {
   final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   final Preferences prefs = PreferencesImpl(sharedPreferences);
   final PreferencesRepository prefsRepository = PreferencesRepositoryImpl(prefs: prefs);
-  final SaveUserCredentialsInteractor saveUserCredentialsInteractor = SaveUserCredentialsInteractorImpl(preferencesRepository: prefsRepository);
-  final LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService, saveUserCredentialsInteractor: saveUserCredentialsInteractor);
+  final FetchUserAttributesInteractor fetchUserAttributesInteractor = FetchUserAttributesInteractorImpl(authenticationService: authenticationService);
   final GetIdTokenInteractor getIdTokenInteractor = GetIdTokenInteractorImpl(preferencesRepository: prefsRepository);
-  final FetchUserAttributesInteractor fetchUserAttributesInteractor = FetchUserAttributesInteractorImpl(loginRepository: loginRepository);
-  final ProfileApi profileApi = ProfileApi(getIdTokenInteractor: getIdTokenInteractor, fetchUserAttributesInteractor: fetchUserAttributesInteractor);
-  final LocalStorageHelper localStorageHelper = LocalStorageHelperImpl();
-  final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageHelper: localStorageHelper);
+  final ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService);
+  final LoginRepository loginRepository = LoginRepositoryImpl(
+      authenticationService: authenticationService,
+      profileApi: profileApi
+  );
+  final SaveUserCredentialsInteractor saveUserCredentialsInteractor = SaveUserCredentialsInteractorImpl(preferencesRepository: prefsRepository);
+  final LocalStorageRepository localStorageRepository = LocalStorageImpl();
+  final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository);
   final SignUpInteractor signUpInteractor = SignUpInteractorImpl(loginRepository: loginRepository);
   final SendVerificationCodeInteractor sendVerificationCodeInteractor = SendVerificationCodeInteractorImpl(loginRepository: loginRepository);
   final SignInInteractor signInInteractor = SignInInteractorImpl(loginRepository: loginRepository);
   final GetUserIdInteractor getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
   final UploadProfileInteractor uploadProfileInteractor = UploadProfileInteractorImpl(profileRepository: profileRepository);
   final SaveUsernameAndEmailInteractor saveUsernameAndEmailInteractor = SaveUsernameAndEmailInteractorImpl(preferencesRepository: prefsRepository);
-  final IsUserSignedInInteractor isUserSignedInInteractor = IsUserSignedInInteractorImpl(preferencesRepository: prefsRepository);
+  // final IsUserSignedInInteractor isUserSignedInInteractor = IsUserSignedInInteractorImpl(preferencesRepository: prefsRepository);
   final SaveProfileInteractor saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
-  final FoodEventsApi foodEventsApi = FoodEventsApi(getIdTokenInteractor: getIdTokenInteractor, fetchUserAttributesInteractor: fetchUserAttributesInteractor);
-  final FoodEventsRepository foodEventsRepository = FoodEventsRepositoryImpl(localStorageHelper: localStorageHelper, foodEventsApi: foodEventsApi, );
+  final FoodEventsApi foodEventsApi = FoodEventsApi(prefsRepository, authenticationService);
+  final FoodEventsRepository foodEventsRepository = FoodEventsRepositoryImpl(localStorageRepository: localStorageRepository, foodEventsApi: foodEventsApi, );
   final UploadFoodEventInteractor uploadFoodEventInteractor = UploadFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
   final SaveFoodEventInteractor saveFoodEventInteractor = SaveFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
-  final RecommendationsApi recommendationsApi = RecommendationsApi(fetchUserAttributesInteractor: fetchUserAttributesInteractor, getIdTokenInteractor: getIdTokenInteractor);
+  final RecommendationsApi recommendationsApi = RecommendationsApi(prefsRepository, authenticationService);
   final RecommendationsRepository recommendationsRepository = RecommendationsRepositoryImpl(recommendationsApi: recommendationsApi);
   final GetRecommendationInteractor getRecommendationInteractor = GetRecommendationInteractorImpl(recommendationsRepository: recommendationsRepository);
   final GetAllFoodEventsInteractor getAllFoodEventsInteractor = GetAllFoodEventsInteractorImpl(foodEventsRepository: foodEventsRepository);
   final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor = GetUserMicronutrientsInteractorImpl(profileRepository: profileRepository);
+  final MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService);
+  final MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi);
+  final GetMasterFileVersionInteractor getMasterFileVersionInteractor = GetMasterFileVersionInteractorImpl(masterFilesRepository: masterFilesRepository);
+  final ManageMasterFilesInteractor manageMasterFilesInteractor = ManageMasterFilesInteractorImpl(masterFilesRepository: masterFilesRepository);
+  final SaveMasterFileInteractor saveMasterFileInteractor = SaveMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
+  final CheckProfileExistenceInteractor checkProfileExistenceInteractor = CheckProfileExistenceInteractorImpl(profileRepository: profileRepository);
+  final DownloadProfileInteractor downloadProfileInteractor = DownloadProfileInteractorImpl(profileRepository: profileRepository);
+  final ResendVerificationCodeInteractor resendVerificationCodeInteractor = ResendVerificationCodeInteractorImpl(loginRepository: loginRepository);
+  final SaveUserInUsersRemoteDatabaseInteractor saveUserInUsersRemoteDatabaseInteractor = SaveUserInUsersRemoteDatabaseInteractorImpl(loginRepository: loginRepository);
+  final SignOutInteractor signOutInteractor = SignOutInteractorImpl(authenticationService: authenticationService);
+  final GetMasterFileInteractor getMasterFileInteractor = GetMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
+
+  final splashProvider = SplashProvider(getIdTokenInteractor: getIdTokenInteractor);
 
   final loginProvider = LoginProvider(
       signUpInteractor: signUpInteractor,
@@ -112,30 +154,45 @@ void main() async {
       fetchUserAttributesInteractor: fetchUserAttributesInteractor,
       signInInteractor: signInInteractor,
       saveUsernameAndEmailInteractor: saveUsernameAndEmailInteractor,
-      isUserSignedInInteractor: isUserSignedInInteractor,
+      // isUserSignedInInteractor: isUserSignedInInteractor,
+      getMasterFilesVersionInteractor: getMasterFileVersionInteractor,
+      manageMasterFilesInteractor: manageMasterFilesInteractor,
+      saveMasterFileInteractor: saveMasterFileInteractor,
+      checkProfileExistenceInteractor: checkProfileExistenceInteractor,
+      downloadProfileInteractor: downloadProfileInteractor,
+      getIdTokenInteractor: getIdTokenInteractor,
+      saveProfileInteractor: saveProfileInteractor,
+      resendVerificationCodeInteractor: resendVerificationCodeInteractor,
+      saveUserCredentialsInteractor: saveUserCredentialsInteractor,
+      saveUserInUsersRemoteDatabaseInteractor: saveUserInUsersRemoteDatabaseInteractor,
+      signOutInteractor: signOutInteractor
   );
-  await loginProvider.init();
+  // await loginProvider.init();
 
   final registryProvider = RegistryProvider(
     getUserIdInteractor: getUserIdInteractor,
     uploadProfileInteractor: uploadProfileInteractor,
-    saveProfileInteractor: saveProfileInteractor
+    saveProfileInteractor: saveProfileInteractor,
+    getMasterFileInteractor: getMasterFileInteractor
   );
 
   final dashboardProvider = DashboardProvider(
       getAllFoodEventsInteractor: getAllFoodEventsInteractor,
-      getUserMicronutrientsInteractor: getUserMicronutrientsInteractor
+      getUserMicronutrientsInteractor: getUserMicronutrientsInteractor,
+      getMasterFileInteractor: getMasterFileInteractor
   );
 
   final addFoodEventProvider = AddFoodEventProvider(
       getUserIdInteractor: getUserIdInteractor,
       saveFoodEventInteractor: saveFoodEventInteractor,
-      uploadFoodEventInteractor: uploadFoodEventInteractor
+      uploadFoodEventInteractor: uploadFoodEventInteractor,
+      getMasterFileInteractor: getMasterFileInteractor,
   );
 
   final recommendationsProvider = RecommendationsProvider(
       getRecommendationInteractor: getRecommendationInteractor,
-      getUserIdInteractor: getUserIdInteractor
+      getUserIdInteractor: getUserIdInteractor,
+      getMasterFileInteractor: getMasterFileInteractor
   );
   // await addFoodEventProvider.init();
   // await dashboardProvider.init();
@@ -144,6 +201,7 @@ void main() async {
     MultiProvider(
       providers: [
         // TODO: el interactor es use case, uno por cada caso de uso.
+        ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
         ChangeNotifierProvider<DashboardProvider>(create: (_) => dashboardProvider),
@@ -171,10 +229,10 @@ void main() async {
           Locale('es', ''), // Spanish, no country code
         ],
         routes: {
-          '/': (ctx) => const LoginScreen(),
-          SplashScreen.routeName: (ctx) => SplashScreen(context: ctx),
+          '/': (ctx) => const DashboardScreen(),
+          SplashScreen.routeName: (_) => const SplashScreen(),
           LoginScreen.routeName: (_) => const LoginScreen(),
-          RegistryScreen.routeName: (ctx) => RegistryScreen(),
+          RegistryScreen.routeName: (_) => RegistryScreen(),
           DashboardScreen.routeName: (_) => const DashboardScreen(),
           AddFoodEventScreen.routeName: (_) => const AddFoodEventScreen(),
           RecommendationsScreen.routeName: (_) => const RecommendationsScreen(),
@@ -198,4 +256,17 @@ void initLocalStorage() async {
   Hive.registerAdapter(FoodInfoAdapter());
   Hive.registerAdapter(EventInfoAdapter());
   Hive.registerAdapter(ParamsAdapter());
+  Hive.registerAdapter(CookingMethodsEntityAdapter());
+  Hive.registerAdapter(CookingMethodGroupEntityAdapter());
+  Hive.registerAdapter(CookingMethodsInfoEntityAdapter());
+  Hive.registerAdapter(CookingMethodInfoEntityAdapter());
+  Hive.registerAdapter(FoodsAndDrinksNamesEntityAdapter());
+  Hive.registerAdapter(FoodsAndDrinkListsEntityAdapter());
+  Hive.registerAdapter(FoodItemEntityAdapter());
+  Hive.registerAdapter(NutrientsInfoEntityAdapter());
+  Hive.registerAdapter(NutrientInfoEntityAdapter());
+  Hive.registerAdapter(ObjectivesInfoEntityAdapter());
+  Hive.registerAdapter(ObjectiveInfoEntityAdapter());
+  Hive.registerAdapter(RecommendationGroupsEntityAdapter());
+  Hive.registerAdapter(RecommendationGroupEntityAdapter());
 }

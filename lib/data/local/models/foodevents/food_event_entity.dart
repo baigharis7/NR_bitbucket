@@ -1,10 +1,11 @@
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/hive_type_ids.dart';
 
 part 'food_event_entity.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-@HiveType(typeId: 8)
+@HiveType(typeId: HiveTypeIds.foodEventEntity)
 class FoodEventEntity extends HiveObject {
   static const boxName = "food_events";
 
@@ -23,7 +24,7 @@ class FoodEventEntity extends HiveObject {
 }
 
 @JsonSerializable(explicitToJson: true)
-@HiveType(typeId: 9)
+@HiveType(typeId: HiveTypeIds.foodInfo)
 class FoodInfo {
   @HiveField(0) int? exchangePortion;
   // String? exchangePortionDaily;
@@ -56,8 +57,8 @@ class FoodInfo {
 }
 
 @JsonSerializable(explicitToJson: true)
-@HiveType(typeId: 10)
-class EventInfo {
+@HiveType(typeId: HiveTypeIds.eventInfo)
+class EventInfo { // TODO nombre
   @HiveField(0) int? cookingMethod;
   @HiveField(1) double ?qty;
   @HiveField(2) int? unit;
@@ -75,7 +76,7 @@ class EventInfo {
 }
 
 @JsonSerializable(explicitToJson: true)
-@HiveType(typeId: 11)
+@HiveType(typeId: HiveTypeIds.params)
 class Params {
   @HiveField(0) double? alanine;
   @HiveField(1) double? arginine;
@@ -314,5 +315,4 @@ class Params {
 
   factory Params.fromJson(Map<String, dynamic> json) => _$ParamsFromJson(json);
   Map<String, dynamic> toJson() => _$ParamsToJson(this);
-
 }

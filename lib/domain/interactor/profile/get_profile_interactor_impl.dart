@@ -7,6 +7,6 @@ class GetProfileInteractorImpl extends GetProfileInteractor {
 
   GetProfileInteractorImpl({required this.profileRepository});
 
-  // TODO: poner UserProfileModel
-  Future<UserProfileModel> execute() => profileRepository.getProfile();
+  @override
+  Future<UserProfileModel?> execute() => profileRepository.getProfile();
 }

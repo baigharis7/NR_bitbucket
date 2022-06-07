@@ -83,14 +83,15 @@ extension ListExtensions<T> on List<T> {
   }
 }
 
-extension NullableListExtensions on List? {
-  List orEmpty() {
-    if (this == null || this!.isEmpty) {
-      return <Object>[];
+extension NullableListExtensions<T> on List<T>? {
+  List<T> orEmpty() {
+    if (this == null) {
+      return <T>[];
     } else {
       return this!;
     }
   }
+
 }
 
 extension PrefsKeysExtensions on PrefsKeys {
@@ -99,4 +100,49 @@ extension PrefsKeysExtensions on PrefsKeys {
 
 extension IntExtensions on int? {
   int getHiveKey() => this!~/(1000000);
+}
+
+extension ObjectExtensions on Object? {
+  bool isNull() {
+    if (this == null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool aintNull(Function action) {
+    if (this == null) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  void doIfNull(Function action) {
+    if (this == null) {
+      action.call();
+    }
+  }
+
+  void doIfAintNull(Function action) {
+    if (this != null) {
+      action.call();
+    }
+  }
+
+}
+
+extension BoolExtensions on bool {
+  void doIfTrue(Function action) {
+    if (this) {
+      action.call();
+    }
+  }
+
+  void doIfFalse(Function action) {
+    if (!this) {
+      action.call();
+    }
+  }
 }

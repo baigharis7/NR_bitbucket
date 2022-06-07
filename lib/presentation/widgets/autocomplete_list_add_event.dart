@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
-
-import '../../domain/models/foodevents/food_event_simple.dart';
-import '../../domain/models/masterfiles/food_names_master.dart';
-import '../../infrastructure/extensions/extensions.dart';
-import '../../infrastructure/helpers/i10n_helper.dart';
-import '../../infrastructure/utils/dimens.dart';
-import '../foodevent/provider/add_food_event_provider.dart';
-import 'add_food_event_item.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/presentation/foodevent/provider/add_food_event_provider.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_item.dart';
+import 'package:provider/provider.dart';
 
 // TODO: hacer genérico para usarlo en los eventos de comida y aversions y todo.
 // TODO: Pasarle una lista de un objeto que sea sólo id y name.
 // TODO: En general, este widget es una mierda. Pensarme si ponerlo directamente en la pantalla, porque vaya tela.
 class AutocompleteListAddEvent extends StatefulWidget {
-  final AddFoodEventProvider provider;
 
   const AutocompleteListAddEvent({
     Key? key,
-    required this.provider,
   }) : super(key: key);
 
   @override
@@ -28,9 +26,10 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<AddFoodEventProvider>(context);
     String currentLanguage = Localizations.localeOf(context).languageCode;
 
-    final onlyFoodNames = widget.provider.getFoodAndDrinksList!.foodNames?.map((foodItem) {
+    final onlyFoodNames = provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.map((foodItem) {
       if (currentLanguage == 'es') {
         return foodItem.es.orEmpty();
       } else {
@@ -38,7 +37,7 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
       }
     }).toList();
 
-    final onlyDrinksNames = widget.provider.getFoodAndDrinksList!.drinkNames?.map((foodItem) {
+    final onlyDrinksNames = provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.drinkNames?.map((foodItem) {
       if (currentLanguage == 'es') {
         return foodItem.es.orEmpty();
       } else {
@@ -49,9 +48,9 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
     FoodInEvent? findFoodId(String foodName) {
       FoodItemMaster? foodItem;
       if (currentLanguage == 'es') {
-        foodItem = widget.provider.getFoodAndDrinksList!.foodNames?.firstWhere((food) => food.es == foodName);
+        foodItem = provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.firstWhere((food) => food.es == foodName);
       } else {
-       foodItem = widget.provider.getFoodAndDrinksList!.foodNames?.firstWhere((food) => food.en == foodName);
+       foodItem = provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.firstWhere((food) => food.en == foodName);
       }
       if (foodItem != null) {
         return FoodInEvent(id: foodItem.id!, qty: 0, unit: 0, cookingMethod: -1);
@@ -63,9 +62,9 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
     String? findFoodGroup(String foodName) {
       FoodItemMaster? foodItem;
       if (currentLanguage == 'es') {
-        foodItem = widget.provider.getFoodAndDrinksList!.foodNames?.firstWhere((food) => food.es == foodName);
+        foodItem = provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.firstWhere((food) => food.es == foodName);
       } else {
-       foodItem = widget.provider.getFoodAndDrinksList!.foodNames?.firstWhere((food) => food.en == foodName);
+       foodItem = provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.firstWhere((food) => food.en == foodName);
       }
       if (foodItem != null) {
         return foodItem.group;
@@ -75,7 +74,7 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
     }
 
     String findFoodName(FoodInEvent foodInEvent) {
-      final food = widget.provider.getFoodAndDrinksList!.foodNames?.firstWhere((foodItemMaster) => foodItemMaster.id == foodInEvent.id);
+      final food = provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.firstWhere((foodItemMaster) => foodItemMaster.id == foodInEvent.id);
       if (currentLanguage == 'es') {
         return food!.es.orEmpty();
       } else {
@@ -115,15 +114,15 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
                 ingredient: ingredient,
                 currentLanguage: currentLanguage,
                 foodGroup: foodGroup,
-                cookingMethodsInfoMaster: widget.provider.getCookingMethodsInfo!,
-                cookingMethodsMaster: widget.provider.getCookingMethods!,
+                cookingMethodsInfoMaster: provider.getCookingMethodsInfo!,
+                cookingMethodsMaster: provider.getCookingMethods!,
               )
             ],
           );
           },
       ).then((foodInEvent) {
         if (foodInEvent != null) {
-          widget.provider.addIngredient(foodInEvent);
+          provider.addIngredient(foodInEvent);
         }
         setState(() {
           _foodInputController.text = '';
@@ -169,8 +168,8 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
           ),
           Column(
             children: <Widget>[
-              if (widget.provider.getIngredients.isNotEmpty)
-                ...widget.provider.getIngredients.map((ingredient) {
+              if (provider.getIngredients.isNotEmpty)
+                ...provider.getIngredients.map((ingredient) {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -196,38 +195,40 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
                     ),
                     Expanded(
                       flex: 2,
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                              icon: Container(
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                    color: const Color.fromARGB(100, 177, 217, 212),
-                                    border: Border.all(color: Colors.black, width: 1),
-                                    shape: BoxShape.circle
-                                ),
-                              child: const Icon(
-                                Icons.edit,
-                                color: Colors.red,
-                              ),
-                            ),
-                              onPressed: () {
-                                final foodGroup = findFoodGroup(findFoodName(ingredient));
-                                showAddFoodEventDialog(findFoodName(ingredient), ingredient, foodGroup.orEmpty());
-                              },
-                            ),
+                      child: FittedBox(
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
                               IconButton(
-                                onPressed: () => widget.provider.removeIngredient(ingredient),
-                                icon: const Icon(Icons.cancel_outlined),
-                            ),
-                          ]
+                                icon: Container(
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                      color: const Color.fromARGB(100, 177, 217, 212),
+                                      border: Border.all(color: Colors.black, width: 1),
+                                      shape: BoxShape.circle
+                                  ),
+                                child: const Icon(
+                                  Icons.edit,
+                                  color: Colors.red,
+                                ),
+                              ),
+                                onPressed: () {
+                                  final foodGroup = findFoodGroup(findFoodName(ingredient));
+                                  showAddFoodEventDialog(findFoodName(ingredient), ingredient, foodGroup.orEmpty());
+                                },
+                              ),
+                                IconButton(
+                                  onPressed: () => provider.removeIngredient(ingredient),
+                                  icon: const Icon(Icons.cancel_outlined),
+                              ),
+                            ]
+                        ),
                       ),
                     ),
                   ],
                 );
               }).toList(),
-              if (widget.provider.getIngredients.isEmpty)
+              if (provider.getIngredients.isEmpty)
                 const Center(child: Text('No has elegido comidas todavía'),),
             ],
           ),

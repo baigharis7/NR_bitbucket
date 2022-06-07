@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class CustomButton1 extends StatelessWidget {
   final String message;
   final Function action;

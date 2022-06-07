@@ -6,43 +6,28 @@ part of 'food_names_master.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-FoodAndDrinksNamesMaster _$FoodAndDrinksNamesMasterFromJson(
+FoodsAndDrinksNamesMaster _$FoodsAndDrinksNamesMasterFromJson(
         Map<String, dynamic> json) =>
-    FoodAndDrinksNamesMaster(
-      json['foodAndDrinksNames'] == null
-          ? null
-          : FoodAndDrinksNames.fromJson(
-              json['foodAndDrinksNames'] as Map<String, dynamic>),
-    );
-
-Map<String, dynamic> _$FoodAndDrinksNamesMasterToJson(
-        FoodAndDrinksNamesMaster instance) =>
-    <String, dynamic>{
-      'foodAndDrinksNames': instance.foodAndDrinksNames?.toJson(),
-    };
-
-FoodAndDrinksNames _$FoodAndDrinksNamesFromJson(Map<String, dynamic> json) =>
-    FoodAndDrinksNames(
-      json['v'] as int?,
-      json['data'] == null
+    FoodsAndDrinksNamesMaster(
+      json['foodsAndDrinksNames'] == null
           ? null
           : FoodsAndDrinkListsMaster.fromJson(
-              json['data'] as Map<String, dynamic>),
+              json['foodsAndDrinksNames'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$FoodAndDrinksNamesToJson(FoodAndDrinksNames instance) =>
+Map<String, dynamic> _$FoodsAndDrinksNamesMasterToJson(
+        FoodsAndDrinksNamesMaster instance) =>
     <String, dynamic>{
-      'v': instance.v,
-      'data': instance.data?.toJson(),
+      'foodsAndDrinksNames': instance.foodsAndDrinksNames?.toJson(),
     };
 
 FoodsAndDrinkListsMaster _$FoodsAndDrinkListsMasterFromJson(
         Map<String, dynamic> json) =>
     FoodsAndDrinkListsMaster(
-      (json['foodNames'] as List<dynamic>?)
+      foodNames: (json['foodNames'] as List<dynamic>?)
           ?.map((e) => FoodItemMaster.fromJson(e as Map<String, dynamic>))
           .toList(),
-      (json['drinkNames'] as List<dynamic>?)
+      drinkNames: (json['drinkNames'] as List<dynamic>?)
           ?.map((e) => FoodItemMaster.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -56,10 +41,10 @@ Map<String, dynamic> _$FoodsAndDrinkListsMasterToJson(
 
 FoodItemMaster _$FoodItemMasterFromJson(Map<String, dynamic> json) =>
     FoodItemMaster(
-      json['id'] as int?,
-      json['en'] as String?,
-      json['es'] as String?,
-      json['group'] as String?,
+      id: json['id'] as int?,
+      en: json['en'] as String?,
+      es: json['es'] as String?,
+      group: json['group'] as String?,
     );
 
 Map<String, dynamic> _$FoodItemMasterToJson(FoodItemMaster instance) =>

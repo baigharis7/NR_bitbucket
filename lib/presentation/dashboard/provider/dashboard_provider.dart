@@ -1,78 +1,95 @@
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_all_food_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
-import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_objective.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_objective_master.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 class DashboardProvider extends BaseProvider {
   final GetAllFoodEventsInteractor getAllFoodEventsInteractor;
   final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor;
+  final GetMasterFileInteractor getMasterFileInteractor;
 
-  DashboardProvider({required this.getAllFoodEventsInteractor, required this.getUserMicronutrientsInteractor});
+  DashboardProvider({
+    required this.getAllFoodEventsInteractor,
+    required this.getUserMicronutrientsInteractor,
+    required this.getMasterFileInteractor,
+  });
 
   List<FoodEventComplete> _foodEvents = [];
-  NutrientsObjective? _nutrientsObjective;
+  bool _infoLoaded = false;
+  NutrientsObjectiveMaster? _nutrientsObjective;
   List<String> _userMicronutrients = [];
   NutrientsInfoMaster? _nutrientsInfoMaster;
 
   List<FoodEventComplete> get getFoodEvents => _foodEvents;
-  NutrientsObjective? get getNutrientsObjective => _nutrientsObjective;
+  bool get isInfoLoaded => _infoLoaded;
+  NutrientsObjectiveMaster? get getNutrientsObjective => _nutrientsObjective;
   List<String> get getUserMicronutrients => _userMicronutrients;
   NutrientsInfoMaster? get getNutrientsInfoMaster => _nutrientsInfoMaster;
 
   void setFoodEvents(List<FoodEventComplete> foodEvents) => _foodEvents = foodEvents;
-  void setNutrientsObjective(NutrientsObjective nutrientsObjective) => _nutrientsObjective = nutrientsObjective;
+  void setInfoLoaded(bool foodEventsLoaded) => _infoLoaded = foodEventsLoaded;
+  void setNutrientsObjective(NutrientsObjectiveMaster nutrientsObjective) => _nutrientsObjective = nutrientsObjective;
   void setUserMicronutrients(List<String> micronutrients) => _userMicronutrients = micronutrients;
   void setNutrientsInfoMaster(NutrientsInfoMaster nutrientsInfoMaster) => _nutrientsInfoMaster = nutrientsInfoMaster;
 
-  void retrieveFoodEvents({Function? nextCall}) {
-    if (getFoodEvents.isEmpty) {
-      launchSync(
-          block: () => getAllFoodEventsInteractor.execute(),
-          onSuccess: (List<FoodEventComplete> foodEvents) {
-            setFoodEvents(foodEvents);
-            nextCall?.call();
-            notifyListeners();
-          },
-          onError: (Object error) {
-            // TODO: manage errors.
-            const g = '';
-          }
-      );
+  void initialize(Future<Map<String, dynamic>> nutrientsObjective) {
+    if (!isInfoLoaded) {
+      setInfoLoaded(true);
+      getFoodEvents.isEmpty.doIfTrue(retrieveFoodEvents);
+      getNutrientsObjective.doIfNull(() => retrieveNutrientsObjectives(nutrientsObjective));
+      getNutrientsInfoMaster.doIfNull(retrieveNutrientsInfoFile);
     }
   }
 
-  void retrieveNutrientsObjectives(Future<Map<String, dynamic>> nutrientsObjective, {Function? nextCall}) async {
+  void retrieveFoodEvents() {
     launchSync(
-        block: () async {
-          final t = await nutrientsObjective;
-          final NutrientsObjective nutrientsObjectiveMaster = NutrientsObjective.fromJson(t);
-          return nutrientsObjectiveMaster;
-        },
-        onSuccess: (NutrientsObjective nutrientsObjective) {
-          setNutrientsObjective(nutrientsObjective);
-          nextCall?.call();
+        block: () => getAllFoodEventsInteractor.execute(),
+        onSuccess: (List<FoodEventComplete> foodEvents) {
+          setFoodEvents(foodEvents);
+          notifyListeners();
         },
         onError: (Object error) {
-          // TODO: control error.
+          // TODO: manage errors.
           const g = '';
+          setInfoLoaded(false);
         }
     );
   }
 
-  void retrieveNutrientsInfoFile(Future<Map<String, dynamic>> nutrientsInfo) {
+  void retrieveNutrientsObjectives(Future<Map<String, dynamic>> nutrientsObjective) async {
     launchSync(
         block: () async {
-          final NutrientsInfoMaster nutrientsInfoMaster = NutrientsInfoMaster.fromJson(await nutrientsInfo);
-          return nutrientsInfoMaster;
+          final t = await nutrientsObjective;
+          final NutrientsObjectiveMaster nutrientsObjectiveMaster = NutrientsObjectiveMaster.fromJson(t);
+          return nutrientsObjectiveMaster;
         },
+        onSuccess: (NutrientsObjectiveMaster nutrientsObjective) {
+          setNutrientsObjective(nutrientsObjective);
+        },
+        onError: (Object error) {
+          // TODO: control error.
+          const g = '';
+          setInfoLoaded(false);
+        }
+    );
+  }
+
+  void retrieveNutrientsInfoFile() {
+    launchSync(
+        block: () => getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo),
         onSuccess: (NutrientsInfoMaster nutrientsInfoMaster) {
           setNutrientsInfoMaster(nutrientsInfoMaster);
           retrieveUserMicronutrients();
         },
-        onError: () {});
+        onError: (error) {
+          // TODO: manage errors.
+          setInfoLoaded(false);
+        });
   }
 
   void retrieveUserMicronutrients() {
@@ -92,7 +109,7 @@ class DashboardProvider extends BaseProvider {
   // TODO: darle una vuelta a esta función, probablemente sea más eficiente generando un array con los nombres de los mN.
   String getNutrientName(String nutrientName, String currentLanguage) {
 
-    final nutrientInfo = getNutrientsInfoMaster!.data.firstWhere((info) => info.officialName == nutrientName);
+    final nutrientInfo = getNutrientsInfoMaster!.nutrientsInfo.firstWhere((info) => info.officialName == nutrientName);
     if (currentLanguage == 'es') {
       String name = nutrientInfo.es.orEmpty();
       if (name.contains(",")) name = name.split(",")[0];

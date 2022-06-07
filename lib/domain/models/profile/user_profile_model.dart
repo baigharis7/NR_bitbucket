@@ -1,3 +1,8 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'user_profile_model.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class UserProfileModel {
   String? userId;
   late String commonName;
@@ -34,16 +39,24 @@ class UserProfileModel {
     required this.objectives,
     this.micronutrients
   });
+
+  factory UserProfileModel.fromJson(Map<String, dynamic> json) => _$UserProfileModelFromJson(json);
+  Map<String, dynamic> toJson() => _$UserProfileModelToJson(this);
 }
 
+@JsonSerializable(explicitToJson: true)
 class MedicalSituation{
     List<int> commonDiseases;
     List<String> otherDiseases;
     bool underPharmaceuticalTreatment;
 
     MedicalSituation({this.commonDiseases = const [], this.otherDiseases = const [], this.underPharmaceuticalTreatment = false});
+
+    factory MedicalSituation.fromJson(Map<String, dynamic> json) => _$MedicalSituationFromJson(json);
+    Map<String, dynamic> toJson() => _$MedicalSituationToJson(this);
 }
 
+@JsonSerializable(explicitToJson: true)
 class PhysicalCharacteristics{
   late int height;
   late int weight;
@@ -56,14 +69,22 @@ class PhysicalCharacteristics{
     this.bodyFat,
     this.waistMeasurement
   });
+
+  factory PhysicalCharacteristics.fromJson(Map<String, dynamic> json) => _$PhysicalCharacteristicsFromJson(json);
+  Map<String, dynamic> toJson() => _$PhysicalCharacteristicsToJson(this);
 }
 
+@JsonSerializable(explicitToJson: true)
 class FemaleCharacteristics{
   Menstruation? menstruation;
 
   FemaleCharacteristics({this.menstruation});
+
+  factory FemaleCharacteristics.fromJson(Map<String, dynamic> json) => _$FemaleCharacteristicsFromJson(json);
+  Map<String, dynamic> toJson() => _$FemaleCharacteristicsToJson(this);
 }
 
+@JsonSerializable(explicitToJson: true)
 class Menstruation {
   int regularity;
   int? daysOfCycle;
@@ -74,12 +95,19 @@ class Menstruation {
     this.daysOfCycle,
     this.lastStartDate
   });
+
+  factory Menstruation.fromJson(Map<String, dynamic> json) => _$MenstruationFromJson(json);
+  Map<String, dynamic> toJson() => _$MenstruationToJson(this);
 }
 
+@JsonSerializable(explicitToJson: true)
 class Exclusions {
   List<int> exclusions;
 
   Exclusions({this.exclusions = const []});
+
+  factory Exclusions.fromJson(Map<String, dynamic> json) => _$ExclusionsFromJson(json);
+  Map<String, dynamic> toJson() => _$ExclusionsToJson(this);
 }
 
 enum SexType {

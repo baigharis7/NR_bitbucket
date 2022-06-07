@@ -15,7 +15,8 @@ class Constants {
   static const MAX_PERIOD_DURATION = 40;
   static const PERIOD_DURATION_INITIAL_VALUE = 28;
   static const AUTHORIZATION_KEY = 'Authorization';
-  static const EXCLUSIONS_SIZE = 15;
+  static const EXCLUSIONS_SIZE = 17;
+  static const ALLERGENS_SIZE = 14;
   static const DISEASES_SIZE = 7;
   static const DIET_TYPES_SIZE = 3;
   static const INTOLERANCES_SIZE = 3;

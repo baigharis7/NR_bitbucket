@@ -1,8 +1,9 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/hive_type_ids.dart';
 
 part 'user_profile_entity.g.dart';
 
-@HiveType(typeId: 0)
+@HiveType(typeId: HiveTypeIds.userProfileEntity)
 class UserProfileEntity extends HiveObject {
   @HiveField(0) String? userId;
   @HiveField(1) late String commonName;
@@ -44,7 +45,7 @@ class UserProfileEntity extends HiveObject {
 
 }
 
-@HiveType(typeId: 1)
+@HiveType(typeId: HiveTypeIds.medicalSituation)
 class MedicalSituation{
   @HiveField(0) List<int> commonDiseases;
   @HiveField(1) List<String> otherDiseases;
@@ -53,7 +54,7 @@ class MedicalSituation{
   MedicalSituation({this.commonDiseases = const [], this.otherDiseases = const [], this.underPharmaceuticalTreatment = false});
 }
 
-@HiveType(typeId: 2)
+@HiveType(typeId: HiveTypeIds.physicalCharacteristics)
 class PhysicalCharacteristics{
   @HiveField(0) late int height;
   @HiveField(1) late int weight;
@@ -68,14 +69,14 @@ class PhysicalCharacteristics{
   });
 }
 
-@HiveType(typeId: 3)
+@HiveType(typeId: HiveTypeIds.femaleCharacteristics)
 class FemaleCharacteristics{
   @HiveField(0) Menstruation? menstruation;
 
   FemaleCharacteristics({this.menstruation});
 }
 
-@HiveType(typeId: 4)
+@HiveType(typeId: HiveTypeIds.menstruation)
 class Menstruation {
   @HiveField(0) int regularity;
   @HiveField(1) int? daysOfCycle;
@@ -88,19 +89,19 @@ class Menstruation {
   });
 }
 
-@HiveType(typeId: 5)
+@HiveType(typeId: HiveTypeIds.exclusions)
 class Exclusions {
   @HiveField(0) List<int> exclusions;
 
   Exclusions({this.exclusions = const []});
 }
 
-@HiveType(typeId: 6)
+@HiveType(typeId: HiveTypeIds.sexType)
 enum SexType {
   @HiveField(0) male, @HiveField(1) female
 }
 
-@HiveType(typeId: 7)
+@HiveType(typeId: HiveTypeIds.menstruationRegularity)
 enum MenstruationRegularity {
   @HiveField(0) regular, @HiveField(1) irregular, @HiveField(2) nothing // TODO -> Add in definitive version.
 }

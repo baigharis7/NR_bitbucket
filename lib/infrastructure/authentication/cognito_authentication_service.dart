@@ -1,13 +1,11 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:nutrenaissance_flutter/infrastructure/authentication/amplify_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/environment/environment.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
-import 'amplify_service.dart';
-import 'authentication_service.dart';
-
 class CognitoAuthenticationService implements AuthenticationService {
-
   final AmplifyService amplifyService;
 
   static Future<CognitoAuthenticationService> init({AmplifyService? amplify}) async {
@@ -29,6 +27,7 @@ class CognitoAuthenticationService implements AuthenticationService {
 
   @override
   Future<SignUpResult> signUp(String username, String email, String password) {
+
     return _getAuthorization().signUp(
         username: username,
         password: password,
@@ -51,13 +50,8 @@ class CognitoAuthenticationService implements AuthenticationService {
   }
 
   @override
-  void resendVerificationCode(String username, Function onResendSuccess, Function onResendError) async {
-    try {
-      await _getAuthorization().resendSignUpCode(username: "Alex1");
-      onResendSuccess.call();
-    } catch (error) {
-      onResendError.call(error);
-    }
+  Future<ResendSignUpCodeResult> resendVerificationCode(String username) async {
+      return await _getAuthorization().resendSignUpCode(username: username);
   }
 
   @override
@@ -69,13 +63,19 @@ class CognitoAuthenticationService implements AuthenticationService {
   }
 
   @override
-  Future<AuthSession> fetchUserAttributes() async {
-    return await Amplify.Auth.fetchAuthSession(
+  Future<CognitoAuthSession> fetchUserAttributes() async {
+
+    final authSession = await _getAuthorization().fetchAuthSession(
       options: CognitoSessionOptions(getAWSCredentials: true),
     );
+    return authSession as CognitoAuthSession;
   }
 
   @override
   Future<SignOutResult> signOut() => _getAuthorization().signOut();
+
+  Future<void> deleteUser() async {
+    await _getAuthorization().deleteUser();
+  }
 
 }

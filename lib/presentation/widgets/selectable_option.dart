@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-
-import '../../infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 // TODO: Añadir argumento de Widget para ponerle botón y poder hacerlo genérico. Aplicarlo tb en ActivityFactor.
 class SelectableOption extends StatefulWidget {
-  bool isSelected;
-  final List selectedItemsList;
+  final int selectedOption;
   final String name;
   final int id;
   final Function onTap;
 
-  SelectableOption({Key? key, required this.isSelected, required this.selectedItemsList, required this.name, required this.onTap, required this.id}): super(key: key);
+  const SelectableOption({
+    Key? key,
+    required this.selectedOption,
+    required this.name,
+    required this.onTap,
+    required this.id,
+  }): super(key: key);
 
   @override
   State<SelectableOption> createState() => _SelectableOptionState();
@@ -18,23 +22,23 @@ class SelectableOption extends StatefulWidget {
 }
 
 class _SelectableOptionState extends State<SelectableOption> {
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         setState(() {
-          widget.isSelected = !widget.isSelected;
           widget.onTap.call(widget.id);
         });
       },
       child: Container(
         margin: const EdgeInsets.all(Dimens.marginSmall),
-        decoration: BoxDecoration(color: widget.isSelected
+        decoration: BoxDecoration(color: widget.selectedOption == widget.id
             ? Colors.amber
             : Colors.transparent,
             border: Border.all(
               width: Dimens.borderNormal,
-              color: widget.isSelected
+              color: widget.selectedOption == widget.id
                   ? Colors.amber
                   : Colors.transparent,
             ),

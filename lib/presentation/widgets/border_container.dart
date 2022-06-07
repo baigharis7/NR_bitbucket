@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 class BorderContainer extends StatelessWidget {
   final Color borderColor;

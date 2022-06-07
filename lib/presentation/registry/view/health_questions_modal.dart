@@ -1,13 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
 import 'package:provider/provider.dart';
-import '../../../infrastructure/utils/constants.dart';
-import '../provider/registry_provider.dart';
-
-import '../../../infrastructure/utils/dimens.dart';
-import '../../../infrastructure/helpers/i10n_helper.dart';
-import '../../../infrastructure/extensions/extensions.dart';
 
 class HealthQuestionsModal extends StatelessWidget {
 

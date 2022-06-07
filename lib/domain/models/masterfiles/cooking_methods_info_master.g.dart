@@ -9,7 +9,7 @@ part of 'cooking_methods_info_master.dart';
 CookingMethodsInfoMaster _$CookingMethodsInfoMasterFromJson(
         Map<String, dynamic> json) =>
     CookingMethodsInfoMaster(
-      (json['cookingMethodsInfo'] as List<dynamic>?)
+      cookingMethodsInfo: (json['cookingMethodsInfo'] as List<dynamic>?)
           ?.map((e) => CookingMethodInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -23,9 +23,9 @@ Map<String, dynamic> _$CookingMethodsInfoMasterToJson(
 
 CookingMethodInfo _$CookingMethodInfoFromJson(Map<String, dynamic> json) =>
     CookingMethodInfo(
-      json['id'] as int?,
-      json['en'] as String?,
-      json['es'] as String?,
+      id: json['id'] as int?,
+      en: json['en'] as String?,
+      es: json['es'] as String?,
     );
 
 Map<String, dynamic> _$CookingMethodInfoToJson(CookingMethodInfo instance) =>

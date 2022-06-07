@@ -1,5 +1,4 @@
 class SimpleItem {
-
   String name;
   int id;
 

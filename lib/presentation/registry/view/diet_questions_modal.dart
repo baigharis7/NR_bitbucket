@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/autocomplete_list_hits.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/multi_selectable_option.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/selectable_option.dart';
 import 'package:provider/provider.dart';
-
-import '../../../domain/models/masterfiles/food_names_master.dart';
-import '../../../infrastructure/mixins/generic_provider.dart';
-import '../../../infrastructure/mixins/show_loading_mixin.dart';
-import '../../../infrastructure/utils/dimens.dart';
-import '../../../infrastructure/helpers/i10n_helper.dart';
-import '../../../infrastructure/extensions/extensions.dart';
-import '../../widgets/autocomplete_list_hits.dart';
-import '../../widgets/selectable_option.dart';
-import '../provider/registry_provider.dart';
 
 class DietQuestionsModal extends StatefulWidget {
   const DietQuestionsModal({Key? key}) : super(key: key);
@@ -21,7 +21,7 @@ class DietQuestionsModal extends StatefulWidget {
 class _DietQuestionsModalState extends State<DietQuestionsModal>
     with ShowLoadingDialog, GenericProvider<RegistryProvider> {
 
-  void showAversionsDialog(FoodsAndDrinkListsMaster foodAndDrinks) {
+  void showAversionsDialog(FoodsAndDrinkListsMaster? foodAndDrinks) {
     showDialog(
         useSafeArea: true,
         builder: (BuildContext context) {
@@ -29,12 +29,13 @@ class _DietQuestionsModalState extends State<DietQuestionsModal>
             title: Text(AppLocalizations.instance.translate('choose_aversions')),
             children: [
               AutocompleteListHits(
-                data: foodAndDrinks,
+                data: foodAndDrinks!,
               ),
             ],
           );
         },
-        context: context);
+        context: context
+    );
   }
 
   @override
@@ -48,44 +49,54 @@ class _DietQuestionsModalState extends State<DietQuestionsModal>
             children: [
               Container(
                 alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.fromLTRB(Dimens.marginNormal,
-                    Dimens.marginXLarge, Dimens.marginLarge, Dimens.zero),
+                margin: const EdgeInsets.fromLTRB(
+                    Dimens.marginNormal,
+                    Dimens.marginXLarge,
+                    Dimens.marginLarge,
+                    Dimens.zero
+                ),
                 child:
                 Text(AppLocalizations.instance.translate('diet_type_question')),
+              ),
+              Container(
+                margin: const EdgeInsets.fromLTRB(
+                    Dimens.marginNormal,
+                    Dimens.zero,
+                    Dimens.marginNormal,
+                    Dimens.zero),
+                child: Column(children: <Widget>[
+                  ...getProvider.listDietTypes.map((dietType) => SelectableOption(
+                    name: dietType.name.toString().orEmpty(),
+                    id: dietType.id!,
+                    selectedOption: getProvider.getDietType ?? 0,
+                    onTap: (id) => getProvider.manageDietType(id),
+                  ),
+                  )
+                ]),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
                     alignment: Alignment.centerLeft,
-                    margin: const EdgeInsets.fromLTRB(Dimens.marginNormal,
-                        Dimens.marginXLarge, Dimens.marginLarge, Dimens.zero),
+                    margin: const EdgeInsets.fromLTRB(
+                        Dimens.marginNormal,
+                        Dimens.zero,
+                        Dimens.marginLarge,
+                        Dimens.marginLarge
+                    ),
                     child: const Text('Do you eat guts?'),
                   ),
                   Container(
                     alignment: Alignment.centerLeft,
                     margin: const EdgeInsets.fromLTRB(Dimens.marginNormal,
-                        Dimens.marginXLarge, Dimens.marginLarge, Dimens.zero),
+                        Dimens.zero, Dimens.marginLarge, Dimens.marginLarge),
                     child: Checkbox(
                         value: getProvider.getEatGuts,
                         onChanged: (value) => getProvider.setEatGuts(value!),
                     ),
                   )
                 ],
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(Dimens.marginNormal, Dimens.zero,
-                    Dimens.marginNormal, Dimens.marginLarge),
-                child: Column(children: <Widget>[
-                  ...getProvider.listDietTypes.map((dietType) => SelectableOption(
-                    isSelected: getProvider.getDietType == dietType.id,
-                    name: dietType.name.toString().orEmpty(),
-                    id: dietType.id!,
-                    selectedItemsList: [getProvider.getDietType],
-                    onTap: (id) => getProvider.manageDietType(id),
-                  ),
-                  )
-                ]),
               ),
               Container(
                 alignment: Alignment.centerLeft,
@@ -100,7 +111,7 @@ class _DietQuestionsModalState extends State<DietQuestionsModal>
                     Dimens.marginNormal, Dimens.marginLarge),
                 child: Column(children: <Widget>[
                   ...getProvider.listAllergens.map(
-                        (allergen) => SelectableOption(
+                        (allergen) => MultiSelectableOption(
                       isSelected: getProvider.getAllergens.contains(allergen.id),
                       name: allergen.name.toString().orEmpty(),
                       id: allergen.id!,
@@ -127,7 +138,7 @@ class _DietQuestionsModalState extends State<DietQuestionsModal>
                 ),
                 child: Column(children: <Widget>[
                   ...getProvider.listIntolerances.map(
-                        (intolerance) => SelectableOption(
+                        (intolerance) => MultiSelectableOption(
                       isSelected: getProvider.getIntolerances.contains(intolerance.id),
                       name: intolerance.name.toString().orEmpty(),
                       id: intolerance.id!,
@@ -166,20 +177,13 @@ class _DietQuestionsModalState extends State<DietQuestionsModal>
                               Dimens.marginXLarge, Dimens.marginLarge, Dimens.zero),
                           child: IconButton(
                             icon: const Icon(Icons.edit),
-                            onPressed: () {
-                              getProvider.retrieveFoodAndDrinks(
-                                  context,
-                                  (FoodsAndDrinkListsMaster foodAndDrinks) => showAversionsDialog(foodAndDrinks),
-                              );
-                            },
+                            onPressed: () => showAversionsDialog(getProvider.getFoodsAndDrinksNamesMaster!.foodsAndDrinksNames),
                           ),
                         ),
                       ],
                     )
                   : ElevatedButton(
-                      onPressed: () {
-                        getProvider.retrieveFoodAndDrinks(context, (foodAndDrinks) => showAversionsDialog(foodAndDrinks));
-                      },
+                      onPressed: () => showAversionsDialog(getProvider.getFoodsAndDrinksNamesMaster!.foodsAndDrinksNames),
                       child: Text(AppLocalizations.instance.translate('choose_aversions'),
                       ),
                     ),

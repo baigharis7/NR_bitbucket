@@ -8,7 +8,7 @@ class SaveUserCredentialsInteractorImpl extends SaveUserCredentialsInteractor {
   SaveUserCredentialsInteractorImpl({required this.preferencesRepository});
 
   @override
-  void execute(CognitoAuthSession session) {
+  Future<void> execute(CognitoAuthSession session) async {
     preferencesRepository.setUserCredentials(session);
   }
 
