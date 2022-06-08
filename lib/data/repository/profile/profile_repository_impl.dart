@@ -1,7 +1,9 @@
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart' as upload;
 import 'package:nutrenaissance_flutter/data/api/profile/model/user_profile_response.dart';
+import 'package:nutrenaissance_flutter/data/api/profile/model/user_rdas_response.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_rdas.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/profile/profile_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/profile_mappers.dart';
@@ -62,6 +64,17 @@ class ProfileRepositoryImpl extends ProfileRepository {
         rethrow;
       }
     }
+  }
+
+  @override
+  Future<List<UserRdas>> getUserRdas() {
+    // TODO: ya know.
+    throw UnimplementedError;
+  }
+
+  @override
+  Future<void> saveUserRdas(List<UserRdasResponse> userRdasResponse) async {
+    await localStorageRepository.saveUserRdas(maptoToUserRdasEntity(userRdasResponse));
   }
 
 }
