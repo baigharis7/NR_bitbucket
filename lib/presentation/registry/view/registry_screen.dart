@@ -49,16 +49,18 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
               AppLocalizations.instance.translate('objectives_question'),
               style: const TextStyle(
                 fontSize: Dimens.fontSizeLarge
-              ),),
+              ),
+            ),
           ),
           ...getProvider.getObjectivesList(Localizations.localeOf(context).languageCode).map((objective) => MultiSelectableOption(
-                isSelected: registryProvider.getObjectives.contains(objective.id),
-                selectedItemsList: registryProvider.getObjectives,
-                name: objective.name,
-                id: objective.id,
-                onTap: (id) => registryProvider.manageObjectives(id),
-            )).toList()
-        ],);
+            isSelected: registryProvider.getObjectives.contains(objective.id),
+            selectedItemsList: registryProvider.getObjectives,
+            name: objective.name,
+            id: objective.id,
+            onTap: (id) => registryProvider.manageObjectives(id),
+          )).toList()
+        ],
+      );
     });
   }
 

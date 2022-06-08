@@ -64,6 +64,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micron
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/save_user_rdas_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/save_user_rdas_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
@@ -146,6 +148,7 @@ void main() async {
   final SaveUserInUsersRemoteDatabaseInteractor saveUserInUsersRemoteDatabaseInteractor = SaveUserInUsersRemoteDatabaseInteractorImpl(loginRepository: loginRepository);
   final SignOutInteractor signOutInteractor = SignOutInteractorImpl(authenticationService: authenticationService);
   final GetMasterFileInteractor getMasterFileInteractor = GetMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
+  final SaveUserRdasInteractor saveUserRdasInteractor = SaveUserRdasInteractorImpl(profileRepository: profileRepository);
 
   final splashProvider = SplashProvider(getIdTokenInteractor: getIdTokenInteractor);
 
@@ -174,7 +177,8 @@ void main() async {
     getUserIdInteractor: getUserIdInteractor,
     uploadProfileInteractor: uploadProfileInteractor,
     saveProfileInteractor: saveProfileInteractor,
-    getMasterFileInteractor: getMasterFileInteractor
+    getMasterFileInteractor: getMasterFileInteractor,
+    saveUserRdasInteractor: saveUserRdasInteractor
   );
 
   final dashboardProvider = DashboardProvider(
@@ -230,7 +234,7 @@ void main() async {
           Locale('es', ''), // Spanish, no country code
         ],
         routes: {
-          '/': (ctx) => const DashboardScreen(),
+          '/': (ctx) => LoginScreen(),
           SplashScreen.routeName: (_) => const SplashScreen(),
           LoginScreen.routeName: (_) => const LoginScreen(),
           RegistryScreen.routeName: (_) => RegistryScreen(),

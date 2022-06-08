@@ -3,6 +3,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_file
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/save_user_rdas_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
@@ -22,12 +23,14 @@ class RegistryProvider extends BaseProvider {
   final UploadProfileInteractor uploadProfileInteractor;
   final SaveProfileInteractor saveProfileInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
+  final SaveUserRdasInteractor saveUserRdasInteractor;
 
   RegistryProvider({
     required this.getUserIdInteractor,
     required this.uploadProfileInteractor,
     required this.saveProfileInteractor,
-    required this.getMasterFileInteractor
+    required this.getMasterFileInteractor,
+    required this.saveUserRdasInteractor
   });
 
   bool _infoLoaded = false;
@@ -384,18 +387,25 @@ class RegistryProvider extends BaseProvider {
 
     launchSync(
       block: () => uploadProfileInteractor.execute(profile),
-      onSuccess: (UserProfileResponse userProfileResponse) {
+      onSuccess: (UserProfileResponse userProfileResponse) async {
         if (userProfileResponse.uploadSuccess) {
-          profile.micronutrients = userProfileResponse.micronutrients;
           launchSync(
-              block: () => saveProfileInteractor.execute(profile),
+              block: () => saveUserRdasInteractor.execute(userProfileResponse.userRdas),
               onSuccess: (_) {
-                moveToDashboard.call();
-              },
-              onError: (Object error) {
-                // TODO: Manage error
-                const g = '';
-              });
+                profile.micronutrients = userProfileResponse.micronutrients;
+                launchSync(
+                    block: () => saveProfileInteractor.execute(profile),
+                    onSuccess: (_) => moveToDashboard.call(),
+                    onError: (_) {
+                    // Todo: manage errors.
+                      const g = '';
+                    });
+            },
+            onError: (_) {
+              // Todo: manage errors.
+              const g = '';
+            }
+          );
         } else {
           // TODO: manage error.
           const g = '';
