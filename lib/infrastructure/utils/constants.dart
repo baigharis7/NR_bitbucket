@@ -24,5 +24,6 @@ class Constants {
   static const UPLOAD_SUCCESS = 'uploadSuccess';
   static const PROFILE_ENTITY = 'profile_entity';
   static const FOOD_EVENT_ENTITY = 'food_event_entity';
+  static const USER_RDAS_ENTITY = 'user_rdas';
   static const USERID_QUERY = 'userId';
 }

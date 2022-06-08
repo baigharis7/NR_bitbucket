@@ -13,6 +13,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_i
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/profile/user_rdas_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/foodevent/food_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/localstorage/local_storage_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/login/login_repository_impl.dart';
@@ -269,4 +270,6 @@ void initLocalStorage() async {
   Hive.registerAdapter(ObjectiveInfoEntityAdapter());
   Hive.registerAdapter(RecommendationGroupsEntityAdapter());
   Hive.registerAdapter(RecommendationGroupEntityAdapter());
+  Hive.registerAdapter(UserRdasEntityAdapter());
+
 }

@@ -1,5 +1,7 @@
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart' as upload;
+import 'package:nutrenaissance_flutter/data/api/profile/model/user_rdas_response.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart' as entity;
+import 'package:nutrenaissance_flutter/data/local/models/profile/user_rdas_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/diet_type.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart' as domain;
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
@@ -241,4 +243,12 @@ DietType findDietType(int dietId) {
   final dietTypes = DietType.listAllDietTypes();
   final dietType = dietTypes.firstWhere((diet) => diet.id == dietId, orElse: () => Omnivorous());
   return dietType;
+}
+
+List<UserRdasEntity> maptoToUserRdasEntity(List<UserRdasResponse> userRdasResponse) {
+  return userRdasResponse.map((rda) => UserRdasEntity(
+      n: rda.n,
+      rda: rda.rda.toDouble(),
+      ul: rda.ul.toDouble()
+  )).toList();
 }
