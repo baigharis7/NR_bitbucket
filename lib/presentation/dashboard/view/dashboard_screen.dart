@@ -3,7 +3,6 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart'
 import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/json_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/provider/dashboard_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/view/recommendations_screen.dart';
@@ -26,8 +25,7 @@ class _DashboardScreen extends State<DashboardScreen>
     setProvider(Provider.of<DashboardProvider>(context));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final Future<Map<String, dynamic>> nutrientsObjective = JsonUtils(context: context).readJson('assets/nutrient_objective.json');
-      getProvider.initialize(nutrientsObjective);
+      getProvider.initialize();
     });
 
     return SafeArea(

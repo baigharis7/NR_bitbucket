@@ -79,13 +79,6 @@ flutter:
     - assets/images/logo_black.png
     - assets/images/logo_name_black.png
     - assets/images/dummy_recipe.jpeg
-    - assets/dummy_foods.json
-    - assets/objectives_list.json
-    - assets/cooking_methods.json
-    - assets/cooking_methods_info.json
-    - assets/recommendation_groups.json
-    - assets/nutrient_objective.json
-    - assets/nutrients_info_file.json
 
 flutter_icons:
   android: "launcher_icon"
