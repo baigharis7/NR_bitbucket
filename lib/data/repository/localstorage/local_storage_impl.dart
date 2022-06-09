@@ -144,8 +144,8 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<void> saveUserRdas(List<UserRdasEntity> userRdas) async => await _openUserRdasBox().then((box) =>
-      box.put(Constants.USER_RDAS_ENTITY, userRdas)
+  Future<void> saveUserRdas(List<UserRdasResponse> userRdas) async => await _openUserRdasBox().then((box) =>
+      box.put(Constants.USER_RDAS_ENTITY, mapToUserRdasEntity(userRdas))
   );
 
 }

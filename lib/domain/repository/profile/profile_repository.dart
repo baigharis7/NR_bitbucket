@@ -11,6 +11,4 @@ abstract class ProfileRepository {
   Future<List<String>> getUserMicronutrients();
   Future<bool> checkProfileExistence();
   Future<UserProfileModel?> downloadProfile(String email);
-  Future<void> saveUserRdas(List<UserRdasResponse> userRdasResponse);
-  Future<List<UserRdas>> getUserRdas();
 }

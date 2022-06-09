@@ -1,3 +1,4 @@
+import 'package:nutrenaissance_flutter/data/api/profile/model/user_rdas_response.dart';
 import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
@@ -17,6 +18,6 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<dynamic> getMasterFile(MasterFilesType masterFileType);
   Future<int> getMasterFileVersion(MasterFilesType masterFileType);
   Future<bool> checkProfileExistence();
-  Future<void> saveUserRdas(List<UserRdasEntity> userRdas);
+  Future<void> saveUserRdas(List<UserRdasResponse> userRdas);
   Future<List<UserRdas>> getUserRdas();
 }
