@@ -62,6 +62,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/download_profil
 import 'package:nutrenaissance_flutter/domain/interactor/profile/download_profile_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_user_rdas_interactor.dart';
@@ -148,7 +150,8 @@ void main() async {
   final SaveUserInUsersRemoteDatabaseInteractor saveUserInUsersRemoteDatabaseInteractor = SaveUserInUsersRemoteDatabaseInteractorImpl(loginRepository: loginRepository);
   final SignOutInteractor signOutInteractor = SignOutInteractorImpl(authenticationService: authenticationService);
   final GetMasterFileInteractor getMasterFileInteractor = GetMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
-  final SaveUserRdasInteractor saveUserRdasInteractor = SaveUserRdasInteractorImpl(profileRepository: profileRepository);
+  final SaveUserRdasInteractor saveUserRdasInteractor = SaveUserRdasInteractorImpl(localStorageRepository: localStorageRepository);
+  final GetUserRdasInteractor getUserRdasInteractor = GetUserRdasInteractorImpl(localStorageRepository: localStorageRepository);
 
   final splashProvider = SplashProvider(getIdTokenInteractor: getIdTokenInteractor);
 
@@ -184,7 +187,8 @@ void main() async {
   final dashboardProvider = DashboardProvider(
       getAllFoodEventsInteractor: getAllFoodEventsInteractor,
       getUserMicronutrientsInteractor: getUserMicronutrientsInteractor,
-      getMasterFileInteractor: getMasterFileInteractor
+      getMasterFileInteractor: getMasterFileInteractor,
+      getUserRdasInteractor: getUserRdasInteractor
   );
 
   final addFoodEventProvider = AddFoodEventProvider(

@@ -13,8 +13,8 @@ import 'package:nutrenaissance_flutter/data/local/models/profile/user_rdas_entit
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_rdas.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/user_rdas_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
-import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 // TODO: ordenar variables y funciones.
 // TODO: asegurarme de que va con el async aquí.
@@ -138,9 +138,9 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<List<UserRdas>> getUserRdas() {
-    // TODO: implement getUserRdas
-    throw UnimplementedError();
+  Future<List<UserRdas>> getUserRdas() async {
+    final List<dynamic> userRdasEntities = await _getUserRdasBox.then((box) => box.get(Constants.USER_RDAS_ENTITY));
+    return mapToUserRdas(userRdasEntities);
   }
 
   @override
