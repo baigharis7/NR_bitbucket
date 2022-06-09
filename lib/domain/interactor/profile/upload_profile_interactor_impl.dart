@@ -9,7 +9,6 @@ class UploadProfileInteractorImpl extends UploadProfileInteractor {
   UploadProfileInteractorImpl({required this.profileRepository});
 
   @override
-  // TODO: mapear esto en el repositorio y que devuelva el objeto.
   Future<UserProfileResponse> execute(UserProfileModel profile) => profileRepository.uploadProfile(profile);
 
 }
