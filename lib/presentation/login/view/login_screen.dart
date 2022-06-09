@@ -231,11 +231,7 @@ class _LoginScreenState extends State<LoginScreen>
                         message:
                         AppLocalizations.instance.translate('accept'),
                         action: () {
-                          getProvider
-                              .notConfirmedUserAsksForNewVerificationCode(
-                                  () {
-                                _showMFADialog();
-                              });
+                          getProvider.notConfirmedUserAsksForNewVerificationCode(_showMFADialog);
                         },
                       ),
                     ],
