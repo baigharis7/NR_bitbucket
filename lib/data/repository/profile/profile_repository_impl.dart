@@ -4,8 +4,8 @@ import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/profile/profile_repository.dart';
-import 'package:nutrenaissance_flutter/infrastructure/mappers/profile_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/profile_mappers.dart';
 
 class ProfileRepositoryImpl extends ProfileRepository {
   final ProfileApi profileApi;

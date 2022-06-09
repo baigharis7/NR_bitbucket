@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:nutrenaissance_flutter/data/api/profile/model/user_rdas_response.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
@@ -8,10 +9,12 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_i
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/profile/user_rdas_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_rdas.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/user_rdas_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
-import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 // TODO: ordenar variables y funciones.
 // TODO: asegurarme de que va con el async aquí.
@@ -25,6 +28,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _nutrientsInfoBox;
   Box? _objectivesInfoBox;
   Box? _recommendationGroupsBox;
+  Box? _userRdasBox;
 
   Future<Box> _openProfileBox() async => openBox(_profileBox, UserProfileEntity.boxName);
   Future<Box> _openFoodEventsBox() async => openBox(_foodEventsBox, FoodEventEntity.boxName);
@@ -44,9 +48,12 @@ class LocalStorageImpl extends LocalStorageRepository {
         return openBox(_recommendationGroupsBox, recommendationGroupsBoxName);
     }
   }
+  Future<Box> _openUserRdasBox() async => openBox(_userRdasBox, UserRdasEntity.boxName);
+
 
   Future<Box> get _getProfileBox async => await _openProfileBox();
   Future<Box> get _getFoodEventsBox async => await _openFoodEventsBox();
+  Future<Box> get _getUserRdasBox async => await _openUserRdasBox();
   Future<Box> _getMasterFilesBox(MasterFilesType masterFilesType) async => await _openMasterFilesBox(masterFilesType);
 
   @override
@@ -129,5 +136,16 @@ class LocalStorageImpl extends LocalStorageRepository {
       return true;
     }
   }
+
+  @override
+  Future<List<UserRdas>> getUserRdas() async {
+    final List<dynamic> userRdasEntities = await _getUserRdasBox.then((box) => box.get(Constants.USER_RDAS_ENTITY));
+    return mapToUserRdas(userRdasEntities);
+  }
+
+  @override
+  Future<void> saveUserRdas(List<UserRdasResponse> userRdas) async => await _openUserRdasBox().then((box) =>
+      box.put(Constants.USER_RDAS_ENTITY, mapToUserRdasEntity(userRdas))
+  );
 
 }

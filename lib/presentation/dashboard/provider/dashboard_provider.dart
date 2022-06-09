@@ -2,9 +2,11 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_file
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_all_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_objective_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_rdas.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
@@ -12,11 +14,13 @@ class DashboardProvider extends BaseProvider {
   final GetAllFoodEventsInteractor getAllFoodEventsInteractor;
   final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
+  final GetUserRdasInteractor getUserRdasInteractor;
 
   DashboardProvider({
     required this.getAllFoodEventsInteractor,
     required this.getUserMicronutrientsInteractor,
     required this.getMasterFileInteractor,
+    required this.getUserRdasInteractor,
   });
 
   List<FoodEventComplete> _foodEvents = [];
@@ -24,18 +28,21 @@ class DashboardProvider extends BaseProvider {
   NutrientsObjectiveMaster? _nutrientsObjective;
   List<String> _userMicronutrients = [];
   NutrientsInfoMaster? _nutrientsInfoMaster;
+  List<UserRdas>? _userRdas;
 
   List<FoodEventComplete> get getFoodEvents => _foodEvents;
   bool get isInfoLoaded => _infoLoaded;
   NutrientsObjectiveMaster? get getNutrientsObjective => _nutrientsObjective;
   List<String> get getUserMicronutrients => _userMicronutrients;
   NutrientsInfoMaster? get getNutrientsInfoMaster => _nutrientsInfoMaster;
+  List<UserRdas>? get getUserRdas => _userRdas;
 
   void setFoodEvents(List<FoodEventComplete> foodEvents) => _foodEvents = foodEvents;
   void setInfoLoaded(bool foodEventsLoaded) => _infoLoaded = foodEventsLoaded;
   void setNutrientsObjective(NutrientsObjectiveMaster nutrientsObjective) => _nutrientsObjective = nutrientsObjective;
   void setUserMicronutrients(List<String> micronutrients) => _userMicronutrients = micronutrients;
   void setNutrientsInfoMaster(NutrientsInfoMaster nutrientsInfoMaster) => _nutrientsInfoMaster = nutrientsInfoMaster;
+  void setUserRdas(List<UserRdas> userRdas) => _userRdas = userRdas;
 
   void initialize(Future<Map<String, dynamic>> nutrientsObjective) {
     if (!isInfoLoaded) {
@@ -43,6 +50,7 @@ class DashboardProvider extends BaseProvider {
       getFoodEvents.isEmpty.doIfTrue(retrieveFoodEvents);
       getNutrientsObjective.doIfNull(() => retrieveNutrientsObjectives(nutrientsObjective));
       getNutrientsInfoMaster.doIfNull(retrieveNutrientsInfoFile);
+      getUserRdas.doIfNull(retrieveUserRdas);
     }
   }
 
@@ -99,7 +107,7 @@ class DashboardProvider extends BaseProvider {
           setUserMicronutrients(userMicronutrients);
           notifyListeners();
         },
-        onError: () {
+        onError: (error) {
           // TODO: manage error.
           const g = '';
         }
@@ -108,7 +116,6 @@ class DashboardProvider extends BaseProvider {
 
   // TODO: darle una vuelta a esta función, probablemente sea más eficiente generando un array con los nombres de los mN.
   String getNutrientName(String nutrientName, String currentLanguage) {
-
     final nutrientInfo = getNutrientsInfoMaster!.nutrientsInfo.firstWhere((info) => info.officialName == nutrientName);
     if (currentLanguage == 'es') {
       String name = nutrientInfo.es.orEmpty();
@@ -121,10 +128,9 @@ class DashboardProvider extends BaseProvider {
     }
   }
 
-  // TODO: ahora lo hago para Susana mañana, pero esto tiene que coger los valores de RDA para cada usuario según sus características.
   // TODO: restringir la información que sale a sólo los eventos del día. Hacer filtrado en la parte del repositorio.
   double getFractionToFill(String micronutrient) {
-    final rdaForUser = getNutrientsObjective!.nutrients!.firstWhere((nutrient) => nutrient.name == micronutrient).female2 ?? 1.5;
+    final rdaForUser = getUserRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
     double nutrientQuantitySoFar = 0.0;
     for (var foodEvent in getFoodEvents) {
       for (var food in foodEvent.foodInfo!) {
@@ -136,6 +142,20 @@ class DashboardProvider extends BaseProvider {
     double returnQuantity = nutrientQuantitySoFar/rdaForUser;
     if (returnQuantity > 1) returnQuantity = 1;
     return returnQuantity;
+  }
+
+  void retrieveUserRdas() {
+    launchSync(
+        block: () => getUserRdasInteractor.execute(),
+        onSuccess: (List<UserRdas> userRdas) {
+          setUserRdas(userRdas);
+        },
+        onError: (error) {
+          // TODO: manage errors.
+          const g = '';
+          setInfoLoaded(false);
+        },
+    );
   }
 
 }

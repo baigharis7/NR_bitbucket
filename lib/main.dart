@@ -13,6 +13,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_i
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/profile/user_rdas_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/foodevent/food_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/localstorage/local_storage_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/login/login_repository_impl.dart';
@@ -61,8 +62,12 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/download_profil
 import 'package:nutrenaissance_flutter/domain/interactor/profile/download_profile_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/save_user_rdas_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/save_user_rdas_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
@@ -145,6 +150,8 @@ void main() async {
   final SaveUserInUsersRemoteDatabaseInteractor saveUserInUsersRemoteDatabaseInteractor = SaveUserInUsersRemoteDatabaseInteractorImpl(loginRepository: loginRepository);
   final SignOutInteractor signOutInteractor = SignOutInteractorImpl(authenticationService: authenticationService);
   final GetMasterFileInteractor getMasterFileInteractor = GetMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
+  final SaveUserRdasInteractor saveUserRdasInteractor = SaveUserRdasInteractorImpl(localStorageRepository: localStorageRepository);
+  final GetUserRdasInteractor getUserRdasInteractor = GetUserRdasInteractorImpl(localStorageRepository: localStorageRepository);
 
   final splashProvider = SplashProvider(getIdTokenInteractor: getIdTokenInteractor);
 
@@ -173,13 +180,15 @@ void main() async {
     getUserIdInteractor: getUserIdInteractor,
     uploadProfileInteractor: uploadProfileInteractor,
     saveProfileInteractor: saveProfileInteractor,
-    getMasterFileInteractor: getMasterFileInteractor
+    getMasterFileInteractor: getMasterFileInteractor,
+    saveUserRdasInteractor: saveUserRdasInteractor
   );
 
   final dashboardProvider = DashboardProvider(
       getAllFoodEventsInteractor: getAllFoodEventsInteractor,
       getUserMicronutrientsInteractor: getUserMicronutrientsInteractor,
-      getMasterFileInteractor: getMasterFileInteractor
+      getMasterFileInteractor: getMasterFileInteractor,
+      getUserRdasInteractor: getUserRdasInteractor
   );
 
   final addFoodEventProvider = AddFoodEventProvider(
@@ -229,7 +238,7 @@ void main() async {
           Locale('es', ''), // Spanish, no country code
         ],
         routes: {
-          '/': (ctx) => const DashboardScreen(),
+          '/': (ctx) => LoginScreen(),
           SplashScreen.routeName: (_) => const SplashScreen(),
           LoginScreen.routeName: (_) => const LoginScreen(),
           RegistryScreen.routeName: (_) => RegistryScreen(),
@@ -269,4 +278,6 @@ void initLocalStorage() async {
   Hive.registerAdapter(ObjectiveInfoEntityAdapter());
   Hive.registerAdapter(RecommendationGroupsEntityAdapter());
   Hive.registerAdapter(RecommendationGroupEntityAdapter());
+  Hive.registerAdapter(UserRdasEntityAdapter());
+
 }

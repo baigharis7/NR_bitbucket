@@ -1,4 +1,5 @@
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart' as upload;
+import 'package:nutrenaissance_flutter/data/api/profile/model/user_rdas_response.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart' as entity;
 import 'package:nutrenaissance_flutter/domain/models/profile/diet_type.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart' as domain;
@@ -62,7 +63,7 @@ String _setExclusions({List<int> allergens = const [], int? dietType}) {
   List<int> allergensList = [];
   if (dietType != null) { allergensList.add(dietType); }
 
-  return allergensList.convertToBinary(Constants.EXCLUSIONS_SIZE + Constants.DIET_TYPES_SIZE);
+  return allergensList.convertToBinary(Constants.EXCLUSIONS_SIZE);
 }
 
 entity.UserProfileEntity mapToProfileEntity(domain.UserProfileModel profileModel) {

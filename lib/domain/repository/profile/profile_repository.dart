@@ -1,5 +1,7 @@
 import 'package:nutrenaissance_flutter/data/api/profile/model/user_profile_response.dart';
+import 'package:nutrenaissance_flutter/data/api/profile/model/user_rdas_response.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_rdas.dart';
 
 abstract class ProfileRepository {
   Future<UserProfileResponse> uploadProfile(UserProfileModel profile);

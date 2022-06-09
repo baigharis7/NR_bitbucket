@@ -40,8 +40,7 @@ class LoginProvider extends BaseProvider {
   final SaveProfileInteractor saveProfileInteractor;
   final ResendVerificationCodeInteractor resendVerificationCodeInteractor;
   final SaveUserCredentialsInteractor saveUserCredentialsInteractor;
-  final SaveUserInUsersRemoteDatabaseInteractor
-      saveUserInUsersRemoteDatabaseInteractor;
+  final SaveUserInUsersRemoteDatabaseInteractor saveUserInUsersRemoteDatabaseInteractor;
   final SignOutInteractor signOutInteractor;
 
   LoginProvider({
@@ -414,9 +413,10 @@ class LoginProvider extends BaseProvider {
         onSuccess: (_) {
           finishFetchUserAttributes.call();
         },
-        onError: () {
+        onError: (error) {
           // TODO: manage errors.
           const g = '';
-        });
+        },
+    );
   }
 }
