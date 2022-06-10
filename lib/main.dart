@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/data/api/foodevents/food_events_api.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
@@ -228,7 +229,8 @@ void main() async {
         ),
         initialRoute: '/',
         localizationsDelegates: const [
-          AppLocalizationsDelegate(),
+          AppLocalizationsHelperDelegate(),
+          AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
@@ -279,5 +281,4 @@ void initLocalStorage() async {
   Hive.registerAdapter(RecommendationGroupsEntityAdapter());
   Hive.registerAdapter(RecommendationGroupEntityAdapter());
   Hive.registerAdapter(UserRdasEntityAdapter());
-
 }
