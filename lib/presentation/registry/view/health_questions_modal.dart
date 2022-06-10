@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
@@ -24,7 +24,7 @@ class HealthQuestionsModal extends StatelessWidget {
                     margin: const EdgeInsets.fromLTRB(
                         Dimens.marginNormal, Dimens.marginXLarge,
                         Dimens.marginLarge, Dimens.zero),
-                    child: Text(AppLocalizations.instance.translate('common_diseases_question'))
+                    child: Text(AppLocalizations.of(context)!.common_diseases_question)
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
@@ -68,7 +68,7 @@ class HealthQuestionsModal extends StatelessWidget {
                       Dimens.marginLarge, Dimens.zero),
                   child: Row(
                     children: [
-                      Text(AppLocalizations.instance.translate('medication_question'),),
+                      Text(AppLocalizations.of(context)!.medication_question),
                       Checkbox(
                         onChanged: (value) {
                           setState(() {
@@ -84,7 +84,7 @@ class HealthQuestionsModal extends StatelessWidget {
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text(AppLocalizations.instance.translate('height_question') + ' cm'),
+                        Text(AppLocalizations.of(context)!.height_question + ' cm'),
                         NumberPicker(
                           value: registryProvider.getHeight,
                           maxValue: Constants.HEIGHT_MAX,
@@ -112,7 +112,7 @@ class HealthQuestionsModal extends StatelessWidget {
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text(AppLocalizations.instance.translate('weight_question') + ' kg'),
+                        Text(AppLocalizations.of(context)!.weight_question + ' kg'),
                         NumberPicker(
                           value: registryProvider.getWeight,
                           maxValue: Constants.WEIGHT_MAX,
@@ -141,7 +141,7 @@ class HealthQuestionsModal extends StatelessWidget {
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Text(AppLocalizations.instance.translate('body_fat_question') + ' %'),
+                          Text(AppLocalizations.of(context)!.body_fat_question + ' %'),
                           NumberPicker(
                             value: registryProvider.getBodyFat,
                             maxValue: Constants.MAX_BODY_FAT,
@@ -170,7 +170,7 @@ class HealthQuestionsModal extends StatelessWidget {
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text(AppLocalizations.instance.translate('waist_measurement_question') + ' cm'),
+                        Text(AppLocalizations.of(context)!.waist_measurement_question + ' cm'),
                         NumberPicker(
                           value: registryProvider.getWaistMeasurement,
                           maxValue: Constants.MAX_WAIST_MEASUREMENT,

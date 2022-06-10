@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
@@ -28,7 +28,7 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
           children: [
             Container(
               alignment: Alignment.centerLeft,
-              child: Text(AppLocalizations.instance.translate('objectives'),),
+              child: Text(AppLocalizations.of(context)!.objectives),
             ),
             Container(
               alignment: Alignment.centerRight,
@@ -46,7 +46,7 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
             alignment: Alignment.centerLeft,
             margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginLarge),
             child: Text(
-              AppLocalizations.instance.translate('objectives_question'),
+              AppLocalizations.of(context)!.objectives_question,
               style: const TextStyle(
                 fontSize: Dimens.fontSizeLarge
               ),
@@ -103,7 +103,7 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
                   child: Text(
-                    AppLocalizations.instance.translate('profile_creation'),
+                    AppLocalizations.of(context)!.profile_creation,
                     style: const TextStyle(fontSize: Dimens.fontSizeXLarge),
                   ),
                 ),
@@ -114,7 +114,7 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
                         alignment: Alignment.centerLeft,
                         margin: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingNormal),
                         child: Text(
-                          AppLocalizations.instance.translate('objectives_question'),
+                          AppLocalizations.of(context)!.objectives_question,
                           style: getProvider.areObjectivesSelected()
                               ? const TextStyle(color: Colors.green)
                               : const TextStyle(color: Colors.black),
@@ -132,7 +132,7 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
                         alignment: Alignment.centerLeft,
                         margin: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingNormal),
                         child: Text(
-                          AppLocalizations.instance.translate('general_questions'),
+                          AppLocalizations.of(context)!.general_questions,
                           style: getProvider.areGeneralQuestionsAnswered()
                               ? const TextStyle(color: Colors.green)
                               : const TextStyle(color: Colors.black),
@@ -151,7 +151,7 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
                         alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingNormal),
                         child: Text(
-                          AppLocalizations.instance.translate('health_questions'),
+                          AppLocalizations.of(context)!.health_questions,
                           style: getProvider.areHealthQuestionsAnswered()
                               ? const TextStyle(color: Colors.green)
                               : const TextStyle(color: Colors.black),
@@ -171,7 +171,7 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
                         alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingNormal),
                         child: Text(
-                          AppLocalizations.instance.translate('women_questions'),
+                          AppLocalizations.of(context)!.women_questions,
                           style: getProvider.areWomenQuestionsAnswered()
                               ? const TextStyle(color: Colors.green)
                               : const TextStyle(color: Colors.black),
@@ -191,7 +191,7 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
                         alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingNormal),
                         child: Text(
-                          AppLocalizations.instance.translate('diet_questions'),
+                          AppLocalizations.of(context)!.diet_questions,
                           style: getProvider.areDietQuestionsAnswered()
                               ? const TextStyle(color: Colors.green)
                               : const TextStyle(color: Colors.black),
@@ -212,7 +212,7 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
                           Navigator.popAndPushNamed(context, DashboardScreen.routeName);
                         });
                       },
-                      child: Text(AppLocalizations.instance.translate('accept')),
+                      child: Text(AppLocalizations.of(context)!.accept),
                     ),
                   )
               ],

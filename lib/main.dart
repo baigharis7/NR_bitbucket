@@ -240,7 +240,7 @@ void main() async {
           Locale('es', ''), // Spanish, no country code
         ],
         routes: {
-          '/': (ctx) => LoginScreen(),
+          '/': (ctx) => RegistryScreen(),
           SplashScreen.routeName: (_) => const SplashScreen(),
           LoginScreen.routeName: (_) => const LoginScreen(),
           RegistryScreen.routeName: (_) => RegistryScreen(),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
@@ -85,13 +85,13 @@ class _LoginScreenState extends State<LoginScreen>
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               CustomButton1(
-                message: AppLocalizations.instance.translate('cancel'),
+                message: AppLocalizations.of(context)!.cancel,
                 action: () {
                   Navigator.pop(context);
                 },
               ),
               CustomButton1(
-                message: AppLocalizations.instance.translate('accept'),
+                message: AppLocalizations.of(context)!.accept,
                 action: () {
                   Navigator.pop(context, true);
                 },
@@ -113,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen>
       builder: (ctx) => SimpleDialog(
         title: Center(
           child: Text(
-            AppLocalizations.instance.translate('verify_your_account'),
+            AppLocalizations.of(context)!.verify_your_account,
           ),
         ),
         children: [
@@ -122,8 +122,7 @@ class _LoginScreenState extends State<LoginScreen>
                 vertical: Dimens.paddingSmall,
                 horizontal: Dimens.paddingLarge),
             child: Text(
-              AppLocalizations.instance
-                  .translate('verification_code_explanation'),
+              AppLocalizations.of(context)!.verification_code_explanation,
             ),
           ),
           Padding(
@@ -133,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen>
             child: TextField(
               decoration: InputDecoration(
                 labelText:
-                AppLocalizations.instance.translate('write_here_hint'),
+                AppLocalizations.of(context)!.write_here_hint,
               ),
               controller: _mfaController,
             ),
@@ -143,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen>
                 horizontal: Dimens.paddingXLarge,
                 vertical: Dimens.paddingSmall),
             child: CustomButton1(
-              message: AppLocalizations.instance.translate('accept'),
+              message: AppLocalizations.of(context)!.accept,
               action: () {
                 getProvider.sendVerificationCode(_mfaController.text, () {
                   Navigator.of(ctx).popAndPushNamed(RegistryScreen.routeName,
@@ -158,8 +157,7 @@ class _LoginScreenState extends State<LoginScreen>
                 horizontal: Dimens.paddingXLarge,
                 vertical: Dimens.paddingSmall),
             child: CustomButton1(
-              message: AppLocalizations.instance
-                  .translate('resend_verification_code'),
+              message: AppLocalizations.of(context)!.resend_verification_code,
               action: () => getProvider.resendVerificationCode(),
             ),
           ),
@@ -168,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen>
                 horizontal: Dimens.paddingXLarge,
                 vertical: Dimens.paddingSmall),
             child: CustomButton1(
-                message: AppLocalizations.instance.translate('cancel'),
+                message: AppLocalizations.of(context)!.cancel,
                 action: () {
                   _showExitConfirmationDialog(context);
                 }),
@@ -222,14 +220,14 @@ class _LoginScreenState extends State<LoginScreen>
                     children: [
                       CustomButton1(
                         message:
-                        AppLocalizations.instance.translate('cancel'),
+                        AppLocalizations.of(context)!.cancel,
                         action: () {
                           getProvider.notConfirmedUserCancelsReceiveConfirmationCode();
                         },
                       ),
                       CustomButton1(
                         message:
-                        AppLocalizations.instance.translate('accept'),
+                        AppLocalizations.of(context)!.accept,
                         action: () {
                           getProvider.notConfirmedUserAsksForNewVerificationCode(_showMFADialog);
                         },
@@ -270,7 +268,7 @@ class _LoginScreenState extends State<LoginScreen>
                     child: TextField(
                       decoration: InputDecoration(
                         labelText:
-                            AppLocalizations.instance.translate('login_hint'),
+                            AppLocalizations.of(context)!.login_hint,
                       ),
                       controller: _usernameController,
                     ),
@@ -292,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen>
                           child: TextField(
                             decoration: InputDecoration(
                               labelText:
-                                  AppLocalizations.instance.translate('email'),
+                                  AppLocalizations.of(context)!.email,
                             ),
                             controller: _emailController,
                           ),
@@ -304,8 +302,7 @@ class _LoginScreenState extends State<LoginScreen>
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: TextField(
                       decoration: InputDecoration(
-                        labelText: AppLocalizations.instance
-                            .translate('password_hint'),
+                        labelText: AppLocalizations.of(context)!.password_hint,
                       ),
                       controller: _passwordController,
                       obscureText: true,
@@ -328,8 +325,7 @@ class _LoginScreenState extends State<LoginScreen>
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: TextField(
                               decoration: InputDecoration(
-                                labelText: AppLocalizations.instance
-                                    .translate('repeat_password'),
+                                labelText: AppLocalizations.of(context)!.repeat_password,
                               ),
                               controller: _repeatPasswordController,
                               obscureText: true,
@@ -343,8 +339,8 @@ class _LoginScreenState extends State<LoginScreen>
                     child: Center(
                       child: CustomButton1(
                         message: getProvider.isLogin
-                            ? AppLocalizations.instance.translate('login')
-                            : AppLocalizations.instance.translate('register'),
+                            ? AppLocalizations.of(context)!.login
+                            : AppLocalizations.of(context)!.register,
                         action: () => getProvider.submitData(
                             username: _usernameController.text.orEmpty(),
                             email: _emailController.text.orEmpty(),
@@ -367,8 +363,7 @@ class _LoginScreenState extends State<LoginScreen>
                       children: [
                         Center(
                           child: Text(
-                            AppLocalizations.instance
-                                .translate('have_an_account'),
+                            AppLocalizations.of(context)!.have_an_account,
                           ),
                         ),
                         TextButton(
@@ -381,7 +376,7 @@ class _LoginScreenState extends State<LoginScreen>
                             // _emailController.text = '';
                           }),
                           child: Text(
-                            AppLocalizations.instance.translate('register'),
+                            AppLocalizations.of(context)!.register,
                           ),
                         ),
                       ],
@@ -396,8 +391,7 @@ class _LoginScreenState extends State<LoginScreen>
                             shadowColor: Colors.amber),
                         onPressed: () {},
                         child: Text(
-                          AppLocalizations.instance
-                              .translate('forgotten_password'),
+                          AppLocalizations.of(context)!.forgotten_password,
                         ),
                       ),
                     ),

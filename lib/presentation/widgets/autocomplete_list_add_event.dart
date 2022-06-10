@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/provider/add_food_event_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
@@ -147,7 +147,7 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
                   ) {
                       _foodInputController = textEditingController;
                       return TextField(
-                        decoration: InputDecoration(labelText: AppLocalizations.instance.translate('write_here_hint'),),
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.write_here_hint),
                         controller: textEditingController,
                         focusNode: focusNode,
                       );
@@ -187,7 +187,7 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
                             Container(
                               alignment: Alignment.centerLeft,
                               margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge, vertical: Dimens.marginSmall),
-                              child: Text('${AppLocalizations.instance.translate('quantity')}: ${ingredient.qty}' 'gr'),
+                              child: Text('${AppLocalizations.of(context)!.quantity}: ${ingredient.qty}' 'gr'),
                             ),
                           Container(height: 1, color: Colors.amber,),
                         ],

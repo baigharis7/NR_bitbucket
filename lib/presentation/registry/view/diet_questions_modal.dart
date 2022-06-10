@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
@@ -26,7 +26,7 @@ class _DietQuestionsModalState extends State<DietQuestionsModal>
         useSafeArea: true,
         builder: (BuildContext context) {
           return SimpleDialog(
-            title: Text(AppLocalizations.instance.translate('choose_aversions')),
+            title: Text(AppLocalizations.of(context)!.choose_aversions),
             children: [
               AutocompleteListHits(
                 data: foodAndDrinks!,
@@ -56,7 +56,7 @@ class _DietQuestionsModalState extends State<DietQuestionsModal>
                     Dimens.zero
                 ),
                 child:
-                Text(AppLocalizations.instance.translate('diet_type_question')),
+                Text(AppLocalizations.of(context)!.diet_type_question),
               ),
               Container(
                 margin: const EdgeInsets.fromLTRB(
@@ -103,7 +103,7 @@ class _DietQuestionsModalState extends State<DietQuestionsModal>
                 margin: const EdgeInsets.fromLTRB(Dimens.marginNormal, Dimens.zero,
                     Dimens.marginLarge, Dimens.zero),
                 child: Text(
-                  AppLocalizations.instance.translate('allergens_question'),
+                  AppLocalizations.of(context)!.allergens_question,
                 ),
               ),
               Container(
@@ -126,7 +126,7 @@ class _DietQuestionsModalState extends State<DietQuestionsModal>
                 margin: const EdgeInsets.fromLTRB(Dimens.marginNormal,
                     Dimens.marginXLarge, Dimens.marginLarge, Dimens.zero),
                 child: Text(
-                  AppLocalizations.instance.translate('intolerances_question'),
+                  AppLocalizations.of(context)!.intolerances_question,
                 ),
               ),
               Container(
@@ -153,7 +153,7 @@ class _DietQuestionsModalState extends State<DietQuestionsModal>
                 margin: const EdgeInsets.fromLTRB(Dimens.marginNormal,
                     Dimens.marginXLarge, Dimens.marginLarge, Dimens.zero),
                 child: Text(
-                  AppLocalizations.instance.translate('aversions_question'),
+                  AppLocalizations.of(context)!.aversions_question,
                 ),
               ),
               getProvider.getAversions.isNotEmpty
@@ -184,7 +184,7 @@ class _DietQuestionsModalState extends State<DietQuestionsModal>
                     )
                   : ElevatedButton(
                       onPressed: () => showAversionsDialog(getProvider.getFoodsAndDrinksNamesMaster!.foodsAndDrinksNames),
-                      child: Text(AppLocalizations.instance.translate('choose_aversions'),
+                      child: Text(AppLocalizations.of(context)!.choose_aversions,
                       ),
                     ),
               Container(margin: const EdgeInsets.only(bottom: Dimens.marginLarge),)

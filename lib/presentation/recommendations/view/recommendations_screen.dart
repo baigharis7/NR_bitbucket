@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
@@ -59,7 +59,7 @@ class _RecommendationsScreenState extends State<RecommendationsScreen>
                             )
                           ),
                           child: Text(
-                            AppLocalizations.instance.translate('recommendations'),
+                            AppLocalizations.of(context)!.recommendations,
                             style: const TextStyle(
                                 fontSize: Dimens.fontSizeXLarge,
                                 color: Colors.white

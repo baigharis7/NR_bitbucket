@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_picker_helper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
@@ -35,7 +35,7 @@ class _GeneralQuestionState extends State<GeneralQuestionsModal> {
               margin: const EdgeInsets.fromLTRB(
                   Dimens.marginNormal, Dimens.marginXLarge,
                   Dimens.marginLarge, Dimens.zero),
-              child: Text(AppLocalizations.instance.translate('name_you_want_to_be_called_by')),
+              child: Text(AppLocalizations.of(context)!.name_you_want_to_be_called_by),
             ),
             Container(
               alignment: Alignment.centerLeft,
@@ -44,7 +44,7 @@ class _GeneralQuestionState extends State<GeneralQuestionsModal> {
                   Dimens.marginLarge),
               child: TextField(
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.instance.translate('write_your_name_here'),),
+                  labelText: AppLocalizations.of(context)!.write_your_name_here),
                 controller: _commonNameController,
                 onChanged: (name) => registryProvider.setCommonName(name),
               ),
@@ -52,7 +52,7 @@ class _GeneralQuestionState extends State<GeneralQuestionsModal> {
             Container(
               alignment: Alignment.centerLeft,
               child: Text(
-                AppLocalizations.instance.translate('birthday_question'),),
+                AppLocalizations.of(context)!.birthday_question),
               margin: const EdgeInsets.fromLTRB(
                   Dimens.marginNormal, Dimens.marginXLarge,
                   Dimens.marginLarge, Dimens.zero),
@@ -72,7 +72,7 @@ class _GeneralQuestionState extends State<GeneralQuestionsModal> {
                 child: TextButton(
                   onPressed: () =>
                       DatePickerHelper.presentDatePicker(context, setState, (pickedDate) => registryProvider.setBirthDate(pickedDate)),
-                  child: Text(AppLocalizations.instance.translate('birthday_button'),
+                  child: Text(AppLocalizations.of(context)!.birthday_button,
                   ),
                 ),
               ),
@@ -83,7 +83,7 @@ class _GeneralQuestionState extends State<GeneralQuestionsModal> {
                   Dimens.marginNormal, Dimens.marginXLarge,
                   Dimens.marginLarge, Dimens.zero),
               child: Text(
-                AppLocalizations.instance.translate('sex_question'),
+                AppLocalizations.of(context)!.sex_question,
               ),
             ),
             Row(
@@ -93,7 +93,7 @@ class _GeneralQuestionState extends State<GeneralQuestionsModal> {
                     margin: const EdgeInsets.only(
                         right: Dimens.marginNormal),
                     child: CustomButton1(
-                      message: AppLocalizations.instance.translate('masculine'),
+                      message: AppLocalizations.of(context)!.masculine,
                       isPushed: registryProvider.getSex == SexType.male ? true : false,
                       action: () {
                         setState(() {
@@ -105,7 +105,7 @@ class _GeneralQuestionState extends State<GeneralQuestionsModal> {
                 Container(
                   margin: const EdgeInsets.only(right: Dimens.marginNormal),
                   child: CustomButton1(
-                    message: AppLocalizations.instance.translate('feminine'),
+                    message: AppLocalizations.of(context)!.feminine,
                     isPushed: registryProvider.getSex == SexType.female ? true : false,
                     action: () {
                       setState(() {
@@ -121,7 +121,7 @@ class _GeneralQuestionState extends State<GeneralQuestionsModal> {
                   Dimens.marginNormal, Dimens.marginXLarge,
                   Dimens.marginLarge, Dimens.zero),
               alignment: Alignment.centerLeft,
-              child: Text(AppLocalizations.instance.translate('occupation_question'),),
+              child: Text(AppLocalizations.of(context)!.occupation_question),
             ),
             Container(
               margin: const EdgeInsets.fromLTRB(
@@ -163,8 +163,7 @@ class _GeneralQuestionState extends State<GeneralQuestionsModal> {
                                 alignment: Alignment.centerRight,
                                 child: IconButton(
                                   onPressed: () => ToastHelper().showToast(
-                                    text: activityType.explanation
-                                        .orEmpty(),),
+                                    text: activityType.explanation.orEmpty(),),
                                   icon: const Icon(
                                       Icons.info,
                                       color: Colors.amber

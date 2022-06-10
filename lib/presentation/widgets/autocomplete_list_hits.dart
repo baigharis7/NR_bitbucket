@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
@@ -65,7 +65,7 @@ class _AutocompleteListHits extends State<AutocompleteListHits> {
                 _foodInputController = textEditingController;
                 return TextField(
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.instance.translate('write_here_hint'),),
+                    labelText: AppLocalizations.of(context)!.write_here_hint),
                   controller: textEditingController,
                   focusNode: focusNode,
                 );
