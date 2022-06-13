@@ -1,5 +1,4 @@
 // ignore_for_file: overridden_fields
-
 import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 
 class Allergens {
@@ -7,138 +6,138 @@ class Allergens {
   String? icon;
   int? id;
 
-  Allergens(this.name, this.icon);
-  
+  Allergens(this.icon);
+
   static List<Allergens> listAllAllergens() {
     return [
-        Crustaceans(name: AppLocalizations.instance.translate('crustaceans'), icon: ''),
-        Gluten(name: AppLocalizations.instance.translate('gluten'), icon: ''),
-        Eggs(name: AppLocalizations.instance.translate('eggs'), icon: ''),
-        Fish(name: AppLocalizations.instance.translate('fish'), icon: ''),
-        Peanuts(name: AppLocalizations.instance.translate('peanuts'), icon: ''),
-        Soy(name: AppLocalizations.instance.translate('soy'), icon: ''),
-        Milk(name: AppLocalizations.instance.translate('milk'), icon: ''),
-        Nuts(name: AppLocalizations.instance.translate('nuts'), icon: ''),
-        Celery(name: AppLocalizations.instance.translate('celery'), icon: ''),
-        Mustard(name: AppLocalizations.instance.translate('mustard'), icon: ''),
-        Sesame(name: AppLocalizations.instance.translate('sesame'), icon: ''),
-        Sulphites(name: AppLocalizations.instance.translate('sulphites'), icon: ''),
-        Lupins(name: AppLocalizations.instance.translate('lupins'), icon: ''),
-        Mollusks(name: AppLocalizations.instance.translate('mollusks'), icon: '')
+      Crustaceans(icon: ''),
+      Gluten(icon: ''),
+      Eggs(icon: ''),
+      Fish(icon: ''),
+      Peanuts(icon: ''),
+      Soy(icon: ''),
+      Milk(icon: ''),
+      Nuts(icon: ''),
+      Celery(icon: ''),
+      Mustard(icon: ''),
+      Sesame(icon: ''),
+      Sulphites(icon: ''),
+      Lupins(icon: ''),
+      Mollusks(icon: '')
     ];
   }
 
 }
 
 class Crustaceans extends Allergens {
-  @override String? name;
+  @override String? name = AppLocalizationsHelper.instance.translate('crustaceans');
   @override String? icon;
   @override int? id = 0;
 
-  Crustaceans({this.name, this.icon}): super (name, icon);
+  Crustaceans({this.icon}): super (icon);
 }
 
 class Gluten extends Allergens {
-  @override String? name;
+  @override String? name = AppLocalizationsHelper.instance.translate('gluten');
   @override String? icon;
   @override int? id = 1;
 
-  Gluten({this.name, this.icon}): super (name, icon);
+  Gluten({this.icon}): super (icon);
 
 }
 
 class Eggs extends Allergens {
-  @override String? name;
+  @override String? name = AppLocalizationsHelper.instance.translate('eggs');
   @override String? icon;
   @override int? id = 2;
 
-  Eggs({this.name, this.icon}): super (name, icon);
+  Eggs({this.icon}): super (icon);
 }
 
 class Fish extends Allergens {
-  @override String? name;
+  @override String? name = AppLocalizationsHelper.instance.translate('fish');
   @override String? icon;
   @override int? id = 3;
 
-  Fish({this.name, this.icon}): super (name, icon);
+  Fish({this.icon}): super (icon);
 }
 
 class Peanuts extends Allergens {
-  @override String? name;
+  @override String? name = AppLocalizationsHelper.instance.translate('peanuts');
   @override String? icon;
   @override int? id = 4;
 
-  Peanuts({this.name, this.icon}): super (name, icon);
+  Peanuts({this.icon}): super (icon);
 }
 
 class Soy extends Allergens {
-  @override String? name;
+  @override String? name = AppLocalizationsHelper.instance.translate('soy');
   @override String? icon;
   @override int? id = 5;
 
-  Soy({this.name, this.icon}): super (name, icon);
+  Soy({this.icon}): super (icon);
 }
 
 class Milk extends Allergens {
-  @override String? name;
+  @override String? name = AppLocalizationsHelper.instance.translate('milk');
   @override String? icon;
   @override int? id = 6;
 
-  Milk({this.name, this.icon}): super (name, icon);
+  Milk({this.icon}): super (icon);
 }
 
 class Nuts extends Allergens {
-  @override String? name;
+  @override String? name = AppLocalizationsHelper.instance.translate('nuts');
   @override String? icon;
   @override int? id = 7;
 
-  Nuts({this.name, this.icon}): super (name, icon);
+  Nuts({this.icon}): super (icon);
 }
 
 class Celery extends Allergens {
-  @override String? name;
+  @override String? name = AppLocalizationsHelper.instance.translate('celery');
   @override String? icon;
   @override int? id = 8;
 
-  Celery({this.name, this.icon}): super (name, icon);
+  Celery({this.icon}): super (icon);
 }
 
 class Mustard extends Allergens {
-  @override String? name;
+  @override String? name = AppLocalizationsHelper.instance.translate('mustard');
   @override String? icon;
   @override int? id = 9;
 
-  Mustard({this.name, this.icon}): super (name, icon);
+  Mustard({this.icon}): super (icon);
 }
 
 class Sesame extends Allergens {
-  @override String? name;
+  @override String? name = AppLocalizationsHelper.instance.translate('sesame');
   @override String? icon;
   @override int? id = 10;
 
-  Sesame({this.name, this.icon}): super (name, icon);
+  Sesame({this.icon}): super (icon);
 }
 
 class Sulphites extends Allergens {
-  @override String? name;
+  @override String? name = AppLocalizationsHelper.instance.translate('sulphites');
   @override String? icon;
   @override int? id = 11;
 
-  Sulphites({this.name, this.icon}): super (name, icon);
+  Sulphites({this.icon}): super (icon);
 }
 
 class Lupins extends Allergens {
-  @override String? name;
+  @override String? name = AppLocalizationsHelper.instance.translate('lupins');
   @override String? icon;
   @override int? id = 12;
 
-  Lupins({this.name, this.icon}): super (name, icon);
+  Lupins({this.icon}): super (icon);
 }
 
 class Mollusks extends Allergens {
-  @override String? name;
+  @override String? name = AppLocalizationsHelper.instance.translate('mollusks');
   @override String? icon;
   @override int? id = 13;
 
-  Mollusks({this.name, this.icon}): super (name, icon);
+  Mollusks({this.icon}): super (icon);
 }

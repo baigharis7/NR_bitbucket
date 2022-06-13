@@ -33,6 +33,34 @@ class RegistryProvider extends BaseProvider {
     required this.saveUserRdasInteractor
   });
 
+  bool get isInfoLoaded => _infoLoaded;
+  List<ActivityByOccupationType> get listActivityTypes => ActivityByOccupationType.listAllActivityTypes();
+  List<CommonDiseases> get listDiseases => CommonDiseases.listAllDiseases();
+  List<Allergens> get listAllergens => Allergens.listAllAllergens();
+  List<Intolerances> get listIntolerances => Intolerances.listAllIntolerances();
+  List<DietType> get listDietTypes => DietType.listAllDietTypes();
+  ObjectivesInfoMaster? get getObjectivesInfo => _objectivesInfoMaster;
+  FoodsAndDrinksNamesMaster? get getFoodsAndDrinksNamesMaster => _foodsAndDrinksNamesMaster;
+  get getCommonName => _commonName.orEmpty();
+  get getBirthDate => _birthDate;
+  get getSex => _sex;
+  get getDiseases => _diseases;
+  get isUnderTreatment => _underPharmaceuticalTreatment;
+  get getHeight => _height;
+  get getWeight => _weight;
+  get getBodyFat => _bodyFat;
+  get getWaistMeasurement => _waistMeasurement;
+  get getActivityType => _activityType;
+  get getPeriodRegularity => _periodRegularity;
+  get getPeriodDuration => _periodDuration;
+  get getLastPeriodDate => _lastPeriodDate;
+  get getEatGuts => _eatGuts;
+  get getIntolerances => _intolerances;
+  get getDietType => _dietType;
+  get getAllergens => _allergens;
+  get getAversions => _aversions;
+  get getObjectives => _objectives;
+
   bool _infoLoaded = false;
   String? _commonName;
   DateTime? _birthDate;
@@ -62,120 +90,30 @@ class RegistryProvider extends BaseProvider {
   ObjectivesInfoMaster? _objectivesInfoMaster;
   FoodsAndDrinksNamesMaster? _foodsAndDrinksNamesMaster;
 
-  bool get isInfoLoaded => _infoLoaded;
-
-  List<ActivityByOccupationType> get listActivityTypes =>
-      ActivityByOccupationType.listAllActivityTypes();
-
-  List<CommonDiseases> get listDiseases => CommonDiseases.listAllDiseases();
-
-  List<Allergens> get listAllergens => Allergens.listAllAllergens();
-
-  List<Intolerances> get listIntolerances => Intolerances.listAllIntolerances();
-
-  List<DietType> get listDietTypes => DietType.listAllDietTypes();
-
-  ObjectivesInfoMaster? get getObjectivesInfo => _objectivesInfoMaster;
-
-  FoodsAndDrinksNamesMaster? get getFoodsAndDrinksNamesMaster =>
-      _foodsAndDrinksNamesMaster;
-
-  void setInfoIsLoaded(bool infoIsLoaded) => _infoLoaded = infoIsLoaded;
-
   void initialize() {
     if (!isInfoLoaded) {
-      setInfoIsLoaded(true);
-      getObjectivesInfo.doIfNull(retrieveObjectivesInfoMaster);
-      getFoodsAndDrinksNamesMaster.doIfNull(retrieveFoodAndDrinks);
+      _setInfoIsLoaded(true);
+      getObjectivesInfo.doIfNull(_retrieveObjectivesInfoMaster);
+      getFoodsAndDrinksNamesMaster.doIfNull(_retrieveFoodAndDrinks);
     }
-  }
-
-  void setObjectivesInfoMaster(ObjectivesInfoMaster objectivesInfoMaster) =>
-      _objectivesInfoMaster = objectivesInfoMaster;
-
-  void setFoodsAndDrinksNamesMaster(FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) =>
-      _foodsAndDrinksNamesMaster = foodsAndDrinksNamesMaster;
-
-  void retrieveObjectivesInfoMaster() {
-    launchSync(
-      block: () => getMasterFileInteractor.execute(MasterFilesType.objectivesInfo),
-      onSuccess: (ObjectivesInfoMaster objectivesInfoMaster) {
-        setObjectivesInfoMaster(objectivesInfoMaster);
-      },
-      onError: (error) {
-        // TODO: manage errors.
-        setInfoIsLoaded(false);
-      },
-    );
-  }
-
-  void retrieveFoodAndDrinks() async {
-    launchSync(
-        block: () => getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames),
-        onSuccess: (FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) {
-          setFoodsAndDrinksNamesMaster(foodsAndDrinksNamesMaster);
-        },
-        onError: (Object error) {
-          // TODO: manage error.
-          const g = '';
-        },
-    );
-  }
-
-  String _chooseRightLanguage(String languageCode, ObjectiveInfoMaster objectiveInfoMaster) {
-    String objectiveName = '';
-    if (languageCode == 'es') {
-      objectiveName = objectiveInfoMaster.es;
-    } else {
-      objectiveName = objectiveInfoMaster.en;
-    }
-    return objectiveName;
-  }
-
-  List<SimpleItem> getObjectivesList(String currentLanguage) {
-    return getObjectivesInfo!.objectives.map((objective) => SimpleItem(
-      name: _chooseRightLanguage(currentLanguage, objective),
-      id: objective.id,
-    )).toList();
   }
 
   void setCommonName(String commonName) {
     _commonName = commonName;
     notifyListeners();
   }
-
-  String get getCommonName => _commonName.orEmpty();
-
   void setBirthDate(DateTime birthDate) {
     _birthDate = birthDate;
     notifyListeners();
   }
-
-  DateTime? get getBirthDate => _birthDate;
-
   void setSex(SexType sex) {
     _sex = sex;
     notifyListeners();
   }
-
-  SexType? get getSex => _sex;
-
-  void manageDiseases(int diseaseId) {
-    _diseases.contains(diseaseId)
-        ? _diseases.remove(diseaseId)
-        : _diseases.add(diseaseId);
-    notifyListeners();
-  }
-
-  List<int> get getDiseases => _diseases;
-
   void setPharmaceuticalTreatment(bool changeCheck) {
     _underPharmaceuticalTreatment = changeCheck;
     notifyListeners();
   }
-
-  bool get isUnderTreatment => _underPharmaceuticalTreatment;
-
   void setHeight(int height) {
     _height = height;
     _heightChosen = true;
@@ -187,63 +125,49 @@ class RegistryProvider extends BaseProvider {
     _weightChosen = true;
     notifyListeners();
   }
-
   void setBodyFat(int bodyFat) {
     _bodyFat = bodyFat;
     _bodyFatChosen = true;
     notifyListeners();
   }
-
   void setWaistMeasurement(int waistMeasurement) {
     _waistMeasurement = waistMeasurement;
     _waistMeasurementChosen = true;
     notifyListeners();
   }
-
-  int get getHeight {
-    return _height;
-  }
-
-  int get getWeight {
-    return _weight;
-  }
-
-  int get getBodyFat => _bodyFat;
-
-  int get getWaistMeasurement => _waistMeasurement;
-
-  void onActivityTypeSelected(double activityTypeSelected) {
-    _activityType = activityTypeSelected;
-    notifyListeners();
-  }
-
-  double? get getActivityType => _activityType;
-
   void setPeriodRegularity(MenstruationRegularity regularity) {
     _periodRegularity = regularity;
   }
-
-  get getPeriodRegularity => _periodRegularity;
-
   void setPeriodDuration(int duration) {
     _periodDurationChosen = true;
     _periodDuration = duration;
   }
-
-  get getPeriodDuration => _periodDuration;
-
   void setLastPeriodDate(DateTime date) {
     _lastPeriodDate = date;
   }
-
-  get getLastPeriodDate => _lastPeriodDate;
-
   void setEatGuts(bool eatGuts) {
     _eatGuts = eatGuts;
     notifyListeners();
   }
 
-  get getEatGuts => _eatGuts;
+  void manageDiseases(int diseaseId) {
+    _diseases.contains(diseaseId)
+        ? _diseases.remove(diseaseId)
+        : _diseases.add(diseaseId);
+    notifyListeners();
+  }
+
+  List<SimpleItem> getObjectivesList(String currentLanguage) {
+    return getObjectivesInfo!.objectives.map((objective) => SimpleItem(
+      name: _chooseRightLanguage(currentLanguage, objective),
+      id: objective.id,
+    )).toList();
+  }
+
+  void onActivityTypeSelected(double activityTypeSelected) {
+    _activityType = activityTypeSelected;
+    notifyListeners();
+  }
 
   void manageAllergen(int allergen) {
     _allergens.contains(allergen)
@@ -252,8 +176,6 @@ class RegistryProvider extends BaseProvider {
     notifyListeners();
   }
 
-  List<int> get getAllergens => _allergens;
-
   void manageIntolerance(int intolerance) {
     _intolerances.contains(intolerance)
         ? _intolerances.remove(intolerance)
@@ -261,15 +183,10 @@ class RegistryProvider extends BaseProvider {
     notifyListeners();
   }
 
-  List<int> get getIntolerances => _intolerances;
-
-  // TODO: poner DietType para que se pueda coger sólo una.
   void manageDietType(int diet) {
     _dietType = diet;
     notifyListeners();
   }
-
-  int? get getDietType => _dietType;
 
   void manageAversions(FoodItemMaster aversion) {
     _aversions.contains(aversion)
@@ -282,8 +199,6 @@ class RegistryProvider extends BaseProvider {
     _aversions.remove(aversion);
     notifyListeners();
   }
-
-  List<FoodItemMaster> get getAversions => _aversions;
 
   void setDietQuestionsChecked() {
     _areDietQuestionsChecked = true;
@@ -319,20 +234,11 @@ class RegistryProvider extends BaseProvider {
 
   bool areObjectivesSelected() => _objectives.isEmpty ? false : true;
 
-  List<int> addDietTypesToAllergens() {
-    if (_dietType != null) _allergens.add(_dietType!);
-    return _allergens;
-  }
-
   void manageObjectives(int objective) {
     _objectives.contains(objective)
         ? _objectives.remove(objective)
         : _objectives.add(objective);
     notifyListeners();
-  }
-
-  List<int> get getObjectives {
-    return _objectives;
   }
 
   showFinishButton() {
@@ -378,7 +284,7 @@ class RegistryProvider extends BaseProvider {
       foodAversions:
           getAversions.map((foodItemMaster) => foodItemMaster.id!).toList(),
       dietType: getDietType,
-      exclusions: Exclusions(exclusions: addDietTypesToAllergens()),
+      exclusions: Exclusions(exclusions: _addDietTypesToAllergens()),
       intolerances: getIntolerances,
       // symptoms: , // Añadir cuando esté implementado
       guts: 0,
@@ -417,4 +323,48 @@ class RegistryProvider extends BaseProvider {
       },
     );
   }
+
+  String _chooseRightLanguage(String languageCode, ObjectiveInfoMaster objectiveInfoMaster) {
+    String objectiveName = '';
+    if (languageCode == 'es') {
+      objectiveName = objectiveInfoMaster.es;
+    } else {
+      objectiveName = objectiveInfoMaster.en;
+    }
+    return objectiveName;
+  }
+
+  void _setInfoIsLoaded(bool infoIsLoaded) => _infoLoaded = infoIsLoaded;
+  void _setObjectivesInfoMaster(ObjectivesInfoMaster objectivesInfoMaster) => _objectivesInfoMaster = objectivesInfoMaster;
+  void _setFoodsAndDrinksNamesMaster(FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) => _foodsAndDrinksNamesMaster = foodsAndDrinksNamesMaster;
+  void _retrieveObjectivesInfoMaster() {
+    launchSync(
+      block: () => getMasterFileInteractor.execute(MasterFilesType.objectivesInfo),
+      onSuccess: (ObjectivesInfoMaster objectivesInfoMaster) {
+        _setObjectivesInfoMaster(objectivesInfoMaster);
+      },
+      onError: (error) {
+        // TODO: manage errors.
+        _setInfoIsLoaded(false);
+      },
+    );
+  }
+  void _retrieveFoodAndDrinks() async {
+    launchSync(
+      block: () => getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames),
+      onSuccess: (FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) {
+        _setFoodsAndDrinksNamesMaster(foodsAndDrinksNamesMaster);
+      },
+      onError: (Object error) {
+        // TODO: manage error.
+        const g = '';
+      },
+    );
+  }
+
+  List<int> _addDietTypesToAllergens() {
+    if (_dietType != null) _allergens.add(_dietType!);
+    return _allergens;
+  }
+
 }

@@ -1,4 +1,5 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_response.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/simple_user.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
@@ -30,7 +31,6 @@ class LoginProvider extends BaseProvider {
   final FetchUserAttributesInteractor fetchUserAttributesInteractor;
   final SignInInteractor signInInteractor;
   final SaveUsernameAndEmailInteractor saveUsernameAndEmailInteractor;
-  // final IsUserSignedInInteractor isUserSignedInInteractor;
   final GetMasterFileVersionInteractor getMasterFilesVersionInteractor;
   final ManageMasterFilesInteractor manageMasterFilesInteractor;
   final SaveMasterFileInteractor saveMasterFileInteractor;
@@ -49,7 +49,6 @@ class LoginProvider extends BaseProvider {
     required this.fetchUserAttributesInteractor,
     required this.signInInteractor,
     required this.saveUsernameAndEmailInteractor,
-    // required this.isUserSignedInInteractor,
     required this.getMasterFilesVersionInteractor,
     required this.manageMasterFilesInteractor,
     required this.saveMasterFileInteractor,
@@ -63,28 +62,29 @@ class LoginProvider extends BaseProvider {
     required this.signOutInteractor,
   });
 
+  get getNotConfirmedUserTryingToLogin => _notConfirmedUserTryingToLogin;
+  get isLogin => _loginMode;
+  get getEmail => _email.orEmpty();
+  get getUsername => _username.orEmpty();
+  get getPassword => _password.orEmpty();
+  get isLoginMode => _loginMode;
+  get areMasterFilesChecked => _masterFilesChecked;
+  get isProfileChecked => _profileChecked;
+  get goToRegistry => _goToRegistry;
+  get isNotConfirmedUserTryingToLogin => _notConfirmedUserTryingToLogin;
+
   String? _email;
   String? _username;
   String? _password;
-  bool isLogin = true;
-  bool _areMasterFilesChecked = false;
-  bool _isProfileChecked = false;
+  bool _loginMode = true;
+  bool _masterFilesChecked = false;
+  bool _profileChecked = false;
   Function? _goToRegistry;
   bool _notConfirmedUserTryingToLogin = false;
   bool _userNameAlreadyUsed = false;
 
-  bool get getNotConfirmedUserTryingToLogin => _notConfirmedUserTryingToLogin;
-
-  // init() async {
-  //   await _refreshAllStates();
-  // }
-
-  // _refreshAllStates() async {
-  //   notifyListeners();
-  // }
-
   void changeLoginMode(Function action) {
-    isLogin = !isLogin;
+    _setLoginMode(!isLogin);
     notifyListeners();
     if (!isLogin) {
       action.call();
@@ -92,33 +92,33 @@ class LoginProvider extends BaseProvider {
   }
 
   void submitData({
-    String? username,
-    String? email,
-    String? password,
-    String? repeatPassword,
-    Function? action,
-    Function? goToRegistry,
+    required String username,
+    required String email,
+    required String password,
+    required String repeatPassword,
+    required Function action,
+    required Function goToRegistry,
   }) async {
-    _email = email.orEmpty();
-    _username = username.orEmpty();
-    _password = password.orEmpty();
-    _goToRegistry = goToRegistry;
+    _setEmail(email.orEmpty());
+    _setUserName(username.orEmpty());
+    _setPassword(password.orEmpty());
+    _setGoToRegistry(goToRegistry);
 
-    if (_username.isEmptyOrNull()) {
+    if (getUsername.isEmptyOrNull()) {
       // TODO: manage error.
       // Error: campo vacío.
-    } else if (_password.isEmptyOrNull()) {
+    } else if (getPassword.isEmptyOrNull()) {
       // TODO: manage error.
       // Error: campo vacío.
     } else if (!isLogin && repeatPassword.isEmptyOrNull()) {
       // TODO: manage error.
       // Error campo vacío.
-    } else if (!isLogin && _email.isEmptyOrNull()) {
+    } else if (!isLogin && getEmail.isEmptyOrNull()) {
       // TODO: manage error.
       // Error campo vacío.
     } else {
       if (isLogin) {
-        fetchUserAttributes(action!, isFromLogin: true);
+        _fetchUserAttributes(action, isFromLogin: true);
       } else {
         if (password != repeatPassword) {
           // TODO: manage error.
@@ -126,20 +126,47 @@ class LoginProvider extends BaseProvider {
         } else {
           launchSync(
               block: () => signUpInteractor.execute(
-                _username.orEmpty(),
-                _email.orEmpty(),
-                _password.orEmpty(),
+                getUsername,
+                getEmail,
+                getPassword,
               ),
-              onSuccess: (result) => onSignUpSuccess(result, action!),
-              onError: (Object error) => onSignUpError(error));
+              onSuccess: (result) => _onSignUpSuccess(result, action),
+              onError: (error) => _onSignUpError(error));
         }
       }
     }
   }
 
-  void onSignInError(Object error) {
+  void notConfirmedUserAsksForNewVerificationCode(Function showMfaDialog) {
+    _setNotConfirmedUserTryingToLogin(false);
+
+    launchSync(
+      block: () => resendVerificationCodeInteractor.execute(getUsername.orEmpty()),
+      onSuccess: (ResendSignUpCodeResult resendSignUpCodeResult) => showMfaDialog.call(),
+      onError: (error) {
+        // TODO: manage errors.
+      },
+    );
+  }
+
+  void notConfirmedUserCancelsReceiveConfirmationCode() {
+    _setNotConfirmedUserTryingToLogin(false);
+    notifyListeners();
+  }
+
+  void _setLoginMode(bool isLogin) => _loginMode = isLogin;
+  void _setEmail(String email) => _email = email;
+  void _setUserName(String username) => _username = username;
+  void _setPassword(String password) => _password = password;
+  void _setGoToRegistry(Function goToRegistry) => _goToRegistry = goToRegistry;
+  void _setMasterFilesChecked(bool masterFilesChecked) => _masterFilesChecked = masterFilesChecked;
+  void _setProfileChecked(bool profileChecked) => _profileChecked = profileChecked;
+  void _setNotConfirmedUserTryingToLogin(bool notConfirmedUserTryingToLogin) => _notConfirmedUserTryingToLogin = notConfirmedUserTryingToLogin;
+
+
+  void _onSignInError(Object error) {
     if (error is UserNotConfirmedException) {
-      _notConfirmedUserTryingToLogin = true;
+      _setNotConfirmedUserTryingToLogin(true);
     } else if (error is NotAuthorizedException) {
       // Username/email o password incorrectos o no existen.
       // TODO: manage errors.
@@ -147,51 +174,31 @@ class LoginProvider extends BaseProvider {
     }
   }
 
-  void notConfirmedUserAsksForNewVerificationCode(Function showMfaDialog) {
-    _notConfirmedUserTryingToLogin = false;
-    launchSync(
-      block: () =>
-          resendVerificationCodeInteractor.execute(_username.orEmpty()),
-      onSuccess: (ResendSignUpCodeResult resendSignUpCodeResult) {
-        showMfaDialog.call();
-      },
-      onError: (Object error) {
-        // TODO: manage errors.
-      },
-    );
-  }
-
-  void notConfirmedUserCancelsReceiveConfirmationCode() {
-    _notConfirmedUserTryingToLogin = false;
-    notifyListeners();
-  }
-
-  void fetchUserAttributes(Function? moveToNextScreen, {bool isFromVerificationCode = false, bool isFromLogin = false}) async {
+  void _fetchUserAttributes(Function moveToNextScreen, {bool isFromVerificationCode = false, bool isFromLogin = false}) async {
     if (isFromLogin) await signOutInteractor.execute();
 
     launchSync(
         block: () => fetchUserAttributesInteractor.execute(),
         onSuccess: (CognitoAuthSession session) async {
           if (!isUserConfirmedFromToken(session.userPoolTokens?.idToken)) {
-            _notConfirmedUserTryingToLogin = true;
+            _setNotConfirmedUserTryingToLogin(true);
           } else if (isFromVerificationCode) {
-            saveUserInRemoteUsersDatabase(session.userSub.orEmpty(), () {
-              onFetchUserAttributesSuccess(session, moveToNextScreen);
+            _saveUserInRemoteUsersDatabase(session.userSub.orEmpty(), () {
+              _onFetchUserAttributesSuccess(session, moveToNextScreen);
             });
           } else {
-            onFetchUserAttributesSuccess(session, moveToNextScreen);
+            _onFetchUserAttributesSuccess(session, moveToNextScreen);
           }
         },
-        onError: (error) =>
-            onFetchUserAttributesError(error, moveToNextScreen));
+        onError: (error) => _onFetchUserAttributesError(error, moveToNextScreen));
   }
 
-  void onSignUpSuccess(SignUpResult result, Function action) {
-    saveUsernameAndEmail(_username.orEmpty(), _email.orEmpty());
+  void _onSignUpSuccess(SignUpResult result, Function action) {
+    _saveUsernameAndEmail(getUsername, getEmail);
     action.call();
   }
 
-  void onSignUpError(Object error) {
+  void _onSignUpError(Object error) {
     // TODO: manage error.
     if (error is UsernameExistsException) {
       // TODO: enseñar cartel de que tiene que usar otro nombre
@@ -201,37 +208,33 @@ class LoginProvider extends BaseProvider {
 
   void sendVerificationCode(String confirmationCode, Function action) {
     launchSync(
-      block: () => verificationCodeInteractor.execute(
-          confirmationCode, _username.orEmpty()),
-      onSuccess: (signUpResult) =>
-          onSendVerificationCodeSuccess(signUpResult, action),
-      onError: (error) => onSendVerificationCodeError(error),
+      block: () => verificationCodeInteractor.execute(confirmationCode, getUsername),
+      onSuccess: (signUpResult) => _onSendVerificationCodeSuccess(signUpResult, action),
+      onError: (error) => _onSendVerificationCodeError(error),
     );
   }
 
-  void onSendVerificationCodeSuccess(
-      SignUpResult signUpResult, Function action) {
-    fetchUserAttributes(action, isFromVerificationCode: true);
+  void _onSendVerificationCodeSuccess(SignUpResult signUpResult, Function action) {
+    _fetchUserAttributes(action, isFromVerificationCode: true);
   }
 
-  void onSendVerificationCodeError(Object error) {
+  void _onSendVerificationCodeError(Object error) {
     // TODO: manage errors.
     const g = '';
   }
 
-  void onFetchUserAttributesSuccess(CognitoAuthSession session, Function? moveToNextScreen) {
+  void _onFetchUserAttributesSuccess(CognitoAuthSession session, Function moveToNextScreen) {
     launchSync(
         block: () => saveUserCredentialsInteractor.execute(session),
         onSuccess: (_) {
           if (session.isSignedIn) {
-            if (!_isProfileChecked) {
+            if (!isProfileChecked) {
               launchSync(
                   block: () => checkProfileExistenceInteractor.execute(),
                   onSuccess: (profileExists) {
-                    _isProfileChecked = true;
+                    _setProfileChecked(true);
                     if (!profileExists) {
-                      String? email =
-                          getEmailFromToken(getIdTokenInteractor.execute());
+                      String? email = getEmailFromToken(getIdTokenInteractor.execute());
                       if (email.isNotNull()) {
                         downloadProfile(email.orEmpty(), moveToNextScreen);
                       } else {
@@ -239,7 +242,7 @@ class LoginProvider extends BaseProvider {
                         const g = '';
                       }
                     } else {
-                      manageMasterFiles(moveToNextScreen);
+                      _manageMasterFiles(moveToNextScreen);
                     }
                   },
                   onError: (error) {
@@ -247,15 +250,14 @@ class LoginProvider extends BaseProvider {
                     const g = '';
                   });
             } else {
-              if (!_areMasterFilesChecked) {
-                manageMasterFiles(moveToNextScreen);
+              if (!areMasterFilesChecked) {
+                _manageMasterFiles(moveToNextScreen);
               } else {
-                moveToNextScreen?.call();
+                moveToNextScreen.call();
               }
             }
           } else {
-            performSignIn(
-                _username.orEmpty(), _password.orEmpty(), moveToNextScreen);
+            _performSignIn(getUsername.orEmpty(), getPassword.orEmpty(), moveToNextScreen);
           }
         },
         onError: (error) {
@@ -264,11 +266,11 @@ class LoginProvider extends BaseProvider {
         });
   }
 
-  void onFetchUserAttributesError(Object error, Function? action) {
+  void _onFetchUserAttributesError(Object error, Function action) {
     if (error is UserNotConfirmedException) {
-      _notConfirmedUserTryingToLogin = true;
+      _setNotConfirmedUserTryingToLogin(true);
     } else if (error is SignedOutException) {
-      performSignIn(_username.orEmpty(), _password.orEmpty(), action);
+      _performSignIn(getUsername, getPassword, action);
     } else {
       // TODO: manage errors.
       const g = '';
@@ -281,67 +283,60 @@ class LoginProvider extends BaseProvider {
       onSuccess: (UserProfileModel? userProfileModel) {
         if (userProfileModel.isNull()) {
           // TODO: poner diálogo que avisa de que no tiene perfil y tiene que tenerlo para usar la app.
-          manageMasterFiles(() => _goToRegistry?.call());
+          _manageMasterFiles(() => _goToRegistry?.call());
         } else {
-          saveProfileInLocal(userProfileModel!, moveToNextScreen!);
+          _saveProfileInLocal(userProfileModel!, moveToNextScreen!);
         }
       },
       onError: (error) {
         // TODO: manage errors.
         const g = '';
-        _isProfileChecked = false;
+        _setProfileChecked(false);
       },
     );
   }
 
-  void saveProfileInLocal(
-      UserProfileModel userProfileModel, Function? moveToNextScreen) {
+  void _saveProfileInLocal(UserProfileModel userProfileModel, Function? moveToNextScreen) {
     launchSync(
       block: () => saveProfileInteractor.execute(userProfileModel),
-      onSuccess: (_) {
-        manageMasterFiles(moveToNextScreen);
-      },
-      onError: () {
+      onSuccess: (_) => _manageMasterFiles(moveToNextScreen),
+      onError: (error) {
         // TODO: manage errors.
         const g = '';
-        _isProfileChecked = false;
+        _setProfileChecked(false);
       },
     );
   }
 
-  void saveUsernameAndEmail(String username, String email) {
+  void _saveUsernameAndEmail(String username, String email) {
     saveUsernameAndEmailInteractor.execute(username, email);
   }
 
   void resendVerificationCode() {
     launchSync(
-      block: () =>
-          resendVerificationCodeInteractor.execute(_username.orEmpty()),
+      block: () => resendVerificationCodeInteractor.execute(_username.orEmpty()),
       onSuccess: (ResendSignUpCodeResult resendSignUpCodeResult) {
         // TODO: poner toast.
         const g = '';
       },
-      onError: (Object error) {
+      onError: (error) {
         // TODO: manage errors.
         const g = '';
       },
     );
   }
 
-  void performSignIn(String username, String password, Function? action) {
+  void _performSignIn(String username, String password, Function action) {
     launchSync(
         block: () => signInInteractor.execute(
               username.orEmpty(),
               password.orEmpty(),
             ),
-        onSuccess: (SignInResult result) {
-          fetchUserAttributes(action);
-          // action?.call();
-        },
-        onError: (error) => onSignInError(error));
+        onSuccess: (SignInResult result) => _fetchUserAttributes(action),
+        onError: (error) => _onSignInError(error));
   }
 
-  void manageMasterFiles(Function? onFinish) {
+  void _manageMasterFiles(Function? onFinish) {
     launchSync(
         block: () async => manageMasterFilesInteractor.execute(
               await getMasterFilesVersionInteractor
@@ -357,13 +352,11 @@ class LoginProvider extends BaseProvider {
               await getMasterFilesVersionInteractor
                   .execute(MasterFilesType.recommendationGroups),
             ),
-        onSuccess: (MasterFilesResponse masterFilesResponse) =>
-            onSuccessManageMasterFiles(masterFilesResponse, onFinish),
-        onError: (Object error) => onErrorManageMasterFiles(error, onFinish));
+        onSuccess: (MasterFilesResponse masterFilesResponse) => _onSuccessManageMasterFiles(masterFilesResponse, onFinish),
+        onError: (error) => _onErrorManageMasterFiles(error, onFinish));
   }
 
-  void onSuccessManageMasterFiles(
-      MasterFilesResponse masterFilesResponse, Function? onFinish) {
+  void _onSuccessManageMasterFiles(MasterFilesResponse masterFilesResponse, Function? onFinish) {
     masterFilesResponse.cookingMethodsResponse.doIfAintNull(() {
       saveMasterFileInteractor.execute(
           masterFilesResponse.cookingMethodsResponse,
@@ -393,26 +386,22 @@ class LoginProvider extends BaseProvider {
           masterFilesResponse.recommendationGroupsResponse,
           MasterFilesType.recommendationGroups);
     });
-    _areMasterFilesChecked = true;
+    _setMasterFilesChecked(true);
     onFinish?.call();
   }
 
-  void onErrorManageMasterFiles(Object error, Function? onFinish) {
+  void _onErrorManageMasterFiles(Object error, Function? onFinish) {
     // TODO: manage errors.
-    _areMasterFilesChecked = false;
+    _setMasterFilesChecked(false);
     // onFinish?.call();
   }
 
-  void saveUserInRemoteUsersDatabase(
-      String userId, Function finishFetchUserAttributes) {
+  void _saveUserInRemoteUsersDatabase(String userId, Function finishFetchUserAttributes) {
     final simpleUser = SimpleUser(
-        email: _email.orEmpty(), userName: _username.orEmpty(), userId: userId);
+        email: getEmail.orEmpty(), userName: getUsername.orEmpty(), userId: userId);
     launchSync(
-        block: () =>
-            saveUserInUsersRemoteDatabaseInteractor.execute(simpleUser),
-        onSuccess: (_) {
-          finishFetchUserAttributes.call();
-        },
+        block: () => saveUserInUsersRemoteDatabaseInteractor.execute(simpleUser),
+        onSuccess: (_) => finishFetchUserAttributes.call(),
         onError: (error) {
           // TODO: manage errors.
           const g = '';

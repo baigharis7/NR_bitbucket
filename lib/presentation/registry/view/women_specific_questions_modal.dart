@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_picker_helper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
@@ -26,7 +26,7 @@ class WomenSpecificQuestionsModal extends StatelessWidget {
                 margin: const EdgeInsets.fromLTRB(
                     Dimens.marginNormal, Dimens.marginXLarge,
                     Dimens.marginLarge, Dimens.zero),
-                child: Text(AppLocalizations.instance.translate('regularity_period_question'))
+                child: Text(AppLocalizations.of(context)!.regularity_period_question)
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -35,7 +35,7 @@ class WomenSpecificQuestionsModal extends StatelessWidget {
                     margin: const EdgeInsets.only(
                         right: Dimens.marginNormal),
                     child: CustomButton1(
-                      message: AppLocalizations.instance.translate('regular'),
+                      message: AppLocalizations.of(context)!.regular,
                       isPushed: registryProvider.getPeriodRegularity == MenstruationRegularity.regular ? true : false,
                       action: () {
                         setState(() {
@@ -47,7 +47,7 @@ class WomenSpecificQuestionsModal extends StatelessWidget {
                 Container(
                   margin: const EdgeInsets.only(right: Dimens.marginNormal),
                   child: CustomButton1(
-                    message: AppLocalizations.instance.translate('irregular'),
+                    message: AppLocalizations.of(context)!.irregular,
                     isPushed: registryProvider.getPeriodRegularity == MenstruationRegularity.irregular ? true : false,
                     action: () {
                       setState(() {
@@ -66,7 +66,7 @@ class WomenSpecificQuestionsModal extends StatelessWidget {
                         margin: const EdgeInsets.fromLTRB(
                             Dimens.marginNormal, Dimens.marginXLarge,
                             Dimens.marginLarge, Dimens.zero),
-                        child: Text(AppLocalizations.instance.translate('period_duration_question'))
+                        child: Text(AppLocalizations.of(context)!.period_duration_question)
                       ),
                     NumberPicker(
                         minValue: Constants.MIN_PERIOD_DURATION,
@@ -92,7 +92,7 @@ class WomenSpecificQuestionsModal extends StatelessWidget {
                         margin: const EdgeInsets.fromLTRB(
                             Dimens.marginNormal, Dimens.marginXLarge,
                             Dimens.marginLarge, Dimens.zero),
-                        child: Text(AppLocalizations.instance.translate('last_period_question'))
+                        child: Text(AppLocalizations.of(context)!.last_period_question)
                     ),
                     registryProvider.getLastPeriodDate == null
                         ? Container(
@@ -102,7 +102,7 @@ class WomenSpecificQuestionsModal extends StatelessWidget {
                             child: TextButton(
                               onPressed: () =>
                                   DatePickerHelper.presentDatePicker(context, setState, (pickedDate) => registryProvider.setLastPeriodDate(pickedDate)),
-                              child: Text(AppLocalizations.instance.translate('choose_last_period_date'),),
+                              child: Text(AppLocalizations.of(context)!.choose_last_period_date),
                             ),
                           )
                         : Container(

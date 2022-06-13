@@ -8,7 +8,6 @@ import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simpl
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
-import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
 
 // TODO: Tengo que poner lo de las bebidas.
@@ -25,25 +24,29 @@ class AddFoodEventProvider extends BaseProvider {
     required this.getMasterFileInteractor,
   });
 
+  bool onSaveFoodEventSuccess = false;
+  get isInfoLoaded => _infoLoaded;
+  get getFoodAndDrinksNames => _foodAndDrinksNames;
+  get getCookingMethods => _cookingMethods;
+  get getCookingMethodsInfo => _cookingMethodsInfo;
+  get getIngredients => _ingredients;
+  get getDrinks => _drinks;
+
   bool _infoLoaded = false;
   FoodsAndDrinksNamesMaster? _foodAndDrinksNames;
   CookingMethodsMaster? _cookingMethods;
   CookingMethodsInfoMaster? _cookingMethodsInfo;
   final List<FoodInEvent> _ingredients = [];
   final List<FoodInEvent> _drinks = [];
-  bool onSaveFoodEventSuccess = false;
 
-  bool get isInfoLoaded => _infoLoaded;
-  FoodsAndDrinksNamesMaster? get getFoodAndDrinksNames => _foodAndDrinksNames;
-  CookingMethodsMaster? get getCookingMethods => _cookingMethods;
-  CookingMethodsInfoMaster? get getCookingMethodsInfo => _cookingMethodsInfo;
-  List<FoodInEvent> get getIngredients => _ingredients;
-  List<FoodInEvent> get getDrinks => _drinks;
-
-  bool setInfoLoaded(bool infoLoaded) => _infoLoaded = infoLoaded;
-  void setFoodAndDrinksNames(FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) => _foodAndDrinksNames = foodsAndDrinksNamesMaster;
-  void setCookingMethods(CookingMethodsMaster cookingMethodsMaster) => _cookingMethods = cookingMethodsMaster;
-  void setCookingMethodsInfo(CookingMethodsInfoMaster cookingMethodsInfoMaster) => _cookingMethodsInfo = cookingMethodsInfoMaster;
+  void initialize() {
+    if (!isInfoLoaded) {
+      _setInfoLoaded(true);
+      getFoodAndDrinksNames.doIfNull(_retrieveFoodAndDrinks);
+      getCookingMethods.doIfNull(_retrieveCookingMethods);
+      getCookingMethodsInfo.doIfNull(_retrieveCookingMethodsInfo);
+    }
+  }
 
   void addIngredient(FoodInEvent foodEntered) {
     if (getIngredients.map((e) => e.id).contains(foodEntered.id)) {
@@ -75,54 +78,6 @@ class AddFoodEventProvider extends BaseProvider {
     notifyListeners();
   }
 
-  void initialize() {
-    if (!isInfoLoaded) {
-      setInfoLoaded(true);
-      getFoodAndDrinksNames.doIfNull(retrieveFoodAndDrinks);
-      getCookingMethods.doIfNull(retrieveCookingMethods);
-      getCookingMethodsInfo.doIfNull(retrieveCookingMethodsInfo);
-    }
-  }
-
-  void retrieveFoodAndDrinks() async {
-    launchSync(
-        block: () => getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames),
-        onSuccess: (FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) {
-          setFoodAndDrinksNames(foodsAndDrinksNamesMaster);
-        },
-        onError: (Object error) {
-          // TODO: control error.
-          const g = '';
-          setInfoLoaded(false);
-        }
-    );
-  }
-
-  void retrieveCookingMethods() async {
-    launchSync(
-        block: () => getMasterFileInteractor.execute(MasterFilesType.cookingMethods),
-        onSuccess: (CookingMethodsMaster cookingMethodsMaster) {
-          setCookingMethods(cookingMethodsMaster);
-        },
-        onError: (Object error) {
-          // TODO: control error.
-          setInfoLoaded(false);
-        }
-    );
-  }
-
-  void retrieveCookingMethodsInfo() async {
-    launchSync(
-        block: () => getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo),
-        onSuccess: (CookingMethodsInfoMaster cookingMethodsInfo) {
-          setCookingMethodsInfo(cookingMethodsInfo);
-        },
-        onError: (Object error) {
-          setInfoLoaded(false);
-        }
-    );
-  }
-
   void onFinishClicked(Function onFinish) {
     final foodEvent = FoodEventSimple(
         userId: getUserIdInteractor.execute(),
@@ -136,16 +91,14 @@ class AddFoodEventProvider extends BaseProvider {
       onSuccess: (UploadFoodEvent uploadFoodEvent) {
         if (uploadFoodEvent.uploadSuccess) {
           launchSync(
-            block: () {
-              saveFoodEventInteractor.execute(uploadFoodEvent);
-            },
+            block: () => saveFoodEventInteractor.execute(uploadFoodEvent),
             onSuccess: (_) {
               onSaveFoodEventSuccess = true;
               notifyListeners();
               Future.delayed(const Duration(milliseconds: 1000), () {
                 onSaveFoodEventSuccess = false;
-                _ingredients.clear();
-                _drinks.clear();
+                getIngredients.clear();
+                getDrinks.clear();
                 notifyListeners();
                 onFinish.call();
               });
@@ -163,6 +116,44 @@ class AddFoodEventProvider extends BaseProvider {
         // TODO: manage error uploading even
         final g = error.toString();
         },
+    );
+  }
+
+  bool _setInfoLoaded(bool infoLoaded) => _infoLoaded = infoLoaded;
+  void _setFoodAndDrinksNames(FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) => _foodAndDrinksNames = foodsAndDrinksNamesMaster;
+  void _setCookingMethods(CookingMethodsMaster cookingMethodsMaster) => _cookingMethods = cookingMethodsMaster;
+  void _setCookingMethodsInfo(CookingMethodsInfoMaster cookingMethodsInfoMaster) => _cookingMethodsInfo = cookingMethodsInfoMaster;
+
+  void _retrieveFoodAndDrinks() async {
+    launchSync(
+        block: () => getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames),
+        onSuccess: (FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) => _setFoodAndDrinksNames(foodsAndDrinksNamesMaster),
+        onError: (Object error) {
+          // TODO: control error.
+          const g = '';
+          _setInfoLoaded(false);
+        }
+    );
+  }
+
+  void _retrieveCookingMethods() async {
+    launchSync(
+        block: () => getMasterFileInteractor.execute(MasterFilesType.cookingMethods),
+        onSuccess: (CookingMethodsMaster cookingMethodsMaster) => _setCookingMethods(cookingMethodsMaster),
+        onError: (Object error) {
+          // TODO: control error.
+          _setInfoLoaded(false);
+        }
+    );
+  }
+
+  void _retrieveCookingMethodsInfo() async {
+    launchSync(
+        block: () => getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo),
+        onSuccess: (CookingMethodsInfoMaster cookingMethodsInfo) => _setCookingMethodsInfo(cookingMethodsInfo),
+        onError: (Object error) {
+          _setInfoLoaded(false);
+        }
     );
   }
 

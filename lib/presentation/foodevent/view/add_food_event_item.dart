@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_master.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/selectable_option.dart';
 
@@ -61,7 +61,7 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
               flex: 1,
               child: Container(
                 margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginLarge),
-                child: Text('${AppLocalizations.instance.translate('quantity')}:')
+                child: Text('${AppLocalizations.of(context)!.quantity}:')
               ),
             ),
             Expanded(
@@ -72,7 +72,7 @@ class _AddFoodEventItem extends State<AddFoodEventItem> {
                   keyboardType: TextInputType.number,
                   controller: _textController,
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.instance.translate('write_here_hint'),
+                    labelText: AppLocalizations.of(context)!.write_here_hint,
                   ),
                   onChanged: (qty) => widget.ingredient.qty = int.parse(qty),
                 ),

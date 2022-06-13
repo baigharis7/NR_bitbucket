@@ -1,21 +1,19 @@
 // ignore_for_file: overridden_fields
-
 import 'dart:core';
-
-import '../../../infrastructure/helpers/i10n_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 
 class DietType {
   String? name;
   int? id;
 
-  DietType({this.name});
+  DietType();
 
   static List<DietType> listAllDietTypes() {
     return [
-      // Omnivorous(name: AppLocalizations.instance.translate('omnivorous')),
-      Vegetarian(name: AppLocalizations.instance.translate('vegetarian')),
-      Vegan(name: AppLocalizations.instance.translate('vegan')),
-      Halal(name: AppLocalizations.instance.translate('halal')),
+      // Omnivorous(name: AppLocalizationsHelper.instance.translate('omnivorous')),
+      Vegetarian(),
+      Vegan(),
+      Halal(),
     ];
   }
 }
@@ -24,32 +22,32 @@ class Omnivorous extends DietType {
   @override
   String? name;
 
-  Omnivorous({this.name}): super(name: name);
+  Omnivorous(): super();
 }
 
 class Vegetarian extends DietType {
   @override
-  String? name;
+  String? name = AppLocalizationsHelper.instance.translate('vegetarian');
   @override
   int? id = 14;
   
-  Vegetarian({this.name}): super(name: name);
+  Vegetarian(): super();
 }
 
 class Vegan extends DietType {
   @override
-  String? name;
+  String? name = AppLocalizationsHelper.instance.translate('vegan');
   @override
   int? id = 15;
 
-  Vegan({this.name}): super(name: name);
+  Vegan(): super();
 }
 
 class Halal extends DietType {
   @override
-  String? name;
+  String? name = AppLocalizationsHelper.instance.translate('halal');
   @override
   int? id = 16;
 
-  Halal({this.name}): super(name: name);
+  Halal(): super();
 }

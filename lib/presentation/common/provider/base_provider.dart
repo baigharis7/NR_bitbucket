@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 abstract class BaseProvider extends ChangeNotifier {
 
-  bool _isLoading = false;
   bool get isLoading => _isLoading;
+  bool _isLoading = false;
+
   void manageLoading(bool isLoading) {
     _isLoading = isLoading;
     notifyListeners();

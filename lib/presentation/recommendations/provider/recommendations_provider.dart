@@ -20,6 +20,15 @@ class RecommendationsProvider extends BaseProvider {
     required this.getMasterFileInteractor
   });
 
+  get isInfoLoaded => _infoLoaded;
+  get getRecommendation => _recommendation;
+  get isRecommendationOrdered => _recommendationOrdered;
+  get getRecommendationGroups => _recommendationGroups;
+  get getFoodAndDrinksNames => _foodAndDrinksNames;
+  get getSelectedFoodIds => _selectedFoodIds;
+  get getSelectedFoodNames => _selectedFoodNames;
+  get isMultiSelectionActive => _multiSelection;
+
   bool _infoLoaded = false;
   Recommendation? _recommendation;
   bool _recommendationOrdered = false;
@@ -29,91 +38,30 @@ class RecommendationsProvider extends BaseProvider {
   final List<String> _selectedFoodNames = [];
   bool _multiSelection = false;
 
-  bool get isInfoLoaded => _infoLoaded;
-  Recommendation? get getRecommendation => _recommendation;
-  bool get isRecommendationOrdered => _recommendationOrdered;
-  RecommendationGroupsMaster? get getRecommendationGroups => _recommendationGroups;
-  FoodsAndDrinksNamesMaster? get getFoodAndDrinksNames => _foodAndDrinksNames;
-  List<int> get getSelectedFoodIds => _selectedFoodIds;
-  List<String> get getSelectedFoodNames => _selectedFoodNames;
-  bool get isMultiSelectionActive => _multiSelection;
+  void initialize() {
+    if (!isInfoLoaded) {
+      _setInfoLoaded(true);
+      launchSync(
+          block: () {
+            getRecommendationGroups.doIfNull(_retrieveRecommendationGroups);
+            getFoodAndDrinksNames.doIfNull(_retrieveFoodAndDrinks);
+            return true;
+          },
+          onSuccess: (_) => _orderRecommendation()
+      );
+    }
+  }
 
-  void setInfoLoaded(bool infoLoaded) => _infoLoaded = infoLoaded;
-  void setRecommendation(Recommendation? recommendation) => _recommendation = recommendation;
-  void setRecommendationOrdered(bool isRecommendationOrdered) => _recommendationOrdered = isRecommendationOrdered;
-  void setRecommendationGroups(RecommendationGroupsMaster recommendationGroups) => _recommendationGroups = recommendationGroups;
-  void setFoodsAndDrinksNames(FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) => _foodAndDrinksNames = foodsAndDrinksNamesMaster;
   void manageSelectedFood(SimpleItem foodId) {
     getSelectedFoodIds.contains(foodId.id) ? getSelectedFoodIds.remove(foodId.id) : getSelectedFoodIds.add(foodId.id);
     getSelectedFoodNames.contains(foodId.name) ? getSelectedFoodNames.remove(foodId.name) : getSelectedFoodNames.add(foodId.name);
     if (getSelectedFoodIds.isEmpty) setMultiSelection(false);
     notifyListeners();
   }
+
   void setMultiSelection(bool isActive) {
     _multiSelection = isActive;
     notifyListeners();
-  }
-
-  void initialize() {
-    if (!isInfoLoaded) {
-      setInfoLoaded(true);
-      launchSync(
-        block: () {
-          getRecommendationGroups.doIfNull(retrieveRecommendationGroups);
-          getFoodAndDrinksNames.doIfNull(retrieveFoodAndDrinks);
-          return true;
-          },
-          onSuccess: (_) => orderRecommendation()
-      );
-    }
-  }
-
-  void orderRecommendation() async {
-    final _userId = getUserIdInteractor.execute();
-    setRecommendationOrdered(true);
-    launchSync(
-      block: () => getRecommendationInteractor.execute(_userId.orEmpty()),
-      onSuccess: (Recommendation? recommendation) {
-        setRecommendation(recommendation!);
-        notifyListeners();
-        },
-      onError: (Object error) {
-        _recommendation = null;
-        setRecommendationOrdered(false);
-        notifyListeners();
-        // TODO: manage errors.
-        },
-    );
-  }
-
-  void retrieveFoodAndDrinks() async {
-    launchSync(
-        showLoading: false,
-        block: () => getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames),
-        onSuccess: (FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) {
-          setFoodsAndDrinksNames(foodsAndDrinksNamesMaster);
-          notifyListeners();
-        },
-        onError: (Object error) {
-          // TODO: control error.
-          setInfoLoaded(false);
-        }
-    );
-  }
-
-  void retrieveRecommendationGroups() {
-    launchSync(
-      showLoading: false,
-      block: () => getMasterFileInteractor.execute(MasterFilesType.recommendationGroups),
-      onSuccess: (RecommendationGroupsMaster recommendationGroups) {
-        setRecommendationGroups(recommendationGroups);
-        notifyListeners();
-      },
-      onError: () {
-        // TODO: manage errors.
-        setInfoLoaded(false);
-      },
-    );
   }
 
   String getRecommendationGroupName(int groupRecommendation, String language) {
@@ -138,8 +86,58 @@ class RecommendationsProvider extends BaseProvider {
     }).toList();
   }
 
-  Future<bool> removeRecommendation() async {
-    setRecommendation(null);
-    return true;
+  void _setInfoLoaded(bool infoLoaded) => _infoLoaded = infoLoaded;
+  void _setRecommendation(Recommendation? recommendation) => _recommendation = recommendation;
+  void _setRecommendationOrdered(bool isRecommendationOrdered) => _recommendationOrdered = isRecommendationOrdered;
+  void _setRecommendationGroups(RecommendationGroupsMaster recommendationGroups) => _recommendationGroups = recommendationGroups;
+  void _setFoodsAndDrinksNames(FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) => _foodAndDrinksNames = foodsAndDrinksNamesMaster;
+
+  void _orderRecommendation() async {
+    final _userId = getUserIdInteractor.execute();
+    _setRecommendationOrdered(true);
+    launchSync(
+      block: () => getRecommendationInteractor.execute(_userId.orEmpty()),
+      onSuccess: (Recommendation? recommendation) {
+        _setRecommendation(recommendation!);
+        notifyListeners();
+      },
+      onError: (Object error) {
+        _recommendation = null;
+        _setRecommendationOrdered(false);
+        notifyListeners();
+        // TODO: manage errors.
+      },
+    );
   }
+
+  void _retrieveFoodAndDrinks() async {
+    launchSync(
+        showLoading: false,
+        block: () => getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames),
+        onSuccess: (FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) {
+          _setFoodsAndDrinksNames(foodsAndDrinksNamesMaster);
+          notifyListeners();
+        },
+        onError: (Object error) {
+          // TODO: control error.
+          _setInfoLoaded(false);
+        }
+    );
+  }
+
+  void _retrieveRecommendationGroups() {
+    launchSync(
+      showLoading: false,
+      block: () => getMasterFileInteractor.execute(MasterFilesType.recommendationGroups),
+      onSuccess: (RecommendationGroupsMaster recommendationGroups) {
+        _setRecommendationGroups(recommendationGroups);
+        notifyListeners();
+      },
+      onError: () {
+        // TODO: manage errors.
+        _setInfoLoaded(false);
+      },
+    );
+  }
+
 }
