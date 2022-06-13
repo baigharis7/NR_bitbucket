@@ -81,6 +81,11 @@ flutter:
     - assets/images/dummy_recipe.jpeg
 
   fonts:
+    - family: Prettywise
+      fonts:
+        - asset: assets/fonts/prettywise-regular.otf
+        - asset: assets/fonts/prettywise-bold.otf
+          weight: 700
     - family: Montserrat
       fonts:
         - asset: assets/fonts/montserrat-regular.ttf
