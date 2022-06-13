@@ -225,6 +225,7 @@ void main() async {
       child: MaterialApp(
         title: 'NutreNaissance',
         theme: ThemeData(
+          fontFamily: 'Montserrat',
           primarySwatch: Colors.amber,
         ),
         initialRoute: '/',
@@ -240,7 +241,7 @@ void main() async {
           Locale('es', ''), // Spanish, no country code
         ],
         routes: {
-          '/': (ctx) => RegistryScreen(),
+          '/': (ctx) => SplashScreen(),
           SplashScreen.routeName: (_) => const SplashScreen(),
           LoginScreen.routeName: (_) => const LoginScreen(),
           RegistryScreen.routeName: (_) => RegistryScreen(),

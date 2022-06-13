@@ -80,6 +80,18 @@ flutter:
     - assets/images/logo_name_black.png
     - assets/images/dummy_recipe.jpeg
 
+  fonts:
+    - family: Prettywise
+      fonts:
+        - asset: assets/fonts/prettywise-regular.otf
+        - asset: assets/fonts/prettywise-bold.otf
+          weight: 700
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/montserrat-regular.ttf
+        - asset: assets/fonts/montserrat-bold.ttf
+          weight: 700
+
 flutter_icons:
   android: "launcher_icon"
   ios: true
