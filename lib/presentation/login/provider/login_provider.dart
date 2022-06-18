@@ -64,9 +64,9 @@ class LoginProvider extends BaseProvider {
 
   get getNotConfirmedUserTryingToLogin => _notConfirmedUserTryingToLogin;
   get isLogin => _loginMode;
-  get getEmail => _email.orEmpty();
-  get getUsername => _username.orEmpty();
-  get getPassword => _password.orEmpty();
+  String? get getEmail => _email.orEmpty();
+  String? get getUsername => _username.orEmpty();
+  String? get getPassword => _password.orEmpty();
   get isLoginMode => _loginMode;
   get areMasterFilesChecked => _masterFilesChecked;
   get isProfileChecked => _profileChecked;
@@ -81,7 +81,6 @@ class LoginProvider extends BaseProvider {
   bool _profileChecked = false;
   Function? _goToRegistry;
   bool _notConfirmedUserTryingToLogin = false;
-  bool _userNameAlreadyUsed = false;
 
   void changeLoginMode(Function action) {
     _setLoginMode(!isLogin);
@@ -97,44 +96,28 @@ class LoginProvider extends BaseProvider {
     required String password,
     required String repeatPassword,
     required Function action,
-    required Function goToRegistry,
-    required Function onError
+    required Function goToRegistry
   }) async {
     _setEmail(email.orEmpty());
     _setUserName(username.orEmpty());
     _setPassword(password.orEmpty());
     _setGoToRegistry(goToRegistry);
-    setOnError(onError);
 
-    if (getUsername.isEmptyOrNull()) {
-      // TODO: manage error.
-      // Error: campo vacío.
-    } else if (getPassword.isEmptyOrNull()) {
-      // TODO: manage error.
-      // Error: campo vacío.
-    } else if (!isLogin && repeatPassword.isEmptyOrNull()) {
-      // TODO: manage error.
-      // Error campo vacío.
-    } else if (!isLogin && getEmail.isEmptyOrNull()) {
-      // TODO: manage error.
-      // Error campo vacío.
+    if (isLogin) {
+      _fetchUserAttributes(action, isFromLogin: true);
     } else {
-      if (isLogin) {
-        _fetchUserAttributes(action, isFromLogin: true);
-      } else {
-        if (password != repeatPassword) {
-          // TODO: manage error.
+      if (password != repeatPassword) {
+        // TODO: manage error.
 
-        } else {
-          launchSync(
-              block: () => signUpInteractor.execute(
-                getUsername,
-                getEmail,
-                getPassword,
-              ),
-              onSuccess: (result) => _onSignUpSuccess(result, action),
-              onError: (error) => _onSignUpError(error));
-        }
+      } else {
+        launchSync(
+            block: () => signUpInteractor.execute(
+              getUsername.orEmpty(),
+              getEmail.orEmpty(),
+              getPassword.orEmpty(),
+            ),
+            onSuccess: (result) => _onSignUpSuccess(result, action),
+            onError: (error) => _onSignUpError(error));
       }
     }
   }
@@ -154,6 +137,42 @@ class LoginProvider extends BaseProvider {
   void notConfirmedUserCancelsReceiveConfirmationCode() {
     _setNotConfirmedUserTryingToLogin(false);
     notifyListeners();
+  }
+
+  FormErrorTypes? validateUsername(String? username) {
+    if (username == null || username.isEmpty) {
+      return FormErrorTypes.usernameEmptyOrNullError;
+    }
+    return null;
+  }
+
+  FormErrorTypes? validateEmail(String? value) {
+    if (isEmail(value)) {
+      return null;
+    } else {
+      return FormErrorTypes.emailFormatError;
+    }
+  }
+
+  FormErrorTypes? validatePassword(String? value) => validatePasswordOrNull(value);
+  FormErrorTypes? validateRepeatPassword(String? value, String password) {
+    if (isLogin) {
+      return null;
+    } else {
+      if (value.isEmptyOrNull()) {
+        return FormErrorTypes.emptyRepeatPassword;
+      } else {
+        if (validatePasswordOrNull(password) == null) {
+          if (value != password) {
+            return FormErrorTypes.repeatPasswordError;
+          } else {
+            return null;
+          }
+        } else {
+          return null;
+        }
+      }
+    }
   }
 
   void _setLoginMode(bool isLogin) => _loginMode = isLogin;
