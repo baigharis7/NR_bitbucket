@@ -3,7 +3,18 @@ import 'package:flutter/material.dart';
 abstract class BaseProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
+  Function? get onError => _onError;
+
   bool _isLoading = false;
+  Function? _onError;
+
+  void initialize(Function onError) {
+    setOnError(onError);
+  }
+
+  void showError({required Function snackBar}) {
+    snackBar.call();
+  }
 
   void manageLoading(bool isLoading) {
     _isLoading = isLoading;
@@ -21,5 +32,7 @@ abstract class BaseProvider extends ChangeNotifier {
       onError?.call(error);
     }
   }
+
+  void setOnError(Function onError) => _onError = onError;
 
 }
