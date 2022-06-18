@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
@@ -91,7 +94,12 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
   @override
   Widget build(BuildContext context) {
     setProvider(Provider.of<RegistryProvider>(context, listen: true));
-    WidgetsBinding.instance.addPostFrameCallback((_) => getProvider.initialize());
+    WidgetsBinding.instance.addPostFrameCallback(
+          (_) => getProvider.initialize(
+                (ErrorTypes errorType) => showErrorSnackBar(context, resolveError(context, errorType),
+                ),
+          ),
+    );
 
     return SafeArea(
       child: Stack(
@@ -208,9 +216,9 @@ class RegistryScreen extends StatelessWidget with ShowLoadingDialog, GenericProv
                     alignment: Alignment.center,
                     child: ElevatedButton(
                       onPressed: () {
-                        getProvider.finishRegistry(() {
-                          Navigator.popAndPushNamed(context, DashboardScreen.routeName);
-                        });
+                        getProvider.finishRegistry(
+                          nextScreen: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
+                        );
                       },
                       child: Text(AppLocalizations.of(context)!.accept),
                     ),

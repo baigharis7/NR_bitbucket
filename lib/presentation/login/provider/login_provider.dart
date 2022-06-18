@@ -1,5 +1,4 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_response.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/simple_user.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
@@ -20,11 +19,12 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/download_profil
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/token_utils.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/validator_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
 
-// TODO: manage errors, finish flows, sort functions and variables.
 class LoginProvider extends BaseProvider {
   final SignUpInteractor signUpInteractor;
   final SendVerificationCodeInteractor verificationCodeInteractor;
@@ -98,11 +98,13 @@ class LoginProvider extends BaseProvider {
     required String repeatPassword,
     required Function action,
     required Function goToRegistry,
+    required Function onError
   }) async {
     _setEmail(email.orEmpty());
     _setUserName(username.orEmpty());
     _setPassword(password.orEmpty());
     _setGoToRegistry(goToRegistry);
+    setOnError(onError);
 
     if (getUsername.isEmptyOrNull()) {
       // TODO: manage error.
@@ -144,7 +146,7 @@ class LoginProvider extends BaseProvider {
       block: () => resendVerificationCodeInteractor.execute(getUsername.orEmpty()),
       onSuccess: (ResendSignUpCodeResult resendSignUpCodeResult) => showMfaDialog.call(),
       onError: (error) {
-        // TODO: manage errors.
+        onError?.call(ErrorTypes.resendVerificationCodeError);
       },
     );
   }
@@ -163,15 +165,15 @@ class LoginProvider extends BaseProvider {
   void _setProfileChecked(bool profileChecked) => _profileChecked = profileChecked;
   void _setNotConfirmedUserTryingToLogin(bool notConfirmedUserTryingToLogin) => _notConfirmedUserTryingToLogin = notConfirmedUserTryingToLogin;
 
-
   void _onSignInError(Object error) {
     if (error is UserNotConfirmedException) {
       _setNotConfirmedUserTryingToLogin(true);
     } else if (error is NotAuthorizedException) {
-      // Username/email o password incorrectos o no existen.
-      // TODO: manage errors.
-      const g = '';
+      onError?.call(ErrorTypes.notAuthorizedError);
+    } else {
+      onError?.call(ErrorTypes.unknownError);
     }
+
   }
 
   void _fetchUserAttributes(Function moveToNextScreen, {bool isFromVerificationCode = false, bool isFromLogin = false}) async {
@@ -194,21 +196,22 @@ class LoginProvider extends BaseProvider {
   }
 
   void _onSignUpSuccess(SignUpResult result, Function action) {
-    _saveUsernameAndEmail(getUsername, getEmail);
+    _saveUsernameAndEmail(getUsername.orEmpty(), getEmail.orEmpty());
     action.call();
   }
 
   void _onSignUpError(Object error) {
-    // TODO: manage error.
     if (error is UsernameExistsException) {
       // TODO: enseñar cartel de que tiene que usar otro nombre
-      const h = '';
+      onError?.call(ErrorTypes.usernameExistsError);
+    } else {
+      onError?.call(ErrorTypes.unknownError);
     }
   }
 
   void sendVerificationCode(String confirmationCode, Function action) {
     launchSync(
-      block: () => verificationCodeInteractor.execute(confirmationCode, getUsername),
+      block: () => verificationCodeInteractor.execute(confirmationCode, getUsername.orEmpty()),
       onSuccess: (signUpResult) => _onSendVerificationCodeSuccess(signUpResult, action),
       onError: (error) => _onSendVerificationCodeError(error),
     );
@@ -219,8 +222,7 @@ class LoginProvider extends BaseProvider {
   }
 
   void _onSendVerificationCodeError(Object error) {
-    // TODO: manage errors.
-    const g = '';
+    onError?.call(ErrorTypes.sendVerificationCodeError);
   }
 
   void _onFetchUserAttributesSuccess(CognitoAuthSession session, Function moveToNextScreen) {
@@ -238,16 +240,14 @@ class LoginProvider extends BaseProvider {
                       if (email.isNotNull()) {
                         downloadProfile(email.orEmpty(), moveToNextScreen);
                       } else {
-                        // TODO: manage errors.
-                        const g = '';
+                        onError?.call(ErrorTypes.getEmailFromTokenError);
                       }
                     } else {
                       _manageMasterFiles(moveToNextScreen);
                     }
                   },
                   onError: (error) {
-                    // TODO: manage errors.
-                    const g = '';
+                    onError?.call(ErrorTypes.profileExistenceError);
                   });
             } else {
               if (!areMasterFilesChecked) {
@@ -261,8 +261,7 @@ class LoginProvider extends BaseProvider {
           }
         },
         onError: (error) {
-          // TODO: manage errors.
-          const g = '';
+          onError?.call(ErrorTypes.saveUserCredentialsError);
         });
   }
 
@@ -270,11 +269,9 @@ class LoginProvider extends BaseProvider {
     if (error is UserNotConfirmedException) {
       _setNotConfirmedUserTryingToLogin(true);
     } else if (error is SignedOutException) {
-      _performSignIn(getUsername, getPassword, action);
+      _performSignIn(getUsername.orEmpty(), getPassword.orEmpty(), action);
     } else {
-      // TODO: manage errors.
-      const g = '';
-    }
+      onError?.call(ErrorTypes.fetchUserCredentialsError);}
   }
 
   void downloadProfile(String email, Function? moveToNextScreen) {
@@ -282,17 +279,14 @@ class LoginProvider extends BaseProvider {
       block: () => downloadProfileInteractor.execute(email.orEmpty()),
       onSuccess: (UserProfileModel? userProfileModel) {
         if (userProfileModel.isNull()) {
-          // TODO: poner diálogo que avisa de que no tiene perfil y tiene que tenerlo para usar la app.
           _manageMasterFiles(() => _goToRegistry?.call());
         } else {
           _saveProfileInLocal(userProfileModel!, moveToNextScreen!);
         }
       },
       onError: (error) {
-        // TODO: manage errors.
-        const g = '';
         _setProfileChecked(false);
-      },
+        onError?.call(ErrorTypes.downloadProfileError);      },
     );
   }
 
@@ -301,9 +295,8 @@ class LoginProvider extends BaseProvider {
       block: () => saveProfileInteractor.execute(userProfileModel),
       onSuccess: (_) => _manageMasterFiles(moveToNextScreen),
       onError: (error) {
-        // TODO: manage errors.
-        const g = '';
         _setProfileChecked(false);
+        onError?.call(ErrorTypes.saveProfileInLocalError);
       },
     );
   }
@@ -316,13 +309,10 @@ class LoginProvider extends BaseProvider {
     launchSync(
       block: () => resendVerificationCodeInteractor.execute(_username.orEmpty()),
       onSuccess: (ResendSignUpCodeResult resendSignUpCodeResult) {
-        // TODO: poner toast.
-        const g = '';
+        // TODO: ¿avisar de que se ha enviado?
       },
       onError: (error) {
-        // TODO: manage errors.
-        const g = '';
-      },
+        onError?.call(ErrorTypes.resendVerificationCodeError);      },
     );
   }
 
@@ -353,7 +343,7 @@ class LoginProvider extends BaseProvider {
                   .execute(MasterFilesType.recommendationGroups),
             ),
         onSuccess: (MasterFilesResponse masterFilesResponse) => _onSuccessManageMasterFiles(masterFilesResponse, onFinish),
-        onError: (error) => _onErrorManageMasterFiles(error, onFinish));
+        onError: (error) => _onErrorManageMasterFiles(error));
   }
 
   void _onSuccessManageMasterFiles(MasterFilesResponse masterFilesResponse, Function? onFinish) {
@@ -390,22 +380,19 @@ class LoginProvider extends BaseProvider {
     onFinish?.call();
   }
 
-  void _onErrorManageMasterFiles(Object error, Function? onFinish) {
-    // TODO: manage errors.
+  void _onErrorManageMasterFiles(Object error) {
     _setMasterFilesChecked(false);
-    // onFinish?.call();
+    onError?.call(ErrorTypes.manageMasterFilesError);
   }
 
   void _saveUserInRemoteUsersDatabase(String userId, Function finishFetchUserAttributes) {
     final simpleUser = SimpleUser(
         email: getEmail.orEmpty(), userName: getUsername.orEmpty(), userId: userId);
     launchSync(
-        block: () => saveUserInUsersRemoteDatabaseInteractor.execute(simpleUser),
-        onSuccess: (_) => finishFetchUserAttributes.call(),
-        onError: (error) {
-          // TODO: manage errors.
-          const g = '';
-        },
+      block: () => saveUserInUsersRemoteDatabaseInteractor.execute(simpleUser),
+      onSuccess: (_) => finishFetchUserAttributes.call(),
+      onError: (error) => onError?.call(ErrorTypes.saveUserInRemoteDatabaseError),
     );
   }
+
 }
