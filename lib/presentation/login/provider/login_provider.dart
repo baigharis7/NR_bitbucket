@@ -72,6 +72,7 @@ class LoginProvider extends BaseProvider {
   get isProfileChecked => _profileChecked;
   get goToRegistry => _goToRegistry;
   get isNotConfirmedUserTryingToLogin => _notConfirmedUserTryingToLogin;
+  bool get isPasswordVisible => _passwordVisible;
 
   String? _email;
   String? _username;
@@ -81,6 +82,7 @@ class LoginProvider extends BaseProvider {
   bool _profileChecked = false;
   Function? _goToRegistry;
   bool _notConfirmedUserTryingToLogin = false;
+  bool _passwordVisible = false;
 
   void changeLoginMode(Function action) {
     _setLoginMode(!isLogin);
@@ -88,6 +90,11 @@ class LoginProvider extends BaseProvider {
     if (!isLogin) {
       action.call();
     }
+  }
+
+  void changePasswordVisibility() {
+    _passwordVisible = !_passwordVisible;
+    notifyListeners();
   }
 
   void submitData({

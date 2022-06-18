@@ -322,9 +322,14 @@ class _LoginScreenState extends State<LoginScreen>
                       child: TextFormField(
                         decoration: InputDecoration(
                           labelText: stringResolver.password_hint,
+                          suffixIcon: IconButton(
+                              icon: Icon(
+                                  getProvider.isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+                              onPressed: () => getProvider.changePasswordVisibility()
+                          ),
                         ),
                         controller: _passwordController,
-                        obscureText: true,
+                        obscureText: getProvider.isPasswordVisible,
                         validator: (value) => resolveFormError(context, getProvider.validatePassword(value)),
                       ),
                     ),
@@ -346,9 +351,14 @@ class _LoginScreenState extends State<LoginScreen>
                               child: TextFormField(
                                 decoration: InputDecoration(
                                   labelText: stringResolver.repeat_password,
+                                    suffixIcon: IconButton(
+                                        icon: Icon(
+                                            getProvider.isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+                                        onPressed: () => getProvider.changePasswordVisibility()
+                                    ),
                                 ),
                                 controller: _repeatPasswordController,
-                                obscureText: true,
+                                obscureText: getProvider.isPasswordVisible,
                                 validator: (value) => resolveFormError(context, getProvider.validateRepeatPassword(value, _passwordController.text)),
                               ),
                             ),
