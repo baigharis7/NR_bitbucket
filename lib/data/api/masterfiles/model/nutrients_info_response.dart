@@ -16,7 +16,7 @@ class NutrientsInfoResponse {
 @JsonSerializable(explicitToJson: true)
 class NutrientInfoResponse {
   String name;
-  String unit; // TODO: Pensar si poner una Sealed Class. Sería un Iny entonces.
+  String unit; // TODO: Pensar si poner una Sealed Class. Sería un Int entonces.
   String es;
   String en;
 

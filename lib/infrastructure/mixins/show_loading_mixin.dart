@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 mixin ShowLoadingDialog {
-
   // CONDICIONES PARA QUE FUNCIONE:
   // - Se usa en la clase desde donde se llama al método que necesita Loading los mixin del diálogo (éste) y del GenericProvider.
   // - Se confira el GenericProvider, claro.

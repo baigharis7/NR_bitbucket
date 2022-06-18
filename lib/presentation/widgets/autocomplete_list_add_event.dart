@@ -8,9 +8,6 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_item.dart';
 import 'package:provider/provider.dart';
 
-// TODO: hacer genérico para usarlo en los eventos de comida y aversions y todo.
-// TODO: Pasarle una lista de un objeto que sea sólo id y name.
-// TODO: En general, este widget es una mierda. Pensarme si ponerlo directamente en la pantalla, porque vaya tela.
 class AutocompleteListAddEvent extends StatefulWidget {
 
   const AutocompleteListAddEvent({
