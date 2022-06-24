@@ -13,6 +13,7 @@ import 'package:nutrenaissance_flutter/domain/models/profile/allergens.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/common_diseases.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/diet_type.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/intolerances.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
@@ -41,7 +42,7 @@ class RegistryProvider extends BaseProvider {
   List<DietType> get listDietTypes => DietType.listAllDietTypes();
   ObjectivesInfoMaster? get getObjectivesInfo => _objectivesInfoMaster;
   FoodsAndDrinksNamesMaster? get getFoodsAndDrinksNamesMaster => _foodsAndDrinksNamesMaster;
-  get getCommonName => _commonName.orEmpty();
+  String? get getCommonName => _commonName;
   get getBirthDate => _birthDate;
   get getSex => _sex;
   get getDiseases => _diseases;
@@ -58,7 +59,7 @@ class RegistryProvider extends BaseProvider {
   get getIntolerances => _intolerances;
   get getDietType => _dietType;
   get getAllergens => _allergens;
-  get getAversions => _aversions;
+  List<FoodItemMaster> get getAversions => _aversions ;
   get getObjectives => _objectives;
 
   bool _infoLoaded = false;
@@ -90,7 +91,9 @@ class RegistryProvider extends BaseProvider {
   ObjectivesInfoMaster? _objectivesInfoMaster;
   FoodsAndDrinksNamesMaster? _foodsAndDrinksNamesMaster;
 
-  void initialize() {
+  @override
+  void initialize(Function onError) {
+    super.initialize(onError);
     if (!isInfoLoaded) {
       _setInfoIsLoaded(true);
       getObjectivesInfo.doIfNull(_retrieveObjectivesInfoMaster);
@@ -250,7 +253,7 @@ class RegistryProvider extends BaseProvider {
         areObjectivesSelected());
   }
 
-  void finishRegistry(Function moveToDashboard) {
+  void finishRegistry({required Function nextScreen}) {
     FemaleCharacteristics? femaleCharacteristics;
     if (getSex == SexType.female) {
       FemaleCharacteristics(
@@ -301,26 +304,16 @@ class RegistryProvider extends BaseProvider {
                 profile.micronutrients = userProfileResponse.micronutrients;
                 launchSync(
                     block: () => saveProfileInteractor.execute(profile),
-                    onSuccess: (_) => moveToDashboard.call(),
-                    onError: (_) {
-                    // Todo: manage errors.
-                      const g = '';
-                    });
+                    onSuccess: (_) => nextScreen.call(),
+                    onError: (_) => onError?.call(ErrorTypes.savingProfileError));
             },
-            onError: (_) {
-              // Todo: manage errors.
-              const g = '';
-            }
+            onError: (_) => onError?.call(ErrorTypes.savingRdasError)
           );
         } else {
-          // TODO: manage error.
-          const g = '';
+          onError?.call(ErrorTypes.uploadingProfileError);
         }
       },
-      onError: (Object error) {
-        // TODO: manage error.
-        const g = '';
-      },
+      onError: (Object error) => onError?.call(ErrorTypes.uploadingProfileError)
     );
   }
 
@@ -344,8 +337,8 @@ class RegistryProvider extends BaseProvider {
         _setObjectivesInfoMaster(objectivesInfoMaster);
       },
       onError: (error) {
-        // TODO: manage errors.
         _setInfoIsLoaded(false);
+        onError?.call(ErrorTypes.retrievingMasterFileError);
       },
     );
   }
@@ -355,10 +348,7 @@ class RegistryProvider extends BaseProvider {
       onSuccess: (FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) {
         _setFoodsAndDrinksNamesMaster(foodsAndDrinksNamesMaster);
       },
-      onError: (Object error) {
-        // TODO: manage error.
-        const g = '';
-      },
+      onError: (Object error) => onError?.call(ErrorTypes.retrievingMasterFileError)
     );
   }
 

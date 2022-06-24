@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
@@ -31,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen>
   AnimationController? _controller;
   Animation<Offset>? _slideAnimation;
   Animation<double>? _opacityAnimation;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -65,6 +69,8 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   void _showExitConfirmationDialog(BuildContext context) {
+    final stringResolver = AppLocalizations.of(context)!;
+
     showDialog(
       context: context,
       builder: (ctx) => SimpleDialog(
@@ -85,13 +91,13 @@ class _LoginScreenState extends State<LoginScreen>
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               CustomButton1(
-                message: AppLocalizations.of(context)!.cancel,
+                message: stringResolver.cancel,
                 action: () {
                   Navigator.pop(context);
                 },
               ),
               CustomButton1(
-                message: AppLocalizations.of(context)!.accept,
+                message: stringResolver.accept,
                 action: () {
                   Navigator.pop(context, true);
                 },
@@ -107,13 +113,15 @@ class _LoginScreenState extends State<LoginScreen>
 
   // TODO: Esto debería ir fuera, pero da error. Revisar.
   void _showMFADialog() {
+    final stringResolver = AppLocalizations.of(context)!;
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => SimpleDialog(
         title: Center(
           child: Text(
-            AppLocalizations.of(context)!.verify_your_account,
+            stringResolver.verify_your_account,
           ),
         ),
         children: [
@@ -122,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen>
                 vertical: Dimens.paddingSmall,
                 horizontal: Dimens.paddingLarge),
             child: Text(
-              AppLocalizations.of(context)!.verification_code_explanation,
+              stringResolver.verification_code_explanation,
             ),
           ),
           Padding(
@@ -132,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen>
             child: TextField(
               decoration: InputDecoration(
                 labelText:
-                AppLocalizations.of(context)!.write_here_hint,
+                stringResolver.write_here_hint,
               ),
               controller: _mfaController,
             ),
@@ -142,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen>
                 horizontal: Dimens.paddingXLarge,
                 vertical: Dimens.paddingSmall),
             child: CustomButton1(
-              message: AppLocalizations.of(context)!.accept,
+              message: stringResolver.accept,
               action: () {
                 getProvider.sendVerificationCode(_mfaController.text, () {
                   Navigator.of(ctx).popAndPushNamed(RegistryScreen.routeName,
@@ -157,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen>
                 horizontal: Dimens.paddingXLarge,
                 vertical: Dimens.paddingSmall),
             child: CustomButton1(
-              message: AppLocalizations.of(context)!.resend_verification_code,
+              message: stringResolver.resend_verification_code,
               action: () => getProvider.resendVerificationCode(),
             ),
           ),
@@ -166,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen>
                 horizontal: Dimens.paddingXLarge,
                 vertical: Dimens.paddingSmall),
             child: CustomButton1(
-                message: AppLocalizations.of(context)!.cancel,
+                message: stringResolver.cancel,
                 action: () {
                   _showExitConfirmationDialog(context);
                 }),
@@ -181,6 +189,8 @@ class _LoginScreenState extends State<LoginScreen>
 
   // TODO: esto podría ser un diálogo genérico si permanece.
   Widget _notConfirmedUserTryingToLogin(BuildContext context) {
+    final stringResolver = AppLocalizations.of(context)!;
+
     return Container(
       color: const Color.fromARGB(148, 104, 96, 96),
       child: SimpleDialog(
@@ -220,14 +230,14 @@ class _LoginScreenState extends State<LoginScreen>
                     children: [
                       CustomButton1(
                         message:
-                        AppLocalizations.of(context)!.cancel,
+                        stringResolver.cancel,
                         action: () {
                           getProvider.notConfirmedUserCancelsReceiveConfirmationCode();
                         },
                       ),
                       CustomButton1(
                         message:
-                        AppLocalizations.of(context)!.accept,
+                        stringResolver.accept,
                         action: () {
                           getProvider.notConfirmedUserAsksForNewVerificationCode(_showMFADialog);
                         },
@@ -246,6 +256,11 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     setProvider(Provider.of<LoginProvider>(context));
+    final stringResolver = AppLocalizations.of(context)!;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getProvider.initialize((ErrorTypes errorType) => showErrorSnackBar(context, resolveError(context, errorType)));
+    });
 
     return SafeArea(
       child: Stack(
@@ -253,62 +268,29 @@ class _LoginScreenState extends State<LoginScreen>
           Scaffold(
             backgroundColor: Colors.white,
             body: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(Dimens.marginXLarge),
-                    child: Image.asset(
-                      'assets/images/logo_name_black.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText:
-                            AppLocalizations.of(context)!.login_hint,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.all(Dimens.marginXLarge),
+                      child: Image.asset(
+                        'assets/images/logo_name_black.png',
+                        fit: BoxFit.cover,
                       ),
-                      controller: _usernameController,
                     ),
-                  ),
-                  AnimatedContainer(
-                    constraints: BoxConstraints(
-                      minHeight: !getProvider.isLogin ? 60 : 0,
-                      maxHeight: !getProvider.isLogin ? 120 : 0,
-                    ),
-                    duration:
-                        const Duration(milliseconds: NumConstants.animDelay),
-                    curve: Curves.easeInOut,
-                    child: FadeTransition(
-                      opacity: _opacityAnimation!,
-                      child: SlideTransition(
-                        position: _slideAnimation!,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              labelText:
-                                  AppLocalizations.of(context)!.email,
-                            ),
-                            controller: _emailController,
-                          ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText:
+                              stringResolver.login_hint,
                         ),
+                        controller: _usernameController,
+                        validator: (value) => resolveFormError(context, getProvider.validateUsername(value)),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context)!.password_hint,
-                      ),
-                      controller: _passwordController,
-                      obscureText: true,
-                    ),
-                  ),
-                  if (!getProvider.isLogin)
                     AnimatedContainer(
                       constraints: BoxConstraints(
                         minHeight: !getProvider.isLogin ? 60 : 0,
@@ -323,86 +305,143 @@ class _LoginScreenState extends State<LoginScreen>
                           position: _slideAnimation!,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: TextField(
+                            child: TextFormField(
                               decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)!.repeat_password,
+                                labelText:
+                                    stringResolver.email,
                               ),
-                              controller: _repeatPasswordController,
-                              obscureText: true,
+                              controller: _emailController,
+                              validator: (value) => resolveFormError(context, getProvider.validateEmail(value)),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: Center(
-                      child: CustomButton1(
-                        message: getProvider.isLogin
-                            ? AppLocalizations.of(context)!.login
-                            : AppLocalizations.of(context)!.register,
-                        action: () => getProvider.submitData(
-                            username: _usernameController.text.orEmpty(),
-                            email: _emailController.text.orEmpty(),
-                            password: _passwordController.text.orEmpty(),
-                            repeatPassword:
-                                _repeatPasswordController.text.orEmpty(),
-                            action: getProvider.isLogin
-                                ? () => Navigator.of(context)
-                                    .popAndPushNamed(DashboardScreen.routeName)
-                                : () => _showMFADialog(),
-                            goToRegistry: () => Navigator.of(context)
-                                .popAndPushNamed(RegistryScreen.routeName)),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Text(
-                            AppLocalizations.of(context)!.have_an_account,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: stringResolver.password_hint,
+                          suffixIcon: IconButton(
+                              icon: Icon(
+                                  getProvider.isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+                              onPressed: () => getProvider.changePasswordVisibility()
                           ),
                         ),
-                        TextButton(
+                        controller: _passwordController,
+                        obscureText: getProvider.isPasswordVisible,
+                        validator: (value) => resolveFormError(context, getProvider.validatePassword(value)),
+                      ),
+                    ),
+                    if (!getProvider.isLogin)
+                      AnimatedContainer(
+                        constraints: BoxConstraints(
+                          minHeight: !getProvider.isLogin ? 60 : 0,
+                          maxHeight: !getProvider.isLogin ? 120 : 0,
+                        ),
+                        duration:
+                            const Duration(milliseconds: NumConstants.animDelay),
+                        curve: Curves.easeInOut,
+                        child: FadeTransition(
+                          opacity: _opacityAnimation!,
+                          child: SlideTransition(
+                            position: _slideAnimation!,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  labelText: stringResolver.repeat_password,
+                                    suffixIcon: IconButton(
+                                        icon: Icon(
+                                            getProvider.isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+                                        onPressed: () => getProvider.changePasswordVisibility()
+                                    ),
+                                ),
+                                controller: _repeatPasswordController,
+                                obscureText: getProvider.isPasswordVisible,
+                                validator: (value) => resolveFormError(context, getProvider.validateRepeatPassword(value, _passwordController.text)),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Center(
+                        child: CustomButton1(
+                          message: getProvider.isLogin
+                              ? stringResolver.login
+                              : stringResolver.register,
+                          action: () {
+                            if (_formKey.currentState!.validate()) {
+                              getProvider.submitData(
+                                username: _usernameController.text.orEmpty(),
+                                email: _emailController.text.orEmpty(),
+                                password: _passwordController.text.orEmpty(),
+                                repeatPassword: _repeatPasswordController.text
+                                    .orEmpty(),
+                                action: getProvider.isLogin
+                                    ? () =>
+                                    Navigator.of(context).popAndPushNamed(
+                                        DashboardScreen.routeName)
+                                    : () => _showMFADialog(),
+                                goToRegistry: () =>
+                                    Navigator.of(context).popAndPushNamed(
+                                        RegistryScreen.routeName),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Text(
+                              stringResolver.have_an_account,
+                            ),
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                                textStyle: const TextStyle(),
+                                shadowColor: Colors.amber),
+                            onPressed: () => getProvider.changeLoginMode(() {
+                              _controller!.forward();
+                              // _repeatPasswordController.text = '';
+                              // _emailController.text = '';
+                            }),
+                            child: Text(
+                              stringResolver.register,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: TextButton(
                           style: TextButton.styleFrom(
                               textStyle: const TextStyle(),
-                              shadowColor: Colors.amber),
-                          onPressed: () => getProvider.changeLoginMode(() {
-                            _controller!.forward();
-                            // _repeatPasswordController.text = '';
-                            // _emailController.text = '';
-                          }),
-                          child: Text(
-                            AppLocalizations.of(context)!.register,
+                              shadowColor: Colors.amber
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    child: Center(
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                            textStyle: const TextStyle(),
-                            shadowColor: Colors.amber),
-                        onPressed: () {},
-                        child: Text(
-                          AppLocalizations.of(context)!.forgotten_password,
+                          onPressed: () {},
+                          child: Text(
+                            stringResolver.forgotten_password,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
           if (getProvider.isLoading) showLoadingDialog(context),
-          if (getProvider.getNotConfirmedUserTryingToLogin)
-            _notConfirmedUserTryingToLogin(context)
+          if (getProvider.getNotConfirmedUserTryingToLogin) _notConfirmedUserTryingToLogin(context),
         ],
       ),
     );

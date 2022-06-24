@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simpl
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
 
 // TODO: Tengo que poner lo de las bebidas.
@@ -39,7 +40,9 @@ class AddFoodEventProvider extends BaseProvider {
   final List<FoodInEvent> _ingredients = [];
   final List<FoodInEvent> _drinks = [];
 
-  void initialize() {
+  @override
+  void initialize(Function onError) {
+    super.initialize(onError);
     if (!isInfoLoaded) {
       _setInfoLoaded(true);
       getFoodAndDrinksNames.doIfNull(_retrieveFoodAndDrinks);
@@ -103,19 +106,14 @@ class AddFoodEventProvider extends BaseProvider {
                 onFinish.call();
               });
             },
-            onError: (error) {
-              // TODO: manage error.
-              final h = error;
-            }
+            onError: (error) => onError?.call(ErrorTypes.locallySavingFoodEventError)
           );
         } else {
-          // TODO: manage error uploading even
+          onError?.call(ErrorTypes.uploadingFoodEventError);
         }
       },
-      onError: (Object error) {
-        // TODO: manage error uploading even
-        final g = error.toString();
-        },
+      onError: (Object error) => onError?.call(ErrorTypes.uploadingFoodEventError)
+
     );
   }
 
@@ -129,8 +127,7 @@ class AddFoodEventProvider extends BaseProvider {
         block: () => getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames),
         onSuccess: (FoodsAndDrinksNamesMaster foodsAndDrinksNamesMaster) => _setFoodAndDrinksNames(foodsAndDrinksNamesMaster),
         onError: (Object error) {
-          // TODO: control error.
-          const g = '';
+          onError?.call(ErrorTypes.retrievingMasterFileError);
           _setInfoLoaded(false);
         }
     );
@@ -141,8 +138,8 @@ class AddFoodEventProvider extends BaseProvider {
         block: () => getMasterFileInteractor.execute(MasterFilesType.cookingMethods),
         onSuccess: (CookingMethodsMaster cookingMethodsMaster) => _setCookingMethods(cookingMethodsMaster),
         onError: (Object error) {
-          // TODO: control error.
           _setInfoLoaded(false);
+          onError?.call(ErrorTypes.retrievingMasterFileError);
         }
     );
   }
@@ -153,6 +150,7 @@ class AddFoodEventProvider extends BaseProvider {
         onSuccess: (CookingMethodsInfoMaster cookingMethodsInfo) => _setCookingMethodsInfo(cookingMethodsInfo),
         onError: (Object error) {
           _setInfoLoaded(false);
+          onError?.call(ErrorTypes.retrievingMasterFileError);
         }
     );
   }

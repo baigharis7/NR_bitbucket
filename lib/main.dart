@@ -108,7 +108,6 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  // TODO: meter todo esto en funciones.
   final authenticationService = await CognitoAuthenticationService.init();
   final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   final Preferences prefs = PreferencesImpl(sharedPreferences);
@@ -129,7 +128,6 @@ void main() async {
   final GetUserIdInteractor getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
   final UploadProfileInteractor uploadProfileInteractor = UploadProfileInteractorImpl(profileRepository: profileRepository);
   final SaveUsernameAndEmailInteractor saveUsernameAndEmailInteractor = SaveUsernameAndEmailInteractorImpl(preferencesRepository: prefsRepository);
-  // final IsUserSignedInInteractor isUserSignedInInteractor = IsUserSignedInInteractorImpl(preferencesRepository: prefsRepository);
   final SaveProfileInteractor saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
   final FoodEventsApi foodEventsApi = FoodEventsApi(prefsRepository, authenticationService);
   final FoodEventsRepository foodEventsRepository = FoodEventsRepositoryImpl(localStorageRepository: localStorageRepository, foodEventsApi: foodEventsApi, );
@@ -210,7 +208,6 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        // TODO: el interactor es use case, uno por cada caso de uso.
         ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -241,7 +238,7 @@ void main() async {
           Locale('es', ''), // Spanish, no country code
         ],
         routes: {
-          '/': (ctx) => SplashScreen(),
+          '/': (ctx) => const SplashScreen(),
           SplashScreen.routeName: (_) => const SplashScreen(),
           LoginScreen.routeName: (_) => const LoginScreen(),
           RegistryScreen.routeName: (_) => RegistryScreen(),

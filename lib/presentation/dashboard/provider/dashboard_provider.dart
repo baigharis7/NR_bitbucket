@@ -6,7 +6,9 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_i
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_rdas.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 class DashboardProvider extends BaseProvider {
   final GetAllFoodEventsInteractor getAllFoodEventsInteractor;
@@ -21,8 +23,8 @@ class DashboardProvider extends BaseProvider {
     required this.getUserRdasInteractor,
   });
 
-  get getFoodEvents => _foodEvents;
-  get isInfoLoaded => _infoLoaded;
+  List<FoodEventComplete> get getFoodEvents => _foodEvents;
+  bool get isInfoLoaded => _infoLoaded;
   get getUserMicronutrients => _userMicronutrients;
   get getNutrientsInfoMaster => _nutrientsInfoMaster;
   get getUserRdas => _userRdas;
@@ -33,7 +35,9 @@ class DashboardProvider extends BaseProvider {
   NutrientsInfoMaster? _nutrientsInfoMaster;
   List<UserRdas>? _userRdas;
 
-  void initialize() {
+  @override
+  void initialize(Function onError) {
+    super.initialize(onError);
     if (!isInfoLoaded) {
       _setInfoLoaded(true);
       getFoodEvents.isEmpty.doIfTrue(_retrieveFoodEvents);
@@ -85,9 +89,8 @@ class DashboardProvider extends BaseProvider {
           notifyListeners();
         },
         onError: (Object error) {
-          // TODO: manage errors.
-          const g = '';
           _setInfoLoaded(false);
+          onError?.call(ErrorTypes.retrieveFoodEventsError);
         }
     );
   }
@@ -100,8 +103,8 @@ class DashboardProvider extends BaseProvider {
           _retrieveUserMicronutrients();
         },
         onError: (error) {
-          // TODO: manage errors.
           _setInfoLoaded(false);
+          onError?.call(ErrorTypes.retrievingMasterFileError);
         });
   }
 
@@ -113,8 +116,8 @@ class DashboardProvider extends BaseProvider {
           notifyListeners();
         },
         onError: (error) {
-          // TODO: manage error.
-          const g = '';
+          _setInfoLoaded(false);
+          onError?.call(ErrorTypes.retrievingMasterFileError);
         }
     );
   }
@@ -124,9 +127,8 @@ class DashboardProvider extends BaseProvider {
       block: () => getUserRdasInteractor.execute(),
       onSuccess: (List<UserRdas> userRdas) => _setUserRdas(userRdas),
       onError: (error) {
-        // TODO: manage errors.
-        const g = '';
         _setInfoLoaded(false);
+        onError?.call(ErrorTypes.retrievingMasterFileError);
       },
     );
   }

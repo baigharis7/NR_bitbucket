@@ -25,7 +25,7 @@ class _GeneralQuestionState extends State<GeneralQuestionsModal> {
   @override
   Widget build(BuildContext context) {
     final registryProvider = Provider.of<RegistryProvider>(context, listen: false);
-    _commonNameController.text = registryProvider.getCommonName;
+    _commonNameController.text = registryProvider.getCommonName.orEmpty();
 
     return SingleChildScrollView(
       child: Column(

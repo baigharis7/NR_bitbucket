@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
@@ -25,7 +28,7 @@ class _DashboardScreen extends State<DashboardScreen>
     setProvider(Provider.of<DashboardProvider>(context));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getProvider.initialize();
+      getProvider.initialize((ErrorTypes errorType) => showErrorSnackBar(context, resolveError(context, errorType)));
     });
 
     return SafeArea(

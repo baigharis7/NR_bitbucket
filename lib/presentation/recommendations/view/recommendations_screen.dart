@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
@@ -31,7 +34,10 @@ class _RecommendationsScreenState extends State<RecommendationsScreen>
     setProvider(Provider.of<RecommendationsProvider>(context));
     final currentLanguage = Localizations.localeOf(context).languageCode;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => getProvider.initialize());
+    WidgetsBinding.instance.addPostFrameCallback(
+            (_) => getProvider.initialize(
+                    (ErrorTypes errorType) => showErrorSnackBar(context, resolveError(context, errorType))
+            ));
 
     return
       // WillPopScope(

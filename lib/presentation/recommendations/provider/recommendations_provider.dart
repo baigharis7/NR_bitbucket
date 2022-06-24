@@ -6,6 +6,7 @@ import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/recommendation_groups_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/recommendations/recommendation.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
 
@@ -38,7 +39,9 @@ class RecommendationsProvider extends BaseProvider {
   final List<String> _selectedFoodNames = [];
   bool _multiSelection = false;
 
-  void initialize() {
+  @override
+  void initialize(Function onError) {
+    super.initialize(onError);
     if (!isInfoLoaded) {
       _setInfoLoaded(true);
       launchSync(
@@ -104,8 +107,8 @@ class RecommendationsProvider extends BaseProvider {
       onError: (Object error) {
         _recommendation = null;
         _setRecommendationOrdered(false);
+        onError?.call(ErrorTypes.recommendationError);
         notifyListeners();
-        // TODO: manage errors.
       },
     );
   }
@@ -119,8 +122,8 @@ class RecommendationsProvider extends BaseProvider {
           notifyListeners();
         },
         onError: (Object error) {
-          // TODO: control error.
           _setInfoLoaded(false);
+          onError?.call(ErrorTypes.retrievingMasterFileError);
         }
     );
   }
@@ -134,8 +137,8 @@ class RecommendationsProvider extends BaseProvider {
         notifyListeners();
       },
       onError: () {
-        // TODO: manage errors.
         _setInfoLoaded(false);
+        onError?.call(ErrorTypes.retrievingMasterFileError);
       },
     );
   }
