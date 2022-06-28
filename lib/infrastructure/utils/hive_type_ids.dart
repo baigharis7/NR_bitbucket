@@ -26,5 +26,9 @@ class HiveTypeIds {
   static const cookingMethodsEntity = 23;
   static const cookingMethodGroupEntity = 24;
   static const userRdasEntity = 25;
+  static const sportsInfoEntity = 26;
+  static const sportInfoEntity = 27;
+  static const sportEventEntity = 28;
+  static const sportEventInfoEntity = 29;
 
 }

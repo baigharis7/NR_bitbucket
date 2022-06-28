@@ -32,6 +32,10 @@ MasterFilesResponse _$MasterFilesResponseFromJson(Map<String, dynamic> json) =>
           ? null
           : RecommendationGroupsResponse.fromJson(
               json['recommendationGroupsResponse'] as Map<String, dynamic>),
+      sportsInfoResponse: json['sportsInfoResponse'] == null
+          ? null
+          : SportsInfoResponse.fromJson(
+              json['sportsInfoResponse'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$MasterFilesResponseToJson(
@@ -46,4 +50,5 @@ Map<String, dynamic> _$MasterFilesResponseToJson(
       'objectivesResponse': instance.objectivesResponse?.toJson(),
       'recommendationGroupsResponse':
           instance.recommendationGroupsResponse?.toJson(),
+      'sportsInfoResponse': instance.sportsInfoResponse?.toJson(),
     };
