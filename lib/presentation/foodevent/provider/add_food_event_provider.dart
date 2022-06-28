@@ -113,7 +113,6 @@ class AddFoodEventProvider extends BaseProvider {
         }
       },
       onError: (Object error) => onError?.call(ErrorTypes.uploadingFoodEventError)
-
     );
   }
 

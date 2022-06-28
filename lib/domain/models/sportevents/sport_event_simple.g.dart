@@ -1,0 +1,35 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'sport_event_simple.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+SportEventSimple _$SportEventSimpleFromJson(Map<String, dynamic> json) =>
+    SportEventSimple(
+      userId: json['userId'] as String?,
+      info: json['info'] == null
+          ? null
+          : SportInfo.fromJson(json['info'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$SportEventSimpleToJson(SportEventSimple instance) =>
+    <String, dynamic>{
+      'userId': instance.userId,
+      'info': instance.info?.toJson(),
+    };
+
+SportInfo _$SportInfoFromJson(Map<String, dynamic> json) => SportInfo(
+      id: json['id'] as int?,
+      timeStart: json['timeStart'] as int?,
+      intensity: json['intensity'] as int?,
+      minutes: json['minutes'] as int?,
+    );
+
+Map<String, dynamic> _$SportInfoToJson(SportInfo instance) => <String, dynamic>{
+      'id': instance.id,
+      'timeStart': instance.timeStart,
+      'intensity': instance.intensity,
+      'minutes': instance.minutes,
+    };

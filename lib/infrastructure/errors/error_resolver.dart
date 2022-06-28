@@ -48,6 +48,22 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.uploading_food_event_error;
     case ErrorTypes.retrieveFoodEventsError:
       return stringResolver.retrieve_food_events_error;
+    case ErrorTypes.locallySavingSportEventError:
+      return stringResolver.locally_saving_sport_event_error;
+    case ErrorTypes.uploadingSportEventError:
+      return stringResolver.uploading_sport_event_error;
+    case ErrorTypes.retrieveSportEventsError:
+      return stringResolver.retrieve_sport_events_error;
+    case ErrorTypes.sportEventTimeStartError:
+      return stringResolver.sport_event_time_start_error;
+    case ErrorTypes.sportEventDateStartError:
+      return stringResolver.sport_event_date_start_error;
+    case ErrorTypes.sportEventSportIdError:
+      return stringResolver.sport_event_sport_id_error;
+    case ErrorTypes.sportEventIntensityStartError:
+      return stringResolver.sport_event_intensity_start_error;
+    case ErrorTypes.sportEventMinutesStartError:
+      return stringResolver.sport_event_minutes_start_error;
   }
 }
 

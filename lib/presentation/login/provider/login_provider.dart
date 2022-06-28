@@ -154,10 +154,14 @@ class LoginProvider extends BaseProvider {
   }
 
   FormErrorTypes? validateEmail(String? value) {
-    if (isEmail(value)) {
-      return null;
+    if (!isLogin) {
+      if (isEmail(value)) {
+        return null;
+      } else {
+        return FormErrorTypes.emailFormatError;
+      }
     } else {
-      return FormErrorTypes.emailFormatError;
+      return null;
     }
   }
 
@@ -199,7 +203,6 @@ class LoginProvider extends BaseProvider {
     } else {
       onError?.call(ErrorTypes.unknownError);
     }
-
   }
 
   void _fetchUserAttributes(Function moveToNextScreen, {bool isFromVerificationCode = false, bool isFromLogin = false}) async {
@@ -355,19 +358,14 @@ class LoginProvider extends BaseProvider {
   void _manageMasterFiles(Function? onFinish) {
     launchSync(
         block: () async => manageMasterFilesInteractor.execute(
-              await getMasterFilesVersionInteractor
-                  .execute(MasterFilesType.cookingMethods),
-              await getMasterFilesVersionInteractor
-                  .execute(MasterFilesType.cookingMethodsInfo),
-              await getMasterFilesVersionInteractor
-                  .execute(MasterFilesType.foodsAndDrinksNames),
-              await getMasterFilesVersionInteractor
-                  .execute(MasterFilesType.nutrientsInfo),
-              await getMasterFilesVersionInteractor
-                  .execute(MasterFilesType.objectivesInfo),
-              await getMasterFilesVersionInteractor
-                  .execute(MasterFilesType.recommendationGroups),
-            ),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethods),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethodsInfo),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.foodsAndDrinksNames),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.objectivesInfo),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.recommendationGroups),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.sportsInfo),
+        ),
         onSuccess: (MasterFilesResponse masterFilesResponse) => _onSuccessManageMasterFiles(masterFilesResponse, onFinish),
         onError: (error) => _onErrorManageMasterFiles(error));
   }
@@ -401,6 +399,11 @@ class LoginProvider extends BaseProvider {
       saveMasterFileInteractor.execute(
           masterFilesResponse.recommendationGroupsResponse,
           MasterFilesType.recommendationGroups);
+    });
+    masterFilesResponse.sportsInfoResponse.doIfAintNull(() {
+      saveMasterFileInteractor.execute(
+          masterFilesResponse.sportsInfoResponse,
+          MasterFilesType.sportsInfo);
     });
     _setMasterFilesChecked(true);
     onFinish?.call();

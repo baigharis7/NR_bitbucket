@@ -15,6 +15,7 @@ class ManageMasterFilesInteractorImpl extends ManageMasterFilesInteractor {
       int nutrientsInfoVersion,
       int objectivesInfoVersion,
       int recommendationGroupsVersion,
+      int sportsInfoVersion,
   ) async {
     return masterFilesRepository.manageMasterFiles(
       cookingMethodsVersion,
@@ -23,6 +24,7 @@ class ManageMasterFilesInteractorImpl extends ManageMasterFilesInteractor {
       nutrientsInfoVersion,
       objectivesInfoVersion,
       recommendationGroupsVersion,
+      sportsInfoVersion,
     );
   }
 

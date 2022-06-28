@@ -101,7 +101,7 @@ class WomenSpecificQuestionsModal extends StatelessWidget {
 
                             child: TextButton(
                               onPressed: () =>
-                                  DatePickerHelper.presentDatePicker(context, setState, (pickedDate) => registryProvider.setLastPeriodDate(pickedDate)),
+                                  DatePickerHelper.presentDatePicker(context: context, saveDate: (pickedDate) => registryProvider.setLastPeriodDate(pickedDate)),
                               child: Text(AppLocalizations.of(context)!.choose_last_period_date),
                             ),
                           )

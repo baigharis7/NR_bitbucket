@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_file
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/masterfiles/master_files_repository.dart';
@@ -34,7 +35,8 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
       int foodsAndDrinksNamesVersion,
       int nutrientsInfoVersion,
       int objectivesInfoVersion,
-      int recommendationGroupsVersion
+      int recommendationGroupsVersion,
+      int sportsInfoVersion
   ) async {
     final response = await masterFilesApi.manageMasterFiles(
       cookingMethodsVersion,
@@ -43,6 +45,7 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
       nutrientsInfoVersion,
       objectivesInfoVersion,
       recommendationGroupsVersion,
+      sportsInfoVersion
     );
     if (response.isNotEmpty) {
       return MasterFilesResponse.fromJson(response);
@@ -73,6 +76,8 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
         return mapToObjectivesInfoMaster(masterFileEntity as ObjectivesInfoEntity);
       case MasterFilesType.recommendationGroups:
         return mapToRecommendationGroupsMaster(masterFileEntity as RecommendationGroupsEntity);
+      case MasterFilesType.sportsInfo:
+        return mapToSportsInfoMaster(masterFileEntity as SportsInfoEntity);
     }
   }
 

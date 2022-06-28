@@ -25,9 +25,9 @@ class DashboardProvider extends BaseProvider {
 
   List<FoodEventComplete> get getFoodEvents => _foodEvents;
   bool get isInfoLoaded => _infoLoaded;
-  get getUserMicronutrients => _userMicronutrients;
-  get getNutrientsInfoMaster => _nutrientsInfoMaster;
-  get getUserRdas => _userRdas;
+  List<String> get getUserMicronutrients => _userMicronutrients;
+  NutrientsInfoMaster? get getNutrientsInfoMaster => _nutrientsInfoMaster;
+  List<UserRdas>? get getUserRdas => _userRdas;
 
   List<FoodEventComplete> _foodEvents = [];
   bool _infoLoaded = false;

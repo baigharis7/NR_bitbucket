@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/data/api/masterfiles/model/cooking_method
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/nutrients_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/objectives_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/recommendation_groups_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/sports_info_response.dart';
 
 part 'master_files_response.g.dart';
 
@@ -16,6 +17,7 @@ class MasterFilesResponse {
   FoodsAndDrinksNamesResponse? foodsAndDrinksNamesResponse;
   ObjectivesInfoResponse? objectivesResponse;
   RecommendationGroupsResponse? recommendationGroupsResponse;
+  SportsInfoResponse? sportsInfoResponse;
 
   MasterFilesResponse(
       {
@@ -25,6 +27,7 @@ class MasterFilesResponse {
         this.foodsAndDrinksNamesResponse,
         this.objectivesResponse,
         this.recommendationGroupsResponse,
+        this.sportsInfoResponse,
       }
   );
 

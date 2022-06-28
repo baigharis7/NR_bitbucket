@@ -8,5 +8,6 @@ abstract class ManageMasterFilesInteractor {
       int nutrientsInfoVersion,
       int objectivesInfoVersion,
       int recommendationGroupsVersion,
+      int sportsInfoVersion,
   );
 }
