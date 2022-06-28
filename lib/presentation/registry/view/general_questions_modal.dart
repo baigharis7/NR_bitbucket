@@ -63,15 +63,14 @@ class _GeneralQuestionState extends State<GeneralQuestionsModal> {
                   ? Container(
                 alignment: Alignment.centerLeft,
                 margin: const EdgeInsets.only(left: Dimens.marginLarge),
-                child: Text(DateFormat('dd/MM/yyyy').format(registryProvider
-                    .getBirthDate!),
+                child: Text(DateFormat('dd/MM/yyyy').format(registryProvider.getBirthDate!),
                 ),
               )
                   : Container(
                 alignment: Alignment.centerLeft,
                 child: TextButton(
                   onPressed: () =>
-                      DatePickerHelper.presentDatePicker(context, setState, (pickedDate) => registryProvider.setBirthDate(pickedDate)),
+                      DatePickerHelper.presentDatePicker(context: context, state: setState, saveDate: (pickedDate) => registryProvider.setBirthDate(pickedDate)),
                   child: Text(AppLocalizations.of(context)!.birthday_button,
                   ),
                 ),
