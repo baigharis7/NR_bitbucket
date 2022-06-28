@@ -6,6 +6,7 @@ import 'package:nutrenaissance_flutter/data/api/foodevents/food_events_api.dart'
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
 import 'package:nutrenaissance_flutter/data/api/recommendations/recommendations_api.dart';
+import 'package:nutrenaissance_flutter/data/api/sportevents/sport_events_api.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
@@ -13,9 +14,11 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/foods_and_d
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_rdas_entity.dart';
-import 'package:nutrenaissance_flutter/data/repository/foodevent/food_events_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/repository/foodevents/food_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/localstorage/local_storage_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/login/login_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/masterfiles/master_files_repository_impl.dart';
@@ -23,6 +26,7 @@ import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_i
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/profile/profile_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/recommendations/recommendations_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/sportevents/sport_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_all_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_all_food_events_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart';
@@ -75,6 +79,10 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/repository/foodevents/food_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart';
@@ -83,6 +91,7 @@ import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/profile/profile_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/recommendations/recommendations_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_events_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/cognito_authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/environment/environment.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
@@ -98,6 +107,8 @@ import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_p
 import 'package:nutrenaissance_flutter/presentation/registry/view/registry_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/provider/splash_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/sportevent/provider/add_sport_event_provider.dart';
+import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -151,6 +162,10 @@ void main() async {
   final GetMasterFileInteractor getMasterFileInteractor = GetMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
   final SaveUserRdasInteractor saveUserRdasInteractor = SaveUserRdasInteractorImpl(localStorageRepository: localStorageRepository);
   final GetUserRdasInteractor getUserRdasInteractor = GetUserRdasInteractorImpl(localStorageRepository: localStorageRepository);
+  final SportEventsApi sportEventsApi = SportEventsApi(prefsRepository, authenticationService);
+  final SportEventsRepository sportEventsRepository = SportEventsRepositoryImpl(sportEventsApi: sportEventsApi, localStorageRepository: localStorageRepository);
+  final UploadSportEventsInteractor uploadSportEventsInteractor = UploadSportEventsInteractorImpl(sportEventsRepository: sportEventsRepository);
+  final SaveSportEventInteractor saveSportEventInteractor = SaveSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
 
   final splashProvider = SplashProvider(getIdTokenInteractor: getIdTokenInteractor);
 
@@ -205,6 +220,13 @@ void main() async {
   // await addFoodEventProvider.init();
   // await dashboardProvider.init();
 
+  final addSportEventProvider = AddSportEventProvider(
+    getMasterFileInteractor: getMasterFileInteractor,
+    getUserIdInteractor: getUserIdInteractor,
+    uploadSportsEventInteractor: uploadSportEventsInteractor,
+    saveSportEventInteractor: saveSportEventInteractor
+  );
+
   runApp(
     MultiProvider(
       providers: [
@@ -214,6 +236,7 @@ void main() async {
         ChangeNotifierProvider<DashboardProvider>(create: (_) => dashboardProvider),
         ChangeNotifierProvider<AddFoodEventProvider>(create: (_) => addFoodEventProvider),
         ChangeNotifierProvider<RecommendationsProvider>(create: (_) => recommendationsProvider),
+        ChangeNotifierProvider<AddSportEventProvider>(create: (_) => addSportEventProvider),
         // ChangeNotifierProxyProvider<ClaseDeLaQueDepende, ClaseQueSeProvee>(
         //     create: (ctx) {},
         //     update: (ctx, dynamic, objetoQueSeProvee) => ClaseQueSeProvee(),
@@ -238,13 +261,14 @@ void main() async {
           Locale('es', ''), // Spanish, no country code
         ],
         routes: {
-          '/': (ctx) => const SplashScreen(),
+          '/': (ctx) => const AddSportEventScreen(),
           SplashScreen.routeName: (_) => const SplashScreen(),
           LoginScreen.routeName: (_) => const LoginScreen(),
           RegistryScreen.routeName: (_) => RegistryScreen(),
           DashboardScreen.routeName: (_) => const DashboardScreen(),
           AddFoodEventScreen.routeName: (_) => const AddFoodEventScreen(),
           RecommendationsScreen.routeName: (_) => const RecommendationsScreen(),
+          AddSportEventScreen.routeName: (_) => const AddSportEventScreen(),
         },
       ),
     ),
@@ -279,4 +303,8 @@ void initLocalStorage() async {
   Hive.registerAdapter(RecommendationGroupsEntityAdapter());
   Hive.registerAdapter(RecommendationGroupEntityAdapter());
   Hive.registerAdapter(UserRdasEntityAdapter());
+  Hive.registerAdapter(SportsInfoEntityAdapter());
+  Hive.registerAdapter(SportInfoEntityAdapter());
+  Hive.registerAdapter(SportEventEntityAdapter());
+  Hive.registerAdapter(SportEventInfoEntityAdapter());
 }

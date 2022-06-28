@@ -9,7 +9,7 @@ abstract class BaseProvider extends ChangeNotifier {
   Function? _onError;
 
   void initialize(Function onError) {
-    setOnError(onError);
+    _setOnError(onError);
   }
 
   void showError({required Function snackBar}) {
@@ -33,6 +33,6 @@ abstract class BaseProvider extends ChangeNotifier {
     }
   }
 
-  void setOnError(Function onError) => _onError = onError;
+  void _setOnError(Function onError) => _onError = onError;
 
 }
