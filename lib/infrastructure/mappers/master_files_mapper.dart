@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/data/api/masterfiles/model/foods_and_drin
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/nutrients_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/objectives_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/recommendation_groups_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/sports_info_response.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/foods_and_drinks_names_entity.dart';
@@ -11,12 +12,14 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_file
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/objectives_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/recommendation_groups_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 
 dynamic mapToMasterFileEntity(dynamic masterFileResponse, MasterFilesType masterFilesType) {
   switch (masterFilesType) {
@@ -39,7 +42,10 @@ dynamic mapToMasterFileEntity(dynamic masterFileResponse, MasterFilesType master
     case MasterFilesType.recommendationGroups:
       return mapToRecommendationGroupsEntity(masterFileResponse as RecommendationGroupsResponse);
 
+    case MasterFilesType.sportsInfo:
+      return mapToSportsInfoEntity(masterFileResponse as SportsInfoResponse);
   }
+  
 }
 
 CookingMethodsEntity mapToCookingMethodsEntity(CookingMethodsResponse cookingMethodsResponse) {
@@ -104,4 +110,13 @@ RecommendationGroupsEntity mapToRecommendationGroupsEntity(RecommendationGroupsR
 RecommendationGroupsMaster mapToRecommendationGroupsMaster(RecommendationGroupsEntity recommendationGroupsEntity) {
   List<RecommendationGroup> recommendationGroups = recommendationGroupsEntity.data.map((item) => RecommendationGroup(id: item.id, groups: item.groups, size: item.size, en: item.en, es: item.es)).toList();
   return RecommendationGroupsMaster(recommendationGroups: recommendationGroups);
+}
+SportsInfoEntity mapToSportsInfoEntity(SportsInfoResponse sportsInfoResponse) {
+  List<SportInfoEntity> data = sportsInfoResponse.data.map((item) => SportInfoEntity(id: item.id, en: item.en, es: item.es, mets: item.mets)).toList();
+  return SportsInfoEntity(id: MasterFilesType.sportsInfo.index, v: sportsInfoResponse.v, data: data);
+}
+
+SportsInfoMaster mapToSportsInfoMaster(SportsInfoEntity sportsInfoEntity) {
+  List<SportInfoMaster> sportsInfoMaster = sportsInfoEntity.data.map((item) => SportInfoMaster(id: item.id, en: item.en, es: item.es, mets: item.mets)).toList();
+  return SportsInfoMaster(sportsInfoMaster: sportsInfoMaster);
 }
