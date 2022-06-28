@@ -147,6 +147,7 @@ class RegistryProvider extends BaseProvider {
   }
   void setLastPeriodDate(DateTime date) {
     _lastPeriodDate = date;
+    notifyListeners();
   }
   void setEatGuts(bool eatGuts) {
     _eatGuts = eatGuts;

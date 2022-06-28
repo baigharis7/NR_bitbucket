@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/provider/dashboard_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/view/recommendations_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -296,7 +297,7 @@ class _DashboardScreen extends State<DashboardScreen>
                             color: Colors.white,
                           ),
                           onPressed: () {
-
+                            Navigator.pushNamed(context, AddSportEventScreen.routeName);
                           },
                         ),
                       ),

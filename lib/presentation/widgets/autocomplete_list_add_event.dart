@@ -19,7 +19,7 @@ class AutocompleteListAddEvent extends StatefulWidget {
 }
 
 class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
-  TextEditingController  _foodInputController = TextEditingController();
+  TextEditingController _foodInputController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class _AutocompleteListAddEvent extends State<AutocompleteListAddEvent> {
       if (currentLanguage == 'es') {
         foodItem = provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.firstWhere((food) => food.es == foodName);
       } else {
-       foodItem = provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.firstWhere((food) => food.en == foodName);
+        foodItem = provider.getFoodAndDrinksNames!.foodsAndDrinksNames!.foodNames?.firstWhere((food) => food.en == foodName);
       }
       if (foodItem != null) {
         return foodItem.group;
