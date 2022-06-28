@@ -8,8 +8,10 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_file
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_rdas_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_rdas.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
@@ -29,6 +31,8 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _objectivesInfoBox;
   Box? _recommendationGroupsBox;
   Box? _userRdasBox;
+  Box? _sportsInfoBox;
+  Box? _sportEventsBox;
 
   Future<Box> _openProfileBox() async => openBox(_profileBox, UserProfileEntity.boxName);
   Future<Box> _openFoodEventsBox() async => openBox(_foodEventsBox, FoodEventEntity.boxName);
@@ -46,15 +50,19 @@ class LocalStorageImpl extends LocalStorageRepository {
         return openBox(_objectivesInfoBox, objectivesInfoBoxName);
       case MasterFilesType.recommendationGroups:
         return openBox(_recommendationGroupsBox, recommendationGroupsBoxName);
+      case MasterFilesType.sportsInfo:
+        return openBox(_sportsInfoBox, sportsInfoBoxName);
     }
   }
   Future<Box> _openUserRdasBox() async => openBox(_userRdasBox, UserRdasEntity.boxName);
+  Future<Box> _openSportEventsBox() async => openBox(_sportEventsBox, SportEventEntity.boxName);
 
 
   Future<Box> get _getProfileBox async => await _openProfileBox();
   Future<Box> get _getFoodEventsBox async => await _openFoodEventsBox();
   Future<Box> get _getUserRdasBox async => await _openUserRdasBox();
   Future<Box> _getMasterFilesBox(MasterFilesType masterFilesType) async => await _openMasterFilesBox(masterFilesType);
+  Future<Box> get _getSportEventsBox async => await _openSportEventsBox();
 
   @override
   Future<void> saveProfile(UserProfileEntity profileEntity) async => await _getProfileBox.then((box) => box.put(Constants.PROFILE_ENTITY, profileEntity));
@@ -112,6 +120,8 @@ class LocalStorageImpl extends LocalStorageRepository {
           return (masterFile as ObjectivesInfoEntity).v;
         case MasterFilesType.recommendationGroups:
           return (masterFile as RecommendationGroupsEntity).v;
+        case MasterFilesType.sportsInfo:
+          return (masterFile as SportsInfoEntity).v;
         default:
           return -1;
       }
@@ -148,4 +158,19 @@ class LocalStorageImpl extends LocalStorageRepository {
       box.put(Constants.USER_RDAS_ENTITY, mapToUserRdasEntity(userRdas))
   );
 
+  @override
+  Future<void> saveSportEvent(SportEventEntity sportEventEntity) async {
+    try {
+      await sportEventEntity.save();
+    } catch (error) {
+      try {
+        _getSportEventsBox.then((box) {
+          box.add(sportEventEntity);
+          // box.put(sportEventEntity.eventDate.getHiveKey(), sportEventEntity);
+        });
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
 }

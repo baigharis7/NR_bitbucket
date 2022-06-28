@@ -14,7 +14,8 @@ class MasterFilesApi extends ApiHelper {
       int foodsAndDrinksNamesVersion,
       int nutrientsInfoVersion,
       int objectivesInfoVersion,
-      int recommendationGroupsVersion
+      int recommendationGroupsVersion,
+      int sportsInfoVersion
   ) {
     return get(
       Uri.https(
@@ -27,6 +28,7 @@ class MasterFilesApi extends ApiHelper {
           nutrientsInfo: nutrientsInfoVersion.toString(),
           objectivesInfo: objectivesInfoVersion.toString(),
           recommendationGroups: recommendationGroupsVersion.toString(),
+          sportsInfo: sportsInfoVersion.toString(),
         },
       ),
     );
