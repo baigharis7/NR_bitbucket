@@ -163,5 +163,22 @@
     "username_empty_or_null_error" : "Tienes que introducir un nombre de usuario",
     "email_format_error" : "El email introducido contiene errores",
     "empty_repeat_password" : "Este campo no puede estar vacío",
-    "repeat_password_error" : "Las contraseñas no coinciden"
+    "repeat_password_error" : "Las contraseñas no coinciden",
+    "chosen_sport" : "Deporte elegido",
+    "sport_date_start" : "Fecha de comienzo",
+    "sport_time_start" : "Hora de comienzo",
+    "intensity" : "Intensidad",
+    "low" : "Baja",
+    "medium" : "Media",
+    "high" : "Alta",
+    "duration" : "Duración",
+    "minutes" : "Minutos",
+    "locally_saving_sport_event_error" : "Ha habido un problema guardando tu evento de ejercicio. Prueba de nuevo más tarde.",
+    "uploading_sport_event_error" : "Ha habido un problema al subir tu evento de ejercicio. Prueba de nuevo más tarde.",
+    "retrieve_sport_events_error" : "Ha habido un problema cargando tus eventos de ejercicio. Prueba de nuevo más tarde.",
+    "sport_event_time_start_error" : "Tienes que seleccionar la hora de comienzo",
+    "sport_event_date_start_error" : "Tienes que seleccionar la fecha",
+    "sport_event_sport_id_error" : "Tienes que seleccionar el deporte",
+    "sport_event_intensity_start_error" : "Tienes que seleccionar la intensidad",
+    "sport_event_minutes_start_error" : "Tienes que seleccionar la duración"
 }

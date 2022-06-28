@@ -12,7 +12,6 @@ enum ErrorTypes {
   saveProfileInLocalError,
   manageMasterFilesError,
   saveUserInRemoteDatabaseError,
-
   savingProfileError,
   savingRdasError,
   uploadingProfileError,
@@ -21,6 +20,14 @@ enum ErrorTypes {
   locallySavingFoodEventError,
   uploadingFoodEventError,
   retrieveFoodEventsError,
+  locallySavingSportEventError,
+  uploadingSportEventError,
+  retrieveSportEventsError,
+  sportEventTimeStartError,
+  sportEventDateStartError,
+  sportEventSportIdError,
+  sportEventIntensityStartError,
+  sportEventMinutesStartError,
 }
 
 enum FormErrorTypes {
@@ -29,5 +36,4 @@ enum FormErrorTypes {
   invalidPasswordError,
   emptyRepeatPassword,
   repeatPasswordError
-
 }
