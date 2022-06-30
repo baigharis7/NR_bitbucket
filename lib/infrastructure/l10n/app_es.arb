@@ -180,5 +180,6 @@
     "sport_event_date_start_error" : "Tienes que seleccionar la fecha",
     "sport_event_sport_id_error" : "Tienes que seleccionar el deporte",
     "sport_event_intensity_start_error" : "Tienes que seleccionar la intensidad",
-    "sport_event_minutes_start_error" : "Tienes que seleccionar la duración"
+    "sport_event_minutes_start_error" : "Tienes que seleccionar la duración",
+    "advice" : "Consejo"
 }

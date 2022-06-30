@@ -180,5 +180,6 @@
     "sport_event_date_start_error" : "You have to select the date",
     "sport_event_sport_id_error" : "You have to select the sport",
     "sport_event_intensity_start_error" : "You have to select the intensity",
-    "sport_event_minutes_start_error" : "You have to select the duration"
+    "sport_event_minutes_start_error" : "You have to select the duration",
+    "advice" : "Advice"
 }
