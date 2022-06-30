@@ -1,8 +1,11 @@
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_all_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/advices/advice.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_rdas.dart';
@@ -15,12 +18,16 @@ class DashboardProvider extends BaseProvider {
   final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetUserRdasInteractor getUserRdasInteractor;
+  final GetAdviceInteractor getAdviceInteractor;
+  final GetUserIdInteractor getUserIdInteractor;
 
   DashboardProvider({
     required this.getAllFoodEventsInteractor,
     required this.getUserMicronutrientsInteractor,
     required this.getMasterFileInteractor,
     required this.getUserRdasInteractor,
+    required this.getAdviceInteractor,
+    required this.getUserIdInteractor
   });
 
   List<FoodEventComplete> get getFoodEvents => _foodEvents;
@@ -28,21 +35,38 @@ class DashboardProvider extends BaseProvider {
   List<String> get getUserMicronutrients => _userMicronutrients;
   NutrientsInfoMaster? get getNutrientsInfoMaster => _nutrientsInfoMaster;
   List<UserRdas>? get getUserRdas => _userRdas;
+  String get getAdvice => _advice.orEmpty();
 
   List<FoodEventComplete> _foodEvents = [];
   bool _infoLoaded = false;
   List<String> _userMicronutrients = [];
   NutrientsInfoMaster? _nutrientsInfoMaster;
   List<UserRdas>? _userRdas;
+  String? _advice;
 
   @override
   void initialize(Function onError) {
     super.initialize(onError);
     if (!isInfoLoaded) {
-      _setInfoLoaded(true);
       getFoodEvents.isEmpty.doIfTrue(_retrieveFoodEvents);
       getNutrientsInfoMaster.doIfNull(_retrieveNutrientsInfoFile);
       getUserRdas.doIfNull(_retrieveUserRdas);
+      _setInfoLoaded(true);
+    }
+  }
+
+  void getAdviceString(String currentLanguage) async {
+    if (!isInfoLoaded) {
+      final userId = getUserIdInteractor.execute();
+      launchSync(
+          block: () => getAdviceInteractor.execute(userId),
+          onSuccess: (Advice advice) {
+            _setAdvice(_selectAdviceLanguage(advice, currentLanguage));
+          },
+          onError: (error) {
+            onError?.call(ErrorTypes.unknownError);
+          }
+      );
     }
   }
 
@@ -80,6 +104,7 @@ class DashboardProvider extends BaseProvider {
   void _setUserMicronutrients(List<String> micronutrients) => _userMicronutrients = micronutrients;
   void _setNutrientsInfoMaster(NutrientsInfoMaster nutrientsInfoMaster) => _nutrientsInfoMaster = nutrientsInfoMaster;
   void _setUserRdas(List<UserRdas> userRdas) => _userRdas = userRdas;
+  void _setAdvice(String advice) => _advice = advice;
 
   void _retrieveFoodEvents() {
     launchSync(
@@ -131,6 +156,14 @@ class DashboardProvider extends BaseProvider {
         onError?.call(ErrorTypes.retrievingMasterFileError);
       },
     );
+  }
+
+  String _selectAdviceLanguage(Advice advice, String currentLanguage) {
+    if (currentLanguage == 'es') {
+      return advice.advEs;
+    } else {
+      return advice.advEn.orEmpty();
+    }
   }
 
 }
