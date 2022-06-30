@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/data/api/advices/advices_api.dart';
 import 'package:nutrenaissance_flutter/data/api/foodevents/food_events_api.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
@@ -26,7 +27,10 @@ import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_i
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/profile/profile_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/recommendations/recommendations_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/repository/advices_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/sportevents/sport_events_repository_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_all_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_all_food_events_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart';
@@ -83,6 +87,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/repository/advices/advices_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/foodevents/food_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart';
@@ -166,6 +171,9 @@ void main() async {
   final SportEventsRepository sportEventsRepository = SportEventsRepositoryImpl(sportEventsApi: sportEventsApi, localStorageRepository: localStorageRepository);
   final UploadSportEventsInteractor uploadSportEventsInteractor = UploadSportEventsInteractorImpl(sportEventsRepository: sportEventsRepository);
   final SaveSportEventInteractor saveSportEventInteractor = SaveSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
+  final AdvicesApi advicesApi = AdvicesApi(prefsRepository, authenticationService);
+  final AdvicesRepository advicesRepository = AdvicesRepositoryImpl(advicesApi: advicesApi);
+  final GetAdviceInteractor getAdviceInteractor = GetAdviceInteractorImpl(advicesRepository: advicesRepository);
 
   final splashProvider = SplashProvider(getIdTokenInteractor: getIdTokenInteractor);
 
@@ -199,10 +207,12 @@ void main() async {
   );
 
   final dashboardProvider = DashboardProvider(
-      getAllFoodEventsInteractor: getAllFoodEventsInteractor,
-      getUserMicronutrientsInteractor: getUserMicronutrientsInteractor,
-      getMasterFileInteractor: getMasterFileInteractor,
-      getUserRdasInteractor: getUserRdasInteractor
+    getAllFoodEventsInteractor: getAllFoodEventsInteractor,
+    getUserMicronutrientsInteractor: getUserMicronutrientsInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
+    getUserRdasInteractor: getUserRdasInteractor,
+    getAdviceInteractor: getAdviceInteractor,
+    getUserIdInteractor: getUserIdInteractor
   );
 
   final addFoodEventProvider = AddFoodEventProvider(
@@ -261,7 +271,7 @@ void main() async {
           Locale('es', ''), // Spanish, no country code
         ],
         routes: {
-          '/': (ctx) => const AddSportEventScreen(),
+          '/': (ctx) => const DashboardScreen(),
           SplashScreen.routeName: (_) => const SplashScreen(),
           LoginScreen.routeName: (_) => const LoginScreen(),
           RegistryScreen.routeName: (_) => RegistryScreen(),
