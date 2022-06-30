@@ -11,6 +11,7 @@ import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_even
 import 'package:nutrenaissance_flutter/presentation/recommendations/view/recommendations_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -29,6 +30,7 @@ class _DashboardScreen extends State<DashboardScreen>
     setProvider(Provider.of<DashboardProvider>(context));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      getProvider.getAdviceString(Localizations.localeOf(context).languageCode);
       getProvider.initialize((ErrorTypes errorType) => showErrorSnackBar(context, resolveError(context, errorType)));
     });
 
@@ -221,7 +223,27 @@ class _DashboardScreen extends State<DashboardScreen>
                       ),
                     ],
                   ),
-
+                  Card(
+                    margin: const EdgeInsets.all(Dimens.marginSmall),
+                    child: Column(
+                        children: [
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            margin: const EdgeInsets.fromLTRB(Dimens.marginNormal, Dimens.marginNormal,  Dimens.marginNormal, Dimens.zero),
+                            child: Text(
+                                AppLocalizations.of(context)!.advice,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
+                            child: Text(getProvider.getAdvice),
+                          )
+                        ]
+                    ),
+                  )
                 ],
               ),
             ),
