@@ -351,11 +351,11 @@ class _LoginScreenState extends State<LoginScreen>
                               child: TextFormField(
                                 decoration: InputDecoration(
                                   labelText: stringResolver.repeat_password,
-                                    suffixIcon: IconButton(
-                                        icon: Icon(
+                                  suffixIcon: IconButton(
+                                      icon: Icon(
                                             getProvider.isPasswordVisible ? Icons.visibility : Icons.visibility_off),
-                                        onPressed: () => getProvider.changePasswordVisibility()
-                                    ),
+                                      onPressed: () => getProvider.changePasswordVisibility()
+                                  ),
                                 ),
                                 controller: _repeatPasswordController,
                                 obscureText: getProvider.isPasswordVisible,

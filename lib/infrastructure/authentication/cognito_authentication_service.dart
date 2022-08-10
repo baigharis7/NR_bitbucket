@@ -21,14 +21,14 @@ class CognitoAuthenticationService implements AuthenticationService {
 
   CognitoAuthenticationService._(this.amplifyService);
 
-  AuthCategory _getAuthorization() {
+  AuthCategory getAuthorization() {
     return amplifyService.getAuth();
   }
 
   @override
   Future<SignUpResult> signUp(String username, String email, String password) {
 
-    return _getAuthorization().signUp(
+    return getAuthorization().signUp(
         username: username,
         password: password,
         options: CognitoSignUpOptions(userAttributes: {
@@ -43,7 +43,7 @@ class CognitoAuthenticationService implements AuthenticationService {
     String confirmationCode,
     String email,
   ) async {
-    return _getAuthorization().confirmSignUp(
+    return getAuthorization().confirmSignUp(
         username: email,
         confirmationCode: confirmationCode,
       );
@@ -51,12 +51,12 @@ class CognitoAuthenticationService implements AuthenticationService {
 
   @override
   Future<ResendSignUpCodeResult> resendVerificationCode(String username) async {
-      return await _getAuthorization().resendSignUpCode(username: username);
+      return await getAuthorization().resendSignUpCode(username: username);
   }
 
   @override
   Future<SignInResult> signIn(String username, String password) async {
-    return _getAuthorization().signIn(
+    return getAuthorization().signIn(
         username: username,
         password: password
     );
@@ -65,17 +65,17 @@ class CognitoAuthenticationService implements AuthenticationService {
   @override
   Future<CognitoAuthSession> fetchUserAttributes() async {
 
-    final authSession = await _getAuthorization().fetchAuthSession(
+    final authSession = await getAuthorization().fetchAuthSession(
       options: CognitoSessionOptions(getAWSCredentials: true),
     );
     return authSession as CognitoAuthSession;
   }
 
   @override
-  Future<SignOutResult> signOut() => _getAuthorization().signOut();
+  Future<SignOutResult> signOut() => getAuthorization().signOut();
 
   Future<void> deleteUser() async {
-    await _getAuthorization().deleteUser();
+    await getAuthorization().deleteUser();
   }
 
 }
