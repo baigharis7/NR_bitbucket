@@ -100,6 +100,7 @@ import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_event
 import 'package:nutrenaissance_flutter/infrastructure/authentication/cognito_authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/environment/environment.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
+import 'package:nutrenaissance_flutter/presentation/common/view/test_widget_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/provider/dashboard_provider.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/provider/add_food_event_provider.dart';
@@ -271,7 +272,7 @@ void main() async {
           Locale('es', ''), // Spanish, no country code
         ],
         routes: {
-          '/': (ctx) => const DashboardScreen(),
+          '/': (ctx) => TestWidgetScreen(),
           SplashScreen.routeName: (_) => const SplashScreen(),
           LoginScreen.routeName: (_) => const LoginScreen(),
           RegistryScreen.routeName: (_) => RegistryScreen(),
