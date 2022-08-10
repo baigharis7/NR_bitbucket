@@ -1,4 +1,4 @@
-import 'package:amplify_auth_plugin_interface/src/SignUp/SignUpResult.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/send_perrification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart';
 
