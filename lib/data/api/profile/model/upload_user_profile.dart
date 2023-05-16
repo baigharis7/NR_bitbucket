@@ -19,6 +19,8 @@ class UploadUserProfile {
   int? guts;
   List<int> objectives;
   List<String>? micronutrients;
+  List<UserRda>? userRdas;
+  int? kcal;
 
   UploadUserProfile({
     required this.userId,
@@ -35,7 +37,9 @@ class UploadUserProfile {
     // this.symptoms,
     this.guts,
     required this.objectives,
-    this.micronutrients
+    this.micronutrients,
+    this.userRdas,
+    this.kcal,
   });
 
   factory UploadUserProfile.fromJson(Map<String, dynamic> json) => _$UploadUserProfileFromJson(json);
@@ -65,7 +69,7 @@ class PhysicalCharacteristics{
     required this.height,
     required this.weight,
     this.bodyFat,
-    this.waistMeasurement
+    this.waistMeasurement,
   });
 
   factory PhysicalCharacteristics.fromJson(Map<String, dynamic> json) => _$PhysicalCharacteristicsFromJson(json);
@@ -91,11 +95,33 @@ class Menstruation {
   Menstruation({
     required this.regularity,
     this.daysOfCycle,
-    this.lastStartDate
+    this.lastStartDate,
   });
 
   factory Menstruation.fromJson(Map<String, dynamic> json) => _$MenstruationFromJson(json);
   Map<String, dynamic> toJson() => _$MenstruationToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class UserRdas {
+  List<UserRda> userRdas;
+
+  UserRdas({required this.userRdas});
+
+  factory UserRdas.fromJson(Map<String, dynamic> json) => _$UserRdasFromJson(json);
+  Map<String, dynamic> toJson() => _$UserRdasToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class UserRda {
+  String n;
+  num rda;
+  num ul;
+
+  UserRda({required this.n, required this.rda, required this.ul});
+
+  factory UserRda.fromJson(Map<String, dynamic> json) => _$UserRdaFromJson(json);
+  Map<String, dynamic> toJson() => _$UserRdaToJson(this);
 }
 
 enum SexType {

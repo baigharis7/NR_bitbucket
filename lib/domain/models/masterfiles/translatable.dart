@@ -1,0 +1,3 @@
+class Translatable {
+  Translatable();
+}

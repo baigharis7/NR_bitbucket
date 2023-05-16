@@ -8,7 +8,7 @@ part of 'sports_info_entity.dart';
 
 class SportsInfoEntityAdapter extends TypeAdapter<SportsInfoEntity> {
   @override
-  final int typeId = 26;
+  final int typeId = 27;
 
   @override
   SportsInfoEntity read(BinaryReader reader) {
@@ -48,7 +48,7 @@ class SportsInfoEntityAdapter extends TypeAdapter<SportsInfoEntity> {
 
 class SportInfoEntityAdapter extends TypeAdapter<SportInfoEntity> {
   @override
-  final int typeId = 27;
+  final int typeId = 28;
 
   @override
   SportInfoEntity read(BinaryReader reader) {

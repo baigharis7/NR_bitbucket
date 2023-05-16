@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
-import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/mixins/generic_provider.dart';
-import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
-import 'package:nutrenaissance_flutter/presentation/dashboard/provider/dashboard_provider.dart';
-import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
-import 'package:nutrenaissance_flutter/presentation/recommendations/view/recommendations_screen.dart';
-import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
+import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
+import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/energy_balance_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/liquids_summary_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_widget.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -23,389 +29,211 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreen extends State<DashboardScreen>
-    with ShowLoadingDialog, GenericProvider<DashboardProvider>, SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
+
+  @override
+  void initState() {
+    final bloc = BlocProvider.of<DashboardBloc>(context);
+    bloc.add(InitializeState(context: context));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    setProvider(Provider.of<DashboardProvider>(context));
+    final bloc = BlocProvider.of<DashboardBloc>(context);
+    final mediaQuerySize = MediaQuery.of(context).size;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getProvider.getAdviceString(Localizations.localeOf(context).languageCode);
-      getProvider.initialize((ErrorTypes errorType) => showErrorSnackBar(context, resolveError(context, errorType)));
-    });
-
-    return SafeArea(
-      child: Stack(
-        children: [
-          Scaffold(
-            body: Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color.fromARGB(81, 97, 64, 81),
-                      Color.fromARGB(75, 227, 135, 0),
-                      Color.fromARGB(70, 0, 120, 23)
-                    ],
-                    stops: [0.1, 0.6, 0.8],
-                    begin: FractionalOffset.bottomRight,
-                    end: FractionalOffset.topLeft,
-                  ),
-              ),
-              child: Column(
-                children: [
-                  Card(
-                    margin: const EdgeInsets.all(Dimens.marginSmall),
-                    child: Column(
-                      children: [
-                        FittedBox(
-                          child: Container(
-                            margin: const EdgeInsets.only(bottom: Dimens.marginLarge),
-                            padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal),
-                            alignment: Alignment.topCenter,
-                            decoration: const BoxDecoration(
-                                color: Colors.grey,
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.vertical(bottom: Radius.circular(5.0))
-                            ),
-                            child: const Text(
-                              'Micronutrients',
-                              style: TextStyle(
-                                  fontSize: Dimens.fontSizeSmall,
-                                  color: Colors.white
-                              ),
-                            ),
-                          ),
-                        ),
-                        // TODO: aquí poner una comprobación buena, no esta tontería.
-                        getProvider.getFoodEvents.isEmpty
-                            ? const Text('You need to introduce food events')
-                            : Column(
-                          children: [
-                            ...getProvider.getUserMicronutrients.map((micronutrient) =>
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 2,
-                                      child: Container(
-                                        alignment: Alignment.centerLeft,
-                                        margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginSmall),
-                                        child: Text('${getProvider.getNutrientName(micronutrient, Localizations.localeOf(context).languageCode)}:'),
-                                      ),
-                                    ),
-                                    if (getProvider.getFractionToFill(micronutrient) == 1) Container(
-                                        margin: const EdgeInsets.only(
-                                            right: Dimens.marginSmall
-                                        ), child: const Text(
-                                      "!!",
-                                      style: TextStyle(
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.bold),
-                                    )),
-                                    Expanded(
-                                      flex: 4,
-                                      child: Container(
-                                          margin: const EdgeInsets.only(right: Dimens.marginLarge),
-                                          child: LayoutBuilder(
-                                              builder: (ctx, constraints) {
-                                                return Row(children: [
-                                                  Container(
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(color: Colors.black54, width: 1.0),
-                                                      borderRadius: BorderRadius.circular(20.00),
-                                                      color: Colors.white12,
-                                                      shape: BoxShape.rectangle,
-                                                    ),
-                                                    height: 15,
-                                                    width: constraints.maxWidth,
-                                                    child: Stack(
-                                                        children: [
-                                                          Container(
-                                                            color: Colors.white30,
-                                                            child: FractionallySizedBox(
-                                                              alignment: Alignment.centerLeft,
-                                                              widthFactor: getProvider.getFractionToFill(micronutrient),
-                                                              child: Container(
-                                                                alignment: Alignment.centerLeft,
-                                                                decoration: BoxDecoration(
-                                                                  color: getProvider.getFractionToFill(micronutrient) == 1
-                                                                      ? Colors.red
-                                                                      : const Color.fromARGB(255, 3, 179, 164),
-                                                                  borderRadius: BorderRadius.circular(20.00),
-                                                                  shape: BoxShape.rectangle,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          )
-                                                        ]
-                                                    ),
-                                                  )
-                                                ],
-                                                );
-                                              })
-                                      ),
-                                    )
-                                  ],
-                                ),
-                            ).toList()
-                          ],
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(bottom: Dimens.marginSmall),
-                        )
-                      ],
+    return BlocProvider.value(
+      value: bloc,
+      child: SafeArea(
+        child: BlocConsumer<DashboardBloc, DashboardState>(
+          listener: (ctx, state) {
+            if (state.isLoading) {
+              LoadingScreen.instance().show(
+                context: ctx,
+                text: AppLocalizations.of(ctx)!.loading,
+              );
+            } else {
+              LoadingScreen.instance().hide();
+            }
+            if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
+          },
+          builder: (ctx, state) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Container(
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.symmetric(vertical: Dimens.marginNormal,),
+                  child: Text(
+                    AppLocalizations.of(context)!.welcome,
+                    style: const TextStyle(
+                      fontSize: Dimens.fontSizeLarge,
+                      color: Colors.black,
                     ),
                   ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                          flex: 3,
-                          child: Card(
-                            margin: const EdgeInsets.all(Dimens.marginSmall),
-                            child: SizedBox(
-                              height: 200,
-                              child: Column(
-                                children: [
-                                  FittedBox(
-                                    child: Container(
-                                      margin: const EdgeInsets.only(bottom: Dimens.marginLarge,),
-                                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal),
-                                      alignment: Alignment.topCenter,
-                                      decoration: const BoxDecoration(
-                                          color: Colors.grey,
-                                      ),
-                                      child: const Text(
-                                        'Macronutrients',
-                                        style: TextStyle(
-                                            fontSize: Dimens.fontSizeSmall,
-                                            color: Colors.white
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const Icon(Icons.settings, size: 40.00, color: Colors.grey,),
-                                  const Text('We\'re working on it!')
-                                ],
-                              ),
-                            ),
-                          ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Card(
-                          margin: const EdgeInsets.all(Dimens.marginSmall),
-                          child: Column(
-                            children: [
-                              FittedBox(
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: Dimens.marginLarge),
-                                  padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal),
-                                  alignment: Alignment.topCenter,
-                                  decoration: const BoxDecoration(
-                                      color: Colors.grey,
-                                      shape: BoxShape.rectangle,
-                                      borderRadius: BorderRadius.vertical(bottom: Radius.circular(5.0))
-                                  ),
-                                  child: const Text(
-                                    'Liquid intake',
-                                    style: TextStyle(
-                                        fontSize: Dimens.fontSizeSmall,
-                                        color: Colors.white
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const Icon(Icons.settings, color: Colors.grey, size: 40.00,),
-                              const Text('Under construction!')
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Card(
-                    margin: const EdgeInsets.all(Dimens.marginSmall),
-                    child: Column(
-                        children: [
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            margin: const EdgeInsets.fromLTRB(Dimens.marginNormal, Dimens.marginNormal,  Dimens.marginNormal, Dimens.zero),
-                            child: Text(
-                                AppLocalizations.of(context)!.advice,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold
-                                ),
-                              ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
-                            child: Text(getProvider.getAdvice),
-                          )
-                        ]
+                ),
+                backgroundColor: Colors.white,
+                actions: [
+                  IconButton(
+                    onPressed: () => Navigator.pushNamed(context, ProfileScreen.routeName),
+                    iconSize: 35.0,
+                    icon: Image.asset(
+                      'assets/icon/profile_icon.png',
+                      color: Colors.black,
+                      height: 29,
+                      width: 29,
                     ),
                   )
                 ],
               ),
-            ),
-            bottomNavigationBar: BottomAppBar(
-              notchMargin: 6.0,
-              color: const Color.fromARGB(255, 151, 21, 21),
-              shape: const CircularNotchedRectangle(),
-              child: IconTheme(
-                data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
-                child:  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.all(Dimens.marginSmall),
-                        decoration: BoxDecoration(
-                          color: Colors.amber,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.black, width: 1.0)
+              body: SingleChildScrollView(
+                child: Stack(
+                  children: [
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
+                            Text(bloc.getTodayMessage(AppLocalizations.of(context)!.today, Localizations.localeOf(context).languageCode),)
+                          ],
                         ),
-                        child: IconButton(
-                          iconSize: 30,
-                          icon: const Icon(
-                              Icons.home,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            final snackBar = SnackBar(
-                              content: const Text('Botón de home'),
-                              action: SnackBarAction(
-                                label: 'Pulsado el botón de home',
-                                onPressed: () {
-                                  ToastHelper().showToast(
-                                      text: 'Esto es un toast',
-                                      backgroundColor: const Color.fromARGB(40, 97, 64, 81),
-                                      textColor: Colors.white
-                                  );
-                                },
-                              ),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          },
+                        NutrientsDashboardWidget(
+                          title: AppLocalizations.of(context)!.micronutrients,
+                          nutrients: state.micronutrients.orEmpty(),
+                          isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
                         ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(Dimens.marginSmall),
-                        decoration: BoxDecoration(
-                            color: Colors.amber,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.black, width: 1.0)
+                        NutrientsDashboardWidget(
+                          title: AppLocalizations.of(context)!.macronutrients,
+                          nutrients: state.macronutrients.orEmpty(),
+                          isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
                         ),
-                        child: IconButton(
-                          iconSize: 30,
-                          icon: const Icon(
-                            Icons.food_bank_outlined,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            Navigator.pushNamed(context, AddFoodEventScreen.routeName);
-                          },
+                        EnergyBalanceWidget(
+                          energyModel: state.energyModel,
                         ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(Dimens.marginSmall),
-                        decoration: BoxDecoration(
-                            color: Colors.amber,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.black, width: 1.0)
-                        ),
-                        child: IconButton(
-                          iconSize: 30,
-                          icon: const Icon(
-                            Icons.sports_baseball_outlined,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            Navigator.pushNamed(context, AddSportEventScreen.routeName);
-                          },
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(Dimens.marginSmall),
-                        decoration: BoxDecoration(
-                            color: Colors.amber,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.black, width: 1.0)
-                        ),
-                        child: IconButton(
-                          iconSize: 30,
-                          icon: const Icon(
-                            Icons.person,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            final snackBar = SnackBar(
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                  side: const BorderSide(color: Colors.amber),
-                                  borderRadius: BorderRadius.circular(5.00),
-                              ),
-                              backgroundColor: Colors.deepPurpleAccent,
-                              content: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20.00),
-                                    border: Border.all(color: Colors.grey, width: 5.0),
-                                    shape: BoxShape.rectangle,
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Color.fromARGB(100, 147, 147, 147),
-                                        blurRadius: 5.0,
-                                        spreadRadius: 1.0,
-                                        offset: Offset(-10.0, 20.0), // shadow direction: bottom right
-                                      ),
-                                    ],
-                                    color: Colors.transparent
+                        SizedBox(
+                          height: 200,
+                          child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: LiquidSummaryWidget(
+                                    quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents),
+                                    fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents),
+                                    onReloadData: () => bloc.add(ReloadWaterInfoAction()),
                                   ),
-                                  child: const Text('Botón de perfil'),
-                              ),
-                              action: SnackBarAction(
-                                label: 'Has pulsado el botón de perfil',
-                                onPressed: () {
-                                  ToastHelper().showToast(
-                                      text: 'Esto es un Toast',
-                                      backgroundColor: const Color.fromARGB(40, 97, 64, 81),
-                                      textColor: Colors.white
-                                  );
-                                },
-                              ),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          },
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Card(
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          margin: const EdgeInsets.only(left: Dimens.marginNormal),
+                                          alignment: Alignment.centerLeft,
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                AppLocalizations.of(context)!.steps,
+                                                style: const TextStyle(
+                                                  fontSize: Dimens.fontSizeNormal,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              Container(
+                                                alignment: Alignment.centerRight,
+                                                child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          height: 80,
+                                          decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.grey,
+                                          ),
+                                          child: const Center(child: Text('2000'),),
+                                        ),
+                                        Container(
+                                          margin: const EdgeInsets.only(top: Dimens.marginNormal),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                            children: const [
+                                              Text('5,4 km'),
+                                              Text('98 min')
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                          ),
                         ),
+                        // TODO: DUMMY sugar
+                        Card(
+                          child: Column(
+                            children: [
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                margin: const EdgeInsets.all(Dimens.marginNormal),
+                                child: Text(
+                                  AppLocalizations.of(context)!.sugar,
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                                child: const FillHorizontalBar(fractionToFill: 0.75),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
+                                alignment: Alignment.centerRight,
+                                child: const Text(
+                                  '20 g',
+                                  style: TextStyle(fontSize: Dimens.fontSizeSmall),
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    if (state.showCard != null && state.showCard!) Positioned(
+                      top: 100,
+                      width: mediaQuerySize.width,
+                      child: ExplainingCardsHelper().getExplainingCardWithId(
+                        context: context,
+                        explainingCardId: ExplainingCardRefs.dashboard.index,
+                        onHideCard: () => bloc.add(HideCardAction()),
                       ),
-                    ],
+                    ),
+                  ],
                 ),
               ),
-            ),
-            resizeToAvoidBottomInset: true,
-            floatingActionButton: FloatingActionButton(
-              elevation: 2.0,
-              backgroundColor: const Color.fromARGB(255, 97, 64, 81),
-              onPressed: () {
-                final snackBar = SnackBar(
-                  content: const Text('Botón de algoritmo'),
-                  action: SnackBarAction(
-                    label: 'Pulsa aquí para ver tu recomendación',
-                    onPressed: () {
-                      Navigator.pushNamed(context, RecommendationsScreen.routeName);
-                    },
+              bottomNavigationBar: CustomBottomAppBar(initStateCallback: () => bloc.add(InitializeState(context: context))),
+              resizeToAvoidBottomInset: true,
+              floatingActionButton: FloatingActionButton(
+                elevation: 2.0,
+                backgroundColor: Colors.white,
+                onPressed: () {},
+                child: Container(
+                  padding: const EdgeInsets.all(Dimens.paddingSmall),
+                  child: Image.asset(
+                    'assets/images/logo_black.png',
+                    fit: BoxFit.cover,
+                    color: Colors.black,
                   ),
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              },
-              child: Image.asset(
-                'assets/images/logo_black.png',
-                fit: BoxFit.cover,
-                color: Colors.white,
+                ),
               ),
-            ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-          ),
-          if (getProvider.isLoading) showLoadingDialog(context),
-        ],
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            );
+          },
+        ),
       ),
     );
   }

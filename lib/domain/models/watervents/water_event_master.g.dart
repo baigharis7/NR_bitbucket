@@ -1,0 +1,21 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'water_event_master.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+WaterEventMaster _$WaterEventMasterFromJson(Map<String, dynamic> json) =>
+    WaterEventMaster(
+      json['userId'] as String?,
+      json['eventDate'] as int?,
+      (json['qty'] as num?)?.toDouble(),
+    );
+
+Map<String, dynamic> _$WaterEventMasterToJson(WaterEventMaster instance) =>
+    <String, dynamic>{
+      'userId': instance.userId,
+      'eventDate': instance.eventDate,
+      'qty': instance.qty,
+    };

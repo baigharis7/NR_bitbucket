@@ -7,7 +7,10 @@ class Recommendation {
   List<GroupRecommendation> foodList;
   List<String> userNutrients;
 
-  Recommendation(this.foodList, this.userNutrients);
+  Recommendation({
+    required this.foodList,
+    required this.userNutrients,
+  });
 
   factory Recommendation.fromJson(Map<String, dynamic> json) => _$RecommendationFromJson(json);
   Map<String, dynamic> toJson() => _$RecommendationToJson(this);
@@ -17,8 +20,9 @@ class Recommendation {
 class GroupRecommendation {
   int recGroup;
   List<int> foods;
+  List<int> usualFoods;
 
-  GroupRecommendation(this.recGroup, this.foods);
+  GroupRecommendation(this.recGroup, this.foods, this.usualFoods);
 
   factory GroupRecommendation.fromJson(Map<String, dynamic> json) => _$GroupRecommendationFromJson(json);
   Map<String, dynamic> toJson() => _$GroupRecommendationToJson(this);

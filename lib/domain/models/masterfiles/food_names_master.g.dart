@@ -45,6 +45,7 @@ FoodItemMaster _$FoodItemMasterFromJson(Map<String, dynamic> json) =>
       en: json['en'] as String?,
       es: json['es'] as String?,
       group: json['group'] as String?,
+      units: json['units'] as String?,
     );
 
 Map<String, dynamic> _$FoodItemMasterToJson(FoodItemMaster instance) =>
@@ -53,4 +54,5 @@ Map<String, dynamic> _$FoodItemMasterToJson(FoodItemMaster instance) =>
       'en': instance.en,
       'es': instance.es,
       'group': instance.group,
+      'units': instance.units,
     };

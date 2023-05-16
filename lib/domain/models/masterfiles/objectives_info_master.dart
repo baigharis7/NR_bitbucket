@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/translatable.dart';
 
 part 'objectives_info_master.g.dart';
 
@@ -13,7 +14,7 @@ class ObjectivesInfoMaster {
 }
 
 @JsonSerializable(explicitToJson: true)
-class ObjectiveInfoMaster {
+class ObjectiveInfoMaster extends Translatable {
   int id;
   String en;
   String es;

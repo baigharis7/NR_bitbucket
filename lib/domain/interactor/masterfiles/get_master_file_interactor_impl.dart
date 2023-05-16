@@ -8,6 +8,8 @@ class GetMasterFileInteractorImpl extends GetMasterFileInteractor {
   GetMasterFileInteractorImpl({required this.masterFilesRepository});
 
   @override
-  Future execute(MasterFilesType masterFileType) async => masterFilesRepository.getMasterFile(masterFileType);
-
+  Future? execute(MasterFilesType masterFileType) async {
+    final masterFile = await masterFilesRepository.getMasterFile(masterFileType);
+    return masterFile;
+  }
 }

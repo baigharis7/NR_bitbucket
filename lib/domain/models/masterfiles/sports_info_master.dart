@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/translatable.dart';
 
 part 'sports_info_master.g.dart';
 
@@ -13,7 +14,7 @@ class SportsInfoMaster {
 }
 
 @JsonSerializable(explicitToJson: true)
-class SportInfoMaster {
+class SportInfoMaster extends Translatable {
   int id;
   String en;
   String es;

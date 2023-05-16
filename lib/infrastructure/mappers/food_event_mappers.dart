@@ -1,6 +1,9 @@
 import 'package:nutrenaissance_flutter/data/api/foodevents/model/upload_food_event.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart' as entity;
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart' as domain;
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 
 entity.FoodEventEntity mapToFoodEventEntity(UploadFoodEvent uploadFoodEvent) {
   final List<entity.FoodInfo> foodInfoEntity = [];
@@ -121,7 +124,7 @@ entity.FoodEventEntity mapToFoodEventEntity(UploadFoodEvent uploadFoodEvent) {
         foodInfoFromComplete.params!.aluminum,
         foodInfoFromComplete.params!.boron,
         foodInfoFromComplete.params!.bromine,
-        foodInfoFromComplete.params!.arsenInorganic
+        foodInfoFromComplete.params!.arsenInorganic,
     );
     entity.EventInfo eventInfo = entity.EventInfo(
       foodInfoFromComplete.eventInfo!.cookingMethod,
@@ -131,12 +134,12 @@ entity.FoodEventEntity mapToFoodEventEntity(UploadFoodEvent uploadFoodEvent) {
 
     );
     final foodInfo = entity.FoodInfo(
-      foodInfoFromComplete.exchangePortion,
+      // foodInfoFromComplete.exchangePortion,
       foodInfoFromComplete.group,
       foodInfoFromComplete.id,
       foodInfoFromComplete.name_en,
       foodInfoFromComplete.name_es,
-      foodInfoFromComplete.portionSenc,
+      // foodInfoFromComplete.portionSenc,
       foodInfoFromComplete.recommendable,
       eventInfo,
       params,
@@ -144,7 +147,12 @@ entity.FoodEventEntity mapToFoodEventEntity(UploadFoodEvent uploadFoodEvent) {
 
     foodInfoEntity.add(foodInfo);
   }
-  return entity.FoodEventEntity(uploadFoodEvent.userId, uploadFoodEvent.eventDate, foodInfoEntity);
+  return entity.FoodEventEntity(
+    uploadFoodEvent.userId,
+    uploadFoodEvent.eventDate,
+    foodInfoEntity,
+    uploadFoodEvent.eventKcals,
+  );
 
 }
 
@@ -267,7 +275,7 @@ domain.FoodEventComplete mapToFoodEventComplete(entity.FoodEventEntity foodEvent
         foodInfoFromEntity.params!.aluminum,
         foodInfoFromEntity.params!.boron,
         foodInfoFromEntity.params!.bromine,
-        foodInfoFromEntity.params!.arsenInorganic
+        foodInfoFromEntity.params!.arsenInorganic,
     );
     final eventInfo = domain.EventInfo(
       foodInfoFromEntity.eventInfo!.cookingMethod,
@@ -277,20 +285,66 @@ domain.FoodEventComplete mapToFoodEventComplete(entity.FoodEventEntity foodEvent
 
     );
     final foodInfo = domain.FoodInfo(
-        foodInfoFromEntity.exchangePortion,
+        // foodInfoFromEntity.exchangePortion,
         foodInfoFromEntity.group,
         foodInfoFromEntity.id,
         foodInfoFromEntity.name_en,
         foodInfoFromEntity.name_es,
-        foodInfoFromEntity.portionSenc,
+        // foodInfoFromEntity.portionSenc,
         foodInfoFromEntity.recommendable,
         eventInfo,
-        params
+        params,
     );
 
     foodInfoEntity.add(foodInfo);
   }
-  return domain.FoodEventComplete(foodEventEntity.userId, foodEventEntity.eventDate, foodInfoEntity);
+  return domain.FoodEventComplete(
+    userId: foodEventEntity.userId,
+    eventDate: foodEventEntity.eventDate,
+    foodInfo: foodInfoEntity,
+    eventKcals: foodEventEntity.eventKcals,
+  );
 }
 
 Future<List<domain.FoodEventComplete>> mapToFoodEventCompleteList(List<dynamic> entityList) async => entityList.map((foodEventEntity) => mapToFoodEventComplete(foodEventEntity as entity.FoodEventEntity)).toList();
+
+int getQuantityWithOtherUnits(int quantity, int unit, String equivalences) {
+  if (unit != -1 && equivalences != '') {
+    final equivalence = int.parse(equivalences.split('|').firstWhere((unitAndEquivalence) => int.parse(unitAndEquivalence.split(',')[0]) == unit).split(',')[1]);
+    return (equivalence * quantity);
+  } else {
+    return quantity;
+  }
+}
+
+List<FoodInEvent> mapToFoodInEventList(List<domain.FoodInfo> foodInfoList) {
+    return foodInfoList.map((foodInfo) => FoodInEvent(
+        id: foodInfo.id!,
+        qty: foodInfo.eventInfo!.qty!.toInt(),
+        unit: foodInfo.eventInfo!.unit!,
+        cookingMethod: foodInfo.eventInfo!.cookingMethod!,
+    ),).toList();
+}
+
+FoodEventSimple mapToFoodEventSimple(domain.FoodEventComplete foodEventComplete) {
+    return FoodEventSimple(
+        userId: foodEventComplete.userId!,
+        date: foodEventComplete.eventDate!,
+        ingredients: mapToFoodInEventList(foodEventComplete.foodInfo!),
+        // drinks: mapToFoodInEventList(foodEventComplete.foodInfo!.),
+    );
+}
+
+SportEventSimple mapToSportEventSimple(SportEventComplete sportEventComplete) {
+    return SportEventSimple(
+        userId: sportEventComplete.userId,
+        info: SportInfo(
+            id: sportEventComplete.info.id,
+            name_es: sportEventComplete.info.name_es,
+            name_en: sportEventComplete.info.name_en,
+            timeStart: sportEventComplete.eventDate,
+            intensity: sportEventComplete.info.intensity,
+            minutes: sportEventComplete.info.minutes,
+        ),
+    );
+}

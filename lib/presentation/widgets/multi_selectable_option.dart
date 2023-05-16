@@ -47,7 +47,8 @@ class _MultiSelectableOptionState extends State<MultiSelectableOption> {
                   : Colors.transparent,
             ),
             shape: BoxShape.rectangle,
-            borderRadius: const BorderRadius.all(Radius.circular(20))),
+            borderRadius: const BorderRadius.all(Radius.circular(20)),
+        ),
         child: Container(
           alignment: Alignment.centerLeft,
           padding: const EdgeInsets.all(Dimens.paddingSmall),

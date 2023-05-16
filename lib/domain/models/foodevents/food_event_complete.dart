@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/translatable.dart';
 
 part 'food_event_complete.g.dart';
 
@@ -8,21 +9,22 @@ class FoodEventComplete extends HiveObject {
   String? userId;
   int? eventDate;
   List<FoodInfo>? foodInfo;
-  
-  FoodEventComplete(
-      this.userId, 
-      this.eventDate, 
-      this.foodInfo
-  );
+  int? eventKcals;
+
+  FoodEventComplete({
+    this.userId,
+    this.eventDate,
+    this.foodInfo,
+    this.eventKcals,
+  });
 
   factory FoodEventComplete.fromJson(Map<String, dynamic> json) => _$FoodEventCompleteFromJson(json);
   Map<String, dynamic> toJson() => _$FoodEventCompleteToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)
-class FoodInfo {
+class FoodInfo extends Translatable {
   int? exchangePortion;
-  // String? exchangePortionDaily;
   String? group;
   int? id;
   // TODO: quitar "name"
@@ -35,16 +37,13 @@ class FoodInfo {
   Params? params;
 
   FoodInfo(
-      this.exchangePortion,
-      // this.exchangePortionDaily,
       this.group,
       this.id,
       this.name_en,
       this.name_es,
-      this.portionSenc,
       this.recommendable,
       this.eventInfo,
-      this.params
+      this.params,
   );
 
   factory FoodInfo.fromJson(Map<String, dynamic> json) => _$FoodInfoFromJson(json);
@@ -54,11 +53,12 @@ class FoodInfo {
 @JsonSerializable(explicitToJson: true)
 class EventInfo {
   int? cookingMethod;
-  double ?qty;
+  double? qty;
   int? unit;
   double? waste;
 
-  EventInfo(this.cookingMethod, 
+  EventInfo(
+      this.cookingMethod,
       this.qty, 
       this.unit, 
       this.waste,
@@ -84,7 +84,7 @@ class Params {
   double? c18_3N_3;
   double? cadmium;
   double? calcium;
-  double? carbsAvailable;
+  double? carbsAvailable; // TODO
   double? carbsByDiff;
   double? carbsDeclared;
   double? celulose;
@@ -92,9 +92,9 @@ class Params {
   double? copper;
   double? cystine;
   double? dryMatter;
-  double? energyKcal;
+  double? energyKcal; // TODO.
   double? energyKJ;
-  double? fatTotal;
+  double? fatTotal; // TODO.
   double? fattyAcidConversionFactor;
   double? fattyAcidsTotal;
   double? fiber;
@@ -127,7 +127,7 @@ class Params {
   double? potassium;
   double? proline;
   double? proteinLabel;
-  double? proteinSci;
+  double? proteinSci; // TODO.
   double? selenium;
   double? serin;
   double? sodium;
@@ -302,7 +302,7 @@ class Params {
       this.aluminum,
       this.boron,
       this.bromine,
-      this.arsenInorganic
+      this.arsenInorganic,
   );
 
   factory Params.fromJson(Map<String, dynamic> json) => _$ParamsFromJson(json);

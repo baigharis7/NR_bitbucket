@@ -6,6 +6,8 @@ abstract class ProfileRepository {
   Future<void> saveProfile(UserProfileModel profileModel);
   Future<UserProfileModel?> getProfile();
   Future<List<String>> getUserMicronutrients();
-  Future<bool> checkProfileExistence();
+  Future<bool> checkProfileExistence(String userId);
   Future<UserProfileModel?> downloadProfile(String email);
+  Future<int> getUserKcal();
+  Future<List<int>> getUserExclusions();
 }

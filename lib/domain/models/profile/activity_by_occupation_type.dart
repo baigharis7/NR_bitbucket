@@ -8,6 +8,13 @@ class ActivityByOccupationType {
   double? physicalActivityFactor;
   Function? action;
 
+  ActivityByOccupationType({
+    required this.typeName,
+    required this.explanation,
+    required this.physicalActivityFactor,
+    this.action,
+  });
+
   static List<ActivityByOccupationType> listAllActivityTypes() {
     return [
       ReposeActivity(),
@@ -18,85 +25,52 @@ class ActivityByOccupationType {
       VeryIntenseActivity(),
     ];
   }
-  ActivityByOccupationType({this.action});
 }
 
 class ReposeActivity extends ActivityByOccupationType {
-  @override
-  String? typeName = AppLocalizationsHelper.instance.translate('repose');
-  @override
-  String? explanation = AppLocalizationsHelper.instance.translate('repose_explanation');
-  @override
-  double? physicalActivityFactor = 1.2;
-  @override
-  Function? action;
-
-  ReposeActivity({this.action}): super(action: action);
+  ReposeActivity() : super(
+    typeName: AppLocalizationsHelper.instance.translate('repose'),
+    explanation: AppLocalizationsHelper.instance.translate('repose_explanation'),
+    physicalActivityFactor: 1.2,
+  );
 }
 
 class VeryLightActivity extends ActivityByOccupationType {
-  @override
-  String? typeName = AppLocalizationsHelper.instance.translate('very_light_activity');
-  @override
-  String? explanation = AppLocalizationsHelper.instance.translate('very_light_activity_explanation');
-  @override
-  double? physicalActivityFactor = 1.45;
-  @override
-  Function? action;
-
-  VeryLightActivity({this.action}):
-        super(action: action);
+  VeryLightActivity() : super(
+    typeName: AppLocalizationsHelper.instance.translate('very_light_activity'),
+    explanation: AppLocalizationsHelper.instance.translate('very_light_activity_explanation'),
+    physicalActivityFactor: 1.45,
+  );
 }
 
 class LightActivity extends ActivityByOccupationType {
-  @override
-  String? typeName = AppLocalizationsHelper.instance.translate('light_activity');
-  @override
-  String? explanation = AppLocalizationsHelper.instance.translate('light_activity_explanation');
-  @override
-  double? physicalActivityFactor = 1.65;
-  @override
-  Function? action;
-
-  LightActivity({this.action}): super(action: action);
+  LightActivity() : super(
+    typeName: AppLocalizationsHelper.instance.translate('light_activity'),
+    explanation: AppLocalizationsHelper.instance.translate('light_activity_explanation'),
+    physicalActivityFactor: 1.65,
+  );
 }
 
 class ModerateActivity extends ActivityByOccupationType {
-  @override
-  String? typeName = AppLocalizationsHelper.instance.translate('moderated_activity');
-  @override
-  String? explanation = AppLocalizationsHelper.instance.translate('moderated_activity_explanation');
-  @override
-  double? physicalActivityFactor = 1.85;
-  @override
-  Function? action;
-
-  ModerateActivity({this.action}): super(action: action);
+  ModerateActivity() : super(
+    typeName: AppLocalizationsHelper.instance.translate('moderated_activity'),
+    explanation: AppLocalizationsHelper.instance.translate('moderated_activity_explanation'),
+    physicalActivityFactor: 1.85,
+  );
 }
 
 class IntenseActivity extends ActivityByOccupationType {
-  @override
-  String? typeName = AppLocalizationsHelper.instance.translate('intense_activity');
-  @override
-  String? explanation = AppLocalizationsHelper.instance.translate('intense_activity_explanation');
-  @override
-  double? physicalActivityFactor = 2.25;
-  @override
-  Function? action;
-
-  IntenseActivity({this.action}):super(action: action);
+  IntenseActivity() : super(
+    typeName: AppLocalizationsHelper.instance.translate('intense_activity'),
+    explanation: AppLocalizationsHelper.instance.translate('intense_activity_explanation'),
+    physicalActivityFactor: 2.25,
+  );
 }
 
 class VeryIntenseActivity extends ActivityByOccupationType {
-  @override
-  String? typeName = AppLocalizationsHelper.instance.translate('very_intense_activity');
-  @override
-  String? explanation = AppLocalizationsHelper.instance.translate('very_intense_activity_explanation');
-  @override
-  double? physicalActivityFactor = 2.5;
-  @override
-  Function? action;
-
-  VeryIntenseActivity({this.action}):
-        super(action: action);
+  VeryIntenseActivity() :super(
+    typeName: AppLocalizationsHelper.instance.translate('very_intense_activity'),
+    explanation: AppLocalizationsHelper.instance.translate('very_intense_activity_explanation'),
+    physicalActivityFactor: 2.5,
+  );
 }

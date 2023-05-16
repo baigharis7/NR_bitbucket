@@ -21,6 +21,8 @@ class UserProfileEntity extends HiveObject {
   @HiveField(13) int? guts;
   @HiveField(14) List<int> objectives;
   @HiveField(15) List<String>? micronutrients;
+  @HiveField(16) UserRdasEntity? userRdas;
+  @HiveField(17) int? kcal;
 
   static const boxName = 'profile';
 
@@ -40,7 +42,9 @@ class UserProfileEntity extends HiveObject {
     this.symptoms,
     this.guts,
     required this.objectives,
-    this.micronutrients
+    this.micronutrients,
+    this.userRdas,
+    this.kcal,
   });
 
 }
@@ -65,7 +69,7 @@ class PhysicalCharacteristics{
     required this.height,
     required this.weight,
     this.bodyFat,
-    this.waistMeasurement
+    this.waistMeasurement,
   });
 }
 
@@ -85,7 +89,7 @@ class Menstruation {
   Menstruation({
     required this.regularity,
     this.daysOfCycle,
-    this.lastStartDate
+    this.lastStartDate,
   });
 }
 
@@ -106,4 +110,19 @@ enum MenstruationRegularity {
   @HiveField(0) regular, @HiveField(1) irregular, @HiveField(2) nothing // TODO -> Add in definitive version.
 }
 
+@HiveType(typeId: HiveTypeIds.userRdasEntity)
+class UserRdasEntity {
+  @HiveField(0) List<UserRdaEntity> userRdasEntity;
 
+  UserRdasEntity({required this.userRdasEntity});
+
+}
+
+@HiveType(typeId: HiveTypeIds.userRdaEntity)
+class UserRdaEntity {
+  @HiveField(0) String n;
+  @HiveField(1) double rda;
+  @HiveField(2) double ul;
+
+  UserRdaEntity({required this.n, required this.rda, required this.ul});
+}

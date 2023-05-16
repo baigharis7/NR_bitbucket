@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import 'translatable.dart';
+
 part 'recommendation_groups_master.g.dart';
 
 @JsonSerializable(explicitToJson: true)
@@ -13,7 +15,7 @@ class RecommendationGroupsMaster {
 }
 
 @JsonSerializable(explicitToJson: true)
-class RecommendationGroup {
+class RecommendationGroup extends Translatable {
   int id;
   List<String> groups;
   int size;

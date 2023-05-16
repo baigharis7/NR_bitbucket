@@ -17,7 +17,7 @@ abstract class ApiHelper {
         body: json.encode(body),
         headers: {
           'Authorization': idToken
-        }
+        },
     );
 
     if (response.statusCode == 200) {
@@ -38,7 +38,30 @@ abstract class ApiHelper {
         call,
         headers: {
           'Authorization': idToken
-        });
+        },
+    );
+
+    if (response.statusCode == 200) {
+      try {
+        final Map<String, dynamic> jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+        return jsonResponse;
+      } catch (error) {
+        rethrow;
+      }
+    } else {
+      throw response;
+    }
+  }
+
+  Future<Map<String, dynamic>> delete(Uri call, dynamic body) async {
+    String idToken = await _getToken();
+    final http.Response response = await http.delete(
+      call,
+      body: json.encode(body),
+      headers: {
+        'Authorization': idToken
+      },
+    );
 
     if (response.statusCode == 200) {
       try {

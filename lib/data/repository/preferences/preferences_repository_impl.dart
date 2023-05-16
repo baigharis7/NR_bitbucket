@@ -1,8 +1,8 @@
-import 'package:amplify_auth_cognito/src/CognitoSession/CognitoAuthSession.dart';
-import '../../../domain/repository/preferences/preferences.dart';
-import '../../../domain/repository/preferences/preferences_repository.dart';
-import '../../../infrastructure/utils/prefs_keys.dart';
-import '../../../infrastructure/extensions/extensions.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences.dart';
+import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 class PreferencesRepositoryImpl extends PreferencesRepository {
   final Preferences prefs;

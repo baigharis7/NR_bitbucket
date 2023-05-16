@@ -7,6 +7,6 @@ class GetUserMicronutrientsInteractorImpl extends GetUserMicronutrientsInteracto
   GetUserMicronutrientsInteractorImpl({required this.profileRepository});
 
   @override
-  Future<List<String>> execute() => profileRepository.getUserMicronutrients();
+  Future<List<String>>? execute() => profileRepository.getUserMicronutrients();
 
 }

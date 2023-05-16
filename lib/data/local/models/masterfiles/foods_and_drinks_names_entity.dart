@@ -36,8 +36,9 @@ class FoodItemEntity {
   @HiveField(1) String en;
   @HiveField(2) String es;
   @HiveField(3) String g;
+  @HiveField(4) String? units;
 
-  FoodItemEntity({required this.id, required this.en, required this.es, required this.g});
+  FoodItemEntity({required this.id, required this.en, required this.es, required this.g, required this.units});
 
   factory FoodItemEntity.fromJson(Map<String, dynamic> json) => _$FoodItemEntityFromJson(json);
   Map<String, dynamic> toJson() => _$FoodItemEntityToJson(this);

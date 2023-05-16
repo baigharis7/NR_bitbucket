@@ -1,3 +1,3 @@
 abstract class GetUserMicronutrientsInteractor {
-  Future<List<String>> execute();
+  Future<List<String>>? execute();
 }

@@ -19,8 +19,8 @@ class CommonDiseases {
       HighSugarLevel(),
       HighCholesterol(),
       HighTriglycerides(),
-      NoDiseases(),
-      OtherDiseases()
+      // NoDiseases(),
+      // OtherDiseases()
     ];
   }
 }
@@ -109,22 +109,22 @@ class HighTriglycerides extends CommonDiseases {
         super(otherDiseases: otherDiseases);
 }
 
-class OtherDiseases extends CommonDiseases {
-  @override
-  String? name = AppLocalizationsHelper.instance.translate('none');
-  @override
-  int? id = 7;
-  @override
-  String? otherDiseases;
+// class OtherDiseases extends CommonDiseases {
+//   @override
+//   String? name = AppLocalizationsHelper.instance.translate('none');
+//   @override
+//   int? id = 7;
+//   @override
+//   String? otherDiseases;
+//
+//   OtherDiseases({this.otherDiseases}):
+//         super(otherDiseases: otherDiseases);
+// }
 
-  OtherDiseases({this.otherDiseases}):
-        super(otherDiseases: otherDiseases);
-}
-
-class NoDiseases extends CommonDiseases {
-  @override
-  String? name = AppLocalizationsHelper.instance.translate('other_diseases');
-
-  NoDiseases():super();
-}
+// class NoDiseases extends CommonDiseases {
+//   @override
+//   String? name = AppLocalizationsHelper.instance.translate('other_diseases');
+//
+//   NoDiseases():super();
+// }
 

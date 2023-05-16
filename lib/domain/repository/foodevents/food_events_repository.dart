@@ -4,7 +4,9 @@ import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simpl
 
 abstract class FoodEventsRepository {
   Future<UploadFoodEvent> uploadFoodEvent(FoodEventSimple foodEventSimple);
-  Future<void> saveFoodEvent(UploadFoodEvent uploadFoodEvent);
+  Future<void> saveFoodEvent(UploadFoodEvent uploadFoodEvent, bool isEdit);
   Future<List<FoodEventComplete>> getAllFoodEvents();
   Future<FoodEventComplete> getLastFoodEvent();
+  Future<List<FoodEventComplete>> getFoodEventsOfToday();
+  Future<List<FoodEventComplete>> getWeekFoodEvents();
 }

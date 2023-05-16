@@ -8,6 +8,6 @@ Advice mapToAdviceFromResponse(AdviceResponse adviceResponse) {
       advEs: adviceResponse.adv_es,
       advEn: adviceResponse.adv_en.orEmpty(),
       objective: adviceResponse.objective,
-      interaction: adviceResponse.interaction
+      interaction: adviceResponse.interaction,
   );
 }

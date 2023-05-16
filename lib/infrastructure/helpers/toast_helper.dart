@@ -11,7 +11,7 @@ class ToastHelper {
     int timeInSecForIosWeb = 1,
     Color backgroundColor = Colors.amber,
     Color textColor = Colors.black,
-    double fontSize = Dimens.fontSizeNormal
+    double fontSize = Dimens.fontSizeNormal,
   }) {
     return Fluttertoast.showToast(
         msg: text,
@@ -20,7 +20,7 @@ class ToastHelper {
         timeInSecForIosWeb: timeInSecForIosWeb,
         backgroundColor: backgroundColor,
         textColor: textColor,
-        fontSize: fontSize
+        fontSize: fontSize,
     );
   }
 

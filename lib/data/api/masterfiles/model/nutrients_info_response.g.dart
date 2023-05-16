@@ -25,17 +25,17 @@ Map<String, dynamic> _$NutrientsInfoResponseToJson(
 NutrientInfoResponse _$NutrientInfoResponseFromJson(
         Map<String, dynamic> json) =>
     NutrientInfoResponse(
-      name: json['name'] as String,
+      officialName: json['officialName'] as String,
       unit: json['unit'] as String,
-      es: json['es'] as String,
-      en: json['en'] as String,
+      name_es: json['name_es'] as String,
+      name_en: json['name_en'] as String,
     );
 
 Map<String, dynamic> _$NutrientInfoResponseToJson(
         NutrientInfoResponse instance) =>
     <String, dynamic>{
-      'name': instance.name,
+      'officialName': instance.officialName,
       'unit': instance.unit,
-      'es': instance.es,
-      'en': instance.en,
+      'name_es': instance.name_es,
+      'name_en': instance.name_en,
     };

@@ -5,6 +5,9 @@ import 'package:nutrenaissance_flutter/data/api/masterfiles/model/nutrients_info
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/objectives_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/recommendation_groups_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/sports_info_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/subjective_analysis_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/units_foods_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/units_info_response.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/foods_and_drinks_names_entity.dart';
@@ -13,6 +16,9 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_i
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_analysis_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
@@ -20,6 +26,10 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/objectives_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/recommendation_groups_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/subjective_analysis_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 dynamic mapToMasterFileEntity(dynamic masterFileResponse, MasterFilesType masterFilesType) {
   switch (masterFilesType) {
@@ -44,6 +54,15 @@ dynamic mapToMasterFileEntity(dynamic masterFileResponse, MasterFilesType master
 
     case MasterFilesType.sportsInfo:
       return mapToSportsInfoEntity(masterFileResponse as SportsInfoResponse);
+
+    case MasterFilesType.unitsInfo:
+      return mapToUnitsInfoEntity(masterFileResponse as UnitsInfoResponse);
+
+    case MasterFilesType.unitsFoods:
+      return mapToUnitsFoodsEntity(masterFileResponse as UnitsFoodsResponse);
+
+    case MasterFilesType.subjectiveAnalysis:
+      return mapToSubjectiveAnalysisListMaster(masterFileResponse as SubjectiveAnalysisListResponse);
   }
   
 }
@@ -69,21 +88,21 @@ CookingMethodsInfoMaster mapToCookingMethodsInfoMaster(CookingMethodsInfoEntity 
 }
 
 FoodsAndDrinksNamesEntity mapToFoodsAndDrinksNamesEntity(FoodsAndDrinksNamesResponse foodsAndDrinksNamesResponse) {
-  List<FoodItemEntity> foodsNames = foodsAndDrinksNamesResponse.data.foodNames.map((item) => FoodItemEntity(id: item.id, en: item.en, es: item.es, g: item.g)).toList();
-  List<FoodItemEntity> drinksNames = foodsAndDrinksNamesResponse.data.drinkNames.map((item) => FoodItemEntity(id: item.id, en: item.en, es: item.es, g: item.g)).toList();
+  List<FoodItemEntity> foodsNames = foodsAndDrinksNamesResponse.data.foodNames.map((item) => FoodItemEntity(id: item.id, en: item.en, es: item.es, g: item.g, units: item.units)).toList();
+  List<FoodItemEntity> drinksNames = foodsAndDrinksNamesResponse.data.drinkNames.map((item) => FoodItemEntity(id: item.id, en: item.en, es: item.es, g: item.g, units: item.units)).toList();
   FoodsAndDrinkListsEntity data = FoodsAndDrinkListsEntity(foodNames: foodsNames, drinkNames: drinksNames);
   return FoodsAndDrinksNamesEntity(id: MasterFilesType.foodsAndDrinksNames.index, v: foodsAndDrinksNamesResponse.v, data: data);
 }
 
 FoodsAndDrinksNamesMaster mapToFoodsAndDrinksNamesMaster(FoodsAndDrinksNamesEntity foodsAndDrinksNamesEntity) {
-  List<FoodItemMaster> foodsNames = foodsAndDrinksNamesEntity.data.foodNames.map((item) => FoodItemMaster(id: item.id, en: item.en, es: item.es, group: item.g)).toList();
-  List<FoodItemMaster> drinksNames = foodsAndDrinksNamesEntity.data.drinkNames.map((item) => FoodItemMaster(id: item.id, en: item.en, es: item.es, group: item.g)).toList();
+  List<FoodItemMaster> foodsNames = foodsAndDrinksNamesEntity.data.foodNames.map((item) => FoodItemMaster(id: item.id, en: item.en, es: item.es, group: item.g, units: item.units)).toList();
+  List<FoodItemMaster> drinksNames = foodsAndDrinksNamesEntity.data.drinkNames.map((item) => FoodItemMaster(id: item.id, en: item.en, es: item.es, group: item.g, units: item.units)).toList();
   FoodsAndDrinkListsMaster foodsAndDrinkListsMaster = FoodsAndDrinkListsMaster(foodNames: foodsNames, drinkNames: drinksNames);
   return FoodsAndDrinksNamesMaster(foodsAndDrinkListsMaster);
 }
 
 NutrientsInfoEntity mapToNutrientsInfoEntity(NutrientsInfoResponse nutrientsInfoResponse) {
-  List<NutrientInfoEntity> data = nutrientsInfoResponse.data.map((item) => NutrientInfoEntity(name: item.name, unit: item.unit, es: item.es, en: item.en)).toList();
+  List<NutrientInfoEntity> data = nutrientsInfoResponse.data.map((item) => NutrientInfoEntity(name: item.officialName, unit: item.unit, es: item.name_es, en: item.name_en)).toList();
   return NutrientsInfoEntity(id: MasterFilesType.nutrientsInfo.index, v: nutrientsInfoResponse.v, data: data);
 }
 
@@ -111,6 +130,7 @@ RecommendationGroupsMaster mapToRecommendationGroupsMaster(RecommendationGroupsE
   List<RecommendationGroup> recommendationGroups = recommendationGroupsEntity.data.map((item) => RecommendationGroup(id: item.id, groups: item.groups, size: item.size, en: item.en, es: item.es)).toList();
   return RecommendationGroupsMaster(recommendationGroups: recommendationGroups);
 }
+
 SportsInfoEntity mapToSportsInfoEntity(SportsInfoResponse sportsInfoResponse) {
   List<SportInfoEntity> data = sportsInfoResponse.data.map((item) => SportInfoEntity(id: item.id, en: item.en, es: item.es, mets: item.mets)).toList();
   return SportsInfoEntity(id: MasterFilesType.sportsInfo.index, v: sportsInfoResponse.v, data: data);
@@ -119,4 +139,89 @@ SportsInfoEntity mapToSportsInfoEntity(SportsInfoResponse sportsInfoResponse) {
 SportsInfoMaster mapToSportsInfoMaster(SportsInfoEntity sportsInfoEntity) {
   List<SportInfoMaster> sportsInfoMaster = sportsInfoEntity.data.map((item) => SportInfoMaster(id: item.id, en: item.en, es: item.es, mets: item.mets)).toList();
   return SportsInfoMaster(sportsInfoMaster: sportsInfoMaster);
+}
+
+UnitsInfoEntity mapToUnitsInfoEntity(UnitsInfoResponse unitsInfoResponse) {
+  List<UnitInfoEntity> data = unitsInfoResponse.data.map((item) => UnitInfoEntity(id: item.id, en: item.en, es: item.es)).toList();
+  return UnitsInfoEntity(id: MasterFilesType.unitsInfo.index, v: unitsInfoResponse.v, data: data);
+}
+
+UnitsInfoMaster mapToUnitsInfoMaster(UnitsInfoEntity unitsInfoEntity) {
+  List<UnitInfoMaster> unitsInfoMaster = unitsInfoEntity.data.map((item) => UnitInfoMaster(id: item.id, en: item.en, es: item.es)).toList();
+  unitsInfoMaster.add(UnitInfoMaster(id: -1, en: 'grams', es: 'gramos'));
+  return UnitsInfoMaster(unitsInfoMaster: unitsInfoMaster);
+}
+
+UnitsFoodsEntity mapToUnitsFoodsEntity(UnitsFoodsResponse unitsFoodsResponse) {
+  List<UnitFoodEntity> data = unitsFoodsResponse.data.map((item) => UnitFoodEntity(id: item.id, units: item.units)).toList();
+  return UnitsFoodsEntity(id: MasterFilesType.unitsFoods.index, v: unitsFoodsResponse.v, data: data);
+}
+
+UnitsFoodsMaster mapToUnitsFoodsMaster(UnitsFoodsEntity unitsFoodsEntity) {
+  List<UnitFoodMaster> unitsFoodsMaster = unitsFoodsEntity.data.map((item) => UnitFoodMaster(id: item.id, units: item.units)).toList();
+  return UnitsFoodsMaster(unitsFoodsMaster: unitsFoodsMaster);
+}
+
+SubjectiveAnalysisListMaster mapToSubjectiveAnalysisMaster(SubjectiveAnalysisListEntity subjectiveAnalysisListEntity) {
+  final List<SubjectiveAnalysisMaster> subjectiveAnalysisList = subjectiveAnalysisListEntity.data
+      .map((entity) => SubjectiveAnalysisMaster(
+      questionId: entity.questionId,
+      questionType: entity.questionType == 0 ? QuestionType.parameter : QuestionType.test,
+      parameter_en: entity.parameter_en,
+      parameter_es: entity.parameter_es,
+      objectivesId: entity.objectivesId,
+      subjectiveAnalysisTestMaster_en: _mapToSubjectiveAnalysisTestMaster(entity.subjectiveAnalysisTestEntity_en),
+      subjectiveAnalysisTestMaster_es: _mapToSubjectiveAnalysisTestMaster(entity.subjectiveAnalysisTestEntity_es),
+      evaluation: entity.evaluation.orEmpty(),
+  ),).toList();
+
+  return SubjectiveAnalysisListMaster(subjectiveAnalysisList: subjectiveAnalysisList);
+}
+
+SubjectiveAnalysisTestMaster? _mapToSubjectiveAnalysisTestMaster(SubjectiveAnalysisTestEntity? subjectiveAnalysisTestEntity) {
+  if (subjectiveAnalysisTestEntity == null) {
+    return null;
+  } else {
+    return SubjectiveAnalysisTestMaster(
+      questions: _mapToTestQuestionMaster(subjectiveAnalysisTestEntity.questions),
+    );
+  }
+}
+
+List<TestQuestionMaster> _mapToTestQuestionMaster(List<TestQuestionEntity> testQuestionEntity) {
+  return testQuestionEntity.map((entity) => TestQuestionMaster(
+    id: entity.id,
+    title: entity.title,
+    afirm: entity.afirm,
+    neg: entity.neg,
+  ),).toList();
+}
+
+SubjectiveAnalysisListMaster mapToSubjectiveAnalysisListMaster(SubjectiveAnalysisListResponse response) {
+  return SubjectiveAnalysisListMaster(subjectiveAnalysisList: response.data.map((subjectiveAnalysis) => SubjectiveAnalysisMaster(
+    questionId: subjectiveAnalysis.q_id,
+    questionType: subjectiveAnalysis.q_type == 0 ? QuestionType.parameter : QuestionType.test,
+    objectivesId: subjectiveAnalysis.obj_id,
+    parameter_en: subjectiveAnalysis.q_en,
+    parameter_es: subjectiveAnalysis.q_es,
+    // TODO: descomentar cuando tengamos los recursos traducidos
+    // subjectiveAnalysisTestMaster_en: SubjectiveAnalysisTestMaster(
+    //   testTitle: subjectiveAnalysis.ans_en!.testTitle,
+    //   questions: mapToTestQuestionMasterList(subjectiveAnalysis.ans_en!.questions),
+    // ),
+    subjectiveAnalysisTestMaster_en: null,
+    subjectiveAnalysisTestMaster_es: SubjectiveAnalysisTestMaster(
+      questions: mapToTestQuestionMasterList(subjectiveAnalysis.ans_es!),
+    ),
+    evaluation: subjectiveAnalysis.eval.orEmpty(),
+  ),).toList(),);
+}
+
+List<TestQuestionMaster> mapToTestQuestionMasterList(List<TestQuestionAnswerResponse> questions) {
+  final masterQuestions = <TestQuestionMaster>[];
+  for (var question in questions) {
+    final testQuestion = TestQuestionMaster(id: question.id, title: question.title, afirm: question.afirm, neg: question.neg);
+    masterQuestions.add(testQuestion);
+  }
+  return masterQuestions;
 }

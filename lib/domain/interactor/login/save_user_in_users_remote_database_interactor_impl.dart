@@ -8,6 +8,6 @@ class SaveUserInUsersRemoteDatabaseInteractorImpl extends SaveUserInUsersRemoteD
   SaveUserInUsersRemoteDatabaseInteractorImpl({required this.loginRepository});
 
   @override
-  void execute(SimpleUser simpleUser) => loginRepository.saveUserInUsersRemoteDatabase(simpleUser);
+  Future<void> execute(SimpleUser simpleUser) => loginRepository.saveUserInUsersRemoteDatabase(simpleUser);
 
 }

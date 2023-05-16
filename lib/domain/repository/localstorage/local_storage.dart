@@ -1,13 +1,17 @@
-import 'package:nutrenaissance_flutter/data/api/profile/model/user_rdas_response.dart';
+import 'package:nutrenaissance_flutter/data/api/eventssync/model/events_synchronization_request.dart';
 import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
-import 'package:nutrenaissance_flutter/data/local/models/profile/user_rdas_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
+import 'package:nutrenaissance_flutter/domain/models/analysis/subjective/subjective_analysis_result.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/liquid/liquid_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
-import 'package:nutrenaissance_flutter/domain/models/profile/user_rdas.dart';
-import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 
 abstract class LocalStorageRepository extends LocalStorageHelper {
 
@@ -15,12 +19,37 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<List> getAllFoodEvents();
   Future<FoodEventComplete> getLastFoodEvent();
   Future<void> saveProfile(UserProfileEntity profileEntity);
-  Future<void> saveFoodEvent(FoodEventEntity foodEventEntity);
+  Future<void> saveFoodEvent(FoodEventEntity foodEventEntity, bool isEdit);
+  Future<void> saveLiquidEvent(LiquidEventEntity liquidEventEntity, bool isEdit);
   Future<void> saveMasterFile(MasterFilesType masterFileType, dynamic masterFile);
   Future<dynamic> getMasterFile(MasterFilesType masterFileType);
   Future<int> getMasterFileVersion(MasterFilesType masterFileType);
-  Future<bool> checkProfileExistence();
-  Future<void> saveUserRdas(List<UserRdasResponse> userRdas);
-  Future<List<UserRdas>> getUserRdas();
-  Future<void> saveSportEvent(SportEventEntity sportEventEntity);
+  Future<bool> checkProfileExistence(String userId);
+  Future<List<UserRda>> getUserRdas();
+  Future<void> saveSportEvent(SportEventEntity sportEventEntity, bool isEdit);
+  Future<List> getFoodEventsOfToday();
+  Future<List> getWeekFoodEvents();
+  Future<List> getSportsEventsOfToday();
+  Future<List> getWeeklySportEvents();
+  Future<List> getTodayLiquidEvents();
+  Future<List> getWeeklyLiquidEvents();
+  Future<void> saveWaterEvent(WaterEventMaster waterEventMaster);
+  Future<List> getWaterEventsToday();
+  Future<List> getAllSportEvents();
+  Future<List> getAllLiquidEvents();
+  Future<List> getAllWaterEvents();
+  Future<List> getFoodFavorites();
+  Future<void> saveFoodFavorite(FoodFavorite foodFavorite, {bool? isEdit = false});
+  Future<void> removeFoodFavorite(FoodFavorite foodFavorite);
+  Future<bool> saveSportFavorite(SportFavorite sportFavorite, {bool isEdit = false});
+  Future<List> getSportFavorites();
+  Future<void> removeSportFavorite(SportFavorite sportFavorite, String userId);
+  Future<List> getLiquidFavorites();
+  Future<void> saveLiquidFavorite(LiquidFavorite liquidFavorite);
+  Future<void> removeLiquidFavorite(LiquidFavorite liquidFavorite);
+  Future<void> saveExplainingCardInteraction(int explainingCardId);
+  Future<bool> isNecessaryToShowExplainingCard(int explainingCardId);
+  Future<EventsSynchronizationRequest> getAllEventIds();
+  Future<bool> eraseDatabaseInformation();
+  Future<bool> saveSubjectiveAnalysis(SubjectiveAnalysisResult subjectiveAnalysis);
 }

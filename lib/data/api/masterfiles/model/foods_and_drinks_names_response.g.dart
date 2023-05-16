@@ -45,6 +45,7 @@ FoodItemResponse _$FoodItemResponseFromJson(Map<String, dynamic> json) =>
       en: json['en'] as String,
       es: json['es'] as String,
       g: json['g'] as String,
+      units: json['units'] as String?,
     );
 
 Map<String, dynamic> _$FoodItemResponseToJson(FoodItemResponse instance) =>
@@ -53,4 +54,5 @@ Map<String, dynamic> _$FoodItemResponseToJson(FoodItemResponse instance) =>
       'en': instance.en,
       'es': instance.es,
       'g': instance.g,
+      'units': instance.units,
     };

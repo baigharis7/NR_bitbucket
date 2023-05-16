@@ -33,13 +33,15 @@ class UserProfileEntityAdapter extends TypeAdapter<UserProfileEntity> {
       guts: fields[13] as int?,
       objectives: (fields[14] as List).cast<int>(),
       micronutrients: (fields[15] as List?)?.cast<String>(),
+      userRdas: fields[16] as UserRdasEntity?,
+      kcal: fields[17] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfileEntity obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -71,7 +73,11 @@ class UserProfileEntityAdapter extends TypeAdapter<UserProfileEntity> {
       ..writeByte(14)
       ..write(obj.objectives)
       ..writeByte(15)
-      ..write(obj.micronutrients);
+      ..write(obj.micronutrients)
+      ..writeByte(16)
+      ..write(obj.userRdas)
+      ..writeByte(17)
+      ..write(obj.kcal);
   }
 
   @override
@@ -273,6 +279,80 @@ class ExclusionsAdapter extends TypeAdapter<Exclusions> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ExclusionsAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class UserRdasEntityAdapter extends TypeAdapter<UserRdasEntity> {
+  @override
+  final int typeId = 25;
+
+  @override
+  UserRdasEntity read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return UserRdasEntity(
+      userRdasEntity: (fields[0] as List).cast<UserRdaEntity>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, UserRdasEntity obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(0)
+      ..write(obj.userRdasEntity);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserRdasEntityAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class UserRdaEntityAdapter extends TypeAdapter<UserRdaEntity> {
+  @override
+  final int typeId = 26;
+
+  @override
+  UserRdaEntity read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return UserRdaEntity(
+      n: fields[0] as String,
+      rda: fields[1] as double,
+      ul: fields[2] as double,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, UserRdaEntity obj) {
+    writer
+      ..writeByte(3)
+      ..writeByte(0)
+      ..write(obj.n)
+      ..writeByte(1)
+      ..write(obj.rda)
+      ..writeByte(2)
+      ..write(obj.ul);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserRdaEntityAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

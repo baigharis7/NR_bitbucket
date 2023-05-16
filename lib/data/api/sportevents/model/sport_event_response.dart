@@ -7,8 +7,14 @@ class SportEventResponse {
   String userId;
   int eventDate;
   SportEventInfoResponse info;
+  int? eventKcal;
 
-  SportEventResponse({required this.userId, required this.eventDate, required this.info});
+  SportEventResponse({
+    required this.userId,
+    required this.eventDate,
+    required this.info,
+    this.eventKcal,
+  });
 
   factory SportEventResponse.fromJson(Map<String, dynamic> json) => _$SportEventResponseFromJson(json);
   Map<String, dynamic> toJson() => _$SportEventResponseToJson(this);
@@ -17,11 +23,20 @@ class SportEventResponse {
 @JsonSerializable(explicitToJson: true)
 class SportEventInfoResponse {
   int id;
+  String name_en;
+  String name_es;
   int intensity;
   int minutes;
   int kcal;
 
-  SportEventInfoResponse({required this.id, required this.intensity, required this.minutes, required this.kcal, });
+  SportEventInfoResponse({
+    required this.id,
+    required this.name_en,
+    required this.name_es,
+    required this.intensity,
+    required this.minutes,
+    required this.kcal,
+  });
 
   factory SportEventInfoResponse.fromJson(Map<String, dynamic> json) => _$SportEventInfoResponseFromJson(json);
   Map<String, dynamic> toJson() => _$SportEventInfoResponseToJson(this);

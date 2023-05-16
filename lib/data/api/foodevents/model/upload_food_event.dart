@@ -8,12 +8,14 @@ class UploadFoodEvent {
   int? eventDate;
   List<FoodInfo>? foodInfo;
   bool uploadSuccess;
+  int? eventKcals;
 
   UploadFoodEvent(
-    this.userId,
-    this.eventDate,
-    this.foodInfo,
-    {this.uploadSuccess = false}
+      this.userId,
+      this.eventDate,
+      this.foodInfo,
+      this.eventKcals,
+      {this.uploadSuccess = false,}
   );
 
   factory UploadFoodEvent.fromJson(Map<String, dynamic> json) => _$UploadFoodEventFromJson(json);
@@ -23,7 +25,7 @@ class UploadFoodEvent {
 @JsonSerializable(explicitToJson: true)
 class FoodInfo {
   EventInfo? eventInfo;
-  int? exchangePortion;
+  // int? exchangePortion;
   // String? exchangePortionDaily;
   String? group;
   int? id;
@@ -31,19 +33,19 @@ class FoodInfo {
   String? name_en;
   String? name_es;
   // TODO: este tiene que ser un int.
-  String? portionSenc;
+  // String? portionSenc;
   int? recommendable;
   Params? params;
 
   FoodInfo(
     this.eventInfo,
-    this.exchangePortion,
+    // this.exchangePortion,
     // this.exchangePortionDaily,
     this.group,
     this.id,
     this.name_en,
     this.name_es,
-    this.portionSenc,
+    // this.portionSenc,
     this.recommendable,
     this.params
 );
@@ -55,7 +57,7 @@ class FoodInfo {
 @JsonSerializable(explicitToJson: true)
 class EventInfo {
   int? cookingMethod;
-  double ?qty;
+  double? qty;
   int? unit;
   double? waste;
 
@@ -303,7 +305,7 @@ class Params {
     this.aluminum,
     this.boron,
     this.bromine,
-    this.arsenInorganic
+    this.arsenInorganic,
   );
 
   factory Params.fromJson(Map<String, dynamic> json) => _$ParamsFromJson(json);

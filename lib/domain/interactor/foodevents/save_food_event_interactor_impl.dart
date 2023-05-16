@@ -8,6 +8,6 @@ class SaveFoodEventInteractorImpl extends SaveFoodEventInteractor {
   SaveFoodEventInteractorImpl({required this.foodEventsRepository});
 
   @override
-  Future<void> execute(UploadFoodEvent uploadFoodEvent) => foodEventsRepository.saveFoodEvent(uploadFoodEvent);
+  Future<void> execute(UploadFoodEvent uploadFoodEvent, bool isEdit) => foodEventsRepository.saveFoodEvent(uploadFoodEvent, isEdit);
 
 }

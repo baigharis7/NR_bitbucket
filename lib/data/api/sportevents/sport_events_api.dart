@@ -12,7 +12,7 @@ class SportEventsApi extends ApiHelper {
       post(
         Uri.https(
           Environment().config!.baseUrl,
-          '/dev/sport-event/amplify',
+          '${Environment().config!.distributionPath}/sport-event/amplify',
         ),
         sportEventSimple,
       );

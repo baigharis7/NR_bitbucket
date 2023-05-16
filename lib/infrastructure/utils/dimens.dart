@@ -12,13 +12,16 @@ class Dimens {
   static const marginNormal = 12.0;
   static const marginLarge = 16.0;
   static const marginXLarge = 24.0;
+  static const marginXXLarge = 30.0;
 
   // Font sizes
   static const fontSizeXSmall = 10.0;
   static const fontSizeSmall = 12.0;
   static const fontSizeNormal = 14.0;
+  static const fontSizeMedium = 16.0;
   static const fontSizeLarge = 18.0;
   static const fontSizeXLarge = 22.0;
+  static const fontSizeXXLarge = 24.0;
 
   // Borders
   static const borderSmall = 1.0;

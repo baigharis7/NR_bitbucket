@@ -100,13 +100,14 @@ class FoodItemEntityAdapter extends TypeAdapter<FoodItemEntity> {
       en: fields[1] as String,
       es: fields[2] as String,
       g: fields[3] as String,
+      units: fields[4] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, FoodItemEntity obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -114,7 +115,9 @@ class FoodItemEntityAdapter extends TypeAdapter<FoodItemEntity> {
       ..writeByte(2)
       ..write(obj.es)
       ..writeByte(3)
-      ..write(obj.g);
+      ..write(obj.g)
+      ..writeByte(4)
+      ..write(obj.units);
   }
 
   @override
@@ -173,6 +176,7 @@ FoodItemEntity _$FoodItemEntityFromJson(Map<String, dynamic> json) =>
       en: json['en'] as String,
       es: json['es'] as String,
       g: json['g'] as String,
+      units: json['units'] as String?,
     );
 
 Map<String, dynamic> _$FoodItemEntityToJson(FoodItemEntity instance) =>
@@ -181,4 +185,5 @@ Map<String, dynamic> _$FoodItemEntityToJson(FoodItemEntity instance) =>
       'en': instance.en,
       'es': instance.es,
       'g': instance.g,
+      'units': instance.units,
     };

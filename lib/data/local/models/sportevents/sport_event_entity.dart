@@ -7,13 +7,19 @@ part 'sport_event_entity.g.dart';
 @JsonSerializable(explicitToJson: true)
 @HiveType(typeId: HiveTypeIds.sportEventEntity)
 class SportEventEntity extends HiveObject {
-  static const boxName = "sport_events";
+  static const boxName = 'sport_events';
 
   @HiveField(0) String userId;
   @HiveField(1) int eventDate;
   @HiveField(2) SportEventInfoEntity info;
+  @HiveField(3) int? eventKcal;
 
-  SportEventEntity({required this.userId, required this.eventDate, required this.info});
+  SportEventEntity({
+    required this.userId,
+    required this.eventDate,
+    required this.info,
+    this.eventKcal,
+  });
 
   factory SportEventEntity.fromJson(Map<String, dynamic> json) => _$SportEventEntityFromJson(json);
   Map<String, dynamic> toJson() => _$SportEventEntityToJson(this);
@@ -26,8 +32,17 @@ class SportEventInfoEntity {
   @HiveField(1) int intensity;
   @HiveField(2) int minutes;
   @HiveField(3) int kcal;
+  @HiveField(4) String? name_en;
+  @HiveField(5) String? name_es;
 
-  SportEventInfoEntity({required this.id, required this.intensity, required this.minutes, required this.kcal, });
+  SportEventInfoEntity({
+    required this.id,
+    required this.intensity,
+    required this.minutes,
+    required this.kcal,
+    this.name_en,
+    this.name_es,
+  });
 
   factory SportEventInfoEntity.fromJson(Map<String, dynamic> json) => _$SportEventInfoEntityFromJson(json);
   Map<String, dynamic> toJson() => _$SportEventInfoEntityToJson(this);

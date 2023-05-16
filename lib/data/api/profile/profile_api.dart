@@ -13,7 +13,7 @@ class ProfileApi extends ApiHelper {
       post(
         Uri.https(
           Environment().config!.baseUrl,
-          '/dev/profile-data',
+          '${Environment().config!.distributionPath}/profile-data',
         ),
         body,
       );
@@ -22,16 +22,16 @@ class ProfileApi extends ApiHelper {
       get(
         Uri.https(
           Environment().config!.baseUrl,
-          '/dev/users',
-            {'email': email}
-        )
+          '${Environment().config!.distributionPath}/users',
+            {'email': email},
+        ),
       );
 
   Future<Map<String, dynamic>> saveUser(SimpleUser simpleUser) =>
       post(
         Uri.https(
             Environment().config!.baseUrl,
-            '/dev/users'
+            '${Environment().config!.distributionPath}/users',
         ),
         simpleUser,
       );

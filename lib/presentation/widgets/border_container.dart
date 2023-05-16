@@ -17,10 +17,10 @@ class BorderContainer extends StatelessWidget {
           color: backgroundColor,
           border: Border.all(
             width: Dimens.borderNormal,
-            color: borderColor
+            color: borderColor,
         ),
           shape: BoxShape.rectangle,
-          borderRadius: const BorderRadius.all(Radius.circular(20))
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
       ),
       child: child,
     );

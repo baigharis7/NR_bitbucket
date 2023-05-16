@@ -26,6 +26,7 @@ GroupRecommendation _$GroupRecommendationFromJson(Map<String, dynamic> json) =>
     GroupRecommendation(
       json['recGroup'] as int,
       (json['foods'] as List<dynamic>).map((e) => e as int).toList(),
+      (json['usualFoods'] as List<dynamic>).map((e) => e as int).toList(),
     );
 
 Map<String, dynamic> _$GroupRecommendationToJson(
@@ -33,4 +34,5 @@ Map<String, dynamic> _$GroupRecommendationToJson(
     <String, dynamic>{
       'recGroup': instance.recGroup,
       'foods': instance.foods,
+      'usualFoods': instance.usualFoods,
     };

@@ -1,7 +1,6 @@
+import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../../domain/repository/preferences/preferences.dart';
-import '../../../infrastructure/utils/prefs_keys.dart';
 
 class PreferencesImpl extends Preferences {
   final SharedPreferences prefs;

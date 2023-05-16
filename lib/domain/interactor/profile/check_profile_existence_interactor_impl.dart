@@ -7,6 +7,6 @@ class CheckProfileExistenceInteractorImpl extends CheckProfileExistenceInteracto
   CheckProfileExistenceInteractorImpl({required this.profileRepository});
 
   @override
-  Future<bool> execute() => profileRepository.checkProfileExistence();
+  Future<bool> execute(String userId) => profileRepository.checkProfileExistence(userId);
 
 }
