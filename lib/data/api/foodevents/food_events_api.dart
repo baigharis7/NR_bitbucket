@@ -11,8 +11,8 @@ class FoodEventsApi extends ApiHelper {
   Future<Map<String, dynamic>> uploadFoodEvent(FoodEventSimple foodEventSimple) =>
       post(
         Uri.https(
-            Environment().config!.baseUrl,
-            '/dev/food-event/amplify',
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/food-event/amplify',
         ),
         foodEventSimple,
       );

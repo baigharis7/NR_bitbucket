@@ -13,6 +13,7 @@ UploadFoodEvent _$UploadFoodEventFromJson(Map<String, dynamic> json) =>
       (json['foodInfo'] as List<dynamic>?)
           ?.map((e) => FoodInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
+      json['eventKcals'] as int?,
       uploadSuccess: json['uploadSuccess'] as bool? ?? false,
     );
 
@@ -22,18 +23,17 @@ Map<String, dynamic> _$UploadFoodEventToJson(UploadFoodEvent instance) =>
       'eventDate': instance.eventDate,
       'foodInfo': instance.foodInfo?.map((e) => e.toJson()).toList(),
       'uploadSuccess': instance.uploadSuccess,
+      'eventKcals': instance.eventKcals,
     };
 
 FoodInfo _$FoodInfoFromJson(Map<String, dynamic> json) => FoodInfo(
       json['eventInfo'] == null
           ? null
           : EventInfo.fromJson(json['eventInfo'] as Map<String, dynamic>),
-      json['exchangePortion'] as int?,
       json['group'] as String?,
       json['id'] as int?,
       json['name_en'] as String?,
       json['name_es'] as String?,
-      json['portionSenc'] as String?,
       json['recommendable'] as int?,
       json['params'] == null
           ? null
@@ -42,12 +42,10 @@ FoodInfo _$FoodInfoFromJson(Map<String, dynamic> json) => FoodInfo(
 
 Map<String, dynamic> _$FoodInfoToJson(FoodInfo instance) => <String, dynamic>{
       'eventInfo': instance.eventInfo?.toJson(),
-      'exchangePortion': instance.exchangePortion,
       'group': instance.group,
       'id': instance.id,
       'name_en': instance.name_en,
       'name_es': instance.name_es,
-      'portionSenc': instance.portionSenc,
       'recommendable': instance.recommendable,
       'params': instance.params?.toJson(),
     };

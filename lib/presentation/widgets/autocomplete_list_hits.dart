@@ -1,60 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
-import 'package:nutrenaissance_flutter/presentation/registry/provider/registry_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 // TODO: hacer genérico para usarlo en los eventos de comida.
 // Pasarle una lista de un objeto que sea sólo id y name.
 class AutocompleteListHits extends StatefulWidget {
   final FoodsAndDrinkListsMaster data;
+  final Function manageListItems;
+  final Function removeSelectedItem;
+  final List<FoodItemMaster> aversions;
 
-  const AutocompleteListHits({Key? key, required this.data}) : super(key: key);
+  const AutocompleteListHits({
+    Key? key,
+    required this.data,
+    required this.manageListItems,
+    required this.removeSelectedItem,
+    required this.aversions,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _AutocompleteListHits();
 }
 
 class _AutocompleteListHits extends State<AutocompleteListHits> {
-  TextEditingController  _foodInputController = TextEditingController();
+  TextEditingController _foodInputController = TextEditingController();
+
+  @override
+  void dispose() {
+    _foodInputController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final registryProvider = Provider.of<RegistryProvider>(context);
-
-    // TODO: Mover de aquí. Cuando baje los JSON de AWS eso se hará en el repositorio, dándole a Presentación sólo
     // los nombres de comida en su idioma, y por tanto simplificando la búsqueda.
-    final allFoodsAndDrinks = [...widget.data.drinkNames!.toList(), ...widget.data.foodNames!.toList()];
-    String currentLanguage = Localizations.localeOf(context).languageCode;
-    final onlyNames = allFoodsAndDrinks.map((foodItem) {
-      if (currentLanguage == 'es') {
-        return foodItem.es.orEmpty();
-      } else {
-        return foodItem.en.orEmpty();
-      }
-    }).toList();
+    final allFoodsAndDrinks = widget.data.getFoodsAndDrinkNamesOrEmpty();
+    final onlyNames = allFoodsAndDrinks.map((item) => item.translate(context));
 
     FoodItemMaster findFoodId(String foodName) {
-      if (currentLanguage == 'es') {
-        return allFoodsAndDrinks
-            .firstWhere((foodOrDrink) => foodOrDrink.es == foodName);
-      } else {
-        return allFoodsAndDrinks
-            .firstWhere((foodOrDrink) => foodOrDrink.en == foodName);
-      }
+      final currentLanguage = Localizations.localeOf(context).languageCode;
+      return allFoodsAndDrinks.firstWhere((foodOrDrink) {
+        if (currentLanguage == 'es') {
+          return foodOrDrink.es == foodName;
+        } else {
+          return foodOrDrink.en == foodName;
+        }
+      });
     }
 
     return Container(
       margin: const EdgeInsets.fromLTRB(Dimens.marginNormal, Dimens.zero,
-          Dimens.marginNormal, Dimens.marginLarge),
+          Dimens.marginNormal, Dimens.marginLarge,),
       child: Column(
         children: [
           Container(
             alignment: Alignment.centerLeft,
             margin: const EdgeInsets.fromLTRB(Dimens.marginNormal,
-                Dimens.zero, Dimens.marginNormal, Dimens.marginLarge),
+                Dimens.zero, Dimens.marginNormal, Dimens.marginLarge,),
             child: Autocomplete<String>(
               fieldViewBuilder: (
                   BuildContext context,
@@ -65,7 +69,8 @@ class _AutocompleteListHits extends State<AutocompleteListHits> {
                 _foodInputController = textEditingController;
                 return TextField(
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.write_here_hint),
+                    labelText: AppLocalizations.of(context)!.write_here_hint,
+                  ),
                   controller: textEditingController,
                   focusNode: focusNode,
                 );
@@ -78,46 +83,48 @@ class _AutocompleteListHits extends State<AutocompleteListHits> {
               },
               onSelected: (option) {
                 FoodItemMaster foodId = findFoodId(option);
+                  // registryProvider.manageAversions(foodId);
+                widget.manageListItems.call(foodId.id);
                 setState(() {
-                  registryProvider.manageAversions(foodId);
-                  _foodInputController.text = '';
+                  widget.aversions.add(foodId);
                 });
+                _foodInputController.text = '';
               },
             ),
           ),
           Column(
             children: <Widget>[
-              ...registryProvider.getAversions
-                  .map(
-                    (aversion) => FittedBox(
-                      child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          margin: const EdgeInsets.only(
-                              left: Dimens.marginXLarge),
-                          child: Text(currentLanguage == 'en'
-                              ? aversion.en.orEmpty()
-                              : aversion.es.orEmpty(),
-                                  maxLines: 2),
+              ...widget.aversions.map((aversion) => FittedBox(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        margin: const EdgeInsets.only(left: Dimens.marginXLarge),
+                        child: Text(
+                            aversion.translate(context),
+                            maxLines: 2,
                         ),
-                        Container(
-                          alignment: Alignment.centerRight,
-                          child: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                registryProvider.removeAversion(aversion);
-                              });
+                      ),
+                      Container(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          onPressed: () {
+                            widget.removeSelectedItem(aversion.id);
+                            setState(() {
+                              widget.aversions.remove(aversion);
+                            });
                             },
-                            icon: const Icon(Icons.delete_forever,
-                                color: Colors.amber),
+                          icon: const Icon(
+                            Icons.delete_forever,
+                            color: Colors.amber,
                           ),
-                        )
-                      ]),
-                    ),
-              )
-                  .toList(),
+                        ),
+                      )
+                    ],
+                ),
+              ),
+              ).toList(),
             ],
           )
         ],

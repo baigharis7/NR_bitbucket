@@ -19,8 +19,11 @@ class _SelectableOptionsState extends State<SelectableOptionsList> {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.fromLTRB(
-          Dimens.marginNormal, Dimens.zero, Dimens.marginNormal,
-          Dimens.marginLarge),
+        Dimens.marginNormal,
+        Dimens.zero,
+        Dimens.marginNormal,
+        Dimens.marginLarge,
+      ),
       child: ListView.builder(
         itemCount: widget.itemList.length,
         shrinkWrap: true,
@@ -37,7 +40,8 @@ class _SelectableOptionsState extends State<SelectableOptionsList> {
                       : Colors.transparent,
                 ),
                 shape: BoxShape.rectangle,
-                borderRadius: const BorderRadius.all(Radius.circular(20))),
+                borderRadius: const BorderRadius.all(Radius.circular(20)),
+            ),
             child: GestureDetector(
               onTap: () {
                 setState(() {

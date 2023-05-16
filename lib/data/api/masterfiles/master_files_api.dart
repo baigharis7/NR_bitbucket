@@ -15,12 +15,15 @@ class MasterFilesApi extends ApiHelper {
       int nutrientsInfoVersion,
       int objectivesInfoVersion,
       int recommendationGroupsVersion,
-      int sportsInfoVersion
+      int sportsInfoVersion,
+      int unitsInfoVersion,
+      int unitsFoodsVersion,
+      int subjectiveAnalysisVersion,
   ) {
     return get(
       Uri.https(
         Environment().config!.baseUrl,
-        '/dev/manage-master-files',
+        '${Environment().config!.distributionPath}/manage-master-files',
         {
           cookingMethods: cookingMethodsVersion.toString(),
           cookingMethodsInfo: cookingMethodsInfoVersion.toString(),
@@ -29,6 +32,9 @@ class MasterFilesApi extends ApiHelper {
           objectivesInfo: objectivesInfoVersion.toString(),
           recommendationGroups: recommendationGroupsVersion.toString(),
           sportsInfo: sportsInfoVersion.toString(),
+          unitsInfo: unitsInfoVersion.toString(),
+          unitsFoods: unitsFoodsVersion.toString(),
+          subjectiveAnalysis: subjectiveAnalysisVersion.toString(),
         },
       ),
     );

@@ -8,6 +8,6 @@ class SaveSportEventInteractorImpl extends SaveSportEventInteractor {
   SaveSportEventInteractorImpl({required this.sportEventsRepository});
 
   @override
-  Future<void> execute(SportEventComplete sportEventComplete) => sportEventsRepository.saveSportEvent(sportEventComplete);
+  Future<void> execute(SportEventComplete sportEventComplete, bool isEdit) => sportEventsRepository.saveSportEvent(sportEventComplete, isEdit);
 
 }

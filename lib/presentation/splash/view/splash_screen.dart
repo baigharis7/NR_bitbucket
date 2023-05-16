@@ -3,7 +3,6 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/provider/splash_provider.dart';
-import 'package:provider/provider.dart';
 
 class SplashScreen extends StatelessWidget {
   static const routeName = '/splash_screen';
@@ -12,19 +11,21 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<SplashProvider>(context);
-    provider.init(
-        toLogin: () => Navigator.of(context).popAndPushNamed(LoginScreen.routeName),
-        toDashboard: () => Navigator.of(context).popAndPushNamed(DashboardScreen.routeName)
+    SplashProvider().init(
+        toLogin: () => Navigator.popAndPushNamed(context, LoginScreen.routeName),
+        toDashboard: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
     );
 
-    return Center(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge),
-        child: Image.asset(
-          'assets/images/logo_name_black.png',
-          fit: BoxFit.cover,
-          color: Colors.white,
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge),
+          child: Image.asset(
+            'assets/images/logo_name_black.png',
+            fit: BoxFit.cover,
+            color: Colors.black,
+          ),
         ),
       ),
     );

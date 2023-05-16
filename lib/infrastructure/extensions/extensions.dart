@@ -1,4 +1,19 @@
+import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/objectives_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/recommendation_groups_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/translatable.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/recipes/recipes_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 
 extension NullableStringExtensions on String? {
   bool isNotEmptyOrNull() {
@@ -59,16 +74,12 @@ extension StringExtensions on String {
     }
   }
 
+  String appendColon() {
+    return '$this:';
+  }
 }
 
 extension ListExtensions<T> on List<T> {
-  List<T> orEmpty() {
-    if (isEmpty) {
-      return <T>[];
-    } else {
-      return this;
-    }
-  }
 
   String convertToBinary(int binarySize) {
     String binary = '';
@@ -100,6 +111,14 @@ extension PrefsKeysExtensions on PrefsKeys {
 
 extension IntExtensions on int? {
   int getHiveKey() => this!~/(1000000);
+
+  int orZero() {
+    if (this == null) {
+      return 0;
+    } else {
+      return this!;
+    }
+  }
 }
 
 extension ObjectExtensions on Object? {
@@ -145,4 +164,109 @@ extension BoolExtensions on bool {
       action.call();
     }
   }
+}
+
+extension DoubleExtensions on double? {
+  double orZero() {
+    if (this == null) {
+      return 0.0;
+    } else {
+      return this!;
+    }
+  }
+}
+
+extension LanguageSelector<T> on T {
+  String translate(BuildContext context) {
+    if (this is Translatable) {
+      String language = Localizations.localeOf(context).languageCode;
+      if (this is ObjectiveInfoMaster) {
+        if (language == 'es') {
+          return (this as ObjectiveInfoMaster).es;
+        } else {
+          return (this as ObjectiveInfoMaster).en;
+        }
+      } else if (this is FoodItemMaster) {
+        if (language == 'es') {
+          return (this as FoodItemMaster).es.orEmpty();
+        } else {
+          return (this as FoodItemMaster).en.orEmpty();
+        }
+      } else if (this is NutrientInfoMaster) {
+        if (language == 'es') {
+          return (this as NutrientInfoMaster).es.orEmpty();
+        } else {
+          return (this as NutrientInfoMaster).en.orEmpty();
+        }
+      } else if (this is CookingMethodInfo) {
+        if (language == 'es') {
+          return (this as CookingMethodInfo).es.orEmpty();
+        } else {
+          return (this as CookingMethodInfo).en.orEmpty();
+        }
+      } else if (this is UnitInfoMaster) {
+        if (language == 'es') {
+          return (this as UnitInfoMaster).es.orEmpty();
+        } else {
+          return (this as UnitInfoMaster).en.orEmpty();
+        }
+      } else if (this is RecommendationGroup) {
+        if (language == 'es') {
+          return (this as RecommendationGroup).es.orEmpty();
+        } else {
+          return (this as RecommendationGroup).en.orEmpty();
+        }
+      } else if (this is SportInfoMaster) {
+        if (language == 'es') {
+          return (this as SportInfoMaster).es.orEmpty();
+        } else {
+          return (this as SportInfoMaster).en.orEmpty();
+        }
+      } else if (this is FoodInfo) {
+        if (language == 'es') {
+          return (this as FoodInfo).name_es.orEmpty();
+        } else {
+          return (this as FoodInfo).name_en.orEmpty();
+        }
+      } else if (this is SportEventInfo) {
+        if (language == 'es') {
+          return (this as SportEventInfo).name_es.orEmpty();
+        } else {
+          return (this as SportEventInfo).name_en.orEmpty();
+        }
+      } else if (this is FoodInFavorite) {
+        if (language == 'es') {
+          return (this as FoodInFavorite).name_es.orEmpty();
+        } else {
+          return (this as FoodInFavorite).name_en.orEmpty();
+        }
+      } else if (this is SportFavorite) {
+        if (language == 'es') {
+          return (this as SportFavorite).name_es.orEmpty();
+        } else {
+          return (this as SportFavorite).name_en.orEmpty();
+        }
+      } else if (this is RecipeMaster) {
+        if (language == 'es') {
+          return (this as RecipeMaster).name_es.orEmpty();
+        } else {
+          return (this as RecipeMaster).name_en.orEmpty();
+        }
+      } else if (this is SportInfo) {
+        if (language == 'es') {
+          return (this as SportInfo).name_es.orEmpty();
+        } else {
+          return (this as SportInfo).name_en.orEmpty();
+        }
+      } else {
+        return '';
+      }
+    } else {
+      return '';
+    }
+  }
+}
+
+extension GetAllFoodNames on FoodsAndDrinkListsMaster {
+  List<FoodItemMaster> getFoodsAndDrinkNamesOrEmpty() => [...drinkNames!.toList(), ...foodNames!.toList()];
 }

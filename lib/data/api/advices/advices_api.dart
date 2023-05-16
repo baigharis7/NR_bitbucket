@@ -12,7 +12,7 @@ class AdvicesApi extends ApiHelper {
       get(
           Uri.https(
               Environment().config!.baseUrl,
-            '/dev/advices',
+              '${Environment().config!.distributionPath}/advices',
             {Constants.USERID_QUERY: userId.toString()}
           ),
       );

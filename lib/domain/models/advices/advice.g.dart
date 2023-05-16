@@ -9,7 +9,7 @@ part of 'advice.dart';
 Advice _$AdviceFromJson(Map<String, dynamic> json) => Advice(
       id: json['id'] as int,
       advEs: json['advEs'] as String,
-      advEn: json['advEn'] as String,
+      advEn: json['advEn'] as String?,
       objective:
           (json['objective'] as List<dynamic>).map((e) => e as int).toList(),
       interaction: json['interaction'] as int,

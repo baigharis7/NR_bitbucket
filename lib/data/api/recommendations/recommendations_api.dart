@@ -11,7 +11,7 @@ class RecommendationsApi extends ApiHelper {
       get(
         Uri.https(
           Environment().config!.baseUrl,
-          '/dev/recommendations',
+          '${Environment().config!.distributionPath}/recommendations',
           {Constants.USERID_QUERY: userId.toString()},
         ),
       );

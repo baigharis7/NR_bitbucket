@@ -26,9 +26,33 @@ class HiveTypeIds {
   static const cookingMethodsEntity = 23;
   static const cookingMethodGroupEntity = 24;
   static const userRdasEntity = 25;
-  static const sportsInfoEntity = 26;
-  static const sportInfoEntity = 27;
-  static const sportEventEntity = 28;
-  static const sportEventInfoEntity = 29;
+  static const userRdaEntity = 26;
+  static const sportsInfoEntity = 27;
+  static const sportInfoEntity = 28;
+  static const sportEventEntity = 29;
+  static const sportEventInfoEntity = 30;
+  static const unitsInfoEntity= 31;
+  static const unitInfoEntity = 32;
+  static const unitsFoodsEntity = 33;
+  static const unitFoodEntity = 34;
+  static const liquidEventEntity = 35;
+  static const liquidInfo = 36;
+  static const liquidEventInfo = 37;
+  static const liquidParams = 38;
+  static const waterEventEntity = 39;
+  static const foodFavoriteEntity = 40;
+  static const foodInFavoriteEntity = 41;
+  static const sportFavoriteEntity = 42;
+  static const sportInFavoriteEntity = 43;
+  static const liquidFavoriteEntity = 44;
+  static const liquidInFavoriteEntity = 45;
+  static const explainingCardEntity = 46;
+  static const subjectiveAnalysisListEntity = 47;
+  static const subjectiveAnalysisEntity = 48;
+  static const subjectiveAnalysisTestEntity = 49;
+  static const testQuestionEntity = 50;
+  static const subjectiveAnalysisResultEntity = 51;
+  static const subjectiveAnalysisAnswerResultEntity = 52;
+  static const subjectiveAnalysisTestAnswerResultEntity = 53;
 
 }

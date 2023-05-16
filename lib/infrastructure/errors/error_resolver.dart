@@ -64,6 +64,46 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.sport_event_intensity_start_error;
     case ErrorTypes.sportEventMinutesStartError:
       return stringResolver.sport_event_minutes_start_error;
+    case ErrorTypes.passwordsNotMatchingError:
+      return stringResolver.password_matching_error;
+    case ErrorTypes.locallySavingWaterEventError:
+      return stringResolver.error_saving_event;
+    case ErrorTypes.uploadingWaterEventError:
+      return stringResolver.error_uploading_event;
+    case ErrorTypes.saveFoodFavoriteError:
+      return stringResolver.error_uploading_favorite;
+    case ErrorTypes.uploadFoodFavoriteError:
+      return stringResolver.error_uploading_favorite;
+    case ErrorTypes.deleteFoodFavoriteError:
+      return stringResolver.delete_favorite_error;
+    case ErrorTypes.removeFoodFavoriteError:
+      return stringResolver.remove_favorite_error;
+    case ErrorTypes.saveSportFavoriteError:
+      return stringResolver.save_favorite_error;
+    case ErrorTypes.uploadSportFavoriteError:
+      return stringResolver.upload_favorite_error;
+    case ErrorTypes.deleteSportFavoriteError:
+      return stringResolver.delete_favorite_error;
+    case ErrorTypes.removeSportFavoriteError:
+      return stringResolver.remove_favorite_error;
+    case ErrorTypes.saveLiquidFavoriteError:
+      return stringResolver.error_saving_favorite;
+    case ErrorTypes.uploadLiquidFavoriteError:
+      return stringResolver.error_uploading_favorite;
+    case ErrorTypes.removeLiquidFavoriteError:
+      return stringResolver.error_uploading_favorite;
+    case ErrorTypes.deleteLiquidFavoriteError:
+      return stringResolver.delete_favorite_error;
+    case ErrorTypes.emailAlreadyExistsError:
+      return stringResolver.email_already_exists;
+    case ErrorTypes.codeExpiredError:
+      return stringResolver.code_expired_error;
+    case ErrorTypes.signInError:
+      return stringResolver.sign_in_error;
+    case ErrorTypes.signOutError:
+      return stringResolver.sign_out_error;
+    case ErrorTypes.synchronizeEventsError:
+      return stringResolver.synchronize_events_error;
   }
 }
 

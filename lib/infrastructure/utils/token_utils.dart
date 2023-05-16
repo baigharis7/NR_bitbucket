@@ -17,7 +17,7 @@ dynamic decodeIdToken(String? idToken) {
       if (parts.length != 3) {
         throw Exception('invalid token');
       }
-      final payload = json.decode(ascii.decode(base64.decode(base64.normalize(idToken.split(".")[1]))));
+      final payload = json.decode(ascii.decode(base64.decode(base64.normalize(idToken.split('.')[1]))));
       return payload;
     } catch (error) {
       rethrow;

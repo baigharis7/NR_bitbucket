@@ -5,10 +5,10 @@ part 'user_profile_model.g.dart';
 @JsonSerializable(explicitToJson: true)
 class UserProfileModel {
   String? userId;
-  late String commonName;
-  late int birthDate;
-  late SexType sex;
-  late double occupationActivityFactor;
+  String? commonName;
+  int? birthDate;
+  SexType? sex;
+  double? occupationActivityFactor;
   PhysicalCharacteristics? physicalCharacteristics;
   FemaleCharacteristics? femaleCharacteristics;
   MedicalSituation? medicalSituation;
@@ -18,15 +18,17 @@ class UserProfileModel {
   List<int>? intolerances;
   String? symptoms; // TODO -> Consider storing it in a different table or only in local and send it with each recommendation
   int? guts;
-  List<int> objectives;
+  List<int>? objectives;
   List<String>? micronutrients;
+  UserRdas? userRdas;
+  int? kcal;
 
   UserProfileModel({
-    required this.userId,
-    required this.commonName,
-    required this.birthDate,
-    required this.sex,
-    required this.occupationActivityFactor,
+    this.userId,
+    this.commonName,
+    this.birthDate,
+    this.sex,
+    this.occupationActivityFactor,
     this.physicalCharacteristics,
     this.femaleCharacteristics,
     this.medicalSituation,
@@ -36,9 +38,32 @@ class UserProfileModel {
     this.intolerances,
     this.symptoms,
     this.guts,
-    required this.objectives,
-    this.micronutrients
+    this.objectives,
+    this.micronutrients,
+    this.userRdas,
+    this.kcal,
   });
+
+  UserProfileModel.empty() {
+    userId = null;
+    commonName = null;
+    birthDate = null;
+    sex = null;
+    occupationActivityFactor = -1;
+    physicalCharacteristics = PhysicalCharacteristics();
+    femaleCharacteristics = FemaleCharacteristics(menstruation: Menstruation());
+    medicalSituation = MedicalSituation(commonDiseases: [], otherDiseases: []);
+    foodAversions = [];
+    dietType = 0;
+    exclusions = Exclusions(exclusions: []);
+    intolerances = [];
+    symptoms = null;
+    guts = null;
+    objectives = [];
+    micronutrients = [];
+    userRdas = UserRdas(userRdas: []);
+    kcal = null;
+  }
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) => _$UserProfileModelFromJson(json);
   Map<String, dynamic> toJson() => _$UserProfileModelToJson(this);
@@ -46,11 +71,11 @@ class UserProfileModel {
 
 @JsonSerializable(explicitToJson: true)
 class MedicalSituation{
-    List<int> commonDiseases;
-    List<String> otherDiseases;
+    List<int>? commonDiseases;
+    List<String>? otherDiseases;
     bool underPharmaceuticalTreatment;
 
-    MedicalSituation({this.commonDiseases = const [], this.otherDiseases = const [], this.underPharmaceuticalTreatment = false});
+    MedicalSituation({this.commonDiseases, this.otherDiseases, this.underPharmaceuticalTreatment = false});
 
     factory MedicalSituation.fromJson(Map<String, dynamic> json) => _$MedicalSituationFromJson(json);
     Map<String, dynamic> toJson() => _$MedicalSituationToJson(this);
@@ -58,16 +83,16 @@ class MedicalSituation{
 
 @JsonSerializable(explicitToJson: true)
 class PhysicalCharacteristics{
-  late int height;
-  late int weight;
+  int? height;
+  int? weight;
   int? bodyFat;
   int? waistMeasurement;
 
   PhysicalCharacteristics({
-    required this.height,
-    required this.weight,
+    this.height,
+    this.weight,
     this.bodyFat,
-    this.waistMeasurement
+    this.waistMeasurement,
   });
 
   factory PhysicalCharacteristics.fromJson(Map<String, dynamic> json) => _$PhysicalCharacteristicsFromJson(json);
@@ -86,14 +111,14 @@ class FemaleCharacteristics{
 
 @JsonSerializable(explicitToJson: true)
 class Menstruation {
-  int regularity;
+  int? regularity;
   int? daysOfCycle;
   int? lastStartDate;
 
   Menstruation({
-    required this.regularity,
+    this.regularity,
     this.daysOfCycle,
-    this.lastStartDate
+    this.lastStartDate,
   });
 
   factory Menstruation.fromJson(Map<String, dynamic> json) => _$MenstruationFromJson(json);
@@ -102,12 +127,34 @@ class Menstruation {
 
 @JsonSerializable(explicitToJson: true)
 class Exclusions {
-  List<int> exclusions;
+  List<int>? exclusions;
 
-  Exclusions({this.exclusions = const []});
+  Exclusions({this.exclusions});
 
   factory Exclusions.fromJson(Map<String, dynamic> json) => _$ExclusionsFromJson(json);
   Map<String, dynamic> toJson() => _$ExclusionsToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class UserRdas {
+  List<UserRda> userRdas;
+
+  UserRdas({required this.userRdas});
+
+  factory UserRdas.fromJson(Map<String, dynamic> json) => _$UserRdasFromJson(json);
+  Map<String, dynamic> toJson() => _$UserRdasToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class UserRda {
+  String name;
+  num rda;
+  num ul;
+
+  UserRda({required this.name, required this.rda, required this.ul});
+
+  factory UserRda.fromJson(Map<String, dynamic> json) => _$UserRdaFromJson(json);
+  Map<String, dynamic> toJson() => _$UserRdaToJson(this);
 }
 
 enum SexType {

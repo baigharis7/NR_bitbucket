@@ -9,8 +9,8 @@ class Environment {
 
   static final Environment _singleton = Environment._internal();
 
-  static const String staging = 'STAGING';
-  static const String production = 'PRODUCTION';
+  static const String DEV = 'DEV';
+  static const String PROD = 'PROD';
 
   BaseConfig? config;
 
@@ -20,13 +20,12 @@ class Environment {
 
   BaseConfig _getConfig(String environment) {
     switch (environment) {
-      case Environment.production:
+      case Environment.DEV:
+        return DevConfig();
+      case Environment.PROD:
         return ProductionConfig();
-      case Environment.staging:
-        return StagingConfig();
       default:
-        return StagingConfig();
+        return DevConfig();
     }
   }
-
 }

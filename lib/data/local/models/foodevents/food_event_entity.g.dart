@@ -20,19 +20,22 @@ class FoodEventEntityAdapter extends TypeAdapter<FoodEventEntity> {
       fields[0] as String?,
       fields[1] as int?,
       (fields[2] as List?)?.cast<FoodInfo>(),
+      fields[3] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, FoodEventEntity obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
       ..write(obj.eventDate)
       ..writeByte(2)
-      ..write(obj.foodInfo);
+      ..write(obj.foodInfo)
+      ..writeByte(3)
+      ..write(obj.eventKcals);
   }
 
   @override
@@ -57,39 +60,33 @@ class FoodInfoAdapter extends TypeAdapter<FoodInfo> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return FoodInfo(
-      fields[0] as int?,
-      fields[1] as String?,
-      fields[2] as int?,
+      fields[0] as String?,
+      fields[1] as int?,
+      fields[2] as String?,
       fields[3] as String?,
-      fields[4] as String?,
-      fields[5] as String?,
-      fields[6] as int?,
-      fields[7] as EventInfo?,
-      fields[8] as Params?,
+      fields[4] as int?,
+      fields[5] as EventInfo?,
+      fields[6] as Params?,
     );
   }
 
   @override
   void write(BinaryWriter writer, FoodInfo obj) {
     writer
-      ..writeByte(9)
-      ..writeByte(0)
-      ..write(obj.exchangePortion)
-      ..writeByte(1)
-      ..write(obj.group)
-      ..writeByte(2)
-      ..write(obj.id)
-      ..writeByte(3)
-      ..write(obj.name_en)
-      ..writeByte(4)
-      ..write(obj.name_es)
-      ..writeByte(5)
-      ..write(obj.portionSenc)
-      ..writeByte(6)
-      ..write(obj.recommendable)
       ..writeByte(7)
+      ..writeByte(0)
+      ..write(obj.group)
+      ..writeByte(1)
+      ..write(obj.id)
+      ..writeByte(2)
+      ..write(obj.name_en)
+      ..writeByte(3)
+      ..write(obj.name_es)
+      ..writeByte(4)
+      ..write(obj.recommendable)
+      ..writeByte(5)
       ..write(obj.eventInfo)
-      ..writeByte(8)
+      ..writeByte(6)
       ..write(obj.params);
   }
 
@@ -536,6 +533,7 @@ FoodEventEntity _$FoodEventEntityFromJson(Map<String, dynamic> json) =>
       (json['foodInfo'] as List<dynamic>?)
           ?.map((e) => FoodInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
+      json['eventKcals'] as int?,
     );
 
 Map<String, dynamic> _$FoodEventEntityToJson(FoodEventEntity instance) =>
@@ -543,15 +541,14 @@ Map<String, dynamic> _$FoodEventEntityToJson(FoodEventEntity instance) =>
       'userId': instance.userId,
       'eventDate': instance.eventDate,
       'foodInfo': instance.foodInfo?.map((e) => e.toJson()).toList(),
+      'eventKcals': instance.eventKcals,
     };
 
 FoodInfo _$FoodInfoFromJson(Map<String, dynamic> json) => FoodInfo(
-      json['exchangePortion'] as int?,
       json['group'] as String?,
       json['id'] as int?,
       json['name_en'] as String?,
       json['name_es'] as String?,
-      json['portionSenc'] as String?,
       json['recommendable'] as int?,
       json['eventInfo'] == null
           ? null
@@ -562,12 +559,10 @@ FoodInfo _$FoodInfoFromJson(Map<String, dynamic> json) => FoodInfo(
     );
 
 Map<String, dynamic> _$FoodInfoToJson(FoodInfo instance) => <String, dynamic>{
-      'exchangePortion': instance.exchangePortion,
       'group': instance.group,
       'id': instance.id,
       'name_en': instance.name_en,
       'name_es': instance.name_es,
-      'portionSenc': instance.portionSenc,
       'recommendable': instance.recommendable,
       'eventInfo': instance.eventInfo?.toJson(),
       'params': instance.params?.toJson(),

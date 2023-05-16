@@ -1,5 +1,5 @@
-import 'package:nutrenaissance_flutter/domain/models/profile/user_rdas.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 
 abstract class GetUserRdasInteractor {
-  Future<List<UserRdas>> execute();
+  Future<List<UserRda>> execute();
 }

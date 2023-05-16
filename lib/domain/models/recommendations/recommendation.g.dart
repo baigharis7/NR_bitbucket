@@ -8,10 +8,12 @@ part of 'recommendation.dart';
 
 Recommendation _$RecommendationFromJson(Map<String, dynamic> json) =>
     Recommendation(
-      (json['foodList'] as List<dynamic>)
+      foodList: (json['foodList'] as List<dynamic>)
           .map((e) => GroupRecommendation.fromJson(e as Map<String, dynamic>))
           .toList(),
-      (json['userNutrients'] as List<dynamic>).map((e) => e as String).toList(),
+      userNutrients: (json['userNutrients'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
     );
 
 Map<String, dynamic> _$RecommendationToJson(Recommendation instance) =>
@@ -24,6 +26,7 @@ GroupRecommendation _$GroupRecommendationFromJson(Map<String, dynamic> json) =>
     GroupRecommendation(
       json['recGroup'] as int,
       (json['foods'] as List<dynamic>).map((e) => e as int).toList(),
+      (json['usualFoods'] as List<dynamic>).map((e) => e as int).toList(),
     );
 
 Map<String, dynamic> _$GroupRecommendationToJson(
@@ -31,4 +34,5 @@ Map<String, dynamic> _$GroupRecommendationToJson(
     <String, dynamic>{
       'recGroup': instance.recGroup,
       'foods': instance.foods,
+      'usualFoods': instance.usualFoods,
     };

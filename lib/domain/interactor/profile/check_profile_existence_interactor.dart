@@ -1,3 +1,3 @@
 abstract class CheckProfileExistenceInteractor {
-  Future<bool> execute();
+  Future<bool> execute(String userId);
 }

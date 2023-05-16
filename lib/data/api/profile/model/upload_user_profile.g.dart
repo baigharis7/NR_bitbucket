@@ -37,6 +37,10 @@ UploadUserProfile _$UploadUserProfileFromJson(Map<String, dynamic> json) =>
       micronutrients: (json['micronutrients'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      userRdas: (json['userRdas'] as List<dynamic>?)
+          ?.map((e) => UserRda.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      kcal: json['kcal'] as int?,
     );
 
 Map<String, dynamic> _$UploadUserProfileToJson(UploadUserProfile instance) =>
@@ -55,6 +59,8 @@ Map<String, dynamic> _$UploadUserProfileToJson(UploadUserProfile instance) =>
       'guts': instance.guts,
       'objectives': instance.objectives,
       'micronutrients': instance.micronutrients,
+      'userRdas': instance.userRdas?.map((e) => e.toJson()).toList(),
+      'kcal': instance.kcal,
     };
 
 MedicalSituation _$MedicalSituationFromJson(Map<String, dynamic> json) =>
@@ -118,4 +124,26 @@ Map<String, dynamic> _$MenstruationToJson(Menstruation instance) =>
       'regularity': instance.regularity,
       'daysOfCycle': instance.daysOfCycle,
       'lastStartDate': instance.lastStartDate,
+    };
+
+UserRdas _$UserRdasFromJson(Map<String, dynamic> json) => UserRdas(
+      userRdas: (json['userRdas'] as List<dynamic>)
+          .map((e) => UserRda.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$UserRdasToJson(UserRdas instance) => <String, dynamic>{
+      'userRdas': instance.userRdas.map((e) => e.toJson()).toList(),
+    };
+
+UserRda _$UserRdaFromJson(Map<String, dynamic> json) => UserRda(
+      n: json['n'] as String,
+      rda: json['rda'] as num,
+      ul: json['ul'] as num,
+    );
+
+Map<String, dynamic> _$UserRdaToJson(UserRda instance) => <String, dynamic>{
+      'n': instance.n,
+      'rda': instance.rda,
+      'ul': instance.ul,
     };

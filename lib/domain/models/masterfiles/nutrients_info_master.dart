@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/translatable.dart';
 
 part 'nutrients_info_master.g.dart';
 
@@ -13,7 +14,7 @@ class NutrientsInfoMaster {
 }
 
 @JsonSerializable(explicitToJson: true)
-class NutrientInfoMaster {
+class NutrientInfoMaster extends Translatable {
   String officialName;
   String unit;
   String en;

@@ -13,8 +13,9 @@ UserProfileResponse _$UserProfileResponseFromJson(Map<String, dynamic> json) =>
           .map((e) => e as String)
           .toList(),
       userRdas: (json['userRdas'] as List<dynamic>)
-          .map((e) => UserRdasResponse.fromJson(e as Map<String, dynamic>))
+          .map((e) => UserRda.fromJson(e as Map<String, dynamic>))
           .toList(),
+      kcal: json['kcal'] as int,
     );
 
 Map<String, dynamic> _$UserProfileResponseToJson(
@@ -23,4 +24,5 @@ Map<String, dynamic> _$UserProfileResponseToJson(
       'uploadSuccess': instance.uploadSuccess,
       'micronutrients': instance.micronutrients,
       'userRdas': instance.userRdas.map((e) => e.toJson()).toList(),
+      'kcal': instance.kcal,
     };

@@ -33,8 +33,8 @@ class CognitoAuthenticationService implements AuthenticationService {
         password: password,
         options: CognitoSignUpOptions(userAttributes: {
           CognitoUserAttributeKey.givenName: username,
-          CognitoUserAttributeKey.email: email
-        })
+          CognitoUserAttributeKey.email: email,
+        },),
     );
   }
 
@@ -58,7 +58,7 @@ class CognitoAuthenticationService implements AuthenticationService {
   Future<SignInResult> signIn(String username, String password) async {
     return getAuthorization().signIn(
         username: username,
-        password: password
+        password: password,
     );
   }
 

@@ -4,21 +4,44 @@ class CustomButton1 extends StatelessWidget {
   final String message;
   final Function action;
   final ButtonStyle? style;
-  final bool isPushed;
+  final bool isSelected;
+  final Color? textColor;
+  final Color? borderColor;
 
-  const CustomButton1({Key? key, required this.message, required this.action, this.style, this.isPushed = false}): super(key: key);
+  const CustomButton1({
+    Key? key,
+    required this.message,
+    required this.action,
+    this.style,
+    this.isSelected = false,
+    this.textColor,
+    this.borderColor,
+  }): super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: style ?? ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: ElevatedButton(
+        style: style ?? ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            side: BorderSide(
+              color: borderColor ?? Colors.transparent,
+              width: borderColor == null ? 0.0 : 1.0,
+            ),
+          ),
+          backgroundColor: isSelected ? Colors.grey[400] : Colors.white,
         ),
-        primary: isPushed ? Colors.amber[100] : Colors.amber,
-        side: const BorderSide(style: BorderStyle.solid),
+        child: Text(
+          message,
+          overflow: TextOverflow.clip,
+          maxLines: 2,
+          style: TextStyle(
+              color: textColor ?? Colors.black,
+          ),
+        ),
+        onPressed: () => action.call(),
       ),
-      child: Text(message),
-      onPressed: () => action.call());
+    );
   }
 }

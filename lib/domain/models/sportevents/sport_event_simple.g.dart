@@ -22,6 +22,8 @@ Map<String, dynamic> _$SportEventSimpleToJson(SportEventSimple instance) =>
 
 SportInfo _$SportInfoFromJson(Map<String, dynamic> json) => SportInfo(
       id: json['id'] as int?,
+      name_en: json['name_en'] as String?,
+      name_es: json['name_es'] as String?,
       timeStart: json['timeStart'] as int?,
       intensity: json['intensity'] as int?,
       minutes: json['minutes'] as int?,
@@ -29,6 +31,8 @@ SportInfo _$SportInfoFromJson(Map<String, dynamic> json) => SportInfo(
 
 Map<String, dynamic> _$SportInfoToJson(SportInfo instance) => <String, dynamic>{
       'id': instance.id,
+      'name_en': instance.name_en,
+      'name_es': instance.name_es,
       'timeStart': instance.timeStart,
       'intensity': instance.intensity,
       'minutes': instance.minutes,

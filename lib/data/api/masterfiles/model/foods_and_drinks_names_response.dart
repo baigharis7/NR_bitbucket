@@ -30,8 +30,9 @@ class FoodItemResponse {
   String en;
   String es;
   String g;
+  String? units;
 
-  FoodItemResponse({required this.id, required this.en, required this.es, required this.g});
+  FoodItemResponse({required this.id, required this.en, required this.es, required this.g, required this.units});
 
   factory FoodItemResponse.fromJson(Map<String, dynamic> json) => _$FoodItemResponseFromJson(json);
   Map<String, dynamic> toJson() => _$FoodItemResponseToJson(this);

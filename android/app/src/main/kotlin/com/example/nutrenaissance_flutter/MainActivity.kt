@@ -1,4 +1,4 @@
-package com.example.nutrenaissance_flutter
+package com.nutrenaissance.flutter
 
 import io.flutter.embedding.android.FlutterActivity
 

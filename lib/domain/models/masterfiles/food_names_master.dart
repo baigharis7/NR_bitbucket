@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/translatable.dart';
 
 part 'food_names_master.g.dart';
 
@@ -14,7 +15,7 @@ class FoodsAndDrinksNamesMaster {
 }
 
 @JsonSerializable(explicitToJson: true)
-class FoodsAndDrinkListsMaster{
+class FoodsAndDrinkListsMaster {
   @JsonKey(name: 'foodNames')
   List<FoodItemMaster>? foodNames;
   @JsonKey(name: 'drinkNames')
@@ -28,7 +29,7 @@ class FoodsAndDrinkListsMaster{
 }
 
 @JsonSerializable()
-class FoodItemMaster{
+class FoodItemMaster extends Translatable {
   @JsonKey(name: 'id')
   int? id;
   @JsonKey(name: 'en')
@@ -37,8 +38,18 @@ class FoodItemMaster{
   String? es;
   @JsonKey(name: 'group')
   String? group;
+  @JsonKey(name: 'units')
+  String? units;
 
-  FoodItemMaster({this.id, this.en, this.es, this.group});
+
+  FoodItemMaster({this.id, this.en, this.es, this.group, this.units});
+  FoodItemMaster.empty({
+    this.id = 0,
+    this.en = '',
+    this.es = '',
+    this.group = '',
+    this.units = '',
+  });
 
   factory FoodItemMaster.fromJson(Map<String, dynamic> json) => _$FoodItemMasterFromJson(json);
   Map<String, dynamic> toJson() => _$FoodItemMasterToJson(this);

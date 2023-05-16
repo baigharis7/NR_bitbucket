@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/translatable.dart';
 
 part 'cooking_methods_info_master.g.dart';
 
@@ -14,7 +15,7 @@ class CookingMethodsInfoMaster {
 }
 
 @JsonSerializable(explicitToJson: true)
-class CookingMethodInfo {
+class CookingMethodInfo extends Translatable {
   @JsonKey(name: 'id')
   int? id;
   @JsonKey(name: 'en')

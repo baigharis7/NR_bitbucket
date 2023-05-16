@@ -1,0 +1,50 @@
+import 'package:json_annotation/json_annotation.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/translatable.dart';
+
+part 'food_favorite.g.dart';
+
+@JsonSerializable(explicitToJson: true)
+class FoodFavorite {
+  String title;
+  int eventDate;
+  List<FoodInFavorite> ingredients = [];
+  List<FoodInFavorite> drinks = [];
+  String? comment;
+  int mealTime;
+  
+  FoodFavorite({
+    required this.title,
+    required this.eventDate,
+    required this.ingredients,
+    required this.drinks,
+    this.comment,
+    required this.mealTime,
+  });
+
+  factory FoodFavorite.fromJson(Map<String, dynamic> json) => _$FoodFavoriteFromJson(json);
+  Map<String, dynamic> toJson() => _$FoodFavoriteToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class FoodInFavorite extends Translatable {
+  int id;
+  String name_en;
+  String name_es;
+  int qty;
+  int unit;
+  int cookingMethod;
+  String? unitsEquivalences;
+
+  FoodInFavorite({
+    required this.id,
+    required this.name_en,
+    required this.name_es,
+    required this.qty,
+    required this.unit,
+    required this.cookingMethod,
+    this.unitsEquivalences,
+  });
+
+  factory FoodInFavorite.fromJson(Map<String, dynamic> json) => _$FoodInFavoriteFromJson(json);
+  Map<String, dynamic> toJson() => _$FoodInFavoriteToJson(this);
+}

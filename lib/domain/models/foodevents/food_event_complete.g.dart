@@ -8,11 +8,12 @@ part of 'food_event_complete.dart';
 
 FoodEventComplete _$FoodEventCompleteFromJson(Map<String, dynamic> json) =>
     FoodEventComplete(
-      json['userId'] as String?,
-      json['eventDate'] as int?,
-      (json['foodInfo'] as List<dynamic>?)
+      userId: json['userId'] as String?,
+      eventDate: json['eventDate'] as int?,
+      foodInfo: (json['foodInfo'] as List<dynamic>?)
           ?.map((e) => FoodInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
+      eventKcals: json['eventKcals'] as int?,
     );
 
 Map<String, dynamic> _$FoodEventCompleteToJson(FoodEventComplete instance) =>
@@ -20,15 +21,14 @@ Map<String, dynamic> _$FoodEventCompleteToJson(FoodEventComplete instance) =>
       'userId': instance.userId,
       'eventDate': instance.eventDate,
       'foodInfo': instance.foodInfo?.map((e) => e.toJson()).toList(),
+      'eventKcals': instance.eventKcals,
     };
 
 FoodInfo _$FoodInfoFromJson(Map<String, dynamic> json) => FoodInfo(
-      json['exchangePortion'] as int?,
       json['group'] as String?,
       json['id'] as int?,
       json['name_en'] as String?,
       json['name_es'] as String?,
-      json['portionSenc'] as String?,
       json['recommendable'] as int?,
       json['eventInfo'] == null
           ? null
@@ -36,7 +36,9 @@ FoodInfo _$FoodInfoFromJson(Map<String, dynamic> json) => FoodInfo(
       json['params'] == null
           ? null
           : Params.fromJson(json['params'] as Map<String, dynamic>),
-    );
+    )
+      ..exchangePortion = json['exchangePortion'] as int?
+      ..portionSenc = json['portionSenc'] as String?;
 
 Map<String, dynamic> _$FoodInfoToJson(FoodInfo instance) => <String, dynamic>{
       'exchangePortion': instance.exchangePortion,

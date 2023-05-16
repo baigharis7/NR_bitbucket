@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class DatePickerHelper {
 
   static void presentDatePicker(
-      {required BuildContext context, StateSetter? state, required Function saveDate}) {
+      {required BuildContext context, required Function saveDate,}) {
     DateTime currentMoment = DateTime.now();
     showDatePicker(
       context: context,
@@ -14,11 +14,7 @@ class DatePickerHelper {
       if (pickedDate == null) {
         return;
       }
-      if (state != null) {
-        state(() => saveDate.call(pickedDate));
-      } else {
-        saveDate.call(pickedDate);
-      }
+      saveDate.call(pickedDate);
     });
   }
 

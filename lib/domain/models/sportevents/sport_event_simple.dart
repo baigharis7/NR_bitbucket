@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/translatable.dart';
 
 part 'sport_event_simple.g.dart';
 
@@ -18,15 +19,26 @@ class SportEventSimple {
 }
 
 @JsonSerializable(explicitToJson: true)
-class SportInfo {
+class SportInfo extends Translatable {
   int? id;
+  String? name_en;
+  String? name_es;
   int? timeStart;
   int? intensity;
   int? minutes;
 
-  SportInfo({this.id, this.timeStart, this.intensity, this.minutes});
+  SportInfo({
+    this.id,
+    this.name_en,
+    this.name_es,
+    this.timeStart,
+    this.intensity,
+    this.minutes,
+  });
   SportInfo.empty() {
     id = null;
+    name_en = null;
+    name_es = null;
     timeStart = null;
     intensity = null;
     minutes = null;

@@ -15,12 +15,12 @@ class NutrientsInfoResponse {
 
 @JsonSerializable(explicitToJson: true)
 class NutrientInfoResponse {
-  String name;
+  String officialName;
   String unit; // TODO: Pensar si poner una Sealed Class. Sería un Int entonces.
-  String es;
-  String en;
+  String name_es;
+  String name_en;
 
-  NutrientInfoResponse({required this.name, required this.unit, required this.es, required this.en});
+  NutrientInfoResponse({required this.officialName, required this.unit, required this.name_es, required this.name_en});
 
   factory NutrientInfoResponse.fromJson(Map<String, dynamic> json) => _$NutrientInfoResponseFromJson(json);
   Map<String, dynamic> toJson() => _$NutrientInfoResponseToJson(this);

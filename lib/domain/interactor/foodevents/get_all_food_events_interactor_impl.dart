@@ -8,6 +8,6 @@ class GetAllFoodEventsInteractorImpl extends GetAllFoodEventsInteractor {
   GetAllFoodEventsInteractorImpl({required this.foodEventsRepository});
 
   @override
-  Future<List<FoodEventComplete>> execute() => foodEventsRepository.getAllFoodEvents();
+  Future<List<FoodEventComplete>>? execute() async => await foodEventsRepository.getAllFoodEvents();
 
 }

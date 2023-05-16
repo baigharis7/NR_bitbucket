@@ -1,21 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_picker_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
-import 'package:nutrenaissance_flutter/presentation/sportevent/provider/add_sport_event_provider.dart';
-import 'package:provider/provider.dart';
-
 
 class AutocompleteSportEvent extends StatefulWidget {
-  const AutocompleteSportEvent({Key? key}) : super(key: key);
+  final SportsInfoMaster sportsInfo;
+  final Function onSetSportName;
+  final Function onSetMinutes;
+  final Function onSetIntensity;
+  final Function onSetTimeStart;
+  final Function? onSetDateStart;
+  final String? sportName;
+  final int? duration;
+  final TimeOfDay? timeStart;
+  final int? sportId;
+  final DateTime? dateStart;
+  final int? intensity;
+  final Function resetSportInfo;
+  final String? favoriteName;
+
+  const AutocompleteSportEvent({
+    Key? key,
+    required this.sportsInfo,
+    required this.onSetSportName,
+    required this.onSetMinutes,
+    required this.onSetIntensity,
+    required this.onSetTimeStart,
+    this.onSetDateStart,
+    required this.sportName,
+    this.duration,
+    this.timeStart,
+    this.sportId,
+    this.dateStart,
+    this.intensity,
+    required this.resetSportInfo,
+    this.favoriteName,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _AutocompleteSportEventState();
 }
 
 class _AutocompleteSportEventState extends State<AutocompleteSportEvent> {
-  final _minutesController = TextEditingController();
+  String? _sportName;
+  int? _sportIntensities;
+  int? _duration;
+  int? _intensity;
+  TimeOfDay? _timeOfDay;
+  final _durationTextController = TextEditingController();
 
   List<String> getIntensityList(int itemsNumber, BuildContext context) {
     final List<String> intensities = [];
@@ -32,139 +67,245 @@ class _AutocompleteSportEventState extends State<AutocompleteSportEvent> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final provider = Provider.of<AddSportEventProvider>(context);
-    String currentLanguage = Localizations.localeOf(context).languageCode;
+  void dispose() {
+    _durationTextController.dispose();
+    super.dispose();
+  }
 
-    return Container(
-      margin: const EdgeInsets.fromLTRB(Dimens.marginNormal, Dimens.zero, Dimens.marginNormal, Dimens.marginLarge),
-      child: Column(
-        children: [
-          Container(
-            alignment: Alignment.centerLeft,
-            margin: const EdgeInsets.fromLTRB(Dimens.marginNormal,
-                Dimens.zero, Dimens.marginNormal, Dimens.marginLarge),
-            child: Autocomplete<String>(
-              fieldViewBuilder: (
-                  BuildContext context,
-                  TextEditingController textEditingController,
-                  FocusNode focusNode,
-                  VoidCallback onFieldSubmitted
+  @override
+  Widget build(BuildContext context) {
+    final currentLanguage = Localizations.localeOf(context).languageCode;
+    final eventsHelper = EventsHelper();
+    if (widget.sportName != null && widget.sportName != '') {
+      _sportIntensities = eventsHelper.getChosenSportIntensities(widget.sportName, widget.sportsInfo, currentLanguage);
+      _sportName = widget.sportName;
+    }
+    if (widget.duration != null && _durationTextController.text == '') {
+      _duration = widget.duration;
+      _durationTextController.text = _duration.toString();
+    }
+    if (widget.timeStart != null) _timeOfDay = widget.timeStart;
+    if (widget.intensity != null) _intensity = widget.intensity;
+
+    return SizedBox(
+      child: Container(
+          margin: const EdgeInsets.fromLTRB(
+            Dimens.marginNormal,
+            Dimens.zero,
+            Dimens.marginNormal,
+            Dimens.marginLarge,
+          ),
+          child: Column(
+            children: [
+              Container(
+                alignment: Alignment.centerLeft,
+                margin: const EdgeInsets.fromLTRB(
+                  Dimens.marginNormal,
+                  Dimens.zero,
+                  Dimens.marginNormal,
+                  Dimens.marginLarge,
+                ),
+                child: Autocomplete<String>(
+                  fieldViewBuilder: (
+                    BuildContext context,
+                    TextEditingController textEditingController,
+                    FocusNode focusNode,
+                    VoidCallback onFieldSubmitted,
                   ) {
-                return TextField(
-                  decoration: InputDecoration(labelText: AppLocalizations.of(context)!.write_here_hint),
-                  controller: textEditingController,
-                  focusNode: focusNode,
-                );
-              },
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                if (textEditingValue.text == '') return const Iterable<String>.empty();
-                return provider.getSportNames(currentLanguage).where((String option) {
-                  return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
-                });
-              },
-              onSelected: (option) {
-                provider.setSportName(option, currentLanguage);
-              },
-            ),
-          ),
-          Row(
-            children: [
-              Text(AppLocalizations.of(context)!.chosen_sport),
-              Container(
-                margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                child: Text(
-                  provider.getChosenSportName != null
-                      ? provider.getSportName()
-                      : '',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold
-                  ),
-                ),
-              )
-            ],
-          ),
-          Row(
-            children: [
-              Text(AppLocalizations.of(context)!.sport_time_start),
-              Container(
-                margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: Colors.blueGrey),
-                ),
-                child: Column(
-                  children: [
-                    TextButton(
-                        onPressed: () {
-                          DatePickerHelper.presentDatePicker(context: context, saveDate: (dateTime) => provider.setDateStart(dateTime));
-                        },
-                        child: provider.getDateStart == null
-                            ? Text(AppLocalizations.of(context)!.sport_date_start)
-                            : Text(DateFormat('dd/MM/yyyy').format(provider.getDateStart!))
-                    ),
-                    TextButton(
-                        onPressed: () {
-                          DatePickerHelper.presentTimePicker(context: context, saveDate: (timeOfDay) => provider.setTimeStart(timeOfDay));
-                        },
-                        child: provider.getTimeStart == null
-                            ? Text(AppLocalizations.of(context)!.sport_time_start)
-                            : Text('${provider.getTimeStart!.hour}:${provider.getTimeStart!.minute}')
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-          provider.getChosenSportName != null && provider.getSportIntensities != null && provider.getSportIntensities! > 1
-              ? Row(
-                  children: [
-                    Text(AppLocalizations.of(context)!.intensity),
-                    ...getIntensityList(provider.getSportIntensities!, context).map((intensityName) {
-                      return Container(
-                        margin: const EdgeInsets.only(left: Dimens.marginNormal, right: Dimens.marginNormal),
-                        child: InkWell(
-                          child: Text(
-                            intensityName,
-                            style: const TextStyle(
-                              color: Colors.purple,
-                              decoration: TextDecoration.underline
-                            ),
-                          ),
-                          onTap: () {
-                            final intensityIndex = getIntensityList(provider.getSportIntensities!, context).indexOf(intensityName);
-                            provider.setIntensity(intensityIndex, currentLanguage);
+                    return TextField(
+                      decoration: InputDecoration(
+                        fillColor: Colors.black,
+                        labelText: AppLocalizations.of(context)!.enter,
+                        suffixIcon: IconButton(
+                          icon: textEditingController.text != ''
+                              ? const Icon(Icons.highlight_remove, color: Colors.black,)
+                              : Container(),
+                          onPressed: () {
+                            widget.resetSportInfo.call();
+                            setState(() {
+                              textEditingController.text = '';
+                            });
                           },
                         ),
-                      );
-                    })
-                  ]
-                )
-              : Container(),
-          Row(
-            children: [
-              Text('${AppLocalizations.of(context)!.duration}: '),
-              TextButton(
-                  onPressed: () {
-                    DatePickerHelper.presentTimePicker(
-                        context: context,
-                        saveDate: (TimeOfDay timeOfDay) {
-                          provider.setMinutes(timeOfDay.hour*60 + timeOfDay.minute);
-                        },
+                      ),
+                      controller: textEditingController,
+                      focusNode: focusNode,
+                      onChanged: (value) {
+                        setState(() {
+                          textEditingController;
+                        });
+                      },
                     );
                   },
-                  child: Text(
-                      provider.getMinutes != null
-                          ? provider.getMinutes.toString()
-                          : 'Presiona aquí loko'
-                  ),
+                  optionsBuilder: (TextEditingValue textEditingValue) {
+                    if (textEditingValue.text == '') {
+                      return const Iterable<String>.empty();
+                    }
+                    return widget.sportsInfo.sportsInfoMaster
+                        .map((sport) => sport.translate(context))
+                        .toList()
+                        .where((String option) {
+                      return option
+                          .toLowerCase()
+                          .contains(textEditingValue.text.toLowerCase());
+                    });
+                  },
+                  onSelected: (sportName) {
+                    setState(() {
+                      _sportName = sportName;
+                    });
+                    _sportIntensities = eventsHelper.getChosenSportIntensities(sportName, widget.sportsInfo, currentLanguage);
+                    final sportId = eventsHelper.getSportIdByName(sportName, widget.sportsInfo, currentLanguage);
+                    widget.onSetSportName.call(sportName, sportId);
+                    widget.onSetDateStart?.call();
+                  },
+                ),
               ),
-              Text(AppLocalizations.of(context)!.minutes.toLowerCase())
+              if (_sportName != null) Card(
+                color: Colors.green[200],
+                child: Container(
+                  margin: const EdgeInsets.only(
+                    left: Dimens.marginSmall,
+                    top: Dimens.marginSmall,
+                    right: Dimens.marginSmall,
+                    bottom: Dimens.marginNormal,
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(
+                                left: Dimens.marginNormal,
+                            ),
+                            child: Text(
+                              _sportName.orEmpty(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: Dimens.marginNormal,
+                            ),
+                            child:
+                                Text(AppLocalizations.of(context)!.duration),
+                          ),
+                          Expanded(
+                            child: TextField(
+                              keyboardType: TextInputType.number,
+                              controller: _durationTextController,
+                              onChanged: (minutes) {
+                                setState(() {
+                                  _duration = int.parse(minutes);
+                                });
+                                widget.onSetMinutes.call(_duration);
+                              },
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(
+                                right: Dimens.marginNormal,
+                            ),
+                            child: Text(
+                              AppLocalizations.of(context)!.minutes.toLowerCase(),
+                            ),
+                          )
+                        ],
+                      ),
+                      _sportIntensities != null && _sportIntensities! > 1
+                          ? Row(
+                              children: [
+                                Container(
+                                  alignment: Alignment.centerLeft,
+                                  margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
+                                  child: Text(AppLocalizations.of(context)!.intensity),
+                                ),
+                                Expanded(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: [
+                                      ...getIntensityList(_sportIntensities!, context,).map((intensityName) {
+                                        return Container(
+                                          margin: const EdgeInsets.only(
+                                            left: Dimens.marginNormal,
+                                            right: Dimens.marginNormal,
+                                            top: Dimens.marginNormal,
+                                          ),
+                                          padding: const EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.rectangle,
+                                            borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                            border: Border.all(
+                                              color: _intensity == getIntensityList(_sportIntensities!, context,).indexOf(intensityName) ? Colors.white : Colors.transparent ,
+                                              width: 3,
+                                            ),
+                                          ),
+                                          child: InkWell(
+                                            child: Text(
+                                              intensityName,
+                                              style: const TextStyle(
+                                                color: Colors.blue,
+                                                decoration: TextDecoration.underline,
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              final intensityIndex = getIntensityList(_sportIntensities!, context,).indexOf(intensityName);
+                                              setState(() {
+                                                _intensity = intensityIndex;
+                                              });
+                                              widget.onSetIntensity.call(intensityIndex);
+                                            },
+                                          ),
+                                        );
+                                      })
+                                    ],
+                                  ),
+                                )
+                              ],
+                            )
+                          : Container(),
+                      Row(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
+                            child: Text('${AppLocalizations.of(context)!.sport_time_start} '),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
+                            child: Text(_timeOfDay != null ? _timeOfDay!.format(context) : ''),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
+                            child: IconButton(
+                              icon: const Icon(Icons.calendar_month),
+                              onPressed: () {
+                                DatePickerHelper.presentTimePicker(
+                                  context: context,
+                                  saveDate: (TimeOfDay timeOfDay) {
+                                    setState(() {
+                                      _timeOfDay = timeOfDay;
+                                    });
+                                    widget.onSetTimeStart.call(timeOfDay);
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
-          )
-        ],
+          ),
       ),
     );
   }
-
 }

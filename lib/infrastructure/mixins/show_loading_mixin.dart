@@ -15,9 +15,9 @@ mixin ShowLoadingDialog {
       // color: const Color.fromARGB(50, 232, 222, 222),
       child: const Center(
           child: SpinKitSpinningLines(
-            color: Colors.amber,
+            color: Colors.teal,
             duration: Duration(milliseconds: 1000),
-          )
+          ),
       ),
     );
   }
