@@ -205,6 +205,8 @@ import 'package:nutrenaissance_flutter/presentation/waterevent/bloc/water_event_
 import 'package:shared_preferences/shared_preferences.dart';
 import 'presentation/profile/common/aversions_screen.dart';
 import 'presentation/profile/common/health_questions_screen.dart';
+import 'presentation/recommendations/common/view/recommendations_tabs_holder.dart';
+import 'presentation/waterevent/view/add_water_event_screen.dart';
 
 void main() async {
   const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
