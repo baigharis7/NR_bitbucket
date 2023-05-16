@@ -1,0 +1,73 @@
+import 'package:nutrenaissance_flutter/domain/models/dashboard/energy_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/dashboard/nutrients_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+
+class DashboardState {
+  bool isLoading;
+  ErrorTypes? onError;
+  List<FoodEventComplete>? foodEvents;
+  List<String>? userMicronutrients;
+  NutrientsInfoMaster? nutrientsInfoMaster;
+  List<UserRda>? userRdas;
+  String? advice;
+  List<NutrientsModel>? micronutrients;
+  List<NutrientsModel>? macronutrients;
+  int? userKcal;
+  EnergyModel? energyModel;
+  List<WaterEventMaster>? waterEvents;
+  bool? showCard;
+
+  DashboardState({
+    required this.isLoading,
+    this.onError,
+    this.foodEvents,
+    this.userMicronutrients,
+    this.nutrientsInfoMaster,
+    this.userRdas,
+    this.advice,
+    this.micronutrients,
+    this.macronutrients,
+    this.userKcal,
+    this.energyModel,
+    this.waterEvents,
+    this.showCard,
+  });
+
+  DashboardState copyWith({
+    required bool isLoading,
+    ErrorTypes? onError,
+    List<FoodEventComplete>? foodEvents,
+    bool? infoLoaded,
+    List<String>? userMicronutrients,
+    NutrientsInfoMaster? nutrientsInfoMaster,
+    List<UserRda>? userRdas,
+    String? advice,
+    List<NutrientsModel>? micronutrients,
+    List<NutrientsModel>? macronutrients,
+    int? userKcal,
+    EnergyModel? energyModel,
+    List<WaterEventMaster>? waterEvents,
+    bool? showCard,
+  }) {
+    return DashboardState(
+      isLoading: isLoading,
+      onError: onError ?? this.onError,
+      foodEvents: foodEvents ?? this.foodEvents,
+      userMicronutrients: userMicronutrients ?? this.userMicronutrients,
+      nutrientsInfoMaster: nutrientsInfoMaster ?? this.nutrientsInfoMaster,
+      userRdas: userRdas ?? this.userRdas,
+      advice: advice ?? this.advice,
+      micronutrients: micronutrients ?? this.micronutrients,
+      macronutrients: macronutrients ?? this.macronutrients,
+      userKcal: userKcal ?? this.userKcal,
+      energyModel: energyModel ?? this.energyModel,
+      waterEvents: waterEvents ?? this.waterEvents,
+      showCard: showCard ?? this.showCard,
+    );
+  }
+
+}

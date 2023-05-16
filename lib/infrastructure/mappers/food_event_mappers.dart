@@ -1,0 +1,350 @@
+import 'package:nutrenaissance_flutter/data/api/foodevents/model/upload_food_event.dart';
+import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart' as entity;
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart' as domain;
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
+
+entity.FoodEventEntity mapToFoodEventEntity(UploadFoodEvent uploadFoodEvent) {
+  final List<entity.FoodInfo> foodInfoEntity = [];
+  
+  for (var foodInfoFromComplete in uploadFoodEvent.foodInfo!) {
+    entity.Params params = entity.Params(
+        foodInfoFromComplete.params!.alanine,
+        foodInfoFromComplete.params!.arginine,
+        foodInfoFromComplete.params!.arsenic,
+        foodInfoFromComplete.params!.ash,
+        foodInfoFromComplete.params!.asparticAcid,
+        foodInfoFromComplete.params!.benzoicAcid,
+        foodInfoFromComplete.params!.betacaroteneVitA,
+        foodInfoFromComplete.params!.c16_0,
+        foodInfoFromComplete.params!.c18_0,
+        foodInfoFromComplete.params!.c18_1N_9,
+        foodInfoFromComplete.params!.c18_2N_6,
+        foodInfoFromComplete.params!.c18_3N_3,
+        foodInfoFromComplete.params!.cadmium,
+        foodInfoFromComplete.params!.calcium,
+        foodInfoFromComplete.params!.carbsAvailable,
+        foodInfoFromComplete.params!.carbsByDiff,
+        foodInfoFromComplete.params!.carbsDeclared,
+        foodInfoFromComplete.params!.celulose,
+        foodInfoFromComplete.params!.chromium,
+        foodInfoFromComplete.params!.copper,
+        foodInfoFromComplete.params!.cystine,
+        foodInfoFromComplete.params!.dryMatter,
+        foodInfoFromComplete.params!.energyKcal,
+        foodInfoFromComplete.params!.energyKJ,
+        foodInfoFromComplete.params!.fatTotal,
+        foodInfoFromComplete.params!.fattyAcidConversionFactor,
+        foodInfoFromComplete.params!.fattyAcidsTotal,
+        foodInfoFromComplete.params!.fiber,
+        foodInfoFromComplete.params!.fructose,
+        foodInfoFromComplete.params!.glucose,
+        foodInfoFromComplete.params!.glutamicAcid,
+        foodInfoFromComplete.params!.glycine,
+        foodInfoFromComplete.params!.hexose,
+        foodInfoFromComplete.params!.histamine,
+        foodInfoFromComplete.params!.histidine,
+        foodInfoFromComplete.params!.hydroxyproline,
+        foodInfoFromComplete.params!.iodine,
+        foodInfoFromComplete.params!.iron,
+        foodInfoFromComplete.params!.isoleucine,
+        foodInfoFromComplete.params!.lead,
+        foodInfoFromComplete.params!.leucine,
+        foodInfoFromComplete.params!.lignin,
+        foodInfoFromComplete.params!.lysine,
+        foodInfoFromComplete.params!.magnesium,
+        foodInfoFromComplete.params!.manganese,
+        foodInfoFromComplete.params!.mercury,
+        foodInfoFromComplete.params!.methionine,
+        foodInfoFromComplete.params!.monosaccharidesTotal,
+        foodInfoFromComplete.params!.nickel,
+        foodInfoFromComplete.params!.nitro2protein,
+        foodInfoFromComplete.params!.nitrogen,
+        foodInfoFromComplete.params!.pentose,
+        foodInfoFromComplete.params!.phenylalanine,
+        foodInfoFromComplete.params!.phosphorus,
+        foodInfoFromComplete.params!.potassium,
+        foodInfoFromComplete.params!.proline,
+        foodInfoFromComplete.params!.proteinLabel,
+        foodInfoFromComplete.params!.proteinSci,
+        foodInfoFromComplete.params!.selenium,
+        foodInfoFromComplete.params!.serin,
+        foodInfoFromComplete.params!.sodium,
+        foodInfoFromComplete.params!.starch,
+        foodInfoFromComplete.params!.sugarsTotal,
+        foodInfoFromComplete.params!.sumMonoUnsat,
+        foodInfoFromComplete.params!.sumN3FattyAcids,
+        foodInfoFromComplete.params!.sumN6FattyAcids,
+        foodInfoFromComplete.params!.sumPolyUnsat,
+        foodInfoFromComplete.params!.sumSat,
+        foodInfoFromComplete.params!.threonine,
+        foodInfoFromComplete.params!.tryptophan,
+        foodInfoFromComplete.params!.tyrosine,
+        foodInfoFromComplete.params!.uronicAcid,
+        foodInfoFromComplete.params!.valin,
+        foodInfoFromComplete.params!.vitA,
+        foodInfoFromComplete.params!.vitB1,
+        foodInfoFromComplete.params!.vitB2,
+        foodInfoFromComplete.params!.vitB3,
+        foodInfoFromComplete.params!.vitB3Eq,
+        foodInfoFromComplete.params!.vitB5,
+        foodInfoFromComplete.params!.vitB6,
+        foodInfoFromComplete.params!.vitB7,
+        foodInfoFromComplete.params!.vitB9,
+        foodInfoFromComplete.params!.vitB9Free,
+        foodInfoFromComplete.params!.vitB12,
+        foodInfoFromComplete.params!.vitC,
+        foodInfoFromComplete.params!.vitCL,
+        foodInfoFromComplete.params!.vitCLDehydro,
+        foodInfoFromComplete.params!.vitD,
+        foodInfoFromComplete.params!.vitD2,
+        foodInfoFromComplete.params!.vitD3,
+        foodInfoFromComplete.params!.vitD_25hydroxi,
+        foodInfoFromComplete.params!.vitD3_25hydroxi,
+        foodInfoFromComplete.params!.vitE,
+        foodInfoFromComplete.params!.vitE_alphaTP,
+        foodInfoFromComplete.params!.water,
+        foodInfoFromComplete.params!.zinc,
+        foodInfoFromComplete.params!.other,
+        foodInfoFromComplete.params!.saturated,
+        foodInfoFromComplete.params!.monounsaturated,
+        foodInfoFromComplete.params!.polyunsaturated,
+        foodInfoFromComplete.params!.totalTrans,
+        foodInfoFromComplete.params!.total,
+        foodInfoFromComplete.params!.n3,
+        foodInfoFromComplete.params!.n6,
+        foodInfoFromComplete.params!.cholesterol,
+        foodInfoFromComplete.params!.chloride,
+        foodInfoFromComplete.params!.molybdenum,
+        foodInfoFromComplete.params!.cobalt,
+        foodInfoFromComplete.params!.fluoron,
+        foodInfoFromComplete.params!.silicon,
+        foodInfoFromComplete.params!.rubidium,
+        foodInfoFromComplete.params!.aluminum,
+        foodInfoFromComplete.params!.boron,
+        foodInfoFromComplete.params!.bromine,
+        foodInfoFromComplete.params!.arsenInorganic,
+    );
+    entity.EventInfo eventInfo = entity.EventInfo(
+      foodInfoFromComplete.eventInfo!.cookingMethod,
+      foodInfoFromComplete.eventInfo!.qty,
+      foodInfoFromComplete.eventInfo!.unit,
+      foodInfoFromComplete.eventInfo!.waste,
+
+    );
+    final foodInfo = entity.FoodInfo(
+      // foodInfoFromComplete.exchangePortion,
+      foodInfoFromComplete.group,
+      foodInfoFromComplete.id,
+      foodInfoFromComplete.name_en,
+      foodInfoFromComplete.name_es,
+      // foodInfoFromComplete.portionSenc,
+      foodInfoFromComplete.recommendable,
+      eventInfo,
+      params,
+    );
+
+    foodInfoEntity.add(foodInfo);
+  }
+  return entity.FoodEventEntity(
+    uploadFoodEvent.userId,
+    uploadFoodEvent.eventDate,
+    foodInfoEntity,
+    uploadFoodEvent.eventKcals,
+  );
+
+}
+
+domain.FoodEventComplete mapToFoodEventComplete(entity.FoodEventEntity foodEventEntity) {
+  final List<domain.FoodInfo> foodInfoEntity = [];
+
+  for (var foodInfoFromEntity in foodEventEntity.foodInfo!) {
+    final params = domain.Params(
+        foodInfoFromEntity.params!.alanine,
+        foodInfoFromEntity.params!.arginine,
+        foodInfoFromEntity.params!.arsenic,
+        foodInfoFromEntity.params!.ash,
+        foodInfoFromEntity.params!.asparticAcid,
+        foodInfoFromEntity.params!.benzoicAcid,
+        foodInfoFromEntity.params!.betacaroteneVitA,
+        foodInfoFromEntity.params!.c16_0,
+        foodInfoFromEntity.params!.c18_0,
+        foodInfoFromEntity.params!.c18_1N_9,
+        foodInfoFromEntity.params!.c18_2N_6,
+        foodInfoFromEntity.params!.c18_3N_3,
+        foodInfoFromEntity.params!.cadmium,
+        foodInfoFromEntity.params!.calcium,
+        foodInfoFromEntity.params!.carbsAvailable,
+        foodInfoFromEntity.params!.carbsByDiff,
+        foodInfoFromEntity.params!.carbsDeclared,
+        foodInfoFromEntity.params!.celulose,
+        foodInfoFromEntity.params!.chromium,
+        foodInfoFromEntity.params!.copper,
+        foodInfoFromEntity.params!.cystine,
+        foodInfoFromEntity.params!.dryMatter,
+        foodInfoFromEntity.params!.energyKcal,
+        foodInfoFromEntity.params!.energyKJ,
+        foodInfoFromEntity.params!.fatTotal,
+        foodInfoFromEntity.params!.fattyAcidConversionFactor,
+        foodInfoFromEntity.params!.fattyAcidsTotal,
+        foodInfoFromEntity.params!.fiber,
+        foodInfoFromEntity.params!.fructose,
+        foodInfoFromEntity.params!.glucose,
+        foodInfoFromEntity.params!.glutamicAcid,
+        foodInfoFromEntity.params!.glycine,
+        foodInfoFromEntity.params!.hexose,
+        foodInfoFromEntity.params!.histamine,
+        foodInfoFromEntity.params!.histidine,
+        foodInfoFromEntity.params!.hydroxyproline,
+        foodInfoFromEntity.params!.iodine,
+        foodInfoFromEntity.params!.iron,
+        foodInfoFromEntity.params!.isoleucine,
+        foodInfoFromEntity.params!.lead,
+        foodInfoFromEntity.params!.leucine,
+        foodInfoFromEntity.params!.lignin,
+        foodInfoFromEntity.params!.lysine,
+        foodInfoFromEntity.params!.magnesium,
+        foodInfoFromEntity.params!.manganese,
+        foodInfoFromEntity.params!.mercury,
+        foodInfoFromEntity.params!.methionine,
+        foodInfoFromEntity.params!.monosaccharidesTotal,
+        foodInfoFromEntity.params!.nickel,
+        foodInfoFromEntity.params!.nitro2protein,
+        foodInfoFromEntity.params!.nitrogen,
+        foodInfoFromEntity.params!.pentose,
+        foodInfoFromEntity.params!.phenylalanine,
+        foodInfoFromEntity.params!.phosphorus,
+        foodInfoFromEntity.params!.potassium,
+        foodInfoFromEntity.params!.proline,
+        foodInfoFromEntity.params!.proteinLabel,
+        foodInfoFromEntity.params!.proteinSci,
+        foodInfoFromEntity.params!.selenium,
+        foodInfoFromEntity.params!.serin,
+        foodInfoFromEntity.params!.sodium,
+        foodInfoFromEntity.params!.starch,
+        foodInfoFromEntity.params!.sugarsTotal,
+        foodInfoFromEntity.params!.sumMonoUnsat,
+        foodInfoFromEntity.params!.sumN3FattyAcids,
+        foodInfoFromEntity.params!.sumN6FattyAcids,
+        foodInfoFromEntity.params!.sumPolyUnsat,
+        foodInfoFromEntity.params!.sumSat,
+        foodInfoFromEntity.params!.threonine,
+        foodInfoFromEntity.params!.tryptophan,
+        foodInfoFromEntity.params!.tyrosine,
+        foodInfoFromEntity.params!.uronicAcid,
+        foodInfoFromEntity.params!.valin,
+        foodInfoFromEntity.params!.vitA,
+        foodInfoFromEntity.params!.vitB1,
+        foodInfoFromEntity.params!.vitB2,
+        foodInfoFromEntity.params!.vitB3,
+        foodInfoFromEntity.params!.vitB3Eq,
+        foodInfoFromEntity.params!.vitB5,
+        foodInfoFromEntity.params!.vitB6,
+        foodInfoFromEntity.params!.vitB7,
+        foodInfoFromEntity.params!.vitB9,
+        foodInfoFromEntity.params!.vitB9Free,
+        foodInfoFromEntity.params!.vitB12,
+        foodInfoFromEntity.params!.vitC,
+        foodInfoFromEntity.params!.vitCL,
+        foodInfoFromEntity.params!.vitCLDehydro,
+        foodInfoFromEntity.params!.vitD,
+        foodInfoFromEntity.params!.vitD2,
+        foodInfoFromEntity.params!.vitD3,
+        foodInfoFromEntity.params!.vitD_25hydroxi,
+        foodInfoFromEntity.params!.vitD3_25hydroxi,
+        foodInfoFromEntity.params!.vitE,
+        foodInfoFromEntity.params!.vitE_alphaTP,
+        foodInfoFromEntity.params!.water,
+        foodInfoFromEntity.params!.zinc,
+        foodInfoFromEntity.params!.other,
+        foodInfoFromEntity.params!.saturated,
+        foodInfoFromEntity.params!.monounsaturated,
+        foodInfoFromEntity.params!.polyunsaturated,
+        foodInfoFromEntity.params!.totalTrans,
+        foodInfoFromEntity.params!.total,
+        foodInfoFromEntity.params!.n3,
+        foodInfoFromEntity.params!.n6,
+        foodInfoFromEntity.params!.cholesterol,
+        foodInfoFromEntity.params!.chloride,
+        foodInfoFromEntity.params!.molybdenum,
+        foodInfoFromEntity.params!.cobalt,
+        foodInfoFromEntity.params!.fluoron,
+        foodInfoFromEntity.params!.silicon,
+        foodInfoFromEntity.params!.rubidium,
+        foodInfoFromEntity.params!.aluminum,
+        foodInfoFromEntity.params!.boron,
+        foodInfoFromEntity.params!.bromine,
+        foodInfoFromEntity.params!.arsenInorganic,
+    );
+    final eventInfo = domain.EventInfo(
+      foodInfoFromEntity.eventInfo!.cookingMethod,
+      foodInfoFromEntity.eventInfo!.qty,
+      foodInfoFromEntity.eventInfo!.unit,
+      foodInfoFromEntity.eventInfo!.waste,
+
+    );
+    final foodInfo = domain.FoodInfo(
+        // foodInfoFromEntity.exchangePortion,
+        foodInfoFromEntity.group,
+        foodInfoFromEntity.id,
+        foodInfoFromEntity.name_en,
+        foodInfoFromEntity.name_es,
+        // foodInfoFromEntity.portionSenc,
+        foodInfoFromEntity.recommendable,
+        eventInfo,
+        params,
+    );
+
+    foodInfoEntity.add(foodInfo);
+  }
+  return domain.FoodEventComplete(
+    userId: foodEventEntity.userId,
+    eventDate: foodEventEntity.eventDate,
+    foodInfo: foodInfoEntity,
+    eventKcals: foodEventEntity.eventKcals,
+  );
+}
+
+Future<List<domain.FoodEventComplete>> mapToFoodEventCompleteList(List<dynamic> entityList) async => entityList.map((foodEventEntity) => mapToFoodEventComplete(foodEventEntity as entity.FoodEventEntity)).toList();
+
+int getQuantityWithOtherUnits(int quantity, int unit, String equivalences) {
+  if (unit != -1 && equivalences != '') {
+    final equivalence = int.parse(equivalences.split('|').firstWhere((unitAndEquivalence) => int.parse(unitAndEquivalence.split(',')[0]) == unit).split(',')[1]);
+    return (equivalence * quantity);
+  } else {
+    return quantity;
+  }
+}
+
+List<FoodInEvent> mapToFoodInEventList(List<domain.FoodInfo> foodInfoList) {
+    return foodInfoList.map((foodInfo) => FoodInEvent(
+        id: foodInfo.id!,
+        qty: foodInfo.eventInfo!.qty!.toInt(),
+        unit: foodInfo.eventInfo!.unit!,
+        cookingMethod: foodInfo.eventInfo!.cookingMethod!,
+    ),).toList();
+}
+
+FoodEventSimple mapToFoodEventSimple(domain.FoodEventComplete foodEventComplete) {
+    return FoodEventSimple(
+        userId: foodEventComplete.userId!,
+        date: foodEventComplete.eventDate!,
+        ingredients: mapToFoodInEventList(foodEventComplete.foodInfo!),
+        // drinks: mapToFoodInEventList(foodEventComplete.foodInfo!.),
+    );
+}
+
+SportEventSimple mapToSportEventSimple(SportEventComplete sportEventComplete) {
+    return SportEventSimple(
+        userId: sportEventComplete.userId,
+        info: SportInfo(
+            id: sportEventComplete.info.id,
+            name_es: sportEventComplete.info.name_es,
+            name_en: sportEventComplete.info.name_en,
+            timeStart: sportEventComplete.eventDate,
+            intensity: sportEventComplete.info.intensity,
+            minutes: sportEventComplete.info.minutes,
+        ),
+    );
+}

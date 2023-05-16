@@ -1,0 +1,29 @@
+class Constants {
+  static const HEIGHT_MAX = 250;
+  static const HEIGHT_MIN = 50;
+  static const HEIGHT_INITIAL_VALUE = 170;
+  static const WEIGHT_MAX = 200;
+  static const WEIGHT_MIN = 30;
+  static const WEIGHT_INITIAL_VALUE = 70;
+  static const MIN_BODY_FAT = 0;
+  static const MAX_BODY_FAT = 100;
+  static const BODY_FAT_INITIAL_VALUE = 30;
+  static const MIN_WAIST_MEASUREMENT = 20;
+  static const MAX_WAIST_MEASUREMENT = 200;
+  static const WAIST_MEASUREMENT_INITIAL_VALUE = 80;
+  static const MIN_PERIOD_DURATION = 20;
+  static const MAX_PERIOD_DURATION = 40;
+  static const PERIOD_DURATION_INITIAL_VALUE = 28;
+  static const AUTHORIZATION_KEY = 'Authorization';
+  static const EXCLUSIONS_SIZE = 21;
+  static const ALLERGENS_SIZE = 14;
+  static const DISEASES_SIZE = 7;
+  static const DIET_TYPES_SIZE = 3;
+  static const INTOLERANCES_SIZE = 3;
+  static const SYMPTOMS_SIZE = 3;
+  static const UPLOAD_SUCCESS = 'uploadSuccess';
+  static const PROFILE_ENTITY = 'profile_entity';
+  static const FOOD_EVENT_ENTITY = 'food_event_entity';
+  static const USER_RDAS_ENTITY = 'user_rdas';
+  static const USERID_QUERY = 'userId';
+}
