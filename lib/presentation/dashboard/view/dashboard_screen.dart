@@ -34,7 +34,7 @@ class _DashboardScreen extends State<DashboardScreen>
   @override
   void initState() {
     final bloc = BlocProvider.of<DashboardBloc>(context);
-    bloc.add(InitializeState(context: context));
+    bloc.add(InitializeState());
     super.initState();
   }
 
@@ -75,7 +75,7 @@ class _DashboardScreen extends State<DashboardScreen>
                 backgroundColor: Colors.white,
                 actions: [
                   IconButton(
-                    onPressed: () => Navigator.pushNamed(context, ProfileScreen.routeName),
+                    onPressed: () => Navigator.pushNamed(context, ProfileScreen.routeName).then((value) => bloc.add(InitializeState())),
                     iconSize: 35.0,
                     icon: Image.asset(
                       'assets/icon/profile_icon.png',
@@ -215,7 +215,7 @@ class _DashboardScreen extends State<DashboardScreen>
                   ],
                 ),
               ),
-              bottomNavigationBar: CustomBottomAppBar(initStateCallback: () => bloc.add(InitializeState(context: context))),
+              bottomNavigationBar: CustomBottomAppBar(initStateCallback: () => bloc.add(InitializeState())),
               resizeToAvoidBottomInset: true,
               floatingActionButton: FloatingActionButton(
                 elevation: 2.0,
