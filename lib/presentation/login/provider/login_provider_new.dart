@@ -322,31 +322,37 @@ class LoginProviderNew extends BaseProvider {
         final userId = getUserIdInteractor!.execute();
         if (session.isSignedIn) {
           if (!isProfileChecked) {
-                try {
-                  final profileExists = await checkProfileExistenceInteractor?.execute(session.userSub.orEmpty());
-                  _setProfileChecked(true);
-                  if (!profileExists!) {
-                    String? email = getEmailFromToken(getIdTokenInteractor?.execute());
-                    if (email.isNotNull()) {
-                      _downloadProfile(email.orEmpty(), moveToNextScreen);
-                    } else {
-                      manageLoading(false);
-                      onError?.call(ErrorTypes.getEmailFromTokenError);
-                    }
-                  } else {
-                    // Aquí lo de borrar los datos.
-                    if (session.userSub != userId) {
-                      await eraseDatabaseInteractor!.execute();
-                      String? email = getEmailFromToken(getIdTokenInteractor?.execute());
-                      _downloadProfile(email, moveToNextScreen);
-                    } else {
-                      _manageMasterFiles(userId, moveToNextScreen);
-                    }
-                  }
-                } catch (profileExistenceError) {
+            try {
+              final profileExists = await checkProfileExistenceInteractor?.execute(session.userSub.orEmpty());
+              _setProfileChecked(true);
+              if (!profileExists!) {
+                String? email = getEmailFromToken(getIdTokenInteractor?.execute());
+                if (email.isNotNull()) {
+                  _downloadProfile(email.orEmpty(), moveToNextScreen);
+                } else {
                   manageLoading(false);
-                  onError?.call(ErrorTypes.profileExistenceError);
+                  onError?.call(ErrorTypes.getEmailFromTokenError);
                 }
+              } else {
+                // Aquí lo de borrar los datos.
+                if (session.userSub != userId) {
+                  await eraseDatabaseInteractor!.execute();
+                  String? email = getEmailFromToken(getIdTokenInteractor?.execute());
+                  if (email.isNotNull()) {
+                    _downloadProfile(email.orEmpty(), moveToNextScreen);
+                  } else {
+                    manageLoading(false);
+                    onError?.call(ErrorTypes.getEmailFromTokenError);
+                  }
+                } else {
+                  _manageMasterFiles(userId, moveToNextScreen);
+                }
+              }
+            } catch (profileExistenceError) {
+              manageLoading(false);
+              _setProfileChecked(false);
+              onError?.call(ErrorTypes.profileExistenceError);
+            }
           } else {
             if (!areMasterFilesChecked) {
               _manageMasterFiles(userId, moveToNextScreen);

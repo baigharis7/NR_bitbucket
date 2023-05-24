@@ -5,9 +5,7 @@ class DashboardActions {
 }
 
 class InitializeState extends DashboardActions {
-  final BuildContext context;
-
-  InitializeState({required this.context});
+  InitializeState();
 }
 
 class HideCardAction extends DashboardActions {
