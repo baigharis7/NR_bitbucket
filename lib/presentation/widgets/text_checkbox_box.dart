@@ -20,11 +20,11 @@ class TextCheckboxBox extends StatefulWidget {
 }
 
 class _TextCheckboxBoxState extends State<TextCheckboxBox> {
-  bool isChecked = false;
+  bool _isChecked = false;
 
   @override
   Widget build(BuildContext context) {
-    isChecked = widget.checkboxValue;
+    _isChecked = widget.checkboxValue;
 
     return Card(
       elevation: 4,
@@ -57,10 +57,10 @@ class _TextCheckboxBoxState extends State<TextCheckboxBox> {
                     fillColor: MaterialStateProperty.all(Colors.grey[400]),
                     checkColor: Colors.black,
                     side: const BorderSide(width: 1, color: Colors.black,),
-                    value: isChecked,
+                    value: _isChecked,
                     onChanged: (value) {
                       setState(() {
-                        isChecked = value!;
+                        _isChecked = value!;
                         widget.onChangedCheckbox.call();
                       });
                     },
