@@ -24,15 +24,22 @@ class EnergyBalanceWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  AppLocalizations.of(context)!.energy_balance_title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  flex: 4,
+                  child: Text(
+                    AppLocalizations.of(context)!.energy_balance_title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      overflow: TextOverflow.clip,
+                    ),
                   ),
                 ),
-                Container(
-                  alignment: Alignment.centerRight,
-                  child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                  ),
                 )
               ],
             ),
@@ -66,7 +73,13 @@ class EnergyBalanceWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(AppLocalizations.of(context)!.raw_kcal_title),
+                Expanded(
+                    flex: 4,
+                    child: Text(
+                      AppLocalizations.of(context)!.raw_kcal_title,
+                      overflow: TextOverflow.clip,
+                    ),
+                ),
                 Text('${energyModel?.rawKcalTaken ?? 0} kcal')
               ],
             ),
@@ -76,8 +89,16 @@ class EnergyBalanceWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(AppLocalizations.of(context)!.spent_kcal_title),
-                Text('${energyModel?.spentKcal ?? 0} kcal')
+                Expanded(
+                  flex: 4,
+                  child: Text(
+                    AppLocalizations.of(context)!.spent_kcal_title,
+                    overflow: TextOverflow.clip,
+                  ),
+                ),
+                Expanded(
+                  child: Text('${energyModel?.spentKcal ?? 0} kcal'),
+                )
               ],
             ),
           ),

@@ -449,27 +449,36 @@ class _LoginScreenState extends State<LoginScreen>
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Center(
-                                child: Text(
-                                  AppLocalizations.of(context)!.dont_have_account,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal, horizontal: Dimens.marginNormal),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  flex: 2,
+                                  child: Center(
+                                    child: Text(
+                                      AppLocalizations.of(context)!.dont_have_account,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              TextButton(
-                                style: TextButton.styleFrom(
-                                  textStyle: const TextStyle(),
-                                  shadowColor: Colors.amber,
+                                Expanded(
+                                  flex: 1,
+                                  child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      textStyle: const TextStyle(),
+                                      shadowColor: Colors.amber,
+                                    ),
+                                    onPressed: () => model.changeLoginMode(() {
+                                      _controller!.forward();
+                                    }),
+                                    child: Text(
+                                      AppLocalizations.of(context)!.register,
+                                    ),
+                                  ),
                                 ),
-                                onPressed: () => model.changeLoginMode(() {
-                                  _controller!.forward();
-                                }),
-                                child: Text(
-                                  AppLocalizations.of(context)!.register,
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                         // Padding(

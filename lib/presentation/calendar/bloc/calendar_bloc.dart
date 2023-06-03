@@ -51,7 +51,6 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
       state.dayEvents = getEventsForDay(event.selectedDay);
       emit(state.copyWith(isLoading: false));
     });
-
   }
 
   DateTime provideFirstDay() => dateTimeHelper.provideFirstDayForCalendar();

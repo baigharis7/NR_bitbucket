@@ -494,12 +494,12 @@ void main() async {
       child: MaterialApp(
         title: 'NutreNaissance',
         theme: ThemeData(
-            fontFamily: 'Montserrat',
-            colorScheme: ColorScheme.fromSwatch().copyWith(
-              primary: const Color.fromARGB(255, 107, 107, 107),
-              secondary: const Color.fromARGB(255, 0, 0, 0),
-              tertiary: const Color.fromARGB(255, 255, 255, 255),
-            ),
+          fontFamily: 'Montserrat',
+          colorScheme: ColorScheme.fromSwatch().copyWith(
+            primary: const Color.fromARGB(255, 107, 107, 107),
+            secondary: const Color.fromARGB(255, 0, 0, 0),
+            tertiary: const Color.fromARGB(255, 255, 255, 255),
+          ),
         ),
         initialRoute: '/',
         localizationsDelegates: const [
