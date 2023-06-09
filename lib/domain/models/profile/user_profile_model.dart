@@ -49,7 +49,7 @@ class UserProfileModel {
     commonName = null;
     birthDate = null;
     sex = null;
-    occupationActivityFactor = -1;
+    occupationActivityFactor = null;
     physicalCharacteristics = PhysicalCharacteristics();
     femaleCharacteristics = FemaleCharacteristics(menstruation: Menstruation());
     medicalSituation = MedicalSituation(commonDiseases: [], otherDiseases: []);

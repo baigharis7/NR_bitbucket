@@ -91,7 +91,7 @@ class _PhysicalActivityScreen extends State<PhysicalActivityScreen> {
                       return TextRadioButtonExpansible(
                         title: activityType.typeName.orEmpty(),
                         explanation: activityType.explanation.orEmpty(),
-                        isSelected: state.profile!.occupationActivityFactor! == activityType.physicalActivityFactor,
+                        isSelected: state.profile!.occupationActivityFactor == activityType.physicalActivityFactor,
                         onPressed: () => bloc.add(SetActivityTypeAction(activityType: activityType.physicalActivityFactor!)),
                       );
                     }),

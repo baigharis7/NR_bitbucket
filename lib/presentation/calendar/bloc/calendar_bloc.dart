@@ -23,6 +23,7 @@ import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_ev
 
 class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
   final EventsHelper _eventsHelper = EventsHelper();
+  final dateTimeHelper = DateTimeHelper();
   final GetAllEventsSortedByDateInteractor getAllEventsSortedByDateInteractor;
   
   CalendarBloc({
@@ -50,12 +51,11 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
       state.dayEvents = getEventsForDay(event.selectedDay);
       emit(state.copyWith(isLoading: false));
     });
-
   }
 
-  DateTime provideFirstDay() => DateTimeHelper().provideFirstDayForCalendar();
-  DateTime provideFocusedDay() => DateTimeHelper().provideFocusedDayForCalendar();
-  DateTime provideLastDay() => DateTimeHelper().provideLastDayForCalendar();
+  DateTime provideFirstDay() => dateTimeHelper.provideFirstDayForCalendar();
+  DateTime provideFocusedDay() => dateTimeHelper.provideFocusedDayForCalendar();
+  DateTime provideLastDay() => dateTimeHelper.provideLastDayForCalendar();
 
   List<dynamic> getEventsForDay(DateTime dateTime) {
     return _eventsHelper.getEventsFromGivenDate(state.allCalendarEvents!, dateTime);

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
@@ -16,8 +18,6 @@ import 'package:nutrenaissance_flutter/presentation/widgets/energy_balance_widge
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/liquids_summary_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_widget.dart';
-import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -34,7 +34,7 @@ class _DashboardScreen extends State<DashboardScreen>
   @override
   void initState() {
     final bloc = BlocProvider.of<DashboardBloc>(context);
-    bloc.add(InitializeState(context: context));
+    bloc.add(InitializeState());
     super.initState();
   }
 
@@ -75,7 +75,7 @@ class _DashboardScreen extends State<DashboardScreen>
                 backgroundColor: Colors.white,
                 actions: [
                   IconButton(
-                    onPressed: () => Navigator.pushNamed(context, ProfileScreen.routeName),
+                    onPressed: () => Navigator.pushNamed(context, ProfileScreen.routeName).then((value) => bloc.add(InitializeState())),
                     iconSize: 35.0,
                     icon: Image.asset(
                       'assets/icon/profile_icon.png',
@@ -125,49 +125,52 @@ class _DashboardScreen extends State<DashboardScreen>
                                 ),
                                 Expanded(
                                   flex: 1,
-                                  child: Card(
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                                          alignment: Alignment.centerLeft,
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                AppLocalizations.of(context)!.steps,
-                                                style: const TextStyle(
-                                                  fontSize: Dimens.fontSizeNormal,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold,
+                                  child: Opacity(
+                                    opacity: 0.4,
+                                    child: Card(
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            margin: const EdgeInsets.only(left: Dimens.marginNormal),
+                                            alignment: Alignment.centerLeft,
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text(
+                                                  AppLocalizations.of(context)!.steps,
+                                                  style: const TextStyle(
+                                                    fontSize: Dimens.fontSizeNormal,
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
-                                              ),
-                                              Container(
-                                                alignment: Alignment.centerRight,
-                                                child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
-                                              )
-                                            ],
+                                                Container(
+                                                  alignment: Alignment.centerRight,
+                                                  child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                                                )
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        Container(
-                                          height: 80,
-                                          decoration: const BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.grey,
+                                          Container(
+                                            height: 80,
+                                            decoration: const BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.grey,
+                                            ),
+                                            child: const Center(child: Text('2000'),),
                                           ),
-                                          child: const Center(child: Text('2000'),),
-                                        ),
-                                        Container(
-                                          margin: const EdgeInsets.only(top: Dimens.marginNormal),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            children: const [
-                                              Text('5,4 km'),
-                                              Text('98 min')
-                                            ],
-                                          ),
-                                        )
-                                      ],
+                                          Container(
+                                            margin: const EdgeInsets.only(top: Dimens.marginNormal),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                              children: const [
+                                                Text('5,4 km'),
+                                                Text('98 min')
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 )
@@ -175,30 +178,33 @@ class _DashboardScreen extends State<DashboardScreen>
                           ),
                         ),
                         // TODO: DUMMY sugar
-                        Card(
-                          child: Column(
-                            children: [
-                              Container(
-                                alignment: Alignment.centerLeft,
-                                margin: const EdgeInsets.all(Dimens.marginNormal),
-                                child: Text(
-                                  AppLocalizations.of(context)!.sugar,
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                        Opacity(
+                          opacity: 0.4,
+                          child: Card(
+                            child: Column(
+                              children: [
+                                Container(
+                                  alignment: Alignment.centerLeft,
+                                  margin: const EdgeInsets.all(Dimens.marginNormal),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.sugar,
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                                child: const FillHorizontalBar(fractionToFill: 0.75),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
-                                alignment: Alignment.centerRight,
-                                child: const Text(
-                                  '20 g',
-                                  style: TextStyle(fontSize: Dimens.fontSizeSmall),
+                                Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                                  child: const FillHorizontalBar(fractionToFill: 0.75),
                                 ),
-                              )
-                            ],
+                                Container(
+                                  margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
+                                  alignment: Alignment.centerRight,
+                                  child: const Text(
+                                    '20 g',
+                                    style: TextStyle(fontSize: Dimens.fontSizeSmall),
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         )
                       ],
@@ -215,7 +221,7 @@ class _DashboardScreen extends State<DashboardScreen>
                   ],
                 ),
               ),
-              bottomNavigationBar: CustomBottomAppBar(initStateCallback: () => bloc.add(InitializeState(context: context))),
+              bottomNavigationBar: CustomBottomAppBar(initStateCallback: () => bloc.add(InitializeState())),
               resizeToAvoidBottomInset: true,
               floatingActionButton: FloatingActionButton(
                 elevation: 2.0,
