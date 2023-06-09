@@ -36,8 +36,6 @@ class _LoginScreenState extends State<LoginScreen>
   Animation<double>? _opacityAnimation;
   final _formKey = GlobalKey<FormState>();
 
-
-
   void _showExitConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -143,13 +141,9 @@ class _LoginScreenState extends State<LoginScreen>
                         horizontal: Dimens.paddingXLarge,
                         vertical: Dimens.paddingSmall,
                       ),
-                      child: CustomButton1(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(Colors.teal[700],),
-                          foregroundColor: MaterialStateProperty.all(Colors.white,),
-                        ),
-                        message: AppLocalizations.of(context)!.accept,
-                        action: () {
+                      child: RoundedCustomButton(
+                        buttonText: AppLocalizations.of(context)!.accept,
+                        onPressed: () {
                           sendVerificationCode.call(_mfaController.text);
                           _mfaController.text = '';
                           Navigator.pop(context);
@@ -161,13 +155,9 @@ class _LoginScreenState extends State<LoginScreen>
                         horizontal: Dimens.paddingXLarge,
                         vertical: Dimens.paddingSmall,
                       ),
-                      child: CustomButton1(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(Colors.teal[700],),
-                          foregroundColor: MaterialStateProperty.all(Colors.white,),
-                        ),
-                        message: AppLocalizations.of(context)!.resend_verification_code,
-                        action: () => resendVerificationCode.call(),
+                      child: RoundedCustomButton(
+                        buttonText: AppLocalizations.of(context)!.resend_verification_code,
+                        onPressed: () => resendVerificationCode.call(),
                       ),
                     ),
                     Padding(
@@ -175,13 +165,9 @@ class _LoginScreenState extends State<LoginScreen>
                         horizontal: Dimens.paddingXLarge,
                         vertical: Dimens.paddingSmall,
                       ),
-                      child: CustomButton1(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(Colors.teal[700],),
-                          foregroundColor: MaterialStateProperty.all(Colors.white,),
-                        ),
-                        message: AppLocalizations.of(context)!.cancel,
-                        action: () => _showExitConfirmationDialog(context),
+                      child: RoundedCustomButton(
+                        buttonText: AppLocalizations.of(context)!.cancel,
+                        onPressed: () => _showExitConfirmationDialog(context),
                       ),
                     ),
                     const Padding(
@@ -240,15 +226,25 @@ class _LoginScreenState extends State<LoginScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        CustomButton1(
-                          message:
-                          AppLocalizations.of(context)!.cancel,
-                          action: () => notConfirmedUserCancelsReceiveConfirmationCode.call(),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+                            child: RoundedCustomButton(
+                              buttonText: AppLocalizations.of(context)!.cancel,
+                              onPressed: () => notConfirmedUserCancelsReceiveConfirmationCode.call(),
+                            ),
+                          ),
                         ),
-                        CustomButton1(
-                          message:
-                          AppLocalizations.of(context)!.accept,
-                          action: () => notConfirmedUserAsksForNewVerificationCode.call(),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+                            child: RoundedCustomButton(
+                              buttonText: AppLocalizations.of(context)!.accept,
+                              onPressed: () => notConfirmedUserAsksForNewVerificationCode.call(),
+                            ),
+                          ),
                         ),
                       ],
                     )
