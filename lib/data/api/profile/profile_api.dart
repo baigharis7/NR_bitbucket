@@ -1,3 +1,4 @@
+import 'package:chuck_interceptor/chuck.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/simple_user.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
@@ -7,7 +8,7 @@ import 'package:nutrenaissance_flutter/infrastructure/http/api_helper.dart';
 
 class ProfileApi extends ApiHelper {
 
-  ProfileApi(PreferencesRepository preferencesRepository, AuthenticationService authenticationService) : super(preferencesRepository, authenticationService);
+  ProfileApi(PreferencesRepository preferencesRepository, AuthenticationService authenticationService, Chuck chuck) : super(preferencesRepository, authenticationService, chuck);
 
   Future<Map<String, dynamic>> uploadProfileApi(UploadUserProfile body) =>
       post(

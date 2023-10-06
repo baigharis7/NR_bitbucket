@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:chuck_interceptor/chuck.dart';
+import 'package:chuck_interceptor/core/chuck_http_extensions.dart';
 import 'package:http/http.dart' as http;
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
@@ -7,8 +9,9 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/token_utils.dart';
 abstract class ApiHelper {
   final PreferencesRepository _preferencesRepository;
   final AuthenticationService _authenticationService;
+  final Chuck _chuck;
 
-  ApiHelper(this._preferencesRepository, this._authenticationService);
+  ApiHelper(this._preferencesRepository, this._authenticationService, this._chuck);
 
   Future<Map<String, dynamic>> post(Uri call, dynamic body) async {
     String idToken = await _getToken();
@@ -18,7 +21,7 @@ abstract class ApiHelper {
         headers: {
           'Authorization': idToken
         },
-    );
+    ).interceptWithChuck(_chuck);
 
     if (response.statusCode == 200) {
       try {
@@ -39,7 +42,7 @@ abstract class ApiHelper {
         headers: {
           'Authorization': idToken
         },
-    );
+    ).interceptWithChuck(_chuck);
 
     if (response.statusCode == 200) {
       try {
@@ -61,7 +64,7 @@ abstract class ApiHelper {
       headers: {
         'Authorization': idToken
       },
-    );
+    ).interceptWithChuck(_chuck);
 
     if (response.statusCode == 200) {
       try {

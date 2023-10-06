@@ -1,3 +1,4 @@
+import 'package:chuck_interceptor/chuck.dart';
 import 'package:nutrenaissance_flutter/data/api/analysis/subjective/model/subjective_analysis_result_request.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
@@ -8,7 +9,7 @@ class SubjectiveAnalysisApi extends ApiHelper {
   SubjectiveAnalysisApi(
       PreferencesRepository preferencesRepository,
       AuthenticationService authenticationService,
-      ) : super(preferencesRepository, authenticationService);
+      Chuck chuck) : super(preferencesRepository, authenticationService, chuck);
 
   Future<Map<String, dynamic>> uploadSubjectiveAnalysis(SubjectiveAnalysisResultRequest subjectiveAnalysisResultRequest) =>
       post(

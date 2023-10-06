@@ -1,4 +1,5 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:chuck_interceptor/chuck.dart';
 import 'package:nutrenaissance_flutter/data/api/eventssync/events_sync_api.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_response.dart';
@@ -138,11 +139,18 @@ class LoginProviderNew extends BaseProvider {
 
     authenticationService = await CognitoAuthenticationService.init();
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
+    Chuck chuck = Chuck(
+      showNotification: true,
+      showInspectorOnShake: true,
+      darkTheme: false,
+      maxCallsCount: 1000,
+    );
     Preferences prefs = PreferencesImpl(sharedPreferences);
     PreferencesRepository prefsRepository = PreferencesRepositoryImpl(prefs: prefs);
     fetchUserAttributesInteractor = FetchUserAttributesInteractorImpl(authenticationService: authenticationService!);
     getIdTokenInteractor = GetIdTokenInteractorImpl(preferencesRepository: prefsRepository);
-    ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService!);
+    ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService!, chuck);
     LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService!, profileApi: profileApi,);
     saveUserCredentialsInteractor = SaveUserCredentialsInteractorImpl(preferencesRepository: prefsRepository);
     signUpInteractor = SignUpInteractorImpl(loginRepository: loginRepository);
@@ -152,7 +160,7 @@ class LoginProviderNew extends BaseProvider {
     ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository);
     saveUsernameAndEmailInteractor = SaveUsernameAndEmailInteractorImpl(preferencesRepository: prefsRepository);
     saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
-    MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService!);
+    MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService!, chuck);
     MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi);
     getMasterFilesVersionInteractor = GetMasterFileVersionInteractorImpl(masterFilesRepository: masterFilesRepository);
     manageMasterFilesInteractor = ManageMasterFilesInteractorImpl(masterFilesRepository: masterFilesRepository);
@@ -162,7 +170,7 @@ class LoginProviderNew extends BaseProvider {
     resendVerificationCodeInteractor = ResendVerificationCodeInteractorImpl(loginRepository: loginRepository);
     saveUserInUsersRemoteDatabaseInteractor = SaveUserInUsersRemoteDatabaseInteractorImpl(loginRepository: loginRepository);
     signOutInteractor = SignOutInteractorImpl(authenticationService: authenticationService!);
-    EventsSyncApi eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService!);
+    EventsSyncApi eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService!, chuck);
     EventsSynchronizationRequestRepository eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
     synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
     getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);

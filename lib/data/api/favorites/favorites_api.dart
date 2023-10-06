@@ -1,3 +1,4 @@
+import 'package:chuck_interceptor/chuck.dart';
 import 'package:nutrenaissance_flutter/data/api/favorites/model/food/upload_food_favorite.dart';
 import 'package:nutrenaissance_flutter/data/api/favorites/model/liquid/upload_liquid_favorite.dart';
 import 'package:nutrenaissance_flutter/data/api/favorites/model/sport/upload_sport_favorite.dart';
@@ -8,7 +9,7 @@ import 'package:nutrenaissance_flutter/infrastructure/http/api_helper.dart';
 
 class FavoritesApi extends ApiHelper {
 
-  FavoritesApi(PreferencesRepository preferencesRepository, AuthenticationService authenticationService) : super(preferencesRepository, authenticationService);
+  FavoritesApi(PreferencesRepository preferencesRepository, AuthenticationService authenticationService, Chuck chuck) : super(preferencesRepository, authenticationService, chuck);
 
   Future<Map<String, dynamic>> uploadFoodFavorite(UploadFoodFavorite uploadFoodFavorite) =>
       post(

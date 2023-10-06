@@ -177,6 +177,8 @@ import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/sport_f
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/create_new_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/favorite_sports_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/food/bloc/food_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/food/view/food_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_bloc.dart';
@@ -190,6 +192,7 @@ import 'package:nutrenaissance_flutter/presentation/journal/view/journal_sport_s
 import 'package:nutrenaissance_flutter/presentation/liquidevent/bloc/liquid_event_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidevent/view/add_liquid_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/micronutrientsdetail/view/micronutrient_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/diet_questions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/food_list_aversions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/general_questions_screen.dart';
@@ -208,8 +211,9 @@ import 'presentation/profile/common/health_questions_screen.dart';
 import 'presentation/recommendations/common/view/recommendations_tabs_holder.dart';
 import 'presentation/waterevent/view/add_water_event_screen.dart';
 
+import 'package:chuck_interceptor/chuck.dart';
 void main() async {
-  const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
+  const String environmentName = String.fromEnvironment(Environment.DEV, defaultValue: Environment.DEV);
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -218,36 +222,42 @@ void main() async {
   final authenticationService = await CognitoAuthenticationService.init();
   final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
+  Chuck chuck = Chuck(
+    showNotification: true,
+    showInspectorOnShake: true,
+    darkTheme: false,
+    maxCallsCount: 1000,
+  );
   final Preferences prefs = PreferencesImpl(sharedPreferences);
   final PreferencesRepository prefsRepository = PreferencesRepositoryImpl(prefs: prefs);
-  final ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService);
+  final ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService, chuck);
   final LocalStorageRepository localStorageRepository = LocalStorageImpl();
   final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository);
   final GetUserIdInteractor getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
   final UploadProfileInteractor uploadProfileInteractor = UploadProfileInteractorImpl(profileRepository: profileRepository);
   final SaveProfileInteractor saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
-  final FoodEventsApi foodEventsApi = FoodEventsApi(prefsRepository, authenticationService);
+  final FoodEventsApi foodEventsApi = FoodEventsApi(prefsRepository, authenticationService, chuck);
   final FoodEventsRepository foodEventsRepository = FoodEventsRepositoryImpl(localStorageRepository: localStorageRepository, foodEventsApi: foodEventsApi, );
   final UploadFoodEventInteractor uploadFoodEventInteractor = UploadFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
   final SaveFoodEventInteractor saveFoodEventInteractor = SaveFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
-  final RecommendationsApi recommendationsApi = RecommendationsApi(prefsRepository, authenticationService);
+  final RecommendationsApi recommendationsApi = RecommendationsApi(prefsRepository, authenticationService, chuck);
   final RecommendationsRepository recommendationsRepository = RecommendationsRepositoryImpl(recommendationsApi: recommendationsApi);
   final GetRecommendationInteractor getRecommendationInteractor = GetRecommendationInteractorImpl(recommendationsRepository: recommendationsRepository);
   final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor = GetUserMicronutrientsInteractorImpl(profileRepository: profileRepository);
-  final MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService);
+  final MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService, chuck);
   final MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi);
   final GetMasterFileInteractor getMasterFileInteractor = GetMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
   final GetUserRdasInteractor getUserRdasInteractor = GetUserRdasInteractorImpl(localStorageRepository: localStorageRepository);
-  final SportEventsApi sportEventsApi = SportEventsApi(prefsRepository, authenticationService);
+  final SportEventsApi sportEventsApi = SportEventsApi(prefsRepository, authenticationService, chuck);
   final SportEventsRepository sportEventsRepository = SportEventsRepositoryImpl(sportEventsApi: sportEventsApi, localStorageRepository: localStorageRepository);
   final UploadSportEventsInteractor uploadSportEventsInteractor = UploadSportEventsInteractorImpl(sportEventsRepository: sportEventsRepository);
   final SaveSportEventInteractor saveSportEventInteractor = SaveSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
-  final AdvicesApi advicesApi = AdvicesApi(prefsRepository, authenticationService);
+  final AdvicesApi advicesApi = AdvicesApi(prefsRepository, authenticationService, chuck);
   final AdvicesRepository advicesRepository = AdvicesRepositoryImpl(advicesApi: advicesApi);
   final GetAdviceInteractor getAdviceInteractor = GetAdviceInteractorImpl(advicesRepository: advicesRepository);
   final GetProfileInteractor getProfileInteractor = GetProfileInteractorImpl(profileRepository: profileRepository);
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor = GetFoodEventsOfTodayInteractorImpl(foodEventsRepository: foodEventsRepository);
-  final LiquidEventsApi liquidEventsApi = LiquidEventsApi(prefsRepository, authenticationService);
+  final LiquidEventsApi liquidEventsApi = LiquidEventsApi(prefsRepository, authenticationService, chuck);
   final LiquidEventsRepository liquidEventsRepository = LiquidEventsRepositoryImpl(liquidEventsApi: liquidEventsApi, localStorageRepository: localStorageRepository);
   final SaveLiquidEventInteractor saveLiquidEventInteractor = SaveLiquidEventInteractorImpl(liquidEventsRepository: liquidEventsRepository);
   final UploadLiquidEventInteractor uploadLiquidEventInteractor = UploadLiquidEventInteractorImpl(liquidEventsRepository: liquidEventsRepository);
@@ -257,7 +267,7 @@ void main() async {
   final GetWeekSportsInteractor getWeekSportsInteractor = GetWeekSportsInteractorImpl(sportEventsRepository: sportEventsRepository);
   final GetWeekLiquidEventsInteractor getWeekLiquidEventsInteractor = GetWeekLiquidEventsInteractorImpl(liquidEventsRepository: liquidEventsRepository);
   final GetTodayLiquidEventsInteractor getTodayLiquidEventsInteractor = GetTodayLiquidEventsInteractorImpl(liquidEventsRepository: liquidEventsRepository);
-  final WaterEventsApi waterEventsApi = WaterEventsApi(prefsRepository, authenticationService);
+  final WaterEventsApi waterEventsApi = WaterEventsApi(prefsRepository, authenticationService, chuck);
   final WaterEventsRepository waterEventsRepository = WaterEventRepositoryImpl(localStorageRepository: localStorageRepository, waterEventsApi: waterEventsApi);
   final UploadWaterEventInteractor uploadWaterEventInteractor = UploadWaterEventInteractorImpl(waterEventsRepository: waterEventsRepository);
   final SaveWaterEventInteractor saveWaterEventInteractor = SaveWaterEventInteractorImpl(waterEventsRepository: waterEventsRepository);
@@ -269,7 +279,7 @@ void main() async {
     waterEventsRepository: waterEventsRepository,
   );
   final GetAllEventsSortedByDateInteractor getAllEventsSortedByDateInteractor = GetAllEventsSortedByDateInteractorImpl(calendarRepository: calendarRepository);
-  final FavoritesApi favoritesApi = FavoritesApi(prefsRepository, authenticationService);
+  final FavoritesApi favoritesApi = FavoritesApi(prefsRepository, authenticationService, chuck);
   final FavoritesRepository favoritesRepository = FavoritesRepositoryImpl(localStorageRepository: localStorageRepository, favoritesApi: favoritesApi);
   final GetFoodFavoritesInteractor getFoodFavoritesInteractor = GetFoodFavoritesInteractorImpl(favoritesRepository: favoritesRepository);
   final SaveFoodFavoriteInteractor saveFoodFavoriteInteractor = SaveFoodFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
@@ -281,7 +291,7 @@ void main() async {
   final GetSportFavoritesInteractor getSportFavoritesInteractor = GetSportFavoritesInteractorImpl(favoritesRepository: favoritesRepository);
   final DeleteSportFavoriteInteractor deleteSportFavoriteInteractor = DeleteSportFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
   final RemoveSportFavoriteInteractor removeSportFavoriteInteractor = RemoveSportFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
-  final RecipesApi recipesApi = RecipesApi(prefsRepository, authenticationService);
+  final RecipesApi recipesApi = RecipesApi(prefsRepository, authenticationService, chuck);
   final RecipesRepository recipesRepository = RecipesRepositoryImpl(recipesApi: recipesApi);
   final GetRecipesForFoodsInteractor getRecipesForFoodsInteractor = GetRecipesForFoodsInteractorImpl(recipesRepository: recipesRepository);
   final GetUserExclusionsInteractor getUserExclusionsInteractor = GetUserExclusionsInteractorImpl(profileRepository: profileRepository);
@@ -492,6 +502,7 @@ void main() async {
         // ),
       ],
       child: MaterialApp(
+        navigatorKey: chuck.getNavigatorKey(),
         title: 'NutreNaissance',
         theme: ThemeData(
           fontFamily: 'Montserrat',

@@ -1,3 +1,4 @@
+import 'package:chuck_interceptor/chuck.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/data/api/analysis/subjective/subjective_analysis_api.dart';
 import 'package:nutrenaissance_flutter/data/repository/analysis/subjective/subjective_analysis_repository_impl.dart';
@@ -18,7 +19,13 @@ class TestBloc extends Bloc<TestActions, TestState> {
   TestBloc() : super(TestState(namesSelected: [])) {
 
     on<SelectOption>((event, emit) async {
-      final repository = SubjectiveAnalysisRepositoryImpl(localStorageRepository: LocalStorageImpl(), subjectiveAnalysisApi: SubjectiveAnalysisApi(PreferencesRepositoryImpl(prefs: PreferencesImpl(await SharedPreferences.getInstance())), await CognitoAuthenticationService.init()));
+      Chuck chuck = Chuck(
+        showNotification: true,
+        showInspectorOnShake: true,
+        darkTheme: false,
+        maxCallsCount: 1000,
+      );
+      final repository = SubjectiveAnalysisRepositoryImpl(localStorageRepository: LocalStorageImpl(), subjectiveAnalysisApi: SubjectiveAnalysisApi(PreferencesRepositoryImpl(prefs: PreferencesImpl(await SharedPreferences.getInstance())), await CognitoAuthenticationService.init(), chuck));
       final UploadSubjectiveAnalysisInteractor interactor = UploadSubjectiveAnalysisInteractorImpl(subjectiveAnalysisRepository: repository);
       final subjectiveData = SubjectiveAnalysisResult(
         eventDate: DateTimeHelper().provideCurrentDate().millisecondsSinceEpoch,

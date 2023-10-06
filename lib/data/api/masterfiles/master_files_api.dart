@@ -1,3 +1,4 @@
+import 'package:chuck_interceptor/chuck.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
@@ -6,7 +7,7 @@ import 'package:nutrenaissance_flutter/infrastructure/http/api_helper.dart';
 
 class MasterFilesApi extends ApiHelper {
 
-  MasterFilesApi(PreferencesRepository preferencesRepository, AuthenticationService authenticationService) : super(preferencesRepository, authenticationService);
+  MasterFilesApi(PreferencesRepository preferencesRepository, AuthenticationService authenticationService, Chuck chuck) : super(preferencesRepository, authenticationService, chuck);
 
   Future<Map<String, dynamic>> manageMasterFiles(
       int cookingMethodsVersion,
