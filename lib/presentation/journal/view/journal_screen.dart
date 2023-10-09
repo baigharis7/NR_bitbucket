@@ -112,7 +112,7 @@ class _JournalScreenState extends State<JournalScreen> {
                                       flex: 1,
                                       child: ModifiableCenterBoxWithWatchAndAdd(
                                         title: AppLocalizations.of(context)!.food,
-                                        onAddPressed: () => bloc.add(FoodsClickAction(action: () => Navigator.of(context).pushNamed(FoodScreen.routeName))),
+                                        onAddPressed: () => bloc.add(FoodsClickAction(action: () => Navigator.of(context).pushNamed(AddFoodEventScreen.routeName))),
                                         onWatchPressed: () => bloc.add(FoodsClickAction(action: () => Navigator.of(context).pushNamed(JournalFoodScreen.routeName))),
                                         centerWidget: SizedBox(
                                           height: 70,

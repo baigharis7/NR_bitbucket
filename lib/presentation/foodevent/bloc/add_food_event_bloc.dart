@@ -98,7 +98,8 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
 
       final foodEvent = FoodEventSimple(
           userId: getUserIdInteractor.execute(),
-          date: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+          eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+        eventId: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
       );
       foodEvent.ingredients = state.foodsInEvent.orEmpty();
       foodEvent.drinks = []; // TODO: is it necessary to implement drinks in food events?
@@ -128,7 +129,8 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     on<ReceiveFoodsInEventFromNavigationAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, eventDate: state.eventDate));
       state.isEdit = true;
-      state.eventDate = event.foodEventSimple.date;
+      state.eventDate = event.foodEventSimple.eventDate;
+      state.eventId = event.foodEventSimple.eventId;
       state.foodsInEvent = event.foodEventSimple.ingredients;
       if (state.foodNames!.foodsAndDrinksNames!.foodNames!.isEmpty) {
         state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);

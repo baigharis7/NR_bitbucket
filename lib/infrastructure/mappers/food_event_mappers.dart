@@ -329,7 +329,8 @@ List<FoodInEvent> mapToFoodInEventList(List<domain.FoodInfo> foodInfoList) {
 FoodEventSimple mapToFoodEventSimple(domain.FoodEventComplete foodEventComplete) {
     return FoodEventSimple(
         userId: foodEventComplete.userId!,
-        date: foodEventComplete.eventDate!,
+        eventDate: foodEventComplete.eventDate!,
+        eventId: foodEventComplete.eventDate!,
         ingredients: mapToFoodInEventList(foodEventComplete.foodInfo!),
         // drinks: mapToFoodInEventList(foodEventComplete.foodInfo!.),
     );

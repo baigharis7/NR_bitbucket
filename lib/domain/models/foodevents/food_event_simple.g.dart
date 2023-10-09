@@ -9,7 +9,8 @@ part of 'food_event_simple.dart';
 FoodEventSimple _$FoodEventSimpleFromJson(Map<String, dynamic> json) =>
     FoodEventSimple(
       userId: json['userId'] as String,
-      date: json['date'] as int,
+      eventDate: json['date'] as int,
+          eventId: json['eventId'] as int,
       ingredients: (json['ingredients'] as List<dynamic>?)
           ?.map((e) => FoodInEvent.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -21,7 +22,8 @@ FoodEventSimple _$FoodEventSimpleFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$FoodEventSimpleToJson(FoodEventSimple instance) =>
     <String, dynamic>{
       'userId': instance.userId,
-      'date': instance.date,
+      'eventDate': instance.eventDate,
+          'eventId': instance.eventId,
       'ingredients': instance.ingredients?.map((e) => e.toJson()).toList(),
       'drinks': instance.drinks?.map((e) => e.toJson()).toList(),
     };

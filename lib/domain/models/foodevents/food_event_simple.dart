@@ -5,11 +5,12 @@ part 'food_event_simple.g.dart';
 @JsonSerializable(explicitToJson: true)
 class FoodEventSimple {
   String userId;
-  int date;
+  int eventDate;
+  int? eventId;
   List<FoodInEvent>? ingredients;
   List<FoodInEvent>? drinks;
 
-  FoodEventSimple({required this.userId, required this.date, this.ingredients, this.drinks});
+  FoodEventSimple({required this.userId, required this.eventDate, this.eventId, this.ingredients, this.drinks});
 
   factory FoodEventSimple.fromJson(Map<String, dynamic> json) => _$FoodEventSimpleFromJson(json);
   Map<String, dynamic> toJson() => _$FoodEventSimpleToJson(this);

@@ -17,6 +17,7 @@ class AddFoodEventState {
   UnitsFoodsMaster? unitsFoodsMaster;
   UnitsInfoMaster? unitsInfoMaster;
   int? eventDate;
+  int? eventId;
   bool? isEdit;
   List<FoodFavorite>? foodFavorites;
 
@@ -30,6 +31,7 @@ class AddFoodEventState {
     this.unitsFoodsMaster,
     this.unitsInfoMaster,
     this.eventDate,
+    this.eventId,
     this.isEdit,
     this.foodFavorites,
   });
