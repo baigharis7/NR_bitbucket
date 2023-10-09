@@ -334,6 +334,10 @@ void main() async {
     getFoodFavoritesInteractor: getFoodFavoritesInteractor,
   );
 
+  final foodEventBloc = FoodBloc(
+    getMasterFileInteractor: getMasterFileInteractor,
+  );
+
   final sportEventsBloc = SportEventsBloc(
     getMasterFileInteractor: getMasterFileInteractor,
     getUserIdInteractor: getUserIdInteractor,
@@ -470,6 +474,7 @@ void main() async {
         BlocProvider<DashboardBloc>(create: (ctx) => dashboardBloc),
         BlocProvider<JournalBloc>(create: (ctx) => journalBloc),
         BlocProvider<AddFoodEventBloc>(create: (ctx) => addFoodEventBloc),
+        BlocProvider<FoodBloc>(create: (ctx) => foodEventBloc),
         BlocProvider<SportEventsBloc>(create: (ctx) => sportEventsBloc),
         BlocProvider<LiquidEventBloc>(create: (ctx) => liquidEventBloc),
         BlocProvider<JournalFoodBloc>(create: (ctx) => journalFoodBloc),
@@ -557,6 +562,7 @@ void main() async {
           DietQuestionsScreen.routeName: (_) => const DietQuestionsScreen(),
           PhysicalActivityScreen.routeName: (_) => const PhysicalActivityScreen(),
           RecommendationsTabHolder.routeName: (_) => const RecommendationsTabHolder(),
+          FoodScreen.routeName: (_) => const FoodScreen()
         },
       ),
     ),

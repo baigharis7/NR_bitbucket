@@ -19,6 +19,9 @@ import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.
 import 'package:nutrenaissance_flutter/presentation/widgets/liquids_summary_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_widget.dart';
 
+import '../../../domain/models/dashboard/nutrients_model.dart';
+import '../../../domain/models/masterfiles/nutrients_info_master.dart';
+
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
 

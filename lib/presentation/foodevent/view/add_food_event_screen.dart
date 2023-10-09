@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/add_food_dialog.dart';
@@ -15,6 +16,8 @@ import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_even
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_card.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
+
+import '../../../domain/models/masterfiles/food_names_master.dart';
 
 // TODO: tengo que poner lo de las bebidas en algún sitio.
 class AddFoodEventScreen extends StatefulWidget {
@@ -94,6 +97,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
       } else if (infoReceived is DateTime?) {
         final eventDate = infoReceived as DateTime?;
         bloc.add(ReceiveEventDateAction(dateTime: eventDate!));
+      }
+      else if (infoReceived is FoodItemMaster) {
+        print(infoReceived.en.toString());
       }
     }
 
