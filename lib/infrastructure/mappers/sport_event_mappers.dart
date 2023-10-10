@@ -6,7 +6,7 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 SportEventComplete mapToSportEventCompleteFromResponse(response.SportEventResponse sportEventResponse) {
   final sportEventComplete = SportEventComplete(
     userId: sportEventResponse.userId,
-    eventDate: sportEventResponse.eventDate,
+    eventDate: sportEventResponse.eventId,
     eventKcal: sportEventResponse.eventKcal,
     info: SportEventInfo(
       id: sportEventResponse.info.id,

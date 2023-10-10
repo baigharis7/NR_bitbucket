@@ -6,11 +6,13 @@ part 'sport_event_simple.g.dart';
 @JsonSerializable(explicitToJson: true)
 class SportEventSimple {
   String? userId;
+  int? eventId;
   SportInfo? info;
 
-  SportEventSimple({this.userId, this.info});
+  SportEventSimple({this.userId, this.eventId, this.info});
   SportEventSimple.empty() {
     userId = null;
+    eventId = null;
     info = SportInfo.empty();
   }
 

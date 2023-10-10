@@ -9,7 +9,7 @@ part of 'sport_event_response.dart';
 SportEventResponse _$SportEventResponseFromJson(Map<String, dynamic> json) =>
     SportEventResponse(
       userId: json['userId'] as String,
-      eventDate: json['eventDate'] as int,
+      eventId: json['eventId'] as int,
       info:
           SportEventInfoResponse.fromJson(json['info'] as Map<String, dynamic>),
       eventKcal: json['eventKcal'] as int?,
@@ -18,7 +18,7 @@ SportEventResponse _$SportEventResponseFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$SportEventResponseToJson(SportEventResponse instance) =>
     <String, dynamic>{
       'userId': instance.userId,
-      'eventDate': instance.eventDate,
+      'eventId': instance.eventId,
       'info': instance.info.toJson(),
       'eventKcal': instance.eventKcal,
     };

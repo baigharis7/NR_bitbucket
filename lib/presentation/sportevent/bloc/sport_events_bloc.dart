@@ -99,6 +99,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
         final sportInfo = findSportById(state.sportId!);
         final sportEventSimple = SportEventSimple(
           userId: getUserIdInteractor.execute(),
+          eventId: DateTime.now().millisecondsSinceEpoch,
           info: SportInfo(
             id: state.sportId,
             name_en: sportInfo.en,

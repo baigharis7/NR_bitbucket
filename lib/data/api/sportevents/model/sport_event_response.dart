@@ -5,13 +5,13 @@ part 'sport_event_response.g.dart';
 @JsonSerializable(explicitToJson: true)
 class SportEventResponse {
   String userId;
-  int eventDate;
+  int eventId;
   SportEventInfoResponse info;
   int? eventKcal;
 
   SportEventResponse({
     required this.userId,
-    required this.eventDate,
+    required this.eventId,
     required this.info,
     this.eventKcal,
   });
