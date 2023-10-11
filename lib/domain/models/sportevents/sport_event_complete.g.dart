@@ -9,7 +9,7 @@ part of 'sport_event_complete.dart';
 SportEventComplete _$SportEventCompleteFromJson(Map<String, dynamic> json) =>
     SportEventComplete(
       userId: json['userId'] as String,
-      eventDate: json['eventDate'] as int,
+      eventDate: json['eventId'] as int,
       info: SportEventInfo.fromJson(json['info'] as Map<String, dynamic>),
       eventKcal: json['eventKcal'] as int?,
     );

@@ -11,11 +11,13 @@ class WaterEventEntity extends HiveObject {
 
   @HiveField(0) String? userId;
   @HiveField(1) int? eventDate;
-  @HiveField(2) double qty;
+  @HiveField(2) int? eventId;
+  @HiveField(3) double qty;
 
   WaterEventEntity(
       this.userId,
       this.eventDate,
+      this.eventId,
       this.qty,
   );
 

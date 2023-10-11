@@ -10,6 +10,7 @@ WaterEventMaster _$WaterEventMasterFromJson(Map<String, dynamic> json) =>
     WaterEventMaster(
       json['userId'] as String?,
       json['eventDate'] as int?,
+      json['eventId'] as int?,
       (json['qty'] as num?)?.toDouble(),
     );
 
@@ -17,5 +18,6 @@ Map<String, dynamic> _$WaterEventMasterToJson(WaterEventMaster instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'eventDate': instance.eventDate,
+      'eventId': instance.eventId,
       'qty': instance.qty,
     };
