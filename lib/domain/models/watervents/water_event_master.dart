@@ -6,14 +6,16 @@ part 'water_event_master.g.dart';
 class WaterEventMaster {
   String? userId;
   int? eventDate;
+  int? eventId;
   double? qty;
 
   WaterEventMaster(
       this.userId,
       this.eventDate,
+      this.eventId,
       this.qty,
   );
-  WaterEventMaster.empty({this.userId = '', this.eventDate = 0, this.qty = 0});
+  WaterEventMaster.empty({this.userId = '', this.eventDate = 0, this.eventId = 0, this.qty = 0});
 
   factory WaterEventMaster.fromJson(Map<String, dynamic> json) => _$WaterEventMasterFromJson(json);
   Map<String, dynamic> toJson() => _$WaterEventMasterToJson(this);

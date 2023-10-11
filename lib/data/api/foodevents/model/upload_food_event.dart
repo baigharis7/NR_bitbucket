@@ -6,6 +6,7 @@ part 'upload_food_event.g.dart';
 class UploadFoodEvent {
   String? userId;
   int? eventDate;
+  int? eventId;
   List<FoodInfo>? foodInfo;
   bool uploadSuccess;
   int? eventKcals;
@@ -13,6 +14,7 @@ class UploadFoodEvent {
   UploadFoodEvent(
       this.userId,
       this.eventDate,
+      this.eventId,
       this.foodInfo,
       this.eventKcals,
       {this.uploadSuccess = false,}

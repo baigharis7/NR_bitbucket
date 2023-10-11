@@ -19,19 +19,22 @@ class WaterEventEntityAdapter extends TypeAdapter<WaterEventEntity> {
     return WaterEventEntity(
       fields[0] as String?,
       fields[1] as int?,
-      fields[2] as double,
+      fields[2] as int?,
+      fields[3] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, WaterEventEntity obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
       ..write(obj.eventDate)
       ..writeByte(2)
+      ..write(obj.eventId)
+      ..writeByte(3)
       ..write(obj.qty);
   }
 
@@ -54,6 +57,7 @@ WaterEventEntity _$WaterEventEntityFromJson(Map<String, dynamic> json) =>
     WaterEventEntity(
       json['userId'] as String?,
       json['eventDate'] as int?,
+      json['eventId'] as int?,
       (json['qty'] as num).toDouble(),
     );
 
@@ -61,5 +65,6 @@ Map<String, dynamic> _$WaterEventEntityToJson(WaterEventEntity instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'eventDate': instance.eventDate,
+      'eventId': instance.eventId,
       'qty': instance.qty,
     };

@@ -192,7 +192,6 @@ import 'package:nutrenaissance_flutter/presentation/journal/view/journal_sport_s
 import 'package:nutrenaissance_flutter/presentation/liquidevent/bloc/liquid_event_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidevent/view/add_liquid_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
-import 'package:nutrenaissance_flutter/presentation/micronutrientsdetail/view/micronutrient_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/diet_questions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/food_list_aversions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/general_questions_screen.dart';

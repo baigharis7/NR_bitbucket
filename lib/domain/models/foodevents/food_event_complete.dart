@@ -8,12 +8,14 @@ part 'food_event_complete.g.dart';
 class FoodEventComplete extends HiveObject {
   String? userId;
   int? eventDate;
+  int? eventId;
   List<FoodInfo>? foodInfo;
   int? eventKcals;
 
   FoodEventComplete({
     this.userId,
     this.eventDate,
+    this.eventId,
     this.foodInfo,
     this.eventKcals,
   });
