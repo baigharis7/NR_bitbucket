@@ -20,6 +20,9 @@ import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
 
+import '../../../domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
+import '../../../domain/models/foodevents/food_event_complete.dart';
+
 class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
   final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor;
@@ -32,6 +35,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final IsNecessaryToShowExplainingCardInteractor isNecessaryToShowExplainingCardInteractor;
   final SaveExplainingCardInteractionInteractor saveExplainingCardInteractionInteractor;
   final GetDayCaloriesInteractor getDayCaloriesInteractor;
+  final GetTodayLiquidEventsInteractor getLiquidEventsOfTodayInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -45,6 +49,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.isNecessaryToShowExplainingCardInteractor,
     required this.saveExplainingCardInteractionInteractor,
     required this.getDayCaloriesInteractor,
+    required this.getLiquidEventsOfTodayInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -60,6 +65,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.userMicronutrients = await getUserMicronutrientsInteractor.execute() ?? [];
       state.userRdas = await getUserRdasInteractor.execute();
       state.foodEvents = await getFoodEventsOfTodayInteractor.execute();
+      state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute();
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       final profile = await getProfileInteractor.execute();
       state.userKcal = profile!.kcal;
@@ -85,7 +91,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       ).toList();
       final caloriesConsumed = await getDayCaloriesInteractor.execute();
       state.energyModel = EnergyModel(
-        fractionToFill: getFractionToFillKcal(),
+        fractionToFill: getFractionToFillKcal(caloriesConsumed ?? 0),
         totalKcal: state.userKcal!,
         rawKcalTaken: getTotalKcalTakenToday(),
         spentKcal: caloriesConsumed ?? 0,
@@ -159,7 +165,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     return returnQuantity;
   }
 
-  double getFractionToFillKcal() {
+  double getFractionToFillKcal(int caloriesConsumed) {
     const kcalName = 'energyKcal';
     double kcalQuantitySoFar = 0.0;
     for (var foodEvent in state.foodEvents!) {
@@ -168,7 +174,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
 
-    double returnQuantity = kcalQuantitySoFar.toInt() / state.userKcal!;
+    double returnQuantity = (kcalQuantitySoFar.toInt() + getTodayKcalFromLiquids(state.todayLiquidEvents!) - caloriesConsumed) / state.userKcal!;
     if (returnQuantity > 1) returnQuantity = 1;
     return returnQuantity;
   }
@@ -181,7 +187,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         kcalQuantitySoFar = kcalQuantitySoFar + (food.params!.toJson()[kcalName] ?? 0.0);
       }
     }
-    return kcalQuantitySoFar.toInt();
+    return kcalQuantitySoFar.toInt() + getTodayKcalFromLiquids(state.todayLiquidEvents!);
   }
 
   double getQuantityConsumedSoFar(String micronutrient) {
@@ -194,6 +200,15 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     }
 
     return double.parse((nutrientQuantitySoFar).toStringAsFixed(2));
+  }
+
+  int getTodayKcalFromLiquids(List<FoodEventComplete> events) {
+    int kcals = 0;
+    for (var event in events) {
+      kcals = kcals + event.eventKcals!;
+    }
+
+    return kcals;
   }
 
   String getUnitForMicronutrient(String micronutrient) {

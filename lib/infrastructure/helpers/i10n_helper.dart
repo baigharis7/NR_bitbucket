@@ -65,7 +65,7 @@ class AppLocalizationsHelper {
       'water' : 'Water',
       'breakfast' : 'Breakfast',
       'lunch' : 'Lunch',
-      'dinner' : 'Snack',
+      'dinner' : 'Dinner',
       'snack' : 'Snack',
       'hindu' : 'Hindu',
       'kosher' : 'Kosher',

@@ -96,6 +96,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/save_liqui
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/save_liquid_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/upload_liquid_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/upload_liquid_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/erase_database_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
@@ -205,6 +206,7 @@ import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/waterevent/bloc/water_event_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'domain/interactor/login/erase_database_interactor_impl.dart';
 import 'presentation/profile/common/aversions_screen.dart';
 import 'presentation/profile/common/health_questions_screen.dart';
 import 'presentation/recommendations/common/view/recommendations_tabs_holder.dart';
@@ -301,6 +303,8 @@ void main() async {
   final SaveExplainingCardInteractionInteractor saveExplainingCardInteractionInteractor = SaveExplainingCardInteractionInteractorImpl(explainingCardsRepository: explainingCardsRepository);
   final GetDayCaloriesInteractor getDayCaloriesInteractor = GetDayCaloriesInteractorImpl(sportEventsRepository: sportEventsRepository);
   final SignOutInteractor signOutInteractor = SignOutInteractorImpl(authenticationService: authenticationService);
+  final EraseDatabaseInteractor eraseDatabaseInteractor = EraseDatabaseInteractorImpl(localStorageRepository: localStorageRepository);
+
 
   final dashboardBloc = DashboardBloc(
     getAdviceInteractor: getAdviceInteractor,
@@ -314,6 +318,7 @@ void main() async {
     isNecessaryToShowExplainingCardInteractor: isNecessaryToShowExplainingCardInteractor,
     saveExplainingCardInteractionInteractor: saveExplainingCardInteractionInteractor,
     getDayCaloriesInteractor: getDayCaloriesInteractor,
+    getLiquidEventsOfTodayInteractor: getTodayLiquidEventsInteractor,
   );
 
   final journalBloc = JournalBloc(
@@ -440,6 +445,8 @@ void main() async {
     uploadProfileInteractor: uploadProfileInteractor,
     getMasterFileInteractor: getMasterFileInteractor,
     signOutInteractor: signOutInteractor,
+    eraseDatabaseInteractor: eraseDatabaseInteractor,
+    sharedPreferences: sharedPreferences,
   );
 
   final addFavoriteLiquidBloc = AddFavoriteLiquidBloc(

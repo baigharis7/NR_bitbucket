@@ -61,7 +61,7 @@ class EnergyBalanceWidget extends StatelessWidget {
                   alignment: Alignment.center,
                   margin: const EdgeInsets.only(top: Dimens.marginXSmall),
                   child: Text(
-                    '${energyModel?.totalKcal ?? 0} kcal',
+                    '${(energyModel?.rawKcalTaken ?? 0) - (energyModel?.spentKcal ?? 0)} kcal',
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),

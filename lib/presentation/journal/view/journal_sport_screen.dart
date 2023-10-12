@@ -146,7 +146,7 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                         margin: const EdgeInsets.only(bottom: Dimens.marginLarge),
                         child: WeeklyInfoCard(
                           weeklyData: state.weeklyData ?? [],
-                          kcals: state.userKcal!,
+                          kcals: state.userKcal ?? 0,
                         ),
                       ),
                     ],

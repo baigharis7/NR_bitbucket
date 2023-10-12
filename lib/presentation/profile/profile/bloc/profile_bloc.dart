@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/user_profile_response.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/erase_database_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
@@ -24,6 +25,7 @@ import 'package:nutrenaissance_flutter/presentation/profile/model/aversions_ui_m
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_state.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
   final GetProfileInteractor getProfileInteractor;
@@ -32,6 +34,8 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
   final UploadProfileInteractor uploadProfileInteractor;
   final SaveProfileInteractor saveProfileInteractor;
   final SignOutInteractor signOutInteractor;
+  final EraseDatabaseInteractor eraseDatabaseInteractor;
+  final SharedPreferences sharedPreferences;
 
   ProfileBloc({
     required this.getProfileInteractor,
@@ -40,6 +44,8 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     required this.uploadProfileInteractor,
     required this.saveProfileInteractor,
     required this.signOutInteractor,
+    required this.eraseDatabaseInteractor,
+    required this.sharedPreferences,
   }) : super(ProfileState(
     isLoading: false,
     profile: UserProfileModel.empty(),
@@ -385,6 +391,8 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
       try {
         signOutInteractor.execute();
         event.goToLogin.call();
+        eraseDatabaseInteractor.execute();
+        sharedPreferences.clear();
         emit(state.copyWith(isLoading: false, onError: null, ));
       } catch (errorSignOut) {
         state.onError = ErrorTypes.signOutError;

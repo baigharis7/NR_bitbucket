@@ -6,10 +6,13 @@ import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 
+import '../../../domain/models/liquidevents/liquid_event_complete.dart';
+
 class DashboardState {
   bool isLoading;
   ErrorTypes? onError;
   List<FoodEventComplete>? foodEvents;
+  List<LiquidEventComplete>? todayLiquidEvents;
   List<String>? userMicronutrients;
   NutrientsInfoMaster? nutrientsInfoMaster;
   List<UserRda>? userRdas;
@@ -25,6 +28,7 @@ class DashboardState {
     required this.isLoading,
     this.onError,
     this.foodEvents,
+    this.todayLiquidEvents,
     this.userMicronutrients,
     this.nutrientsInfoMaster,
     this.userRdas,
@@ -41,6 +45,7 @@ class DashboardState {
     required bool isLoading,
     ErrorTypes? onError,
     List<FoodEventComplete>? foodEvents,
+    List<LiquidEventComplete>? todayLiquidEvents,
     bool? infoLoaded,
     List<String>? userMicronutrients,
     NutrientsInfoMaster? nutrientsInfoMaster,
@@ -57,6 +62,7 @@ class DashboardState {
       isLoading: isLoading,
       onError: onError ?? this.onError,
       foodEvents: foodEvents ?? this.foodEvents,
+      todayLiquidEvents: todayLiquidEvents ?? this.todayLiquidEvents,
       userMicronutrients: userMicronutrients ?? this.userMicronutrients,
       nutrientsInfoMaster: nutrientsInfoMaster ?? this.nutrientsInfoMaster,
       userRdas: userRdas ?? this.userRdas,
