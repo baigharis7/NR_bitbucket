@@ -537,7 +537,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
 
   bool areMandatoryFieldsComplete() {
     if (state.profile!.objectives!.isNotEmpty &&
-        !state.profile!.occupationActivityFactor.isNull() &&
+        // !state.profile!.occupationActivityFactor.isNull() &&
         !state.profile!.physicalCharacteristics!.height.isNull() &&
         !state.profile!.physicalCharacteristics!.weight.isNull() &&
         !state.profile!.commonName.isNull() &&
@@ -560,11 +560,11 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
       ${AppLocalizations.of(context)!.objectives}
       ''';
     }
-    if (state.profile!.occupationActivityFactor.isNull()) {
-      error = '''$error 
-      ${AppLocalizations.of(context)!.physical_activity}
-      ''';
-    }
+    // if (state.profile!.occupationActivityFactor.isNull()) {
+    //   error = '''$error
+    //   ${AppLocalizations.of(context)!.physical_activity}
+    //   ''';
+    // }
     if (state.profile!.physicalCharacteristics!.height.isNull()) {
       error = '''$error 
       ${AppLocalizations.of(context)!.height}

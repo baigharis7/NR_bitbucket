@@ -13,6 +13,7 @@ import 'package:nutrenaissance_flutter/presentation/profile/common/physical_acti
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_state.dart';
+import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/registry_card.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
@@ -100,7 +101,7 @@ class _RegistryScreenState extends State<RegistryScreen> {
                     RoundedCustomButton(
                       onPressed: () {
                         if (bloc.areMandatoryFieldsComplete()) {
-                          bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName)));
+                          bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName)));
                         } else {
                           showErrorSnackBar(context, bloc.buildMandatoryFieldsNotCompletedMessage(context));
                         }

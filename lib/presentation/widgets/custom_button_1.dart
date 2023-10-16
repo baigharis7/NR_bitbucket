@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../infrastructure/utils/dimens.dart';
+
 class CustomButton1 extends StatelessWidget {
   final String message;
   final Function action;
@@ -22,6 +24,7 @@ class CustomButton1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
+      height: Dimens.heightSmall,
       child: ElevatedButton(
         style: style ?? ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
@@ -38,6 +41,8 @@ class CustomButton1 extends StatelessWidget {
           maxLines: 2,
           style: TextStyle(
               color: textColor ?? Colors.black,
+            fontSize: Dimens.fontSizeLarge,
+            fontWeight: FontWeight.w600,
           ),
         ),
         onPressed: () => action.call(),

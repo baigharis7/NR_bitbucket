@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/num_constants.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
@@ -35,6 +36,7 @@ class _LoginScreenState extends State<LoginScreen>
   Animation<Offset>? _slideAnimation;
   Animation<double>? _opacityAnimation;
   final _formKey = GlobalKey<FormState>();
+  bool isChecked = false;
 
   void _showExitConfirmationDialog(BuildContext context) {
     showDialog(
@@ -311,6 +313,7 @@ class _LoginScreenState extends State<LoginScreen>
               Scaffold(
                 backgroundColor: Colors.white,
                 body: SingleChildScrollView(
+                  padding: const EdgeInsets.only(top: Dimens.heightNormal),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -319,15 +322,18 @@ class _LoginScreenState extends State<LoginScreen>
                         Container(
                           margin: const EdgeInsets.all(Dimens.marginXLarge),
                           child: Image.asset(
+                            height: 140,
+                            width: 305,
                             'assets/images/logo_name_black.png',
                             fit: BoxFit.cover,
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.only(left: 20,right: 20,bottom: 20,top: 50),
                           child: TextFormField(
                             decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)!.login_hint,
+                              border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge))),
+                              hintText: AppLocalizations.of(context)!.login_hint,
                               errorMaxLines: 3,
                             ),
                             controller: _usernameController,
@@ -347,10 +353,11 @@ class _LoginScreenState extends State<LoginScreen>
                             child: SlideTransition(
                               position: _slideAnimation!,
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                padding: const EdgeInsets.only(left: 20,right: 20,bottom: 20),
                                 child: TextFormField(
                                   decoration: InputDecoration(
-                                    labelText:
+                                    border:  const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge))),
+                                    hintText:
                                     AppLocalizations.of(context)!.email,
                                     errorMaxLines: 3,
                                   ),
@@ -365,7 +372,8 @@ class _LoginScreenState extends State<LoginScreen>
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: TextFormField(
                             decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)!.password_hint,
+                              border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge))),
+                              hintText: AppLocalizations.of(context)!.password_hint,
                               suffixIcon: IconButton(
                                   icon: Icon(
                                       model.isPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -392,10 +400,11 @@ class _LoginScreenState extends State<LoginScreen>
                               child: SlideTransition(
                                 position: _slideAnimation!,
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20,),
+                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                                   child: TextFormField(
                                     decoration: InputDecoration(
-                                      labelText: AppLocalizations.of(context)!.repeat_password,
+                                      border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge))),
+                                      hintText: AppLocalizations.of(context)!.repeat_password,
                                       suffixIcon: IconButton(
                                           icon: Icon(
                                                 model.isRepeatPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -412,6 +421,19 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                             ),
                           ),
+                        if (model.isLogin) Padding(
+                          padding: const EdgeInsets.only(top: Dimens.heightXXSmall,left: Dimens.heightXSmall,right: Dimens.heightXSmall,bottom: Dimens.heightSmall),
+                          child: SizedBox(
+                              width: double.infinity,
+                              child: Text(
+                                AppLocalizations.of(context)!
+                                    .forgotten_password,
+                                textAlign: TextAlign.right,
+                                style: const TextStyle(
+                                    decoration: TextDecoration.underline,
+                                    color: AppColors.mountainMeadow,),
+                              ),),
+                        ),
                         Container(
                           padding: const EdgeInsets.only(top: 20),
                           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
@@ -444,7 +466,7 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          padding: EdgeInsets.zero,
                           child: Container(
                             margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal, horizontal: Dimens.marginNormal),
                             child: Row(
@@ -452,24 +474,20 @@ class _LoginScreenState extends State<LoginScreen>
                               children: [
                                 Expanded(
                                   flex: 2,
-                                  child: Center(
-                                    child: Text(
-                                      AppLocalizations.of(context)!.dont_have_account,
-                                    ),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.dont_have_account,textAlign: TextAlign.right,
                                   ),
                                 ),
+                                const SizedBox(width: Dimens.marginXSmall,),
                                 Expanded(
                                   flex: 1,
-                                  child: TextButton(
-                                    style: TextButton.styleFrom(
-                                      textStyle: const TextStyle(),
-                                      shadowColor: Colors.amber,
-                                    ),
-                                    onPressed: () => model.changeLoginMode(() {
+                                  child: InkWell(
+                                    onTap: () => model.changeLoginMode(() {
                                       _controller!.forward();
                                     }),
                                     child: Text(
-                                      AppLocalizations.of(context)!.register,
+                                      model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login,
+                                      style: const TextStyle(color: AppColors.mountainMeadow, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge),textAlign: TextAlign.left,
                                     ),
                                   ),
                                 ),
@@ -477,6 +495,17 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
                           ),
                         ),
+                        if (!model.isLogin) Padding(padding: EdgeInsets.symmetric(vertical: Dimens.heightSmall),
+                          child: SizedBox(width: double.infinity, child: Row(
+                            children: [
+                              Checkbox(value: isChecked, onChanged: (value) {
+                                setState(() {
+                                  isChecked = value!;
+                                });
+                              },),
+                              Expanded(child: Text('By continuing you accept the data and privacy policy',textAlign: TextAlign.center,)),
+                            ],
+                          )),),
                         // Padding(
                         //   padding: const EdgeInsets.symmetric(vertical: 20),
                         //   child: Center(

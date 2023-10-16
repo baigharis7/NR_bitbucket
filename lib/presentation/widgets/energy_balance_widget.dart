@@ -54,7 +54,7 @@ class EnergyBalanceWidget extends StatelessWidget {
               children: [
                 FillHorizontalBar(
                   height: 30,
-                  fractionToFill: energyModel?.fractionToFill.toDouble() ?? 0,
+                  fractionToFill: energyModel!.fractionToFill.isNaN ? 0.0 : energyModel?.fractionToFill.toDouble() ?? 0.0,
                   backgroundBarColor: Colors.teal[100],
                 ),
                 Container(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_button_1.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -22,7 +23,7 @@ class RoundedCustomButton extends StatelessWidget {
           textStyle: const TextStyle(
             color: Colors.white,
           ),
-          backgroundColor: Colors.teal,
+          backgroundColor: AppColors.mountainMeadow,
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)),),
         ),
         textColor: Colors.white,
