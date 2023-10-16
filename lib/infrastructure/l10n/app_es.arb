@@ -321,5 +321,10 @@
     "favorite_saved" : "Tu favorito se ha guardado con éxito!",
     "skip_verification_code_message" : "Si saltas este paso podrás realizarlo más adelante",
     "add_liquid_title" : "Añadir líquido",
-    "list" : "Lista"
+    "list" : "Lista",
+    "privacy_policy" : "Al continuar aceptas la política de datos y privacidad",
+    "accept_all" : "Aceptar todas",
+    "your_privacy" : "Tus preferencias de privacidad",
+    "welcome" : "Bienvenid@",
+    "begin" : "Comenzar"
 }

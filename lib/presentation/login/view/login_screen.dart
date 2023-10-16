@@ -11,6 +11,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/num_constants.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/provider/login_provider_new.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/registry/view/registry_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/welcome/welcome_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_button_1.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 import 'package:provider/provider.dart';
@@ -454,12 +455,12 @@ class _LoginScreenState extends State<LoginScreen>
                                     context: context,
                                     sendVerificationCode: (confirmationCode) => model.sendVerificationCode(
                                       confirmationCode: confirmationCode,
-                                      action: () => Navigator.of(context).popAndPushNamed(RegistryScreen.routeName, result: true,),
+                                      action: () => Navigator.of(context).popAndPushNamed(WelcomeScreen.routeName, result: true,),
                                       alreadyExistsAlias: () => Navigator.pop(context),
                                     ),
                                     resendVerificationCode: () => model.resendVerificationCode(),
                                   ),
-                                  goToRegistry: () => Navigator.of(context).popAndPushNamed(RegistryScreen.routeName),
+                                  goToRegistry: () => Navigator.of(context).popAndPushNamed(WelcomeScreen.routeName),
                                 );
                               }
                             },
@@ -495,15 +496,15 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
                           ),
                         ),
-                        if (!model.isLogin) Padding(padding: EdgeInsets.symmetric(vertical: Dimens.heightSmall),
-                          child: SizedBox(width: double.infinity, child: Row(
+                        if (!model.isLogin) Padding(padding: const EdgeInsets.symmetric(vertical: Dimens.heightSmall),
+                          child: SizedBox(width: double.infinity, child: Row(mainAxisSize: MainAxisSize.min,mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Checkbox(value: isChecked, onChanged: (value) {
-                                setState(() {
-                                  isChecked = value!;
-                                });
+                              Checkbox(value: model.isPrivacyPolicyChecked, onChanged: (value) {
+                                model.setPrivacyPolicyChecked(value!);
                               },),
-                              Expanded(child: Text('By continuing you accept the data and privacy policy',textAlign: TextAlign.center,)),
+                              InkWell(onTap: () async {
+                                Navigator.pushNamed(context, WelcomeScreen.routeName);
+                              },child: Text(AppLocalizations.of(context)!.privacy_policy, textAlign: TextAlign.start, style: const TextStyle(fontSize: Dimens.fontSizeSmall),)),
                             ],
                           )),),
                         // Padding(

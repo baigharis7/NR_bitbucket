@@ -193,6 +193,7 @@ import 'package:nutrenaissance_flutter/presentation/journal/view/journal_sport_s
 import 'package:nutrenaissance_flutter/presentation/liquidevent/bloc/liquid_event_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidevent/view/add_liquid_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/privacypolicy/privacy_policy.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/diet_questions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/food_list_aversions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/general_questions_screen.dart';
@@ -205,6 +206,7 @@ import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.da
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/waterevent/bloc/water_event_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/welcome/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'domain/interactor/login/erase_database_interactor_impl.dart';
 import 'presentation/profile/common/aversions_screen.dart';
@@ -568,7 +570,8 @@ void main() async {
           DietQuestionsScreen.routeName: (_) => const DietQuestionsScreen(),
           PhysicalActivityScreen.routeName: (_) => const PhysicalActivityScreen(),
           RecommendationsTabHolder.routeName: (_) => const RecommendationsTabHolder(),
-          FoodScreen.routeName: (_) => const FoodScreen()
+          FoodScreen.routeName: (_) => const FoodScreen(),
+          WelcomeScreen.routeName: (_) => const WelcomeScreen()
         },
       ),
     ),

@@ -5,7 +5,7 @@ class Dimens {
   static const paddingNormal = 12.0;
   static const paddingLarge = 16.0;
   static const paddingXLarge = 24.0;
-  // static const heightXXSmall = 10.0;
+  static const paddingXXLarge = 40.0;
   // static const heightXSmall = 20.0;
   // static const heightSmall = 50.0;
   // static const heightNormal = 100.0;
@@ -18,6 +18,8 @@ class Dimens {
   static const marginLarge = 16.0;
   static const marginXLarge = 24.0;
   static const marginXXLarge = 30.0;
+  static const marginXXXLarge = 50.0;
+  static const marginXXXXLarge = 100.0;
 
   // Font sizes
   static const fontSizeXSmall = 10.0;

@@ -94,6 +94,7 @@ class LoginProviderNew extends BaseProvider {
 
   get getNotConfirmedUserTryingToLogin => _notConfirmedUserTryingToLogin;
   get isLogin => _loginMode;
+  bool get isPrivacyPolicyChecked => _isPrivacyPolicyChecked;
   String? get getEmail => _email.orEmpty();
   String? get getUsername => _username.orEmpty();
   String? get getPassword => _password.orEmpty();
@@ -109,6 +110,7 @@ class LoginProviderNew extends BaseProvider {
   String? _username;
   String? _password;
   bool _loginMode = true;
+  bool _isPrivacyPolicyChecked = false;
   bool _masterFilesChecked = false;
   bool _profileChecked = false;
   Function? _goToRegistry;
@@ -119,6 +121,11 @@ class LoginProviderNew extends BaseProvider {
 
   void _setLoginMode(bool isLoginOn) {
     _loginMode = isLoginOn;
+    notifyListeners();
+  }
+
+  void setPrivacyPolicyChecked(bool isPrivacyPolicyChecked) {
+    _isPrivacyPolicyChecked = isPrivacyPolicyChecked;
     notifyListeners();
   }
 

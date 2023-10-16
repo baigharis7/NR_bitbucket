@@ -320,6 +320,11 @@
     "favorite_saved" : "Your favorite has been successfully saved!",
     "skip_verification_code_message" : "If you skip this step you will be able to confirm your user further.",
     "add_liquid_title" : "Add liquid",
-    "list" : "List"
+    "list" : "List",
+    "privacy_policy" : "By continuing you accept the data and privacy policy",
+    "accept_all" : "Accept all",
+    "your_privacy" : "Your privacy preferences",
+    "welcome" : "Welcome",
+    "begin" : "Begin"
 
 }

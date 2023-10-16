@@ -28,7 +28,6 @@ class TextValueIconBox extends StatefulWidget {
 }
 
 class _TextValueIconBox extends State<TextValueIconBox> {
-  final editNumberController = TextEditingController();
   @override
   Widget build(BuildContext context) {
 
@@ -42,20 +41,23 @@ class _TextValueIconBox extends State<TextValueIconBox> {
         child: InkWell(
           onTap: () {
             setState(() {
-              // widget.onClick.call();
+              widget.onClick.call();
             });
           },
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
             child: Container(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+              alignment: widget.isCentered ? Alignment.center : Alignment.topLeft,
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(widget.title),
-                  TextField(controller: editNumberController,decoration: InputDecoration(hintText: '0,0'),onChanged: (value) {
-
-                  },),
-                  // Text(widget.value == null || widget.value == -1 ? '' : '${widget.value} ${widget.unit}'),
+                  Text(widget.value == null || widget.value == -1 ? '' : '${widget.value} ${widget.unit}'),
+                  SizedBox(
+                    height: 30,
+                    width: 30,
+                    child: widget.icon != null ? Icon(widget.icon) : const Icon(Icons.add_circle),
+                  )
                 ],
               ),
             ),
