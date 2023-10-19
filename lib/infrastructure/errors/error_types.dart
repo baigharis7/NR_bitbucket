@@ -54,6 +54,7 @@ enum FormErrorTypes {
   usernameEmptyOrNullError,
   emailFormatError,
   invalidPasswordError,
+  emptyPasswordError,
   emptyRepeatPassword,
   repeatPasswordError,
 }

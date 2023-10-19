@@ -364,26 +364,26 @@ class LoginBloc extends BaseBloc<LoginActions, LoginState> {
     }
   }
 
-  FormErrorTypes? validatePassword(String? value) => validatePasswordOrNull(value);
-  FormErrorTypes? validateRepeatPassword(String? value, String password) {
-    if (state.isLogin) {
-      return null;
-    } else {
-      if (value.isEmptyOrNull()) {
-        return FormErrorTypes.emptyRepeatPassword;
-      } else {
-        if (validatePasswordOrNull(password) == null) {
-          if (value != password) {
-            return FormErrorTypes.repeatPasswordError;
-          } else {
-            return null;
-          }
-        } else {
-          return null;
-        }
-      }
-    }
-  }
+  // FormErrorTypes? validatePassword(String? value) => validatePasswordOrNull(value);
+  // FormErrorTypes? validateRepeatPassword(String? value, String password) {
+  //   if (state.isLogin) {
+  //     return null;
+  //   } else {
+  //     if (value.isEmptyOrNull()) {
+  //       return FormErrorTypes.emptyRepeatPassword;
+  //     } else {
+  //       if (validatePasswordOrNull(password) == null) {
+  //         if (value != password) {
+  //           return FormErrorTypes.repeatPasswordError;
+  //         } else {
+  //           return null;
+  //         }
+  //       } else {
+  //         return null;
+  //       }
+  //     }
+  //   }
+  // }
 
   Future<void> _onSendVerificationCodeSuccess(SignUpResult signUpResult, Function action, Function removeLoading) async {
     await _fetchUserAttributes(action, isFromVerificationCode: true, removeLoading: removeLoading);

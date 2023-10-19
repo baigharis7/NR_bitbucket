@@ -6,6 +6,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 class CenteredIconBox extends StatefulWidget {
   final IconData icon;
   final Color colorSelected;
+  final Color errorBorderColor;
   final Function onClick;
   final bool isSelected;
 
@@ -13,6 +14,7 @@ class CenteredIconBox extends StatefulWidget {
     Key? key,
     required this.icon,
     required this.colorSelected,
+    required this.errorBorderColor,
     required this.onClick,
     this.isSelected = false,
   }) : super(key: key);
@@ -31,7 +33,7 @@ class _CenteredIconBox extends State<CenteredIconBox> {
         borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
       child: Container(
-        decoration: BoxDecoration(
+        decoration: BoxDecoration(border: Border.all(color: widget.errorBorderColor, width: 2),
           color: widget.isSelected ? widget.colorSelected : Colors.grey[100],
           shape: BoxShape.rectangle,
           borderRadius: const BorderRadius.all(Radius.circular(5)),

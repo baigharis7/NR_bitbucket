@@ -17,11 +17,21 @@ bool isEmail(String? string) {
 }
 
 
-FormErrorTypes? validatePasswordOrNull(String? password) {
-  if (password == null || password.length < 8 || !_isPasswordValid(password)) {
-    return FormErrorTypes.invalidPasswordError;
-  } else {
-    return null;
+FormErrorTypes? validatePasswordOrNull(bool? isLogin,String? password) {
+  // if (password == null || password.length < 8 || !_isPasswordValid(password)) {
+  if(!isLogin!) {
+    if (password == null || password.length < 8 || !_isPasswordValid(password)) {
+      return FormErrorTypes.invalidPasswordError;
+    } else {
+      return null;
+    }
+  }
+  else {
+    if (password == null || password.isEmpty) {
+      return FormErrorTypes.emptyPasswordError;
+    } else {
+      return null;
+    }
   }
 }
 

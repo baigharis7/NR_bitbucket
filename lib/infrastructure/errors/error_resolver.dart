@@ -116,6 +116,8 @@ String? resolveFormError(BuildContext context, FormErrorTypes? formErrorTypes) {
       return stringResolver.username_empty_or_null_error;
     case FormErrorTypes.emailFormatError:
       return stringResolver.email_format_error;
+    case FormErrorTypes.emptyPasswordError:
+      return stringResolver.username_empty_or_null_error;
     case FormErrorTypes.invalidPasswordError:
       return stringResolver.invalid_password_error;
     case FormErrorTypes.emptyRepeatPassword:

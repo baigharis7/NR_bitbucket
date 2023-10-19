@@ -591,7 +591,7 @@ class LoginProviderNew extends BaseProvider {
     }
   }
 
-  FormErrorTypes? validatePassword(String? value) => validatePasswordOrNull(value);
+  FormErrorTypes? validatePassword(String? value) => validatePasswordOrNull(isLogin , value);
   FormErrorTypes? validateRepeatPassword(String? value, String password) {
     if (isLogin) {
       return null;
@@ -599,7 +599,7 @@ class LoginProviderNew extends BaseProvider {
       if (value.isEmptyOrNull()) {
         return FormErrorTypes.emptyRepeatPassword;
       } else {
-        if (validatePasswordOrNull(password) == null) {
+        if (validatePasswordOrNull(!isLogin, password) == null) {
           if (value != password) {
             return FormErrorTypes.repeatPasswordError;
           } else {

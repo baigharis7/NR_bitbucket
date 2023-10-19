@@ -8,6 +8,7 @@ class TextFieldGeneralQuest extends StatelessWidget {
   final String title;
   final Function onChanged;
   final bool isNumeric;
+  final Color errorBorderColor;
   final int? value;
   final textController = TextEditingController();
 
@@ -16,6 +17,7 @@ class TextFieldGeneralQuest extends StatelessWidget {
       required this.title,
       required this.onChanged,
       this.isNumeric = false,
+        required this.errorBorderColor,
       required this.value})
       : super(key: key);
 
@@ -29,38 +31,41 @@ class TextFieldGeneralQuest extends StatelessWidget {
       margin: const EdgeInsets.symmetric(
           horizontal: Dimens.marginSmall, vertical: Dimens.marginSmall),
       elevation: 5.0,
-      child: Row(
-        children: [
-          Expanded(
-            flex: 4,
-            child: Container(
-              margin: const EdgeInsets.symmetric(
-                  horizontal: Dimens.marginSmall, vertical: Dimens.marginSmall),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title),
-                  TextField(
-                    keyboardType:
-                        isNumeric ? TextInputType.number : TextInputType.text,
-                    controller: textController,
-                    decoration: const InputDecoration(),
-                    onChanged: (value) {
-                      if (textController.text != '') {
-                        onChanged
-                            .call(int.parse(textController.text.orEmpty()));
-                      }
-                    },
-                  ),
-                ],
+      child: Container(decoration: BoxDecoration(border: Border.all(color: errorBorderColor, width: 2),
+        borderRadius: const BorderRadius.all(Radius.circular(5)),),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 4,
+              child: Container(
+                margin: const EdgeInsets.symmetric(
+                    horizontal: Dimens.marginSmall, vertical: Dimens.marginSmall),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title),
+                    TextField(
+                      keyboardType:
+                          isNumeric ? TextInputType.number : TextInputType.text,
+                      controller: textController,
+                      decoration: const InputDecoration(),
+                      onChanged: (value) {
+                        if (textController.text != '') {
+                          onChanged
+                              .call(int.parse(textController.text.orEmpty()));
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Container(),
-          )
-        ],
+            Expanded(
+              flex: 1,
+              child: Container(),
+            )
+          ],
+        ),
       ),
     );
   }

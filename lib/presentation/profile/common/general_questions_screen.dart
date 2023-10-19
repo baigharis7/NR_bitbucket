@@ -11,6 +11,7 @@ import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.d
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_state.dart';
+import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/centered_icon_box.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_button_1.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
@@ -30,10 +31,17 @@ class GeneralQuestionsScreen extends StatefulWidget {
 
 class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
   final _commonNameController = TextEditingController();
+  final _dateController = TextEditingController();
+  String? _nameErrorText = null;
+  String? _dateErrorText = null;
+  bool _borderError = false;
+  bool _heightError = false;
+  bool _widthError = false;
 
   @override
   void dispose() {
     _commonNameController.dispose();
+    _dateController.dispose();
     super.dispose();
   }
 
@@ -90,8 +98,9 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                         child: TextField(
                           controller: _commonNameController,
                           decoration: InputDecoration(
-                            labelText:
+                            hintText:
                                 AppLocalizations.of(ctx)!.write_your_name_here,
+                            errorText: _nameErrorText,
                           ),
                           onChanged: (name) => bloc
                               .add(RefreshCommonNameAction(commonName: name)),
@@ -100,77 +109,97 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: Dimens.marginNormal),
-                            child: Text(
-                                AppLocalizations.of(ctx)!.birthday_question +
-                                    ':'),
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: Dimens.marginNormal),
+                              child: TextField(readOnly: true, keyboardType: TextInputType.none, controller: _dateController,
+                                  onTap: () {
+                                DatePickerHelper.presentDatePicker(
+                                  context: ctx,
+                                  saveDate: (DateTime pickedDate) {
+                                    bloc.add(RefreshBirthdateAction(
+                                        birthdate:
+                                        pickedDate.millisecondsSinceEpoch));
+                                  },
+                                );
+                              }, decoration: InputDecoration(errorText: _dateErrorText, hintText: state.profile!.birthDate == null ? AppLocalizations.of(ctx)!.birthday_question : DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.birthDate!)))),
+                            ),
                           ),
-                          Container(
-                            child: state.profile!.birthDate != null
-                                ? Text(
-                                    DateFormat('dd/MM/yyyy').format(
-                                        DateTime.fromMillisecondsSinceEpoch(
-                                            state.profile!.birthDate!)),
-                                    overflow: TextOverflow.fade,
-                                  )
-                                : const Text(''),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.calendar_month,
-                                color: Colors.grey),
-                            onPressed: () {
-                              DatePickerHelper.presentDatePicker(
-                                context: ctx,
-                                saveDate: (DateTime pickedDate) {
-                                  bloc.add(RefreshBirthdateAction(
-                                      birthdate:
-                                          pickedDate.millisecondsSinceEpoch));
-                                },
-                              );
-                            },
-                          )
+                          // Container(
+                          //   child: state.profile!.birthDate != null
+                          //       ? Text(
+                          //           DateFormat('dd/MM/yyyy').format(
+                          //               DateTime.fromMillisecondsSinceEpoch(
+                          //                   state.profile!.birthDate!)),
+                          //           overflow: TextOverflow.fade,
+                          //         )
+                          //       : const Text(''),
+                          // ),
+                          // IconButton(
+                          //   icon: const Icon(Icons.calendar_month,
+                          //       color: Colors.grey),
+                          //   onPressed: () {
+                          //     DatePickerHelper.presentDatePicker(
+                          //       context: ctx,
+                          //       saveDate: (DateTime pickedDate) {
+                          //         bloc.add(RefreshBirthdateAction(
+                          //             birthdate:
+                          //                 pickedDate.millisecondsSinceEpoch));
+                          //       },
+                          //     );
+                          //   },
+                          // )
                         ],
                       ),
                       Container(
                         margin: const EdgeInsets.only(top: Dimens.marginLarge),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              flex: 1,
-                              child: Container(
-                                margin: const EdgeInsets.only(
-                                  left: Dimens.marginNormal,
-                                  right: Dimens.marginXSmall,
+                            if (_borderError) Container(margin: const EdgeInsets.only(
+                      left: Dimens.marginNormal,
+                        right: Dimens.marginXSmall,
+                      ),child: Text(AppLocalizations.of(context)!.must_complete_field+':', style: TextStyle(color: Colors.red,),textAlign: TextAlign.start)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    margin: const EdgeInsets.only(
+                                      left: Dimens.marginNormal,
+                                      right: Dimens.marginXSmall,
+                                    ),
+                                    child: CenteredIconBox(
+                                      errorBorderColor: _borderError ? Colors.red : Colors.grey.shade100,
+                                      colorSelected: Colors.amber,
+                                      icon: Icons.male,
+                                      onClick: () =>
+                                          bloc.add(SetSexAction(sex: SexType.male)),
+                                      isSelected:
+                                          state.profile!.sex == SexType.male,
+                                    ),
+                                  ),
                                 ),
-                                child: CenteredIconBox(
-                                  colorSelected: Colors.amber,
-                                  icon: Icons.male,
-                                  onClick: () =>
-                                      bloc.add(SetSexAction(sex: SexType.male)),
-                                  isSelected:
-                                      state.profile!.sex == SexType.male,
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    margin: const EdgeInsets.only(
+                                      right: Dimens.marginNormal,
+                                      left: Dimens.marginXSmall,
+                                    ),
+                                    child: CenteredIconBox(
+                                      errorBorderColor: _borderError ? Colors.red : Colors.grey.shade100,
+                                      colorSelected: Colors.amber,
+                                      icon: Icons.female,
+                                      onClick: () => bloc
+                                          .add(SetSexAction(sex: SexType.female)),
+                                      isSelected:
+                                          state.profile!.sex == SexType.female,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Container(
-                                margin: const EdgeInsets.only(
-                                  right: Dimens.marginNormal,
-                                  left: Dimens.marginXSmall,
-                                ),
-                                child: CenteredIconBox(
-                                  colorSelected: Colors.amber,
-                                  icon: Icons.female,
-                                  onClick: () => bloc
-                                      .add(SetSexAction(sex: SexType.female)),
-                                  isSelected:
-                                      state.profile!.sex == SexType.female,
-                                ),
-                              ),
+                              ],
                             ),
                           ],
                         ),
@@ -365,6 +394,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                               children: [
                                 Expanded(
                                   child: TextFieldGeneralQuest(
+                                    errorBorderColor: _heightError ? Colors.red : Colors.grey.shade100,
                                     value: state.profile!
                                         .physicalCharacteristics!.height,
                                     title: AppLocalizations.of(ctx)!.height,
@@ -380,6 +410,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                 ),
                                 Expanded(
                                   child: TextFieldGeneralQuest(
+                                    errorBorderColor: _widthError ? Colors.red : Colors.grey.shade100,
                                     value: state.profile!
                                         .physicalCharacteristics!.weight,
                                     title: AppLocalizations.of(ctx)!.weight,
@@ -399,6 +430,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                               children: [
                                 Expanded(
                                   child: TextFieldGeneralQuest(
+                                    errorBorderColor: Colors.grey.shade100,
                                     value: state.profile!
                                         .physicalCharacteristics!.bodyFat,
                                     title: AppLocalizations.of(ctx)!.body_fat,
@@ -414,6 +446,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                 ),
                                 Expanded(
                                   child: TextFieldGeneralQuest(
+                                    errorBorderColor: Colors.grey.shade100,
                                     value: state
                                         .profile!
                                         .physicalCharacteristics!
@@ -435,7 +468,49 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                               margin: const EdgeInsets.only(
                                   top: Dimens.marginXLarge),
                               child: RoundedCustomButton(
-                                onPressed: () => Navigator.pop(context),
+                                onPressed: () {
+                                  if (_commonNameController.text.isEmpty) {
+                                    // bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, GeneralQuestionsScreen.routeName)));
+                                    setState(() {
+                                      _nameErrorText = AppLocalizations.of(context)!.must_complete_field;
+                                    });
+                                  }
+                                  else if ((state.profile?.birthDate ?? 0) < 1) {
+                                    setState(() {
+                                      _nameErrorText = null;
+                                      _dateErrorText = AppLocalizations.of(context)!.must_complete_field;
+                                    });
+                                  }
+                                  else if (state.profile!.sex == null) {
+                                  setState(() {
+                                    _nameErrorText = null;
+                                    _dateErrorText = null;
+                                    _borderError = true;
+                                  });
+                                  }
+                                  else if (state.profile!.physicalCharacteristics!.height == null) {
+                                    setState(() {
+
+                                    });
+                                    _nameErrorText = null;
+                                    _dateErrorText = null;
+                                    _borderError = false;
+                                    _heightError = true;
+                                  }
+                                  else if (state.profile!.physicalCharacteristics!.weight == null) {
+                                    setState(() {
+
+                                    });
+                                    _nameErrorText = null;
+                                    _dateErrorText = null;
+                                    _borderError = false;
+                                    _heightError = false;
+                                    _widthError = true;
+                                  }
+                                  else {
+                                    bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName)));
+                                  }
+                                },
                               ),
                             )
                           ],

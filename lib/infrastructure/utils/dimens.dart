@@ -20,6 +20,8 @@ class Dimens {
   static const marginXXLarge = 30.0;
   static const marginXXXLarge = 50.0;
   static const marginXXXXLarge = 100.0;
+  static const margin5XLarge = 200.0;
+  static const margin6XLarge = 300.0;
 
   // Font sizes
   static const fontSizeXSmall = 10.0;

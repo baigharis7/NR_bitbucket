@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
+import '../profile/common/objectives_screen.dart';
 import '../profile/registry/view/registry_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -41,7 +42,7 @@ class WelcomeScreen extends StatelessWidget {
               child: RoundedCustomButton(
                 onPressed: () {
                   Navigator.of(context)
-                      .popAndPushNamed(RegistryScreen.routeName);
+                      .popAndPushNamed(ObjectivesScreen.routeName);
                 },
                 buttonText: AppLocalizations.of(context)!.begin,
               ),
