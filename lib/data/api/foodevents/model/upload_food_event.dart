@@ -7,6 +7,7 @@ class UploadFoodEvent {
   String? userId;
   int? eventDate;
   int? eventId;
+  String? foodName;
   List<FoodInfo>? foodInfo;
   bool uploadSuccess;
   int? eventKcals;
@@ -15,6 +16,7 @@ class UploadFoodEvent {
       this.userId,
       this.eventDate,
       this.eventId,
+      this.foodName,
       this.foodInfo,
       this.eventKcals,
       {this.uploadSuccess = false,}

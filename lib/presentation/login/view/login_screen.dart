@@ -340,7 +340,7 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
                             controller: _usernameController,
                             validator: (value) => resolveFormError(context, model.validateUsername(value)),
-                          ),
+                          onChanged: (value) => _formKey.currentState!.validate(),),
                         ),
                         if (!model.isLogin) AnimatedContainer(
                           constraints: BoxConstraints(
@@ -365,6 +365,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   ),
                                   controller: _emailController,
                                   validator: (value) => resolveFormError(context, model.validateEmail(value)),
+                                  onChanged: (value) => _formKey.currentState!.validate(),
                                 ),
                               ),
                             ),
@@ -387,6 +388,7 @@ class _LoginScreenState extends State<LoginScreen>
                             controller: _passwordController,
                             obscureText: !model.isPasswordVisible,
                             validator: (value) => resolveFormError(context, model.validatePassword(value)),
+                            onChanged: (value) => _formKey.currentState!.validate(),
                           ),
                         ),
                         if (!model.isLogin)
@@ -418,6 +420,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     controller: _repeatPasswordController,
                                     obscureText: !model.isRepeatPasswordVisible,
                                     validator: (value) => resolveFormError(context, model.validateRepeatPassword(value, _passwordController.text)),
+                                    onChanged: (value) => _formKey.currentState!.validate(),
                                   ),
                                 ),
                               ),

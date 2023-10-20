@@ -78,7 +78,7 @@ class _DashboardScreen extends State<DashboardScreen>
                 backgroundColor: Colors.white,
                 actions: [
                   IconButton(
-                    onPressed: () => Navigator.pushNamed(context, ProfileScreen.routeName).then((value) => bloc.add(InitializeState())),
+                    onPressed: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName).then((value) => bloc.add(InitializeState())),
                     iconSize: 35.0,
                     icon: Image.asset(
                       'assets/icon/profile_icon.png',

@@ -73,6 +73,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
 
   Future<void> showAddFoodNameDialog({
     required BuildContext context,
+    required Function onFinish,
     required Function onNameChange,
   }) async {
     await showDialog(
@@ -80,9 +81,10 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
       barrierDismissible: false,
       builder: (ctx) => AddFoodNameDialog(
         onNameChange: (String foodName) => onNameChange.call(foodName),
+        onFinish: () => onFinish.call(),
         onPop: () => Navigator.pop(context),
       ),
-    );
+    ).then((_) => Navigator.pop(context));
   }
 
   @override
@@ -317,14 +319,15 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                 .no_foods_in_event)
                             : bloc.validateList() ?? false ? ToastHelper().showToast(
                             text: AppLocalizations.of(context)!
-                                .must_complete_field) : state.foodName != ''
-                            ? context
-                            .read<AddFoodEventBloc>()
-                            .add(FinishFoodEventAction(
-                          onFinish: () =>
-                              _showConfirmationDialog(context),
-                        )) : showAddFoodNameDialog(
+                                .must_complete_field) : showAddFoodNameDialog(
                             context: context,
+                            onFinish: (){
+                              context
+                                .read<AddFoodEventBloc>()
+                                .add(FinishFoodEventAction(
+                              onFinish: () =>
+                                  _showConfirmationDialog(context),
+                            ));},
                             onNameChange: (foodName) {
                               bloc.add(AddFoodNameEventAction(
                                   foodName: foodName));

@@ -130,7 +130,8 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                           children: [
                             ...state.todayFoodEvents!.map((foodEvent) {
                               return EventItemWithEditAndLike(
-                                name: foodEvent.foodInfo!.map((food) => food.translate(context)).join(', '),
+                                // name: foodEvent.foodInfo!.map((food) => food.translate(context)).join(', '),
+                                name: foodEvent.foodName ?? '',
                                 isFavorite: /** TODO: lógica del */false,
                                 onEdit: () => Navigator.pushNamed(
                                   context,

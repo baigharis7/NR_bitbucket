@@ -11,6 +11,7 @@ UploadFoodEvent _$UploadFoodEventFromJson(Map<String, dynamic> json) =>
       json['userId'] as String?,
       json['eventDate'] as int?,
       json['eventId'] as int?,
+      json['foodName'] as String?,
       (json['foodInfo'] as List<dynamic>?)
           ?.map((e) => FoodInfo.fromJson(e as Map<String, dynamic>))
           .toList(),

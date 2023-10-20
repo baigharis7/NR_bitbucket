@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
 class AddFoodNameDialog extends StatefulWidget {
   final Function onNameChange;
+  final Function onFinish;
   final Function onPop;
 
   const AddFoodNameDialog({
     Key? key,
     required this.onNameChange,
+    required this.onFinish,
     required this.onPop,
   }) : super(key: key);
 
@@ -38,7 +42,7 @@ class _AddFoodNameDialogState extends State<AddFoodNameDialog> {
       children: [
         SizedBox(
           width: mediaQuerySize.width,
-          height: mediaQuerySize.height/2.5,
+          height: mediaQuerySize.height/2,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -79,6 +83,19 @@ class _AddFoodNameDialogState extends State<AddFoodNameDialog> {
                   ),
                 ],
               ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                child: RoundedCustomButton(
+                  buttonText: AppLocalizations.of(context)!.save_food,
+                  onPressed: () {
+                    if (_foodNameController.text == '') {
+                      ToastHelper().showToast(text: AppLocalizations.of(context)!.favorite_name_required);
+                    } else {
+                      widget.onFinish.call();
+                    }
+                  },
+                ),
+              )
             ],
           ),
         ),

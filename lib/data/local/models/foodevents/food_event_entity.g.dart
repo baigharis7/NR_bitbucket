@@ -19,22 +19,25 @@ class FoodEventEntityAdapter extends TypeAdapter<FoodEventEntity> {
     return FoodEventEntity(
       fields[0] as String?,
       fields[1] as int?,
-      (fields[2] as List?)?.cast<FoodInfo>(),
-      fields[3] as int?,
+      fields[2] as String?,
+      (fields[3] as List?)?.cast<FoodInfo>(),
+      fields[4] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, FoodEventEntity obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
       ..write(obj.eventDate)
       ..writeByte(2)
-      ..write(obj.foodInfo)
+      ..write(obj.foodName)
       ..writeByte(3)
+      ..write(obj.foodInfo)
+      ..writeByte(4)
       ..write(obj.eventKcals);
   }
 
@@ -530,6 +533,7 @@ FoodEventEntity _$FoodEventEntityFromJson(Map<String, dynamic> json) =>
     FoodEventEntity(
       json['userId'] as String?,
       json['eventDate'] as int?,
+      json['foodName'] as String?,
       (json['foodInfo'] as List<dynamic>?)
           ?.map((e) => FoodInfo.fromJson(e as Map<String, dynamic>))
           .toList(),

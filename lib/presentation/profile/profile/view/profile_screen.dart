@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/popup_menu_helper.
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/diet_questions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/general_questions_screen.dart';
@@ -17,6 +18,9 @@ import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.
 import 'package:nutrenaissance_flutter/presentation/widgets/profile_option_with_graphic_and_add.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+
+import '../../../dashboard/bloc/dashboard_actions.dart';
+import '../../../widgets/custom_bottom_app_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const routeName = '/profile';
@@ -70,7 +74,10 @@ class _ProfileScreen extends State<ProfileScreen> {
                 backgroundColor: Colors.transparent,
                 titleSpacing: Dimens.marginNormal,
                 elevation: 0,
-                leadingWidth: 0.0,
+                leading: IconButton(
+                  onPressed: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 25,),
+                ),
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -167,7 +174,22 @@ class _ProfileScreen extends State<ProfileScreen> {
                   ],
                 ),
               ),
-            );
+              bottomNavigationBar: const CustomBottomAppBar(initStateCallback : null),
+              resizeToAvoidBottomInset: true,
+              floatingActionButton: FloatingActionButton(
+                elevation: 2.0,
+                backgroundColor: Colors.white,
+                onPressed: () { Navigator.popAndPushNamed(context, DashboardScreen.routeName); },
+                child: Container(
+                  padding: const EdgeInsets.all(Dimens.paddingSmall),
+                  child: Image.asset(
+                    'assets/images/logo_black.png',
+                    fit: BoxFit.cover,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,);
           },
         ),
       ),
