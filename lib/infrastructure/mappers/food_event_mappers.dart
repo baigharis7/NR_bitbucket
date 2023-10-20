@@ -331,6 +331,7 @@ FoodEventSimple mapToFoodEventSimple(domain.FoodEventComplete foodEventComplete)
         userId: foodEventComplete.userId!,
         eventDate: foodEventComplete.eventDate!,
         eventId: foodEventComplete.eventDate!,
+        foodName: '',
         ingredients: mapToFoodInEventList(foodEventComplete.foodInfo!),
         // drinks: mapToFoodInEventList(foodEventComplete.foodInfo!.),
     );

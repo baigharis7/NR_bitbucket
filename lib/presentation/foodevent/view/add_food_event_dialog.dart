@@ -246,18 +246,18 @@ class _AddFoodEventItem extends State<AddFoodEventDialog> {
                 ),
               ),
               onPressed: () {
-                if (_quantityController.text != '' && _quantityController.text != '0' && ((units.isNotEmpty && _unitName != '') || (units.isEmpty)) && ((cookingMethods.isNotEmpty && _cookingMethodName != '') || cookingMethods.isEmpty)) {
+                // if (_quantityController.text != '' && _quantityController.text != '0' && ((units.isNotEmpty && _unitName != '') || (units.isEmpty)) && ((cookingMethods.isNotEmpty && _cookingMethodName != '') || cookingMethods.isEmpty)) {
                   final foodInEvent = FoodInEvent(
                     id: ingredient.id,
-                    qty: int.parse(_quantityController.text),
+                    qty: _quantityController.text.isEmpty ? -1 : int.parse(_quantityController.text),
                     unit: SimpleItemHelper().findSimpleItemId(units, _unitName!),
                     cookingMethod: SimpleItemHelper().findSimpleItemId(cookingMethods, _cookingMethodName ?? '-1'),
                     unitsEquivalences: unitsEquivalences,
                   );
                   Navigator.pop(context, foodInEvent);
-                } else {
-                  ToastHelper().showToast(text: AppLocalizations.of(context)!.missing_fieds_food_event);
-                }
+                // } else {
+                //   ToastHelper().showToast(text: AppLocalizations.of(context)!.missing_fieds_food_event);
+                // }
                 },
               child: Text(AppLocalizations.of(context)!.finish, style: const TextStyle(color: Colors.white),),
             )

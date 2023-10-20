@@ -42,6 +42,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     cookingMethodsMaster: CookingMethodsMaster(cookingMethods: []),
     unitsFoodsMaster: UnitsFoodsMaster(unitsFoodsMaster: []),
     unitsInfoMaster: UnitsInfoMaster(unitsInfoMaster: []),
+    foodName: '',
     eventDate: null,
     isEdit: false,
     foodFavorites: [],
@@ -88,6 +89,11 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
     });
 
+    on<AddFoodNameEventAction>((event, emit) {
+      state.foodName = event.foodName;
+      emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
+    },);
+
     on<SelectCookingMethodAction>((event, emit) {
       state.foodsInEvent!.add(event.foodInEvent);
       emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
@@ -100,6 +106,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
           userId: getUserIdInteractor.execute(),
           eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
         eventId: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+        foodName: state.foodName ?? '',
       );
       foodEvent.ingredients = state.foodsInEvent.orEmpty();
       foodEvent.drinks = []; // TODO: is it necessary to implement drinks in food events?
@@ -110,6 +117,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
           try {
             await saveFoodEventInteractor.execute(uploadFoodEvent, state.isEdit!);
             state.foodsInEvent!.clear();
+            state.foodName = '';
             emit(state.copyWith(isLoading: false, onError: null, eventDate: null));
             event.onFinish.call();
           } catch (error) {
@@ -158,6 +166,13 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       state.eventDate = event.dateTime.millisecondsSinceEpoch;
       emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
     });
+
+    on<ValidateListEventAction>((event, emit) {
+      state.foodsInEvent = state.foodsInEvent?.map((food) {
+        return FoodInEvent(id: food.id, qty: food.qty, unit: food.unit, errorFood: food.qty < 0 ? true : false, cookingMethod: food.cookingMethod, );
+      },).toList();
+      emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+    },);
   }
 
   UnitInfoMaster findUnitName(int unitId) {
@@ -168,6 +183,12 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     } else {
       return unitInfo;
     }
+  }
+
+  bool? validateList() {
+     return state.foodsInEvent?.any((food) {
+      return food.errorFood == true;
+    },);
   }
 
 }

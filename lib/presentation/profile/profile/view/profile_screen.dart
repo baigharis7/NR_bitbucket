@@ -70,10 +70,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                 backgroundColor: Colors.transparent,
                 titleSpacing: Dimens.marginNormal,
                 elevation: 0,
-                leading: IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 25,),
-                ),
+                leadingWidth: 0.0,
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -176,5 +173,6 @@ class _ProfileScreen extends State<ProfileScreen> {
       ),
     );
   }
+
 
 }

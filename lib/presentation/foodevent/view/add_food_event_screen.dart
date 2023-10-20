@@ -4,7 +4,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/add_food_dialog.dart';
@@ -18,6 +17,7 @@ import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_card.dar
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
 import '../../../domain/models/masterfiles/food_names_master.dart';
+import '../common/add_food_name_dialog.dart';
 
 // TODO: tengo que poner lo de las bebidas en algún sitio.
 class AddFoodEventScreen extends StatefulWidget {
@@ -69,6 +69,20 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
       }
       setState(() => _foodInputController.text = '');
     });
+  }
+
+  Future<void> showAddFoodNameDialog({
+    required BuildContext context,
+    required Function onNameChange,
+  }) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AddFoodNameDialog(
+        onNameChange: (String foodName) => onNameChange.call(foodName),
+        onPop: () => Navigator.pop(context),
+      ),
+    );
   }
 
   @override
@@ -225,7 +239,43 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                         children: [
                           _foodInputController.text == '' && state.foodsInEvent != null && state.foodsInEvent!.isEmpty
                           // TODO: aquí saldrían los FAVORITOS.
-                              ? Container()
+                              ? Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal), child: state.foodFavorites!.isEmpty ? Container() : GridView(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 0,
+                              crossAxisSpacing: Dimens.marginNormal,
+                              mainAxisExtent: 55.0,
+                              childAspectRatio: 3/1,
+                            ),
+                            shrinkWrap: true,
+                            children: [
+                              ...state.foodFavorites!.map((food) => Card(
+                                elevation: 3.00,
+                                shadowColor: Colors.black,
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  ),
+                                  child: InkWell(
+                                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                    onTap: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: food),
+                                    child: Center(
+                                      child: Text(
+                                        food.title.toString(),
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: Dimens.fontSizeSmall,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              ),
+                            ],
+                          ),)
                               : Column(
                                   children: [
                                     ...state.foodsInEvent.orEmpty().map((foodInEvent) =>
@@ -260,9 +310,25 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge),
                       child: RoundedCustomButton(onPressed: () {
+                        bloc.add(ValidateListEventAction());
                         state.foodsInEvent!.isEmpty
-                            ? ToastHelper().showToast(text: AppLocalizations.of(context)!.no_foods_in_event)
-                            : context.read<AddFoodEventBloc>().add(FinishFoodEventAction(onFinish: () => _showConfirmationDialog(context),));
+                            ? ToastHelper().showToast(
+                            text: AppLocalizations.of(context)!
+                                .no_foods_in_event)
+                            : bloc.validateList() ?? false ? ToastHelper().showToast(
+                            text: AppLocalizations.of(context)!
+                                .must_complete_field) : state.foodName != ''
+                            ? context
+                            .read<AddFoodEventBloc>()
+                            .add(FinishFoodEventAction(
+                          onFinish: () =>
+                              _showConfirmationDialog(context),
+                        )) : showAddFoodNameDialog(
+                            context: context,
+                            onNameChange: (foodName) {
+                              bloc.add(AddFoodNameEventAction(
+                                  foodName: foodName));
+                            });
                         },
                       ),
                     )],

@@ -10,6 +10,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/num_constants.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/provider/login_provider_new.dart';
+import 'package:nutrenaissance_flutter/presentation/privacypolicy/privacy_policy.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/registry/view/registry_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/welcome/welcome_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_button_1.dart';
@@ -503,7 +504,7 @@ class _LoginScreenState extends State<LoginScreen>
                                 model.setPrivacyPolicyChecked(value!);
                               },),
                               InkWell(onTap: () async {
-                                Navigator.pushNamed(context, WelcomeScreen.routeName);
+                                Navigator.pushNamed(context, PrivacyPolicy.routeName).then((value) => model.setPrivacyPolicyChecked(value as bool));
                               },child: Text(AppLocalizations.of(context)!.privacy_policy, textAlign: TextAlign.start, style: const TextStyle(fontSize: Dimens.fontSizeSmall),)),
                             ],
                           )),),

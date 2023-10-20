@@ -320,6 +320,7 @@
     "drinks_name" : "Nombre de la bebida",
     "enter" : "Introduce...",
     "save_favorite" : "Guardar favorito",
+    "save_food" : "Guardar comida",
     "favorite_saved" : "Tu favorito se ha guardado con éxito!",
     "skip_verification_code_message" : "Si saltas este paso podrás realizarlo más adelante",
     "add_liquid_title" : "Añadir líquido",

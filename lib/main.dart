@@ -573,7 +573,8 @@ void main() async {
           PhysicalActivityScreen.routeName: (_) => const PhysicalActivityScreen(),
           RecommendationsTabHolder.routeName: (_) => const RecommendationsTabHolder(),
           FoodScreen.routeName: (_) => const FoodScreen(),
-          WelcomeScreen.routeName: (_) => const WelcomeScreen()
+          WelcomeScreen.routeName: (_) => const WelcomeScreen(),
+          PrivacyPolicy.routeName: (_) => const PrivacyPolicy(),
         },
       ),
     ),

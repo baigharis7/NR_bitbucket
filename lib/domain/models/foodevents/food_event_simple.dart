@@ -7,10 +7,11 @@ class FoodEventSimple {
   String userId;
   int eventDate;
   int? eventId;
+  String? foodName;
   List<FoodInEvent>? ingredients;
   List<FoodInEvent>? drinks;
 
-  FoodEventSimple({required this.userId, required this.eventDate, this.eventId, this.ingredients, this.drinks});
+  FoodEventSimple({required this.userId, required this.eventDate, this.eventId, required this.foodName, this.ingredients, this.drinks});
 
   factory FoodEventSimple.fromJson(Map<String, dynamic> json) => _$FoodEventSimpleFromJson(json);
   Map<String, dynamic> toJson() => _$FoodEventSimpleToJson(this);
@@ -21,10 +22,11 @@ class FoodInEvent {
   int id;
   int qty;
   int unit;
+  bool errorFood;
   int cookingMethod;
   String? unitsEquivalences;
 
-  FoodInEvent({required this.id, required this.qty, required this.unit, required this.cookingMethod, this.unitsEquivalences});
+  FoodInEvent({required this.id, required this.qty, required this.unit, this.errorFood = false, required this.cookingMethod, this.unitsEquivalences});
 
   factory FoodInEvent.fromJson(Map<String, dynamic> json) => _$FoodInEventFromJson(json);
   Map<String, dynamic> toJson() => _$FoodInEventToJson(this);

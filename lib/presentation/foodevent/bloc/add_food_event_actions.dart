@@ -32,6 +32,12 @@ class FinishFoodEventAction extends AddFoodEventActions {
   FinishFoodEventAction({required this.onFinish});
 }
 
+class AddFoodNameEventAction extends AddFoodEventActions {
+  String foodName;
+
+  AddFoodNameEventAction({required this.foodName});
+}
+
 class ReceiveFoodsInEventFromNavigationAction extends AddFoodEventActions {
   final FoodEventSimple foodEventSimple;
   ReceiveFoodsInEventFromNavigationAction({required this.foodEventSimple});
@@ -46,3 +52,5 @@ class ReceiveEventDateAction extends AddFoodEventActions {
 
   ReceiveEventDateAction({required this.dateTime});
 }
+
+class ValidateListEventAction extends AddFoodEventActions {}
