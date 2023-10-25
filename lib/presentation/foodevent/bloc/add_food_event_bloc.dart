@@ -46,6 +46,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     eventDate: null,
     isEdit: false,
     foodFavorites: [],
+    foodsFromFavorite: [],
   ),) {
 
     on<InitializeStateAction>((event, emit) async {
@@ -173,6 +174,49 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       },).toList();
       emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
     },);
+
+    on<AddFoodFromFavouriteEventAction>((event, emit) {
+      state.foodName = event.foodFavorite.title;
+      state.foodsFromFavorite = event.foodFavorite.ingredients.map((item) {
+        return FoodInEvent(id: item.id, qty: item.qty, unit: item.unit, cookingMethod: item.cookingMethod);
+      },).toList();
+      emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+    },);
+
+    on<FinishFoodFavouriteEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true, onError: null, eventDate: state.eventDate));
+
+      final foodEvent = FoodEventSimple(
+        userId: getUserIdInteractor.execute(),
+        eventDate: DateTime.now().millisecondsSinceEpoch,
+        eventId: DateTime.now().millisecondsSinceEpoch,
+        foodName: state.foodName ?? '',
+      );
+      foodEvent.ingredients = state.foodsFromFavorite.orEmpty();
+      foodEvent.drinks = []; // TODO: is it necessary to implement drinks in food events?
+
+      try {
+        final uploadFoodEvent = await uploadFoodEventInteractor.execute(foodEvent);
+        if (uploadFoodEvent.uploadSuccess) {
+          try {
+            await saveFoodEventInteractor.execute(uploadFoodEvent, state.isEdit!);
+            state.foodsFromFavorite!.clear();
+            state.foodName = '';
+            emit(state.copyWith(isLoading: false, onError: null, eventDate: null));
+            event.onFinish.call();
+          } catch (error) {
+            state.onError = ErrorTypes.locallySavingFoodEventError;
+            emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+          }
+        } else {
+          state.onError = ErrorTypes.uploadingFoodEventError;
+          emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+        }
+      } catch (error) {
+        state.onError = ErrorTypes.uploadingFoodEventError;
+        emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+      }
+    },);
   }
 
   UnitInfoMaster findUnitName(int unitId) {
@@ -187,7 +231,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
 
   bool? validateList() {
      return state.foodsInEvent?.any((food) {
-      return food.errorFood == true;
+      return food.qty < 0;
     },);
   }
 

@@ -7,6 +7,7 @@ class CustomButton1 extends StatelessWidget {
   final Function action;
   final ButtonStyle? style;
   final bool isSelected;
+  final bool enable;
   final Color? textColor;
   final Color? borderColor;
 
@@ -16,6 +17,7 @@ class CustomButton1 extends StatelessWidget {
     required this.action,
     this.style,
     this.isSelected = false,
+    this.enable = true,
     this.textColor,
     this.borderColor,
   }): super(key: key);
@@ -45,7 +47,7 @@ class CustomButton1 extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        onPressed: () => action.call(),
+        onPressed: () => enable ? action.call() : null,
       ),
     );
   }

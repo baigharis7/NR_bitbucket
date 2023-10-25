@@ -255,14 +255,13 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                 elevation: 3.00,
                                 shadowColor: Colors.black,
                                 child: Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  decoration: BoxDecoration(
+                                    color: state.foodName == food.title ? Colors.amber : Colors.white,
+                                    borderRadius: BorderRadius.all(Radius.circular(5)),
                                   ),
                                   child: InkWell(
                                     borderRadius: const BorderRadius.all(Radius.circular(10)),
-                                    onTap: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: food),
+                                    onTap: () => bloc.add(AddFoodFromFavouriteEventAction(foodFavorite: food)),
                                     child: Center(
                                       child: Text(
                                         food.title.toString(),
@@ -313,25 +312,31 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge),
                       child: RoundedCustomButton(onPressed: () {
                         bloc.add(ValidateListEventAction());
-                        state.foodsInEvent!.isEmpty
-                            ? ToastHelper().showToast(
-                            text: AppLocalizations.of(context)!
-                                .no_foods_in_event)
-                            : bloc.validateList() ?? false ? ToastHelper().showToast(
-                            text: AppLocalizations.of(context)!
-                                .must_complete_field) : showAddFoodNameDialog(
-                            context: context,
-                            onFinish: (){
-                              context
-                                .read<AddFoodEventBloc>()
-                                .add(FinishFoodEventAction(
-                              onFinish: () =>
-                                  _showConfirmationDialog(context),
-                            ));},
-                            onNameChange: (foodName) {
-                              bloc.add(AddFoodNameEventAction(
-                                  foodName: foodName));
-                            });
+
+                        if(state.foodsFromFavorite!.isEmpty) {
+                          if (state.foodsInEvent!.isNotEmpty) {
+                            if (!(bloc.validateList() ?? true)) {
+                              showAddFoodNameDialog(
+                                  context: context,
+                                  onFinish: (){
+                                    context
+                                        .read<AddFoodEventBloc>()
+                                        .add(FinishFoodEventAction(
+                                      onFinish: () =>
+                                          _showConfirmationDialog(context),
+                                    ),);},
+                                  onNameChange: (foodName) {
+                                    bloc.add(AddFoodNameEventAction(
+                                        foodName: foodName,),);
+                                  },);
+                            }
+                          } else {
+                            ToastHelper().showToast(text: AppLocalizations.of(context)!.must_complete_field);
+                          }
+                        }
+                        else {
+                          context.read<AddFoodEventBloc>().add(FinishFoodFavouriteEventAction(onFinish: () => _showConfirmationDialog(context),),);
+                        }
                         },
                       ),
                     )],

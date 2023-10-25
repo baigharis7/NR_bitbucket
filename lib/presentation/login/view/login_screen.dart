@@ -443,6 +443,7 @@ class _LoginScreenState extends State<LoginScreen>
                           padding: const EdgeInsets.only(top: 20),
                           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                           child: RoundedCustomButton(
+                            enableButton: model.isLogin ? true : model.isPrivacyPolicyChecked,
                             buttonText: model.isLogin
                                 ? AppLocalizations.of(context)!.login
                                 : AppLocalizations.of(context)!.register,

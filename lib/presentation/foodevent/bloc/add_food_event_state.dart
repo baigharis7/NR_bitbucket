@@ -12,6 +12,7 @@ class AddFoodEventState {
   ErrorTypes? onError;
   FoodsAndDrinksNamesMaster? foodNames;
   List<FoodInEvent>? foodsInEvent;
+  List<FoodInEvent>? foodsFromFavorite;
   CookingMethodsMaster? cookingMethodsMaster;
   CookingMethodsInfoMaster? cookingMethodsInfoMaster;
   UnitsFoodsMaster? unitsFoodsMaster;
@@ -27,6 +28,7 @@ class AddFoodEventState {
     this.onError,
     this.foodNames,
     this.foodsInEvent,
+    this.foodsFromFavorite,
     this.cookingMethodsMaster,
     this.cookingMethodsInfoMaster,
     this.unitsFoodsMaster,
@@ -43,6 +45,7 @@ class AddFoodEventState {
     ErrorTypes? onError,
     FoodsAndDrinksNamesMaster? foodNames,
     List<FoodInEvent>? foodsInEvent,
+    List<FoodInEvent>? foodsFromFavorite,
     CookingMethodsMaster? cookingMethodsMaster,
     CookingMethodsInfoMaster? cookingMethodsInfoMaster,
     UnitsFoodsMaster? unitsFoodsMaster,
@@ -65,6 +68,7 @@ class AddFoodEventState {
       eventDate: eventDate,
       isEdit: isEdit ?? this.isEdit,
       foodFavorites: foodFavorites ?? this.foodFavorites,
+      foodsFromFavorite: foodsFromFavorite ?? this.foodsFromFavorite,
     );
   }
 }

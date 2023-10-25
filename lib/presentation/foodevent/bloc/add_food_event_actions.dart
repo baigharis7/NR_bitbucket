@@ -1,3 +1,4 @@
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 
 class AddFoodEventActions {
@@ -54,3 +55,14 @@ class ReceiveEventDateAction extends AddFoodEventActions {
 }
 
 class ValidateListEventAction extends AddFoodEventActions {}
+
+class AddFoodFromFavouriteEventAction extends AddFoodEventActions {
+  final FoodFavorite foodFavorite;
+  AddFoodFromFavouriteEventAction({required this.foodFavorite});
+}
+
+class FinishFoodFavouriteEventAction extends AddFoodEventActions {
+  Function onFinish;
+
+  FinishFoodFavouriteEventAction({required this.onFinish});
+}

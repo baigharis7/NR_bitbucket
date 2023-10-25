@@ -341,7 +341,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         commonName: state.profile!.commonName.orEmpty(),
         birthDate: state.profile!.birthDate,
         sex: state.profile!.sex,
-        occupationActivityFactor: state.profile!.occupationActivityFactor,
+        occupationActivityFactor: state.profile!.occupationActivityFactor ?? 1.2,
         physicalCharacteristics: PhysicalCharacteristics(
           height: state.profile!.physicalCharacteristics!.height,
           weight: state.profile!.physicalCharacteristics!.weight,
