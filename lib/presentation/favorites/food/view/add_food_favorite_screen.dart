@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -111,148 +112,209 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
           },
           builder: (ctx, state) {
             return Scaffold(
-              body: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: Dimens.marginXLarge),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.arrow_back_ios, size: 24)),
-                          ),
-                          Expanded(
-                            flex: 4,
-                            child: Text(
-                              state.foodsInFavorite!.map((favorite) => favorite.translate(ctx)).join(', '),
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: Dimens.fontSizeLarge,
-                                overflow: TextOverflow.ellipsis,
+              body: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: Dimens.marginXLarge),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.arrow_back_ios, size: 24)),
                               ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Image.asset('assets/icon/fork_knife.png', width: 24, height: 31,),
-                          )
-                        ],
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.rectangle,
-                        borderRadius: const BorderRadius.all(Radius.circular(10)),
-                        border: Border.all(color: Colors.grey[300]!, width: 1.0),
-                      ),
-                      padding: const EdgeInsets.all(Dimens.paddingNormal),
-                      margin: const EdgeInsets.all(Dimens.marginNormal),
-                      child: Column(
-                        children: [
-                          ...state.foodsInFavorite!.map((foodInFavorite) => FoodCard(
-                            foodName: eventHelper.findFoodNameFromId(foodInFavorite.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!),
-                            cookingMethod: eventHelper.findCookingMethodName(
-                              ctx,
-                              foodInFavorite.id,
-                              state.cookingMethodsInfoMaster!.cookingMethodsInfo!,
-                            ),
-                            quantity: foodInFavorite.qty.toString(),
-                            unit: eventHelper.findUnitName(foodInFavorite.unit, state.unitsInfoMaster!.unitsInfoMaster).translate(context),
-                            removeFood: () {},
-                            editFood: () {},
-                          ),),
-                          SizedBox(
-                            child: Container(
-                              alignment: Alignment.centerLeft,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Colors.yellow[200],
-                                borderRadius: BorderRadius.circular(10),
+                              Expanded(
+                                flex: 4,
+                                child: Text(
+                                  state.foodsInFavorite!.map((favorite) => favorite.translate(ctx)).join(', '),
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: Dimens.fontSizeLarge,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
                               ),
-                              margin: const EdgeInsets.all(Dimens.marginNormal),
-                              child: InkWell(
+                              Expanded(
+                                flex: 1,
+                                child: Image.asset('assets/icon/fork_knife.png', width: 24, height: 31,),
+                              )
+                            ],
+                          ),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.rectangle,
+                            borderRadius: const BorderRadius.all(Radius.circular(10)),
+                            border: Border.all(color: Colors.grey[300]!, width: 1.0),
+                          ),
+                          padding: const EdgeInsets.all(Dimens.paddingNormal),
+                          margin: const EdgeInsets.all(Dimens.marginNormal),
+                          child: Column(
+                            children: [
+                              ...state.foodsInFavorite!.map((foodInFavorite) => FoodCard(
+                                foodName: eventHelper.findFoodNameFromId(foodInFavorite.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!),
+                                cookingMethod: eventHelper.findCookingMethodName(
+                                  ctx,
+                                  foodInFavorite.id,
+                                  state.cookingMethodsInfoMaster!.cookingMethodsInfo!,
+                                ),
+                                quantity: foodInFavorite.qty.toString(),
+                                unit: eventHelper.findUnitName(foodInFavorite.unit, state.unitsInfoMaster!.unitsInfoMaster).translate(context),
+                                removeFood: () {
+                                  return AlertDialog(
+                                    title: Text('Are you sure want to delete this food ?'),
+                                    actions: [
+                                      TextButton(onPressed: () {ToastHelper().showToast(text: 'Yes');}, child: Text('Yes')),
+                                      TextButton(onPressed: () {ToastHelper().showToast(text: 'No');}, child: Text('No')),
+                                    ],
+                                  );
+                                },
+                                editFood: () {},
+                              ),),
+                              SizedBox(
                                 child: Container(
+                                  alignment: Alignment.centerLeft,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.rectangle,
+                                    color: Colors.yellow[200],
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                   margin: const EdgeInsets.all(Dimens.marginNormal),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Text(AppLocalizations.of(context)!.add_comment),
-                                      const Icon(Icons.mode_comment_outlined)
-                                    ],
-                                  ),
-                                ),
-                                onTap: () => showAddCommentDialog(
-                                  context: ctx,
-                                  onAddComment: (String comment) => bloc.add(AddCommentToFavoriteActions(
-                                    comment: comment,
-                                    onFinish: () => Navigator.pop(context),
-                                  ),),
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (state.comment.isNotEmptyOrNull()) Container(
-                            margin: const EdgeInsets.all(Dimens.marginNormal),
-                            child: Card(
-                              child: Container(
-                                alignment: Alignment.centerLeft,
-                                margin: const EdgeInsets.all(Dimens.marginNormal),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.mode_comment),
-                                    Container(
-                                      margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                                      child: Text(
-                                        state.comment.orEmpty(),
-                                        style: const TextStyle(
-                                          overflow: TextOverflow.clip,
-                                        ),
+                                  child: InkWell(
+                                    child: Container(
+                                      margin: const EdgeInsets.all(Dimens.marginNormal),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Text(AppLocalizations.of(context)!.add_comment),
+                                          const Icon(Icons.mode_comment_outlined)
+                                        ],
                                       ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            child: Container(
-                              alignment: Alignment.centerLeft,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Colors.pink[200],
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              margin: const EdgeInsets.all(Dimens.marginNormal),
-                              child: Container(
-                                margin: const EdgeInsets.all(Dimens.marginNormal),
-                                child: InkWell(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Text(AppLocalizations.of(context)!.add_favorite),
-                                      const Icon(Icons.favorite_border)
-                                    ],
-                                  ),
-                                  onTap: () {
-                                    showAddFavoriteDialog(
+                                    ),
+                                    onTap: () => showAddCommentDialog(
                                       context: ctx,
-                                      onNameChange: (String foodName) => bloc.add(AddFoodNameAction(name: foodName)),
-                                      onMealTimeChange: (int mealTime) => bloc.add(AddMealTimeAction(mealTime: mealTime)),
-                                      onFinish: () => bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context))),
-                                    );
-                                  },
+                                      onAddComment: (String comment) => bloc.add(AddCommentToFavoriteActions(
+                                        comment: comment,
+                                        onFinish: () => Navigator.pop(context),
+                                      ),),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          )
-                        ],
-                      ),
+                              if (state.comment.isNotEmptyOrNull()) Container(
+                                margin: const EdgeInsets.all(Dimens.marginNormal),
+                                child: Card(
+                                  child: Container(
+                                    alignment: Alignment.centerLeft,
+                                    margin: const EdgeInsets.all(Dimens.marginNormal),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.mode_comment),
+                                        Container(
+                                          margin: const EdgeInsets.only(left: Dimens.marginNormal),
+                                          child: Text(
+                                            state.comment.orEmpty(),
+                                            style: const TextStyle(
+                                              overflow: TextOverflow.clip,
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                child: Container(
+                                  alignment: Alignment.centerLeft,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.rectangle,
+                                    color: Colors.pink[200],
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  margin: const EdgeInsets.all(Dimens.marginNormal),
+                                  child: Container(
+                                    margin: const EdgeInsets.all(Dimens.marginNormal),
+                                    child: InkWell(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Text(AppLocalizations.of(context)!.add_favorite),
+                                          const Icon(Icons.favorite_border)
+                                        ],
+                                      ),
+                                      onTap: () {
+                                        showAddFavoriteDialog(
+                                          context: ctx,
+                                          onNameChange: (String foodName) => bloc.add(AddFoodNameAction(name: foodName)),
+                                          onMealTimeChange: (int mealTime) => bloc.add(AddMealTimeAction(mealTime: mealTime)),
+                                          onFinish: () => bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context))),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingLarge),
+                    decoration: BoxDecoration(borderRadius: BorderRadiusDirectional.vertical(top: Radius.circular(5.0)),color: Colors.white,boxShadow: [BoxShadow(blurRadius: 5.0)]),
+                    child: Column(children: [
+                      InkWell(
+                        child: Container(
+                          margin: const EdgeInsets.all(Dimens.marginSmall),
+                          padding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: Colors.yellow[200],
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(AppLocalizations.of(context)!.add_food),
+                              const Icon(Icons.add_circle)
+                            ],
+                          ),
+                        ),
+                        onTap: () {},
+                      ),
+                      InkWell(
+                        child: Container(
+                          margin: const EdgeInsets.all(Dimens.marginSmall),
+                          padding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: Colors.yellow[200],
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(AppLocalizations.of(context)!.add_comment),
+                              const Icon(Icons.mode_comment_outlined)
+                            ],
+                          ),
+                        ),
+                        onTap: () => showAddCommentDialog(
+                          context: ctx,
+                          onAddComment: (String comment) => bloc.add(AddCommentToFavoriteActions(
+                            comment: comment,
+                            onFinish: () => Navigator.pop(context),
+                          ),),
+                        ),
+                      ),
+                    ]),)
+                ],
               ),
             );
           },

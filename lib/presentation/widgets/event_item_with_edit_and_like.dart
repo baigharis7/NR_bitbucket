@@ -19,41 +19,44 @@ class EventItemWithEditAndLike extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                flex: 3,
-                child: Container(
-                  alignment: Alignment.topLeft,
-                  margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall, horizontal: Dimens.marginNormal),
-                  child: Text(name, overflow: TextOverflow.clip,),
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Container(
-                  alignment: Alignment.centerRight,
-                  child: IconButton(
-                    onPressed: () => onEdit.call(),
-                    icon: const Icon(Icons.edit),
+    return InkWell(
+      onTap: () { onEdit.call(); },
+      child: Card(
+        elevation: 2,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    alignment: Alignment.topLeft,
+                    margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall, horizontal: Dimens.marginNormal),
+                    child: Text(name, overflow: TextOverflow.clip,),
                   ),
                 ),
-              ),
-            ],
-          ),
-          Container(
-            alignment: Alignment.bottomRight,
-            child: IconButton(
-              onPressed: () => onFavorite.call(),
-              icon: const Icon(Icons.favorite_border, color: Colors.red,),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      onPressed: () => onEdit.call(),
+                      icon: const Icon(Icons.edit),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          )
-        ],
+            Container(
+              alignment: Alignment.bottomRight,
+              child: IconButton(
+                onPressed: () => onFavorite.call(),
+                icon: const Icon(Icons.favorite_border, color: Colors.red,),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
