@@ -51,8 +51,8 @@ class EventItemWithEditAndLike extends StatelessWidget {
             Container(
               alignment: Alignment.bottomRight,
               child: IconButton(
-                onPressed: () => onFavorite.call(),
-                icon: const Icon(Icons.favorite_border, color: Colors.red,),
+                onPressed: () => !isFavorite ? onFavorite.call() : () {},
+                icon: isFavorite ? const Icon(Icons.favorite, color: Colors.red,) : const Icon(Icons.favorite_border, color: Colors.red,),
               ),
             )
           ],

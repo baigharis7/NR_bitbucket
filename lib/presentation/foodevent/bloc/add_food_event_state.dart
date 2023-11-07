@@ -18,6 +18,7 @@ class AddFoodEventState {
   UnitsFoodsMaster? unitsFoodsMaster;
   UnitsInfoMaster? unitsInfoMaster;
   String? foodName;
+  String? comment;
   int? eventDate;
   int? eventId;
   bool? isEdit;
@@ -34,6 +35,7 @@ class AddFoodEventState {
     this.unitsFoodsMaster,
     this.unitsInfoMaster,
     this.foodName,
+    this.comment,
     this.eventDate,
     this.eventId,
     this.isEdit,
@@ -51,6 +53,7 @@ class AddFoodEventState {
     UnitsFoodsMaster? unitsFoodsMaster,
     UnitsInfoMaster? unitsInfoMaster,
     String? foodName,
+    String? comment,
     required int? eventDate,
     bool? isEdit,
     List<FoodFavorite>? foodFavorites,
@@ -65,6 +68,7 @@ class AddFoodEventState {
       unitsFoodsMaster: unitsFoodsMaster ?? this.unitsFoodsMaster,
       unitsInfoMaster: unitsInfoMaster ?? this.unitsInfoMaster,
       foodName: foodName ?? this.foodName,
+      comment: comment ?? this.comment,
       eventDate: eventDate,
       isEdit: isEdit ?? this.isEdit,
       foodFavorites: foodFavorites ?? this.foodFavorites,

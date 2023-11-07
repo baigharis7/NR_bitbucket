@@ -1,6 +1,9 @@
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/get_food_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/save_food_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/upload_food_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
@@ -11,19 +14,32 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_mast
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/add_favorite_food_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/add_favorite_food_state.dart';
+
+import '../../../../domain/interactor/preferences/get_user_id_interactor.dart';
+import '../../../../domain/models/foodevents/food_event_complete.dart';
+import '../../../../domain/models/foodevents/food_event_simple.dart';
 
 class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFoodState> {
   final GetMasterFileInteractor getMasterFileInteractor;
   final SaveFoodFavoriteInteractor saveFoodFavoriteInteractor;
   final UploadFoodFavoriteInteractor uploadFoodFavoriteInteractor;
+  final UploadFoodEventInteractor uploadFoodEventInteractor;
+  final SaveFoodEventInteractor saveFoodEventInteractor;
+  final GetUserIdInteractor getUserIdInteractor;
+  final GetFoodFavoritesInteractor getFoodFavoritesInteractor;
 
   AddFavoriteFoodBloc({
     required this.getMasterFileInteractor,
     required this.saveFoodFavoriteInteractor,
     required this.uploadFoodFavoriteInteractor,
+    required this.uploadFoodEventInteractor,
+    required this.saveFoodEventInteractor,
+    required this.getUserIdInteractor,
+    required this.getFoodFavoritesInteractor,
   }) : super(AddFavoriteFoodState(
     isLoading: false,
     onError: null,
@@ -43,6 +59,7 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
       state.cookingMethodsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
       state.unitsFoodsMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsFoods);
       state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
+      state.favoriteFoods = await getFoodFavoritesInteractor.execute();
       
       emit(state.copyWith(isLoading: false, onError: null));
     });
@@ -50,7 +67,8 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
     on<SetFoodsInFavoriteAction>((event, emit) {
       emit(state.copyWith(isLoading: false, onError: null));
 
-      state.foodsInFavorite = event.foodsInFavorite;
+      state.foodsInFavorite = mapToFoodFavoriteList(event.foodsInFavorite.foodInfo!);
+      state.comment = event.foodsInFavorite.comment;
       emit(state.copyWith(isLoading: false,));
     });
 
@@ -113,6 +131,45 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadFoodFavoriteError));
       }
     });
+
+    on<FinishFoodCommentAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true, onError: null, eventDate: state.eventDate));
+
+      final foodEvent = FoodEventSimple(
+          userId: getUserIdInteractor.execute(),
+          eventDate: event.foodEventComplete.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+          eventId: event.foodEventComplete.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+          foodName: event.foodEventComplete.foodName ?? '',
+          comment: state.comment
+      );
+      state.isEdit = true;
+      foodEvent.ingredients = state.foodsInFavorite?.map((food) => FoodInEvent(id: food.id, qty: food.qty, unit: food.unit, cookingMethod: food.cookingMethod)).toList();
+      foodEvent.drinks = []; // TODO: is it necessary to implement drinks in food events?
+
+      try {
+        final uploadFoodEvent = await uploadFoodEventInteractor.execute(foodEvent);
+        if (uploadFoodEvent.uploadSuccess) {
+          try {
+            await saveFoodEventInteractor.execute(uploadFoodEvent, state.isEdit!);
+            emit(state.copyWith(isLoading: false, onError: null, eventDate: null));
+            event.onFinish.call();
+          } catch (error) {
+            state.onError = ErrorTypes.locallySavingFoodEventError;
+            emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+          }
+        } else {
+          state.onError = ErrorTypes.uploadingFoodEventError;
+          emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+        }
+      } catch (error) {
+        state.onError = ErrorTypes.uploadingFoodEventError;
+        emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+      }
+    });
+  }
+
+  bool isFoodFavourite(FoodEventComplete foodEvent) {
+    return state.favoriteFoods?.any((favFood) => favFood.title.toString() == foodEvent.foodName.toString()) ?? false;
   }
 
 }

@@ -151,6 +151,7 @@ entity.FoodEventEntity mapToFoodEventEntity(UploadFoodEvent uploadFoodEvent) {
     uploadFoodEvent.userId,
     uploadFoodEvent.eventDate,
     uploadFoodEvent.foodName,
+    uploadFoodEvent.comment,
     foodInfoEntity,
     uploadFoodEvent.eventKcals,
   );
@@ -303,6 +304,7 @@ domain.FoodEventComplete mapToFoodEventComplete(entity.FoodEventEntity foodEvent
     userId: foodEventEntity.userId,
     eventDate: foodEventEntity.eventDate,
     foodName: foodEventEntity.foodName,
+    comment: foodEventEntity.comment,
     foodInfo: foodInfoEntity,
     eventKcals: foodEventEntity.eventKcals,
   );
@@ -333,7 +335,8 @@ FoodEventSimple mapToFoodEventSimple(domain.FoodEventComplete foodEventComplete)
         userId: foodEventComplete.userId!,
         eventDate: foodEventComplete.eventDate!,
         eventId: foodEventComplete.eventDate!,
-        foodName: '',
+        foodName: foodEventComplete.foodName,
+        comment: foodEventComplete.comment,
         ingredients: mapToFoodInEventList(foodEventComplete.foodInfo!),
         // drinks: mapToFoodInEventList(foodEventComplete.foodInfo!.),
     );

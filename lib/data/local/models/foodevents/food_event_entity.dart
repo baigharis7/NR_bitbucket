@@ -13,13 +13,15 @@ class FoodEventEntity extends HiveObject {
   @HiveField(0) String? userId;
   @HiveField(1) int? eventDate;
   @HiveField(2) String? foodName;
-  @HiveField(3) List<FoodInfo>? foodInfo;
-  @HiveField(4) int? eventKcals;
+  @HiveField(3) String? comment;
+  @HiveField(4) List<FoodInfo>? foodInfo;
+  @HiveField(5) int? eventKcals;
 
   FoodEventEntity(
       this.userId,
       this.eventDate,
       this.foodName,
+      this.comment,
       this.foodInfo,
       this.eventKcals,
   );

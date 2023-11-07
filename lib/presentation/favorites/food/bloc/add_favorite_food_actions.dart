@@ -1,4 +1,5 @@
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 
 class AddFavoriteFoodActions {
   AddFavoriteFoodActions();
@@ -9,7 +10,7 @@ class InitializeStateAction extends AddFavoriteFoodActions {
 }
 
 class SetFoodsInFavoriteAction extends AddFavoriteFoodActions {
-  final List<FoodInFavorite> foodsInFavorite;
+  final FoodEventComplete foodsInFavorite;
 
   SetFoodsInFavoriteAction({required this.foodsInFavorite});
 }
@@ -44,4 +45,11 @@ class FinishAddingFavoriteAction extends AddFavoriteFoodActions {
   final Function onFinish;
 
   FinishAddingFavoriteAction({required this.onFinish});
+}
+
+class FinishFoodCommentAction extends AddFavoriteFoodActions {
+  final Function onFinish;
+  final FoodEventComplete foodEventComplete;
+
+  FinishFoodCommentAction({required this.foodEventComplete, required this.onFinish});
 }

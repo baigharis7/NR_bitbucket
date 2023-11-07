@@ -108,6 +108,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
           eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
         eventId: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
         foodName: state.foodName ?? '',
+        comment: state.comment
       );
       foodEvent.ingredients = state.foodsInEvent.orEmpty();
       foodEvent.drinks = []; // TODO: is it necessary to implement drinks in food events?
@@ -119,6 +120,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
             await saveFoodEventInteractor.execute(uploadFoodEvent, state.isEdit!);
             state.foodsInEvent!.clear();
             state.foodName = '';
+            state.comment = null;
             emit(state.copyWith(isLoading: false, onError: null, eventDate: null));
             event.onFinish.call();
           } catch (error) {
@@ -177,6 +179,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
 
     on<AddFoodFromFavouriteEventAction>((event, emit) {
       state.foodName = event.foodFavorite.title;
+      state.comment = event.foodFavorite.comment;
       state.foodsFromFavorite = event.foodFavorite.ingredients.map((item) {
         return FoodInEvent(id: item.id, qty: item.qty, unit: item.unit, cookingMethod: item.cookingMethod);
       },).toList();
@@ -191,6 +194,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         eventDate: DateTime.now().millisecondsSinceEpoch,
         eventId: DateTime.now().millisecondsSinceEpoch,
         foodName: state.foodName ?? '',
+        comment: state.comment,
       );
       foodEvent.ingredients = state.foodsFromFavorite.orEmpty();
       foodEvent.drinks = []; // TODO: is it necessary to implement drinks in food events?
@@ -202,6 +206,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
             await saveFoodEventInteractor.execute(uploadFoodEvent, state.isEdit!);
             state.foodsFromFavorite!.clear();
             state.foodName = '';
+            state.comment = null;
             emit(state.copyWith(isLoading: false, onError: null, eventDate: null));
             event.onFinish.call();
           } catch (error) {

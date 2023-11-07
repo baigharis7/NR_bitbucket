@@ -19,6 +19,10 @@ import 'package:nutrenaissance_flutter/presentation/widgets/weekly_info_card.dar
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 
+import '../../common/view/confirmation_dialog.dart';
+import '../../favorites/common/add_favorite_dialog.dart';
+import 'package:collection/collection.dart';
+
 class JournalFoodScreen extends StatefulWidget {
   const JournalFoodScreen({Key? key}) : super(key: key);
 
@@ -29,6 +33,40 @@ class JournalFoodScreen extends StatefulWidget {
 }
 
 class _JournalFoodScreenState extends State<JournalFoodScreen> {
+
+  Function deepEq = const DeepCollectionEquality().equals;
+
+  void _showConfirmationDialog(BuildContext context) {
+    Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
+    final mediaQuerySize = MediaQuery.of(context).size;
+
+    showDialog(context: context, builder: (ctx) => Container(
+      height: mediaQuerySize.height,
+      width: mediaQuerySize.width,
+      color: const Color.fromARGB(148, 104, 96, 96),
+      child: ConfirmationDialog(message: AppLocalizations.of(context)!.favorite_saved),
+    ),).then((value) =>
+        Navigator.pop(context),
+    );
+  }
+
+  Future<void> showAddFavoriteDialog({
+    required BuildContext context,
+    required Function onFinish,
+    required Function onNameChange,
+    required Function onMealTimeChange,
+  }) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AddFavoriteDialog(
+        onNameChange: (String foodName) => onNameChange.call(foodName),
+        onMealTimeChange: (int mealTime) => onMealTimeChange.call(mealTime),
+        onFinish: () => onFinish.call(),
+        onPop: () => Navigator.pop(context),
+      ),
+    ).then((_) => Navigator.pop(context));
+  }
 
   @override
   void initState() {
@@ -132,21 +170,22 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                               return EventItemWithEditAndLike(
                                 // name: foodEvent.foodInfo!.map((food) => food.translate(context)).join(', '),
                                 name: foodEvent.foodName ?? '',
-                                isFavorite: /** TODO: lógica del */false,
+                                isFavorite: bloc.isFoodFavourite(foodEvent),
                                 onEdit: () => Navigator.pushNamed(
                                   context,
-                                  AddFoodEventScreen.routeName,
-                                  arguments: mapToFoodEventSimple(foodEvent),
-                                ).then((value) {
-                                  bloc.add(InitializeStateAction());
-                                }),
-                                onFavorite: () => Navigator.pushNamed(
-                                  context,
                                   AddFoodFavoriteScreen.routeName,
-                                  arguments: mapToFoodFavoriteList(foodEvent.foodInfo!),
+                                  arguments: foodEvent,
                                 ).then((value) {
                                   bloc.add(InitializeStateAction());
                                 }),
+                                onFavorite: () => {
+                                  showAddFavoriteDialog(
+                                    context: ctx,
+                                    onNameChange: (String foodName) => bloc.add(AddFoodNameAction(name: foodName)),
+                                    onMealTimeChange: (int mealTime) => bloc.add(AddMealTimeAction(mealTime: mealTime)),
+                                    onFinish: () => bloc.add(FinishAddingFavoriteAction(foodEvent: foodEvent, onFinish: () => _showConfirmationDialog(context))),
+                                  )
+                                }
                               );
                             }).toList()
                           ],

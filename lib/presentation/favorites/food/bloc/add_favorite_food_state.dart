@@ -10,6 +10,7 @@ class AddFavoriteFoodState {
   bool isLoading;
   ErrorTypes? onError;
   List<FoodInFavorite>? foodsInFavorite;
+  List<FoodFavorite>? favoriteFoods;
   FoodsAndDrinksNamesMaster? foodNames;
   CookingMethodsMaster? cookingMethodsMaster;
   CookingMethodsInfoMaster? cookingMethodsInfoMaster;
@@ -25,6 +26,7 @@ class AddFavoriteFoodState {
     required this.isLoading,
     this.onError,
     this.foodsInFavorite,
+    this.favoriteFoods,
     this.foodNames,
     this.cookingMethodsMaster,
     this.cookingMethodsInfoMaster,
@@ -41,6 +43,7 @@ class AddFavoriteFoodState {
     required bool isLoading,
     ErrorTypes? onError,
     List<FoodInFavorite>? foodsInFavorite,
+    List<FoodFavorite>? favoriteFoods,
     FoodsAndDrinksNamesMaster? foodNames,
     CookingMethodsMaster? cookingMethodsMaster,
     CookingMethodsInfoMaster? cookingMethodsInfoMaster,
@@ -56,6 +59,7 @@ class AddFavoriteFoodState {
       isLoading: isLoading,
       onError: onError ?? this.onError,
       foodsInFavorite: foodsInFavorite ?? this.foodsInFavorite,
+      favoriteFoods: favoriteFoods ?? this.favoriteFoods,
       foodNames: foodNames ?? this.foodNames,
       cookingMethodsMaster: cookingMethodsMaster ?? this.cookingMethodsMaster,
       cookingMethodsInfoMaster: cookingMethodsInfoMaster ?? this.cookingMethodsInfoMaster,
