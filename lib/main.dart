@@ -350,6 +350,7 @@ void main() async {
     getUserIdInteractor: getUserIdInteractor,
     uploadSportsEventInteractor: uploadSportEventsInteractor,
     saveSportEventInteractor: saveSportEventInteractor,
+    getSportFavoritesInteractor: getSportFavoritesInteractor
   );
 
   final liquidEventBloc = LiquidEventBloc(
@@ -377,6 +378,7 @@ void main() async {
     getWeekSportsInteractor: getWeekSportsInteractor,
     isNecessaryToShowExplainingCardInteractor: isNecessaryToShowExplainingCardInteractor,
     saveExplainingCardInteractionInteractor: saveExplainingCardInteractionInteractor,
+    getSportFavoritesInteractor: getSportFavoritesInteractor,
   );
 
   final journalLiquidBloc = JournalLiquidBloc(
@@ -430,6 +432,7 @@ void main() async {
     getMasterFileInteractor: getMasterFileInteractor,
     uploadSportFavoriteInteractor: uploadSportFavoriteInteractor,
     saveSportFavoriteInteractor: saveSportFavoriteInteractor,
+    getSportFavoritesInteractor: getSportFavoritesInteractor,
   );
 
   final createNewSportFavoriteBloc = CreateNewSportFavoriteBloc(

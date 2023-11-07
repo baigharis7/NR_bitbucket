@@ -100,214 +100,230 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
           },
           builder: (ctx, state) {
             return Scaffold(
-              body: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                            child: IconButton(
-                              onPressed: () => Navigator.pop(context),
-                              icon: const Icon(Icons.arrow_back_ios, size: 25,),
-                            ),
-                          ),
-                          Text(
-                            state.sportFavorite.translate(context),
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: Dimens.fontSizeLarge,
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                            child: Image.asset('assets/icon/sport_icon.png'), height: 27, width: 27,)
-                        ],
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.rectangle,
-                        borderRadius: const BorderRadius.all(Radius.circular(10)),
-                        border: Border.all(color: Colors.grey[300]!, width: 1.0),
-                      ),
-                      padding: const EdgeInsets.all(Dimens.paddingNormal),
-                      margin: const EdgeInsets.all(Dimens.marginNormal),
+              body: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          Card(
-                            margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
-                            color: Colors.green[100],
-                            child: Container(
-                              margin: const EdgeInsets.only(
-                                left: Dimens.marginNormal,
-                                right: Dimens.marginNormal,
-                                top: Dimens.marginLarge,
-                                bottom: Dimens.marginLarge,
-                              ),
-                              child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Container(
-                                          margin: const EdgeInsets.only(
-                                            left: Dimens.marginNormal,
-                                            bottom: Dimens.marginNormal,
-                                          ),
-                                          child: Text(
-                                            state.sportFavorite.translate(ctx),
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal,),
-                                          child:
-                                          Text(AppLocalizations.of(context)!.duration),
-                                        ),
-                                        Expanded(
-                                          child: Text(state.sportFavorite!.minutes.toString()),
-                                        ),
-                                        Container(
-                                          margin: const EdgeInsets.only(
-                                            right: Dimens.marginNormal,
-                                          ),
-                                          child: Text(
-                                            AppLocalizations.of(context)!.minutes.toLowerCase(),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          alignment: Alignment.centerLeft,
-                                          margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                                          child: Text(AppLocalizations.of(context)!.intensity),
-                                        ),
-                                        Expanded(
-                                          child: Container(
-                                            margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                                            child: Text(bloc.getIntensityName(ctx, state.sportFavorite!.intensity)),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    Container(
-                                      margin: const EdgeInsets.only(bottom: Dimens.marginNormal),
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                                            child: Text('${AppLocalizations.of(context)!.duration}: '),
-                                          ),
-                                          Container(
-                                            margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                                            child: Text('${state.sportFavorite!.timeStart.orEmpty()}   ${DateTimeHelper().formatDayMonthYearDate(state.sportFavorite!.eventDate!)}'),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                            ),
-                          ),
-                          SizedBox(
-                            child: Container(
-                              alignment: Alignment.centerLeft,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Colors.yellow[200],
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              margin: const EdgeInsets.all(Dimens.marginNormal),
-                              child: InkWell(
-                                child: Container(
-                                  margin: const EdgeInsets.all(Dimens.marginNormal),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Text(AppLocalizations.of(context)!.add_comment),
-                                      const Icon(Icons.mode_comment_outlined)
-                                    ],
+                          Container(
+                            margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(left: Dimens.marginNormal),
+                                  child: IconButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    icon: const Icon(Icons.arrow_back_ios, size: 25,),
                                   ),
                                 ),
-                                onTap: () => showAddCommentDialog(
-                                  context: context,
-                                  onAddComment: (comment) => bloc.add(SetSportFavoriteCommentAction(
-                                    comment: comment,
-                                    onFinish: () => Navigator.pop(context),
-                                  ),),
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (state.sportFavorite!.comment.isNotEmptyOrNull()) Container(
-                            margin: const EdgeInsets.all(Dimens.marginNormal),
-                            child: Card(
-                              child: Container(
-                                alignment: Alignment.centerLeft,
-                                margin: const EdgeInsets.all(Dimens.marginNormal),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                                      child: Text(
-                                        state.sportFavorite!.comment.orEmpty(),
-                                        style: const TextStyle(
-                                          overflow: TextOverflow.clip,
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            child: Container(
-                              alignment: Alignment.centerLeft,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Colors.pink[200],
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              margin: const EdgeInsets.all(Dimens.marginNormal),
-                              child: Container(
-                                margin: const EdgeInsets.all(Dimens.marginNormal),
-                                child: InkWell(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Text(AppLocalizations.of(context)!.make_favorite),
-                                      const Icon(Icons.favorite_border)
-                                    ],
+                                Text(
+                                  state.sportFavorite.translate(context),
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: Dimens.fontSizeLarge,
                                   ),
-                                  onTap: () {
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(left: Dimens.marginNormal),
+                                  child: Image.asset('assets/icon/sport_icon.png'), height: 27, width: 27,),
+                                const Spacer(),
+                                Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 20),
+                                  child: InkWell(onTap: bloc.isSportFavo(sportFavorite) ? () {
                                     showAddFavoriteDialog(
                                       context: ctx,
                                       onNameChange: (String sportName) => bloc.add(SetSportFavoriteNameAction(favoriteName: sportName)),
                                       onFinish: () => bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context))),
                                     );
-                                  },
-                                ),
-                              ),
+                                  } : () {}, child: bloc.isSportFavo(sportFavorite) ? Icon(Icons.favorite, color: Colors.red,) : Icon(Icons.favorite_border, color: Colors.red,)),
+                                )
+                              ],
                             ),
-                          )
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(Dimens.paddingNormal),
+                            margin: const EdgeInsets.all(Dimens.marginNormal),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  children: [
+                                    Card(
+                                      margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
+                                      color: Colors.green[100],
+                                      child: Container(
+                                        margin: const EdgeInsets.only(
+                                          left: Dimens.marginNormal,
+                                          right: Dimens.marginNormal,
+                                          top: Dimens.marginLarge,
+                                          bottom: Dimens.marginLarge,
+                                        ),
+                                        child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                    margin: const EdgeInsets.only(
+                                                      left: Dimens.marginNormal,
+                                                      bottom: Dimens.marginNormal,
+                                                    ),
+                                                    child: Text(
+                                                      state.sportFavorite.translate(ctx),
+                                                      style: const TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal,),
+                                                    child:
+                                                    Text(AppLocalizations.of(context)!.duration),
+                                                  ),
+                                                  Expanded(
+                                                    child: Text(state.sportFavorite!.minutes.toString()),
+                                                  ),
+                                                  Container(
+                                                    margin: const EdgeInsets.only(
+                                                      right: Dimens.marginNormal,
+                                                    ),
+                                                    child: Text(
+                                                      AppLocalizations.of(context)!.minutes.toLowerCase(),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                    alignment: Alignment.centerLeft,
+                                                    margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
+                                                    child: Text(AppLocalizations.of(context)!.intensity),
+                                                  ),
+                                                  Expanded(
+                                                    child: Container(
+                                                      margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
+                                                      child: Text(bloc.getIntensityName(ctx, state.sportFavorite!.intensity)),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                              Container(
+                                                margin: const EdgeInsets.only(bottom: Dimens.marginNormal),
+                                                child: Row(
+                                                  children: [
+                                                    Container(
+                                                      margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
+                                                      child: Text('${AppLocalizations.of(context)!.duration}: '),
+                                                    ),
+                                                    Container(
+                                                      margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
+                                                      child: Text('${state.sportFavorite!.timeStart.orEmpty()}   ${DateTimeHelper().formatDayMonthYearDate(state.sportFavorite!.eventDate!)}'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                      ),
+                                    ),
+                                    if (state.sportFavorite!.comment.isNotEmptyOrNull()) Container(
+                                      margin: const EdgeInsets.all(Dimens.marginNormal),
+                                      child: Card(
+                                        child: Container(
+                                          alignment: Alignment.centerLeft,
+                                          margin: const EdgeInsets.all(Dimens.marginNormal),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.only(left: Dimens.marginNormal),
+                                                child: Text(
+                                                  state.sportFavorite!.comment.orEmpty(),
+                                                  style: const TextStyle(
+                                                    overflow: TextOverflow.clip,
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            ),
                         ],
                       ),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingLarge),
+                    decoration: BoxDecoration(borderRadius: BorderRadiusDirectional.vertical(top: Radius.circular(5.0)),color: Colors.white,boxShadow: [BoxShadow(blurRadius: 5.0)]),
+                    child: Column(children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: Colors.yellow[200],
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        margin: const EdgeInsets.all(Dimens.marginXSmall),
+                        child: InkWell(
+                          child: Container(
+                            margin: const EdgeInsets.all(Dimens.marginSmall),
+                            padding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(AppLocalizations.of(context)!.add_comment),
+                                const Icon(Icons.add_circle)
+                              ],
+                            ),
+                          ),
+                          onTap: () => showAddCommentDialog(
+                            context: context,
+                            onAddComment: (comment) => bloc.add(SetSportFavoriteCommentAction(
+                              comment: comment,
+                              onFinish: () => Navigator.pop(context),
+                            ),),
+                          ),
+                        ),
                       ),
-                  ],
-                ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: Colors.yellow[200],
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        margin: const EdgeInsets.all(Dimens.marginXSmall),
+                        child: Container(
+                          margin: const EdgeInsets.all(Dimens.marginSmall),
+                          padding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+                          child: InkWell(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(AppLocalizations.of(context)!.make_favorite),
+                                const Icon(Icons.favorite_border)
+                              ],
+                            ),
+                            onTap: () {
+
+                            },
+                          ),
+                        ),
+                      ),
+                    ],),
+                  )
+                ],
               ),
             );
           },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/get_sport_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor.dart';
@@ -19,12 +20,14 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
   final SaveSportEventInteractor saveSportEventInteractor;
   final UploadSportEventsInteractor uploadSportsEventInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
+  final GetSportFavoritesInteractor getSportFavoritesInteractor;
 
   SportEventsBloc({
     required this.getUserIdInteractor,
     required this.saveSportEventInteractor,
     required this.uploadSportsEventInteractor,
     required this.getMasterFileInteractor,
+    required this.getSportFavoritesInteractor,
   }) : super(SportEventsState(
     isLoading: false,
     dateStart: DateTimeHelper().provideCurrentDate(),
@@ -35,6 +38,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
 
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
+      state.sportsFavorite = await getSportFavoritesInteractor.execute();
       state.sportEventSimple!.userId = getUserIdInteractor.execute();
       if (state.sportsInfo!.sportsInfoMaster.isEmpty) {
         state.sportsInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);

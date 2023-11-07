@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/get_sport_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
@@ -17,22 +18,26 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
   final GetMasterFileInteractor getMasterFileInteractor;
   final UploadSportFavoriteInteractor uploadSportFavoriteInteractor;
   final SaveSportFavoriteInteractor saveSportFavoriteInteractor;
+  final GetSportFavoritesInteractor getSportFavoritesInteractor;
 
   AddFavoriteSportBloc({
     required this.getUserIdInteractor,
     required this.getMasterFileInteractor,
     required this.uploadSportFavoriteInteractor,
     required this.saveSportFavoriteInteractor,
+    required this.getSportFavoritesInteractor,
   }) : super(AddFavoriteSportState(
     isLoading: false,
     sportsInfo: SportsInfoMaster(sportsInfoMaster: []),
     sportFavorite: SportFavorite.empty(),
+    sportsFavorite: [],
     isEdit: false,
   ),) {
 
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.sportsInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
+      state.sportsFavorite = await getSportFavoritesInteractor.execute();
 
       emit(state.copyWith(isLoading: false));
     });
@@ -85,5 +90,9 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
       case 2: return AppLocalizations.of(context)!.high;
       default: return '';
     }
+  }
+
+  bool isSportFavo(SportFavorite sportFavorite) {
+    return state.sportsFavorite?.any((sportFav) => sportFav.name_es.toString() == sportFavorite.name_es.toString()) ?? false;
   }
 }

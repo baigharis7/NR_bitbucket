@@ -146,6 +146,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                               dateStart: state.dateStart,
                               sportId: state.sportId,
                               resetSportInfo: () => bloc.add(ResetSportInfoAction()),
+                              sportsFavorite: state.sportsFavorite,
                             )
                             : Container(),
                         Container(

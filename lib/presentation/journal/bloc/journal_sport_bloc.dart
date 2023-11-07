@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/get_sport_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_kcal_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_week_sports_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
@@ -20,6 +22,7 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
   final GetWeekSportsInteractor getWeekSportsInteractor;
   final IsNecessaryToShowExplainingCardInteractor isNecessaryToShowExplainingCardInteractor;
   final SaveExplainingCardInteractionInteractor saveExplainingCardInteractionInteractor;
+  final GetSportFavoritesInteractor getSportFavoritesInteractor;
 
   JournalSportBloc({
     required this.getMasterFileInteractor,
@@ -28,10 +31,12 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
     required this.getWeekSportsInteractor,
     required this.isNecessaryToShowExplainingCardInteractor,
     required this.saveExplainingCardInteractionInteractor,
+    required this.getSportFavoritesInteractor,
   }) : super(
     JournalSportState(
       isLoading: false,
       todaySportEvents: [],
+      sportsFavorite: [],
       showCard: false,
     ),
   ) {
@@ -40,6 +45,7 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
       state.sportsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
       state.userKcal = await getUserKcalInteractor.execute();
       state.todaySportEvents = await getTodaySportsInteractor.execute();
+      state.sportsFavorite = await getSportFavoritesInteractor.execute();
       final completeWeekData = await getWeekSportsInteractor.execute();
       state.weeklyData = EventsHelper().getWeeklyDataFormatted(completeWeekData, state.userKcal!);
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.addNewSportEvent.index);
@@ -57,6 +63,10 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
 
   String getSportName(int sportId, BuildContext context) {
     return state.sportsInfoMaster!.sportsInfoMaster.firstWhere((sport) => sport.id == sportId).translate(context);
+  }
+
+  bool isSportFavorite(SportEventComplete sportEvent) {
+    return state.sportsFavorite?.any((sportFav) => sportFav.name_es.toString() == sportEvent.info.name_es.toString()) ?? false;
   }
 
 }

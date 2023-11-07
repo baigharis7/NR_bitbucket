@@ -6,6 +6,7 @@ class AddFavoriteSportState {
   bool isLoading;
   ErrorTypes? onError;
   SportsInfoMaster? sportsInfo;
+  List<SportFavorite>? sportsFavorite;
   SportFavorite? sportFavorite;
   String? timeStart;
   bool? isEdit;
@@ -14,6 +15,7 @@ class AddFavoriteSportState {
     required this.isLoading,
     this.onError,
     this.sportsInfo,
+    this.sportsFavorite,
     this.sportFavorite,
     this.timeStart,
     this.isEdit,
@@ -23,6 +25,7 @@ class AddFavoriteSportState {
     required bool isLoading,
     ErrorTypes? onError,
     SportsInfoMaster? sportsInfo,
+    List<SportFavorite>? sportsFavorite,
     SportFavorite? sportFavorite,
     String? timeStart,
     bool? isEdit,
@@ -31,6 +34,7 @@ class AddFavoriteSportState {
       isLoading: isLoading,
       onError: onError ?? this.onError,
       sportsInfo: sportsInfo ?? this.sportsInfo,
+      sportsFavorite: sportsFavorite ?? this.sportsFavorite,
       sportFavorite: sportFavorite ?? this.sportFavorite,
       timeStart: timeStart ?? this.timeStart,
       isEdit: isEdit ?? this.isEdit,

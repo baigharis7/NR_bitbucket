@@ -108,26 +108,37 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                         child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold)),
                       ),
                       state.todaySportEvents!.isNotEmpty
-                          ? Column(
+                          ? GridView(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 0,
+                          childAspectRatio: 3/2,
+                        ),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
                         children: [
                           ...state.todaySportEvents!.map((sportEvent) {
                             return EventItemWithEditAndLike(
                               name: bloc.getSportName(sportEvent.info.id, ctx),
-                              isFavorite: /** TODO: aquí poner la lógica de los favoritos */ false,
-                              onEdit: () => Navigator.pushNamed(
-                                context,
-                                AddSportEventScreen.routeName,
-                                arguments: mapToSportEventSimple(sportEvent),
-                              ).then((value) {
-                                bloc.add(InitializeStateAction());
-                              }),
-                              onFavorite: () {
-                                final sportFavorite = mapToSportFavorite(sportEvent);
+                              isFavorite: bloc.isSportFavorite(sportEvent),
+                              onEdit: () {
                                 Navigator.pushNamed(
                                   context,
                                   AddSportFavoriteScreen.routeName,
-                                  arguments: sportFavorite,
-                                );
+                                  arguments: mapToSportFavorite(sportEvent),
+                                ).then((value) {
+                                  bloc.add(InitializeStateAction());
+                                });
+                              },
+                              onFavorite: () {
+                                //Pasted here function from above function for future use if need
+                                // Navigator.pushNamed(
+                                //   context,
+                                //   AddSportEventScreen.routeName,
+                                //   arguments: mapToSportEventSimple(sportEvent),
+                                // ).then((value) {
+                                //   bloc.add(InitializeStateAction());
+                                // });
                               },
                             );
                           }).toList()
