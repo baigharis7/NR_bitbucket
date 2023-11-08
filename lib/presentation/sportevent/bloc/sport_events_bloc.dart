@@ -112,6 +112,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
             timeStart: calculateMillisecondsStart(state.timeStart!, state.dateStart!),
             intensity: state.intensity ?? 0,
           ),
+          comment: state.comment,
         );
 
         try {

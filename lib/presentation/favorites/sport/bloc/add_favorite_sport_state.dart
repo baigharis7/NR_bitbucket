@@ -10,6 +10,7 @@ class AddFavoriteSportState {
   SportFavorite? sportFavorite;
   String? timeStart;
   bool? isEdit;
+  String? comment;
 
   AddFavoriteSportState({
     required this.isLoading,
@@ -19,6 +20,7 @@ class AddFavoriteSportState {
     this.sportFavorite,
     this.timeStart,
     this.isEdit,
+    this.comment,
   });
 
   AddFavoriteSportState copyWith({
@@ -29,6 +31,7 @@ class AddFavoriteSportState {
     SportFavorite? sportFavorite,
     String? timeStart,
     bool? isEdit,
+    String? comment,
   }) {
     return AddFavoriteSportState(
       isLoading: isLoading,
@@ -38,6 +41,7 @@ class AddFavoriteSportState {
       sportFavorite: sportFavorite ?? this.sportFavorite,
       timeStart: timeStart ?? this.timeStart,
       isEdit: isEdit ?? this.isEdit,
+      comment: comment ?? this.comment,
     );
   }
 }

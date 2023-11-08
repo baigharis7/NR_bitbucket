@@ -6,12 +6,14 @@ part 'sport_event_response.g.dart';
 class SportEventResponse {
   String userId;
   int eventId;
+  String? comment;
   SportEventInfoResponse info;
   int? eventKcal;
 
   SportEventResponse({
     required this.userId,
     required this.eventId,
+    required this.comment,
     required this.info,
     this.eventKcal,
   });

@@ -7,12 +7,14 @@ part 'sport_event_complete.g.dart';
 class SportEventComplete {
   String userId;
   int eventDate;
+  String? comment;
   SportEventInfo info;
   int? eventKcal;
 
   SportEventComplete({
     required this.userId,
     required this.eventDate,
+    required this.comment,
     required this.info,
     required this.eventKcal,
   });

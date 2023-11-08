@@ -11,12 +11,14 @@ class SportEventEntity extends HiveObject {
 
   @HiveField(0) String userId;
   @HiveField(1) int eventDate;
-  @HiveField(2) SportEventInfoEntity info;
-  @HiveField(3) int? eventKcal;
+  @HiveField(2) String? comment;
+  @HiveField(3) SportEventInfoEntity info;
+  @HiveField(4) int? eventKcal;
 
   SportEventEntity({
     required this.userId,
     required this.eventDate,
+    required this.comment,
     required this.info,
     this.eventKcal,
   });

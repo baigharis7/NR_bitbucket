@@ -20,6 +20,7 @@ class SportEventsState {
   int? minutes;
   int? eventDate;
   bool? isEdit;
+  String? comment;
 
   SportEventsState({
     required this.isLoading,
@@ -36,6 +37,7 @@ class SportEventsState {
     this.minutes,
     this.eventDate,
     this.isEdit,
+    this.comment,
   });
 
   SportEventsState copyWith({
@@ -53,6 +55,7 @@ class SportEventsState {
     int? minutes,
     int? eventDate,
     bool? isEdit,
+    String? comment
   }) {
     return SportEventsState(
       isLoading: isLoading,
@@ -69,6 +72,7 @@ class SportEventsState {
       minutes: minutes ?? this.minutes,
       eventDate: eventDate ?? this.eventDate,
       isEdit: isEdit ?? this.isEdit,
+      comment: comment ?? this.comment,
     );
   }
 

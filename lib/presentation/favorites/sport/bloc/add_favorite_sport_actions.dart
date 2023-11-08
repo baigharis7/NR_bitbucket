@@ -32,3 +32,9 @@ class FinishAddingFavoriteAction extends AddFavoriteSportActions {
 
   FinishAddingFavoriteAction({required this.onFinish});
 }
+
+class UpdateSportCommentAction extends AddFavoriteSportActions {
+  Function onFinish;
+
+  UpdateSportCommentAction({required this.onFinish});
+}

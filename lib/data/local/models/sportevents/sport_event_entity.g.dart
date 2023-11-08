@@ -19,22 +19,25 @@ class SportEventEntityAdapter extends TypeAdapter<SportEventEntity> {
     return SportEventEntity(
       userId: fields[0] as String,
       eventDate: fields[1] as int,
-      info: fields[2] as SportEventInfoEntity,
-      eventKcal: fields[3] as int?,
+      comment: fields[2] as String?,
+      info: fields[3] as SportEventInfoEntity,
+      eventKcal: fields[4] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SportEventEntity obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
       ..write(obj.eventDate)
       ..writeByte(2)
-      ..write(obj.info)
+      ..write(obj.comment)
       ..writeByte(3)
+      ..write(obj.info)
+      ..writeByte(4)
       ..write(obj.eventKcal);
   }
 
@@ -106,6 +109,7 @@ SportEventEntity _$SportEventEntityFromJson(Map<String, dynamic> json) =>
     SportEventEntity(
       userId: json['userId'] as String,
       eventDate: json['eventDate'] as int,
+      comment: json['comment'] as String?,
       info: SportEventInfoEntity.fromJson(json['info'] as Map<String, dynamic>),
       eventKcal: json['eventKcal'] as int?,
     );
@@ -114,6 +118,7 @@ Map<String, dynamic> _$SportEventEntityToJson(SportEventEntity instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'eventDate': instance.eventDate,
+      'comment': instance.comment,
       'info': instance.info.toJson(),
       'eventKcal': instance.eventKcal,
     };

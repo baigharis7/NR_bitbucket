@@ -10,6 +10,7 @@ SportEventResponse _$SportEventResponseFromJson(Map<String, dynamic> json) =>
     SportEventResponse(
       userId: json['userId'] as String,
       eventId: json['eventId'] as int,
+      comment: json['comment'] as String?,
       info:
           SportEventInfoResponse.fromJson(json['info'] as Map<String, dynamic>),
       eventKcal: json['eventKcal'] as int?,
@@ -19,6 +20,7 @@ Map<String, dynamic> _$SportEventResponseToJson(SportEventResponse instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'eventId': instance.eventId,
+      'comment': instance.comment,
       'info': instance.info.toJson(),
       'eventKcal': instance.eventKcal,
     };
