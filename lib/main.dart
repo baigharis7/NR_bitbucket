@@ -433,6 +433,8 @@ void main() async {
     uploadSportFavoriteInteractor: uploadSportFavoriteInteractor,
     saveSportFavoriteInteractor: saveSportFavoriteInteractor,
     getSportFavoritesInteractor: getSportFavoritesInteractor,
+    uploadSportsEventInteractor: uploadSportEventsInteractor,
+    saveSportEventInteractor: saveSportEventInteractor,
   );
 
   final createNewSportFavoriteBloc = CreateNewSportFavoriteBloc(

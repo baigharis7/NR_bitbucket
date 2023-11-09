@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
@@ -11,7 +12,11 @@ import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_state.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/autocomplete_sport_event.dart';
+import 'package:nutrenaissance_flutter/presentation/sportevent/view/sport_event_item.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
+
+import '../../../data/local/models/masterfiles/master_files_type.dart';
+import '../../../infrastructure/helpers/events_helper.dart';
 
 class AddSportEventScreen extends StatefulWidget {
   const AddSportEventScreen({
@@ -25,6 +30,7 @@ class AddSportEventScreen extends StatefulWidget {
 }
 
 class _AddSportEventScreenState extends State<AddSportEventScreen> {
+  TextEditingController _sportInputController = TextEditingController();
 
   void _showConfirmationDialog({required BuildContext context, required Function onResetState}) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
@@ -53,6 +59,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<SportEventsBloc>(context);
     final currentLanguage = Localizations.localeOf(context).languageCode;
+    final eventsHelper = EventsHelper();
     final infoReceived = ModalRoute.of(context)!.settings.arguments;
     if (infoReceived != null) {
       if (infoReceived is SportEventSimple?) {
@@ -124,31 +131,96 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                             ),
                           ),
                         ),
-                        state.sportsInfo != null
-                            ? AutocompleteSportEvent(
-                              onSetSportName: (sportName, sportId) => bloc.add(SetSportNameAction(
-                                sportName: sportName,
-                                sportId: sportId,
-                                currentLanguage: currentLanguage,
-                              ),),
-                              onSetMinutes: (minutes) => bloc.add(SetMinutesAction(minutes: minutes,),),
-                              onSetIntensity: (intensityIndex) => bloc.add(SetIntensityAction(
-                                intensity: intensityIndex,
-                                currentLanguage: currentLanguage,
-                              ),),
-                              onSetTimeStart: (TimeOfDay timeOfDay) => bloc.add(SetTimeStartAction(timeStart: timeOfDay)),
-                              onSetDateStart: () => bloc.add(SetDateStartAction()),
-                              sportsInfo: state.sportsInfo!,
-                              sportName: state.sportName,
-                              duration: state.minutes,
-                              intensity: state.intensity,
-                              timeStart: state.timeStart,
-                              dateStart: state.dateStart,
-                              sportId: state.sportId,
-                              resetSportInfo: () => bloc.add(ResetSportInfoAction()),
-                              sportsFavorite: state.sportsFavorite,
-                            )
-                            : Container(),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.fromLTRB(
+                            Dimens.marginNormal,
+                            Dimens.zero,
+                            Dimens.marginNormal,
+                            Dimens.marginLarge,
+                          ),
+                          child: Autocomplete<String>(
+                            fieldViewBuilder: (
+                                BuildContext context,
+                                TextEditingController textEditingController,
+                                FocusNode focusNode,
+                                VoidCallback onFieldSubmitted,
+                                ) {
+                              _sportInputController = textEditingController;
+                              return TextField(
+                                decoration: InputDecoration(
+                                  fillColor: Colors.black,
+                                  labelText: AppLocalizations.of(context)!.enter,
+                                  suffixIcon: IconButton(
+                                    icon: textEditingController.text != ''
+                                        ? const Icon(Icons.highlight_remove, color: Colors.black,)
+                                        : Container(),
+                                    onPressed: () {
+                                      setState(() {
+                                        textEditingController.text = '';
+                                      });
+                                    },
+                                  ),
+                                ),
+                                controller: textEditingController,
+                                focusNode: focusNode,
+                                onChanged: (value) {
+                                  setState(() {
+                                    textEditingController;
+                                  });
+                                },
+                              );
+                            },
+                            optionsBuilder: (TextEditingValue textEditingValue) {
+                              if (textEditingValue.text == '') {
+                                return const Iterable<String>.empty();
+                              }
+                              return state.sportsInfo!.sportsInfoMaster.map((sport) => sport.translate(context)).where((String name) => name.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                            },
+                            onSelected: (sportName) {
+                              final sportIntensities = eventsHelper.getChosenSportIntensities(sportName, state.sportsInfo!, currentLanguage);
+                              final sportId = eventsHelper.getSportIdByName(sportName, state.sportsInfo!, currentLanguage);
+                              final sportInfo = bloc.findSportById(sportId);
+                              final info  = SportInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities);
+                              bloc.add(AddSportEventAction(info));
+                              _sportInputController.text = '';
+                            },
+                          ),
+                        ),
+                        Column(children: [
+                          ...state.info.orEmpty().map((sport) => SportEventItem(
+                            sport: sport,
+                            removeSport: () { bloc.add(RemoveSportEventAction(sportInfo: sport)); },
+                            editMinutes: (updatedSport) => bloc.add(SetMinutesAction(sportInfo: updatedSport)),
+                            editIntensity: (updatedSport, currentLanguage) => bloc.add(SetIntensityAction(sportInfo: updatedSport, currentLanguage: currentLanguage)) ,
+                          ),).toList(),
+                        ],),
+
+                        // state.sportsInfo != null
+                        //     ? AutocompleteSportEvent(
+                        //       onSetSportName: (sportName, sportId) => bloc.add(SetSportNameAction(
+                        //         sportName: sportName,
+                        //         sportId: sportId,
+                        //         currentLanguage: currentLanguage,
+                        //       ),),
+                        //       onSetMinutes: (minutes) => bloc.add(SetMinutesAction(minutes: minutes,),),
+                        //       onSetIntensity: (intensityIndex) => bloc.add(SetIntensityAction(
+                        //         intensity: intensityIndex,
+                        //         currentLanguage: currentLanguage,
+                        //       ),),
+                        //       onSetTimeStart: (TimeOfDay timeOfDay) => bloc.add(SetTimeStartAction(timeStart: timeOfDay)),
+                        //       onSetDateStart: () => bloc.add(SetDateStartAction()),
+                        //       sportsInfo: state.sportsInfo!,
+                        //       sportName: state.sportName,
+                        //       duration: state.minutes,
+                        //       intensity: state.intensity,
+                        //       timeStart: state.timeStart,
+                        //       dateStart: state.dateStart,
+                        //       sportId: state.sportId,
+                        //       resetSportInfo: () => bloc.add(ResetSportInfoAction()),
+                        //       sportsFavorite: state.sportsFavorite,
+                        //     )
+                        //     : Container(),
                         Container(
                           margin: const EdgeInsets.only(left: Dimens.marginLarge, right: Dimens.marginLarge, ),
                           child: RoundedCustomButton(

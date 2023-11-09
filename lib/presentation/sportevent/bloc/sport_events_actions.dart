@@ -10,10 +10,10 @@ class InitializeStateAction extends SportEventsActions {
 }
 
 class SetIntensityAction extends SportEventsActions {
-  int intensity;
+  final SportInfo sportInfo;
   String currentLanguage;
 
-  SetIntensityAction({required this.intensity, required this.currentLanguage,});
+  SetIntensityAction({required this.sportInfo, required this.currentLanguage,});
 }
 
 class SetSportNameAction extends SportEventsActions {
@@ -37,9 +37,9 @@ class SetTimeStartAction extends SportEventsActions {
 }
 
 class SetMinutesAction extends SportEventsActions {
-  final int minutes;
+  final SportInfo sportInfo;
 
-  SetMinutesAction({required this.minutes});
+  SetMinutesAction({required this.sportInfo});
 }
 
 class FinishSportEventAction extends SportEventsActions {
@@ -63,4 +63,16 @@ class ReceiveEventDateAction extends SportEventsActions {
   final DateTime eventDate;
 
   ReceiveEventDateAction({required this.eventDate});
+}
+
+class AddSportEventAction extends SportEventsActions {
+  final SportInfo sportInfo;
+
+  AddSportEventAction(this.sportInfo);
+}
+
+class RemoveSportEventAction extends SportEventsActions {
+  SportInfo sportInfo;
+
+  RemoveSportEventAction({required this.sportInfo});
 }

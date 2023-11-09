@@ -105,25 +105,25 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
       //   state.onError = ErrorTypes.sportEventMinutesStartError;
       //   emit(state.copyWith(isLoading: false, onError: state.onError,));
       // } else {
-        final sportInfo = findSportById(state.sportId!);
-        final sportEventSimple = SportEventSimple(
-          userId: getUserIdInteractor.execute(),
-          eventId: DateTime.now().millisecondsSinceEpoch,
-          info: SportInfo(
-            id: state.sportId,
-            name_en: sportInfo.en,
-            name_es: sportInfo.es,
-            minutes: state.minutes,
-            timeStart: calculateMillisecondsStart(state.timeStart!, state.dateStart!),
-            intensity: state.intensity ?? 0,
-          ),
-          comment: state.comment,
-        );
+      //   final sportInfo = findSportById(state.sportId!);
+      //   final sportEventSimple = SportEventSimple(
+      //     userId: getUserIdInteractor.execute(),
+      //     eventId: DateTime.now().millisecondsSinceEpoch,
+      //     info: SportInfo(
+      //       id: state.sportId,
+      //       name_en: sportInfo.en,
+      //       name_es: sportInfo.es,
+      //       minutes: state.minutes,
+      //       timeStart: calculateMillisecondsStart(state.timeStart!, state.dateStart!),
+      //       intensity: state.intensity ?? 0,
+      //     ),
+      //     comment: state.comment,
+      //   );
 
         try {
-          final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
+          // final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
           try {
-            await saveSportEventInteractor.execute(sportEventComplete, state.eventDate != null);
+            // await saveSportEventInteractor.execute(sportEventComplete, state.eventDate != null);
 
             event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null));
