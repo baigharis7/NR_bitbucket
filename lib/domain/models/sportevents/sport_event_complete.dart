@@ -1,6 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/translatable.dart';
 
+import '../../../data/api/sportevents/model/sport_event_response.dart';
+
 part 'sport_event_complete.g.dart';
 
 @JsonSerializable(explicitToJson: true)
@@ -8,15 +10,15 @@ class SportEventComplete {
   String userId;
   int eventDate;
   String? comment;
-  SportEventInfo info;
-  int? eventKcal;
+  List<SportEventInfo>? info;
+  int? eventKcals;
 
   SportEventComplete({
     required this.userId,
     required this.eventDate,
     required this.comment,
     required this.info,
-    required this.eventKcal,
+    required this.eventKcals,
   });
 
   factory SportEventComplete.fromJson(Map<String, dynamic> json) => _$SportEventCompleteFromJson(json);
@@ -31,6 +33,7 @@ class SportEventInfo extends Translatable {
   String name_es;
   int intensity;
   int minutes;
+  int timeStart;
   int kcal;
 
   SportEventInfo({
@@ -39,6 +42,7 @@ class SportEventInfo extends Translatable {
     required this.name_es,
     required this.intensity,
     required this.minutes,
+    required this.timeStart,
     required this.kcal,
   });
 

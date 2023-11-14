@@ -49,7 +49,7 @@ class EventsHelper {
       }
       int kcalConsumed = 0;
       for (var event in eventsOfWeekDay) {
-        kcalConsumed = kcalConsumed + event.info.kcal;
+        kcalConsumed = kcalConsumed + (event.eventKcals ?? 0);
       }
 
       weeklyData.add({

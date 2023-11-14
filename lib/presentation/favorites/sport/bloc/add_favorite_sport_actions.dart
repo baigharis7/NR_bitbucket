@@ -1,5 +1,7 @@
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 
+import '../../../../domain/models/sportevents/sport_event_complete.dart';
+
 class AddFavoriteSportActions {
   AddFavoriteSportActions();
 }
@@ -12,6 +14,12 @@ class SetSportFavoriteAction extends AddFavoriteSportActions {
   final SportFavorite sportFavorite;
 
   SetSportFavoriteAction({required this.sportFavorite});
+}
+
+class SetSportEventAction extends AddFavoriteSportActions {
+  final SportEventComplete sportEventComplete;
+
+  SetSportEventAction({required this.sportEventComplete});
 }
 
 class SetSportFavoriteCommentAction extends AddFavoriteSportActions {

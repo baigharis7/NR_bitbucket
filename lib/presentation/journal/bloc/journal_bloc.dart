@@ -112,7 +112,7 @@ class JournalBloc extends BaseBloc<JournalActions, JournalState> {
   int getTodaysKcal(List<SportEventComplete> sportEvents) {
     int kcal = 0;
     for (var sportEvent in sportEvents) {
-      kcal = kcal + sportEvent.info.kcal;
+      kcal = kcal + (sportEvent.eventKcals ?? 0);
     }
     return kcal;
   }

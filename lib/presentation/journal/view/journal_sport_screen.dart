@@ -119,13 +119,13 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                         children: [
                           ...state.todaySportEvents!.map((sportEvent) {
                             return EventItemWithEditAndLike(
-                              name: bloc.getSportName(sportEvent.info.id, ctx),
+                              name: 'Sport Kcal: '+sportEvent.eventKcals.toString(),
                               isFavorite: bloc.isSportFavorite(sportEvent),
                               onEdit: () {
                                 Navigator.pushNamed(
                                   context,
                                   AddSportFavoriteScreen.routeName,
-                                  arguments: mapToSportFavorite(sportEvent),
+                                  arguments: sportEvent,
                                 ).then((value) {
                                   bloc.add(InitializeStateAction());
                                 });

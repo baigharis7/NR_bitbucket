@@ -53,7 +53,7 @@ class SportEventsRepositoryImpl extends SportEventsRepository {
       return 0;
     } else {
       return todaysSportEvents
-          .map((sportEventComplete) => sportEventComplete.info.kcal)
+          .map((sportEventComplete) => sportEventComplete.eventKcals)
           .reduce((value, element) => value.orZero() + element.orZero());
     }
   }

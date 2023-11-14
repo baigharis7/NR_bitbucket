@@ -7,14 +7,14 @@ part 'sport_event_simple.g.dart';
 class SportEventSimple {
   String? userId;
   int? eventId;
-  SportInfo? info;
+  List<SportInfo>? info;
   String? comment;
 
   SportEventSimple({this.userId, this.eventId, this.info, this.comment});
   SportEventSimple.empty() {
     userId = null;
     eventId = null;
-    info = SportInfo.empty();
+    info = <SportInfo>[];
   }
 
   factory SportEventSimple.fromJson(Map<String, dynamic> json) => _$SportEventSimpleFromJson(json);

@@ -7,7 +7,7 @@ class SportEventResponse {
   String userId;
   int eventId;
   String? comment;
-  SportEventInfoResponse info;
+  List<SportEventInfoResponse>? info;
   int? eventKcal;
 
   SportEventResponse({
@@ -29,6 +29,7 @@ class SportEventInfoResponse {
   String name_es;
   int intensity;
   int minutes;
+  int timeStart;
   int kcal;
 
   SportEventInfoResponse({
@@ -37,6 +38,7 @@ class SportEventInfoResponse {
     required this.name_es,
     required this.intensity,
     required this.minutes,
+    required this.timeStart,
     required this.kcal,
   });
 

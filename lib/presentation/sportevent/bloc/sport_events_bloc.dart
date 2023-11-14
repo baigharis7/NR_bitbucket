@@ -51,9 +51,9 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       // int intensitiesNumber = findSportByName(state.sportName.orEmpty(), event.currentLanguage).mets;
       if (state.info!.map((sport) => sport.id).contains((event.sportInfo).id)) {
         final itemIndex = state.info!.indexOf(state.info!.firstWhere((food) => food.id == event.sportInfo.id));
-        // state.info![itemIndex].minutes = event.sportInfo.minutes;
-        state.info!.remove(state.info![itemIndex]);
-        state.info!.add(event.sportInfo);
+        state.info![itemIndex].intensity = event.sportInfo.intensity;
+        // state.info!.remove(state.info![itemIndex]);
+        // state.info!.add(event.sportInfo);
       }
       // if (intensitiesNumber == 1) {
       //   state.intensity = 0;
@@ -78,8 +78,13 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
     });
 
     on<SetTimeStartAction>((event, emit) {
-      state.timeStart = event.timeStart;
-
+      emit(state.copyWith(isLoading: true, onError: null));
+      if (state.info!.map((sport) => sport.id).contains((event.sportInfo).id)) {
+        final itemIndex = state.info!.indexOf(state.info!.firstWhere((food) => food.id == event.sportInfo.id));
+        state.info![itemIndex].timeStart = event.sportInfo.timeStart;
+        // state.info!.remove(state.info![itemIndex]);
+        // state.info!.add(event.sportInfo);
+      }
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
@@ -87,9 +92,9 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       emit(state.copyWith(isLoading: true, onError: null));
       if (state.info!.map((sport) => sport.id).contains((event.sportInfo).id)) {
         final itemIndex = state.info!.indexOf(state.info!.firstWhere((food) => food.id == event.sportInfo.id));
-        // state.info![itemIndex].minutes = event.sportInfo.minutes;
-        state.info!.remove(state.info![itemIndex]);
-        state.info!.add(event.sportInfo);
+        state.info![itemIndex].minutes = event.sportInfo.minutes;
+        // state.info!.remove(state.info![itemIndex]);
+        // state.info!.add(event.sportInfo);
       }
       emit(state.copyWith(isLoading: false, onError: null));
     });
@@ -113,56 +118,50 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
-    // on<FinishSportEventAction>((event, emit) async {
-    //   emit(state.copyWith(isLoading: true, onError: null));
-    //   if (state.timeStart == null) {
-    //     state.onError = ErrorTypes.sportEventTimeStartError;
-    //     emit(state.copyWith(isLoading: false, onError: state.onError,));
-    //   } else if (state.dateStart == null) {
-    //     state.onError = ErrorTypes.sportEventDateStartError;
-    //     emit(state.copyWith(isLoading: false, onError: state.onError,));
-    //   } else if (state.sportId == null) {
-    //     state.onError = ErrorTypes.sportEventSportIdError;
-    //     emit(state.copyWith(isLoading: false, onError: state.onError,));
-    //   } else if (state.intensity == null && state.sportIntensities! > 1) {
-    //     state.onError = ErrorTypes.sportEventIntensityStartError;
-    //     emit(state.copyWith(isLoading: false, onError: state.onError,));
-    //   } else if (state.minutes == null) {
-    //     state.onError = ErrorTypes.sportEventMinutesStartError;
-    //     emit(state.copyWith(isLoading: false, onError: state.onError,));
-    //   } else {
-    //     final sportInfo = findSportById(state.sportId!);
-    //     final sportEventSimple = SportEventSimple(
-    //       userId: getUserIdInteractor.execute(),
-    //       eventId: DateTime.now().millisecondsSinceEpoch,
-    //       info: SportInfo(
-    //         id: state.sportId,
-    //         name_en: sportInfo.en,
-    //         name_es: sportInfo.es,
-    //         minutes: state.minutes,
-    //         timeStart: calculateMillisecondsStart(state.timeStart!, state.dateStart!),
-    //         intensity: state.intensity ?? 0,
-    //       ),
-    //       comment: state.comment,
-    //     );
-    //
-    //     try {
-    //       final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
-    //       try {
-    //         await saveSportEventInteractor.execute(sportEventComplete, state.eventDate != null);
-    //
-    //         event.onFinish.call();
-    //         emit(state.copyWith(isLoading: false, onError: null));
-    //       } catch (error) {
-    //         state.onError = ErrorTypes.locallySavingSportEventError;
-    //         emit(state.copyWith(isLoading: false, onError: state.onError,));
-    //       }
-    //     } catch (error) {
-    //       state.onError = ErrorTypes.uploadingSportEventError;
-    //       emit(state.copyWith(isLoading: false, onError: state.onError,));
-    //     }
-    //   }}
-    // );
+    on<FinishSportEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true, onError: null));
+      // if (state.timeStart == null) {
+      //   state.onError = ErrorTypes.sportEventTimeStartError;
+      //   emit(state.copyWith(isLoading: false, onError: state.onError,));
+      // } else if (state.dateStart == null) {
+      //   state.onError = ErrorTypes.sportEventDateStartError;
+      //   emit(state.copyWith(isLoading: false, onError: state.onError,));
+      // } else if (state.sportId == null) {
+      //   state.onError = ErrorTypes.sportEventSportIdError;
+      //   emit(state.copyWith(isLoading: false, onError: state.onError,));
+      // } else if (state.intensity == null && state.sportIntensities! > 1) {
+      //   state.onError = ErrorTypes.sportEventIntensityStartError;
+      //   emit(state.copyWith(isLoading: false, onError: state.onError,));
+      // } else if (state.minutes == null) {
+      //   state.onError = ErrorTypes.sportEventMinutesStartError;
+      //   emit(state.copyWith(isLoading: false, onError: state.onError,));
+      // } else {
+      //   final sportInfo = findSportById(state.sportId!);
+        final sportEventSimple = SportEventSimple(
+          userId: getUserIdInteractor.execute(),
+          eventId: DateTime.now().millisecondsSinceEpoch,
+          info: state.info,
+          comment: state.comment,
+        );
+
+        try {
+          final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
+          try {
+            await saveSportEventInteractor.execute(sportEventComplete, state.eventDate != null);
+
+            event.onFinish.call();
+            emit(state.copyWith(isLoading: false, onError: null));
+          } catch (error) {
+            state.onError = ErrorTypes.locallySavingSportEventError;
+            emit(state.copyWith(isLoading: false, onError: state.onError,));
+          }
+        } catch (error) {
+          state.onError = ErrorTypes.uploadingSportEventError;
+          emit(state.copyWith(isLoading: false, onError: state.onError,));
+        }
+      }
+    // }
+    );
 
     // on<ReceiveSportEventInfoAction>((event, emit) async {
     //   final dateTimeHelper = DateTimeHelper();
@@ -235,5 +234,11 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
     state.sportId = null;
     state.dateStart = null;
     state.eventDate = null;
+  }
+
+  bool validateSportList() {
+    return state.info?.any((sport) {
+      return sport.minutes == null || sport.intensity == null || sport.timeStart == null;
+    },) ?? true;
   }
 }

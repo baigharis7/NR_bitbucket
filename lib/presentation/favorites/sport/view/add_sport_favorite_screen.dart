@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
@@ -14,6 +15,8 @@ import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/add_fav
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_favorite_dialog.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+
+import '../../../../domain/models/sportevents/sport_event_complete.dart';
 
 class AddSportFavoriteScreen extends StatefulWidget {
   static const routeName = '/add_sport_favorite';
@@ -80,8 +83,8 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<AddFavoriteSportBloc>(context);
-    final sportFavorite = ModalRoute.of(context)!.settings.arguments as SportFavorite;
-    bloc.add(SetSportFavoriteAction(sportFavorite: sportFavorite));
+    final sportEvent = ModalRoute.of(context)!.settings.arguments as SportEventComplete;
+    bloc.add(SetSportEventAction(sportEventComplete: sportEvent));
 
     return BlocProvider.value(
       value: bloc,
@@ -131,13 +134,15 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                                 const Spacer(),
                                 Container(
                                   margin: EdgeInsets.symmetric(horizontal: 20),
-                                  child: InkWell(onTap: bloc.isSportFavo(sportFavorite) ? () {
-                                    showAddFavoriteDialog(
-                                      context: ctx,
-                                      onNameChange: (String sportName) => bloc.add(SetSportFavoriteNameAction(favoriteName: sportName)),
-                                      onFinish: () => bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context))),
-                                    );
-                                  } : () {}, child: bloc.isSportFavo(sportFavorite) ? Icon(Icons.favorite, color: Colors.red,) : Icon(Icons.favorite_border, color: Colors.red,)),
+                                  child: InkWell(onTap:
+                                  //     onTap: bloc.isSportFavo(sportFavorite) ? () {
+                                  //   showAddFavoriteDialog(
+                                  //     context: ctx,
+                                  //     onNameChange: (String sportName) => bloc.add(SetSportFavoriteNameAction(favoriteName: sportName)),
+                                  //     onFinish: () => bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context))),
+                                  //   );
+                                  // } :
+                                          () {}, child: false ? Icon(Icons.favorite, color: Colors.red,) : Icon(Icons.favorite_border, color: Colors.red,)),
                                 )
                               ],
                             ),
@@ -150,7 +155,7 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                               children: [
                                 Column(
                                   children: [
-                                    Card(
+                                    if (state.sportsFavorite?.isNotEmpty  ?? false) ...state.sportsFavorite!.map((sport) => Card(
                                       margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
                                       color: Colors.green[100],
                                       child: Container(
@@ -161,77 +166,77 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                                           bottom: Dimens.marginLarge,
                                         ),
                                         child: Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Container(
-                                                    margin: const EdgeInsets.only(
-                                                      left: Dimens.marginNormal,
-                                                      bottom: Dimens.marginNormal,
-                                                    ),
-                                                    child: Text(
-                                                      state.sportFavorite.translate(ctx),
-                                                      style: const TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                      ),
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                    left: Dimens.marginNormal,
+                                                    bottom: Dimens.marginNormal,
+                                                  ),
+                                                  child: Text(
+                                                    sport.name_en.toString(),
+                                                    style: const TextStyle(
+                                                      fontWeight: FontWeight.bold,
                                                     ),
                                                   ),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Container(
-                                                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal,),
-                                                    child:
-                                                    Text(AppLocalizations.of(context)!.duration),
-                                                  ),
-                                                  Expanded(
-                                                    child: Text(state.sportFavorite!.minutes.toString()),
-                                                  ),
-                                                  Container(
-                                                    margin: const EdgeInsets.only(
-                                                      right: Dimens.marginNormal,
-                                                    ),
-                                                    child: Text(
-                                                      AppLocalizations.of(context)!.minutes.toLowerCase(),
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Container(
-                                                    alignment: Alignment.centerLeft,
-                                                    margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                                                    child: Text(AppLocalizations.of(context)!.intensity),
-                                                  ),
-                                                  Expanded(
-                                                    child: Container(
-                                                      margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                                                      child: Text(bloc.getIntensityName(ctx, state.sportFavorite!.intensity)),
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                              Container(
-                                                margin: const EdgeInsets.only(bottom: Dimens.marginNormal),
-                                                child: Row(
-                                                  children: [
-                                                    Container(
-                                                      margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                                                      child: Text('${AppLocalizations.of(context)!.duration}: '),
-                                                    ),
-                                                    Container(
-                                                      margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                                                      child: Text('${state.sportFavorite!.timeStart.orEmpty()}   ${DateTimeHelper().formatDayMonthYearDate(state.sportFavorite!.eventDate!)}'),
-                                                    ),
-                                                  ],
                                                 ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal,),
+                                                  child:
+                                                  Text(AppLocalizations.of(context)!.duration),
+                                                ),
+                                                Expanded(
+                                                  child: Text(sport.minutes.toString()),
+                                                ),
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                    right: Dimens.marginNormal,
+                                                  ),
+                                                  child: Text(
+                                                    AppLocalizations.of(context)!.minutes.toLowerCase(),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  alignment: Alignment.centerLeft,
+                                                  margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
+                                                  child: Text(AppLocalizations.of(context)!.intensity),
+                                                ),
+                                                Expanded(
+                                                  child: Container(
+                                                    margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
+                                                    child: Text(bloc.getIntensityName(ctx, sport.intensity)),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            Container(
+                                              margin: const EdgeInsets.only(bottom: Dimens.marginNormal),
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                    margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
+                                                    child: Text('${AppLocalizations.of(context)!.sport_time_start}: '),
+                                                  ),
+                                                  Container(
+                                                    margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
+                                                    child: Text(DateFormat('hh:mm a, MM/dd/yy').format(DateTime.fromMillisecondsSinceEpoch(int.parse(sport.timeStart ?? '0')))),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
+                                    ),),
                                     if (state.sportFavorite!.comment.isNotEmptyOrNull()) Container(
                                       margin: const EdgeInsets.all(Dimens.marginNormal),
                                       child: Card(

@@ -66,7 +66,8 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
   }
 
   bool isSportFavorite(SportEventComplete sportEvent) {
-    return state.sportsFavorite?.any((sportFav) => sportFav.name_es.toString() == sportEvent.info.name_es.toString()) ?? false;
+    return false;
+    // return state.sportsFavorite?.any((sportFav) => sportFav.name_es.toString() == sportEvent.info.name_es.toString()) ?? false;
   }
 
 }

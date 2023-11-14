@@ -165,7 +165,7 @@ class _AutocompleteSportEventState extends State<AutocompleteSportEvent> {
                   },
                 ),
               ),
-              _sportName != null ? Card(
+              if (_sportName != null) Card(
                 color: Colors.green[200],
                 child: Container(
                   margin: const EdgeInsets.only(
@@ -306,44 +306,7 @@ class _AutocompleteSportEventState extends State<AutocompleteSportEvent> {
                     ],
                   ),
                 ),
-              ) : Container(child: !(widget.sportsFavorite?.isNotEmpty ?? false) ? Container() : GridView(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 2,
-        mainAxisSpacing: 0,
-        crossAxisSpacing: Dimens.marginNormal,
-        mainAxisExtent: 55.0,
-        childAspectRatio: 3/1,
-      ),
-      shrinkWrap: true,
-      children: [
-        ...widget.sportsFavorite?.map((sport) => Card(
-          elevation: 3.00,
-          shadowColor: Colors.black,
-          child: Container(
-            decoration: BoxDecoration(
-              // color: state.foodName == food.title ? Colors.amber : Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(5)),
-            ),
-            child: InkWell(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              onTap: () {
-                // sport.
-              },
-              child: Center(
-                child: Text(
-                  sport.title.toString(),
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: Dimens.fontSizeSmall,
-                  ),
-                ),
               ),
-            ),
-          ),
-        ),
-        ) ?? [],
-      ],
-    ),),
             ],
           ),
       ),

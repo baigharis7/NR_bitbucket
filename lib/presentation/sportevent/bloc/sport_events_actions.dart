@@ -31,9 +31,9 @@ class SetDateStartAction extends SportEventsActions {
 }
 
 class SetTimeStartAction extends SportEventsActions {
-  final TimeOfDay timeStart;
+  final SportInfo sportInfo;
 
-  SetTimeStartAction({required this.timeStart});
+  SetTimeStartAction({required this.sportInfo});
 }
 
 class SetMinutesAction extends SportEventsActions {

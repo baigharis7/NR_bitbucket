@@ -56,6 +56,22 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
       emit(state.copyWith(isLoading: false));
     });
 
+    on<SetSportEventAction>((event, emit) {
+      final eventDate = event.sportEventComplete.eventDate;
+      state.sportsFavorite = event.sportEventComplete.info?.map((event) => SportFavorite(
+        id: event.id,
+        minutes: event.minutes,
+        intensity: event.intensity,
+        timeStart: event.timeStart.toString(),
+        eventDate: eventDate,
+        name_es: event.name_es,
+        name_en: event.name_en,
+      ),).toList();
+      // state.isEdit = true;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
     on<SetSportFavoriteCommentAction>((event, emit) {
       state.sportFavorite!.comment = event.comment;
       event.onFinish.call();

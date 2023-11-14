@@ -345,13 +345,15 @@ FoodEventSimple mapToFoodEventSimple(domain.FoodEventComplete foodEventComplete)
 SportEventSimple mapToSportEventSimple(SportEventComplete sportEventComplete) {
     return SportEventSimple(
         userId: sportEventComplete.userId,
-        info: SportInfo(
-            id: sportEventComplete.info.id,
-            name_es: sportEventComplete.info.name_es,
-            name_en: sportEventComplete.info.name_en,
-            timeStart: sportEventComplete.eventDate,
-            intensity: sportEventComplete.info.intensity,
-            minutes: sportEventComplete.info.minutes,
-        ),
+        eventId: sportEventComplete.eventDate,
+        comment: sportEventComplete.comment,
+        info: sportEventComplete.info?.map((sportEventComplete) => SportInfo(
+            id: sportEventComplete.id,
+            name_es: sportEventComplete.name_es,
+            name_en: sportEventComplete.name_en,
+            timeStart: sportEventComplete.timeStart,
+            intensity: sportEventComplete.intensity,
+            minutes: sportEventComplete.minutes,
+        ),).toList(),
     );
 }

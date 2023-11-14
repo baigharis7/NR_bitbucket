@@ -8,15 +8,16 @@ SportEventComplete mapToSportEventCompleteFromResponse(response.SportEventRespon
     userId: sportEventResponse.userId,
     eventDate: sportEventResponse.eventId,
     comment: sportEventResponse.comment,
-    eventKcal: sportEventResponse.eventKcal,
-    info: SportEventInfo(
-      id: sportEventResponse.info.id,
-      name_en: sportEventResponse.info.name_en,
-      name_es: sportEventResponse.info.name_es,
-      kcal: sportEventResponse.info.kcal,
-      minutes: sportEventResponse.info.minutes,
-      intensity: sportEventResponse.info.intensity,
-    ),
+    eventKcals: sportEventResponse.eventKcal,
+    info: sportEventResponse.info?.map((sportEventResponse) => SportEventInfo(
+      id: sportEventResponse.id,
+      name_en: sportEventResponse.name_en,
+      name_es: sportEventResponse.name_es,
+      kcal: sportEventResponse.kcal,
+      minutes: sportEventResponse.minutes,
+      timeStart: sportEventResponse.timeStart,
+      intensity: sportEventResponse.intensity,
+    ),).toList(),
   );
 
   return sportEventComplete;
@@ -27,15 +28,16 @@ SportEventEntity mapToSportEventEntity(SportEventComplete sportEventComplete) {
     userId: sportEventComplete.userId,
     eventDate: sportEventComplete.eventDate,
     comment: sportEventComplete.comment,
-    eventKcal: sportEventComplete.eventKcal,
-    info: SportEventInfoEntity(
-      id: sportEventComplete.info.id,
-      name_en: sportEventComplete.info.name_en,
-      name_es: sportEventComplete.info.name_es,
-      intensity: sportEventComplete.info.intensity,
-      minutes: sportEventComplete.info.minutes,
-      kcal: sportEventComplete.info.kcal,
-    ),
+    eventKcals: sportEventComplete.eventKcals,
+    info: sportEventComplete.info?.map((sportEventComplete) => SportEventInfoEntity(
+      id: sportEventComplete.id,
+      name_en: sportEventComplete.name_en,
+      name_es: sportEventComplete.name_es,
+      intensity: sportEventComplete.intensity,
+      minutes: sportEventComplete.minutes,
+      timeStart: sportEventComplete.timeStart,
+      kcal: sportEventComplete.kcal,
+    ),).toList(),
   );
 
   return sportEventEntity;
@@ -46,15 +48,16 @@ SportEventComplete mapToSportEventComplete(SportEventEntity entity) {
     userId: entity.userId,
     eventDate: entity.eventDate,
     comment: entity.comment,
-    info: SportEventInfo(
-      id: entity.info.id,
-      name_en: entity.info.name_en.orEmpty(),
-      name_es: entity.info.name_es.orEmpty(),
-      intensity: entity.info.intensity,
-      minutes: entity.info.minutes,
-      kcal: entity.info.kcal,
-    ),
-    eventKcal: entity.eventKcal,
+    info: entity.info?.map((entity) => SportEventInfo(
+      id: entity.id,
+      name_en: entity.name_en.orEmpty(),
+      name_es: entity.name_es.orEmpty(),
+      intensity: entity.intensity,
+      minutes: entity.minutes,
+      timeStart: entity.timeStart,
+      kcal: entity.kcal,
+    ),).toList(),
+    eventKcals: entity.eventKcals,
   );
 
   return sportEventComplete;

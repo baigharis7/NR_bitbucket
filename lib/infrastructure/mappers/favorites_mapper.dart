@@ -60,13 +60,13 @@ UploadFoodFavorite mapToUploadFoodFavorite(FoodFavorite foodFavorite, String use
 SportFavorite mapToSportFavorite(SportEventComplete sportEventComplete) {
   final dateTimeHelper = DateTimeHelper();
   return SportFavorite(
-    id: sportEventComplete.info.id,
-    minutes: sportEventComplete.info.minutes,
-    intensity: sportEventComplete.info.intensity,
+    id: sportEventComplete.info?[0].id,
+    minutes: sportEventComplete.info?[0].minutes,
+    intensity: sportEventComplete.info?[0].intensity,
     timeStart: dateTimeHelper.formatTimeOfDayToString(sportEventComplete.eventDate),
     eventDate: sportEventComplete.eventDate,
-    name_es: sportEventComplete.info.name_es,
-    name_en: sportEventComplete.info.name_en,
+    name_es: sportEventComplete.info?[0].name_es,
+    name_en: sportEventComplete.info?[0].name_en,
   );
 }
 

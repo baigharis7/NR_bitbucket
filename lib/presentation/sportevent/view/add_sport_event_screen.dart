@@ -181,19 +181,58 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                               final sportIntensities = eventsHelper.getChosenSportIntensities(sportName, state.sportsInfo!, currentLanguage);
                               final sportId = eventsHelper.getSportIdByName(sportName, state.sportsInfo!, currentLanguage);
                               final sportInfo = bloc.findSportById(sportId);
-                              final info  = SportInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities);
+                              final info  = SportInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null);
                               bloc.add(AddSportEventAction(info));
                               _sportInputController.text = '';
                             },
                           ),
                         ),
                         Column(children: [
-                          ...state.info.orEmpty().map((sport) => SportEventItem(
+                          if (state.info?.isNotEmpty ?? false) ...state.info.orEmpty().map((sport) => SportEventItem(
+                            sportIntensities: eventsHelper.getChosenSportIntensities(sport.name_en, state.sportsInfo!, currentLanguage),
                             sport: sport,
                             removeSport: () { bloc.add(RemoveSportEventAction(sportInfo: sport)); },
                             editMinutes: (updatedSport) => bloc.add(SetMinutesAction(sportInfo: updatedSport)),
-                            editIntensity: (updatedSport, currentLanguage) => bloc.add(SetIntensityAction(sportInfo: updatedSport, currentLanguage: currentLanguage)) ,
-                          ),).toList(),
+                            editIntensity: (updatedSport, currentLanguage) => bloc.add(SetIntensityAction(sportInfo: updatedSport, currentLanguage: currentLanguage)),
+                            editDateTime: (updatedSport) => bloc.add(SetTimeStartAction(sportInfo: updatedSport)),
+                          ),).toList() else GridView(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 0,
+                              crossAxisSpacing: Dimens.marginNormal,
+                              mainAxisExtent: 55.0,
+                              childAspectRatio: 3/1,
+                            ),
+                            shrinkWrap: true,
+                            children: [
+                              ...state.sportsFavorite.orEmpty().map((sport) => Card(
+                                elevation: 3.00,
+                                shadowColor: Colors.black,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    // color: state.foodName == food.title ? Colors.amber : Colors.white,
+                                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                                  ),
+                                  child: InkWell(
+                                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                    onTap: () {
+                                      // sport.
+                                    },
+                                    child: Center(
+                                      child: Text(
+                                        sport.title.toString(),
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: Dimens.fontSizeSmall,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              ),
+                            ],
+                          ),
                         ],),
 
                         // state.sportsInfo != null
@@ -222,10 +261,10 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                         //     )
                         //     : Container(),
                         Container(
-                          margin: const EdgeInsets.only(left: Dimens.marginLarge, right: Dimens.marginLarge, ),
+                          margin: EdgeInsets.only(left: Dimens.marginLarge, right: Dimens.marginLarge, ),
                           child: RoundedCustomButton(
                             onPressed: () {
-                              if (state.sportName != null) {
+                              if (!bloc.validateSportList() && state.info!.isNotEmpty) {
                                 bloc.add(FinishSportEventAction(onFinish: () => _showConfirmationDialog(
                                   context: ctx, 
                                   onResetState: () => bloc.add(ResetSportInfoAction()),
