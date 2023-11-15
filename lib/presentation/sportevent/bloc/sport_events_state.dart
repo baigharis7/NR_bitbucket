@@ -21,6 +21,7 @@ class SportEventsState {
   int? eventDate;
   bool? isEdit;
   String? comment;
+  String? eventSportName;
   List<SportInfo>? info;
 
   SportEventsState({
@@ -39,6 +40,7 @@ class SportEventsState {
     this.eventDate,
     this.isEdit,
     this.comment,
+    this.eventSportName,
     this.info,
   });
 
@@ -58,6 +60,7 @@ class SportEventsState {
     int? eventDate,
     bool? isEdit,
     String? comment,
+    String? eventSportName,
     List<SportInfo>? info,
   }) {
     return SportEventsState(
@@ -76,6 +79,7 @@ class SportEventsState {
       eventDate: eventDate ?? this.eventDate,
       isEdit: isEdit ?? this.isEdit,
       comment: comment ?? this.comment,
+      eventSportName: eventSportName ?? this.eventSportName,
       info: info ?? this.info,
     );
   }

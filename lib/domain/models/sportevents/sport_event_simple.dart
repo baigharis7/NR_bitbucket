@@ -9,8 +9,9 @@ class SportEventSimple {
   int? eventId;
   List<SportInfo>? info;
   String? comment;
+  String? sportName;
 
-  SportEventSimple({this.userId, this.eventId, this.info, this.comment});
+  SportEventSimple({this.userId, this.eventId, this.info, this.comment, this.sportName});
   SportEventSimple.empty() {
     userId = null;
     eventId = null;

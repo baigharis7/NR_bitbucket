@@ -10,6 +10,7 @@ class SportEventComplete {
   String userId;
   int eventDate;
   String? comment;
+  String? sportName;
   List<SportEventInfo>? info;
   int? eventKcals;
 
@@ -17,6 +18,7 @@ class SportEventComplete {
     required this.userId,
     required this.eventDate,
     required this.comment,
+    required this.sportName,
     required this.info,
     required this.eventKcals,
   });

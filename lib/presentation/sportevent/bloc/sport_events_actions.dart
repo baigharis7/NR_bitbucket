@@ -76,3 +76,9 @@ class RemoveSportEventAction extends SportEventsActions {
 
   RemoveSportEventAction({required this.sportInfo});
 }
+
+class SetEventSportNameAction extends SportEventsActions {
+  final String sportEventName;
+
+  SetEventSportNameAction({required this.sportEventName});
+}

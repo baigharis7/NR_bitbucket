@@ -15,6 +15,7 @@ import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/add_fav
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/add_favorite_sport_state.dart';
 
 import '../../../../domain/interactor/sportevents/upload_sport_events_interactor.dart';
+import '../../../../domain/models/sportevents/sport_event_simple.dart';
 
 class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavoriteSportState> {
   final GetUserIdInteractor getUserIdInteractor;
@@ -57,17 +58,11 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
     });
 
     on<SetSportEventAction>((event, emit) {
-      final eventDate = event.sportEventComplete.eventDate;
-      state.sportsFavorite = event.sportEventComplete.info?.map((event) => SportFavorite(
-        id: event.id,
-        minutes: event.minutes,
-        intensity: event.intensity,
-        timeStart: event.timeStart.toString(),
-        eventDate: eventDate,
-        name_es: event.name_es,
-        name_en: event.name_en,
-      ),).toList();
-      // state.isEdit = true;
+      state.eventId = event.sportEventComplete.eventDate;
+      state.comment = event.sportEventComplete.comment;
+      state.sportName = event.sportEventComplete.sportName;
+      state.sportInfo = event.sportEventComplete.info;
+      state.isEdit = true;
 
       emit(state.copyWith(isLoading: false));
     });
@@ -103,55 +98,37 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
       }
     });
 
-    on<UpdateSportCommentAction>((event, emit) async {
-      emit(state.copyWith(isLoading: true, onError: null));
-      // if (state.timeStart == null) {
-      //   state.onError = ErrorTypes.sportEventTimeStartError;
-      //   emit(state.copyWith(isLoading: false, onError: state.onError,));
-      // } else if (state.dateStart == null) {
-      //   state.onError = ErrorTypes.sportEventDateStartError;
-      //   emit(state.copyWith(isLoading: false, onError: state.onError,));
-      // } else if (state.sportId == null) {
-      //   state.onError = ErrorTypes.sportEventSportIdError;
-      //   emit(state.copyWith(isLoading: false, onError: state.onError,));
-      // } else if (state.intensity == null && state.sportIntensities! > 1) {
-      //   state.onError = ErrorTypes.sportEventIntensityStartError;
-      //   emit(state.copyWith(isLoading: false, onError: state.onError,));
-      // } else if (state.minutes == null) {
-      //   state.onError = ErrorTypes.sportEventMinutesStartError;
-      //   emit(state.copyWith(isLoading: false, onError: state.onError,));
-      // } else {
-      //   final sportInfo = findSportById(state.sportId!);
-      //   final sportEventSimple = SportEventSimple(
-      //     userId: getUserIdInteractor.execute(),
-      //     eventId: DateTime.now().millisecondsSinceEpoch,
-      //     info: SportInfo(
-      //       id: state.sportId,
-      //       name_en: sportInfo.en,
-      //       name_es: sportInfo.es,
-      //       minutes: state.minutes,
-      //       timeStart: calculateMillisecondsStart(state.timeStart!, state.dateStart!),
-      //       intensity: state.intensity ?? 0,
-      //     ),
-      //     comment: state.comment,
-      //   );
+    on<FinishSportCommentEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      final sportEventSimple = SportEventSimple(
+        userId: getUserIdInteractor.execute(),
+        eventId: state.eventId,
+        info: state.sportInfo?.map((sport) => SportInfo(id: sport.id, name_en: sport.name_en, name_es: sport.name_es, minutes: sport.minutes, intensity: sport.intensity, timeStart: sport.timeStart)).toList(),
+        comment: state.comment,
+        sportName: state.sportName,
+      );
 
+      try {
+        final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
         try {
-          // final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
-          try {
-            // await saveSportEventInteractor.execute(sportEventComplete, state.eventDate != null);
+          await saveSportEventInteractor.execute(sportEventComplete, state.comment != null);
 
-            event.onFinish.call();
-            emit(state.copyWith(isLoading: false, onError: null));
-          } catch (error) {
-            state.onError = ErrorTypes.locallySavingSportEventError;
-            emit(state.copyWith(isLoading: false, onError: state.onError,));
-          }
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
         } catch (error) {
-          state.onError = ErrorTypes.uploadingSportEventError;
+          state.onError = ErrorTypes.locallySavingSportEventError;
           emit(state.copyWith(isLoading: false, onError: state.onError,));
         }
-      // }
+      } catch (error) {
+        state.onError = ErrorTypes.uploadingSportEventError;
+        emit(state.copyWith(isLoading: false, onError: state.onError,));
+      }
+    },);
+
+    on<UpdateSportCommentEventAction>((event, emit) async {
+      state.comment = event.comment;
+
+      emit(state.copyWith(isLoading: false));
   });
 
   }

@@ -33,15 +33,16 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
   Future<void> showAddCommentDialog({
     required BuildContext context,
     required Function onAddComment,
+    required Function onSaveComment,
   }) async {
     await showDialog(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AddCommentDialog(
-        onAddComment: (String comment) => onAddComment.call(comment),
-        onPop: () => Navigator.pop(ctx),
+        onEdit: (String comment) => onAddComment.call(comment),
+        onSaveClick: () => onSaveComment.call(),
       ),
-    );
+    ).then((value) => Navigator.pop(context));
   }
 
   Future<void> showAddFavoriteDialog({
@@ -83,8 +84,12 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<AddFavoriteSportBloc>(context);
-    final sportEvent = ModalRoute.of(context)!.settings.arguments as SportEventComplete;
-    bloc.add(SetSportEventAction(sportEventComplete: sportEvent));
+    final arguments = ModalRoute.of(context)!.settings.arguments;
+    if (arguments != null) {
+      if (arguments is SportEventComplete) {
+        bloc.add(SetSportEventAction(sportEventComplete: arguments));
+      }
+    }
 
     return BlocProvider.value(
       value: bloc,
@@ -155,7 +160,7 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                               children: [
                                 Column(
                                   children: [
-                                    if (state.sportsFavorite?.isNotEmpty  ?? false) ...state.sportsFavorite!.map((sport) => Card(
+                                    if (state.sportInfo?.isNotEmpty  ?? false) ...state.sportInfo!.map((sport) => Card(
                                       margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
                                       color: Colors.green[100],
                                       child: Container(
@@ -228,7 +233,7 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                                                   ),
                                                   Container(
                                                     margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                                                    child: Text(DateFormat('hh:mm a, MM/dd/yy').format(DateTime.fromMillisecondsSinceEpoch(int.parse(sport.timeStart ?? '0')))),
+                                                    child: Text(DateFormat('hh:mm a, MM/dd/yy').format(DateTime.fromMillisecondsSinceEpoch(int.parse(sport.timeStart.toString())))),
                                                   ),
                                                 ],
                                               ),
@@ -237,7 +242,7 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                                         ),
                                       ),
                                     ),),
-                                    if (state.sportFavorite!.comment.isNotEmptyOrNull()) Container(
+                                    if (state.comment.isNotEmptyOrNull()) Container(
                                       margin: const EdgeInsets.all(Dimens.marginNormal),
                                       child: Card(
                                         child: Container(
@@ -248,7 +253,7 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                                               Container(
                                                 margin: const EdgeInsets.only(left: Dimens.marginNormal),
                                                 child: Text(
-                                                  state.sportFavorite!.comment.orEmpty(),
+                                                  state.comment.orEmpty(),
                                                   style: const TextStyle(
                                                     overflow: TextOverflow.clip,
                                                   ),
@@ -280,24 +285,20 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         margin: const EdgeInsets.all(Dimens.marginXSmall),
-                        child: InkWell(
-                          child: Container(
-                            margin: const EdgeInsets.all(Dimens.marginSmall),
-                            padding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+                        child: Container(
+                          margin: const EdgeInsets.all(Dimens.marginSmall),
+                          padding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+                          child: InkWell(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(AppLocalizations.of(context)!.add_comment),
+                                Text(AppLocalizations.of(context)!.add_new_sport_button_text),
                                 const Icon(Icons.add_circle)
                               ],
                             ),
-                          ),
-                          onTap: () => showAddCommentDialog(
-                            context: context,
-                            onAddComment: (comment) => bloc.add(SetSportFavoriteCommentAction(
-                              comment: comment,
-                              onFinish: () => Navigator.pop(context),
-                            ),),
+                            onTap: () {
+
+                            },
                           ),
                         ),
                       ),
@@ -309,20 +310,22 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         margin: const EdgeInsets.all(Dimens.marginXSmall),
-                        child: Container(
-                          margin: const EdgeInsets.all(Dimens.marginSmall),
-                          padding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
-                          child: InkWell(
+                        child: InkWell(
+                          child: Container(
+                            margin: const EdgeInsets.all(Dimens.marginSmall),
+                            padding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(AppLocalizations.of(context)!.make_favorite),
-                                const Icon(Icons.favorite_border)
+                                Text(AppLocalizations.of(context)!.add_comment),
+                                const Icon(Icons.mode_comment_outlined)
                               ],
                             ),
-                            onTap: () {
-
-                            },
+                          ),
+                          onTap: () => showAddCommentDialog(
+                            context: context,
+                            onAddComment: (comment) => bloc.add(UpdateSportCommentEventAction(comment: comment),),
+                            onSaveComment: () { bloc.add(FinishSportCommentEventAction(onFinish: () => _showConfirmationDialog(context))); },
                           ),
                         ),
                       ),

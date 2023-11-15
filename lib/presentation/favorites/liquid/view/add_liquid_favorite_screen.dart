@@ -49,8 +49,8 @@ class _AddLiquidFavoriteScreenState extends State<AddLiquidFavoriteScreen> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AddCommentDialog(
-        onAddComment: (String comment) => onAddComment.call(comment),
-        onPop: () => Navigator.pop(ctx),
+        onEdit: (String comment) => onAddComment.call(comment),
+        onSaveClick: () => Navigator.pop(ctx),
       ),
     );
   }

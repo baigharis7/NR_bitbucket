@@ -52,8 +52,8 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AddCommentDialog(
-        onAddComment: (String comment) => onAddComment.call(comment),
-        onPop: () => Navigator.pop(ctx),
+        onEdit: (String comment) => onAddComment.call(comment),
+        onSaveClick: () => Navigator.pop(ctx),
       ),
     ).then((value) => Navigator.pop(context));
   }

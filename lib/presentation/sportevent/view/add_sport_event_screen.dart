@@ -17,6 +17,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
+import '../../foodevent/common/add_food_name_dialog.dart';
 
 class AddSportEventScreen extends StatefulWidget {
   const AddSportEventScreen({
@@ -46,6 +47,22 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
       onResetState.call();
       Navigator.pop(context);
     });
+  }
+
+  Future<void> showAddSportNameDialog({
+    required BuildContext context,
+    required Function onFinish,
+    required Function onNameChange,
+  }) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AddFoodNameDialog(
+        onNameChange: (String sportEventName) => onNameChange.call(sportEventName),
+        onFinish: () => onFinish.call(),
+        onPop: () => Navigator.pop(context),
+      ),
+    ).then((_) => Navigator.pop(context));
   }
 
   @override
@@ -234,41 +251,24 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                             ],
                           ),
                         ],),
-
-                        // state.sportsInfo != null
-                        //     ? AutocompleteSportEvent(
-                        //       onSetSportName: (sportName, sportId) => bloc.add(SetSportNameAction(
-                        //         sportName: sportName,
-                        //         sportId: sportId,
-                        //         currentLanguage: currentLanguage,
-                        //       ),),
-                        //       onSetMinutes: (minutes) => bloc.add(SetMinutesAction(minutes: minutes,),),
-                        //       onSetIntensity: (intensityIndex) => bloc.add(SetIntensityAction(
-                        //         intensity: intensityIndex,
-                        //         currentLanguage: currentLanguage,
-                        //       ),),
-                        //       onSetTimeStart: (TimeOfDay timeOfDay) => bloc.add(SetTimeStartAction(timeStart: timeOfDay)),
-                        //       onSetDateStart: () => bloc.add(SetDateStartAction()),
-                        //       sportsInfo: state.sportsInfo!,
-                        //       sportName: state.sportName,
-                        //       duration: state.minutes,
-                        //       intensity: state.intensity,
-                        //       timeStart: state.timeStart,
-                        //       dateStart: state.dateStart,
-                        //       sportId: state.sportId,
-                        //       resetSportInfo: () => bloc.add(ResetSportInfoAction()),
-                        //       sportsFavorite: state.sportsFavorite,
-                        //     )
-                        //     : Container(),
                         Container(
                           margin: EdgeInsets.only(left: Dimens.marginLarge, right: Dimens.marginLarge, ),
                           child: RoundedCustomButton(
                             onPressed: () {
                               if (!bloc.validateSportList() && state.info!.isNotEmpty) {
-                                bloc.add(FinishSportEventAction(onFinish: () => _showConfirmationDialog(
-                                  context: ctx, 
-                                  onResetState: () => bloc.add(ResetSportInfoAction()),
-                                ),),);
+                                showAddSportNameDialog(
+                                  context: context,
+                                  onFinish: () {
+                                    if (state.eventSportName?.isNotEmpty ?? false) {
+                                      bloc.add(FinishSportEventAction(onFinish: () => _showConfirmationDialog(
+                                        context: ctx,
+                                        onResetState: () => bloc.add(ResetSportInfoAction()),
+                                      ),),);
+                                    }
+                                    },
+                                  onNameChange: (sportEventName) {
+                                    bloc.add(SetEventSportNameAction(sportEventName: sportEventName));
+                                  },);
                               }
                             },
                           ),

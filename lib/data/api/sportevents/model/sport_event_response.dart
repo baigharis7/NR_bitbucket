@@ -7,6 +7,7 @@ class SportEventResponse {
   String userId;
   int eventId;
   String? comment;
+  String? sportName;
   List<SportEventInfoResponse>? info;
   int? eventKcal;
 
@@ -14,6 +15,7 @@ class SportEventResponse {
     required this.userId,
     required this.eventId,
     required this.comment,
+    required this.sportName,
     required this.info,
     this.eventKcal,
   });

@@ -63,6 +63,12 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
+    on<SetEventSportNameAction>((event, emit) {
+      state.eventSportName = event.sportEventName;
+
+      emit(state.copyWith(isLoading: false, onError: null));
+    },);
+
     on<SetSportNameAction>((event, emit) {
       state.sportName = event.sportName;
       state.sportId = event.sportId;
@@ -82,8 +88,6 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       if (state.info!.map((sport) => sport.id).contains((event.sportInfo).id)) {
         final itemIndex = state.info!.indexOf(state.info!.firstWhere((food) => food.id == event.sportInfo.id));
         state.info![itemIndex].timeStart = event.sportInfo.timeStart;
-        // state.info!.remove(state.info![itemIndex]);
-        // state.info!.add(event.sportInfo);
       }
       emit(state.copyWith(isLoading: false, onError: null));
     });
@@ -93,8 +97,6 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       if (state.info!.map((sport) => sport.id).contains((event.sportInfo).id)) {
         final itemIndex = state.info!.indexOf(state.info!.firstWhere((food) => food.id == event.sportInfo.id));
         state.info![itemIndex].minutes = event.sportInfo.minutes;
-        // state.info!.remove(state.info![itemIndex]);
-        // state.info!.add(event.sportInfo);
       }
       emit(state.copyWith(isLoading: false, onError: null));
     });
@@ -142,6 +144,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
           eventId: DateTime.now().millisecondsSinceEpoch,
           info: state.info,
           comment: state.comment,
+          sportName: state.eventSportName,
         );
 
         try {
@@ -149,6 +152,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
           try {
             await saveSportEventInteractor.execute(sportEventComplete, state.eventDate != null);
 
+            _clearFields();
             event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {
@@ -225,15 +229,9 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
   }
 
   void _clearFields() {
-    state.sportEventSimple = SportEventSimple();
-    state.eventDate = null;
-    state.minutes = null;
-    state.intensity = null;
-    state.timeStart = null;
-    state.sportName = null;
-    state.sportId = null;
-    state.dateStart = null;
-    state.eventDate = null;
+    state.info = null;
+    state.eventSportName = null;
+    state.comment = null;
   }
 
   bool validateSportList() {

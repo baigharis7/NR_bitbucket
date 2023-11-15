@@ -8,6 +8,7 @@ SportEventComplete mapToSportEventCompleteFromResponse(response.SportEventRespon
     userId: sportEventResponse.userId,
     eventDate: sportEventResponse.eventId,
     comment: sportEventResponse.comment,
+    sportName: sportEventResponse.sportName,
     eventKcals: sportEventResponse.eventKcal,
     info: sportEventResponse.info?.map((sportEventResponse) => SportEventInfo(
       id: sportEventResponse.id,
@@ -28,6 +29,7 @@ SportEventEntity mapToSportEventEntity(SportEventComplete sportEventComplete) {
     userId: sportEventComplete.userId,
     eventDate: sportEventComplete.eventDate,
     comment: sportEventComplete.comment,
+    sportName: sportEventComplete.sportName,
     eventKcals: sportEventComplete.eventKcals,
     info: sportEventComplete.info?.map((sportEventComplete) => SportEventInfoEntity(
       id: sportEventComplete.id,
@@ -48,6 +50,7 @@ SportEventComplete mapToSportEventComplete(SportEventEntity entity) {
     userId: entity.userId,
     eventDate: entity.eventDate,
     comment: entity.comment,
+    sportName: entity.sportName,
     info: entity.info?.map((entity) => SportEventInfo(
       id: entity.id,
       name_en: entity.name_en.orEmpty(),

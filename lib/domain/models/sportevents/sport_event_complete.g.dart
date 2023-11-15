@@ -11,6 +11,7 @@ SportEventComplete _$SportEventCompleteFromJson(Map<String, dynamic> json) =>
       userId: json['userId'] as String,
       eventDate: json['eventId'] as int,
       comment: json['comment'] as String?,
+          sportName: json['sportName'] as String?,
       info:(json['info'] as List<dynamic>?)
           ?.map((e) => SportEventInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -22,6 +23,7 @@ Map<String, dynamic> _$SportEventCompleteToJson(SportEventComplete instance) =>
       'userId': instance.userId,
       'eventDate': instance.eventDate,
       'comment': instance.comment,
+      'sportName': instance.comment,
       'info': instance.info?.map((e) => e.toJson()).toList(),
       'eventKcals': instance.eventKcals,
     };

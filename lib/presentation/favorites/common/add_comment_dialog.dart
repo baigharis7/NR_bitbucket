@@ -4,13 +4,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
 class AddCommentDialog extends StatefulWidget {
-  final Function onAddComment;
-  final Function onPop;
+  final Function onEdit;
+  final Function onSaveClick;
 
   const AddCommentDialog({
     Key? key,
-    required this.onAddComment,
-    required this.onPop,
+    required this.onEdit,
+    required this.onSaveClick,
   }) : super(key: key);
 
   @override
@@ -19,7 +19,6 @@ class AddCommentDialog extends StatefulWidget {
 
 class _AddCommentDialogState extends State<AddCommentDialog> {
   final _commentController = TextEditingController();
-  String _comment = '';
 
   @override
   void dispose() {
@@ -47,7 +46,7 @@ class _AddCommentDialogState extends State<AddCommentDialog> {
                     alignment: Alignment.centerRight,
                     margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
                     child: IconButton(
-                      onPressed: () => widget.onPop.call(),
+                      onPressed: () => Navigator.pop(context),
                       icon: const Icon(Icons.clear,),
                     ),
                   ),
@@ -66,7 +65,7 @@ class _AddCommentDialogState extends State<AddCommentDialog> {
                           ),
                           controller: _commentController,
                           onChanged: (comment) {
-                            _comment = comment;
+                            widget.onEdit.call(comment);
                           },
                         ),
                       ),
@@ -78,7 +77,7 @@ class _AddCommentDialogState extends State<AddCommentDialog> {
                 alignment: Alignment.bottomCenter,
                 child: RoundedCustomButton(
                   buttonText: AppLocalizations.of(context)!.add_comment,
-                  onPressed: () => widget.onAddComment.call(_comment),
+                  onPressed: () => widget.onSaveClick.call(),
                 ),
               )
             ],
