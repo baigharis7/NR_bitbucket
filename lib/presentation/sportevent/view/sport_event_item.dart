@@ -219,7 +219,7 @@ class _SportEventItem extends State<SportEventItem> {
                             child: IconButton(
                               icon: const Icon(Icons.calendar_month),
                               onPressed: () async {
-                                final selectedDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime(2024));
+                                final selectedDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(DateTime.now().year-1), lastDate: DateTime(DateTime.now().year+1));
                                 if (selectedDate != null) {
                                   final selectedTime = await showTimePicker(context: context, initialTime: TimeOfDay.now());
                                   if (selectedTime != null) {

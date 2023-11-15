@@ -176,6 +176,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
     double returnQuantity = (kcalQuantitySoFar.toInt() + getTodayKcalFromLiquids(state.todayLiquidEvents!) - caloriesConsumed) / state.userKcal!;
     if (returnQuantity > 1) returnQuantity = 1;
+    if (returnQuantity < 1) returnQuantity = 0.0;
     return returnQuantity;
   }
 

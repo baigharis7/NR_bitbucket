@@ -116,4 +116,8 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
     state.sportFavorite = SportFavorite.empty();
   }
 
+  SportInfoMaster findSportById(int sportId) {
+    return state.sportsInfo!.sportsInfoMaster.firstWhere((sport) => sport.id == sportId);
+  }
+
 }

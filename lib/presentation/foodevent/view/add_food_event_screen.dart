@@ -80,6 +80,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AddFoodNameDialog(
+        title: AppLocalizations.of(context)!.food_name,
         onNameChange: (String foodName) => onNameChange.call(foodName),
         onFinish: () => onFinish.call(),
         onPop: () => Navigator.pop(context),

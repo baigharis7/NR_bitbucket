@@ -10,12 +10,14 @@ class AddFoodNameDialog extends StatefulWidget {
   final Function onNameChange;
   final Function onFinish;
   final Function onPop;
+  final String title;
 
   const AddFoodNameDialog({
     Key? key,
     required this.onNameChange,
     required this.onFinish,
     required this.onPop,
+    required this.title,
   }) : super(key: key);
 
   @override
@@ -64,7 +66,7 @@ class _AddFoodNameDialogState extends State<AddFoodNameDialog> {
                       top: Dimens.marginNormal,
                     ),
                     child: Text(
-                      AppLocalizations.of(context)!.food_name.appendColon(),
+                      widget.title.appendColon(),
                       style: const TextStyle(
                         fontSize: Dimens.fontSizeMedium,
                       ),
@@ -86,7 +88,7 @@ class _AddFoodNameDialogState extends State<AddFoodNameDialog> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
                 child: RoundedCustomButton(
-                  buttonText: AppLocalizations.of(context)!.save_food,
+                  buttonText: AppLocalizations.of(context)!.save,
                   onPressed: () {
                     if (_foodNameController.text == '') {
                       ToastHelper().showToast(text: AppLocalizations.of(context)!.favorite_name_required);

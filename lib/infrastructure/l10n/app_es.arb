@@ -247,6 +247,7 @@
     "add_favorite" : "Añadir favorito",
     "make_favorite" : "Hacer favorito",
     "food_name" : "Nombre de la comida",
+    "spor_name" : "nombre del deporte",
     "no_food_favorites" : "No hay favoritos en esta hora de comida",
     "remove_favorite_question" : "¿Estás seguro de que quieres eliminar el favorito",
     "remove" : "Eliminar",

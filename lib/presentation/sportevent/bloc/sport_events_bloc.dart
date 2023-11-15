@@ -229,7 +229,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
   }
 
   void _clearFields() {
-    state.info = null;
+    state.info = [];
     state.eventSportName = null;
     state.comment = null;
   }

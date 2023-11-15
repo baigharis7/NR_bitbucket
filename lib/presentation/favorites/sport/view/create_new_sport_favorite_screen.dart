@@ -27,6 +27,7 @@ class CreateNewSportFavoriteScreen extends StatefulWidget {
 }
 
 class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScreen> {
+  TextEditingController _sportInputController = TextEditingController();
 
   void _showConfirmationDialog(BuildContext context) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
@@ -73,6 +74,7 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<CreateNewSportFavoriteBloc>(context);
     final currentLanguage = Localizations.localeOf(context).languageCode;
+    final eventsHelper = EventsHelper();
 
     return BlocProvider.value(
       value: bloc,
@@ -116,23 +118,82 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                             ),
                           ),
                         ),
-                        state.sportsInfo != null
-                            ? AutocompleteSportEvent(
-                          onSetSportName: (String sportName, int sportId) => bloc.add(SetSportIdAction(
-                            sportId: sportId,
-                          ),),
-                          onSetMinutes: (minutes) => bloc.add(SetMinutesAction(minutes: int.parse(minutes),),),
-                          onSetIntensity: (intensityIndex) => bloc.add(SetIntensityAction(
-                            intensity: intensityIndex,
-                            currentLanguage: currentLanguage,
-                          ),),
-                          onSetTimeStart: (TimeOfDay timeOfDay) => bloc.add(SetTimeStartAction(timeOfDay: timeOfDay)),
-                          sportsInfo: state.sportsInfo!,
-                          sportName: state.sportId == null ? '' : EventsHelper().getSportNameById(state.sportId, state.sportsInfo!.sportsInfoMaster).translate(context),
-                          resetSportInfo: () => bloc.add(ResetFavoriteSportInfoAction()),
-                          favoriteName: state.favoriteSportName.orEmpty(),
-                        )
-                            : Container(),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.fromLTRB(
+                            Dimens.marginNormal,
+                            Dimens.zero,
+                            Dimens.marginNormal,
+                            Dimens.marginLarge,
+                          ),
+                          child: Autocomplete<String>(
+                            fieldViewBuilder: (
+                                BuildContext context,
+                                TextEditingController textEditingController,
+                                FocusNode focusNode,
+                                VoidCallback onFieldSubmitted,
+                                ) {
+                              _sportInputController = textEditingController;
+                              return TextField(
+                                decoration: InputDecoration(
+                                  fillColor: Colors.black,
+                                  labelText: AppLocalizations.of(context)!.enter,
+                                  suffixIcon: IconButton(
+                                    icon: textEditingController.text != ''
+                                        ? const Icon(Icons.highlight_remove, color: Colors.black,)
+                                        : Container(),
+                                    onPressed: () {
+                                      setState(() {
+                                        textEditingController.text = '';
+                                      });
+                                    },
+                                  ),
+                                ),
+                                controller: textEditingController,
+                                focusNode: focusNode,
+                                onChanged: (value) {
+                                  setState(() {
+                                    textEditingController;
+                                  });
+                                },
+                              );
+                            },
+                            optionsBuilder: (TextEditingValue textEditingValue) {
+                              if (textEditingValue.text == '') {
+                                return const Iterable<String>.empty();
+                              }
+                              return state.sportsInfo!.sportsInfoMaster.map((sport) => sport.translate(context)).where((String name) => name.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                            },
+                            onSelected: (sportName) {
+                              final sportIntensities = eventsHelper.getChosenSportIntensities(sportName, state.sportsInfo!, currentLanguage);
+                              final sportId = eventsHelper.getSportIdByName(sportName, state.sportsInfo!, currentLanguage);
+                              // final sportInfo = bloc.findSportById(sportId);
+                              // final info  = SportInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null);
+                              // bloc.add(AddSportEventAction(info));
+                              _sportInputController.text = '';
+                            },
+                          ),
+                        ),
+
+
+
+                        // state.sportsInfo != null
+                        //     ? AutocompleteSportEvent(
+                        //   onSetSportName: (String sportName, int sportId) => bloc.add(SetSportIdAction(
+                        //     sportId: sportId,
+                        //   ),),
+                        //   onSetMinutes: (minutes) => bloc.add(SetMinutesAction(minutes: int.parse(minutes),),),
+                        //   onSetIntensity: (intensityIndex) => bloc.add(SetIntensityAction(
+                        //     intensity: intensityIndex,
+                        //     currentLanguage: currentLanguage,
+                        //   ),),
+                        //   onSetTimeStart: (TimeOfDay timeOfDay) => bloc.add(SetTimeStartAction(timeOfDay: timeOfDay)),
+                        //   sportsInfo: state.sportsInfo!,
+                        //   sportName: state.sportId == null ? '' : EventsHelper().getSportNameById(state.sportId, state.sportsInfo!.sportsInfoMaster).translate(context),
+                        //   resetSportInfo: () => bloc.add(ResetFavoriteSportInfoAction()),
+                        //   favoriteName: state.favoriteSportName.orEmpty(),
+                        // )
+                        //     : Container(),
                       ],
                     ),
                     Container(

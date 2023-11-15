@@ -58,6 +58,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AddFoodNameDialog(
+        title: AppLocalizations.of(context)!.spor_name,
         onNameChange: (String sportEventName) => onNameChange.call(sportEventName),
         onFinish: () => onFinish.call(),
         onPop: () => Navigator.pop(context),
