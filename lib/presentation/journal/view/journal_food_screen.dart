@@ -178,15 +178,15 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                                 ).then((value) {
                                   bloc.add(InitializeStateAction());
                                 }),
-                                onFavorite: () => {
+                                onFavorite: !bloc.isFoodFavourite(foodEvent) ? () => {
                                   showAddFavoriteDialog(
                                     context: ctx,
                                     onNameChange: (String foodName) => bloc.add(AddFoodNameAction(name: foodName)),
                                     onMealTimeChange: (int mealTime) => bloc.add(AddMealTimeAction(mealTime: mealTime)),
                                     onFinish: () => bloc.add(FinishAddingFavoriteAction(foodEvent: foodEvent, onFinish: () => _showConfirmationDialog(context))),
                                   )
-                                }
-                              );
+                                } : () {}
+                              ,);
                             }).toList()
                           ],
                         )

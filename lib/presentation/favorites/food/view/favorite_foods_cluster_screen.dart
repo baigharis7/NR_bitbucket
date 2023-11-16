@@ -27,7 +27,7 @@ class FavoriteFoodsClusterScreen extends StatelessWidget {
       builder: (ctx) {
         return UndoFavoriteDialog(
           title: foodTitle,
-          onUndoFavorite: onUndoFavorite.call(),
+          onUndoFavorite: () => onUndoFavorite.call(),
         );
       },
     ).then((value) => Navigator.pop(context));
@@ -112,7 +112,7 @@ class FavoriteFoodsClusterScreen extends StatelessWidget {
                         ...bloc.getFavorites(bloc.getMealTimeById(mealTime.id!)).map((favorite) => EventListItem(
                           title: favorite.title,
                           onEdit: () => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: favorite).then((value) => bloc.add(InitializeState())),
-                          onFavorite: (index) => showUndoFavoriteDialog(
+                          onFavorite: () => showUndoFavoriteDialog(
                             context: context,
                             foodTitle: favorite.title,
                             onUndoFavorite: () => bloc.add(

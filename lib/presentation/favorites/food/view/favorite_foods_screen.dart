@@ -134,7 +134,7 @@ class _FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
                         onEdit: (index) => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: bloc.getFavoritesSummary(Lunch())[index]).then((value) => bloc.add(InitializeState())),
                         onFavorite: (index) => showUndoFavoriteDialog(
                           context: context,
-                          foodTitle: bloc.getFavoritesSummary(Dinner())[index].title,
+                          foodTitle: bloc.getFavoritesSummary(Lunch())[index].title,
                           onUndoFavorite: () => bloc.add(
                             RemoveFavoriteAction(
                               foodFavorite: bloc.getFavoritesSummary(Lunch())[index],

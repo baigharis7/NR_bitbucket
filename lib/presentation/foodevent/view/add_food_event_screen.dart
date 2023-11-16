@@ -16,6 +16,7 @@ import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_even
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_card.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
+import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../../domain/models/masterfiles/food_names_master.dart';
 import '../common/add_food_name_dialog.dart';
 
@@ -93,6 +94,26 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
     final bloc = BlocProvider.of<AddFoodEventBloc>(context);
     bloc.add(InitializeStateAction());
     super.initState();
+    var infoReceived;
+    final widgetsBinding = WidgetsBinding.instance;
+    widgetsBinding.addPostFrameCallback((callback) {
+      if (ModalRoute.of(context)?.settings.arguments != null) {
+        infoReceived = ModalRoute.of(context)?.settings.arguments;
+        // infoReceived = ModalRoute.of(context)?.settings.arguments;
+        if (infoReceived != null) {
+          if (infoReceived is FoodEventSimple?) {
+            final foodEventSimple = infoReceived as FoodEventSimple?;
+            bloc.add(ReceiveFoodsInEventFromNavigationAction(foodEventSimple: foodEventSimple!));
+          } else if (infoReceived is DateTime?) {
+            final eventDate = infoReceived as DateTime?;
+            bloc.add(ReceiveEventDateAction(dateTime: eventDate!));
+          }
+          else if (infoReceived is FoodEventComplete) {
+            bloc.add(AddFoodEventFromDetailNavigation(infoReceived));
+          }
+        }
+      }
+    });
   }
 
   @override
@@ -106,19 +127,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
     final bloc = BlocProvider.of<AddFoodEventBloc>(context);
     final currentLanguage = Localizations.localeOf(context).languageCode;
     final eventHelper = EventsHelper();
-    final infoReceived = ModalRoute.of(context)!.settings.arguments;
-    if (infoReceived != null) {
-      if (infoReceived is FoodEventSimple?) {
-        final foodEventSimple = infoReceived as FoodEventSimple?;
-        bloc.add(ReceiveFoodsInEventFromNavigationAction(foodEventSimple: foodEventSimple!));
-      } else if (infoReceived is DateTime?) {
-        final eventDate = infoReceived as DateTime?;
-        bloc.add(ReceiveEventDateAction(dateTime: eventDate!));
-      }
-      else if (infoReceived is FoodItemMaster) {
-        print(infoReceived.en.toString());
-      }
-    }
+
 
     return BlocProvider.value(
       value: bloc,

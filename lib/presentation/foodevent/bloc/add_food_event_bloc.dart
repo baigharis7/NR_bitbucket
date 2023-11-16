@@ -118,9 +118,8 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         if (uploadFoodEvent.uploadSuccess) {
           try {
             await saveFoodEventInteractor.execute(uploadFoodEvent, state.isEdit!);
-            state.foodsInEvent!.clear();
-            state.foodName = '';
-            state.comment = null;
+
+            _clearFields();
             emit(state.copyWith(isLoading: false, onError: null, eventDate: null));
             event.onFinish.call();
           } catch (error) {
@@ -204,9 +203,8 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         if (uploadFoodEvent.uploadSuccess) {
           try {
             await saveFoodEventInteractor.execute(uploadFoodEvent, state.isEdit!);
-            state.foodsFromFavorite!.clear();
-            state.foodName = '';
-            state.comment = null;
+
+            _clearFields();
             emit(state.copyWith(isLoading: false, onError: null, eventDate: null));
             event.onFinish.call();
           } catch (error) {
@@ -222,6 +220,26 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
       }
     },);
+
+    on<AddFoodEventFromDetailNavigation>((event, emit) {
+      state.eventDate = event.foodEventComplete.eventDate;
+      state.eventId = event.foodEventComplete.eventId;
+      state.foodName = event.foodEventComplete.foodName;
+      state.comment = event.foodEventComplete.comment;
+      state.isEdit = true;
+      state.foodsInEvent = event.foodEventComplete.foodInfo?.map((food) => FoodInEvent(id: food.id!, qty: food.eventInfo!.qty!.toInt(), unit: food.eventInfo!.unit!, cookingMethod: food.eventInfo!.cookingMethod!)).toList();
+      emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+    },);
+  }
+
+  void _clearFields() {
+    state.foodsFromFavorite?.clear();
+    state.foodsInEvent?.clear();
+    state.foodName = '';
+    state.comment = null;
+    state.eventDate = null;
+    state.eventId = null;
+    state.isEdit = false;
   }
 
   UnitInfoMaster findUnitName(int unitId) {

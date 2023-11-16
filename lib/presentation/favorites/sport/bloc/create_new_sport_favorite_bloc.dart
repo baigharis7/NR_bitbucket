@@ -26,7 +26,8 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
     isLoading: false,
     onError: null,
     sportsInfo: SportsInfoMaster(sportsInfoMaster: []),
-    sportFavorite: SportFavorite.empty(),
+    // sportFavorite: SportFavorite.empty(),
+    info: [],
   ),) {
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
@@ -34,6 +35,18 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
 
       emit(state.copyWith(isLoading: false, onError: null));
     });
+
+    on<AddFavSportAction>((event, emit) {
+      emit(state.copyWith(isLoading: true, onError: null));
+      if (state.info!.map((sport) => sport.id).contains((event.sportFavInfo).id)) {
+        final itemIndex = state.info!.indexOf(state.info!.firstWhere((food) => food.id == event.sportFavInfo.id));
+        state.info!.remove(state.info![itemIndex]);
+        state.info!.add(event.sportFavInfo);
+      } else {
+        state.info!.add(event.sportFavInfo);
+      }
+      emit(state.copyWith(isLoading: false, onError: null));
+    },);
 
     on<SetSportIdAction>((event, emit) {
       state.sportId = event.sportId;

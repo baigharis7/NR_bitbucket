@@ -47,15 +47,16 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
   Future<void> showAddCommentDialog({
     required BuildContext context,
     required Function onAddComment,
+    required Function onSaveComment,
   }) async {
     await showDialog(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AddCommentDialog(
         onEdit: (String comment) => onAddComment.call(comment),
-        onSaveClick: () => Navigator.pop(ctx),
+        onSaveClick: () => onSaveComment.call(),
       ),
-    ).then((value) => Navigator.pop(context));
+    );
   }
 
   Future<void> showAddFavoriteDialog({
@@ -141,14 +142,15 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                               ),
                               Expanded(
                                 flex: 1,
-                                child: InkWell(onTap: arguments is FoodEventComplete ? !bloc.isFoodFavourite(arguments) ? () {
+                                child: InkWell(onTap: (arguments is FoodFavorite || (arguments is FoodEventComplete ? !bloc.isFoodFavourite(arguments) : true)) ? () {
                                   showAddFavoriteDialog(
                                     context: ctx,
                                     onNameChange: (String foodName) => bloc.add(AddFoodNameAction(name: foodName)),
                                     onMealTimeChange: (int mealTime) => bloc.add(AddMealTimeAction(mealTime: mealTime)),
                                     onFinish: () => bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context))),
                                   );
-                                } : () {} : (){},child: arguments is FoodEventComplete ? bloc.isFoodFavourite(arguments) ? Icon(Icons.favorite, color: Colors.red,) : Icon(Icons.favorite_border, color: Colors.red,) : Icon(Icons.favorite, color: Colors.red,)),
+                                } : () {}, child: (arguments is FoodFavorite || (arguments is FoodEventComplete ? bloc.isFoodFavourite(arguments) : true)) ? Icon(Icons.favorite, color: Colors.red,) : Icon(Icons.favorite_border, color: Colors.red,),
+                              ),
                               )
                             ],
                           ),
@@ -214,12 +216,15 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(AppLocalizations.of(context)!.add_food),
+                              Text(AppLocalizations.of(context)!.add_new_ingredient),
                               const Icon(Icons.add_circle)
                             ],
                           ),
                         ),
-                        onTap: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
+                        onTap: () {
+                          // if (arguments is FoodEventComplete)
+                            Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: arguments).then((value) => Navigator.pop(context));
+                        },
                       ),
                       InkWell(
                         child: Container(
@@ -241,9 +246,8 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                         onTap: () => showAddCommentDialog(
                           context: ctx,
                           onAddComment: (String comment) => bloc.add(AddCommentToFavoriteActions(
-                            comment: comment,
-                            onFinish: () => arguments is FoodEventComplete ? bloc.add(FinishFoodCommentAction(foodEventComplete: arguments, onFinish: () => _showConfirmationDialog(context),),) : Navigator.pop(context),
-                          ),),
+                            comment: comment,),),
+                          onSaveComment: () => arguments is FoodEventComplete ? bloc.add(FinishFoodCommentAction(foodEventComplete: arguments, onFinish: () => _showConfirmationDialog(context),),) : Navigator.pop(context),
                         ),
                       ),
                     ]),)

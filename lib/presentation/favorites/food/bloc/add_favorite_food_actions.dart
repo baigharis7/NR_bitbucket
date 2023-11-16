@@ -23,9 +23,8 @@ class SetFoodFavoriteToEditAction extends AddFavoriteFoodActions {
 
 class AddCommentToFavoriteActions extends AddFavoriteFoodActions {
   final String comment;
-  final Function onFinish;
 
-  AddCommentToFavoriteActions({required this.comment, required this.onFinish});
+  AddCommentToFavoriteActions({required this.comment});
 }
 
 class AddFoodNameAction extends AddFavoriteFoodActions {

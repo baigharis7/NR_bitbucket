@@ -1,6 +1,8 @@
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 
+import '../../../domain/models/foodevents/food_event_complete.dart';
+
 class AddFoodEventActions {
   AddFoodEventActions();
 }
@@ -65,4 +67,10 @@ class FinishFoodFavouriteEventAction extends AddFoodEventActions {
   Function onFinish;
 
   FinishFoodFavouriteEventAction({required this.onFinish});
+}
+
+class AddFoodEventFromDetailNavigation extends AddFoodEventActions {
+  final FoodEventComplete foodEventComplete;
+
+  AddFoodEventFromDetailNavigation(this.foodEventComplete);
 }

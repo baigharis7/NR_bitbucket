@@ -75,7 +75,6 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
     on<AddCommentToFavoriteActions>((event, emit) {
       state.comment = event.comment;
 
-      event.onFinish.call();
       emit(state.copyWith(isLoading: false));
     });
 

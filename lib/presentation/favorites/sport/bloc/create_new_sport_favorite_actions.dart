@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
+
+import '../../../../domain/models/sportevents/sport_event_simple.dart';
 
 class CreateNewSportFavoriteActions {
   CreateNewSportFavoriteActions();
@@ -54,4 +57,10 @@ class FinishCreateSportFavoriteAction extends CreateNewSportFavoriteActions {
 
 class ResetFavoriteSportInfoAction extends CreateNewSportFavoriteActions {
   ResetFavoriteSportInfoAction();
+}
+
+class AddFavSportAction extends CreateNewSportFavoriteActions{
+  final SportInfo sportFavInfo;
+
+  AddFavSportAction(this.sportFavInfo);
 }

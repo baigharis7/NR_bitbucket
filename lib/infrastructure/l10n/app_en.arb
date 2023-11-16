@@ -206,6 +206,7 @@
     "sport" : "Sport",
     "today" : "Today",
     "add_food" : "Add food",
+    "add_new_ingredient" : "Add new ingredient",
     "grames" : "Grames",
     "cooking_method" : "Cooking method",
     "no_cooking_methods" : "This food does not have cooking methods.",
