@@ -211,7 +211,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                             sport: sport,
                             removeSport: () { bloc.add(RemoveSportEventAction(sportInfo: sport)); },
                             editMinutes: (updatedSport) => bloc.add(SetMinutesAction(sportInfo: updatedSport)),
-                            editIntensity: (updatedSport, currentLanguage) => bloc.add(SetIntensityAction(sportInfo: updatedSport, currentLanguage: currentLanguage)),
+                            editIntensity: (updatedSport) => bloc.add(SetIntensityAction(sportInfo: updatedSport)),
                             editDateTime: (updatedSport) => bloc.add(SetTimeStartAction(sportInfo: updatedSport)),
                           ),).toList() else GridView(
                             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

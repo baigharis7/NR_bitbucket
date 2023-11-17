@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 
 import '../../../../domain/models/sportevents/sport_event_simple.dart';
@@ -11,35 +12,34 @@ class InitializeStateAction extends CreateNewSportFavoriteActions {
   InitializeStateAction();
 }
 
-class SetSportIdAction extends CreateNewSportFavoriteActions {
-  final int sportId;
+class RemoveSportFavAction extends CreateNewSportFavoriteActions {
+  final AddSportFavInfo addSportFavInfo;
 
-  SetSportIdAction({required this.sportId});
+  RemoveSportFavAction({required this.addSportFavInfo});
 }
 
-class SetMinutesAction extends CreateNewSportFavoriteActions {
-  final int minutes;
+class UpdateMinutesSportFavAction extends CreateNewSportFavoriteActions {
+  final AddSportFavInfo addSportFavInfo;
 
-  SetMinutesAction({required this.minutes});
+  UpdateMinutesSportFavAction({required this.addSportFavInfo});
 }
 
-class SetIntensityAction extends CreateNewSportFavoriteActions {
-  final int intensity;
-  final String currentLanguage;
+class UpdateIntensitySportFavAction extends CreateNewSportFavoriteActions {
+  final AddSportFavInfo addSportFavInfo;
 
-  SetIntensityAction({required this.intensity, required this.currentLanguage});
+  UpdateIntensitySportFavAction({required this.addSportFavInfo});
 }
 
-class SetTimeStartAction extends CreateNewSportFavoriteActions {
-  final TimeOfDay timeOfDay;
+class UpdateTimeStartSportFavAction extends CreateNewSportFavoriteActions {
+  final AddSportFavInfo addSportFavInfo;
 
-  SetTimeStartAction({required this.timeOfDay});
+  UpdateTimeStartSportFavAction({required this.addSportFavInfo});
 }
 
-class SetSportFavoriteNameAction extends CreateNewSportFavoriteActions {
-  final String favoriteName;
+class UpdateSportFavoriteNameAction extends CreateNewSportFavoriteActions {
+  final String favoriteSportName;
 
-  SetSportFavoriteNameAction({required this.favoriteName});
+  UpdateSportFavoriteNameAction({required this.favoriteSportName});
 }
 
 class SetCommentAction extends CreateNewSportFavoriteActions {
@@ -60,7 +60,7 @@ class ResetFavoriteSportInfoAction extends CreateNewSportFavoriteActions {
 }
 
 class AddFavSportAction extends CreateNewSportFavoriteActions{
-  final SportInfo sportFavInfo;
+  final AddSportFavInfo addSportFavInfo;
 
-  AddFavSportAction(this.sportFavInfo);
+  AddFavSportAction(this.addSportFavInfo);
 }

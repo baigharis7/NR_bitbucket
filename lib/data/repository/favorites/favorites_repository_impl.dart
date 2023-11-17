@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/data/local/models/favorites/liquid/liquid
 import 'package:nutrenaissance_flutter/data/local/models/favorites/sport/sport_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/liquid/liquid_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/repository/favorites/favorites_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
@@ -65,13 +66,9 @@ class FavoritesRepositoryImpl extends FavoritesRepository {
   }
 
   @override
-  Future<bool> uploadSportFavorite(SportFavorite sportFavorite, String userId) async {
-    final uploadSportFavorite = mapToUploadSportFavorite(
-      sportFavorite,
-      userId,
-    );
+  Future<bool> uploadSportFavorite(AddSportFavorite sportFavorite) async {
     try {
-      await favoritesApi.uploadSportFavorite(uploadSportFavorite);
+      await favoritesApi.uploadSportFavorite(sportFavorite);
       return true;
     } catch (_) {
       return false;

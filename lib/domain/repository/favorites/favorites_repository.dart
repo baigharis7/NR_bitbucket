@@ -1,5 +1,6 @@
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/liquid/liquid_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 
 abstract class FavoritesRepository {
@@ -8,7 +9,7 @@ abstract class FavoritesRepository {
   Future<bool> uploadFoodFavorite(FoodFavorite foodFavorite);
   Future<bool> deleteFavoriteFoodFromCloud(String userId, int eventDate);
   Future<bool> removeFoodFavoriteFromLocal(FoodFavorite foodFavorite);
-  Future<bool> uploadSportFavorite(SportFavorite sportFavorite, String userId);
+  Future<bool> uploadSportFavorite(AddSportFavorite sportFavorite);
   Future<bool> saveSportFavorite(SportFavorite sportFavorite, bool isEdit);
   Future<List<SportFavorite>> getSportFavorites();
   Future<bool> deleteSportFavoriteFromCloud(String userId, int eventDate);

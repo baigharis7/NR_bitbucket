@@ -3,6 +3,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sp
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
@@ -38,42 +39,54 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
 
     on<AddFavSportAction>((event, emit) {
       emit(state.copyWith(isLoading: true, onError: null));
-      if (state.info!.map((sport) => sport.id).contains((event.sportFavInfo).id)) {
-        final itemIndex = state.info!.indexOf(state.info!.firstWhere((food) => food.id == event.sportFavInfo.id));
+      if (state.info!.map((sport) => sport.id).contains((event.addSportFavInfo).id)) {
+        final itemIndex = state.info!.indexOf(state.info!.firstWhere((food) => food.id == event.addSportFavInfo.id));
         state.info!.remove(state.info![itemIndex]);
-        state.info!.add(event.sportFavInfo);
+        state.info!.add(event.addSportFavInfo);
       } else {
-        state.info!.add(event.sportFavInfo);
+        state.info!.add(event.addSportFavInfo);
       }
       emit(state.copyWith(isLoading: false, onError: null));
     },);
 
-    on<SetSportIdAction>((event, emit) {
-      state.sportId = event.sportId;
+    on<RemoveSportFavAction>((event, emit) {
+      if (state.info!.map((sport) => sport.id).contains((event.addSportFavInfo).id)) {
+        final itemIndex = state.info!.indexOf(state.info!.firstWhere((food) => food.id == event.addSportFavInfo.id));
+        state.info!.remove(state.info![itemIndex]);
+      }
 
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
-    on<SetMinutesAction>((event, emit) {
-      state.minutes = event.minutes;
+    on<UpdateMinutesSportFavAction>((event, emit) {
+      if (state.info!.map((sport) => sport.id).contains((event.addSportFavInfo).id)) {
+        final itemIndex = state.info!.indexOf(state.info!.firstWhere((food) => food.id == event.addSportFavInfo.id));
+        state.info![itemIndex].minutes = event.addSportFavInfo.minutes;
+      }
 
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
-    on<SetIntensityAction>((event, emit) {
-      state.intensity = event.intensity;
+    on<UpdateIntensitySportFavAction>((event, emit) {
+      if (state.info!.map((sport) => sport.id).contains((event.addSportFavInfo).id)) {
+        final itemIndex = state.info!.indexOf(state.info!.firstWhere((food) => food.id == event.addSportFavInfo.id));
+        state.info![itemIndex].intensity = event.addSportFavInfo.intensity;
+      }
 
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
-    on<SetTimeStartAction>((event, emit) {
-      state.timeStart = event.timeOfDay;
+    on<UpdateTimeStartSportFavAction>((event, emit) {
+      if (state.info!.map((sport) => sport.id).contains((event.addSportFavInfo).id)) {
+        final itemIndex = state.info!.indexOf(state.info!.firstWhere((food) => food.id == event.addSportFavInfo.id));
+        state.info![itemIndex].timeStart = event.addSportFavInfo.timeStart;
+      }
 
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
-    on<SetSportFavoriteNameAction>((event, emit) {
-      state.favoriteSportName = event.favoriteName;
+    on<UpdateSportFavoriteNameAction>((event, emit) {
+      state.favoriteSportName = event.favoriteSportName;
 
       emit(state.copyWith(isLoading: false, onError: null));
     });
@@ -82,24 +95,21 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
       emit(state.copyWith(isLoading: true, onError: null));
 
       // TODO: controlar error de firstWhere.
-      final sportInfo = state.sportsInfo!.sportsInfoMaster.firstWhere((sportInfo) => sportInfo.id == state.sportId);
+      // final sportInfo = state.sportsInfo!.sportsInfoMaster.firstWhere((sportInfo) => sportInfo.id == state.sportId);
 
-      final sportFavorite = SportFavorite(
-        id: state.sportId,
-        minutes: state.minutes,
-        intensity: state.intensity,
-        timeStart: '${state.timeStart!.hour}:${state.timeStart!.minute}',
-        eventDate: DateTimeHelper().provideCurrentDate().millisecondsSinceEpoch,
+      final sportFavorite = AddSportFavorite(
+        userId: getUserIdInteractor.execute(),
+        eventDate: DateTime.now().millisecondsSinceEpoch,
         title: state.favoriteSportName,
-        name_en: sportInfo.en,
-        name_es: sportInfo.es,
+        comment: state.comment,
+        info: state.info,
       );
 
       final userId = getUserIdInteractor.execute();
       try {
-        final uploadResult = await uploadSportFavoriteInteractor.execute(sportFavorite, userId);
+        final uploadResult = await uploadSportFavoriteInteractor.execute(sportFavorite);
         if (uploadResult) {
-          await saveSportFavoriteInteractor.execute(sportFavorite, false);
+          // await saveSportFavoriteInteractor.execute(sportFavorite, false);
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null,));
         } else {

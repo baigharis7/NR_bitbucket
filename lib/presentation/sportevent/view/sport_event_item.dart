@@ -17,7 +17,7 @@ class SportEventItem extends StatefulWidget {
   final SportInfo sport;
   final Function removeSport;
   final Function(SportInfo) editMinutes;
-  final Function(SportInfo, String) editIntensity;
+  final Function(SportInfo) editIntensity;
   final Function(SportInfo) editDateTime;
   const SportEventItem({
     Key? key,
@@ -193,7 +193,7 @@ class _SportEventItem extends State<SportEventItem> {
                                               // setState(() {
                                               //   _intensity = intensityIndex;
                                               // });
-                                              widget.editIntensity.call(SportInfo(id: widget.sport.id, name_es: widget.sport.name_es, name_en: widget.sport.name_en, intensity: intensityIndex, minutes: widget.sport.minutes, timeStart: widget.sport.timeStart), currentLanguage);
+                                              widget.editIntensity.call(SportInfo(id: widget.sport.id, name_es: widget.sport.name_es, name_en: widget.sport.name_en, intensity: intensityIndex, minutes: widget.sport.minutes, timeStart: widget.sport.timeStart));
                                             },
                                           ),
                                         );

@@ -18,7 +18,8 @@ class CreateNewSportFavoriteState {
   int? sportIntensities;
   int? sportId;
   int? minutes;
-  List<SportInfo>? info;
+  List<AddSportFavInfo>? info;
+  String? comment;
 
   CreateNewSportFavoriteState({
     required this.isLoading,
@@ -33,6 +34,7 @@ class CreateNewSportFavoriteState {
     this.sportId,
     this.minutes,
     this.info,
+    this.comment,
   });
 
   CreateNewSportFavoriteState copyWith({
@@ -47,7 +49,8 @@ class CreateNewSportFavoriteState {
     int? sportIntensities,
     int? sportId,
     int? minutes,
-    List<SportInfo>? info,
+    List<AddSportFavInfo>? info,
+    String? comment,
   }) {
     return CreateNewSportFavoriteState(
       isLoading: isLoading,
@@ -62,6 +65,7 @@ class CreateNewSportFavoriteState {
       sportId: sportId ?? this.sportId,
       minutes: minutes ?? this.minutes,
       info: info ?? this.info,
+      comment: comment ?? this.comment,
     );
   }
 

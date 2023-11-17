@@ -11,9 +11,8 @@ class InitializeStateAction extends SportEventsActions {
 
 class SetIntensityAction extends SportEventsActions {
   final SportInfo sportInfo;
-  String currentLanguage;
 
-  SetIntensityAction({required this.sportInfo, required this.currentLanguage,});
+  SetIntensityAction({required this.sportInfo});
 }
 
 class SetSportNameAction extends SportEventsActions {

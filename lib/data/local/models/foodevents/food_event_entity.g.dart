@@ -548,6 +548,8 @@ Map<String, dynamic> _$FoodEventEntityToJson(FoodEventEntity instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'eventDate': instance.eventDate,
+      'foodName': instance.foodName,
+      'comment': instance.comment,
       'foodInfo': instance.foodInfo?.map((e) => e.toJson()).toList(),
       'eventKcals': instance.eventKcals,
     };

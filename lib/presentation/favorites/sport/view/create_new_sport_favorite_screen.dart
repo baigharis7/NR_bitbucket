@@ -17,6 +17,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 
+import '../../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../sportevent/view/sport_event_item.dart';
 
 class CreateNewSportFavoriteScreen extends StatefulWidget {
@@ -171,7 +172,7 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                               final sportIntensities = eventsHelper.getChosenSportIntensities(sportName, state.sportsInfo!, currentLanguage);
                               final sportId = eventsHelper.getSportIdByName(sportName, state.sportsInfo!, currentLanguage);
                               final sportInfo = bloc.findSportById(sportId);
-                              final info  = SportInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null);
+                              final info  = AddSportFavInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null);
                               bloc.add(AddFavSportAction(info));
                               _sportInputController.text = '';
                             },
@@ -180,12 +181,11 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                         Column(children: [
                           ...state.info.orEmpty().map((sport) => SportEventItem(
                             sportIntensities: eventsHelper.getChosenSportIntensities(sport.name_en, state.sportsInfo!, currentLanguage),
-                            // sport: SportInfo(id: sport.id, name_es: sport.name_es, name_en: sport.name_en, timeStart: sport.timeStart, intensity: sport.intensity, minutes: sport.minutes),
-                            sport: sport,
-                            removeSport: () { /*bloc.add(RemoveSportEventAction(sportInfo: sport));*/ },
-                            editMinutes: (updatedSport) { /*bloc.add(SetMinutesAction(sportInfo: updatedSport);*/ },
-                            editIntensity: (updatedSport, currentLanguage) { /*bloc.add(SetIntensityAction(sportInfo: updatedSport, currentLanguage: currentLanguage))*/ },
-                            editDateTime: (updatedSport) { /*bloc.add(SetTimeStartAction(sportInfo: updatedSport)) */ },
+                            sport: SportInfo(id: sport.id, name_es: sport.name_es, name_en: sport.name_en, timeStart: sport.timeStart, intensity: sport.intensity, minutes: sport.minutes),
+                            removeSport: () { bloc.add(RemoveSportFavAction(addSportFavInfo: sport)); },
+                            editMinutes: (updatedSport) { bloc.add(UpdateMinutesSportFavAction(addSportFavInfo: AddSportFavInfo(id: updatedSport.id, minutes: updatedSport.minutes, intensity: updatedSport.intensity, timeStart: updatedSport.timeStart, name_en: updatedSport.name_en, name_es: updatedSport.name_es))); },
+                            editIntensity: (updatedSport) { bloc.add(UpdateIntensitySportFavAction(addSportFavInfo: AddSportFavInfo(id: updatedSport.id, minutes: updatedSport.minutes, intensity: updatedSport.intensity, timeStart: updatedSport.timeStart, name_en: updatedSport.name_en, name_es: updatedSport.name_es))); },
+                            editDateTime: (updatedSport) { bloc.add(UpdateTimeStartSportFavAction(addSportFavInfo: AddSportFavInfo(id: updatedSport.id, minutes: updatedSport.minutes, intensity: updatedSport.intensity, timeStart: updatedSport.timeStart, name_en: updatedSport.name_en, name_es: updatedSport.name_es))); },
                           ),).toList(),
                         ],),
 
@@ -214,16 +214,12 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                       child: RoundedCustomButton(
                         buttonText: AppLocalizations.of(context)!.save_favorite,
                         onPressed: () {
-                          if (state.sportId != null) {
                             showAddFavoriteDialog(
                               context: ctx,
-                              onNameChange: (String sportName) => bloc.add(SetSportFavoriteNameAction(favoriteName: sportName)),
+                              onNameChange: (String sportName) => bloc.add(UpdateSportFavoriteNameAction(favoriteSportName: sportName)),
                               onFinish: () => bloc.add(FinishCreateSportFavoriteAction(currentLanguage: currentLanguage, onFinish: () => _showConfirmationDialog(context))),
                               onResetInfo: () => bloc.add(ResetFavoriteSportInfoAction()),
                             );
-                          } else {
-                            ToastHelper().showToast(text: AppLocalizations.of(context)!.favorite_name_required);
-                          }
                         },
                       ),
                     ),

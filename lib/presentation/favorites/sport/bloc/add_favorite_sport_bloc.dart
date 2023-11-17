@@ -85,14 +85,14 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
 
       final userId = getUserIdInteractor.execute();
       try {
-        final uploadResult = await uploadSportFavoriteInteractor.execute(state.sportFavorite!, userId);
-        if (uploadResult) {
-          await saveSportFavoriteInteractor.execute(state.sportFavorite!, state.isEdit ?? false);
-          event.onFinish.call();
-          emit(state.copyWith(isLoading: false, onError: null));
-        } else {
+        // final uploadResult = await uploadSportFavoriteInteractor.execute(state.sportFavorite!, userId);
+        // if (uploadResult) {
+        //   await saveSportFavoriteInteractor.execute(state.sportFavorite!, state.isEdit ?? false);
+        //   event.onFinish.call();
+        //   emit(state.copyWith(isLoading: false, onError: null));
+        // } else {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
-        }
+        // }
       } catch (error) {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
       }

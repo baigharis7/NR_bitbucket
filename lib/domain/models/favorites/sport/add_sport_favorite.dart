@@ -6,16 +6,16 @@ part 'add_sport_favorite.g.dart';
 @JsonSerializable(explicitToJson: true)
 class AddSportFavorite extends Translatable {
   String? userId;
-  int? eventId;
+  int? eventDate;
   String? comment;
-  String? sportName;
+  String? title;
   List<AddSportFavInfo>? info;
 
   AddSportFavorite({
     this.userId,
-    this.eventId,
+    this.eventDate,
     this.comment,
-    this.sportName,
+    this.title,
     this.info,
   });
 

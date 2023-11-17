@@ -22,7 +22,6 @@ class SportEventEntityAdapter extends TypeAdapter<SportEventEntity> {
       comment: fields[2] as String?,
       sportName: fields[3] as String?,
       info: (fields[4] as List?)?.cast<SportEventInfoEntity>(),
-      // info: fields[4] as List<SportEventInfoEntity>?,
       eventKcals: fields[5] as int?,
     );
   }
