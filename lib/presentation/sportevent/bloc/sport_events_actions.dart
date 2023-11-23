@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 
 import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
+import '../../../domain/models/sportevents/sport_event_complete.dart';
 
 class SportEventsActions {
   SportEventsActions();
@@ -94,4 +95,10 @@ class SetEventSportNameAction extends SportEventsActions {
   final String sportEventName;
 
   SetEventSportNameAction({required this.sportEventName});
+}
+
+class AddSportEventFromDetailNavigation extends SportEventsActions {
+  final SportEventComplete sportEventComplete;
+
+  AddSportEventFromDetailNavigation({required this.sportEventComplete});
 }

@@ -3,9 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
-import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -18,7 +16,7 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 
 import '../../../../domain/models/sportevents/sport_event_complete.dart';
-import '../../../../infrastructure/helpers/toast_helper.dart';
+import '../../../sportevent/view/add_sport_event_screen.dart';
 import '../../common/undo_favorite_dialog.dart';
 
 class AddSportFavoriteScreen extends StatefulWidget {
@@ -331,7 +329,8 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                               ],
                             ),
                             onTap: () {
-
+                              // if (arguments is FoodEventComplete)
+                              Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: arguments).then((value) => Navigator.pop(context));
                             },
                           ),
                         ),

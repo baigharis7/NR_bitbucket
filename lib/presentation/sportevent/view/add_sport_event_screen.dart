@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_sim
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -16,6 +17,7 @@ import 'package:nutrenaissance_flutter/presentation/sportevent/view/sport_event_
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
+import '../../../domain/models/sportevents/sport_event_complete.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
 import '../../foodevent/common/add_food_name_dialog.dart';
 
@@ -71,6 +73,27 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
     final bloc = BlocProvider.of<SportEventsBloc>(context);
     bloc.add(InitializeStateAction());
     super.initState();
+
+    // final widgetsBinding = WidgetsBinding.instance;
+    // widgetsBinding.addPostFrameCallback((callback) {
+    //   if (ModalRoute.of(context)?.settings.arguments != null) {
+    //     final infoReceived = ModalRoute.of(context)!.settings.arguments;
+    //     if (infoReceived != null) {
+    //       if (infoReceived is SportEventSimple?) {
+    //         final sportEventSimple = infoReceived as SportEventSimple?;
+    //         bloc.add(ReceiveSportEventInfoAction(sportEventSimple: sportEventSimple!, context: context));
+    //       } else if (infoReceived is DateTime?) {
+    //         final eventDate = ModalRoute.of(context)!.settings.arguments as DateTime?;
+    //         if (eventDate != null) {
+    //           bloc.add(ReceiveEventDateAction(eventDate: eventDate));
+    //         }
+    //       } else if (infoReceived is SportEventComplete) {
+    //         final sportEventComplete = ModalRoute.of(context)!.settings.arguments as SportEventComplete;
+    //         bloc.add(AddSportEventFromDetailNavigation(sportEventComplete: sportEventComplete));
+    //       }
+    //     }
+    //   }
+    // });
   }
 
   @override
@@ -88,6 +111,9 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
         if (eventDate != null) {
           bloc.add(ReceiveEventDateAction(eventDate: eventDate));
         }
+      } else if (infoReceived is SportEventComplete) {
+        final sportEventComplete = ModalRoute.of(context)!.settings.arguments as SportEventComplete;
+        bloc.add(AddSportEventFromDetailNavigation(sportEventComplete: sportEventComplete));
       }
     }
 

@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
@@ -150,7 +151,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       //   final sportInfo = findSportById(state.sportId!);
         final sportEventSimple = SportEventSimple(
           userId: getUserIdInteractor.execute(),
-          eventId: DateTime.now().millisecondsSinceEpoch,
+          eventId: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
           info: state.info,
           comment: state.comment,
           sportName: state.eventSportName,
@@ -159,7 +160,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
         try {
           final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
           try {
-            await saveSportEventInteractor.execute(sportEventComplete, state.eventDate != null);
+            await saveSportEventInteractor.execute(sportEventComplete, state.isEdit != null);
 
             _clearFields();
             event.onFinish.call();
@@ -229,6 +230,15 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       state.eventDate = event.eventDate.millisecondsSinceEpoch;
       emit(state.copyWith(isLoading: false, onError: null));
     });
+
+    on<AddSportEventFromDetailNavigation>((event, emit) {
+      state.eventDate = event.sportEventComplete.eventDate;
+      state.eventSportName = event.sportEventComplete.sportName;
+      state.comment = event.sportEventComplete.comment;
+      state.isEdit = true;
+      state.info = event.sportEventComplete.info?.map((sport) => SportInfo(id: sport.id, minutes: sport.minutes, intensity: sport.intensity, timeStart: sport.timeStart, name_en: sport.name_en, name_es: sport.name_es)).toList();
+      // emit(state.copyWith(isLoading: false, onError: null));
+    },);
   }
 
 
@@ -268,6 +278,8 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
     state.sportFromFavorite = [];
     state.eventSportName = null;
     state.comment = null;
+    state.isEdit = false;
+    state.eventDate = null;
   }
 
   bool validateSportList() {
