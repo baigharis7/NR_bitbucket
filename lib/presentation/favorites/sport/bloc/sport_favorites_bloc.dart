@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/get_spo
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/remove_sport_favorite_from_local_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/sport_favorites_actions.dart';
@@ -46,7 +47,7 @@ class SportFavoritesBloc extends BaseBloc<SportFavoritesActions, SportFavoritesS
         final deleteFavorite = await deleteSportFavoriteInteractor.execute(userId, event.sportFavorite.eventDate!);
         if (deleteFavorite) {
           try {
-            final removeFromLocalResult = await removeSportFavoriteInteractor.execute(event.sportFavorite, userId);
+            final removeFromLocalResult = await removeSportFavoriteInteractor.execute(event.sportFavorite);
             if (removeFromLocalResult) {
               event.onFinish.call();
               emit(state.copyWith(isLoading: false, onError: null));

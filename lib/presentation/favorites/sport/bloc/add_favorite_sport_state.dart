@@ -1,3 +1,4 @@
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
@@ -7,7 +8,7 @@ class AddFavoriteSportState {
   bool isLoading;
   ErrorTypes? onError;
   SportsInfoMaster? sportsInfo;
-  List<SportFavorite>? sportsFavorite;
+  List<AddSportFavorite>? sportsFavorite;
   SportFavorite? sportFavorite;
   String? timeStart;
   bool? isEdit;
@@ -34,7 +35,7 @@ class AddFavoriteSportState {
     required bool isLoading,
     ErrorTypes? onError,
     SportsInfoMaster? sportsInfo,
-    List<SportFavorite>? sportsFavorite,
+    List<AddSportFavorite>? sportsFavorite,
     SportFavorite? sportFavorite,
     String? timeStart,
     bool? isEdit,

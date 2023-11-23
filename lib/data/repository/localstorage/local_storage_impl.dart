@@ -24,6 +24,7 @@ import 'package:nutrenaissance_flutter/data/local/models/watervents/water_event_
 import 'package:nutrenaissance_flutter/domain/models/analysis/subjective/subjective_analysis_result.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/liquid/liquid_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
@@ -453,9 +454,8 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<bool> saveSportFavorite(SportFavorite sportFavorite, {bool isEdit = false}) async {
-    final userId = await getProfile().then((value) => value!.userId);
-    final sportFavoriteEntity = mapToSportFavoriteEntity(sportFavorite, userId.orEmpty());
+  Future<bool> saveSportFavorite(AddSportFavorite sportFavorite, {bool isEdit = false}) async {
+    final sportFavoriteEntity = mapToSportFavoriteEntity(sportFavorite);
     try {
       await sportFavoriteEntity.save();
       return true;
@@ -490,8 +490,8 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<void> removeSportFavorite(SportFavorite sportFavorite, String userId) async {
-    final sportFavoriteEntity = mapToSportFavoriteEntity(sportFavorite, userId);
+  Future<void> removeSportFavorite(AddSportFavorite sportFavorite) async {
+    final sportFavoriteEntity = mapToSportFavoriteEntity(sportFavorite);
 
     try {
       await sportFavoriteEntity.delete();

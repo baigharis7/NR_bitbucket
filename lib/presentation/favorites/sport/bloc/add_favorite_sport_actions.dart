@@ -1,5 +1,6 @@
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 
+import '../../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../../domain/models/sportevents/sport_event_complete.dart';
 
 class AddFavoriteSportActions {
@@ -20,6 +21,12 @@ class SetSportEventAction extends AddFavoriteSportActions {
   final SportEventComplete sportEventComplete;
 
   SetSportEventAction({required this.sportEventComplete});
+}
+
+class SetSportFromFavoriteAction extends AddFavoriteSportActions {
+  final AddSportFavorite sportFavorite;
+
+  SetSportFromFavoriteAction({required this.sportFavorite});
 }
 
 class SetSportFavoriteCommentAction extends AddFavoriteSportActions {
@@ -51,4 +58,10 @@ class FinishSportCommentEventAction extends AddFavoriteSportActions {
   final Function onFinish;
 
   FinishSportCommentEventAction({required this.onFinish});
+}
+
+class FinishFavoriteSportCommentAction extends AddFavoriteSportActions {
+  final Function onFinish;
+
+  FinishFavoriteSportCommentAction({required this.onFinish});
 }

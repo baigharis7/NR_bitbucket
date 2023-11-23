@@ -1,10 +1,11 @@
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 
 class SportFavoritesState {
   bool isLoading;
   ErrorTypes? onError;
-  List<SportFavorite>? sportFavorites;
+  List<AddSportFavorite>? sportFavorites;
   bool? showCard;
 
   SportFavoritesState({
@@ -17,7 +18,7 @@ class SportFavoritesState {
   SportFavoritesState copyWith({
     required bool isLoading,
     ErrorTypes? onError,
-    List<SportFavorite>? sportFavorites,
+    List<AddSportFavorite>? sportFavorites,
     bool? showCard,
   }) {
     return SportFavoritesState(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 
+import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
+
 class SportEventsActions {
   SportEventsActions();
 }
@@ -47,6 +49,12 @@ class FinishSportEventAction extends SportEventsActions {
   FinishSportEventAction({required this.onFinish});
 }
 
+class FinishSportFavoriteAction extends SportEventsActions {
+  Function onFinish;
+
+  FinishSportFavoriteAction({required this.onFinish});
+}
+
 class ReceiveSportEventInfoAction extends SportEventsActions {
   SportEventSimple sportEventSimple;
   BuildContext context;
@@ -68,6 +76,12 @@ class AddSportEventAction extends SportEventsActions {
   final SportInfo sportInfo;
 
   AddSportEventAction(this.sportInfo);
+}
+
+class AddSportFromFavoriteAction extends SportEventsActions {
+  final AddSportFavorite sportInfo;
+
+  AddSportFromFavoriteAction({required this.sportInfo});
 }
 
 class RemoveSportEventAction extends SportEventsActions {

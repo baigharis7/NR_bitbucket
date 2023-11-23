@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/data/api/favorites/model/sport/upload_spo
 import 'package:nutrenaissance_flutter/data/local/models/favorites/food/food_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/favorites/liquid/liquid_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/favorites/sport/sport_favorite_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/liquid/liquid_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
@@ -11,6 +12,8 @@ import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_compl
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
+
+import '../../domain/models/favorites/sport/add_sport_favorite.dart';
 
 FoodFavorite mapToFoodFavoriteFromEntity(FoodFavoriteEntity foodFavoriteEntity) {
   return FoodFavorite(
@@ -85,34 +88,25 @@ UploadSportFavorite mapToUploadSportFavorite(SportFavorite sportFavorite, String
   );
 }
 
-SportFavoriteEntity mapToSportFavoriteEntity(SportFavorite sportFavorite, String userId) {
+SportFavoriteEntity mapToSportFavoriteEntity(AddSportFavorite sportFavorite) {
   return SportFavoriteEntity(
-    eventDate: sportFavorite.eventDate!,
-    userId: userId,
+    eventDate: sportFavorite.eventDate ?? -1,
+    userId: sportFavorite.userId.toString(),
     comment: sportFavorite.comment,
     title: sportFavorite.title,
-    id: sportFavorite.id,
-    minutes: sportFavorite.minutes,
-    intensity: sportFavorite.intensity,
-    timeStart: sportFavorite.timeStart,
-    name_en: sportFavorite.name_en,
-    name_es: sportFavorite.name_es,
+    info: sportFavorite.info?.map((item) => SportFavoriteInfoEntity(id: item.id, intensity: item.intensity, minutes: item.minutes, timeStart: item.timeStart, name_en: item.name_en, name_es: item.name_es)).toList(),
   );
 }
 
-SportFavorite mapToSportFavoriteFromEntity(SportFavoriteEntity sportFavoriteEntity) {
+AddSportFavorite mapToSportFavoriteFromEntity(SportFavoriteEntity sportFavoriteEntity) {
   final dateTimeHelper = DateTimeHelper();
-  return SportFavorite(
-    id: sportFavoriteEntity.id,
-    minutes: sportFavoriteEntity.minutes,
-    intensity: sportFavoriteEntity.intensity,
-    timeStart: dateTimeHelper.formatTimeOfDayToString(sportFavoriteEntity.eventDate),
+  return AddSportFavorite(
+    userId: sportFavoriteEntity.userId,
     eventDate: sportFavoriteEntity.eventDate,
-    name_es: sportFavoriteEntity.name_es,
-    name_en: sportFavoriteEntity.name_en,
     comment: sportFavoriteEntity.comment,
     title: sportFavoriteEntity.title,
-  );
+    info: sportFavoriteEntity.info?.map((sportItem) => AddSportFavInfo(id: sportItem.id, minutes: sportItem.minutes, intensity: sportItem.intensity, timeStart: sportItem.timeStart, name_en: sportItem.name_en, name_es: sportItem.name_es)).toList()
+  ,);
 }
 
 LiquidFavorite mapToLiquidFavoriteFromEntity(LiquidFavoriteEntity liquidFavoriteEntity) {

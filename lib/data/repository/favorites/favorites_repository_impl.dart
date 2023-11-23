@@ -76,10 +76,10 @@ class FavoritesRepositoryImpl extends FavoritesRepository {
   }
 
   @override
-  Future<bool> saveSportFavorite(SportFavorite sportFavorite, bool isEdit) async => localStorageRepository.saveSportFavorite(sportFavorite, isEdit: isEdit);
+  Future<bool> saveSportFavorite(AddSportFavorite addSportFavorite, bool isEdit) async => localStorageRepository.saveSportFavorite(addSportFavorite, isEdit: isEdit);
 
   @override
-  Future<List<SportFavorite>> getSportFavorites() async {
+  Future<List<AddSportFavorite>> getSportFavorites() async {
     List sportFavorites = await localStorageRepository.getSportFavorites();
     return sportFavorites.map((entity) => mapToSportFavoriteFromEntity(entity as SportFavoriteEntity)).toList();
   }
@@ -95,9 +95,9 @@ class FavoritesRepositoryImpl extends FavoritesRepository {
   }
 
   @override
-  Future<bool> removeSportFavoriteFromLocal(SportFavorite sportFavorite, String userId) async {
+  Future<bool> removeSportFavoriteFromLocal(AddSportFavorite sportFavorite) async {
     try {
-      await localStorageRepository.removeSportFavorite(sportFavorite, userId);
+      await localStorageRepository.removeSportFavorite(sportFavorite);
       return true;
     } catch (error) {
       return false;

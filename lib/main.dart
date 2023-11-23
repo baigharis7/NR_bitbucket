@@ -379,6 +379,9 @@ void main() async {
     isNecessaryToShowExplainingCardInteractor: isNecessaryToShowExplainingCardInteractor,
     saveExplainingCardInteractionInteractor: saveExplainingCardInteractionInteractor,
     getSportFavoritesInteractor: getSportFavoritesInteractor,
+    uploadSportFavoriteInteractor: uploadSportFavoriteInteractor,
+    saveSportFavoriteInteractor: saveSportFavoriteInteractor,
+    getUserIdInteractor: getUserIdInteractor,
   );
 
   final journalLiquidBloc = JournalLiquidBloc(
@@ -640,6 +643,7 @@ void initLocalStorage() async {
   Hive.registerAdapter(LiquidFavoriteEntityAdapter());
   Hive.registerAdapter(LiquidInFavoriteEntityAdapter());
   Hive.registerAdapter(SportFavoriteEntityAdapter());
+  Hive.registerAdapter(SportFavoriteInfoEntityAdapter());
   Hive.registerAdapter(ExplainingCardEntityAdapter());
   Hive.registerAdapter(SubjectiveAnalysisListEntityAdapter());
   Hive.registerAdapter(SubjectiveAnalysisEntityAdapter());

@@ -10,10 +10,10 @@ abstract class FavoritesRepository {
   Future<bool> deleteFavoriteFoodFromCloud(String userId, int eventDate);
   Future<bool> removeFoodFavoriteFromLocal(FoodFavorite foodFavorite);
   Future<bool> uploadSportFavorite(AddSportFavorite sportFavorite);
-  Future<bool> saveSportFavorite(SportFavorite sportFavorite, bool isEdit);
-  Future<List<SportFavorite>> getSportFavorites();
+  Future<bool> saveSportFavorite(AddSportFavorite addSportFavorite, bool isEdit);
+  Future<List<AddSportFavorite>> getSportFavorites();
   Future<bool> deleteSportFavoriteFromCloud(String userId, int eventDate);
-  Future<bool> removeSportFavoriteFromLocal(SportFavorite sportFavorite, String userId);
+  Future<bool> removeSportFavoriteFromLocal(AddSportFavorite addSportFavorite);
   Future<List<LiquidFavorite>> getLiquidFavorites();
   Future<void> saveLiquidFavorite(LiquidFavorite liquidFavorite);
   Future<bool> uploadLiquidFavorite(LiquidFavorite liquidFavorite);

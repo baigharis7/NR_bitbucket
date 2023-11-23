@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
@@ -17,6 +18,8 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 
 import '../../../../domain/models/sportevents/sport_event_complete.dart';
+import '../../../../infrastructure/helpers/toast_helper.dart';
+import '../../common/undo_favorite_dialog.dart';
 
 class AddSportFavoriteScreen extends StatefulWidget {
   static const routeName = '/add_sport_favorite';
@@ -74,6 +77,23 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
     ).then((value) => Navigator.pop(context));
   }
 
+  Future<void> showUndoFavoriteDialog({
+    required BuildContext context,
+    required String title,
+    required Function onUndoFavorite,
+    required reloadScreen,
+  }) async {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return UndoFavoriteDialog(
+          title: title,
+          onUndoFavorite: () => onUndoFavorite.call(),
+        );
+      },
+    ).then((_) => reloadScreen.call());
+  }
+
   @override
   void initState() {
     final bloc = BlocProvider.of<AddFavoriteSportBloc>(context);
@@ -88,6 +108,9 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
     if (arguments != null) {
       if (arguments is SportEventComplete) {
         bloc.add(SetSportEventAction(sportEventComplete: arguments));
+      }
+      else if (arguments is AddSportFavorite) {
+        bloc.add(SetSportFromFavoriteAction(sportFavorite: arguments));
       }
     }
 
@@ -139,15 +162,26 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                                 const Spacer(),
                                 Container(
                                   margin: EdgeInsets.symmetric(horizontal: 20),
-                                  child: InkWell(onTap:
-                                  //     onTap: bloc.isSportFavo(sportFavorite) ? () {
-                                  //   showAddFavoriteDialog(
-                                  //     context: ctx,
-                                  //     onNameChange: (String sportName) => bloc.add(SetSportFavoriteNameAction(favoriteName: sportName)),
-                                  //     onFinish: () => bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context))),
-                                  //   );
-                                  // } :
-                                          () {}, child: false ? Icon(Icons.favorite, color: Colors.red,) : Icon(Icons.favorite_border, color: Colors.red,)),
+                                  child: InkWell(onTap: (arguments is AddSportFavorite || (arguments is SportEventComplete ? bloc.isSportFavo(arguments) : true)) ? () {
+                                    // showUndoFavoriteDialog(
+                                    //   context: ctx,
+                                    //   title: (arguments as AddSportFavorite).title.orEmpty(),
+                                    //   onUndoFavorite: (){},
+                                    //   //     () => bloc.add(
+                                    //   //   RemoveFavoriteAction(
+                                    //   //     sportFavorite: arguments,
+                                    //   //     onFinish: () => Navigator.pop(context),
+                                    //   //   ),
+                                    //   // ),
+                                    //   reloadScreen: () => bloc.add(InitializeStateAction()),
+                                    // );
+                                  } : () {
+                                    showAddFavoriteDialog(
+                                      context: ctx,
+                                      onNameChange: (String sportName) => bloc.add(SetSportFavoriteNameAction(favoriteName: sportName)),
+                                      onFinish: () => bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context))),
+                                    );
+                                  }, child: (arguments is AddSportFavorite || (arguments is SportEventComplete ? bloc.isSportFavo(arguments) : true)) ? Icon(Icons.favorite, color: Colors.red,) : Icon(Icons.favorite_border, color: Colors.red,)),
                                 )
                               ],
                             ),
@@ -325,7 +359,7 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                           onTap: () => showAddCommentDialog(
                             context: context,
                             onAddComment: (comment) => bloc.add(UpdateSportCommentEventAction(comment: comment),),
-                            onSaveComment: () { bloc.add(FinishSportCommentEventAction(onFinish: () => _showConfirmationDialog(context))); },
+                            onSaveComment: () { arguments is SportEventComplete ? bloc.add(FinishSportCommentEventAction(onFinish: () => _showConfirmationDialog(context))) :  bloc.add(FinishFavoriteSportCommentAction(onFinish: () => _showConfirmationDialog(context))); },
                           ),
                         ),
                       ),

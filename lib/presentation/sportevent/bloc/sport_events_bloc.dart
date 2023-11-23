@@ -35,6 +35,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
     sportsInfo: SportsInfoMaster(sportsInfoMaster: []),
     isEdit: false,
     info: [],
+    sportFromFavorite: [],
   ),) {
 
     on<InitializeStateAction>((event, emit) async {
@@ -113,6 +114,14 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       emit(state.copyWith(isLoading: false, onError: null));
     },);
 
+    on<AddSportFromFavoriteAction>((event, emit) {
+      emit(state.copyWith(isLoading: true, onError: null));
+      state.eventSportName = event.sportInfo.title;
+      state.comment = event.sportInfo.comment;
+      state.sportFromFavorite = event.sportInfo.info;
+      emit(state.copyWith(isLoading: false, onError: null));
+    },);
+
     on<RemoveSportEventAction>((event, emit) {
       emit(state.copyWith(isLoading: true, onError: null));
       state.info!.remove(event.sportInfo);
@@ -163,9 +172,35 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
           state.onError = ErrorTypes.uploadingSportEventError;
           emit(state.copyWith(isLoading: false, onError: state.onError,));
         }
-      }
-    // }
-    );
+      });
+
+    on<FinishSportFavoriteAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true, onError: null));
+        final sportEventSimple = SportEventSimple(
+          userId: getUserIdInteractor.execute(),
+          eventId: DateTime.now().millisecondsSinceEpoch,
+          info: state.sportFromFavorite?.map((favSport) => SportInfo(id: favSport.id, minutes: favSport.minutes, intensity: favSport.intensity, timeStart: favSport.timeStart, name_en: favSport.name_en, name_es: favSport.name_es)).toList(),
+          comment: state.comment,
+          sportName: state.eventSportName,
+        );
+
+        try {
+          final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
+          try {
+            await saveSportEventInteractor.execute(sportEventComplete, state.eventDate != null);
+
+            _clearFields();
+            event.onFinish.call();
+            emit(state.copyWith(isLoading: false, onError: null));
+          } catch (error) {
+            state.onError = ErrorTypes.locallySavingSportEventError;
+            emit(state.copyWith(isLoading: false, onError: state.onError,));
+          }
+        } catch (error) {
+          state.onError = ErrorTypes.uploadingSportEventError;
+          emit(state.copyWith(isLoading: false, onError: state.onError,));
+        }
+      });
 
     // on<ReceiveSportEventInfoAction>((event, emit) async {
     //   final dateTimeHelper = DateTimeHelper();
@@ -230,6 +265,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
 
   void _clearFields() {
     state.info = [];
+    state.sportFromFavorite = [];
     state.eventSportName = null;
     state.comment = null;
   }

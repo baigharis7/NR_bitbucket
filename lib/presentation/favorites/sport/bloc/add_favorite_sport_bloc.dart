@@ -7,8 +7,10 @@ import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/add_favorite_sport_actions.dart';
@@ -67,6 +69,16 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
       emit(state.copyWith(isLoading: false));
     });
 
+    on<SetSportFromFavoriteAction>((event, emit) {
+      state.eventId = event.sportFavorite.eventDate;
+      state.comment = event.sportFavorite.comment;
+      state.sportName = event.sportFavorite.title;
+      state.sportInfo = event.sportFavorite.info?.map((favSportItem) => SportEventInfo(id: favSportItem.id ?? -1, name_en: favSportItem.name_en ?? '', name_es: favSportItem.name_es ?? '', intensity: favSportItem.intensity ?? -1, minutes: favSportItem.minutes ?? 0, timeStart: favSportItem.timeStart ?? 0, kcal: -1)).toList();
+      state.isEdit = true;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
     on<SetSportFavoriteCommentAction>((event, emit) {
       state.sportFavorite!.comment = event.comment;
       event.onFinish.call();
@@ -75,7 +87,7 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
     });
 
     on<SetSportFavoriteNameAction>((event, emit) {
-      state.sportFavorite!.title = event.favoriteName;
+      state.sportName = event.favoriteName;
 
       emit(state.copyWith(isLoading: false));
     });
@@ -83,16 +95,23 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
     on<FinishAddingFavoriteAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
 
-      final userId = getUserIdInteractor.execute();
+      final sportFavorite = AddSportFavorite(
+        userId: getUserIdInteractor.execute(),
+        eventDate: state.eventId,
+        info: state.sportInfo?.map((sport) => AddSportFavInfo(id: sport.id, name_en: sport.name_en, name_es: sport.name_es, minutes: sport.minutes, intensity: sport.intensity, timeStart: sport.timeStart)).toList(),
+        comment: state.comment,
+        title: state.sportName,
+      );
+
       try {
-        // final uploadResult = await uploadSportFavoriteInteractor.execute(state.sportFavorite!, userId);
-        // if (uploadResult) {
-        //   await saveSportFavoriteInteractor.execute(state.sportFavorite!, state.isEdit ?? false);
-        //   event.onFinish.call();
-        //   emit(state.copyWith(isLoading: false, onError: null));
-        // } else {
+        final uploadResult = await uploadSportFavoriteInteractor.execute(sportFavorite);
+        if (uploadResult) {
+          await saveSportFavoriteInteractor.execute(sportFavorite, false);
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
+        } else {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
-        // }
+        }
       } catch (error) {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
       }
@@ -125,6 +144,33 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
       }
     },);
 
+    on<FinishFavoriteSportCommentAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      final sportFavorite = AddSportFavorite(
+        userId: getUserIdInteractor.execute(),
+        eventDate: state.eventId,
+        info: state.sportInfo?.map((sport) => AddSportFavInfo(id: sport.id, name_en: sport.name_en, name_es: sport.name_es, minutes: sport.minutes, intensity: sport.intensity, timeStart: sport.timeStart)).toList(),
+        comment: state.comment,
+        title: state.sportName,
+      );
+
+      try {
+        final sportEventComplete = await uploadSportFavoriteInteractor.execute(sportFavorite);
+        try {
+          await saveSportFavoriteInteractor.execute(sportFavorite, state.comment != null);
+
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
+        } catch (error) {
+          state.onError = ErrorTypes.locallySavingSportEventError;
+          emit(state.copyWith(isLoading: false, onError: state.onError,));
+        }
+      } catch (error) {
+        state.onError = ErrorTypes.uploadingSportEventError;
+        emit(state.copyWith(isLoading: false, onError: state.onError,));
+      }
+    },);
+
     on<UpdateSportCommentEventAction>((event, emit) async {
       state.comment = event.comment;
 
@@ -142,7 +188,8 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
     }
   }
 
-  bool isSportFavo(SportFavorite sportFavorite) {
-    return state.sportsFavorite?.any((sportFav) => sportFav.name_es.toString() == sportFavorite.name_es.toString()) ?? false;
+  bool isSportFavo(SportEventComplete sportFavorite) {
+    return state.sportsFavorite?.any((sportFav) => sportFav.title.toString() == sportFavorite.sportName.toString()) ?? false;
   }
+
 }

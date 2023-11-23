@@ -4,10 +4,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
-import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/create_new_sport_favorite_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/create_new_sport_favorite_state.dart';
@@ -27,7 +25,6 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
     isLoading: false,
     onError: null,
     sportsInfo: SportsInfoMaster(sportsInfoMaster: []),
-    // sportFavorite: SportFavorite.empty(),
     info: [],
   ),) {
     on<InitializeStateAction>((event, emit) async {
@@ -105,11 +102,12 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
         info: state.info,
       );
 
-      final userId = getUserIdInteractor.execute();
       try {
         final uploadResult = await uploadSportFavoriteInteractor.execute(sportFavorite);
         if (uploadResult) {
-          // await saveSportFavoriteInteractor.execute(sportFavorite, false);
+          await saveSportFavoriteInteractor.execute(sportFavorite, false);
+
+          _resetSportInfo();
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null,));
         } else {
@@ -128,15 +126,10 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
   }
 
   void _resetSportInfo() {
-    state.sportFavorite = SportFavorite.empty();
+    state.info?.clear();
     state.eventDate = null;
-    state.timeStart = null;
     state.favoriteSportName = null;
-    state.intensity = null;
-    state.sportIntensities = null;
-    state.sportId = null;
-    state.minutes = null;
-    state.sportFavorite = SportFavorite.empty();
+    state.comment = null;
   }
 
   SportInfoMaster findSportById(int sportId) {

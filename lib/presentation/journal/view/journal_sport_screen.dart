@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_sport_favorite_screen.dart';
@@ -17,6 +15,9 @@ import 'package:nutrenaissance_flutter/presentation/widgets/event_item_with_edit
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_info_card.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_favorite_dialog.dart';
+
+import '../../common/view/confirmation_dialog.dart';
 
 class JournalSportScreen extends StatefulWidget {
   const JournalSportScreen({Key? key}) : super(key: key);
@@ -29,6 +30,34 @@ class JournalSportScreen extends StatefulWidget {
 }
 
 class _JournalSportScreenState extends State<JournalSportScreen> {
+  Future<void> showAddFavoriteDialog({
+    required BuildContext context,
+    required Function onFinish,
+    required Function onNameChange,
+  }) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AddFavoriteDialog(
+        onNameChange: (String foodName) => onNameChange.call(foodName),
+        onFinish: () => onFinish.call(),
+        onPop: () => Navigator.pop(context),
+      ),
+    ).then((_) => Navigator.pop(context));
+  }
+
+  void _showConfirmationDialog(BuildContext context) {
+    Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
+    final mediaQuerySize = MediaQuery.of(context).size;
+
+    showDialog(context: context, builder: (ctx) => Container(
+      height: mediaQuerySize.height,
+      width: mediaQuerySize.width,
+      color: const Color.fromARGB(148, 104, 96, 96),
+      child: ConfirmationDialog(message: AppLocalizations.of(context)!.sport_event_successfully_saved,),
+    ),
+    ).then((value) => Navigator.pop(context));
+  }
 
   @override
   void initState() {
@@ -131,14 +160,13 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                                 });
                               },
                               onFavorite: () {
-                                //Pasted here function from above function for future use if need
-                                // Navigator.pushNamed(
-                                //   context,
-                                //   AddSportEventScreen.routeName,
-                                //   arguments: mapToSportEventSimple(sportEvent),
-                                // ).then((value) {
-                                //   bloc.add(InitializeStateAction());
-                                // });
+                                if(!bloc.isSportFavorite(sportEvent)) {
+                                  showAddFavoriteDialog(
+                                  context: ctx,
+                                  onNameChange: (String sportName) => bloc.add(AddSportFavNameAction(sportFavName: sportName)),
+                                  onFinish: () => bloc.add(FinishAddSportToFavoriteAction(onFinish: () => _showConfirmationDialog(context), sportEvent: sportEvent)),
+                                );
+                                }
                               },
                             );
                           }).toList()

@@ -228,13 +228,13 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                 shadowColor: Colors.black,
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    // color: state.foodName == food.title ? Colors.amber : Colors.white,
+                                    color: state.eventSportName == sport.title ? Colors.amber : Colors.white,
                                     borderRadius: BorderRadius.all(Radius.circular(5)),
                                   ),
                                   child: InkWell(
                                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                                     onTap: () {
-                                      // sport.
+                                      bloc.add(AddSportFromFavoriteAction(sportInfo: sport));
                                     },
                                     child: Center(
                                       child: Text(
@@ -256,20 +256,25 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                           margin: EdgeInsets.only(left: Dimens.marginLarge, right: Dimens.marginLarge, ),
                           child: RoundedCustomButton(
                             onPressed: () {
-                              if (!bloc.validateSportList() && state.info!.isNotEmpty) {
-                                showAddSportNameDialog(
-                                  context: context,
-                                  onFinish: () {
-                                    if (state.eventSportName?.isNotEmpty ?? false) {
-                                      bloc.add(FinishSportEventAction(onFinish: () => _showConfirmationDialog(
-                                        context: ctx,
-                                        onResetState: () => bloc.add(ResetSportInfoAction()),
-                                      ),),);
-                                    }
+                              if (state.sportFromFavorite?.isEmpty ?? true) {
+                                if (!bloc.validateSportList() && state.info!.isNotEmpty) {
+                                  showAddSportNameDialog(
+                                    context: context,
+                                    onFinish: () {
+                                      if (state.eventSportName?.isNotEmpty ?? false) {
+                                        bloc.add(FinishSportEventAction(onFinish: () => _showConfirmationDialog(
+                                          context: ctx,
+                                          onResetState: () => bloc.add(ResetSportInfoAction()),
+                                        ),),);
+                                      }
                                     },
-                                  onNameChange: (sportEventName) {
-                                    bloc.add(SetEventSportNameAction(sportEventName: sportEventName));
-                                  },);
+                                    onNameChange: (sportEventName) {
+                                      bloc.add(SetEventSportNameAction(sportEventName: sportEventName));
+                                    },);
+                                }
+                              }
+                              else {
+                                bloc.add(FinishSportFavoriteAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()))));
                               }
                             },
                           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
@@ -10,7 +11,8 @@ class SportEventsState {
   ErrorTypes? onError;
   SportsInfoMaster? sportsInfo;
   SportEventSimple? sportEventSimple;
-  List<SportFavorite>? sportsFavorite;
+  List<AddSportFavorite>? sportsFavorite;
+  List<AddSportFavInfo>? sportFromFavorite;
   DateTime? dateStart;
   TimeOfDay? timeStart;
   int? intensity;
@@ -30,6 +32,7 @@ class SportEventsState {
     this.sportsInfo,
     this.sportEventSimple,
     this.sportsFavorite,
+    this.sportFromFavorite,
     this.dateStart,
     this.timeStart,
     this.intensity,
@@ -49,7 +52,8 @@ class SportEventsState {
     required ErrorTypes? onError,
     SportsInfoMaster? sportsInfo,
     SportEventSimple? sportEventSimple,
-    List<SportFavorite>? sportsFavorite,
+    List<AddSportFavorite>? sportsFavorite,
+    List<AddSportFavInfo>? sportFromFavorite,
     DateTime? dateStart,
     TimeOfDay? timeStart,
     int? intensity,
@@ -69,6 +73,7 @@ class SportEventsState {
       sportsInfo: sportsInfo ?? this.sportsInfo,
       sportEventSimple: sportEventSimple ?? this.sportEventSimple,
       sportsFavorite: sportsFavorite ?? this.sportsFavorite,
+      sportFromFavorite: sportFromFavorite ?? this.sportFromFavorite,
       dateStart: dateStart ?? this.dateStart,
       timeStart: timeStart ?? this.timeStart,
       intensity: intensity ?? this.intensity,

@@ -25,7 +25,7 @@ EventsSynchronizationResponse _$EventsSynchronizationResponseFromJson(
           .map((e) => FoodFavorite.fromJson(e as Map<String, dynamic>))
           .toList(),
       sportFavorites: (json['sportFavorites'] as List<dynamic>)
-          .map((e) => SportFavorite.fromJson(e as Map<String, dynamic>))
+          .map((e) => AddSportFavorite.fromJson(e as Map<String, dynamic>))
           .toList(),
       liquidFavorites: (json['liquidFavorites'] as List<dynamic>)
           .map((e) => LiquidFavorite.fromJson(e as Map<String, dynamic>))

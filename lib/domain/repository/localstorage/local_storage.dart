@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event
 import 'package:nutrenaissance_flutter/domain/models/analysis/subjective/subjective_analysis_result.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/liquid/liquid_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
@@ -41,9 +42,9 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<List> getFoodFavorites();
   Future<void> saveFoodFavorite(FoodFavorite foodFavorite, {bool? isEdit = false});
   Future<void> removeFoodFavorite(FoodFavorite foodFavorite);
-  Future<bool> saveSportFavorite(SportFavorite sportFavorite, {bool isEdit = false});
+  Future<bool> saveSportFavorite(AddSportFavorite addSportFavorite, {bool isEdit = false});
   Future<List> getSportFavorites();
-  Future<void> removeSportFavorite(SportFavorite sportFavorite, String userId);
+  Future<void> removeSportFavorite(AddSportFavorite addSportFavorite);
   Future<List> getLiquidFavorites();
   Future<void> saveLiquidFavorite(LiquidFavorite liquidFavorite);
   Future<void> removeLiquidFavorite(LiquidFavorite liquidFavorite);
