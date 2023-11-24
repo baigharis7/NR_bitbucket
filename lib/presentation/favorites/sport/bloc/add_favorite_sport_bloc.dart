@@ -47,7 +47,8 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.sportsInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
-      state.sportsFavorite = await getSportFavoritesInteractor.execute();
+      var a  = await getSportFavoritesInteractor.execute();
+      state.sportsFavorite = a;
 
       emit(state.copyWith(isLoading: false));
     });

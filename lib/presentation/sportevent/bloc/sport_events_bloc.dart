@@ -41,6 +41,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
 
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
+      _clearFields();
       state.sportsFavorite = await getSportFavoritesInteractor.execute();
       state.sportEventSimple!.userId = getUserIdInteractor.execute();
       if (state.sportsInfo!.sportsInfoMaster.isEmpty) {
@@ -160,7 +161,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
         try {
           final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
           try {
-            await saveSportEventInteractor.execute(sportEventComplete, state.isEdit != null);
+            await saveSportEventInteractor.execute(sportEventComplete, state.isEdit ?? false);
 
             _clearFields();
             event.onFinish.call();
@@ -188,7 +189,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
         try {
           final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
           try {
-            await saveSportEventInteractor.execute(sportEventComplete, state.eventDate != null);
+            await saveSportEventInteractor.execute(sportEventComplete, false);
 
             _clearFields();
             event.onFinish.call();
