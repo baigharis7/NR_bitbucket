@@ -344,6 +344,10 @@
     "food_induced_thermo" : "Food-induced thermogenesis",
     "absorption_expense" : "It is the expense we have for the digestion, absorption, metabolization and storage of food. And in general it represents 10% of daily expenses.",
     "energy_expenditure" : "Energy expenditure by activity",
-    "energy_expenditure_description" : "It is the most variable expense since it depends on voluntary exercise, time and intensity. It can account for between 30-80% of daily energy expenditure."
+    "energy_expenditure_description" : "It is the most variable expense since it depends on voluntary exercise, time and intensity. It can account for between 30-80% of daily energy expenditure.",
+    "sugar_description" : "Free sugars are those that are outside the food matrix. Not healthy and the less the better.\n\n\nAbove all, we find them in fruit juice, sweets, cookies and pastries, sugary and flavored dairy products, soft drinks and colas.",
+    "fiber_description" : "Its effects on health are multiple and it is essential to have a healthy microbiota.\n\n\nWe obtain it from foods of plant origin. Above all, if we consume them whole and whole.",
+    "water_description" : "Water is the best option to hydrate ourselves.\n\nWe also obtain water from infusions, broths, purees, vegetables or fruits."
+
 
 }

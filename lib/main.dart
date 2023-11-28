@@ -180,6 +180,8 @@ import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/sport_f
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/create_new_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/favorite_sports_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/fiber_detail/bloc/fiber_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/fiber_detail/view/fiber_detail_Screen.dart';
 import 'package:nutrenaissance_flutter/presentation/food/bloc/food_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/food/view/food_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_bloc.dart';
@@ -194,6 +196,8 @@ import 'package:nutrenaissance_flutter/presentation/journal/view/journal_screen.
 import 'package:nutrenaissance_flutter/presentation/journal/view/journal_sport_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidevent/bloc/liquid_event_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidevent/view/add_liquid_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/bloc/liquid_summary_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/view/liquid_summary_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/bloc/macro_nutrients_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
@@ -212,6 +216,8 @@ import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/
 import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/sugar_detail/bloc/sugar_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/waterevent/bloc/water_event_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/welcome/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -339,6 +345,12 @@ void main() async {
   final macronutrientsDetailBloc = MacroNutrientsDetailBloc();
 
   final energyBalanceDetailBloc = EnergyBalanceDetailBloc();
+
+  final sugarDetailBloc = SugarDetailBloc();
+
+  final fiberDetailBloc = FiberDetailBloc();
+
+  final liquidSummaryDetailBloc = LiquidSummaryDetailBloc();
 
   final journalBloc = JournalBloc(
     getWeekSportsInteractor: getWeekSportsInteractor,
@@ -537,6 +549,9 @@ void main() async {
         BlocProvider<MicroNutrientsDetailBloc>(create: (ctx) => micronutrientsDetailBloc),
         BlocProvider<MacroNutrientsDetailBloc>(create: (ctx) => macronutrientsDetailBloc),
         BlocProvider<EnergyBalanceDetailBloc>(create: (ctx) => energyBalanceDetailBloc),
+        BlocProvider<SugarDetailBloc>(create: (ctx) => sugarDetailBloc),
+        BlocProvider<FiberDetailBloc>(create: (ctx) => fiberDetailBloc),
+        BlocProvider<LiquidSummaryDetailBloc>(create: (ctx) => liquidSummaryDetailBloc),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -612,6 +627,9 @@ void main() async {
           MicroNutrientsDetailScreen.routeName: (_) => const MicroNutrientsDetailScreen(),
           MacroNutrientsDetailScreen.routeName: (_) => const MacroNutrientsDetailScreen(),
           EnergyBalanceDetailScreen.routeName: (_) => const EnergyBalanceDetailScreen(),
+          SugarDetailScreen.routeName: (_) => const SugarDetailScreen(),
+          FiberDetailScreen.routeName: (_) => const FiberDetailScreen(),
+          LiquidSummaryDetailScreen.routeName: (_) => const LiquidSummaryDetailScreen(),
         },
       ),
     ),

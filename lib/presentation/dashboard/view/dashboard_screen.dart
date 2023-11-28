@@ -14,9 +14,11 @@ import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_act
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
 import 'package:nutrenaissance_flutter/presentation/energy_balance_detail/view/energy_balance_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/view/liquid_summary_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/energy_balance_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
@@ -26,6 +28,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_
 import '../../../domain/models/dashboard/nutrients_model.dart';
 import '../../../domain/models/masterfiles/nutrients_info_master.dart';
 import '../../../infrastructure/utils/constants.dart';
+import '../../fiber_detail/view/fiber_detail_Screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -132,6 +135,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                     quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents),
                                     fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents),
                                     onReloadData: () => bloc.add(ReloadWaterInfoAction()),
+                                    screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName),
                                   ),
                                 ),
                                 Expanded(
@@ -191,13 +195,20 @@ class _DashboardScreen extends State<DashboardScreen>
                         Card(
                           child: Column(
                             children: [
-                              Container(
-                                alignment: Alignment.centerLeft,
-                                margin: const EdgeInsets.all(Dimens.marginNormal),
-                                child: Text(
-                                  AppLocalizations.of(context)!.sugar,
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
-                                ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      alignment: Alignment.centerLeft,
+                                      margin: const EdgeInsets.all(Dimens.marginNormal),
+                                      child: Text(
+                                        AppLocalizations.of(context)!.sugar,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(onPressed: () => Navigator.pushNamed(context, SugarDetailScreen.routeName, arguments: state.sugarAndFiberModel), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                                ],
                               ),
                               Container(
                                 margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
@@ -217,13 +228,20 @@ class _DashboardScreen extends State<DashboardScreen>
                         Card(
                           child: Column(
                             children: [
-                              Container(
-                                alignment: Alignment.centerLeft,
-                                margin: const EdgeInsets.all(Dimens.marginNormal),
-                                child: Text(
-                                  AppLocalizations.of(context)!.fiber,
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
-                                ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      alignment: Alignment.centerLeft,
+                                      margin: const EdgeInsets.all(Dimens.marginNormal),
+                                      child: Text(
+                                        AppLocalizations.of(context)!.fiber,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(onPressed: () => Navigator.pushNamed(context, FiberDetailScreen.routeName, arguments: state.sugarAndFiberModel), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                                ],
                               ),
                               Container(
                                 margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),

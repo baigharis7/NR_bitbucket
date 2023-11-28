@@ -9,6 +9,7 @@ class LiquidSummaryWidget extends StatelessWidget {
   final double? width;
   final double fractionToFill;
   final Function? onReloadData;
+  final Function screenToMove;
 
   const LiquidSummaryWidget({
     Key? key,
@@ -16,6 +17,7 @@ class LiquidSummaryWidget extends StatelessWidget {
     this.width,
     required this.fractionToFill,
     this.onReloadData,
+    required this.screenToMove,
   }) : super(key: key);
 
   @override
@@ -39,7 +41,7 @@ class LiquidSummaryWidget extends StatelessWidget {
                 ),
                 Container(
                   alignment: Alignment.centerRight,
-                  child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                  child: IconButton(onPressed: () => screenToMove.call(), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
                 )
               ],
             ),
