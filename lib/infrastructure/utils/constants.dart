@@ -21,6 +21,7 @@ class Constants {
   static const DIET_TYPES_SIZE = 3;
   static const INTOLERANCES_SIZE = 3;
   static const SYMPTOMS_SIZE = 3;
+  static const DASHBOARD_LIST_SIZE = 3;
   static const UPLOAD_SUCCESS = 'uploadSuccess';
   static const PROFILE_ENTITY = 'profile_entity';
   static const FOOD_EVENT_ENTITY = 'food_event_entity';

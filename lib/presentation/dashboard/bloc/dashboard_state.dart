@@ -1,5 +1,6 @@
 import 'package:nutrenaissance_flutter/domain/models/dashboard/energy_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/nutrients_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/dashboard/sugar_&_fiber_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
@@ -14,6 +15,7 @@ class DashboardState {
   List<FoodEventComplete>? foodEvents;
   List<LiquidEventComplete>? todayLiquidEvents;
   List<String>? userMicronutrients;
+  List<int>? userObjectives;
   NutrientsInfoMaster? nutrientsInfoMaster;
   List<UserRda>? userRdas;
   String? advice;
@@ -23,6 +25,7 @@ class DashboardState {
   EnergyModel? energyModel;
   List<WaterEventMaster>? waterEvents;
   bool? showCard;
+  SugarAndFiberModel? sugarAndFiberModel;
 
   DashboardState({
     required this.isLoading,
@@ -30,6 +33,7 @@ class DashboardState {
     this.foodEvents,
     this.todayLiquidEvents,
     this.userMicronutrients,
+    this.userObjectives,
     this.nutrientsInfoMaster,
     this.userRdas,
     this.advice,
@@ -39,6 +43,7 @@ class DashboardState {
     this.energyModel,
     this.waterEvents,
     this.showCard,
+    this.sugarAndFiberModel,
   });
 
   DashboardState copyWith({
@@ -48,6 +53,7 @@ class DashboardState {
     List<LiquidEventComplete>? todayLiquidEvents,
     bool? infoLoaded,
     List<String>? userMicronutrients,
+    List<int>? userObjectives,
     NutrientsInfoMaster? nutrientsInfoMaster,
     List<UserRda>? userRdas,
     String? advice,
@@ -57,6 +63,7 @@ class DashboardState {
     EnergyModel? energyModel,
     List<WaterEventMaster>? waterEvents,
     bool? showCard,
+    SugarAndFiberModel? sugarAndFiberModel,
   }) {
     return DashboardState(
       isLoading: isLoading,
@@ -64,6 +71,7 @@ class DashboardState {
       foodEvents: foodEvents ?? this.foodEvents,
       todayLiquidEvents: todayLiquidEvents ?? this.todayLiquidEvents,
       userMicronutrients: userMicronutrients ?? this.userMicronutrients,
+      userObjectives: userObjectives ?? this.userObjectives,
       nutrientsInfoMaster: nutrientsInfoMaster ?? this.nutrientsInfoMaster,
       userRdas: userRdas ?? this.userRdas,
       advice: advice ?? this.advice,
@@ -73,6 +81,7 @@ class DashboardState {
       energyModel: energyModel ?? this.energyModel,
       waterEvents: waterEvents ?? this.waterEvents,
       showCard: showCard ?? this.showCard,
+      sugarAndFiberModel: sugarAndFiberModel ?? this.sugarAndFiberModel,
     );
   }
 

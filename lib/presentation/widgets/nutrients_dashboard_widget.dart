@@ -10,12 +10,14 @@ class NutrientsDashboardWidget extends StatefulWidget {
   final String title;
   final List<NutrientsModel> nutrients;
   final bool isEmpty;
+  final Function screenToMove;
 
   const NutrientsDashboardWidget({
     Key? key,
     required this.nutrients,
     required this.title,
     required this.isEmpty,
+    required this.screenToMove,
   }) : super(key: key);
 
   @override
@@ -47,7 +49,7 @@ class _NutrientsDashboardWidgetState extends State<NutrientsDashboardWidget> {
                     ),
                     Container(
                       alignment: Alignment.centerRight,
-                      child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                      child: IconButton(onPressed: () { widget.screenToMove.call(); }, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
                     )
                   ],
                 ),

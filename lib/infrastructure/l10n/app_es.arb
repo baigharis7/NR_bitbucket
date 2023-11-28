@@ -331,5 +331,20 @@
     "accept_all" : "Aceptar todas",
     "your_privacy" : "Tus preferencias de privacidad",
     "welcome" : "Bienvenid@",
-    "begin" : "Comenzar"
+    "begin" : "Comenzar",
+    "fiber" : "Fibra",
+    "lorem_ipsum" : "Lorem ipsum dolor sit amet consectetur. Aliquet arcu ac non donec eget id. Netus sem ac etiam nunc vitae donec morbi. Eget consequat lacus semper nullam. Commodo euismod turpis commodo aenean vitae nibh faucibus pellentesque. Turpis eget scelerisque faucibus aenean.",
+    "protein" : "Sus funciones son varias y fundamentales para el organismo y los tejidos. Naturalmente están presentes en las carnes, pescado y mariscos, huevos, legumbres y sus derivados y los lácteos.",
+    "fat" : "Los lípidos o las grasas son nutrientes esenciales y su función principal es energética. De manera natural los consumimos mediante los aceites vegetales no refinados, los frutos secos, las semillas, el pescado azul o los huevos.",
+    "carbohydrates" : "Su función es energética. De manera natural están presentes en las frutas, los lácteos y la miel.",
+    "gross_kcal" : "Kcal Brutas (ingeridas)",
+    "gross_description" : "Las obtenemos por los alimentos ingeridos a lo largo del día. El cuerpo humano tiene alguna reserva, pero la mayor parte de ellas se obtienen por la nutrición.",
+    "spent_Kcal_description" : "El organismo gasta energía para sus diferentes funciones basales y también para responder a las aumentadas por el ejercicio físico. Cuanta más actividad más gasto energético.",
+    "basal_metabolic" : "Metabolismo Basal",
+    "basal_metabolic_description" : "Es la energía que utilizamos en condiciones de reposo para mantener las funciones normales del organismo y la homeostasis. Es el mayor consumo de la energía diaria, alrededor del 60-75%.",
+    "food_induced_thermo" : "Termogénesis inducida por los alimentos",
+    "absorption_expense" : "Es el gasto que tenemos por la digestión, absorción, metabolización y almacenamiento de los alimentos. Y en general supone el 10% del gasto diario.",
+    "energy_expenditure" : "Gasto energético por actividad",
+    "energy_expenditure_description" : "Es el gasto más variable ya que depende del ejercicio voluntario, el tiempo y la intensidad. Puede suponer entre un 30-80% del gasto energético diario."
+
 }

@@ -7,11 +7,15 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
+import 'package:nutrenaissance_flutter/presentation/energy_balance_detail/view/energy_balance_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
+import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/energy_balance_widget.dart';
@@ -21,6 +25,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_
 
 import '../../../domain/models/dashboard/nutrients_model.dart';
 import '../../../domain/models/masterfiles/nutrients_info_master.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -103,16 +108,19 @@ class _DashboardScreen extends State<DashboardScreen>
                         ),
                         NutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.micronutrients,
-                          nutrients: state.micronutrients.orEmpty(),
+                          nutrients: state.micronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList(),
                           isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
+                          screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()),
                         ),
                         NutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.macronutrients,
                           nutrients: state.macronutrients.orEmpty(),
                           isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
+                          screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()),
                         ),
                         EnergyBalanceWidget(
                           energyModel: state.energyModel,
+                          screenToMove: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: state.energyModel),
                         ),
                         SizedBox(
                           height: 200,
@@ -180,36 +188,58 @@ class _DashboardScreen extends State<DashboardScreen>
                               ],
                           ),
                         ),
-                        // TODO: DUMMY sugar
-                        Opacity(
-                          opacity: 0.4,
-                          child: Card(
-                            child: Column(
-                              children: [
-                                Container(
-                                  alignment: Alignment.centerLeft,
-                                  margin: const EdgeInsets.all(Dimens.marginNormal),
-                                  child: Text(
-                                    AppLocalizations.of(context)!.sugar,
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                  ),
+                        Card(
+                          child: Column(
+                            children: [
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                margin: const EdgeInsets.all(Dimens.marginNormal),
+                                child: Text(
+                                  AppLocalizations.of(context)!.sugar,
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
                                 ),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                                  child: const FillHorizontalBar(fractionToFill: 0.75),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                                child: FillHorizontalBar(fractionToFill: state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  (state.sugarAndFiberModel?.fractionToFillSugar.toString() ?? '0').appendGram(),
+                                  style: TextStyle(fontSize: Dimens.fontSizeSmall),
                                 ),
-                                Container(
-                                  margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
-                                  alignment: Alignment.centerRight,
-                                  child: const Text(
-                                    '20 g',
-                                    style: TextStyle(fontSize: Dimens.fontSizeSmall),
-                                  ),
-                                )
-                              ],
-                            ),
+                              )
+                            ],
                           ),
-                        )
+                        ),
+                        Card(
+                          child: Column(
+                            children: [
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                margin: const EdgeInsets.all(Dimens.marginNormal),
+                                child: Text(
+                                  AppLocalizations.of(context)!.fiber,
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                                child: FillHorizontalBar(fractionToFill: state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  (state.sugarAndFiberModel?.fractionToFillFiber.toString() ?? '0').appendGram(),
+                                  style: TextStyle(fontSize: Dimens.fontSizeSmall),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                     if (state.showCard != null && state.showCard!) Positioned(

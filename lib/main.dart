@@ -161,6 +161,8 @@ import 'package:nutrenaissance_flutter/presentation/common/bloc/test_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/test_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/energy_balance_detail/bloc/energy_balance_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/energy_balance_detail/view/energy_balance_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/add_favorite_food_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/create_new_food_favorite_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/favorite_foods_bloc.dart';
@@ -193,6 +195,10 @@ import 'package:nutrenaissance_flutter/presentation/journal/view/journal_sport_s
 import 'package:nutrenaissance_flutter/presentation/liquidevent/bloc/liquid_event_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidevent/view/add_liquid_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/bloc/macro_nutrients_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
+import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/bloc/micro_nutrients_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/privacypolicy/privacy_policy.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/diet_questions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/food_list_aversions_screen.dart';
@@ -210,6 +216,8 @@ import 'package:nutrenaissance_flutter/presentation/waterevent/bloc/water_event_
 import 'package:nutrenaissance_flutter/presentation/welcome/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'domain/interactor/login/erase_database_interactor_impl.dart';
+import 'domain/interactor/profile/get_user_objectives_interactor.dart';
+import 'domain/interactor/profile/get_user_objectives_interactor_impl.dart';
 import 'presentation/profile/common/aversions_screen.dart';
 import 'presentation/profile/common/health_questions_screen.dart';
 import 'presentation/recommendations/common/view/recommendations_tabs_holder.dart';
@@ -248,6 +256,7 @@ void main() async {
   final RecommendationsRepository recommendationsRepository = RecommendationsRepositoryImpl(recommendationsApi: recommendationsApi);
   final GetRecommendationInteractor getRecommendationInteractor = GetRecommendationInteractorImpl(recommendationsRepository: recommendationsRepository);
   final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor = GetUserMicronutrientsInteractorImpl(profileRepository: profileRepository);
+  final GetUserObjectivesInteractor getUserObjectivesInteractor = GetUserObjectivesInteractorImpl(profileRepository: profileRepository);
   final MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService, chuck);
   final MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi);
   final GetMasterFileInteractor getMasterFileInteractor = GetMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
@@ -322,7 +331,14 @@ void main() async {
     saveExplainingCardInteractionInteractor: saveExplainingCardInteractionInteractor,
     getDayCaloriesInteractor: getDayCaloriesInteractor,
     getLiquidEventsOfTodayInteractor: getTodayLiquidEventsInteractor,
+    getUserObjectivesInteractor: getUserObjectivesInteractor,
   );
+
+  final micronutrientsDetailBloc = MicroNutrientsDetailBloc();
+
+  final macronutrientsDetailBloc = MacroNutrientsDetailBloc();
+
+  final energyBalanceDetailBloc = EnergyBalanceDetailBloc();
 
   final journalBloc = JournalBloc(
     getWeekSportsInteractor: getWeekSportsInteractor,
@@ -518,6 +534,9 @@ void main() async {
         BlocProvider<CreateNewLiquidFavoriteBloc>(create: (ctx) => createNewLiquidFavoriteBloc),
         BlocProvider<TestBloc>(create: (ctx) => TestBloc()),
         BlocProvider<RecommendationsGeneralBloc>(create: (ctx) => recommendationsGeneralBloc),
+        BlocProvider<MicroNutrientsDetailBloc>(create: (ctx) => micronutrientsDetailBloc),
+        BlocProvider<MacroNutrientsDetailBloc>(create: (ctx) => macronutrientsDetailBloc),
+        BlocProvider<EnergyBalanceDetailBloc>(create: (ctx) => energyBalanceDetailBloc),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -590,6 +609,9 @@ void main() async {
           FoodScreen.routeName: (_) => const FoodScreen(),
           WelcomeScreen.routeName: (_) => const WelcomeScreen(),
           PrivacyPolicy.routeName: (_) => const PrivacyPolicy(),
+          MicroNutrientsDetailScreen.routeName: (_) => const MicroNutrientsDetailScreen(),
+          MacroNutrientsDetailScreen.routeName: (_) => const MacroNutrientsDetailScreen(),
+          EnergyBalanceDetailScreen.routeName: (_) => const EnergyBalanceDetailScreen(),
         },
       ),
     ),

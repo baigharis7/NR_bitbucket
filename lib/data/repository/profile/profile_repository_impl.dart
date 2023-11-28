@@ -45,6 +45,13 @@ class ProfileRepositoryImpl extends ProfileRepository {
   }
 
   @override
+  Future<List<int>> getUserObjectives() async {
+    UserProfileEntity? profile = await localStorageRepository.getProfile();
+    List<int>? objectives = profile?.objectives;
+    return objectives.orEmpty();
+  }
+
+  @override
   Future<bool> checkProfileExistence(String userId) async {
     return await localStorageRepository.checkProfileExistence(userId);
   }

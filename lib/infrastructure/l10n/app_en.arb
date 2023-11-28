@@ -330,6 +330,20 @@
     "accept_all" : "Accept all",
     "your_privacy" : "Your privacy preferences",
     "welcome" : "Welcome",
-    "begin" : "Begin"
+    "begin" : "Begin",
+    "fiber" : "Fiber",
+    "lorem_ipsum" : "Lorem ipsum dolor sit amet consectetur. Aliquet arcu ac non donec eget id. Netus sem ac etiam nunc vitae donec morbi. Eget consequat lacus semper nullam. Commodo euismod turpis commodo aenean vitae nibh faucibus pellentesque. Turpis eget scelerisque faucibus aenean.",
+    "protein" : "Its functions are various and fundamental for the body and tissues. They are naturally present in meats, fish and shellfish, eggs, legumes and their derivatives, and dairy products.",
+    "fat" : "Lipids or fats are essential nutrients and their main function is energy. We naturally consume them through unrefined vegetable oils, nuts, seeds, oily fish or eggs.",
+    "carbohydrates" : "Its function is energetic. They are naturally present in fruits, dairy products and honey.",
+    "gross_kcal" : "Gross Kcal (ingested)",
+    "gross_description" : "We obtain them from the foods eaten throughout the day. The human body has some reserves, but most of them are obtained through nutrition.",
+    "spent_Kcal_description" : "The body spends energy for its different basal functions and also to respond to those increased by physical exercise. The more activity, the more energy spent.",
+    "basal_metabolic" : "Basal Metabolism",
+    "basal_metabolic_description" : "It is the energy we use under resting conditions to maintain normal body functions and homeostasis. It is the highest consumption of daily energy, around 60-75%.",
+    "food_induced_thermo" : "Food-induced thermogenesis",
+    "absorption_expense" : "It is the expense we have for the digestion, absorption, metabolization and storage of food. And in general it represents 10% of daily expenses.",
+    "energy_expenditure" : "Energy expenditure by activity",
+    "energy_expenditure_description" : "It is the most variable expense since it depends on voluntary exercise, time and intensity. It can account for between 30-80% of daily energy expenditure."
 
 }

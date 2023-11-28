@@ -6,10 +6,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EnergyBalanceWidget extends StatelessWidget {
   final EnergyModel? energyModel;
+  final Function screenToMove;
 
   const EnergyBalanceWidget({
     Key? key,
     required this.energyModel,
+    required this.screenToMove,
   }) : super(key: key);
 
   @override
@@ -38,7 +40,7 @@ class EnergyBalanceWidget extends StatelessWidget {
                   flex: 1,
                   child: Container(
                     alignment: Alignment.centerRight,
-                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                    child: IconButton(onPressed: () => screenToMove.call(), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
                   ),
                 )
               ],
@@ -106,5 +108,5 @@ class EnergyBalanceWidget extends StatelessWidget {
       ),
     );
   }
-  
+
 }

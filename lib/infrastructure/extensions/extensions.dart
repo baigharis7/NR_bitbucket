@@ -77,6 +77,10 @@ extension StringExtensions on String {
   String appendColon() {
     return '$this:';
   }
+
+  String appendGram() {
+    return '$this g';
+  }
 }
 
 extension ListExtensions<T> on List<T> {

@@ -7,11 +7,13 @@ import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_objectives_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_day_calories_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/energy_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/nutrients_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/dashboard/sugar_&_fiber_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
@@ -36,6 +38,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final SaveExplainingCardInteractionInteractor saveExplainingCardInteractionInteractor;
   final GetDayCaloriesInteractor getDayCaloriesInteractor;
   final GetTodayLiquidEventsInteractor getLiquidEventsOfTodayInteractor;
+  final GetUserObjectivesInteractor getUserObjectivesInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -50,6 +53,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.saveExplainingCardInteractionInteractor,
     required this.getDayCaloriesInteractor,
     required this.getLiquidEventsOfTodayInteractor,
+    required this.getUserObjectivesInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -64,6 +68,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       emit(DashboardState(isLoading: true));
       state.userMicronutrients = await getUserMicronutrientsInteractor.execute() ?? [];
       state.userRdas = await getUserRdasInteractor.execute();
+      state.userObjectives = await getUserObjectivesInteractor.execute();
       state.foodEvents = await getFoodEventsOfTodayInteractor.execute();
       state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute();
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
@@ -79,6 +84,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               unit: getUnitForMicronutrient(micronutrient),
             ),
       ).toList();
+      state.micronutrients?.sort((a, b) => b.fractionToFill.compareTo(a.fractionToFill),);
       state.macronutrients = ['proteinSci', 'carbsAvailable', 'fatTotal']
           .map(
             (macronutrient) =>
@@ -97,6 +103,12 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         spentKcal: caloriesConsumed ?? 0,
       );
       state.waterEvents = await getWaterEventsTodayInteractor.execute();
+      state.sugarAndFiberModel = SugarAndFiberModel(
+          fractionToFillSugar: calculateTodaySugar(),
+          totalSugar: 20,
+          fractionToFillFiber: calculateTodayFiber(),
+          totalFiber: 20,
+      );
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
 
       emit(state.copyWith(
@@ -158,7 +170,14 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
 
-    int kcalPerNutrient = state.userKcal!~/100 * getPercentageByMacro(macronutrient);
+    var tEE = state.userKcal ?? 0;
+    if (state.userObjectives?.contains(50) ?? false) {
+      tEE = tEE + tEE~/100*15;
+    }
+    if (state.userObjectives?.contains(51) ?? false) {
+      tEE = tEE - tEE~/100*20;
+    }
+    int kcalPerNutrient = tEE~/100 * getPercentageByMacro(macronutrient);
     int gramsPerNutrient = kcalPerNutrient ~/ getKcalPerGram(macronutrient);
     double returnQuantity = nutrientQuantitySoFar / gramsPerNutrient;
     if (returnQuantity > 1) returnQuantity = 1;
@@ -203,6 +222,30 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     return double.parse((nutrientQuantitySoFar).toStringAsFixed(2));
   }
 
+  double calculateTodaySugar() {
+    double sugarConsumedToday = 0.0;
+    for(var foodEvent in state.foodEvents!) {
+      for (var food in foodEvent.foodInfo!) {
+        sugarConsumedToday = sugarConsumedToday + (food.params?.sugarsTotal ?? 0.0);
+      }
+    }
+
+    sugarConsumedToday = sugarConsumedToday/20;
+    return double.parse(sugarConsumedToday.toStringAsFixed(2));
+  }
+
+  double calculateTodayFiber() {
+    double fiberConsumedToday = 0.0;
+    for(var foodEvent in state.foodEvents!) {
+      for (var food in foodEvent.foodInfo!) {
+        fiberConsumedToday = fiberConsumedToday + (food.params?.fiber ?? 0.0);
+      }
+    }
+
+    fiberConsumedToday = fiberConsumedToday/20;
+    return double.parse(fiberConsumedToday.toStringAsFixed(2));
+  }
+
   int getTodayKcalFromLiquids(List<FoodEventComplete> events) {
     int kcals = 0;
     for (var event in events) {
@@ -217,7 +260,27 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     return nutrientInfo.unit;
   }
 
-  int getPercentageByMacro(String macro) => macro == 'carbsAvailable' ? 30 : 35;
+  int getPercentageByMacro(String macro) {
+    var macroo = 0;
+    if (state.userObjectives?.contains(50) ?? false) {
+      macroo = macro == 'carbsAvailable' ? 40 : 30;
+    }
+    if(state.userObjectives?.contains(51) ?? false) {
+      macroo = macro == 'carbsAvailable' ? 40 : 30;
+    }
+    if(state.userObjectives?.contains(52) ?? false) {
+      macroo = macro == 'carbsAvailable' ? 50 : macro == 'proteinSci' ? 20 : 30;
+    }
+    else {
+      macroo = macro == 'carbsAvailable' ? 30 : 35;
+    }
+    return macroo;
+  }
+
+  // int getPercentageByMacro(String macro) => macro == 'carbsAvailable' ? 30 : 35;
+  // int getPercentageByMacro(String macro) => macro == 'carbsAvailable' ? 40 : 30; (For gain Muscle's) - Objectives-50
+  // int getPercentageByMacro(String macro) => macro == 'carbsAvailable' ? 40 : 30; (Lose fat) - Objectives-51
+  // int getPercentageByMacro(String macro) => macro == 'carbsAvailable' ? 50 : macro == 'proteinSci' ? 20 : 30; (Maintain Weight) - Objectives-52
   int getKcalPerGram(String macro) => macro == 'fatTotal' ? 9 : 4;
 
   String getTodayMessage(String todayString, String locale) => DateTimeHelper().formatDashboardTodayMessage(todayString, locale);
