@@ -347,7 +347,8 @@
     "energy_expenditure_description" : "It is the most variable expense since it depends on voluntary exercise, time and intensity. It can account for between 30-80% of daily energy expenditure.",
     "sugar_description" : "Free sugars are those that are outside the food matrix. Not healthy and the less the better.\n\n\nAbove all, we find them in fruit juice, sweets, cookies and pastries, sugary and flavored dairy products, soft drinks and colas.",
     "fiber_description" : "Its effects on health are multiple and it is essential to have a healthy microbiota.\n\n\nWe obtain it from foods of plant origin. Above all, if we consume them whole and whole.",
-    "water_description" : "Water is the best option to hydrate ourselves.\n\nWe also obtain water from infusions, broths, purees, vegetables or fruits."
-
+    "water_description" : "Water is the best option to hydrate ourselves.\n\nWe also obtain water from infusions, broths, purees, vegetables or fruits.",
+    "minimum_water_required" : "Minimum liquids required",
+    "minimum_water_description" : "Drinking water is essential. Get used to drinking between 4 and 5 glasses of water a day or at least 1.5L.\n\nThe more activity you do, the more water you will have to drink.\n\n\n"
 
 }

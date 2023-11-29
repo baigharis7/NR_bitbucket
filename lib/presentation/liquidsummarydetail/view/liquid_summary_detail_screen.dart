@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/bloc/liquid_summary_detail_bloc.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/liquids_summary_widget.dart';
 
+import '../../../domain/models/watervents/water_event_master.dart';
+import '../../../infrastructure/helpers/events_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../dashboard/view/dashboard_screen.dart';
@@ -29,6 +30,16 @@ class _LiquidSummaryDetailScreenState extends State<LiquidSummaryDetailScreen> {
   void initState() {
     bloc = BlocProvider.of<LiquidSummaryDetailBloc>(context);
     super.initState();
+
+    final widgetBinding = WidgetsBinding.instance;
+    widgetBinding.addPostFrameCallback((timeStamp) {
+      if (ModalRoute.of(context)?.settings.arguments != null) {
+        final infoReceived = ModalRoute.of(context)?.settings.arguments;
+        if (infoReceived is List<WaterEventMaster>?) {
+          bloc.add(LoadLiquidSummaryEventAction(waterEvents: infoReceived));
+        }
+      }
+    });
   }
 
   @override
@@ -88,7 +99,7 @@ class _LiquidSummaryDetailScreenState extends State<LiquidSummaryDetailScreen> {
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(children: [
-                    LiquidDetailWidget()
+                    LiquidDetailWidget(quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents), fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents),)
                   ],),
                 ),
               ),

@@ -4,5 +4,7 @@ part of 'liquid_summary_detail_bloc.dart';
 abstract class LiquidSummaryDetailEvent {}
 
 class LoadLiquidSummaryEventAction extends LiquidSummaryDetailEvent {
+  final List<WaterEventMaster>? waterEvents;
 
+  LoadLiquidSummaryEventAction({required this.waterEvents});
 }

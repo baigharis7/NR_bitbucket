@@ -13,7 +13,12 @@ import 'fill_horizontal_bar.dart';
 import 'fill_vertical_bar.dart';
 
 class LiquidDetailWidget extends StatefulWidget {
-  const LiquidDetailWidget({super.key});
+  final double quantityTaken;
+  final double fractionToFill;
+  const LiquidDetailWidget({super.key,
+    required this.quantityTaken,
+    required this.fractionToFill,
+  });
 
   @override
   State<LiquidDetailWidget> createState() => _LiquidDetailWidgetState();
@@ -55,9 +60,9 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
                       ),
                       alignment: Alignment.centerRight,
                       height: 150,
-                      child: const FillVerticalBar(
+                      child: FillVerticalBar(
                         width: 15,
-                        fractionToFill: 0.3,
+                        fractionToFill: widget.fractionToFill,
                         barColor: Colors.blue,
                       ),
                     ),
@@ -69,7 +74,7 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${2.toString()} L',
+                          '${widget.quantityTaken} L',
                           style: const TextStyle(
                             fontSize: Dimens.fontSizeXLarge,
                           ),
@@ -95,6 +100,7 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
                               onPressed: () => Navigator.pushNamed(
                                       context, AddWaterEventScreen.routeName)
                                   .then((_) {
+                                    Navigator.pop(context);
                                 /*onReloadData?.call();*/
                               }),
                               icon: const Icon(Icons.add_circle_outline_sharp, size: 30, color: Colors.blue,),
@@ -105,7 +111,13 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
                 ],
               ),
             ),
-          )
+          ),
+          Container(width: double.infinity, margin: const EdgeInsets.all(Dimens.marginXLarge), child: Text(AppLocalizations.of(context)!.minimum_water_required, style: const TextStyle(
+            fontSize: Dimens.fontSizeMedium,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),),),
+          Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge, vertical: Dimens.marginLarge), child: Text(AppLocalizations.of(context)!.minimum_water_description),),
         ],
       ),
     );

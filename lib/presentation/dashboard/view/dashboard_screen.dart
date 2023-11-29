@@ -113,17 +113,17 @@ class _DashboardScreen extends State<DashboardScreen>
                           title: AppLocalizations.of(context)!.micronutrients,
                           nutrients: state.micronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList(),
                           isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
-                          screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()),
+                          screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState())),
                         ),
                         NutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.macronutrients,
                           nutrients: state.macronutrients.orEmpty(),
                           isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
-                          screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()),
+                          screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState())),
                         ),
                         EnergyBalanceWidget(
                           energyModel: state.energyModel,
-                          screenToMove: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: state.energyModel),
+                          screenToMove: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: state.energyModel).then((value) => bloc.add(InitializeState())),
                         ),
                         SizedBox(
                           height: 200,
@@ -135,7 +135,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                     quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents),
                                     fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents),
                                     onReloadData: () => bloc.add(ReloadWaterInfoAction()),
-                                    screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName),
+                                    screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState())),
                                   ),
                                 ),
                                 Expanded(
@@ -207,7 +207,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                       ),
                                     ),
                                   ),
-                                  IconButton(onPressed: () => Navigator.pushNamed(context, SugarDetailScreen.routeName, arguments: state.sugarAndFiberModel), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                                  IconButton(onPressed: () => Navigator.pushNamed(context, SugarDetailScreen.routeName, arguments: state.sugarAndFiberModel).then((value) => bloc.add(InitializeState())), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
                                 ],
                               ),
                               Container(
@@ -240,7 +240,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                       ),
                                     ),
                                   ),
-                                  IconButton(onPressed: () => Navigator.pushNamed(context, FiberDetailScreen.routeName, arguments: state.sugarAndFiberModel), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                                  IconButton(onPressed: () => Navigator.pushNamed(context, FiberDetailScreen.routeName, arguments: state.sugarAndFiberModel).then((value) => bloc.add(InitializeState())), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
                                 ],
                               ),
                               Container(

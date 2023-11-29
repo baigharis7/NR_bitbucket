@@ -215,7 +215,7 @@ class EventsHelper {
     if (waterAmount != null) {
       double returnQuantity = waterAmount / 2;
       if (returnQuantity > 1) returnQuantity = 1;
-      return returnQuantity;
+      return double.parse((returnQuantity).toStringAsFixed(2));
     } else {
       return 0.0;
     }

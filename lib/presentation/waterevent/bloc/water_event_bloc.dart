@@ -43,11 +43,18 @@ class WaterEventBloc extends BaseBloc<WaterEventActions, WaterEventState> {
     on<FinishWaterEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null,));
 
+      final waterEventMaster = WaterEventMaster(
+        getUserIdInteractor.execute(),
+        DateTimeHelper().provideCurrentDate().millisecondsSinceEpoch,
+        DateTimeHelper().provideCurrentDate().millisecondsSinceEpoch,
+          state.waterEventMaster?.qty,
+      );
+
       try {
-        final uploadSuccess = await uploadWaterEventInteractor.execute(state.waterEventMaster!);
+        final uploadSuccess = await uploadWaterEventInteractor.execute(waterEventMaster);
         if (uploadSuccess) {
           try {
-            saveWaterEventInteractor.execute(state.waterEventMaster!);
+            saveWaterEventInteractor.execute(waterEventMaster);
             event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {
