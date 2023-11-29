@@ -219,6 +219,8 @@ import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_ev
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/bloc/sugar_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/waterevent/bloc/water_event_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/bloc/weekly_dashboard_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/view/weekly_dashboard_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/welcome/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'domain/interactor/login/erase_database_interactor_impl.dart';
@@ -351,6 +353,14 @@ void main() async {
   final fiberDetailBloc = FiberDetailBloc();
 
   final liquidSummaryDetailBloc = LiquidSummaryDetailBloc();
+
+  final weeklyDashboardDetailBloc = WeeklyDashboardDetailBloc(
+    getProfileInteractor: getProfileInteractor,
+    getUserRdasInteractor: getUserRdasInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
+    getUserMicronutrientsInteractor: getUserMicronutrientsInteractor,
+    getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
+  );
 
   final journalBloc = JournalBloc(
     getWeekSportsInteractor: getWeekSportsInteractor,
@@ -552,6 +562,7 @@ void main() async {
         BlocProvider<SugarDetailBloc>(create: (ctx) => sugarDetailBloc),
         BlocProvider<FiberDetailBloc>(create: (ctx) => fiberDetailBloc),
         BlocProvider<LiquidSummaryDetailBloc>(create: (ctx) => liquidSummaryDetailBloc),
+        BlocProvider<WeeklyDashboardDetailBloc>(create: (ctx) => weeklyDashboardDetailBloc),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -630,6 +641,7 @@ void main() async {
           SugarDetailScreen.routeName: (_) => const SugarDetailScreen(),
           FiberDetailScreen.routeName: (_) => const FiberDetailScreen(),
           LiquidSummaryDetailScreen.routeName: (_) => const LiquidSummaryDetailScreen(),
+          WeeklyDashboardDetailScreen.routeName: (_) => const WeeklyDashboardDetailScreen(),
         },
       ),
     ),

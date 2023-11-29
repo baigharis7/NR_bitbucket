@@ -19,6 +19,7 @@ import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/m
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/view/weekly_dashboard_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/energy_balance_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
@@ -105,7 +106,7 @@ class _DashboardScreen extends State<DashboardScreen>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
+                            IconButton(onPressed: () => Navigator.pushNamed(context, WeeklyDashboardDetailScreen.routeName).then((value) => bloc.add(InitializeState())), icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
                             Text(bloc.getTodayMessage(AppLocalizations.of(context)!.today, Localizations.localeOf(context).languageCode),)
                           ],
                         ),
