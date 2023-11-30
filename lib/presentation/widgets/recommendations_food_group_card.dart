@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/recommendations/recommendations_food_item.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/recommendations_item.dart';
@@ -42,15 +44,15 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      AppLocalizations.of(context)!.alternatives,
-                    ),
-                  ),
-                ),
+                // Expanded(
+                //   flex: 1,
+                //   child: Container(
+                //     alignment: Alignment.center,
+                //     child: Text(
+                //       AppLocalizations.of(context)!.alternatives,
+                //     ),
+                //   ),
+                // ),
                 Expanded(
                   flex: 1,
                   child: Container(
@@ -78,7 +80,7 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
           ...recommendationsFoodItem.frequentFoods.map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodItemMaster.id);
             return Container(
-              color: Colors.white,
+              color: AppColors.cardGreen_200,
               child: RecommendationsItem(
                 foodItemMaster: food.foodItemMaster,
                 onAlternative: () => {/** TODO: mandar a back el id de la comida*/},

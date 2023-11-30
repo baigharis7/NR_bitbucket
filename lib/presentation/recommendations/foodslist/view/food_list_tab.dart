@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
@@ -27,6 +28,50 @@ class FoodListScreen extends StatefulWidget {
 }
 
 class _FoodListScreen extends State<FoodListScreen> {
+
+  void _showDelFoodDialog({required Function onDelFood,}) {
+    showDialog(context: context, builder: (context) => SimpleDialog(
+      backgroundColor: AppColors.light_cyan,
+      contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10),),
+      children: [
+        SizedBox(child: IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.cancel_outlined, color: AppColors.true_blue,), alignment: Alignment.centerRight), width: double.infinity),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall, vertical: Dimens.marginSmall),
+          child: Column(
+            children: [
+              Text(AppLocalizations.of(context)!.remove_food, style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.true_blue,
+                  fontSize: Dimens.fontSizeNormal), textAlign: TextAlign.center),
+              const SizedBox(height: Dimens.heightXSmall),
+              Container(
+                  width: double.infinity,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      InkWell(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXXLarge, vertical: Dimens.paddingNormal),
+                          decoration: const BoxDecoration(color: AppColors.true_blue,shape: BoxShape.rectangle, borderRadius: BorderRadiusDirectional.only(topStart: Radius.circular(5), bottomStart: Radius.circular(5))),
+                          child: Text(AppLocalizations.of(context)!.keep, style: const TextStyle(color: Colors.white),),),
+                      ),
+                      const SizedBox(width: 2,),
+                      InkWell(
+                        onTap: () {onDelFood.call(); Navigator.pop(context);},
+                        child: Container(padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingNormal),
+                          decoration: const BoxDecoration(color: AppColors.true_blue,shape: BoxShape.rectangle, borderRadius: BorderRadiusDirectional.only(topEnd: Radius.circular(5), bottomEnd: Radius.circular(5))),
+                          child: Text(AppLocalizations.of(context)!.remove, style: const TextStyle(color: Colors.white),),),
+                      ),
+                    ],),
+                  alignment: Alignment.centerRight
+              ),
+              const SizedBox(height: Dimens.heightXSmall),
+            ],),
+        )
+      ],
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,8 +126,11 @@ class _FoodListScreen extends State<FoodListScreen> {
                           ),
                           ...state.foodItems!.map((foodItem) => FoodListItem(
                             foodName: foodItem.name,
-                            onDelete: () => bloc.add(OnDeleteFoodIdFromList(foodItem: foodItem)),
-                          ),)
+                            // onDelete: () => bloc.add(OnDeleteFoodIdFromList(foodItem: foodItem)),
+                            onDelete: () {
+                              _showDelFoodDialog(onDelFood: () => bloc.add(OnDeleteFoodIdFromList(foodItem: foodItem)));
+                            },
+                          ),),
                         ],
                       ),
                     ),

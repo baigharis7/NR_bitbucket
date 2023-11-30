@@ -7,4 +7,7 @@ class AppColors {
   static const cardGreen_200 = Color(0xFFA5D6A7);
   static const daffodil = Color(0xFFFBFF24);
   static const gray = Color(0xFFeeeeee);
+  static const light_cyan = Color(0xFFddf7ff);
+  static const carolina_blue = Color(0xFF52a7e0);
+  static const true_blue = Color(0xFF0078ce);
 }

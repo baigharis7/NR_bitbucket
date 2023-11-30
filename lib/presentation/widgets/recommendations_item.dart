@@ -34,22 +34,22 @@ class _RecommendationsItemState extends State<RecommendationsItem> {
       child: Row(
         children: [
           Expanded(
-            flex: 2,
+            flex: 3,
             child: Text(
               widget.foodItemMaster.translate(context),
               overflow: TextOverflow.clip,
             ),
           ),
-          Expanded(
-            flex: 1,
-            child: IconButton(
-              icon: const Icon(
-                Icons.arrow_drop_down,
-                size: 28,
-              ),
-              onPressed: () => widget.onAlternative.call(),
-            ),
-          ),
+          // Expanded(
+          //   flex: 1,
+          //   child: IconButton(
+          //     icon: const Icon(
+          //       Icons.arrow_drop_down,
+          //       size: 28,
+          //     ),
+          //     onPressed: () => widget.onAlternative.call(),
+          //   ),
+          // ),
           Expanded(
             flex: 1,
             child: Row(
