@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/bloc/weekly_dashboard_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/weekly_energy_graph_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_nutrient_graphic.dart';
 
 import '../../../infrastructure/utils/dimens.dart';
@@ -100,6 +101,10 @@ class _WeeklyDashboardDetailScreenState
                         WeeklyNutrientGraphic(
                             title: AppLocalizations.of(context)!.macronutrients,
                             data: state.macronutrientsWeekly ?? []),
+                        const SizedBox(
+                          height: Dimens.heightXSmall,
+                        ),
+                        WeeklyEnergyGraphWidget(title: AppLocalizations.of(context)!.energy_balance_title,data: state.weeklyEnergyBalance ?? [], averageConsumed: state.averageConsumedKcal ?? 0.0, averageSpent: state.averageSpentKcal ?? 0.0),
                       ],
                     ),
                   ),

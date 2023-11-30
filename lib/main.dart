@@ -360,6 +360,8 @@ void main() async {
     getMasterFileInteractor: getMasterFileInteractor,
     getUserMicronutrientsInteractor: getUserMicronutrientsInteractor,
     getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
+    getWeekLiquidEventsInteractor: getWeekLiquidEventsInteractor,
+    getWeekSportsInteractor: getWeekSportsInteractor,
   );
 
   final journalBloc = JournalBloc(

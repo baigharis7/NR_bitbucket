@@ -47,17 +47,29 @@ class _EnergyBalanceDetailWidgetState extends State<EnergyBalanceDetailWidget> {
                 horizontal: Dimens.marginSmall,
                 vertical: Dimens.marginXSmall,
               ),
-              child: FillHorizontalBar(
-                height: 30,
-                backgroundBarColor: AppColors.cardGreen_200,
-                fractionToFill: widget.energyModel?.fractionToFill ?? 0.0,
+              child: Stack(
+                children: [
+                  FillHorizontalBar(
+                    height: 30,
+                    backgroundBarColor: AppColors.cardGreen_200,
+                    fractionToFill: widget.energyModel?.fractionToFill ?? 0.0,
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.only(top: Dimens.marginXSmall),
+                    child: Text(
+                      '${(widget.energyModel?.rawKcalTaken ?? 0) - (widget.energyModel?.spentKcal ?? 0)} kcal',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  )
+                ],
               ),
             ),
             const SizedBox(height: Dimens.heightSmall,),
             Row(
               children: [
                 Expanded(child: Text(AppLocalizations.of(context)!.gross_kcal, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium))),
-                Text('${widget.energyModel?.totalKcal} Kcal', style: const TextStyle(color: AppColors.mountainMeadow, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium)),
+                Text('${widget.energyModel?.rawKcalTaken} Kcal', style: const TextStyle(color: AppColors.mountainMeadow, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium)),
               ],
             ),
             const SizedBox(height: Dimens.heightXSmall,),

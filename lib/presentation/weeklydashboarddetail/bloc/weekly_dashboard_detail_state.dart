@@ -12,8 +12,27 @@ class WeeklyDashboardDetailState {
   List<FoodEventComplete>? weeklyFoodEvents;
   List<NutrientsWeeklyModel>? micronutrientsWeekly;
   List<NutrientsWeeklyModel>? macronutrientsWeekly;
+  List<FoodEventComplete>? weeklyLiquidEvents;
+  List<SportEventComplete>? weeklySportEvents;
+  List<Map<String, dynamic>>? weeklyEnergyBalance;
+  double? averageConsumedKcal;
+  double? averageSpentKcal;
 
-  WeeklyDashboardDetailState({required this.isLoading, this.userMicronutrients, this.userRdas, this.userProfile, this.nutrientsInfoMaster, this.weeklyFoodEvents, this.micronutrientsWeekly, this.macronutrientsWeekly});
+  WeeklyDashboardDetailState({
+    required this.isLoading,
+    this.userMicronutrients,
+    this.userRdas,
+    this.userProfile,
+    this.nutrientsInfoMaster,
+    this.weeklyFoodEvents,
+    this.micronutrientsWeekly,
+    this.macronutrientsWeekly,
+    this.weeklyLiquidEvents,
+    this.weeklySportEvents,
+    this.weeklyEnergyBalance,
+    this.averageConsumedKcal,
+    this.averageSpentKcal,
+  });
 
   WeeklyDashboardDetailState copyWith({
     required bool isLoading,
@@ -24,6 +43,11 @@ class WeeklyDashboardDetailState {
     List<FoodEventComplete>? weeklyFoodEvents,
     List<NutrientsWeeklyModel>? micronutrientsWeekly,
     List<NutrientsWeeklyModel>? macronutrientsWeekly,
+    List<FoodEventComplete>? weeklyLiquidEvents,
+    List<SportEventComplete>? weeklySportEvents,
+    List<Map<String, dynamic>>? weeklyEnergyBalance,
+    double? averageConsumedKcal,
+    double? averageSpentKcal,
   }) {
     return WeeklyDashboardDetailState(
       isLoading: isLoading,
@@ -34,6 +58,11 @@ class WeeklyDashboardDetailState {
       weeklyFoodEvents: weeklyFoodEvents ?? this.weeklyFoodEvents,
       micronutrientsWeekly: micronutrientsWeekly ?? this.micronutrientsWeekly,
       macronutrientsWeekly: macronutrientsWeekly ?? this.macronutrientsWeekly,
+      weeklyLiquidEvents: weeklyLiquidEvents ?? this.weeklyLiquidEvents,
+      weeklySportEvents: weeklySportEvents ?? this.weeklySportEvents,
+      weeklyEnergyBalance: weeklyEnergyBalance ?? this.weeklyEnergyBalance,
+      averageConsumedKcal: averageConsumedKcal ?? this.averageConsumedKcal,
+      averageSpentKcal: averageSpentKcal ?? this.averageSpentKcal,
     );
   }
 }

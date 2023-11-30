@@ -35,7 +35,7 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
             margin: const EdgeInsets.all(Dimens.marginLarge),
             alignment: Alignment.centerLeft,
             child: Text(
-              AppLocalizations.of(context)!.liquids,
+              AppLocalizations.of(context)!.ingested_water,
               style: const TextStyle(
                 fontSize: Dimens.fontSizeNormal,
                 color: Colors.black,

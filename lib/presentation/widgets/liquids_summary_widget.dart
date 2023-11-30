@@ -32,7 +32,7 @@ class LiquidSummaryWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.liquids,
+                  AppLocalizations.of(context)!.water,
                   style: const TextStyle(
                     fontSize: Dimens.fontSizeNormal,
                     color: Colors.black,

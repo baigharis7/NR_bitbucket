@@ -59,7 +59,7 @@ class _AddWaterEventScreesState extends State<AddWaterEventScreen> {
                 title: Row(
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.liquids,
+                      AppLocalizations.of(context)!.water,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: Dimens.fontSizeXXLarge,
