@@ -65,7 +65,7 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
     if (event is FoodEventComplete) {
       return event.foodInfo!.map((e) => e.translate(context)).join(',');
     } else if (event is SportEventComplete) {
-      return event.info.translate(context);
+      return event.info!.map((e) => e.translate(context)).join(',');
     } else if (event is WaterEventMaster) {
       return AppLocalizationsHelper.instance.translate('water');
     } else {
@@ -85,8 +85,10 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
 
   String? getRouteNameByEventTypeForEditing(dynamic event) {
     switch (event.runtimeType) {
-      case FoodEventComplete: return AddFoodEventScreen.routeName;
-      case SportEventComplete: return AddSportEventScreen.routeName;
+      // case FoodEventComplete: return AddFoodEventScreen.routeName;
+      case FoodEventComplete: return AddFoodFavoriteScreen.routeName;
+      // case SportEventComplete: return AddSportEventScreen.routeName;
+      case SportEventComplete: return AddSportFavoriteScreen.routeName;
       case LiquidEventComplete: return AddLiquidEventScreen.routeName;
       case WaterEventMaster: return null;
     }
@@ -105,8 +107,10 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
 
   dynamic getArgumentsToEditEvent(dynamic event) {
     switch (event.runtimeType) {
-      case FoodEventComplete: return mapToFoodEventSimple((event as FoodEventComplete));
-      case SportEventComplete: return mapToSportEventSimple((event as SportEventComplete));
+      // case FoodEventComplete: return mapToFoodEventSimple((event as FoodEventComplete));
+      case FoodEventComplete: return event as FoodEventComplete;
+      // case SportEventComplete: return mapToSportEventSimple((event as SportEventComplete));
+      case SportEventComplete: return event as SportEventComplete;
       case LiquidEventComplete: return mapToLiquidEventSimple((event as LiquidEventComplete));
       case WaterEventMaster: return null;
     }

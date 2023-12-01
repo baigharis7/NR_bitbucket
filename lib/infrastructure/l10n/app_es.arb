@@ -315,7 +315,7 @@
     "help" : "Ayuda",
     "needed_account_confirmation_message" : "Antes de crear tu perfil necesitas confirmar tu cuenta. Vas a recibir un código de confirmation en tu correo electrónico registrado.",
     "welcome" : "¡Bienvenido!",
-    "empty_events_calendar" : "No hay eventos registrados en este día",
+    "empty_events_calendar" : "No hay comida ni actividad física registrada en este día!!",
     "add_liquid_calendar" : "Añadir bebida",
     "add_sport_calendar" : "Añadir ejercicio",
     "activity_type" : "Tipo de actividad",

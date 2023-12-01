@@ -102,16 +102,16 @@ class EventsHelper {
         calendarEvent.sportEvents!.add(event);
       }
     }
-    for (var event in calendarEvents.liquidEvents!) {
-      if (_dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, event.eventDate!)) {
-        calendarEvent.liquidEvents!.add(event);
-      }
-    }
-    for (var event in calendarEvents.waterEvents!) {
-      if (_dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, event.eventDate!)) {
-        calendarEvent.waterEvents!.add(event);
-      }
-    }
+    // for (var event in calendarEvents.liquidEvents!) {
+    //   if (_dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, event.eventDate!)) {
+    //     calendarEvent.liquidEvents!.add(event);
+    //   }
+    // }
+    // for (var event in calendarEvents.waterEvents!) {
+    //   if (_dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, event.eventDate!)) {
+    //     calendarEvent.waterEvents!.add(event);
+    //   }
+    // }
 
     return joinCalendarEvents(calendarEvent);
   }
