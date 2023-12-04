@@ -29,6 +29,8 @@ NutrientInfoResponse _$NutrientInfoResponseFromJson(
       unit: json['unit'] as String,
       name_es: json['name_es'] as String,
       name_en: json['name_en'] as String,
+      description_es: json['description_es'] as String?,
+      description_en: json['description_en'] as String?,
     );
 
 Map<String, dynamic> _$NutrientInfoResponseToJson(
@@ -38,4 +40,6 @@ Map<String, dynamic> _$NutrientInfoResponseToJson(
       'unit': instance.unit,
       'name_es': instance.name_es,
       'name_en': instance.name_en,
+      'description_es': instance.description_es,
+      'description_en': instance.description_en,
     };

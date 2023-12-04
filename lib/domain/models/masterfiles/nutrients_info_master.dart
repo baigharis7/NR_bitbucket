@@ -19,8 +19,10 @@ class NutrientInfoMaster extends Translatable {
   String unit;
   String en;
   String es;
+  String? description_es;
+  String? description_en;
 
-  NutrientInfoMaster({required this.officialName, required this.unit, required this.en, required this.es});
+  NutrientInfoMaster({required this.officialName, required this.unit, required this.en, required this.es, this.description_es, this.description_en});
 
   factory NutrientInfoMaster.fromJson(Map<String, dynamic> json) => _$NutrientInfoMasterFromJson(json);
   Map<String, dynamic> toJson() => _$NutrientInfoMasterToJson(this);

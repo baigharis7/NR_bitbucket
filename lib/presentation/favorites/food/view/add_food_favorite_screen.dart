@@ -117,7 +117,7 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
             return Scaffold(
               body: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SingleChildScrollView(
+                  Expanded(
                     child: Column(
                       children: [
                         Container(
@@ -149,65 +149,69 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                                     onMealTimeChange: (int mealTime) => bloc.add(AddMealTimeAction(mealTime: mealTime)),
                                     onFinish: () => bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context))),
                                   );
-                                } : () {}, child: (arguments is FoodFavorite || (arguments is FoodEventComplete ? bloc.isFoodFavourite(arguments) : true)) ? Icon(Icons.favorite, color: Colors.red,) : Icon(Icons.favorite_border, color: Colors.red,),
+                                } : () {}, child: (arguments is FoodFavorite || (arguments is FoodEventComplete ? bloc.isFoodFavourite(arguments) : true)) ? const Icon(Icons.favorite, color: Colors.red,) : const Icon(Icons.favorite_border, color: Colors.red,),
                               ),
                               )
                             ],
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.all(Dimens.paddingNormal),
-                          margin: const EdgeInsets.all(Dimens.marginNormal),
-                          child: Column(
-                            children: [
-                              ...state.foodsInFavorite!.map((foodInFavorite) => FoodCard(
-                                foodName: eventHelper.findFoodNameFromId(foodInFavorite.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!),
-                                cookingMethod: eventHelper.findCookingMethodName(
-                                  ctx,
-                                  foodInFavorite.id,
-                                  state.cookingMethodsInfoMaster!.cookingMethodsInfo!,
-                                ),
-                                quantity: foodInFavorite.qty.toString(),
-                                unit: eventHelper.findUnitName(foodInFavorite.unit, state.unitsInfoMaster!.unitsInfoMaster).translate(context),
-                                removeFood: () {},
-                                editFood: () {},
-                              ),),
-                              if (state.comment.isNotEmptyOrNull()) Container(
-                                margin: const EdgeInsets.all(Dimens.marginNormal),
-                                child: Card(
-                                  child: Container(
-                                    alignment: Alignment.centerLeft,
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Container(
+                              padding: const EdgeInsets.all(Dimens.paddingNormal),
+                              margin: const EdgeInsets.all(Dimens.marginNormal),
+                              child: Column(
+                                children: [
+                                  ...state.foodsInFavorite!.map((foodInFavorite) => FoodCard(
+                                    foodName: eventHelper.findFoodNameFromId(foodInFavorite.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!),
+                                    cookingMethod: eventHelper.findCookingMethodName(
+                                      ctx,
+                                      foodInFavorite.id,
+                                      state.cookingMethodsInfoMaster!.cookingMethodsInfo!,
+                                    ),
+                                    quantity: foodInFavorite.qty.toString(),
+                                    unit: eventHelper.findUnitName(foodInFavorite.unit, state.unitsInfoMaster!.unitsInfoMaster).translate(context),
+                                    removeFood: () {},
+                                    editFood: () {},
+                                  ),),
+                                  if (state.comment.isNotEmptyOrNull()) Container(
                                     margin: const EdgeInsets.all(Dimens.marginNormal),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          margin: const EdgeInsets.all(Dimens.marginNormal),
-                                          child: Text(
-                                            state.comment.orEmpty(),
-                                            style: const TextStyle(
-                                              overflow: TextOverflow.clip,
-                                            ),
-                                          ),
-                                        )
-                                      ],
+                                    child: Card(
+                                      child: Container(
+                                        alignment: Alignment.centerLeft,
+                                        margin: const EdgeInsets.all(Dimens.marginNormal),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              margin: const EdgeInsets.all(Dimens.marginNormal),
+                                              child: Text(
+                                                state.comment.orEmpty(),
+                                                style: const TextStyle(
+                                                  overflow: TextOverflow.clip,
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingLarge),
-                    decoration: BoxDecoration(borderRadius: BorderRadiusDirectional.vertical(top: Radius.circular(5.0)),color: Colors.white,boxShadow: [BoxShadow(blurRadius: 5.0)]),
+                    padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingLarge),
+                    decoration: const BoxDecoration(borderRadius: BorderRadiusDirectional.vertical(top: Radius.circular(5.0)),color: Colors.white,boxShadow: [BoxShadow(blurRadius: 5.0)]),
                     child: Column(children: [
                       InkWell(
                         child: Container(
                           margin: const EdgeInsets.all(Dimens.marginSmall),
-                          padding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
+                          padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
                           decoration: BoxDecoration(
                             shape: BoxShape.rectangle,
                             color: Colors.yellow[200],
@@ -229,7 +233,7 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                       InkWell(
                         child: Container(
                           margin: const EdgeInsets.all(Dimens.marginSmall),
-                          padding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
+                          padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
                           decoration: BoxDecoration(
                             shape: BoxShape.rectangle,
                             color: Colors.yellow[200],

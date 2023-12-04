@@ -25,6 +25,8 @@ NutrientInfoMaster _$NutrientInfoMasterFromJson(Map<String, dynamic> json) =>
       unit: json['unit'] as String,
       en: json['en'] as String,
       es: json['es'] as String,
+      description_es: json['description_es'] as String?,
+      description_en: json['description_en'] as String?,
     );
 
 Map<String, dynamic> _$NutrientInfoMasterToJson(NutrientInfoMaster instance) =>
@@ -33,4 +35,6 @@ Map<String, dynamic> _$NutrientInfoMasterToJson(NutrientInfoMaster instance) =>
       'unit': instance.unit,
       'en': instance.en,
       'es': instance.es,
+      'description_es': instance.description_es,
+      'description_en': instance.description_en,
     };

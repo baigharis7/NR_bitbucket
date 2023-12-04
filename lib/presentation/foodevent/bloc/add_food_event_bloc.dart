@@ -190,8 +190,8 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
 
       final foodEvent = FoodEventSimple(
         userId: getUserIdInteractor.execute(),
-        eventDate: DateTime.now().millisecondsSinceEpoch,
-        eventId: DateTime.now().millisecondsSinceEpoch,
+        eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+        eventId: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
         foodName: state.foodName ?? '',
         comment: state.comment,
       );

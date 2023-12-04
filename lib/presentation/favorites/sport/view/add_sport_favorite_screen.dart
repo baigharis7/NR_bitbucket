@@ -89,7 +89,7 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
           onUndoFavorite: () => onUndoFavorite.call(),
         );
       },
-    ).then((_) => reloadScreen.call());
+    ).then((_) => Navigator.pop(context));
   }
 
   @override
@@ -159,20 +159,27 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                                   child: Image.asset('assets/icon/sport_icon.png'), height: 27, width: 27,),
                                 const Spacer(),
                                 Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 20),
+                                  margin: const EdgeInsets.symmetric(horizontal: 20),
                                   child: InkWell(onTap: (arguments is AddSportFavorite || (arguments is SportEventComplete ? bloc.isSportFavo(arguments) : true)) ? () {
-                                    // showUndoFavoriteDialog(
-                                    //   context: ctx,
-                                    //   title: (arguments as AddSportFavorite).title.orEmpty(),
-                                    //   onUndoFavorite: (){},
-                                    //   //     () => bloc.add(
-                                    //   //   RemoveFavoriteAction(
-                                    //   //     sportFavorite: arguments,
-                                    //   //     onFinish: () => Navigator.pop(context),
-                                    //   //   ),
-                                    //   // ),
-                                    //   reloadScreen: () => bloc.add(InitializeStateAction()),
-                                    // );
+                                    showUndoFavoriteDialog(
+                                      context: ctx,
+                                      title: (arguments as AddSportFavorite).title.orEmpty(),
+                                      onUndoFavorite: (){
+                                        bloc.add(
+                                          RemoveFavoriteAction(
+                                            sportFavorite: arguments,
+                                            onFinish: () => Navigator.pop(context),
+                                          ),
+                                        );
+                                      },
+                                      //     () => bloc.add(
+                                      //   RemoveFavoriteAction(
+                                      //     sportFavorite: arguments,
+                                      //     onFinish: () => Navigator.pop(context),
+                                      //   ),
+                                      // ),
+                                      reloadScreen: () => bloc.add(InitializeStateAction()),
+                                    );
                                   } : () {
                                     showAddFavoriteDialog(
                                       context: ctx,

@@ -179,11 +179,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         children: [
                           AddEventCalendarButton(
                             title: AppLocalizations.of(context)!.add_food,
-                            onPressedButton: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: _selectedDay).then((value) => bloc.add(InitializeStateAction())),
+                            onPressedButton: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: _selectedDay).then((value) => bloc.add(RefreshEventsAction(selectedDay: _selectedDay))),
                           ),
                           AddEventCalendarButton(
                             title: AppLocalizations.of(context)!.add_sport_calendar,
-                            onPressedButton: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: _selectedDay).then((value) => bloc.add(InitializeStateAction())),
+                            onPressedButton: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: _selectedDay).then((value) => bloc.add(RefreshEventsAction(selectedDay: _selectedDay))),
                           ),
                           // AddEventCalendarButton(
                           //   title: AppLocalizations.of(context)!.add_liquid_calendar,

@@ -219,8 +219,8 @@ class _DashboardScreen extends State<DashboardScreen>
                                 margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  (state.sugarAndFiberModel?.fractionToFillSugar.toString() ?? '0').appendGram(),
-                                  style: TextStyle(fontSize: Dimens.fontSizeSmall),
+                                  (state.sugarAndFiberModel?.totalSugar.toString() ?? '0').appendGram(),
+                                  style: const TextStyle(fontSize: Dimens.fontSizeSmall),
                                 ),
                               )
                             ],
@@ -252,8 +252,8 @@ class _DashboardScreen extends State<DashboardScreen>
                                 margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  (state.sugarAndFiberModel?.fractionToFillFiber.toString() ?? '0').appendGram(),
-                                  style: TextStyle(fontSize: Dimens.fontSizeSmall),
+                                  (state.sugarAndFiberModel?.totalFiber.toString() ?? '0').appendGram(),
+                                  style: const TextStyle(fontSize: Dimens.fontSizeSmall),
                                 ),
                               )
                             ],

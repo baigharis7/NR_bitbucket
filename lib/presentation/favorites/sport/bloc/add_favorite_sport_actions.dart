@@ -65,3 +65,10 @@ class FinishFavoriteSportCommentAction extends AddFavoriteSportActions {
 
   FinishFavoriteSportCommentAction({required this.onFinish});
 }
+
+class RemoveFavoriteAction extends AddFavoriteSportActions {
+  final AddSportFavorite sportFavorite;
+  final Function onFinish;
+
+  RemoveFavoriteAction({required this.onFinish, required this.sportFavorite});
+}

@@ -53,12 +53,12 @@ class _FiberDetailWidgetState extends State<FiberDetailWidget> {
                 fractionToFill: widget.sugarAndFiberModel?.fractionToFillFiber ?? 0.0,
               ),
             ),
-            SizedBox(height: Dimens.heightXXSmall,),
+            const SizedBox(height: Dimens.heightXXSmall,),
             Container(
               alignment: Alignment.centerRight,
               margin: const EdgeInsets.only(right: Dimens.marginNormal),
               child: Text(
-                widget.sugarAndFiberModel?.fractionToFillFiber.toString().appendGram() ?? '0.0 g',
+                widget.sugarAndFiberModel?.totalFiber.toString().appendGram() ?? '0.0 g',
                 style: const TextStyle(
                   fontSize: Dimens.fontSizeSmall,
                 ),

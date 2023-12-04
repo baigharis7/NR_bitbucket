@@ -105,9 +105,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.waterEvents = await getWaterEventsTodayInteractor.execute();
       state.sugarAndFiberModel = SugarAndFiberModel(
           fractionToFillSugar: calculateTodaySugar(),
-          totalSugar: 20,
+          totalSugar: calculateTodayConsumedSugar(),
           fractionToFillFiber: calculateTodayFiber(),
-          totalFiber: 20,
+          totalFiber: calculateTodayConsumedFiber(),
       );
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
 
@@ -230,11 +230,51 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
 
+    for(var liquidEvent in state.todayLiquidEvents!) {
+      for (var liquid in liquidEvent.foodInfo!) {
+        sugarConsumedToday = sugarConsumedToday + (liquid.params?.sugarsTotal ?? 0.0);
+      }
+    }
+
+    sugarConsumedToday = sugarConsumedToday/20;
+    if (sugarConsumedToday > 1) sugarConsumedToday = 1;
+    if (sugarConsumedToday < 0) sugarConsumedToday = 0.0;
+    return double.parse(sugarConsumedToday.toStringAsFixed(2));
+  }
+
+  double calculateTodayConsumedSugar() {
+    double sugarConsumedToday = 0.0;
+    for(var foodEvent in state.foodEvents!) {
+      for (var food in foodEvent.foodInfo!) {
+        sugarConsumedToday = sugarConsumedToday + (food.params?.sugarsTotal ?? 0.0);
+      }
+    }
+
+    for(var liquidEvent in state.todayLiquidEvents!) {
+      for (var liquid in liquidEvent.foodInfo!) {
+        sugarConsumedToday = sugarConsumedToday + (liquid.params?.sugarsTotal ?? 0.0);
+      }
+    }
+
     sugarConsumedToday = sugarConsumedToday/20;
     return double.parse(sugarConsumedToday.toStringAsFixed(2));
   }
 
   double calculateTodayFiber() {
+    double fiberConsumedToday = 0.0;
+    for(var foodEvent in state.foodEvents!) {
+      for (var food in foodEvent.foodInfo!) {
+        fiberConsumedToday = fiberConsumedToday + (food.params?.fiber ?? 0.0);
+      }
+    }
+
+    fiberConsumedToday = fiberConsumedToday/20;
+    if (fiberConsumedToday > 1) fiberConsumedToday = 1;
+    if (fiberConsumedToday < 0) fiberConsumedToday = 0.0;
+    return double.parse(fiberConsumedToday.toStringAsFixed(2));
+  }
+
+  double calculateTodayConsumedFiber() {
     double fiberConsumedToday = 0.0;
     for(var foodEvent in state.foodEvents!) {
       for (var food in foodEvent.foodInfo!) {

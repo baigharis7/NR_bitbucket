@@ -70,8 +70,8 @@ class _MicroNutrientDetailWidgetState extends State<MicroNutrientDetailWidget> {
               ),
             ),
             Container(
-              margin: EdgeInsets.symmetric(vertical: Dimens.marginLarge, horizontal: Dimens.marginXLarge),
-              child: Text(AppLocalizations.of(context)!.lorem_ipsum),)
+              margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge, horizontal: Dimens.marginXLarge),
+              child: Text(widget.nutrientsModel.nutrientInfoMaster.description_en ?? AppLocalizations.of(context)!.lorem_ipsum),)
           ],
         ),
       ),

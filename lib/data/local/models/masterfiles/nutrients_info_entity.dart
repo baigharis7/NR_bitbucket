@@ -26,8 +26,10 @@ class NutrientInfoEntity {
   @HiveField(1) String unit;
   @HiveField(2) String es;
   @HiveField(3) String en;
+  @HiveField(4) String? description_es;
+  @HiveField(5) String? description_en;
 
-  NutrientInfoEntity({required this.name, required this.unit, required this.es, required this.en});
+  NutrientInfoEntity({required this.name, required this.unit, required this.es, required this.en, this.description_es, this.description_en});
 
   factory NutrientInfoEntity.fromJson(Map<String, dynamic> json) => _$NutrientInfoEntityFromJson(json);
   Map<String, dynamic> toJson() => _$NutrientInfoEntityToJson(this);

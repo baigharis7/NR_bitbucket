@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/delete_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/get_sport_favorites_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/remove_sport_favorite_from_local_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
@@ -27,6 +29,8 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
   final GetSportFavoritesInteractor getSportFavoritesInteractor;
   final UploadSportEventsInteractor uploadSportsEventInteractor;
   final SaveSportEventInteractor saveSportEventInteractor;
+  final DeleteSportFavoriteInteractor deleteSportFavoriteInteractor;
+  final RemoveSportFavoriteInteractor removeSportFavoriteInteractor;
 
   AddFavoriteSportBloc({
     required this.getUserIdInteractor,
@@ -36,6 +40,8 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
     required this.getSportFavoritesInteractor,
     required this.uploadSportsEventInteractor,
     required this.saveSportEventInteractor,
+    required this.deleteSportFavoriteInteractor,
+    required this.removeSportFavoriteInteractor,
   }) : super(AddFavoriteSportState(
     isLoading: false,
     sportsInfo: SportsInfoMaster(sportsInfoMaster: []),
@@ -47,8 +53,7 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.sportsInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
-      var a  = await getSportFavoritesInteractor.execute();
-      state.sportsFavorite = a;
+      state.sportsFavorite = await getSportFavoritesInteractor.execute();
 
       emit(state.copyWith(isLoading: false));
     });
@@ -177,6 +182,32 @@ class AddFavoriteSportBloc extends BaseBloc<AddFavoriteSportActions, AddFavorite
 
       emit(state.copyWith(isLoading: false));
   });
+
+    on<RemoveFavoriteAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+
+      final userId = getUserIdInteractor.execute();
+      try {
+        final deleteFavorite = await deleteSportFavoriteInteractor.execute(userId, event.sportFavorite.eventDate!);
+        if (deleteFavorite) {
+          try {
+            final removeFromLocalResult = await removeSportFavoriteInteractor.execute(event.sportFavorite);
+            if (removeFromLocalResult) {
+              event.onFinish.call();
+              emit(state.copyWith(isLoading: false, onError: null));
+            } else {
+              emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeSportFavoriteError));
+            }
+          } catch (error) {
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeSportFavoriteError));
+          }
+        } else {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteSportFavoriteError));
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteSportFavoriteError));
+      }
+    });
 
   }
 

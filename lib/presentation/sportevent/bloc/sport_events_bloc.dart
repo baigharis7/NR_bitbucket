@@ -180,7 +180,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       emit(state.copyWith(isLoading: true, onError: null));
         final sportEventSimple = SportEventSimple(
           userId: getUserIdInteractor.execute(),
-          eventId: DateTime.now().millisecondsSinceEpoch,
+          eventId: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
           info: state.sportFromFavorite?.map((favSport) => SportInfo(id: favSport.id, minutes: favSport.minutes, intensity: favSport.intensity, timeStart: favSport.timeStart, name_en: favSport.name_en, name_es: favSport.name_es)).toList(),
           comment: state.comment,
           sportName: state.eventSportName,

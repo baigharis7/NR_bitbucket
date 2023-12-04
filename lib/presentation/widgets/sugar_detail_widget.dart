@@ -53,12 +53,12 @@ class _SugarDetailWidgetState extends State<SugarDetailWidget> {
                 fractionToFill: widget.sugarAndFiberModel?.fractionToFillSugar ?? 0.0,
               ),
             ),
-            SizedBox(height: Dimens.heightXXSmall,),
+            const SizedBox(height: Dimens.heightXXSmall,),
             Container(
               alignment: Alignment.centerRight,
               margin: const EdgeInsets.only(right: Dimens.marginNormal),
               child: Text(
-                widget.sugarAndFiberModel?.fractionToFillSugar.toString().appendGram() ?? '0.0 g',
+                widget.sugarAndFiberModel?.totalSugar.toString().appendGram() ?? '0.0 g',
                 style: const TextStyle(
                   fontSize: Dimens.fontSizeSmall,
                 ),
