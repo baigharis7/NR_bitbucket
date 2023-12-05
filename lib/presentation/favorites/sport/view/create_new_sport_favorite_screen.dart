@@ -75,6 +75,12 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
   }
 
   @override
+  void dispose() {
+    _sportInputController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<CreateNewSportFavoriteBloc>(context);
     final currentLanguage = Localizations.localeOf(context).languageCode;
@@ -163,9 +169,7 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                               );
                             },
                             optionsBuilder: (TextEditingValue textEditingValue) {
-                              if (textEditingValue.text == '') {
-                                return const Iterable<String>.empty();
-                              }
+                              if (textEditingValue.text == '' || textEditingValue.text.length < 3) return const Iterable<String>.empty();
                               return state.sportsInfo!.sportsInfoMaster.map((sport) => sport.translate(context)).where((String name) => name.toLowerCase().contains(textEditingValue.text.toLowerCase()));
                             },
                             onSelected: (sportName) {

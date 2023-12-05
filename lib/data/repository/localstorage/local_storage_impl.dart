@@ -455,6 +455,7 @@ class LocalStorageImpl extends LocalStorageRepository {
 
   @override
   Future<bool> saveSportFavorite(AddSportFavorite sportFavorite, {bool isEdit = false}) async {
+    print('Hi, from save fav sport');
     final sportFavoriteEntity = mapToSportFavoriteEntity(sportFavorite);
     try {
       await sportFavoriteEntity.save();
@@ -482,6 +483,7 @@ class LocalStorageImpl extends LocalStorageRepository {
 
   @override
   Future<List> getSportFavorites() async {
+    print('Hi, from get fav sport');
     List sportFavorites = await _getSportFavoritesBox.then((box) {
       return box.values.toList();
     });
@@ -491,6 +493,7 @@ class LocalStorageImpl extends LocalStorageRepository {
 
   @override
   Future<void> removeSportFavorite(AddSportFavorite sportFavorite) async {
+    print('Hi, from remove fav sport');
     final sportFavoriteEntity = mapToSportFavoriteEntity(sportFavorite);
 
     try {
@@ -656,6 +659,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   Future<bool> _clearBox(Future<Box> box) async {
+    print('Hi, from clear box');
     // Un poco fulera esta implemetación, si no funciona bien hacerlo bien.
     await box.then((box) {
       box.clear();

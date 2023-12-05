@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_events_sorted_by_date_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/calendar/calendar_events.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_complete.dart';
@@ -25,9 +26,11 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
   final EventsHelper _eventsHelper = EventsHelper();
   final dateTimeHelper = DateTimeHelper();
   final GetAllEventsSortedByDateInteractor getAllEventsSortedByDateInteractor;
-  
+  final GetUserIdInteractor getUserIdInteractor;
+
   CalendarBloc({
     required this.getAllEventsSortedByDateInteractor,
+    required this.getUserIdInteractor,
   }) : super(CalendarState(
     isLoading: false,
     allCalendarEvents: CalendarEvents.empty(),

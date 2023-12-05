@@ -442,6 +442,7 @@ void main() async {
 
   final calendarBloc = CalendarBloc(
     getAllEventsSortedByDateInteractor: getAllEventsSortedByDateInteractor,
+    getUserIdInteractor: getUserIdInteractor,
   );
 
   final favoriteFoodsBloc = FavoriteFoodsBloc(

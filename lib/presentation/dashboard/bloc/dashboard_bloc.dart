@@ -256,7 +256,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
 
-    sugarConsumedToday = sugarConsumedToday/20;
+    var tEE = state.userKcal ?? 0;
+    tEE = tEE~/100*5;
+    sugarConsumedToday = (sugarConsumedToday*4)/tEE;
+    sugarConsumedToday = sugarConsumedToday/4;
     return double.parse(sugarConsumedToday.toStringAsFixed(2));
   }
 
@@ -268,7 +271,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
 
-    fiberConsumedToday = fiberConsumedToday/20;
+    fiberConsumedToday = fiberConsumedToday/25;
     if (fiberConsumedToday > 1) fiberConsumedToday = 1;
     if (fiberConsumedToday < 0) fiberConsumedToday = 0.0;
     return double.parse(fiberConsumedToday.toStringAsFixed(2));
@@ -282,7 +285,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
 
-    fiberConsumedToday = fiberConsumedToday/20;
+    fiberConsumedToday = fiberConsumedToday/25;
     return double.parse(fiberConsumedToday.toStringAsFixed(2));
   }
 
