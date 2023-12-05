@@ -28,7 +28,7 @@ class SportFavoriteEntityAdapter extends TypeAdapter<SportFavoriteEntity> {
   @override
   void write(BinaryWriter writer, SportFavoriteEntity obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -52,25 +52,26 @@ class SportFavoriteEntityAdapter extends TypeAdapter<SportFavoriteEntity> {
           typeId == other.typeId;
 }
 
-class SportFavoriteInfoEntityAdapter extends TypeAdapter<SportFavoriteInfoEntity> {
+class SportFavoriteInfoEntityAdapter
+    extends TypeAdapter<SportFavoriteInfoEntity> {
+  @override
+  final int typeId = 55;
+
   @override
   SportFavoriteInfoEntity read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return SportFavoriteInfoEntity(
-        id: fields[0] as int,
-        intensity: fields[1] as int,
-        minutes: fields[2] as int,
-        timeStart: fields[3] as int,
-        name_en: fields[4] as String,
-        name_es: fields[5] as String,
+      id: fields[0] as int?,
+      intensity: fields[1] as int?,
+      minutes: fields[2] as int?,
+      timeStart: fields[3] as int?,
+      name_en: fields[4] as String?,
+      name_es: fields[5] as String?,
     );
   }
-
-  @override
-  int get typeId => 55;
 
   @override
   void write(BinaryWriter writer, SportFavoriteInfoEntity obj) {
@@ -89,6 +90,16 @@ class SportFavoriteInfoEntityAdapter extends TypeAdapter<SportFavoriteInfoEntity
       ..writeByte(5)
       ..write(obj.name_es);
   }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SportFavoriteInfoEntityAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 // **************************************************************************
@@ -99,43 +110,42 @@ SportFavoriteEntity _$SportFavoriteEntityFromJson(Map<String, dynamic> json) =>
     SportFavoriteEntity(
       userId: json['userId'] as String,
       eventDate: json['eventDate'] as int,
-      comment: json['comment'] as String,
       title: json['title'] as String?,
+      comment: json['comment'] as String?,
       info: (json['info'] as List<dynamic>?)
           ?.map((e) =>
-          SportFavoriteInfoEntity.fromJson(e as Map<String, dynamic>))
+              SportFavoriteInfoEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
 Map<String, dynamic> _$SportFavoriteEntityToJson(
-    SportFavoriteEntity instance) =>
+        SportFavoriteEntity instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'eventDate': instance.eventDate,
-      'comment': instance.comment,
       'title': instance.title,
+      'comment': instance.comment,
       'info': instance.info?.map((e) => e.toJson()).toList(),
     };
 
 SportFavoriteInfoEntity _$SportFavoriteInfoEntityFromJson(
-    Map<String, dynamic> json) =>
+        Map<String, dynamic> json) =>
     SportFavoriteInfoEntity(
-      id: json['id'] as int,
-      name_en: json['name_en'] as String,
-      name_es: json['name_es'] as String,
-      timeStart: json['timeStart'] as int,
-      intensity: json['intensity'] as int,
-      minutes: json['minutes'] as int,
+      id: json['id'] as int?,
+      intensity: json['intensity'] as int?,
+      minutes: json['minutes'] as int?,
+      timeStart: json['timeStart'] as int?,
+      name_en: json['name_en'] as String?,
+      name_es: json['name_es'] as String?,
     );
 
 Map<String, dynamic> _$SportFavoriteInfoEntityToJson(
-    SportFavoriteInfoEntity instance) =>
+        SportFavoriteInfoEntity instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'name_en': instance.name_en,
-      'name_es': instance.name_es,
-      'timeStart': instance.timeStart,
       'intensity': instance.intensity,
       'minutes': instance.minutes,
+      'timeStart': instance.timeStart,
+      'name_en': instance.name_en,
+      'name_es': instance.name_es,
     };
-

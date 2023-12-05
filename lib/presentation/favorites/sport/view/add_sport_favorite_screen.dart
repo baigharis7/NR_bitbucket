@@ -147,11 +147,14 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                                     icon: const Icon(Icons.arrow_back_ios, size: 25,),
                                   ),
                                 ),
-                                Text(
-                                  state.sportFavorite.translate(context),
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: Dimens.fontSizeLarge,
+                                Expanded(flex: 20,
+                                  child: Text(
+                                    state.sportInfo.orEmpty().map((favorite) => favorite.translate(ctx)).join(', '),
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: Dimens.fontSizeLarge,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ),
                                 Container(

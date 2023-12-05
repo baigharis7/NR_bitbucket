@@ -115,14 +115,21 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                   horizontal: Dimens.marginNormal),
                               child: TextField(readOnly: true, keyboardType: TextInputType.none, controller: _dateController,
                                   onTap: () {
-                                DatePickerHelper.presentDatePicker(
-                                  context: ctx,
-                                  saveDate: (DateTime pickedDate) {
-                                    bloc.add(RefreshBirthdateAction(
-                                        birthdate:
-                                        pickedDate.millisecondsSinceEpoch));
-                                  },
-                                );
+                                  showDatePicker(context: context,
+                                      initialDate: DateTime(DateTime.now().year-19),
+                                      firstDate: DateTime(DateTime.now().year-100),
+                                      lastDate: DateTime(DateTime.now().year-19)).then((pickedDate) {
+                                        if (pickedDate == null) { return; }
+                                        bloc.add(RefreshBirthdateAction(birthdate: pickedDate.millisecondsSinceEpoch));
+                                      });
+                                // DatePickerHelper.presentDatePicker(
+                                //   context: ctx,
+                                //   saveDate: (DateTime pickedDate) {
+                                //     bloc.add(RefreshBirthdateAction(
+                                //         birthdate:
+                                //         pickedDate.millisecondsSinceEpoch));
+                                //   },
+                                // );
                               }, decoration: InputDecoration(errorText: _dateErrorText, hintText: state.profile!.birthDate == null ? AppLocalizations.of(ctx)!.birthday_question : DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.birthDate!)))),
                             ),
                           ),
