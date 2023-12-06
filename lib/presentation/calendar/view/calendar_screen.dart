@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
@@ -18,6 +20,9 @@ import 'package:nutrenaissance_flutter/presentation/widgets/add_event_calendar_b
 import 'package:nutrenaissance_flutter/presentation/widgets/event_list_item.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../../../infrastructure/errors/error_resolver.dart';
+import '../../../infrastructure/helpers/snack_bar_helper.dart';
+import '../../common/view/confirmation_dialog.dart';
 import '../../widgets/calender_event_list_item.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -34,6 +39,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
   DateTime _selectedDay = DateTimeHelper().provideCurrentDate();
   DateTime _focusedDay = DateTimeHelper().provideCurrentDate();
   bool isFocusedDayDate = false;
+
+  void _showConfirmationDialog(BuildContext context) {
+    Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
+    final mediaQuerySize = MediaQuery.of(context).size;
+
+    showDialog(context: context, builder: (ctx) => Container(
+      height: mediaQuerySize.height,
+      width: mediaQuerySize.width,
+      color: const Color.fromARGB(148, 104, 96, 96),
+      child: ConfirmationDialog(message: AppLocalizations.of(context)!.removed_food),
+    ),).then((value) {}
+        // Navigator.pop(context),
+    );
+  }
 
   @override
   void initState() {
@@ -59,6 +78,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               } else {
                 LoadingScreen.instance().hide();
               }
+              if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
             },
             builder: (ctx, state) {
               return Scaffold(
@@ -201,7 +221,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           bloc.add(RefreshEventsAction(selectedDay: _selectedDay));
                         }),
                         onDelete: () {
-                          ToastHelper().showToast(text: 'This feature is in progress.....');
+                          bloc.add(bloc.getEventActionToDeleteEvent(dayEvent, () => _showConfirmationDialog(context)));
                         },
                         // onDelete: () => Navigator.pushNamed(
                         //   context,

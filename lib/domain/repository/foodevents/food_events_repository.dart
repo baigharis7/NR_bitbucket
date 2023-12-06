@@ -5,6 +5,8 @@ import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simpl
 abstract class FoodEventsRepository {
   Future<UploadFoodEvent> uploadFoodEvent(FoodEventSimple foodEventSimple);
   Future<void> saveFoodEvent(UploadFoodEvent uploadFoodEvent, bool isEdit);
+  Future<bool> removeFoodEvent(FoodEventComplete foodEventComplete);
+  Future<bool> deleteFoodEvent(String userId, int eventDate);
   Future<List<FoodEventComplete>> getAllFoodEvents();
   Future<FoodEventComplete> getLastFoodEvent();
   Future<List<FoodEventComplete>> getFoodEventsOfToday();

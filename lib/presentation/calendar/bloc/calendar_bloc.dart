@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_events_sorted_by_date_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_sport_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/remove_sport_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/calendar/calendar_events.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
@@ -27,10 +32,18 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
   final dateTimeHelper = DateTimeHelper();
   final GetAllEventsSortedByDateInteractor getAllEventsSortedByDateInteractor;
   final GetUserIdInteractor getUserIdInteractor;
+  final RemoveFoodEventInteractor removeFoodEventInteractor;
+  final DeleteFoodEventInteractor deleteFoodEventInteractor;
+  final RemoveSportEventInteractor removeSportEventInteractor;
+  final DeleteSportEventInteractor deleteSportEventInteractor;
 
   CalendarBloc({
     required this.getAllEventsSortedByDateInteractor,
     required this.getUserIdInteractor,
+    required this.removeFoodEventInteractor,
+    required this.deleteFoodEventInteractor,
+    required this.removeSportEventInteractor,
+    required this.deleteSportEventInteractor,
   }) : super(CalendarState(
     isLoading: false,
     allCalendarEvents: CalendarEvents.empty(),
@@ -54,6 +67,42 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
       state.dayEvents = getEventsForDay(event.selectedDay);
       emit(state.copyWith(isLoading: false));
     });
+
+    on<RemoveFoodEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      try {
+          await deleteFoodEventInteractor.execute(getUserIdInteractor.execute(), event.foodEventComplete.eventDate ?? -1);
+        try {
+          final a = await removeFoodEventInteractor.execute(event.foodEventComplete);
+          add(RefreshEventsAction(selectedDay: DateTime.fromMillisecondsSinceEpoch(event.foodEventComplete.eventDate ?? -1)));
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
+        } catch (error) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeFoodFavoriteError));
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteFoodFavoriteError));
+      }
+    },);
+
+    on<RemoveSportEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      try {
+        await deleteSportEventInteractor.execute(getUserIdInteractor.execute(), event.sportEventComplete.eventDate);
+
+        try {
+          await removeSportEventInteractor.execute(event.sportEventComplete);
+
+          add(RefreshEventsAction(selectedDay: DateTime.fromMillisecondsSinceEpoch(event.sportEventComplete.eventDate)));
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
+        } catch (_) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeSportFavoriteError));
+        }
+      } catch (_) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteSportFavoriteError));
+      }
+    },);
   }
 
   DateTime provideFirstDay() => dateTimeHelper.provideFirstDayForCalendar();
@@ -118,5 +167,12 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
       case WaterEventMaster: return null;
     }
     return null;
+  }
+
+  dynamic getEventActionToDeleteEvent(dynamic event, Function onFinish) {
+    switch (event.runtimeType) {
+      case FoodEventComplete: return RemoveFoodEventAction(foodEventComplete: event as FoodEventComplete, onFinish: () => onFinish.call());
+      case SportEventComplete: return RemoveSportEventAction(sportEventComplete: event as SportEventComplete, onFinish: () => onFinish.call());
+    }
   }
 }

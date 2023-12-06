@@ -18,4 +18,16 @@ class SportEventsApi extends ApiHelper {
         sportEventSimple,
       );
 
+  Future<Map<String, dynamic>> deleteSportEvent(String userId, int eventId) =>
+      delete(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/sport-event',
+        ),
+        {
+          'userId': userId,
+          'eventId': eventId,
+        },
+      );
+
 }

@@ -62,4 +62,23 @@ class FoodEventsRepositoryImpl extends FoodEventsRepository {
     return mapToFoodEventCompleteList(allEvents);
   }
 
+  @override
+  Future<bool> removeFoodEvent(FoodEventComplete foodEventComplete) async {
+    try {
+      final removeFoodEvent = await localStorageRepository.removeFoodEvent(foodEventComplete);
+      return true;
+    } catch (_) {
+      throw false;
+    }
+  }
+
+  @override
+  Future<bool> deleteFoodEvent(String userId, int eventDate) async {
+    try {
+      await foodEventsApi.deleteFoodEvent(userId, eventDate);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
 }

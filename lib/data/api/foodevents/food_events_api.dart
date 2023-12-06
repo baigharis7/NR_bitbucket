@@ -18,4 +18,16 @@ class FoodEventsApi extends ApiHelper {
         foodEventSimple,
       );
 
+  Future<Map<String, dynamic>> deleteFoodEvent(String userId, int eventDate) =>
+      delete(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/food-event',
+        ),
+        {
+          'userId': userId,
+          'eventId': eventDate
+        },
+      );
+
 }

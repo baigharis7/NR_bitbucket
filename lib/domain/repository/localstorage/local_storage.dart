@@ -12,6 +12,7 @@ import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_f
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 
 abstract class LocalStorageRepository extends LocalStorageHelper {
@@ -21,6 +22,7 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<FoodEventComplete> getLastFoodEvent();
   Future<void> saveProfile(UserProfileEntity profileEntity);
   Future<void> saveFoodEvent(FoodEventEntity foodEventEntity, bool isEdit);
+  Future<void> removeFoodEvent(FoodEventComplete foodEventComplete);
   Future<void> saveLiquidEvent(LiquidEventEntity liquidEventEntity, bool isEdit);
   Future<void> saveMasterFile(MasterFilesType masterFileType, dynamic masterFile);
   Future<dynamic> getMasterFile(MasterFilesType masterFileType);
@@ -28,6 +30,7 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<bool> checkProfileExistence(String userId);
   Future<List<UserRda>> getUserRdas();
   Future<void> saveSportEvent(SportEventEntity sportEventEntity, bool isEdit);
+  Future<void> removeSportEvent(SportEventComplete sportEventComplete);
   Future<List> getFoodEventsOfToday();
   Future<List> getWeekFoodEvents();
   Future<List> getSportsEventsOfToday();

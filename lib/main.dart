@@ -84,6 +84,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_eve
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart';
@@ -121,12 +122,16 @@ import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for
 import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for_foods_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_sport_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_sport_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_day_calories_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_day_calories_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_week_sports_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_week_sports_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/remove_sport_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/remove_sport_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart';
@@ -223,6 +228,9 @@ import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/bloc/w
 import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/view/weekly_dashboard_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/welcome/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'domain/interactor/foodevents/delete_food_event_interactor.dart';
+import 'domain/interactor/foodevents/delete_food_event_interactor_impl.dart';
+import 'domain/interactor/foodevents/remove_food_event_interactor_impl.dart';
 import 'domain/interactor/login/erase_database_interactor_impl.dart';
 import 'domain/interactor/profile/get_user_objectives_interactor.dart';
 import 'domain/interactor/profile/get_user_objectives_interactor_impl.dart';
@@ -324,6 +332,10 @@ void main() async {
   final GetDayCaloriesInteractor getDayCaloriesInteractor = GetDayCaloriesInteractorImpl(sportEventsRepository: sportEventsRepository);
   final SignOutInteractor signOutInteractor = SignOutInteractorImpl(authenticationService: authenticationService);
   final EraseDatabaseInteractor eraseDatabaseInteractor = EraseDatabaseInteractorImpl(localStorageRepository: localStorageRepository);
+  final RemoveFoodEventInteractor removeFoodEventInteractor = ReomveFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
+  final DeleteFoodEventInteractor deleteFoodEventInteractor = DeleteFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
+  final RemoveSportEventInteractor removeSportEventInteractor = RemoveSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
+  final DeleteSportEventInteractor deleteSportEventInteractor = DeleteSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
 
 
   final dashboardBloc = DashboardBloc(
@@ -443,6 +455,10 @@ void main() async {
   final calendarBloc = CalendarBloc(
     getAllEventsSortedByDateInteractor: getAllEventsSortedByDateInteractor,
     getUserIdInteractor: getUserIdInteractor,
+    removeFoodEventInteractor: removeFoodEventInteractor,
+    deleteFoodEventInteractor: deleteFoodEventInteractor,
+    removeSportEventInteractor: removeSportEventInteractor,
+    deleteSportEventInteractor: deleteSportEventInteractor,
   );
 
   final favoriteFoodsBloc = FavoriteFoodsBloc(

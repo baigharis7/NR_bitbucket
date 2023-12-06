@@ -28,12 +28,14 @@ import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_f
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/profile_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/sport_event_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/subjective_analysis_mapper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/water_events_mapper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
@@ -680,6 +682,52 @@ class LocalStorageImpl extends LocalStorageRepository {
           box.add(subjectiveAnalysisResultsEntity);
         });
         return true;
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<void> removeFoodEvent(FoodEventComplete foodEventComplete) async {
+    var foodEventEntity = FoodEventEntity(foodEventComplete.userId, foodEventComplete.eventDate, foodEventComplete.foodName, foodEventComplete.comment, [], foodEventComplete.eventKcals);
+    try {
+      await foodEventEntity.delete();
+    } catch (error) {
+      try {
+        _getFoodEventsBox.then((box) {
+            final foodEventsMap = box.toMap();
+            dynamic desiredKey;
+            foodEventsMap.forEach((key, value) {
+              if ((value as FoodEventEntity).eventDate == foodEventEntity.eventDate) {
+                desiredKey = key;
+              }
+            });
+            box.delete(desiredKey);
+        });
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<void> removeSportEvent(SportEventComplete sportEventComplete) async {
+    final sportEventEntity = mapToSportEventEntity(sportEventComplete);
+    try {
+      await sportEventEntity.delete();
+    } catch (error) {
+      try {
+        _getSportEventsBox.then((box) {
+          final sportEventsMap = box.toMap();
+          dynamic desiredKey;
+          sportEventsMap.forEach((key, value) {
+            if ((value as SportEventEntity).eventDate == sportEventEntity.eventDate) {
+              desiredKey = key;
+            }
+          });
+         box.delete(desiredKey);
+        });
       } catch (error) {
         rethrow;
       }

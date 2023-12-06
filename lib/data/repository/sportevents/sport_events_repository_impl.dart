@@ -58,4 +58,22 @@ class SportEventsRepositoryImpl extends SportEventsRepository {
     }
   }
 
+  @override
+  Future<void> removeSportEvent(SportEventComplete sportEventComplete) async {
+    try {
+      await localStorageRepository.removeSportEvent(sportEventComplete);
+    } catch (_) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteSportEvent(String userId, int eventId) async {
+    try {
+      await sportEventsApi.deleteSportEvent(userId, eventId);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
 }

@@ -217,6 +217,7 @@
     "sport_event_successfully_saved" : "Your sport has been successfully saved!",
     "liquid_event_successfully_saved" : "Your liquid has been successfully saved!",
     "remove_food" : "Do you want to remove this food from your list?",
+    "removed_food" : "Your food has been successfully removed!",
     "keep" : "Keep",
     "tips": "Tips",
     "micronutrients" : "Micronutrients",
