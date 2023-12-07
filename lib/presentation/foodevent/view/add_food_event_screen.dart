@@ -14,6 +14,7 @@ import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_even
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_state.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_card.dart';
+import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_event_item.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
 import '../../../domain/models/foodevents/food_event_complete.dart';
@@ -231,18 +232,20 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               // TODO: manage possible errors
                               final food = eventHelper.findFoodByFoodName(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                               final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                              showAddFoodEventDialog(
-                                AddFoodEventDialog(
-                                  unitsFoodsMaster: state.unitsFoodsMaster!,
-                                  unitsInfoMaster: state.unitsInfoMaster!,
-                                  foodInEvent: food!,
-                                  currentLanguage: Localizations.localeOf(context).languageCode,
-                                  foodGroup: foodGroup.orEmpty(),
-                                  cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
-                                  cookingMethodsMaster: state.cookingMethodsMaster!,
-                                ),
-                                option,
-                              );
+                              bloc.add(AddFoodFromEventAction(foodInEvent: food!));
+                              _foodInputController.text = '';
+                              // showAddFoodEventDialog(
+                              //   AddFoodEventDialog(
+                              //     unitsFoodsMaster: state.unitsFoodsMaster!,
+                              //     unitsInfoMaster: state.unitsInfoMaster!,
+                              //     foodInEvent: food!,
+                              //     currentLanguage: Localizations.localeOf(context).languageCode,
+                              //     foodGroup: foodGroup.orEmpty(),
+                              //     cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
+                              //     cookingMethodsMaster: state.cookingMethodsMaster!,
+                              //   ),
+                              //   option,
+                              // );
                             },
                           ),
                         ),
@@ -289,30 +292,46 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                           ),)
                               : Column(
                                   children: [
-                                    ...state.foodsInEvent.orEmpty().map((foodInEvent) =>
-                                        FoodCard(
-                                          foodName: eventHelper.findFoodNameFromId(foodInEvent.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!),
-                                          cookingMethod: eventHelper.findCookingMethodName(context, foodInEvent.cookingMethod, state.cookingMethodsInfoMaster!.cookingMethodsInfo!),
-                                          quantity: foodInEvent.qty.toString(),
-                                          unit: eventHelper.findUnitName(foodInEvent.unit, state.unitsInfoMaster!.unitsInfoMaster).translate(context),
-                                          removeFood: () => context.read<AddFoodEventBloc>().add(RemoveFoodFromEventAction(foodInEvent: foodInEvent)),
-                                          editFood: () {
-                                            final option = eventHelper.findFoodNameFromId(foodInEvent.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                                            final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                                            showAddFoodEventDialog(
-                                              AddFoodEventDialog(
-                                                unitsFoodsMaster: state.unitsFoodsMaster!,
-                                                unitsInfoMaster: state.unitsInfoMaster!,
-                                                foodInEvent: foodInEvent,
-                                                currentLanguage: Localizations.localeOf(context).languageCode,
-                                                foodGroup: foodGroup.orEmpty(),
-                                                cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
-                                                cookingMethodsMaster: state.cookingMethodsMaster!,
-                                              ),
-                                              option,
-                                            );
-                                          },
-                                        ),
+                                    ...state.foodsInEvent.orEmpty().map((foodInEvent) {
+                                      final option = eventHelper.findFoodNameFromId(foodInEvent.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                                      final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                                      return FoodEventItem(
+                                        options: option,
+                                        unitsFoodsMaster: state.unitsFoodsMaster!,
+                                        unitsInfoMaster: state.unitsInfoMaster!,
+                                        foodInEvent: foodInEvent,
+                                        foodGroup: foodGroup.orEmpty(),
+                                        cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
+                                        cookingMethodsMaster: state.cookingMethodsMaster!,
+                                        onRemove: () => context.read<AddFoodEventBloc>().add(RemoveFoodFromEventAction(foodInEvent: foodInEvent)),
+                                        onQtyChange: (changedFood) { bloc.add(UpdateFoodQuantityEventAction(foodInEvent: changedFood));},
+                                        onUnitChange: (changedFood) => bloc.add(UpdateFoodUnitEventAction(foodInEvent: changedFood)),
+                                        onCookingMethodChange: (changedFood) => bloc.add(UpdateFoodCookingMethodEventAction(foodInEvent: changedFood)),
+                                      );
+                                    }
+                                        // FoodCard(
+                                        //   foodName: eventHelper.findFoodNameFromId(foodInEvent.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!),
+                                        //   cookingMethod: eventHelper.findCookingMethodName(context, foodInEvent.cookingMethod, state.cookingMethodsInfoMaster!.cookingMethodsInfo!),
+                                        //   quantity: foodInEvent.qty.toString(),
+                                        //   unit: eventHelper.findUnitName(foodInEvent.unit, state.unitsInfoMaster!.unitsInfoMaster).translate(context),
+                                        //   removeFood: () => context.read<AddFoodEventBloc>().add(RemoveFoodFromEventAction(foodInEvent: foodInEvent)),
+                                        //   editFood: () {
+                                        //     final option = eventHelper.findFoodNameFromId(foodInEvent.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                                        //     final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                                        //     showAddFoodEventDialog(
+                                        //       AddFoodEventDialog(
+                                        //         unitsFoodsMaster: state.unitsFoodsMaster!,
+                                        //         unitsInfoMaster: state.unitsInfoMaster!,
+                                        //         foodInEvent: foodInEvent,
+                                        //         currentLanguage: Localizations.localeOf(context).languageCode,
+                                        //         foodGroup: foodGroup.orEmpty(),
+                                        //         cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
+                                        //         cookingMethodsMaster: state.cookingMethodsMaster!,
+                                        //       ),
+                                        //       option,
+                                        //     );
+                                        //   },
+                                        // ),
                                     ).toList()
                                   ],
                                 )
@@ -321,8 +340,6 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge),
                       child: RoundedCustomButton(onPressed: () {
-                        bloc.add(ValidateListEventAction());
-
                         if(state.foodsFromFavorite!.isEmpty) {
                           if (state.foodsInEvent!.isNotEmpty) {
                             if (!(bloc.validateList() ?? true)) {

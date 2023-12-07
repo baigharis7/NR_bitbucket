@@ -590,7 +590,7 @@ class LocalStorageImpl extends LocalStorageRepository {
       return _getExplainingCardsBox.then((box) {
         final entity = box.get(explainingCardId) as ExplainingCardEntity?;
         if (entity != null) {
-          return entity.timesClicked < 3;
+          return entity.timesClicked < 1;
         } else {
           return true;
         }

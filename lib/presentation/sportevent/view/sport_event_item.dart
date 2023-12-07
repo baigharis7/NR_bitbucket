@@ -89,7 +89,7 @@ class _SportEventItem extends State<SportEventItem> {
           child: Column(
             children: [
               Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5)), side: BorderSide(color: _error ? AppColors.errorRed : AppColors.cardGreen_200, width: 2,style: BorderStyle.solid)),
+                shape: RoundedRectangleBorder(borderRadius: const BorderRadius.all(Radius.circular(5)), side: BorderSide(color: _error ? AppColors.errorRed : AppColors.cardGreen_200, width: 2,style: BorderStyle.solid)),
                 color: Colors.green[200],
                 child: Container(
                   margin: const EdgeInsets.only(

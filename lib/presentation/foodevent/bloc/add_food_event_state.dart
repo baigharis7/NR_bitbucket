@@ -54,7 +54,7 @@ class AddFoodEventState {
     UnitsInfoMaster? unitsInfoMaster,
     String? foodName,
     String? comment,
-    required int? eventDate,
+    int? eventDate,
     bool? isEdit,
     List<FoodFavorite>? foodFavorites,
   }) {

@@ -90,15 +90,45 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
     });
 
+    on<UpdateFoodQuantityEventAction>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      if (state.foodsInEvent!.map((food) => food.id).contains((event.foodInEvent).id)) {
+        final itemIndex = state.foodsInEvent!.indexOf(state.foodsInEvent!.firstWhere((food) => food.id == event.foodInEvent.id));
+        state.foodsInEvent![itemIndex].qty = event.foodInEvent.qty;
+      }
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<UpdateFoodUnitEventAction>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      if (state.foodsInEvent!.map((food) => food.id).contains((event.foodInEvent).id)) {
+        final itemIndex = state.foodsInEvent!.indexOf(state.foodsInEvent!.firstWhere((food) => food.id == event.foodInEvent.id));
+        state.foodsInEvent![itemIndex].unit = event.foodInEvent.unit;
+      }
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<UpdateFoodCookingMethodEventAction>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      if (state.foodsInEvent!.map((food) => food.id).contains((event.foodInEvent).id)) {
+        final itemIndex = state.foodsInEvent!.indexOf(state.foodsInEvent!.firstWhere((food) => food.id == event.foodInEvent.id));
+        state.foodsInEvent![itemIndex].cookingMethod = event.foodInEvent.cookingMethod;
+      }
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
     on<AddFoodNameEventAction>((event, emit) {
       state.foodName = event.foodName;
       emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
     },);
 
-    on<SelectCookingMethodAction>((event, emit) {
-      state.foodsInEvent!.add(event.foodInEvent);
-      emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
-    });
+    // on<SelectCookingMethodAction>((event, emit) {
+    //   state.foodsInEvent!.add(event.foodInEvent);
+    //   emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
+    // });
 
     on<FinishFoodEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null, eventDate: state.eventDate));
@@ -168,13 +198,6 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       state.eventDate = event.dateTime.millisecondsSinceEpoch;
       emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
     });
-
-    on<ValidateListEventAction>((event, emit) {
-      state.foodsInEvent = state.foodsInEvent?.map((food) {
-        return FoodInEvent(id: food.id, qty: food.qty, unit: food.unit, errorFood: food.qty < 0 ? true : false, cookingMethod: food.cookingMethod, );
-      },).toList();
-      emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
-    },);
 
     on<AddFoodFromFavouriteEventAction>((event, emit) {
       state.foodName = event.foodFavorite.title;

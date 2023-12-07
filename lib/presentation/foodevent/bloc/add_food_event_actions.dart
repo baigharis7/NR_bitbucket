@@ -23,11 +23,29 @@ class AddFoodFromEventAction extends AddFoodEventActions {
   AddFoodFromEventAction({required this.foodInEvent});
 }
 
-class SelectCookingMethodAction extends AddFoodEventActions {
+class UpdateFoodQuantityEventAction extends AddFoodEventActions {
   FoodInEvent foodInEvent;
 
-  SelectCookingMethodAction({required this.foodInEvent});
+  UpdateFoodQuantityEventAction({required this.foodInEvent});
 }
+
+class UpdateFoodUnitEventAction extends AddFoodEventActions {
+  FoodInEvent foodInEvent;
+
+  UpdateFoodUnitEventAction({required this.foodInEvent});
+}
+
+class UpdateFoodCookingMethodEventAction extends AddFoodEventActions {
+  FoodInEvent foodInEvent;
+
+  UpdateFoodCookingMethodEventAction({required this.foodInEvent});
+}
+
+// class SelectCookingMethodAction extends AddFoodEventActions {
+//   FoodInEvent foodInEvent;
+//
+//   SelectCookingMethodAction({required this.foodInEvent});
+// }
 
 class FinishFoodEventAction extends AddFoodEventActions {
   Function onFinish;
@@ -55,8 +73,6 @@ class ReceiveEventDateAction extends AddFoodEventActions {
 
   ReceiveEventDateAction({required this.dateTime});
 }
-
-class ValidateListEventAction extends AddFoodEventActions {}
 
 class AddFoodFromFavouriteEventAction extends AddFoodEventActions {
   final FoodFavorite foodFavorite;

@@ -34,7 +34,7 @@ class _TextIconBox extends State<TextIconBox> {
   Widget build(BuildContext context) {
     return Card(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal),
+        padding: const EdgeInsets.only(left: Dimens.paddingNormal),
         decoration: BoxDecoration(
           color: widget.isSelected ? widget.color : Colors.white,
           borderRadius: const BorderRadius.all(Radius.circular(10)),
