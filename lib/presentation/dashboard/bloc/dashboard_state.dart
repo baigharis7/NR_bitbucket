@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_mast
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 
 import '../../../domain/models/liquidevents/liquid_event_complete.dart';
+import '../../../domain/models/sportevents/sport_event_complete.dart';
 
 class DashboardState {
   bool isLoading;
@@ -26,6 +27,10 @@ class DashboardState {
   List<WaterEventMaster>? waterEvents;
   bool? showCard;
   SugarAndFiberModel? sugarAndFiberModel;
+  List<FoodEventComplete>? weeklyFoodEvents;
+  List<FoodEventComplete>? weeklyLiquidEvents;
+  List<SportEventComplete>? weeklySportEvents;
+  List<NutrientsModel>? weeklyMicronutrients;
 
   DashboardState({
     required this.isLoading,
@@ -44,6 +49,10 @@ class DashboardState {
     this.waterEvents,
     this.showCard,
     this.sugarAndFiberModel,
+    this.weeklyFoodEvents,
+    this.weeklyLiquidEvents,
+    this.weeklySportEvents,
+    this.weeklyMicronutrients,
   });
 
   DashboardState copyWith({
@@ -64,6 +73,10 @@ class DashboardState {
     List<WaterEventMaster>? waterEvents,
     bool? showCard,
     SugarAndFiberModel? sugarAndFiberModel,
+    List<FoodEventComplete>? weeklyFoodEvents,
+    List<FoodEventComplete>? weeklyLiquidEvents,
+    List<SportEventComplete>? weeklySportEvents,
+    List<NutrientsModel>? weeklyMicronutrients,
   }) {
     return DashboardState(
       isLoading: isLoading,
@@ -82,6 +95,10 @@ class DashboardState {
       waterEvents: waterEvents ?? this.waterEvents,
       showCard: showCard ?? this.showCard,
       sugarAndFiberModel: sugarAndFiberModel ?? this.sugarAndFiberModel,
+      weeklyFoodEvents: weeklyFoodEvents ?? this.weeklyFoodEvents,
+      weeklyLiquidEvents: weeklyLiquidEvents ?? this.weeklyLiquidEvents,
+      weeklySportEvents: weeklySportEvents ?? this.weeklySportEvents,
+      weeklyMicronutrients: weeklyMicronutrients ?? this.weeklyMicronutrients,
     );
   }
 

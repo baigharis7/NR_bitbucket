@@ -25,6 +25,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/energy_balance_widge
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/liquids_summary_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/weekly_rda_nutrients_dashboard_widget.dart';
 
 import '../../../domain/models/dashboard/nutrients_model.dart';
 import '../../../domain/models/masterfiles/nutrients_info_master.dart';
@@ -121,6 +122,12 @@ class _DashboardScreen extends State<DashboardScreen>
                           nutrients: state.macronutrients.orEmpty(),
                           isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
                           screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState())),
+                        ),
+                        WeeklyRDANutrientsDashboardWidget(
+                          title: AppLocalizations.of(context)!.weekly_nutrients,
+                          nutrients: state.weeklyMicronutrients.orEmpty(),
+                          isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
+                          screenToMove: () {},
                         ),
                         EnergyBalanceWidget(
                           energyModel: state.energyModel,

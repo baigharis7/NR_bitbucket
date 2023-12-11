@@ -16,13 +16,18 @@ import 'package:nutrenaissance_flutter/domain/models/dashboard/nutrients_model.d
 import 'package:nutrenaissance_flutter/domain/models/dashboard/sugar_&_fiber_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
 
+import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import '../../../domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
+import '../../../domain/interactor/liquidevents/get_week_liquid_events_interactor.dart';
+import '../../../domain/interactor/sportevents/get_week_sports_interactor.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
 
 class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
@@ -39,6 +44,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final GetDayCaloriesInteractor getDayCaloriesInteractor;
   final GetTodayLiquidEventsInteractor getLiquidEventsOfTodayInteractor;
   final GetUserObjectivesInteractor getUserObjectivesInteractor;
+  final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor;
+  final GetWeekLiquidEventsInteractor getWeekLiquidEventsInteractor;
+  final GetWeekSportsInteractor getWeekSportsInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -54,6 +62,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.getDayCaloriesInteractor,
     required this.getLiquidEventsOfTodayInteractor,
     required this.getUserObjectivesInteractor,
+    required this.getWeekFoodEventsInteractor,
+    required this.getWeekLiquidEventsInteractor,
+    required this.getWeekSportsInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -71,6 +82,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.userObjectives = await getUserObjectivesInteractor.execute();
       state.foodEvents = await getFoodEventsOfTodayInteractor.execute();
       state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute();
+      state.weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
+      state.weeklyLiquidEvents = await getWeekLiquidEventsInteractor.execute();
+      state.weeklySportEvents = await getWeekSportsInteractor.execute();
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       final profile = await getProfileInteractor.execute();
       state.userKcal = profile!.kcal;
@@ -109,6 +123,14 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           fractionToFillFiber: calculateTodayFiber(),
           totalFiber: calculateTodayConsumedFiber(),
       );
+      state.weeklyMicronutrients = state.userRdas
+          .orEmpty()
+          .map((nutrientRda) => NutrientsModel(
+          quantityConsumed: getWeeklyConsumedNutrient(nutrientRda),
+          nutrientInfoMaster: getNutrientInfo(nutrientRda.name),
+          fractionToFill: getWeeklyFractionFill(nutrientRda),
+          unit: getUnitForMicronutrient(nutrientRda.name)))
+          .toList();
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
 
       emit(state.copyWith(
@@ -142,7 +164,14 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   }
 
   NutrientInfoMaster getNutrientInfo(String nutrientName) {
-    final nutrientInfo = state.nutrientsInfoMaster!.nutrientsInfo.firstWhere((info) => info.officialName == nutrientName);
+    // final nutrientInfo = state.nutrientsInfoMaster!.nutrientsInfo.firstWhere((info) => info.officialName == nutrientName);
+    // return nutrientInfo;
+    NutrientInfoMaster nutrientInfo = NutrientInfoMaster(officialName: nutrientName, unit: '', en: '', es: '');
+    for (var info in state.nutrientsInfoMaster!.nutrientsInfo) {
+      if (info.officialName == nutrientName) {
+        nutrientInfo = info;
+      }
+    }
     return nutrientInfo;
   }
 
@@ -299,8 +328,15 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   }
 
   String getUnitForMicronutrient(String micronutrient) {
-    final nutrientInfo = state.nutrientsInfoMaster!.nutrientsInfo.firstWhere((info,) => info.officialName == micronutrient);
-    return nutrientInfo.unit;
+    // final nutrientInfo = state.nutrientsInfoMaster!.nutrientsInfo.firstWhere((info,) => info.officialName == micronutrient);
+    // return nutrientInfo.unit;
+    var unit = '';
+    for (var info in state.nutrientsInfoMaster!.nutrientsInfo) {
+      if (info.officialName == micronutrient) {
+        unit = info.unit;
+      }
+    }
+    return unit;
   }
 
   int getPercentageByMacro(String macro) {
@@ -327,4 +363,38 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   int getKcalPerGram(String macro) => macro == 'fatTotal' ? 9 : 4;
 
   String getTodayMessage(String todayString, String locale) => DateTimeHelper().formatDashboardTodayMessage(todayString, locale);
+
+  double getWeeklyConsumedNutrient(UserRda nutrientRda) {
+    double nutrientQuantitySoFar = 0.0;
+    for (var foodEvent in state.weeklyFoodEvents!) {
+      for (var food in foodEvent.foodInfo!) {
+        nutrientQuantitySoFar = nutrientQuantitySoFar +
+            (food.params!.toJson()[nutrientRda.name] ?? 0.0);
+      }
+    }
+
+    return double.parse((nutrientQuantitySoFar).toStringAsFixed(2));
+  }
+
+  getWeeklyFractionFill(UserRda nutrientRda) {
+    final perRdaForUser = state.userRdas!.firstWhere((rda) => rda.name == nutrientRda.name).rda;
+    double weeklyNutrientQuantitySoFar = 0.0;
+    for (var foodEvent in state.weeklyFoodEvents!) {
+      for (var food in foodEvent.foodInfo!) {
+        weeklyNutrientQuantitySoFar = weeklyNutrientQuantitySoFar + (food.params!.toJson()[nutrientRda.name] ?? 0.0);
+      }
+    }
+
+    weeklyNutrientQuantitySoFar = weeklyNutrientQuantitySoFar/7;
+    if (weeklyNutrientQuantitySoFar < perRdaForUser) {
+      weeklyNutrientQuantitySoFar = weeklyNutrientQuantitySoFar / perRdaForUser;
+    }
+    if (weeklyNutrientQuantitySoFar > perRdaForUser) {
+      weeklyNutrientQuantitySoFar = 1.0;
+    }
+    if (weeklyNutrientQuantitySoFar < 0 ) {
+      weeklyNutrientQuantitySoFar = 0.0;
+    }
+    return weeklyNutrientQuantitySoFar;
+  }
 }

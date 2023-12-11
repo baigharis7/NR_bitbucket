@@ -352,6 +352,9 @@ void main() async {
     getDayCaloriesInteractor: getDayCaloriesInteractor,
     getLiquidEventsOfTodayInteractor: getTodayLiquidEventsInteractor,
     getUserObjectivesInteractor: getUserObjectivesInteractor,
+    getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
+    getWeekLiquidEventsInteractor: getWeekLiquidEventsInteractor,
+    getWeekSportsInteractor: getWeekSportsInteractor,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc();

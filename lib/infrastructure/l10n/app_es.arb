@@ -222,6 +222,7 @@
     "tips" : "Tips",
     "micronutrients" : "Micronutrientes",
     "macronutrients" : "Macronutrientes",
+    "weekly_nutrients" : "Nutrientes semanales",
     "no_food_events" : "Tienes que introducir eventos de comida",
     "no_sport_events" : "Tienes que introducir eventos de ejercicio",
     "energy_balance_title" : "Balance energético (Kcal netas)",

@@ -63,8 +63,8 @@ class _NutrientsDashboardWidgetState extends State<NutrientsDashboardWidget> {
                   : Column(
                 children: [
                   ...widget.nutrients.map((nutrient) =>
-                    nutrient.fractionToFill > 0
-                       ? Column(
+                    // nutrient.fractionToFill > 0 ?
+                    Column(
                          children: [
                            Row(
                             children: [
@@ -109,7 +109,7 @@ class _NutrientsDashboardWidgetState extends State<NutrientsDashboardWidget> {
                            )
                          ],
                        )
-                        : Container(),
+                        // : Container(),
                   ).toList()
                 ],
               ),
