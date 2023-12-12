@@ -1,9 +1,12 @@
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/get_food_favorites_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_master.dart';
@@ -12,6 +15,7 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_mas
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_state.dart';
@@ -22,6 +26,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
   final UploadFoodEventInteractor uploadFoodEventInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetFoodFavoritesInteractor getFoodFavoritesInteractor;
+  final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor;
 
   AddFoodEventBloc({
     required this.getUserIdInteractor,
@@ -29,6 +34,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     required this.uploadFoodEventInteractor,
     required this.getMasterFileInteractor,
     required this.getFoodFavoritesInteractor,
+    required this.getWeekFoodEventsInteractor,
   }) : super(AddFoodEventState(
     isLoading: false,
     foodNames: FoodsAndDrinksNamesMaster(
@@ -67,6 +73,10 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
       }
       state.foodFavorites = await getFoodFavoritesInteractor.execute();
+      state.weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
+      if (state.weeklyFoodEvents.orEmpty().isNotEmpty && state.foodFavorites.orEmpty().isNotEmpty) {
+        addFrequentFromWeek(state.weeklyFoodEvents!, state.foodFavorites!);
+      }
 
       emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
     },);
@@ -279,6 +289,47 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
      return state.foodsInEvent?.any((food) {
       return food.qty < 0;
     },);
+  }
+
+  void addFrequentFromWeek(List<FoodEventComplete> foodList, List<FoodFavorite> favoriteList) {
+    for (int i = 0; i < foodList.length; i++) {
+      int count = 1;
+      for (int j = i + 1; j < foodList.length; j++) {
+        FoodEventComplete selectedItem = foodList[i];
+        FoodEventComplete matchableItem = foodList[j];
+        if (areFoodInfoListsEqual(selectedItem.foodInfo!, matchableItem.foodInfo!)) {
+          count = count + 1;
+        }
+      }
+      if (count == 3) {
+        favoriteList.add(mapToFoodFavoriteFromFoodEvent(foodList[i]));
+      }
+    }
+  }
+
+  bool compareTwoList(List<FoodInfo> foodInfoA, List<FoodInfo> foodInfoB) {
+    for (int index = 0; index < foodInfoA.length; index += 1) {
+      if (foodInfoA[index] == foodInfoB[index]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool areFoodInfoListsEqual(List<FoodInfo> list1, List<FoodInfo> list2) {
+    if (list1.length != list2.length) {
+      return false;
+    }
+    for (int i = 0; i < list1.length; i++) {
+      if (!areFoodInfoObjectsEqual(list1[i], list2[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+  bool areFoodInfoObjectsEqual(FoodInfo obj1, FoodInfo obj2) {
+    // return obj1.id == obj2.id;
+    return (obj1.id == obj2.id && obj1.eventInfo!.qty == obj2.eventInfo!.qty && obj1.eventInfo!.unit == obj2.eventInfo!.unit && obj1.eventInfo!.cookingMethod == obj2.eventInfo!.cookingMethod);
   }
 
 }

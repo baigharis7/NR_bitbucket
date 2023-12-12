@@ -116,7 +116,9 @@ class _MicroNutrientsDetailScreenState
                 child: SingleChildScrollView(
                   child: Column(children: [
                     ...state.microNutrients.orEmpty().map((item) =>
-                    item.fractionToFill > 0 ? MicroNutrientDetailWidget(nutrientsModel: item,) : Container(),
+                    // item.fractionToFill > 0 ?
+                    MicroNutrientDetailWidget(nutrientsModel: item,)
+                          // : Container(),
                     ).toList()
                   ],),
                 ),

@@ -7,6 +7,8 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_mas
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 
+import '../../../domain/models/foodevents/food_event_complete.dart';
+
 class AddFoodEventState {
   bool isLoading;
   ErrorTypes? onError;
@@ -23,6 +25,7 @@ class AddFoodEventState {
   int? eventId;
   bool? isEdit;
   List<FoodFavorite>? foodFavorites;
+  List<FoodEventComplete>? weeklyFoodEvents;
 
   AddFoodEventState({
     required this.isLoading,
@@ -40,6 +43,7 @@ class AddFoodEventState {
     this.eventId,
     this.isEdit,
     this.foodFavorites,
+    this.weeklyFoodEvents,
   });
 
   AddFoodEventState copyWith({
@@ -57,6 +61,7 @@ class AddFoodEventState {
     int? eventDate,
     bool? isEdit,
     List<FoodFavorite>? foodFavorites,
+    List<FoodEventComplete>? weeklyFoodEvents,
   }) {
     return AddFoodEventState(
       isLoading: isLoading,
@@ -73,6 +78,7 @@ class AddFoodEventState {
       isEdit: isEdit ?? this.isEdit,
       foodFavorites: foodFavorites ?? this.foodFavorites,
       foodsFromFavorite: foodsFromFavorite ?? this.foodsFromFavorite,
+      weeklyFoodEvents: weeklyFoodEvents ?? this.weeklyFoodEvents,
     );
   }
 }

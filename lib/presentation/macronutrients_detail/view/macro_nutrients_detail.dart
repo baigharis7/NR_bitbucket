@@ -124,12 +124,12 @@ class _MacroNutrientsDetailScreenState extends State<MacroNutrientsDetailScreen>
                           if (item.nutrientInfoMaster.officialName == 'fatTotal') {
                             description = AppLocalizations.of(context)!.fat;
                           }
-                          if(item.fractionToFill > 0 ) {
+                          // if(item.fractionToFill > 0 ) {
                             return MacroNutrientDetailWidget(nutrientsModel: item, description: description,);
-                          }
-                          else {
-                            return Container();
-                          }
+                          // }
+                          // else {
+                          //   return Container();
+                          // }
                         }),
                       ],
                     ),

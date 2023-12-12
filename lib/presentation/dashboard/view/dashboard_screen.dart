@@ -114,13 +114,14 @@ class _DashboardScreen extends State<DashboardScreen>
                         NutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.micronutrients,
                           nutrients: state.micronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList(),
-                          isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
+                          isEmpty: false,
                           screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState())),
                         ),
                         NutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.macronutrients,
                           nutrients: state.macronutrients.orEmpty(),
-                          isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
+                          // isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
+                          isEmpty: false,
                           screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState())),
                         ),
                         WeeklyRDANutrientsDashboardWidget(
