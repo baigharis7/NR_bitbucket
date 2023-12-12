@@ -178,9 +178,9 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                         Container(
                           alignment: Alignment.centerLeft,
                           margin: const EdgeInsets.fromLTRB(
-                            Dimens.marginNormal,
+                            Dimens.marginXLarge,
                             Dimens.zero,
-                            Dimens.marginNormal,
+                            Dimens.marginXLarge,
                             Dimens.marginLarge,
                           ),
                           child: Autocomplete<String>(
@@ -225,7 +225,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                               final sportIntensities = eventsHelper.getChosenSportIntensities(sportName, state.sportsInfo!, currentLanguage);
                               final sportId = eventsHelper.getSportIdByName(sportName, state.sportsInfo!, currentLanguage);
                               final sportInfo = bloc.findSportById(sportId);
-                              final info  = SportInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null);
+                              final info  = SportInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null, timeStart: DateTime.now().millisecondsSinceEpoch);
                               bloc.add(AddSportEventAction(info));
                               _sportInputController.text = '';
                             },
