@@ -10,6 +10,8 @@ import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/text_checkbox_box.dart';
 
+import '../../widgets/text_radio_button_expansible.dart';
+
 class ObjectivesDialog extends StatefulWidget {
 
   const ObjectivesDialog({Key? key}) : super(key: key);
@@ -42,37 +44,87 @@ class _ObjectivesDialogState extends State<ObjectivesDialog> {
             backgroundColor: Colors.grey[100],
             children: [
               SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      alignment: Alignment.centerRight,
-                      child: IconButton(
-                        icon: const Icon(Icons.cancel_outlined),
-                        onPressed: () => Navigator.pop(ctx),
-                      ),
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      margin: const EdgeInsets.only(bottom: Dimens.marginXLarge, ),
-                      child: Text(
-                        AppLocalizations.of(ctx)!.objectives,
-                        style: const TextStyle(
-                          fontSize: Dimens.fontSizeXXLarge,
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          icon: const Icon(Icons.cancel_outlined),
+                          onPressed: () => Navigator.pop(ctx),
                         ),
                       ),
-                    ),
-                  ...state.objectivesInfoMaster!.objectives.map((objective) =>
-                      TextCheckboxBox(
-                        title: objective.translate(context),
-                        checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
-                        onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
-                        overflow: TextOverflow.clip,
+                      Container(
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.only(bottom: Dimens.marginXLarge, ),
+                        child: Text(
+                          AppLocalizations.of(ctx)!.objectives,
+                          style: const TextStyle(
+                            fontSize: Dimens.fontSizeXXLarge,
+                          ),
+                        ),
                       ),
-                    ).toList(),
-                    RoundedCustomButton(onPressed: () => Navigator.pop(context),)
-                  ],
+                      Column(crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
+                            child: const Text('', style: TextStyle(
+                              fontSize: Dimens.fontSizeNormal,
+                              fontWeight: FontWeight.bold,
+                            ),)),
+                        ...state.objectivesInfoMaster!.objectives.map((objective) =>
+                            TextCheckboxBox(
+                              title: objective.translate(context),
+                              checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
+                              onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
+                              overflow: TextOverflow.clip,
+                            ),
+                        ).toList(),
+                      ],
+                    ),
+                      Column(crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
+                              child: const Text('Metabolic objectives', style: TextStyle(
+                                fontSize: Dimens.fontSizeNormal,
+                                fontWeight: FontWeight.bold,
+                              ),)),
+                          ...state.objectivesInfoMaster!.metabolicObjectives.map((objective) =>
+                              TextCheckboxBox(
+                                title: objective.translate(context),
+                                checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
+                                onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
+                                overflow: TextOverflow.clip,
+                              ),
+                          ).toList(),
+                        ],
+                      ),
+                      Column(crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
+                              child: const Text('Body composition objectives', style: TextStyle(
+                                fontSize: Dimens.fontSizeNormal,
+                                fontWeight: FontWeight.bold,
+                              ),)),
+                          ...state.objectivesInfoMaster!.bodyCompositionObjectives.map((objective) =>
+                              TextRadioButtonExpansible(
+                                title: objective.translate(context),
+                                isSelected: state.profile!.objectives.orEmpty().contains(objective.id),
+                                onPressed: () => bloc.add(AddRadioObjectiveToListAction(id: objective.id)),
+                                // overflow: TextOverflow.clip,
+                                explanation: '',
+                              ),
+                          ).toList(),
+                        ],
+                      ),
+                      RoundedCustomButton(onPressed: () => Navigator.pop(context),)
+                    ],
+                  ),
                 ),
               ),
             ],

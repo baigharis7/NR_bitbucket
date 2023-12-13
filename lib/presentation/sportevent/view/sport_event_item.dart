@@ -196,7 +196,7 @@ class _SportEventItem extends State<SportEventItem> {
                                       child: DropdownButton<String>(
                                         isExpanded: true,
                                         icon: const Icon(Icons.arrow_drop_down),
-                                        value: getIntensityList(_sportIntensities!, context)[_intensity ?? 0],
+                                        value: _intensity.isNull() ? null : getIntensityList(_sportIntensities!, context)[_intensity!],
                                         onChanged: (String? intensity) {
                                           // setState(() {
                                           final intensityIndex = getIntensityList(_sportIntensities!, context,).indexOf(intensity ?? '');

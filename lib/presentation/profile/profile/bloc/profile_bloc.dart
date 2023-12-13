@@ -51,7 +51,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     profile: UserProfileModel.empty(),
     foodsAndDrinksNamesMaster: FoodsAndDrinksNamesMaster(FoodsAndDrinkListsMaster(foodNames: [], drinkNames: [],)),
     recommendationGroupsMaster: RecommendationGroupsMaster(recommendationGroups: []),
-    objectivesInfoMaster: ObjectivesInfoMaster(objectives: []),
+    objectivesInfoMaster: ObjectivesInfoMaster(objectives: [], metabolicObjectives: [], bodyCompositionObjectives: []),
     showVegetarianDiets: false,
     aversionsUI: AversionsUIModel(foodGroups: []),
     activityTypes: [],
@@ -92,6 +92,15 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     });
 
     on<AddObjectiveToListAction>((event, emit) {
+      manageObjectives(event.id);
+      emit(state.copyWith(isLoading: false, onError: null,),);
+    });
+
+    on<AddRadioObjectiveToListAction>((event, emit) {
+      state.profile!.objectives ??= [];
+      if (event.id != 50) if (state.profile!.objectives!.contains(50)) state.profile!.objectives!.remove(50);
+      if (event.id != 51) if (state.profile!.objectives!.contains(51)) state.profile!.objectives!.remove(51);
+      if (event.id != 52) if (state.profile!.objectives!.contains(52)) state.profile!.objectives!.remove(52);
       manageObjectives(event.id);
       emit(state.copyWith(isLoading: false, onError: null,),);
     });

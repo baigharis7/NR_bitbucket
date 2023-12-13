@@ -10,8 +10,10 @@ class ObjectivesInfoEntity {
   @HiveField(0) int id;
   @HiveField(1) int v;
   @HiveField(2) List<ObjectiveInfoEntity> data;
+  @HiveField(3) List<ObjectiveInfoEntity> metabolicObjectives;
+  @HiveField(4) List<ObjectiveInfoEntity> bodyCompositionObjectives;
 
-  ObjectivesInfoEntity({required this.id, required this.v, required this.data});
+  ObjectivesInfoEntity({required this.id, required this.v, required this.data, required this.metabolicObjectives, required this.bodyCompositionObjectives});
 
   factory ObjectivesInfoEntity.fromJson(Map<String, dynamic> json) => _$ObjectivesInfoEntityFromJson(json);
   Map<String, dynamic> toJson() => _$ObjectivesInfoEntityToJson(this);

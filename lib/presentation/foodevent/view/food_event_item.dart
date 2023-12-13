@@ -131,19 +131,19 @@ class _FoodEventItemState extends State<FoodEventItem> {
   @override
   Widget build(BuildContext context) {
     FoodInEvent ingredient = FoodInEvent(
-        id: widget.foodInEvent.id, qty: 0, unit: 0, cookingMethod: -1);
+        id: widget.foodInEvent.id, qty: 0, unit: -1, cookingMethod: -1);
     final mediaQuerySize = MediaQuery.of(context).size;
 
     // if (ingredient.qty != 0) _quantityController.text = ingredient.qty.toString();
     List<SimpleItem> cookingMethods =
         findCookingMethodsForFood(widget.foodGroup, context);
+    _cookingMethodName = cookingMethods.isNotEmpty ? null : '';
     List<SimpleItem> units = findUnitsForFood(widget.foodInEvent.id, context);
     String unitsEquivalences = widget.unitsFoodsMaster.unitsFoodsMaster
         .firstWhere(
           (unitFood) => unitFood.id == widget.foodInEvent.id,
         )
         .units;
-
     ingredient.unitsEquivalences = unitsEquivalences;
 
     if (widget.foodInEvent.qty != 0 && _quantityController.text == '') {
@@ -160,13 +160,13 @@ class _FoodEventItemState extends State<FoodEventItem> {
       ingredient.cookingMethod = widget.foodInEvent.cookingMethod;
     }
 
-    if (widget.foodInEvent.unit != -1) {
+    // if (widget.foodInEvent.unit != -1) {
       _unitName = _unitName ??
           units.firstWhere((unit) => unit.id == widget.foodInEvent.unit).name;
       ingredient.unit = widget.foodInEvent.unit;
-    }
+    // }
 
-    _error = widget.foodInEvent.qty == 0;
+    _error = widget.foodInEvent.qty == 0 || _cookingMethodName.isNull();
     // _error = widget.foodInEvent.qty == 0 || widget.foodInEvent.unit == 0;
     // _error = widget.foodInEvent.qty == 0 || widget.foodInEvent.unit == -1 || widget.foodInEvent.cookingMethod == -1;
 

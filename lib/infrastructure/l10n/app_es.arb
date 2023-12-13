@@ -265,6 +265,7 @@
     "remove_favorite_error" : "Ha habido un problema borrando tu favorito. Por favor, intenta de nuevo",
     "favorite_name_required" : "Tienes que introducir el nombre",
     "meal_time_required" : "Tienes que seleccionar la hora de la comida",
+    "required_kcal" : "Kcal requeridas",
     "sport_name" : "Nombre del ejercicio",
     "save_sport_favorite_error" : "Ha habido un problema subiendo tu favorito. Por favor, intenta de nuevo",
     "alternatives" : "Alternativas",

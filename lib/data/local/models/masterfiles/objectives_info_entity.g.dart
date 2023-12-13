@@ -20,19 +20,25 @@ class ObjectivesInfoEntityAdapter extends TypeAdapter<ObjectivesInfoEntity> {
       id: fields[0] as int,
       v: fields[1] as int,
       data: (fields[2] as List).cast<ObjectiveInfoEntity>(),
+      metabolicObjectives: (fields[3] as List).cast<ObjectiveInfoEntity>(),
+      bodyCompositionObjectives: (fields[4] as List).cast<ObjectiveInfoEntity>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, ObjectivesInfoEntity obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.v)
       ..writeByte(2)
-      ..write(obj.data);
+      ..write(obj.data)
+      ..writeByte(3)
+      ..write(obj.metabolicObjectives)
+      ..writeByte(4)
+      ..write(obj.bodyCompositionObjectives);
   }
 
   @override
@@ -98,6 +104,12 @@ ObjectivesInfoEntity _$ObjectivesInfoEntityFromJson(
       data: (json['data'] as List<dynamic>)
           .map((e) => ObjectiveInfoEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
+      metabolicObjectives: (json['metabolicObjectives'] as List<dynamic>)
+          .map((e) => ObjectiveInfoEntity.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      bodyCompositionObjectives: (json['bodyCompositionObjectives'] as List<dynamic>)
+          .map((e) => ObjectiveInfoEntity.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$ObjectivesInfoEntityToJson(
@@ -106,6 +118,8 @@ Map<String, dynamic> _$ObjectivesInfoEntityToJson(
       'id': instance.id,
       'v': instance.v,
       'data': instance.data.map((e) => e.toJson()).toList(),
+      'metabolicObjectives': instance.metabolicObjectives.map((e) => e.toJson()).toList(),
+      'bodyCompositionObjectives': instance.bodyCompositionObjectives.map((e) => e.toJson()).toList(),
     };
 
 ObjectiveInfoEntity _$ObjectiveInfoEntityFromJson(Map<String, dynamic> json) =>

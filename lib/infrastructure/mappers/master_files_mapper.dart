@@ -113,12 +113,16 @@ NutrientsInfoMaster mapToNutrientsInfoMaster(NutrientsInfoEntity nutrientsInfoEn
 
 ObjectivesInfoEntity mapToObjectivesInfoEntity(ObjectivesInfoResponse objectivesInfoResponse) {
   List<ObjectiveInfoEntity> data = objectivesInfoResponse.data.map((item) => ObjectiveInfoEntity(id: item.id, en: item.en, es: item.es)).toList();
-  return ObjectivesInfoEntity(id: MasterFilesType.objectivesInfo.index, v: objectivesInfoResponse.v, data: data);
+  List<ObjectiveInfoEntity> metabolicObjectives = objectivesInfoResponse.metabolicObjectives.map((item) => ObjectiveInfoEntity(id: item.id, en: item.en, es: item.es)).toList();
+  List<ObjectiveInfoEntity> bodyCompositionObjectives = objectivesInfoResponse.bodyCompositionObjectives.map((item) => ObjectiveInfoEntity(id: item.id, en: item.en, es: item.es)).toList();
+  return ObjectivesInfoEntity(id: MasterFilesType.objectivesInfo.index, v: objectivesInfoResponse.v, data: data, metabolicObjectives: metabolicObjectives, bodyCompositionObjectives: bodyCompositionObjectives);
 }
 
 ObjectivesInfoMaster mapToObjectivesInfoMaster(ObjectivesInfoEntity objectivesInfoEntity) {
   List<ObjectiveInfoMaster> objectives = objectivesInfoEntity.data.map((item) => ObjectiveInfoMaster(id: item.id, en: item.en, es: item.es)).toList();
-  return ObjectivesInfoMaster(objectives: objectives);
+  List<ObjectiveInfoMaster> metabolicObjectives = objectivesInfoEntity.metabolicObjectives.map((item) => ObjectiveInfoMaster(id: item.id, en: item.en, es: item.es)).toList();
+  List<ObjectiveInfoMaster> bodyCompositionObjectives = objectivesInfoEntity.bodyCompositionObjectives.map((item) => ObjectiveInfoMaster(id: item.id, en: item.en, es: item.es)).toList();
+  return ObjectivesInfoMaster(objectives: objectives, metabolicObjectives: metabolicObjectives, bodyCompositionObjectives: bodyCompositionObjectives);
 }
 
 RecommendationGroupsEntity mapToRecommendationGroupsEntity(RecommendationGroupsResponse recommendationGroupsResponse) {

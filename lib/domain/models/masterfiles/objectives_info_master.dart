@@ -6,8 +6,10 @@ part 'objectives_info_master.g.dart';
 @JsonSerializable(explicitToJson: true)
 class ObjectivesInfoMaster {
   List<ObjectiveInfoMaster> objectives;
+  List<ObjectiveInfoMaster> metabolicObjectives;
+  List<ObjectiveInfoMaster> bodyCompositionObjectives;
 
-  ObjectivesInfoMaster({required this.objectives});
+  ObjectivesInfoMaster({required this.objectives, required this.metabolicObjectives, required this.bodyCompositionObjectives});
 
   factory ObjectivesInfoMaster.fromJson(Map<String, dynamic> json) => _$ObjectivesInfoMasterFromJson(json);
   Map<String, dynamic> toJson() => _$ObjectivesInfoMasterToJson(this);

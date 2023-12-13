@@ -127,7 +127,7 @@ class _DashboardScreen extends State<DashboardScreen>
                         WeeklyRDANutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.weekly_nutrients,
                           nutrients: state.weeklyMicronutrients.orEmpty(),
-                          isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
+                          isEmpty: false,
                           screenToMove: () {},
                         ),
                         EnergyBalanceWidget(

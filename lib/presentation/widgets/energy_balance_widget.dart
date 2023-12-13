@@ -78,11 +78,11 @@ class EnergyBalanceWidget extends StatelessWidget {
                 Expanded(
                     flex: 4,
                     child: Text(
-                      AppLocalizations.of(context)!.gross_kcal,
+                      AppLocalizations.of(context)!.required_kcal,
                       overflow: TextOverflow.clip,
                     ),
                 ),
-                Text('${(energyModel?.rawKcalTaken ?? 0) + (energyModel?.spentKcal ?? 0)} kcal')
+                Text('${(energyModel?.totalKcal ?? 0)} kcal')
               ],
             ),
           ),

@@ -24,6 +24,11 @@ class AddObjectiveToListAction extends ProfileActions {
   AddObjectiveToListAction({required this.id});
 }
 
+class AddRadioObjectiveToListAction extends ProfileActions {
+  int id;
+  AddRadioObjectiveToListAction({required this.id});
+}
+
 class RefreshCommonNameAction extends ProfileActions {
   String commonName;
   RefreshCommonNameAction({required this.commonName});

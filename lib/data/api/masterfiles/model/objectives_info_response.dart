@@ -6,8 +6,10 @@ part 'objectives_info_response.g.dart';
 class ObjectivesInfoResponse {
   int v;
   List<ObjectiveInfo> data;
+  List<ObjectiveInfo> metabolicObjectives;
+  List<ObjectiveInfo> bodyCompositionObjectives;
 
-  ObjectivesInfoResponse({required this.v, required this.data});
+  ObjectivesInfoResponse({required this.v, required this.data, required this.metabolicObjectives, required this.bodyCompositionObjectives});
 
   factory ObjectivesInfoResponse.fromJson(Map<String, dynamic> json) => _$ObjectivesInfoResponseFromJson(json);
   Map<String, dynamic> toJson() => _$ObjectivesInfoResponseToJson(this);
