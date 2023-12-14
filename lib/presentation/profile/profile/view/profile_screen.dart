@@ -95,7 +95,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                       PopupMenuItemModel(
                         value: 0,
                         title: AppLocalizations.of(context)!.log_out,
-                        onPressed: () => bloc.add(PerformLogOutAction(goToLogin: () => Navigator.popAndPushNamed(context, LoginScreen.routeName))),
+                        onPressed: () => bloc.add(PerformLogOutAction(goToLogin: () => Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false,))),
                       ),
                       PopupMenuItemModel(
                         value: 1,

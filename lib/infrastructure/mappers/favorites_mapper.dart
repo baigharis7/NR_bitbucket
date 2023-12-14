@@ -159,6 +159,6 @@ FoodFavorite mapToFoodFavoriteFromFoodEvent(FoodEventComplete foodEventComplete)
       eventDate: foodEventComplete.eventDate ?? -1,
       ingredients: foodEventComplete.foodInfo!.map((e) => FoodInFavorite(id: e.id!, name_en: e.name_en!, name_es: e.name_es!, qty: e.eventInfo!.qty!.toInt(), unit: e.eventInfo!.unit!, cookingMethod: e.eventInfo!.cookingMethod!)).toList(),
       drinks: [],
-      mealTime: -1,
+      mealTime: foodEventComplete.mealType ?? -1,
   );
 }

@@ -166,7 +166,7 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                                     foodName: eventHelper.findFoodNameFromId(foodInFavorite.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!),
                                     cookingMethod: eventHelper.findCookingMethodName(
                                       ctx,
-                                      foodInFavorite.id,
+                                      foodInFavorite.cookingMethod,
                                       state.cookingMethodsInfoMaster!.cookingMethodsInfo!,
                                     ),
                                     quantity: foodInFavorite.qty.toString(),

@@ -92,7 +92,7 @@ class FoodCard extends StatelessWidget {
                           Expanded(
                               flex: 1,
                               // TODO: buscar en la tabla de cooking methods.
-                              child: Text(cookingMethod),
+                              child: Text(cookingMethod.isEmpty ? 'None' : cookingMethod),
                           )
                         ],
                       ),

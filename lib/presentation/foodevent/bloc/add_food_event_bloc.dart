@@ -20,6 +20,8 @@ import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_state.dart';
 
+import '../../../domain/models/favorites/food/meal_time.dart';
+
 class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> {
   final GetUserIdInteractor getUserIdInteractor;
   final SaveFoodEventInteractor saveFoodEventInteractor;
@@ -89,6 +91,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     });
 
     on<AddFoodFromEventAction>((event, emit) {
+      _clearFields();
       emit(state.copyWith(isLoading: true, eventDate: state.eventDate));
       if (state.foodsInEvent!.map((food) => food.id).contains((event.foodInEvent).id)) {
         final itemIndex = state.foodsInEvent!.indexOf(state.foodsInEvent!.firstWhere((food) => food.id == event.foodInEvent.id));
@@ -217,6 +220,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     });
 
     on<AddFoodFromFavouriteEventAction>((event, emit) {
+      _clearFields();
       state.foodName = event.foodFavorite.title;
       state.comment = event.foodFavorite.comment;
       state.mealType = event.foodFavorite.mealTime;
@@ -340,6 +344,16 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
   bool areFoodInfoObjectsEqual(FoodInfo obj1, FoodInfo obj2) {
     // return obj1.id == obj2.id;
     return (obj1.id == obj2.id && obj1.eventInfo!.qty == obj2.eventInfo!.qty && obj1.eventInfo!.unit == obj2.eventInfo!.unit && obj1.eventInfo!.cookingMethod == obj2.eventInfo!.cookingMethod);
+  }
+
+  List<FoodFavorite> getFoodListByType(MealTime mealTime) {
+    final list = <FoodFavorite>[];
+    for (var favorite in state.foodFavorites.orEmpty()) {
+      if (favorite.mealTime == mealTime.id) {
+        list.add(favorite);
+      }
+    }
+    return list;
   }
 
 }
