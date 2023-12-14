@@ -187,6 +187,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
     double returnQuantity = nutrientQuantitySoFar / rdaForUser;
     if (returnQuantity > 1) returnQuantity = 1;
+    if (returnQuantity < 0) returnQuantity = 0;
     return returnQuantity;
   }
 
