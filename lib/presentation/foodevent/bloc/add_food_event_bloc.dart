@@ -135,6 +135,11 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
     },);
 
+    on<AddFoodMealTypeEventAction>((event, emit) {
+      state.mealType = event.mealType;
+      emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
+    },);
+
     // on<SelectCookingMethodAction>((event, emit) {
     //   state.foodsInEvent!.add(event.foodInEvent);
     //   emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
@@ -147,6 +152,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
           userId: getUserIdInteractor.execute(),
           eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
         eventId: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+        mealType: state.mealType,
         foodName: state.foodName ?? '',
         comment: state.comment
       );
@@ -181,6 +187,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       state.isEdit = true;
       state.eventDate = event.foodEventSimple.eventDate;
       state.eventId = event.foodEventSimple.eventId;
+      state.mealType = event.foodEventSimple.mealType;
       state.foodsInEvent = event.foodEventSimple.ingredients;
       if (state.foodNames!.foodsAndDrinksNames!.foodNames!.isEmpty) {
         state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
@@ -212,6 +219,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     on<AddFoodFromFavouriteEventAction>((event, emit) {
       state.foodName = event.foodFavorite.title;
       state.comment = event.foodFavorite.comment;
+      state.mealType = event.foodFavorite.mealTime;
       state.foodsFromFavorite = event.foodFavorite.ingredients.map((item) {
         return FoodInEvent(id: item.id, qty: item.qty, unit: item.unit, cookingMethod: item.cookingMethod);
       },).toList();
@@ -227,6 +235,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         eventId: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
         foodName: state.foodName ?? '',
         comment: state.comment,
+        mealType: state.mealType,
       );
       foodEvent.ingredients = state.foodsFromFavorite.orEmpty();
       foodEvent.drinks = []; // TODO: is it necessary to implement drinks in food events?
@@ -272,6 +281,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     state.comment = null;
     state.eventDate = null;
     state.eventId = null;
+    state.mealType = null;
     state.isEdit = false;
   }
 

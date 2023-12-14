@@ -23,6 +23,7 @@ class AddFoodEventState {
   String? comment;
   int? eventDate;
   int? eventId;
+  int? mealType;
   bool? isEdit;
   List<FoodFavorite>? foodFavorites;
   List<FoodEventComplete>? weeklyFoodEvents;
@@ -41,6 +42,7 @@ class AddFoodEventState {
     this.comment,
     this.eventDate,
     this.eventId,
+    this.mealType,
     this.isEdit,
     this.foodFavorites,
     this.weeklyFoodEvents,
@@ -59,6 +61,7 @@ class AddFoodEventState {
     String? foodName,
     String? comment,
     int? eventDate,
+    int? mealType,
     bool? isEdit,
     List<FoodFavorite>? foodFavorites,
     List<FoodEventComplete>? weeklyFoodEvents,
@@ -75,6 +78,7 @@ class AddFoodEventState {
       foodName: foodName ?? this.foodName,
       comment: comment ?? this.comment,
       eventDate: eventDate,
+      mealType: mealType ?? this.mealType,
       isEdit: isEdit ?? this.isEdit,
       foodFavorites: foodFavorites ?? this.foodFavorites,
       foodsFromFavorite: foodsFromFavorite ?? this.foodsFromFavorite,

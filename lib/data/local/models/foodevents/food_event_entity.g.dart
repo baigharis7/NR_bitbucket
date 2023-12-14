@@ -19,28 +19,31 @@ class FoodEventEntityAdapter extends TypeAdapter<FoodEventEntity> {
     return FoodEventEntity(
       fields[0] as String?,
       fields[1] as int?,
-      fields[2] as String?,
+      fields[2] as int?,
       fields[3] as String?,
-      (fields[4] as List?)?.cast<FoodInfo>(),
-      fields[5] as int?,
+      fields[4] as String?,
+      (fields[5] as List?)?.cast<FoodInfo>(),
+      fields[6] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, FoodEventEntity obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
       ..write(obj.eventDate)
       ..writeByte(2)
-      ..write(obj.foodName)
+      ..write(obj.mealType)
       ..writeByte(3)
-      ..write(obj.comment)
+      ..write(obj.foodName)
       ..writeByte(4)
-      ..write(obj.foodInfo)
+      ..write(obj.comment)
       ..writeByte(5)
+      ..write(obj.foodInfo)
+      ..writeByte(6)
       ..write(obj.eventKcals);
   }
 
@@ -536,6 +539,7 @@ FoodEventEntity _$FoodEventEntityFromJson(Map<String, dynamic> json) =>
     FoodEventEntity(
       json['userId'] as String?,
       json['eventDate'] as int?,
+      json['mealType'] as int?,
       json['foodName'] as String?,
       json['comment'] as String?,
       (json['foodInfo'] as List<dynamic>?)
@@ -548,6 +552,7 @@ Map<String, dynamic> _$FoodEventEntityToJson(FoodEventEntity instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'eventDate': instance.eventDate,
+      'mealType': instance.mealType,
       'foodName': instance.foodName,
       'comment': instance.comment,
       'foodInfo': instance.foodInfo?.map((e) => e.toJson()).toList(),

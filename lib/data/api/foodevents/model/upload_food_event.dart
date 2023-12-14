@@ -7,6 +7,7 @@ class UploadFoodEvent {
   String? userId;
   int? eventDate;
   int? eventId;
+  int? mealType;
   String? foodName;
   String? comment;
   List<FoodInfo>? foodInfo;
@@ -17,6 +18,7 @@ class UploadFoodEvent {
       this.userId,
       this.eventDate,
       this.eventId,
+      this.mealType,
       this.foodName,
       this.comment,
       this.foodInfo,

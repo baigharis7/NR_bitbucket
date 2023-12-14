@@ -19,6 +19,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 
 import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../../domain/models/masterfiles/food_names_master.dart';
+import '../../favorites/common/add_favorite_dialog.dart';
 import '../common/add_food_name_dialog.dart';
 
 // TODO: tengo que poner lo de las bebidas en algún sitio.
@@ -77,15 +78,17 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
     required BuildContext context,
     required Function onFinish,
     required Function onNameChange,
+    required Function onMealTimeChange,
   }) async {
     await showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => AddFoodNameDialog(
-        title: AppLocalizations.of(context)!.food_name,
+      builder: (ctx) => AddFavoriteDialog(
+        // title: AppLocalizations.of(context)!.food_name,
         onNameChange: (String foodName) => onNameChange.call(foodName),
         onFinish: () => onFinish.call(),
         onPop: () => Navigator.pop(context),
+        onMealTimeChange: (int mealType) => onMealTimeChange.call(mealType),
       ),
     ).then((_) => Navigator.pop(context));
   }
@@ -355,7 +358,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                   onNameChange: (foodName) {
                                     bloc.add(AddFoodNameEventAction(
                                         foodName: foodName,),);
-                                  },);
+                                  },
+                                onMealTimeChange: (mealType) { bloc.add(AddFoodMealTypeEventAction(mealType: mealType)); },
+                              );
                             }
                           } else {
                             ToastHelper().showToast(text: AppLocalizations.of(context)!.must_complete_field);

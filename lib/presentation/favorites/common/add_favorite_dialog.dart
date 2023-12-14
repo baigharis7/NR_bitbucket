@@ -127,7 +127,7 @@ class _AddFavoriteDialogState extends State<AddFavoriteDialog> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
                 child: RoundedCustomButton(
-                  buttonText: AppLocalizations.of(context)!.save_favorite,
+                  buttonText: AppLocalizations.of(context)!.save,
                   onPressed: () {
                     if (_foodNameController.text == '') {
                       ToastHelper().showToast(text: AppLocalizations.of(context)!.favorite_name_required);

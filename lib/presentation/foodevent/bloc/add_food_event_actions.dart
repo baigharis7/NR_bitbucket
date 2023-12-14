@@ -59,6 +59,12 @@ class AddFoodNameEventAction extends AddFoodEventActions {
   AddFoodNameEventAction({required this.foodName});
 }
 
+class AddFoodMealTypeEventAction extends AddFoodEventActions {
+  int mealType;
+
+  AddFoodMealTypeEventAction({required this.mealType});
+}
+
 class ReceiveFoodsInEventFromNavigationAction extends AddFoodEventActions {
   final FoodEventSimple foodEventSimple;
   ReceiveFoodsInEventFromNavigationAction({required this.foodEventSimple});

@@ -9,6 +9,7 @@ class FoodEventComplete extends HiveObject {
   String? userId;
   int? eventDate;
   int? eventId;
+  int? mealType;
   String? foodName;
   String? comment;
   List<FoodInfo>? foodInfo;
@@ -18,6 +19,7 @@ class FoodEventComplete extends HiveObject {
     this.userId,
     this.eventDate,
     this.eventId,
+    this.mealType,
     this.foodName,
     this.comment,
     this.foodInfo,
