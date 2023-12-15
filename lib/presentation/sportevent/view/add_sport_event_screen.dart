@@ -240,6 +240,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                             editIntensity: (updatedSport) => bloc.add(SetIntensityAction(sportInfo: updatedSport)),
                             editDateTime: (updatedSport) => bloc.add(SetTimeStartAction(sportInfo: updatedSport)),
                           ),).toList() else GridView(
+                            padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
                             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               mainAxisSpacing: 0,
@@ -255,7 +256,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: state.eventSportName == sport.title ? Colors.amber : Colors.white,
-                                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                                    borderRadius: const BorderRadius.all(Radius.circular(5)),
                                   ),
                                   child: InkWell(
                                     borderRadius: const BorderRadius.all(Radius.circular(10)),

@@ -176,7 +176,7 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                               final sportIntensities = eventsHelper.getChosenSportIntensities(sportName, state.sportsInfo!, currentLanguage);
                               final sportId = eventsHelper.getSportIdByName(sportName, state.sportsInfo!, currentLanguage);
                               final sportInfo = bloc.findSportById(sportId);
-                              final info  = AddSportFavInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null);
+                              final info  = AddSportFavInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null, timeStart: DateTime.now().millisecondsSinceEpoch);
                               bloc.add(AddFavSportAction(info));
                               _sportInputController.text = '';
                             },
@@ -218,12 +218,14 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                       child: RoundedCustomButton(
                         buttonText: AppLocalizations.of(context)!.save_favorite,
                         onPressed: () {
-                            showAddFavoriteDialog(
+                            if (!bloc.validateFavSportList()) {
+                              showAddFavoriteDialog(
                               context: ctx,
                               onNameChange: (String sportName) => bloc.add(UpdateSportFavoriteNameAction(favoriteSportName: sportName)),
                               onFinish: () => bloc.add(FinishCreateSportFavoriteAction(currentLanguage: currentLanguage, onFinish: () => _showConfirmationDialog(context))),
                               onResetInfo: () => bloc.add(ResetFavoriteSportInfoAction()),
                             );
+                            }
                         },
                       ),
                     ),

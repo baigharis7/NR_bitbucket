@@ -136,4 +136,10 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
     return state.sportsInfo!.sportsInfoMaster.firstWhere((sport) => sport.id == sportId);
   }
 
+  bool validateFavSportList() {
+    return state.info?.any((sport) {
+      return sport.minutes == null || sport.intensity == null || sport.timeStart == null;
+    },) ?? true;
+  }
+
 }

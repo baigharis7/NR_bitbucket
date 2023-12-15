@@ -76,7 +76,8 @@ class _SportEventItem extends State<SportEventItem> {
     }
     if (widget.sport.timeStart != null) _timeOfDay = DateFormat('hh:mm a, MM/dd/yy').format(DateTime.fromMillisecondsSinceEpoch(widget.sport.timeStart ?? 0));
     if (widget.sport.intensity != null) _intensity = widget.sport.intensity;
-    _error = widget.sport.minutes == null || widget.sport.intensity == null || widget.sport.timeStart == null;
+    // _error = widget.sport.minutes == null || widget.sport.intensity == null || widget.sport.timeStart == null;
+    _error = widget.sport.minutes == null || widget.sport.intensity == null;
 
     return SizedBox(
       child: Container(
@@ -125,12 +126,14 @@ class _SportEventItem extends State<SportEventItem> {
                         height: Dimens.heightSmall - 15,
                         child: Row(
                           children: [
-                            Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: Dimens.marginNormal,
+                            Expanded(
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: Dimens.marginNormal,
+                                ),
+                                child:
+                                    Text(AppLocalizations.of(context)!.duration),
                               ),
-                              child:
-                                  Text(AppLocalizations.of(context)!.duration),
                             ),
                             Expanded(
                               child: TextField(
@@ -149,20 +152,22 @@ class _SportEventItem extends State<SportEventItem> {
                                 },
                               ),
                             ),
-                            Container(
-                              margin: const EdgeInsets.only(
-                                  left: Dimens.marginNormal,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
-                              decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius:
-                                  BorderRadius.all(Radius.circular(5)),
-                                  border: Border.fromBorderSide(
-                                      BorderSide(color: Colors.black54, width: 1))),
-                              child: Text(
-                                AppLocalizations.of(context)!.minutes.toLowerCase(),
+                            Expanded(
+                              child: Container(
+                                margin: const EdgeInsets.only(
+                                    left: Dimens.marginNormal,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
+                                decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius:
+                                    BorderRadius.all(Radius.circular(5)),
+                                    border: Border.fromBorderSide(
+                                        BorderSide(color: Colors.black54, width: 1))),
+                                child: Text(
+                                  AppLocalizations.of(context)!.minutes.toLowerCase(),
+                                ),
                               ),
                             )
                           ],
@@ -175,7 +180,6 @@ class _SportEventItem extends State<SportEventItem> {
                             child: Row(
                                 children: [
                                   Expanded(
-                                    flex: 1,
                                     child: Container(
                                       alignment: Alignment.centerLeft,
                                       margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
@@ -183,7 +187,7 @@ class _SportEventItem extends State<SportEventItem> {
                                     ),
                                   ),
                                   Expanded(
-                                    flex: 3,
+                                    flex: 2,
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: Dimens.paddingSmall),
