@@ -68,7 +68,7 @@ class _SportEventItem extends State<SportEventItem> {
     final eventsHelper = EventsHelper();
     // if (widget.sportName != null && widget.sportName != '') {
       _sportIntensities = widget.sportIntensities;
-      _sportName = widget.sport.name_en;
+      _sportName = widget.sport.translate(context);
     // }
     if (widget.sport.minutes != null && _durationTextController.text == '') {
       _duration = widget.sport.minutes;

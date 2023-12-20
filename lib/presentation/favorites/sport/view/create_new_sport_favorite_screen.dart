@@ -184,7 +184,7 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                         ),
                         Column(children: [
                           ...state.info.orEmpty().map((sport) => SportEventItem(
-                            sportIntensities: eventsHelper.getChosenSportIntensities(sport.name_en, state.sportsInfo!, currentLanguage),
+                            sportIntensities: eventsHelper.getChosenSportIntensities(sport.translate(context), state.sportsInfo!, currentLanguage),
                             sport: SportInfo(id: sport.id, name_es: sport.name_es, name_en: sport.name_en, timeStart: sport.timeStart, intensity: sport.intensity, minutes: sport.minutes),
                             removeSport: () { bloc.add(RemoveSportFavAction(addSportFavInfo: sport)); },
                             editMinutes: (updatedSport) { bloc.add(UpdateMinutesSportFavAction(addSportFavInfo: AddSportFavInfo(id: updatedSport.id, minutes: updatedSport.minutes, intensity: updatedSport.intensity, timeStart: updatedSport.timeStart, name_en: updatedSport.name_en, name_es: updatedSport.name_es))); },

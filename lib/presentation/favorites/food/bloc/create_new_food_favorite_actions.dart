@@ -20,10 +20,22 @@ class AddFoodFromFavoriteAction extends CreateNewFoodFavoriteActions {
   AddFoodFromFavoriteAction({required this.foodInFavorite});
 }
 
-class SelectCookingMethodAction extends CreateNewFoodFavoriteActions {
+class UpdateQuantityAction extends CreateNewFoodFavoriteActions {
   FoodInFavorite foodInFavorite;
 
-  SelectCookingMethodAction({required this.foodInFavorite});
+  UpdateQuantityAction({required this.foodInFavorite});
+}
+
+class UpdateUnitAction extends CreateNewFoodFavoriteActions {
+  FoodInFavorite foodInFavorite;
+
+  UpdateUnitAction({required this.foodInFavorite});
+}
+
+class UpdateCookingMethodAction extends CreateNewFoodFavoriteActions {
+  FoodInFavorite foodInFavorite;
+
+  UpdateCookingMethodAction({required this.foodInFavorite});
 }
 
 class AddFoodNameAction extends CreateNewFoodFavoriteActions {

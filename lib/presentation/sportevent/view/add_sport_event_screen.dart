@@ -233,7 +233,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                         ),
                         Column(children: [
                           if (state.info?.isNotEmpty ?? false) ...state.info.orEmpty().map((sport) => SportEventItem(
-                            sportIntensities: eventsHelper.getChosenSportIntensities(sport.name_en, state.sportsInfo!, currentLanguage),
+                            sportIntensities: eventsHelper.getChosenSportIntensities(sport.translate(context), state.sportsInfo!, currentLanguage),
                             sport: sport,
                             removeSport: () { bloc.add(RemoveSportEventAction(sportInfo: sport)); },
                             editMinutes: (updatedSport) => bloc.add(SetMinutesAction(sportInfo: updatedSport)),

@@ -58,6 +58,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
   ),) {
 
     on<InitializeStateAction>((event, emit) async {
+      _clearFields();
       emit(state.copyWith(isLoading: true, eventDate: state.eventDate));
       if (state.foodNames!.foodsAndDrinksNames!.foodNames!.isEmpty) {
         state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
@@ -91,7 +92,6 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     });
 
     on<AddFoodFromEventAction>((event, emit) {
-      _clearFields();
       emit(state.copyWith(isLoading: true, eventDate: state.eventDate));
       if (state.foodsInEvent!.map((food) => food.id).contains((event.foodInEvent).id)) {
         final itemIndex = state.foodsInEvent!.indexOf(state.foodsInEvent!.firstWhere((food) => food.id == event.foodInEvent.id));
@@ -220,7 +220,6 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     });
 
     on<AddFoodFromFavouriteEventAction>((event, emit) {
-      _clearFields();
       state.foodName = event.foodFavorite.title;
       state.comment = event.foodFavorite.comment;
       state.mealType = event.foodFavorite.mealTime;

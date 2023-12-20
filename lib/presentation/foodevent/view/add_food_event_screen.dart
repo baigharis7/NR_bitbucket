@@ -338,29 +338,29 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge),
                       child: RoundedCustomButton(onPressed: () {
-                        if(state.foodsFromFavorite!.isEmpty) {
-                          if (state.foodsInEvent!.isNotEmpty) {
-                            if (!(bloc.validateList() ?? true)) {
-                              showAddFoodNameDialog(
-                                  context: context,
-                                  onFinish: (){
-                                    context
-                                        .read<AddFoodEventBloc>()
-                                        .add(FinishFoodEventAction(
-                                      onFinish: () =>
-                                          _showConfirmationDialog(context),
-                                    ),);},
-                                  onNameChange: (foodName) {
-                                    bloc.add(AddFoodNameEventAction(
-                                        foodName: foodName,),);
-                                  },
-                                onMealTimeChange: (mealType) { bloc.add(AddFoodMealTypeEventAction(mealType: mealType)); },
-                              );
-                            }
+                        if(state.foodsInEvent!.isEmpty) {
+                          if (state.foodsFromFavorite!.isNotEmpty) {
+                            context.read<AddFoodEventBloc>().add(FinishFoodFavouriteEventAction(onFinish: () => _showConfirmationDialog(context),),);
                           }
                         }
                         else {
-                          context.read<AddFoodEventBloc>().add(FinishFoodFavouriteEventAction(onFinish: () => _showConfirmationDialog(context),),);
+                          if (!(bloc.validateList() ?? true)) {
+                            showAddFoodNameDialog(
+                              context: context,
+                              onFinish: (){
+                                context
+                                    .read<AddFoodEventBloc>()
+                                    .add(FinishFoodEventAction(
+                                  onFinish: () =>
+                                      _showConfirmationDialog(context),
+                                ),);},
+                              onNameChange: (foodName) {
+                                bloc.add(AddFoodNameEventAction(
+                                  foodName: foodName,),);
+                              },
+                              onMealTimeChange: (mealType) { bloc.add(AddFoodMealTypeEventAction(mealType: mealType)); },
+                            );
+                          }
                         }
                         },
                       ),

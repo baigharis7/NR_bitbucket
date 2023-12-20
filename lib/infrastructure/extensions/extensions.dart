@@ -15,6 +15,8 @@ import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_sim
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 
+import '../../domain/models/favorites/sport/add_sport_favorite.dart';
+
 extension NullableStringExtensions on String? {
   bool isNotEmptyOrNull() {
     if (this != null && this != '') {
@@ -261,6 +263,12 @@ extension LanguageSelector<T> on T {
           return (this as SportInfo).name_es.orEmpty();
         } else {
           return (this as SportInfo).name_en.orEmpty();
+        }
+      } else if (this is AddSportFavInfo) {
+        if (language == 'es') {
+          return (this as AddSportFavInfo).name_es.orEmpty();
+        } else {
+          return (this as AddSportFavInfo).name_en.orEmpty();
         }
       } else {
         return '';

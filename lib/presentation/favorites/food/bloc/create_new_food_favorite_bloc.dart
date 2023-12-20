@@ -54,8 +54,30 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
-    on<SelectCookingMethodAction>((event, emit){
-      state.foodsInFavorite!.add(event.foodInFavorite);
+    on<UpdateQuantityAction>((event, emit) {
+      if (state.foodsInFavorite!.map((food) => food.id).contains((event.foodInFavorite).id)) {
+        final itemIndex = state.foodsInFavorite!.indexOf(state.foodsInFavorite!.firstWhere((food) => food.id == event.foodInFavorite.id));
+        state.foodsInFavorite![itemIndex].qty = event.foodInFavorite.qty;
+      }
+
+      emit(state.copyWith(isLoading: false, onError: null));
+    },);
+
+    on<UpdateUnitAction>((event, emit) {
+      if (state.foodsInFavorite!.map((food) => food.id).contains((event.foodInFavorite).id)) {
+        final itemIndex = state.foodsInFavorite!.indexOf(state.foodsInFavorite!.firstWhere((food) => food.id == event.foodInFavorite.id));
+        state.foodsInFavorite![itemIndex].unit = event.foodInFavorite.unit;
+      }
+
+      emit(state.copyWith(isLoading: false, onError: null));
+    },);
+
+    on<UpdateCookingMethodAction>((event, emit){
+      if (state.foodsInFavorite!.map((food) => food.id).contains((event.foodInFavorite).id)) {
+        final itemIndex = state.foodsInFavorite!.indexOf(state.foodsInFavorite!.firstWhere((food) => food.id == event.foodInFavorite.id));
+        state.foodsInFavorite![itemIndex].cookingMethod = event.foodInFavorite.cookingMethod;
+      }
+
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
@@ -99,4 +121,7 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
     });
   }
 
+  bool isFoodFavValidateList() {
+      return state.foodsInFavorite?.any((foodFav) { return foodFav.qty <= 0; },) ?? true;
+  }
 }

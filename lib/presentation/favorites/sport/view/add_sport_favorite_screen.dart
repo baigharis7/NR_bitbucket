@@ -222,7 +222,7 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                                                     bottom: Dimens.marginNormal,
                                                   ),
                                                   child: Text(
-                                                    sport.name_en.toString(),
+                                                    sport.translate(context),
                                                     style: const TextStyle(
                                                       fontWeight: FontWeight.bold,
                                                     ),

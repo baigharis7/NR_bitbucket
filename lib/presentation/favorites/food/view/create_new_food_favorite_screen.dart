@@ -16,6 +16,8 @@ import 'package:nutrenaissance_flutter/presentation/favorites/food/view/add_food
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_card.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
+import 'food_fav_item.dart';
+
 class CreateNewFoodFavoriteScreen extends StatefulWidget {
   static const routeName = '/create_new_food_favorite';
 
@@ -188,17 +190,19 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
                             final currentLanguage = Localizations.localeOf(context).languageCode;
                             final food = eventHelper.findFoodIdToFavorite(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                             final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                            showAddFoodFavoriteDialog(
-                              AddFoodFavoriteDialog(
-                                  foodInFavorite: food!,
-                                  foodGroup: foodGroup.orEmpty(),
-                                  cookingMethodsMaster: state.cookingMethodsMaster!,
-                                  cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
-                                  unitsInfoMaster: state.unitsInfoMaster!,
-                                  unitsFoodsMaster: state.unitsFoodsMaster!,
-                              ),
-                              option,
-                            );
+                            bloc.add(AddFoodFromFavoriteAction(foodInFavorite: food!));
+                            _foodInputController.text = '';
+                            // showAddFoodFavoriteDialog(
+                            //   AddFoodFavoriteDialog(
+                            //       foodInFavorite: food!,
+                            //       foodGroup: foodGroup.orEmpty(),
+                            //       cookingMethodsMaster: state.cookingMethodsMaster!,
+                            //       cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
+                            //       unitsInfoMaster: state.unitsInfoMaster!,
+                            //       unitsFoodsMaster: state.unitsFoodsMaster!,
+                            //   ),
+                            //   option,
+                            // );
                           },
                         ),
                       ),
@@ -210,31 +214,47 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
                             ? Container()
                             : Column(
                           children: [
-                            ...state.foodsInFavorite.orEmpty().map((foodInFavorite) =>
-                                FoodCard(
-                                  foodName: state.foodNames!.foodsAndDrinksNames!.foodNames!
-                                      .firstWhere((foodItemMaster) => foodItemMaster.id == foodInFavorite.id)
-                                      .translate(context),
-                                  cookingMethod: eventHelper.findCookingMethodName(context, foodInFavorite.cookingMethod, state.cookingMethodsInfoMaster!.cookingMethodsInfo!),
-                                  quantity: foodInFavorite.qty.toString(),
-                                  unit: eventHelper.findUnitName(foodInFavorite.unit, state.unitsInfoMaster!.unitsInfoMaster).translate(context),
-                                  removeFood: () => context.read<CreateNewFoodFavoriteBloc>().add(RemoveFoodFromFavoriteAction(foodInFavorite: foodInFavorite)),
-                                  editFood: () {
-                                    final option = eventHelper.findFoodNameFromId(foodInFavorite.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                                    final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                                    showAddFoodFavoriteDialog(
-                                      AddFoodFavoriteDialog(
-                                        foodInFavorite: foodInFavorite,
-                                        foodGroup: foodGroup.orEmpty(),
-                                        cookingMethodsMaster: state.cookingMethodsMaster!,
-                                        cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
-                                        unitsInfoMaster: state.unitsInfoMaster!,
-                                        unitsFoodsMaster: state.unitsFoodsMaster!,
-                                      ),
-                                      option,
-                                    );
-                                  },
-                                ),
+                            ...state.foodsInFavorite.orEmpty().map((foodInFavorite) {
+                              final option = eventHelper.findFoodNameFromId(foodInFavorite.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                              final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                              return FoodFavItem(
+                                  foodInFavorite: foodInFavorite,
+                                  foodGroup: foodGroup,
+                                  cookingMethodsMaster: state.cookingMethodsMaster!,
+                                  cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
+                                  unitsInfoMaster: state.unitsInfoMaster!,
+                                  unitsFoodsMaster: state.unitsFoodsMaster!,
+                                  options: option,
+                                  onRemove: () => bloc.add(RemoveFoodFromFavoriteAction(foodInFavorite: foodInFavorite)),
+                                  onQtyChange: (foodFav) => bloc.add(UpdateQuantityAction(foodInFavorite: foodFav)),
+                                  onUnitChange: (foodFav) => bloc.add(UpdateUnitAction(foodInFavorite: foodFav)),
+                                  onCookingMethodChange: (foodFav) => bloc.add(UpdateCookingMethodAction(foodInFavorite: foodFav)),
+                              );
+                            }
+                                // FoodCard(
+                                //   foodName: state.foodNames!.foodsAndDrinksNames!.foodNames!
+                                //       .firstWhere((foodItemMaster) => foodItemMaster.id == foodInFavorite.id)
+                                //       .translate(context),
+                                //   cookingMethod: eventHelper.findCookingMethodName(context, foodInFavorite.cookingMethod, state.cookingMethodsInfoMaster!.cookingMethodsInfo!),
+                                //   quantity: foodInFavorite.qty.toString(),
+                                //   unit: eventHelper.findUnitName(foodInFavorite.unit, state.unitsInfoMaster!.unitsInfoMaster).translate(context),
+                                //   removeFood: () => context.read<CreateNewFoodFavoriteBloc>().add(RemoveFoodFromFavoriteAction(foodInFavorite: foodInFavorite)),
+                                //   editFood: () {
+                                //     final option = eventHelper.findFoodNameFromId(foodInFavorite.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                                //     final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                                //     showAddFoodFavoriteDialog(
+                                //       AddFoodFavoriteDialog(
+                                //         foodInFavorite: foodInFavorite,
+                                //         foodGroup: foodGroup.orEmpty(),
+                                //         cookingMethodsMaster: state.cookingMethodsMaster!,
+                                //         cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
+                                //         unitsInfoMaster: state.unitsInfoMaster!,
+                                //         unitsFoodsMaster: state.unitsFoodsMaster!,
+                                //       ),
+                                //       option,
+                                //     );
+                                //   },
+                                // ),
                             ).toList()
                           ],
                         )
@@ -245,7 +265,8 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
                       child: RoundedCustomButton(
                         buttonText: AppLocalizations.of(context)!.save_favorite,
                         onPressed: () {
-                          state.foodsInFavorite!.isEmpty
+                          if (!bloc.isFoodFavValidateList()) {
+                            state.foodsInFavorite!.isEmpty
                               ? ToastHelper().showToast(text: AppLocalizations.of(context)!.no_foods_in_event)
                               : showAddFavoriteDialog(
                             context: context,
@@ -253,6 +274,7 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
                             onMealTimeChange: (int mealTime) => bloc.add(AddMealTimeAction(mealTime: mealTime)),
                             onFinish: () => bloc.add(FinishFoodFavoriteAction(onFinish: () => _showConfirmationDialog(context, () => Navigator.pop(context)))),
                           );
+                          }
                         },
                       ),
                     ),
