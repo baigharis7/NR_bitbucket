@@ -27,4 +27,6 @@ class Constants {
   static const FOOD_EVENT_ENTITY = 'food_event_entity';
   static const USER_RDAS_ENTITY = 'user_rdas';
   static const USERID_QUERY = 'userId';
+  static const MENSTRUATION = 'During menstruation';
+  static const IMPROVE_HUMAN_SYSTEM = 'Improve the immune system';
 }

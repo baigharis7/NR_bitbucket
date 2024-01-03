@@ -9,6 +9,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_int
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_objectives_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_day_calories_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/energy_model.dart';
@@ -20,10 +22,12 @@ import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
 
+import '../../../data/api/profile/model/user_profile_response.dart';
 import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import '../../../domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
 import '../../../domain/interactor/liquidevents/get_week_liquid_events_interactor.dart';
@@ -47,6 +51,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor;
   final GetWeekLiquidEventsInteractor getWeekLiquidEventsInteractor;
   final GetWeekSportsInteractor getWeekSportsInteractor;
+  final UploadProfileInteractor uploadProfileInteractor;
+  final SaveProfileInteractor saveProfileInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -65,6 +71,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.getWeekFoodEventsInteractor,
     required this.getWeekLiquidEventsInteractor,
     required this.getWeekSportsInteractor,
+    required this.uploadProfileInteractor,
+    required this.saveProfileInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -74,6 +82,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     macronutrients: [],
     userKcal: 0,
     showCard: false,
+    isMenstruation: false,
   ),) {
     on<InitializeState>((event, emit) async {
       emit(DashboardState(isLoading: true));
@@ -86,8 +95,11 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.weeklyLiquidEvents = await getWeekLiquidEventsInteractor.execute();
       state.weeklySportEvents = await getWeekSportsInteractor.execute();
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
-      final profile = await getProfileInteractor.execute();
-      state.userKcal = profile!.kcal;
+      state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo,);
+      state.profile = await getProfileInteractor.execute();
+      state.userKcal = state.profile!.kcal;
+      state.isMenstruation = state.profile?.objectives?.contains(28);
+      state.isCold = state.profile?.objectives?.contains(18);
       state.micronutrients = state.userMicronutrients!
           .map(
             (micronutrient) =>
@@ -160,6 +172,93 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     on<ReloadWaterInfoAction>((event, emit) async {
       state.waterEvents = await getWaterEventsTodayInteractor.execute();
       emit(state.copyWith(isLoading: false, onError: null));
+    });
+
+    on<UpdateMenstruationStateAction>((event, emit) {
+      final menstruationId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.MENSTRUATION).id ?? -1;
+      if (menstruationId != -1) {
+        manageObjectives(menstruationId);
+        add(UpdateProfileEventAction(value: event.isMenstruation));
+        state.isMenstruation = event.isMenstruation;
+      }
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<UpdateColdStateAction>((event, emit) {
+      final improveSystemId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.IMPROVE_HUMAN_SYSTEM).id ?? -1;
+      if (improveSystemId != -1) {
+        manageObjectives(improveSystemId);
+        add(UpdateProfileEventAction(value: event.isCold));
+        state.isCold = event.isCold;
+      }
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<UpdateProfileEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      FemaleCharacteristics? femaleCharacteristics;
+      if (state.profile!.sex == SexType.female) {
+        femaleCharacteristics = FemaleCharacteristics(
+          menstruation: Menstruation(
+            regularity: state.profile!.femaleCharacteristics!.menstruation!.regularity,
+            daysOfCycle: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.daysOfCycle,
+            lastStartDate: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.lastStartDate,
+          ),
+        );
+      } else {
+        femaleCharacteristics = null;
+      }
+
+      UserProfileModel profile = UserProfileModel(
+        userId: getUserIdInteractor.execute(),
+        commonName: state.profile!.commonName.orEmpty(),
+        birthDate: state.profile!.birthDate,
+        sex: state.profile!.sex,
+        occupationActivityFactor: state.profile!.occupationActivityFactor ?? 1.2,
+        physicalCharacteristics: PhysicalCharacteristics(
+          height: state.profile!.physicalCharacteristics!.height,
+          weight: state.profile!.physicalCharacteristics!.weight,
+          bodyFat: state.profile!.physicalCharacteristics!.bodyFat,
+          waistMeasurement: state.profile!.physicalCharacteristics!.waistMeasurement,),
+        femaleCharacteristics: femaleCharacteristics,
+        medicalSituation: MedicalSituation(
+          commonDiseases: state.profile!.medicalSituation!.commonDiseases,
+          otherDiseases: [], // Añadir a pantalla
+          // underPharmaceuticalTreatment: isUnderTreatment,
+        ),
+        foodAversions: state.profile!.foodAversions,
+        dietType: state.profile!.dietType ?? 0,
+        exclusions: Exclusions(exclusions: state.profile!.exclusions!.exclusions),
+        intolerances: state.profile!.intolerances,
+        // symptoms: , // Añadir cuando esté implementado
+        guts: 0,
+        objectives: state.profile!.objectives,
+      );
+
+      UserProfileResponse userProfileResponse;
+      try {
+        userProfileResponse = await uploadProfileInteractor.execute(profile);
+        if (userProfileResponse.uploadSuccess) {
+          profile.micronutrients = userProfileResponse.micronutrients;
+          profile.userRdas = UserRdas(
+            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul)).toList(),
+          );
+          profile.kcal = userProfileResponse.kcal;
+          try {
+            await saveProfileInteractor.execute(profile);
+            // event.nextScreen.call();
+            emit(state.copyWith(isLoading: false, onError: null));
+          } catch (error) {
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.savingProfileError));
+          }
+        } else {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingProfileError));
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingProfileError));
+      }
     });
   }
 
@@ -398,4 +497,12 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     }
     return weeklyNutrientQuantitySoFar;
   }
+
+  void manageObjectives(int objective) {
+    state.profile!.objectives ??= [];
+    state.profile!.objectives!.contains(objective)
+        ? state.profile!.objectives!.remove(objective)
+        : state.profile!.objectives!.add(objective);
+  }
+
 }

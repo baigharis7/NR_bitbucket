@@ -30,4 +30,22 @@ class ReloadWaterInfoAction extends DashboardActions {
   ReloadWaterInfoAction();
 }
 
+class UpdateMenstruationStateAction extends DashboardActions {
+  final bool isMenstruation;
+
+  UpdateMenstruationStateAction({ required this.isMenstruation });
+}
+
+class UpdateColdStateAction extends DashboardActions {
+  final bool isCold;
+
+  UpdateColdStateAction({ required this.isCold });
+}
+
+class UpdateProfileEventAction extends DashboardActions {
+  final bool value;
+
+  UpdateProfileEventAction({required this.value});
+}
+
 

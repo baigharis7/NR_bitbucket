@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_mast
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 
 import '../../../domain/models/liquidevents/liquid_event_complete.dart';
+import '../../../domain/models/masterfiles/objectives_info_master.dart';
 import '../../../domain/models/sportevents/sport_event_complete.dart';
 
 class DashboardState {
@@ -18,6 +19,8 @@ class DashboardState {
   List<String>? userMicronutrients;
   List<int>? userObjectives;
   NutrientsInfoMaster? nutrientsInfoMaster;
+  ObjectivesInfoMaster? objectivesInfoMaster;
+  UserProfileModel? profile;
   List<UserRda>? userRdas;
   String? advice;
   List<NutrientsModel>? micronutrients;
@@ -31,6 +34,8 @@ class DashboardState {
   List<FoodEventComplete>? weeklyLiquidEvents;
   List<SportEventComplete>? weeklySportEvents;
   List<NutrientsModel>? weeklyMicronutrients;
+  bool? isMenstruation;
+  bool? isCold;
 
   DashboardState({
     required this.isLoading,
@@ -40,6 +45,8 @@ class DashboardState {
     this.userMicronutrients,
     this.userObjectives,
     this.nutrientsInfoMaster,
+    this.objectivesInfoMaster,
+    this.profile,
     this.userRdas,
     this.advice,
     this.micronutrients,
@@ -53,6 +60,8 @@ class DashboardState {
     this.weeklyLiquidEvents,
     this.weeklySportEvents,
     this.weeklyMicronutrients,
+    this.isMenstruation,
+    this.isCold,
   });
 
   DashboardState copyWith({
@@ -64,6 +73,8 @@ class DashboardState {
     List<String>? userMicronutrients,
     List<int>? userObjectives,
     NutrientsInfoMaster? nutrientsInfoMaster,
+    ObjectivesInfoMaster? objectivesInfoMaster,
+    UserProfileModel? profile,
     List<UserRda>? userRdas,
     String? advice,
     List<NutrientsModel>? micronutrients,
@@ -77,6 +88,8 @@ class DashboardState {
     List<FoodEventComplete>? weeklyLiquidEvents,
     List<SportEventComplete>? weeklySportEvents,
     List<NutrientsModel>? weeklyMicronutrients,
+    bool? isMenstruation,
+    bool? isCold,
   }) {
     return DashboardState(
       isLoading: isLoading,
@@ -86,6 +99,8 @@ class DashboardState {
       userMicronutrients: userMicronutrients ?? this.userMicronutrients,
       userObjectives: userObjectives ?? this.userObjectives,
       nutrientsInfoMaster: nutrientsInfoMaster ?? this.nutrientsInfoMaster,
+      objectivesInfoMaster: objectivesInfoMaster ?? this.objectivesInfoMaster,
+      profile: profile ?? this.profile,
       userRdas: userRdas ?? this.userRdas,
       advice: advice ?? this.advice,
       micronutrients: micronutrients ?? this.micronutrients,
@@ -99,6 +114,8 @@ class DashboardState {
       weeklyLiquidEvents: weeklyLiquidEvents ?? this.weeklyLiquidEvents,
       weeklySportEvents: weeklySportEvents ?? this.weeklySportEvents,
       weeklyMicronutrients: weeklyMicronutrients ?? this.weeklyMicronutrients,
+      isMenstruation: isMenstruation ?? this.isMenstruation,
+      isCold: isCold ?? this.isCold
     );
   }
 

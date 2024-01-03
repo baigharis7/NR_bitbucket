@@ -54,6 +54,8 @@
     "regularity_period_question": "¿Cómo es tu período?",
     "regular": "Regular",
     "irregular": "Irregular",
+    "menstruation": "Menstruación",
+    "cold": "Catarro",
     "period_duration_question": "¿Cuántos días dura tu período?",
     "menstruation_regularity_error": "Debes elegir la regularidad de tu período",
     "period_duration_error": "Debes seleccionar la duración de tu período",

@@ -54,6 +54,8 @@
     "regularity_period_question": "How is your period?",
     "regular": "Regular",
     "irregular": "Irregular",
+    "menstruation": "Menstruation",
+    "cold": "Cold",
     "period_duration_question": "What's the approximate duration of your cycle?",
     "menstruation_regularity_error": "You have to choose your period's regularity",
     "period_duration_error": "You have to select a period's duration",

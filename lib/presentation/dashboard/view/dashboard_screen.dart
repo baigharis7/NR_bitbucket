@@ -25,10 +25,9 @@ import 'package:nutrenaissance_flutter/presentation/widgets/energy_balance_widge
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/liquids_summary_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/swith_with_function_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_rda_nutrients_dashboard_widget.dart';
 
-import '../../../domain/models/dashboard/nutrients_model.dart';
-import '../../../domain/models/masterfiles/nutrients_info_master.dart';
 import '../../../infrastructure/utils/constants.dart';
 import '../../fiber_detail/view/fiber_detail_Screen.dart';
 
@@ -110,6 +109,11 @@ class _DashboardScreen extends State<DashboardScreen>
                             IconButton(onPressed: () => Navigator.pushNamed(context, WeeklyDashboardDetailScreen.routeName).then((value) => bloc.add(InitializeState())), icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
                             Text(bloc.getTodayMessage(AppLocalizations.of(context)!.today, Localizations.localeOf(context).languageCode),)
                           ],
+                        ),
+                        SwitchDashboardWidget(
+                            title: AppLocalizations.of(context)!.menstruation,
+                            currentState: state.isMenstruation ?? false,
+                            onStateChange: (value) => bloc.add(UpdateMenstruationStateAction(isMenstruation: value)),
                         ),
                         NutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.micronutrients,
@@ -266,6 +270,11 @@ class _DashboardScreen extends State<DashboardScreen>
                               )
                             ],
                           ),
+                        ),
+                        SwitchDashboardWidget(
+                            title: AppLocalizations.of(context)!.cold,
+                            currentState: state.isCold ?? false,
+                            onStateChange: (value) => bloc.add(UpdateColdStateAction(isCold: value)),
                         ),
                       ],
                     ),
