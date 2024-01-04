@@ -11,6 +11,7 @@ import '../../dashboard/view/dashboard_screen.dart';
 import '../../profile/profile/view/profile_screen.dart';
 import '../../widgets/custom_bottom_app_bar.dart';
 import '../../widgets/micro_nutrient_detail_widget.dart';
+import '../../widgets/weekly_nutrient_graphic.dart';
 
 class MicroNutrientsDetailScreen extends StatefulWidget {
   static const routeName = '/micro_nutrients_detail_screen';
@@ -30,6 +31,7 @@ class _MicroNutrientsDetailScreenState
   @override
   void initState() {
     bloc = BlocProvider.of<MicroNutrientsDetailBloc>(context);
+    bloc.add(InitializationEventAction());
     super.initState();
 
     final widgetsBinding = WidgetsBinding.instance;
@@ -39,7 +41,7 @@ class _MicroNutrientsDetailScreenState
         if (infoReceived != null) {
           if (infoReceived is List<NutrientsModel>?) {
             final micronutrientsList = infoReceived as List<NutrientsModel>?;
-            
+            bloc.add(LoadMicroNutrientsDetails(micronutrientsList: micronutrientsList ?? []));
           }
         }
       }
@@ -48,16 +50,16 @@ class _MicroNutrientsDetailScreenState
 
   @override
   Widget build(BuildContext context) {
-    List<NutrientsModel>? micronutrientsList = <NutrientsModel>[];
-    if (ModalRoute.of(context)?.settings.arguments != null) {
-      final infoReceived = ModalRoute.of(context)?.settings.arguments;
-      if (infoReceived != null) {
-        if (infoReceived is List<NutrientsModel>?) {
-          micronutrientsList = infoReceived as List<NutrientsModel>?;
-          bloc.add(LoadMicroNutrientsDetails(micronutrientsList: micronutrientsList ?? []));
-        }
-      }
-    }
+    // List<NutrientsModel>? micronutrientsList = <NutrientsModel>[];
+    // if (ModalRoute.of(context)?.settings.arguments != null) {
+    //   final infoReceived = ModalRoute.of(context)?.settings.arguments;
+    //   if (infoReceived != null) {
+    //     if (infoReceived is List<NutrientsModel>?) {
+    //       micronutrientsList = infoReceived as List<NutrientsModel>?;
+    //       bloc.add(LoadMicroNutrientsDetails(micronutrientsList: micronutrientsList ?? []));
+    //     }
+    //   }
+    // }
 
     return BlocProvider.value(value: bloc,
       child: SafeArea(
@@ -117,9 +119,15 @@ class _MicroNutrientsDetailScreenState
                   child: Column(children: [
                     ...state.microNutrients.orEmpty().map((item) =>
                     // item.fractionToFill > 0 ?
-                    MicroNutrientDetailWidget(nutrientsModel: item,)
+                    MicroNutrientDetailWidget(nutrientsModel: item,),
                           // : Container(),
-                    ).toList()
+                    ).toList(),
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+                      child: WeeklyNutrientGraphic(
+                          title: AppLocalizations.of(context)!.this_week,
+                          data: state.micronutrientsWeekly ?? [],),
+                    ),
                   ],),
                 ),
               ),

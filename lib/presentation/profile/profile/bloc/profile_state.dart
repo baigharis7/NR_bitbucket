@@ -27,6 +27,7 @@ class ProfileState {
   bool? showVegetarianDiets;
   RecommendationGroupsMaster? recommendationGroupsMaster;
   AversionsUIModel? aversionsUI;
+  List<ObjectiveInfoMaster>? filteredObjectives;
 
   ProfileState({
     required this.isLoading,
@@ -45,6 +46,7 @@ class ProfileState {
     this.showVegetarianDiets,
     this.recommendationGroupsMaster,
     this.aversionsUI,
+    this.filteredObjectives,
   });
 
   ProfileState copyWith({
@@ -64,6 +66,7 @@ class ProfileState {
     bool? showVegetarianDiets,
     RecommendationGroupsMaster? recommendationGroupsMaster,
     AversionsUIModel? aversionsUI,
+    List<ObjectiveInfoMaster>? filteredObjectives,
   }) {
     return ProfileState(
       isLoading: isLoading,
@@ -82,6 +85,7 @@ class ProfileState {
       showVegetarianDiets: showVegetarianDiets ?? this.showVegetarianDiets,
       recommendationGroupsMaster: recommendationGroupsMaster ?? this.recommendationGroupsMaster,
       aversionsUI: aversionsUI ?? this.aversionsUI,
+      filteredObjectives: filteredObjectives ?? this.filteredObjectives,
     );
   }
 }

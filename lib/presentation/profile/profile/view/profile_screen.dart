@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/popup_menu_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -118,22 +120,33 @@ class _ProfileScreen extends State<ProfileScreen> {
                   children: [
                     ProfileOptionWithGraphicAndAdd(
                       title: AppLocalizations.of(context)!.objectives,
-                      widget: Container(
-                        padding: const EdgeInsets.all(Dimens.marginLarge),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          '${bloc.getNumberOfObjectives()} ${AppLocalizations.of(context)!.objectives}',
-                          style: TextStyle(
-                            fontSize: Dimens.fontSizeLarge,
-                            color: Colors.red[300],
-                          ),
-                        ),
+                      widget: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(children: [
+                          ...?state.filteredObjectives?.map((e) => Container(
+                              padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingNormal),
+                              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+                              decoration: BoxDecoration(color:AppColors.mountainMeadow, borderRadius: BorderRadius.circular(5)),
+                              child: Text(e.translate(context), style: const TextStyle(color: Colors.white,), maxLines: 1, overflow: TextOverflow.ellipsis,))),
+                        ],),
                       ),
+                      // Container(
+                      //   padding: const EdgeInsets.all(Dimens.marginLarge),
+                      //   decoration: BoxDecoration(
+                      //     color: Colors.grey[300],
+                      //     shape: BoxShape.rectangle,
+                      //     borderRadius: BorderRadius.circular(10.0),
+                      //   ),
+                      //   alignment: Alignment.center,
+                      //   child:
+                      //   Text(
+                      //     '${bloc.getNumberOfObjectives()} ${AppLocalizations.of(context)!.objectives}',
+                      //     style: TextStyle(
+                      //       fontSize: Dimens.fontSizeLarge,
+                      //       color: Colors.red[300],
+                      //     ),
+                      //   ),
+                      // ),
                       onAdd: () => _showObjectivesBottomModalSheet(
                         context: context,
                         onSaveChanges: () => bloc.add(SaveChangesAction()),

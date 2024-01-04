@@ -12,6 +12,7 @@ import '../../dashboard/view/dashboard_screen.dart';
 import '../../profile/profile/view/profile_screen.dart';
 import '../../widgets/custom_bottom_app_bar.dart';
 import '../../widgets/macro_nutrient_detail_widget.dart';
+import '../../widgets/weekly_nutrient_graphic.dart';
 
 class MacroNutrientsDetailScreen extends StatefulWidget {
   static const routeName = '/macro_nutrients_detail';
@@ -28,7 +29,9 @@ class _MacroNutrientsDetailScreenState extends State<MacroNutrientsDetailScreen>
   @override
   void initState() {
     bloc = BlocProvider.of<MacroNutrientsDetailBloc>(context);
+    bloc.add(InitializeEventAction());
     super.initState();
+
     final widgetsBinding = WidgetsBinding.instance;
     widgetsBinding.addPostFrameCallback((callback) {
       if (ModalRoute.of(context)?.settings.arguments != null) {
@@ -131,6 +134,12 @@ class _MacroNutrientsDetailScreenState extends State<MacroNutrientsDetailScreen>
                           //   return Container();
                           // }
                         }),
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+                          child: WeeklyNutrientGraphic(
+                            title: AppLocalizations.of(context)!.this_week,
+                            data: state.macronutrientsWeekly ?? [],),
+                        ),
                       ],
                     ),
                   ),

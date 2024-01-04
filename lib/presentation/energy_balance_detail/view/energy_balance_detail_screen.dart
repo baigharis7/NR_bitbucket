@@ -11,6 +11,7 @@ import '../../common/view/loading_screen.dart';
 import '../../dashboard/view/dashboard_screen.dart';
 import '../../profile/profile/view/profile_screen.dart';
 import '../../widgets/custom_bottom_app_bar.dart';
+import '../../widgets/weekly_energy_graph_widget.dart';
 
 class EnergyBalanceDetailScreen extends StatefulWidget {
   static const routeName = '/energy_balance_detail_screen';
@@ -28,6 +29,7 @@ class _EnergyBalanceDetailScreenState extends State<EnergyBalanceDetailScreen> {
   @override
   void initState() {
     bloc = BlocProvider.of<EnergyBalanceDetailBloc>(context);
+    bloc.add(InitializeEventAction());
     super.initState();
 
     final widgetBinding = WidgetsBinding.instance;
@@ -105,6 +107,15 @@ class _EnergyBalanceDetailScreenState extends State<EnergyBalanceDetailScreen> {
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
+                              Container(
+                                margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
+                                child: WeeklyEnergyGraphWidget(
+                                  title: AppLocalizations.of(context)!.energy_balance_title,
+                                  data: state.weeklyEnergyBalance ?? [],
+                                  averageConsumed: state.averageConsumedKcal ?? 0.0,
+                                  averageSpent: state.averageSpentKcal ?? 0.0,
+                                ),
+                              ),
                               // EnergyBalanceDetailWidget(energyModel: EnergyModel(fractionToFill: 0.2, rawKcalTaken: 10, spentKcal: 2, totalKcal: 20)),
                               EnergyBalanceDetailWidget(energyModel: state.energyModel),
                             ],

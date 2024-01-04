@@ -359,11 +359,25 @@ void main() async {
     saveProfileInteractor: saveProfileInteractor,
   );
 
-  final micronutrientsDetailBloc = MicroNutrientsDetailBloc();
+  final micronutrientsDetailBloc = MicroNutrientsDetailBloc(
+    getMasterFileInteractor: getMasterFileInteractor,
+    getUserMicronutrientsInteractor: getUserMicronutrientsInteractor,
+    getUserRdasInteractor: getUserRdasInteractor,
+    getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
+  );
 
-  final macronutrientsDetailBloc = MacroNutrientsDetailBloc();
+  final macronutrientsDetailBloc = MacroNutrientsDetailBloc(
+    getProfileInteractor: getProfileInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
+    getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
+  );
 
-  final energyBalanceDetailBloc = EnergyBalanceDetailBloc();
+  final energyBalanceDetailBloc = EnergyBalanceDetailBloc(
+    getProfileInteractor: getProfileInteractor,
+    getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
+    getWeekLiquidEventsInteractor: getWeekLiquidEventsInteractor,
+    getWeekSportsInteractor: getWeekSportsInteractor,
+  );
 
   final sugarDetailBloc = SugarDetailBloc();
 

@@ -2,6 +2,8 @@ part of 'micro_nutrients_detail_bloc.dart';
 
 abstract class MicroNutrientsDetailEvent {}
 
+class InitializationEventAction extends MicroNutrientsDetailEvent {}
+
 class LoadMicroNutrientsDetails extends MicroNutrientsDetailEvent {
   final List<NutrientsModel> micronutrientsList;
 

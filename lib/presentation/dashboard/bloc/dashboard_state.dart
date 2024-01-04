@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 
+import '../../../domain/models/dashboard/nutrients_weekly_model.dart';
 import '../../../domain/models/liquidevents/liquid_event_complete.dart';
 import '../../../domain/models/masterfiles/objectives_info_master.dart';
 import '../../../domain/models/sportevents/sport_event_complete.dart';
@@ -115,7 +116,7 @@ class DashboardState {
       weeklySportEvents: weeklySportEvents ?? this.weeklySportEvents,
       weeklyMicronutrients: weeklyMicronutrients ?? this.weeklyMicronutrients,
       isMenstruation: isMenstruation ?? this.isMenstruation,
-      isCold: isCold ?? this.isCold
+      isCold: isCold ?? this.isCold,
     );
   }
 

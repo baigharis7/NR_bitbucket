@@ -68,6 +68,8 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
       state.intolerances = Intolerances.listAllIntolerances();
       state.commonDiseases = CommonDiseases.listAllDiseases();
       state.activityTypes = ActivityByOccupationType.listAllActivityTypes();
+      final combineList = (state.objectivesInfoMaster?.objectives ?? []) + (state.objectivesInfoMaster?.metabolicObjectives ?? []) + (state.objectivesInfoMaster?.bodyCompositionObjectives ?? []);
+      state.filteredObjectives = getObjectives(combineList);
       emit(state.copyWith(
         isLoading: false,
         onError: null,
@@ -640,6 +642,19 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     return state.foodsAndDrinksNamesMaster!.foodsAndDrinksNames!
         .getFoodsAndDrinkNamesOrEmpty()
         .firstWhere((foodItemMaster) => foodItemMaster.id == foodId, orElse: FoodItemMaster.empty);
+  }
+
+  List<ObjectiveInfoMaster> getObjectives(List<ObjectiveInfoMaster> combineList) {
+    List<ObjectiveInfoMaster> a = [];
+    for (int item in state.profile?.objectives?? []) {
+      for (ObjectiveInfoMaster obj in combineList) {
+        if (item == obj.id) {
+          a.add(obj);
+          // break;
+        }
+      }
+    }
+    return a;
   }
 
 }

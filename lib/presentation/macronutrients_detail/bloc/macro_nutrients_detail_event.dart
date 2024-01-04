@@ -1,7 +1,9 @@
 part of 'macro_nutrients_detail_bloc.dart';
 
-@immutable
+// @immutable
 abstract class MacroNutrientsDetailEvent {}
+
+class InitializeEventAction extends MacroNutrientsDetailEvent {}
 
 class LoadMacroNutrientsEventAction extends MacroNutrientsDetailEvent {
   final List<NutrientsModel>? macronutrientsList;
