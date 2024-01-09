@@ -37,7 +37,7 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
     case ErrorTypes.savingRdasError:
       return stringResolver.saving_rdas_error;
     case ErrorTypes.uploadingProfileError:
-      return stringResolver.uploading_food_event_error;
+      return stringResolver.uploading_profile_error;
     case ErrorTypes.retrievingMasterFileError:
       return stringResolver.retrieving_master_file_error;
     case ErrorTypes.recommendationError:
