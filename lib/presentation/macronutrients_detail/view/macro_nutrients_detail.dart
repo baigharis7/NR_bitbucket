@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/bloc/macro_nutrients_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 
 import '../../../domain/models/dashboard/nutrients_model.dart';
 import '../../../infrastructure/utils/dimens.dart';
@@ -146,22 +148,23 @@ class _MacroNutrientsDetailScreenState extends State<MacroNutrientsDetailScreen>
                 ),
               ],
             ),
-            bottomNavigationBar: CustomBottomAppBar(initStateCallback: () => null),
-            resizeToAvoidBottomInset: true,
-            floatingActionButton: FloatingActionButton(
-              elevation: 2.0,
-              backgroundColor: Colors.white,
-              onPressed: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
-              child: Container(
-                padding: const EdgeInsets.all(Dimens.paddingSmall),
-                child: Image.asset(
-                  'assets/images/logo_black.png',
-                  fit: BoxFit.cover,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD)
+            // CustomBottomAppBar(initStateCallback: () => null),
+            // resizeToAvoidBottomInset: true,
+            // floatingActionButton: FloatingActionButton(
+            //   elevation: 2.0,
+            //   backgroundColor: Colors.white,
+            //   onPressed: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
+            //   child: Container(
+            //     padding: const EdgeInsets.all(Dimens.paddingSmall),
+            //     child: Image.asset(
+            //       'assets/images/logo_black.png',
+            //       fit: BoxFit.cover,
+            //       color: Colors.black,
+            //     ),
+            //   ),
+            // ),
+            // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           ),
         ),
       ),

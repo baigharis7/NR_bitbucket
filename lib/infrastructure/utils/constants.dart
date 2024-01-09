@@ -29,4 +29,10 @@ class Constants {
   static const USERID_QUERY = 'userId';
   static const MENSTRUATION = 'During menstruation';
   static const IMPROVE_HUMAN_SYSTEM = 'Improve the immune system';
+
+  //Navigation id's
+  static const DASHBOARD = 0;
+  static const JOURNAL = 1;
+  static const TIPS = 2;
+  static const RECIPES = 3;
 }

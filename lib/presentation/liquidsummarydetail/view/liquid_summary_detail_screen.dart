@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/bloc/liquid_summary_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 
 import '../../../domain/models/watervents/water_event_master.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
@@ -105,22 +107,23 @@ class _LiquidSummaryDetailScreenState extends State<LiquidSummaryDetailScreen> {
               ),
             ],
           ),
-          bottomNavigationBar: CustomBottomAppBar(initStateCallback: () => null),
-          resizeToAvoidBottomInset: true,
-          floatingActionButton: FloatingActionButton(
-            elevation: 2.0,
-            backgroundColor: Colors.white,
-            onPressed: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
-            child: Container(
-              padding: const EdgeInsets.all(Dimens.paddingSmall),
-              child: Image.asset(
-                'assets/images/logo_black.png',
-                fit: BoxFit.cover,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD)
+          // CustomBottomAppBar(initStateCallback: () => null),
+          // resizeToAvoidBottomInset: true,
+          // floatingActionButton: FloatingActionButton(
+          //   elevation: 2.0,
+          //   backgroundColor: Colors.white,
+          //   onPressed: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
+          //   child: Container(
+          //     padding: const EdgeInsets.all(Dimens.paddingSmall),
+          //     child: Image.asset(
+          //       'assets/images/logo_black.png',
+          //       fit: BoxFit.cover,
+          //       color: Colors.black,
+          //     ),
+          //   ),
+          // ),
+          // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         ),
       )),
     );

@@ -28,6 +28,8 @@ class ProfileState {
   RecommendationGroupsMaster? recommendationGroupsMaster;
   AversionsUIModel? aversionsUI;
   List<ObjectiveInfoMaster>? filteredObjectives;
+  bool? isMenstruation;
+  bool? isCold;
 
   ProfileState({
     required this.isLoading,
@@ -47,6 +49,8 @@ class ProfileState {
     this.recommendationGroupsMaster,
     this.aversionsUI,
     this.filteredObjectives,
+    this.isMenstruation,
+    this.isCold,
   });
 
   ProfileState copyWith({
@@ -67,6 +71,8 @@ class ProfileState {
     RecommendationGroupsMaster? recommendationGroupsMaster,
     AversionsUIModel? aversionsUI,
     List<ObjectiveInfoMaster>? filteredObjectives,
+    bool? isMenstruation,
+    bool? isCold,
   }) {
     return ProfileState(
       isLoading: isLoading,
@@ -86,6 +92,8 @@ class ProfileState {
       recommendationGroupsMaster: recommendationGroupsMaster ?? this.recommendationGroupsMaster,
       aversionsUI: aversionsUI ?? this.aversionsUI,
       filteredObjectives: filteredObjectives ?? this.filteredObjectives,
+      isMenstruation: isMenstruation ?? this.isMenstruation,
+      isCold: isCold ?? this.isCold,
     );
   }
 }

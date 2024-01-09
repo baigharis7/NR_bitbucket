@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/popup_menu_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -16,10 +17,12 @@ import 'package:nutrenaissance_flutter/presentation/profile/common/physical_acti
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_state.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/profile_option_with_graphic_and_add.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/swith_with_function_widget.dart';
 
 import '../../../dashboard/bloc/dashboard_actions.dart';
 import '../../../widgets/custom_bottom_app_bar.dart';
@@ -184,25 +187,43 @@ class _ProfileScreen extends State<ProfileScreen> {
                       ),
                       onAdd: () => Navigator.pushNamed(context, PhysicalActivityScreen.routeName).then((value) => bloc.add(SaveChangesAction())),
                     ),
+                    SwitchDashboardWidget(
+                        title: AppLocalizations.of(context)!.menstruation,
+                        currentState: state.isMenstruation ?? false,
+                        onStateChange: (value) {
+                          bloc.add(SetMenstruationStateAction(
+                              isMenstruation: value,
+                              onFinish: () => Navigator.pushNamedAndRemoveUntil(context, DashboardScreen.routeName, (route) => false,)));
+                        }),
+                    SwitchDashboardWidget(
+                        title: AppLocalizations.of(context)!.cold,
+                        currentState: state.isCold ?? false,
+                        onStateChange: (value) {
+                          bloc.add(SetColdStateAction(
+                              isCold: value,
+                              onFinish: () => Navigator.pushNamedAndRemoveUntil(context, DashboardScreen.routeName, (route) => false,)));
+                        }),
                   ],
                 ),
               ),
-              bottomNavigationBar: const CustomBottomAppBar(initStateCallback : null),
-              resizeToAvoidBottomInset: true,
-              floatingActionButton: FloatingActionButton(
-                elevation: 2.0,
-                backgroundColor: Colors.white,
-                onPressed: () { Navigator.popAndPushNamed(context, DashboardScreen.routeName); },
-                child: Container(
-                  padding: const EdgeInsets.all(Dimens.paddingSmall),
-                  child: Image.asset(
-                    'assets/images/logo_black.png',
-                    fit: BoxFit.cover,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,);
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD)
+              // const CustomBottomAppBar(initStateCallback : null),
+              // resizeToAvoidBottomInset: true,
+              // floatingActionButton: FloatingActionButton(
+              //   elevation: 2.0,
+              //   backgroundColor: Colors.white,
+              //   onPressed: () { Navigator.popAndPushNamed(context, DashboardScreen.routeName); },
+              //   child: Container(
+              //     padding: const EdgeInsets.all(Dimens.paddingSmall),
+              //     child: Image.asset(
+              //       'assets/images/logo_black.png',
+              //       fit: BoxFit.cover,
+              //       color: Colors.black,
+              //     ),
+              //   ),
+              // ),
+              // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            );
           },
         ),
       ),

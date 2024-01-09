@@ -27,7 +27,10 @@ import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
+import '../../../../infrastructure/utils/constants.dart';
+
+class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> 
+{
   final GetProfileInteractor getProfileInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetUserIdInteractor getUserIdInteractor;
@@ -70,6 +73,8 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
       state.activityTypes = ActivityByOccupationType.listAllActivityTypes();
       final combineList = (state.objectivesInfoMaster?.objectives ?? []) + (state.objectivesInfoMaster?.metabolicObjectives ?? []) + (state.objectivesInfoMaster?.bodyCompositionObjectives ?? []);
       state.filteredObjectives = getObjectives(combineList);
+      state.isMenstruation = state.profile?.objectives?.contains(28);
+      state.isCold = state.profile?.objectives?.contains(18);
       emit(state.copyWith(
         isLoading: false,
         onError: null,
@@ -272,7 +277,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
       if (state.profile!.sex == SexType.female) {
         femaleCharacteristics = FemaleCharacteristics(
           menstruation: Menstruation(
-            regularity: state.profile!.femaleCharacteristics!.menstruation!.regularity,
+            regularity: state.profile?.femaleCharacteristics?.menstruation?.regularity ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
             // TODO: estos dos pueden ir a null si regularity es irregular.
             daysOfCycle: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.daysOfCycle,
             lastStartDate: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.lastStartDate,),);
@@ -338,7 +343,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
       if (state.profile!.sex == SexType.female) {
         femaleCharacteristics = FemaleCharacteristics(
           menstruation: Menstruation(
-            regularity: state.profile!.femaleCharacteristics!.menstruation!.regularity,
+            regularity: state.profile?.femaleCharacteristics?.menstruation?.regularity ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
             daysOfCycle: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.daysOfCycle,
             lastStartDate: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.lastStartDate,
           ),
@@ -410,6 +415,28 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         emit(state.copyWith(isLoading: false, onError: null, ));
       }
     });
+
+    on<SetMenstruationStateAction>((event, emit) {
+      final menstruationId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.MENSTRUATION).id ?? -1;
+      if (menstruationId != -1) {
+        manageObjectives(menstruationId);
+        add(FinishProfileAction(nextScreen: event.onFinish));
+        state.isMenstruation = event.isMenstruation;
+      }
+
+      // emit(state.copyWith(isLoading: false, onError: null));
+    },);
+
+    on<SetColdStateAction>((event, emit) {
+      final improveSystemId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.IMPROVE_HUMAN_SYSTEM).id ?? -1;
+      if (improveSystemId != -1) {
+        manageObjectives(improveSystemId);
+        add(FinishProfileAction(nextScreen: event.onFinish));
+        state.isCold = event.isCold;
+      }
+
+      // emit(state.copyWith(isLoading: false, onError: null));
+    },);
   }
 
   void manageObjectives(int objective) {

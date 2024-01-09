@@ -36,6 +36,7 @@ dependencies:
   hive: ^2.1.0
   shared_preferences: ^2.0.13
   cupertino_icons: ^1.0.2
+  flutter_svg: ^2.0.9
   fluttertoast: ^8.0.9
   numberpicker: ^2.1.1
   json_annotation: ^4.8.1
@@ -91,6 +92,7 @@ flutter:
     - assets/images/recipe_image3.png
     - assets/images/recipe_image4.png
     - assets/images/recipe_image5.png
+    - assets/images/
     - assets/icon/food_icon.png
     - assets/icon/fork_knife.png
     - assets/icon/journal_icon.png

@@ -217,6 +217,7 @@ import 'package:nutrenaissance_flutter/presentation/profile/common/physical_acti
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/registry/view/registry_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/recipes/common/view/recipe_tabs_holder.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
@@ -683,6 +684,7 @@ void main() async {
           FiberDetailScreen.routeName: (_) => const FiberDetailScreen(),
           LiquidSummaryDetailScreen.routeName: (_) => const LiquidSummaryDetailScreen(),
           WeeklyDashboardDetailScreen.routeName: (_) => const WeeklyDashboardDetailScreen(),
+          RecipesTabsHolder.routeName: (_) => const RecipesTabsHolder(),
         },
       ),
     ),

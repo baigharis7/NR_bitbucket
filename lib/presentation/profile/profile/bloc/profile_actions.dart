@@ -147,3 +147,17 @@ class PerformLogOutAction extends ProfileActions {
 
   PerformLogOutAction({required this.goToLogin});
 }
+
+class SetColdStateAction extends ProfileActions {
+  final bool isCold;
+  final Function onFinish;
+
+  SetColdStateAction({ required this.isCold, required this.onFinish });
+}
+
+class SetMenstruationStateAction extends ProfileActions {
+  final bool isMenstruation;
+  final Function onFinish;
+
+  SetMenstruationStateAction({ required this.isMenstruation, required this.onFinish });
+}

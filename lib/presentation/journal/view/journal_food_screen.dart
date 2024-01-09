@@ -6,6 +6,7 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/view/add_food_favorite_screen.dart';
@@ -14,6 +15,7 @@ import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_food_ac
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_food_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_food_state.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/event_item_with_edit_and_like.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_info_card.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
@@ -209,24 +211,25 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                   ),
                 ),
               ),
-              bottomNavigationBar: const CustomBottomAppBar(initStateCallback: null,),
-              resizeToAvoidBottomInset: true,
-              floatingActionButton: FloatingActionButton(
-                elevation: 2.0,
-                backgroundColor: Colors.white,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(Dimens.paddingSmall),
-                  child: Image.asset(
-                    'assets/images/logo_black.png',
-                    fit: BoxFit.cover,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.JOURNAL)
+              // const CustomBottomAppBar(initStateCallback: null,),
+              // resizeToAvoidBottomInset: true,
+              // floatingActionButton: FloatingActionButton(
+              //   elevation: 2.0,
+              //   backgroundColor: Colors.white,
+              //   onPressed: () {
+              //     Navigator.pop(context);
+              //   },
+              //   child: Container(
+              //     padding: const EdgeInsets.all(Dimens.paddingSmall),
+              //     child: Image.asset(
+              //       'assets/images/logo_black.png',
+              //       fit: BoxFit.cover,
+              //       color: Colors.black,
+              //     ),
+              //   ),
+              // ),
+              // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
             );
           },
         ),

@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/calendar/view/calendar_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -23,6 +24,7 @@ import 'package:nutrenaissance_flutter/presentation/journal/view/journal_sport_s
 import 'package:nutrenaissance_flutter/presentation/liquidevent/view/add_liquid_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_vertical_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/modifiable_center_box_with_watch_and_add.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/text_icon_box.dart';
@@ -220,22 +222,23 @@ class _JournalScreenState extends State<JournalScreen> {
                     ),
                   ),
                 ),
-                bottomNavigationBar: const CustomBottomAppBar(initStateCallback: null,),
-                resizeToAvoidBottomInset: true,
-                floatingActionButton: FloatingActionButton(
-                  elevation: 2.0,
-                  backgroundColor: Colors.white,
-                  onPressed: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
-                  child: Container(
-                    padding: const EdgeInsets.all(Dimens.paddingSmall),
-                    child: Image.asset(
-                      'assets/images/logo_black.png',
-                      fit: BoxFit.cover,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.JOURNAL,)
+                // const CustomBottomAppBar(initStateCallback: null,),
+                // resizeToAvoidBottomInset: true,
+                // floatingActionButton: FloatingActionButton(
+                //   elevation: 2.0,
+                //   backgroundColor: Colors.white,
+                //   onPressed: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
+                //   child: Container(
+                //     padding: const EdgeInsets.all(Dimens.paddingSmall),
+                //     child: Image.asset(
+                //       'assets/images/logo_black.png',
+                //       fit: BoxFit.cover,
+                //       color: Colors.black,
+                //     ),
+                //   ),
+                // ),
+                // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               );
             },
           ),

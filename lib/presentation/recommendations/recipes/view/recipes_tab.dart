@@ -16,6 +16,8 @@ import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/recipe_carousel.dart';
 
+import '../../../widgets/custom_bottom_navi_bar_widget.dart';
+
 class RecipesTab extends StatefulWidget {
   final List<SimpleItem> foodItems;
 
@@ -151,22 +153,22 @@ class _RecipesTab extends State<RecipesTab> {
                 ),
               ),
             ),
-            bottomNavigationBar: CustomBottomAppBar(initStateCallback: () => initState()),
-            resizeToAvoidBottomInset: true,
-            floatingActionButton: FloatingActionButton(
-              elevation: 2.0,
-              backgroundColor: Colors.white,
-              onPressed: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
-              child: Container(
-                padding: const EdgeInsets.all(Dimens.paddingSmall),
-                child: Image.asset(
-                  'assets/images/logo_black.png',
-                  fit: BoxFit.cover,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            // bottomNavigationBar: CustomBottomAppBar(initStateCallback: () => initState()),
+            // resizeToAvoidBottomInset: true,
+            // floatingActionButton: FloatingActionButton(
+            //   elevation: 2.0,
+            //   backgroundColor: Colors.white,
+            //   onPressed: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
+            //   child: Container(
+            //     padding: const EdgeInsets.all(Dimens.paddingSmall),
+            //     child: Image.asset(
+            //       'assets/images/logo_black.png',
+            //       fit: BoxFit.cover,
+            //       color: Colors.black,
+            //     ),
+            //   ),
+            // ),
+            // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           );
         },
       ),

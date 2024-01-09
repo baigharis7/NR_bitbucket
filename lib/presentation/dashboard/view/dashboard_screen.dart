@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
@@ -19,17 +21,20 @@ import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/m
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
-import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/view/weekly_dashboard_detail_screen.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/dashboard_calendar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/energy_balance_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/liquids_summary_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/swith_with_function_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_rda_nutrients_dashboard_widget.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import '../../../infrastructure/utils/constants.dart';
 import '../../fiber_detail/view/fiber_detail_Screen.dart';
+import '../../journal/view/journal_screen.dart';
+import '../../recommendations/common/view/recommendations_tabs_holder.dart';
 
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -106,8 +111,15 @@ class _DashboardScreen extends State<DashboardScreen>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            IconButton(onPressed: () => Navigator.pushNamed(context, WeeklyDashboardDetailScreen.routeName).then((value) => bloc.add(InitializeState())), icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
-                            Text(bloc.getTodayMessage(AppLocalizations.of(context)!.today, Localizations.localeOf(context).languageCode),)
+                            // IconButton(onPressed: () => Navigator.pushNamed(context, WeeklyDashboardDetailScreen.routeName).then((value) => bloc.add(InitializeState())), icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
+                            IconButton(onPressed: () => showDialog(context: context, builder: (context) => const SimpleDialog(/*alignment: Alignment.topCenter, */
+                              insetPadding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+                              contentPadding: EdgeInsets.zero,
+                              children: [
+                              DashboardCalendarWidget(),
+                            ],
+                            ),), icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
+                            Text(bloc.getTodayMessage(AppLocalizations.of(context)!.today, Localizations.localeOf(context).languageCode),),
                           ],
                         ),
                         SwitchDashboardWidget(
@@ -290,22 +302,23 @@ class _DashboardScreen extends State<DashboardScreen>
                   ],
                 ),
               ),
-              bottomNavigationBar: CustomBottomAppBar(initStateCallback: () => bloc.add(InitializeState())),
-              resizeToAvoidBottomInset: true,
-              floatingActionButton: FloatingActionButton(
-                elevation: 2.0,
-                backgroundColor: Colors.white,
-                onPressed: () {},
-                child: Container(
-                  padding: const EdgeInsets.all(Dimens.paddingSmall),
-                  child: Image.asset(
-                    'assets/images/logo_black.png',
-                    fit: BoxFit.cover,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD,)
+              // CustomBottomAppBar(initStateCallback: () => bloc.add(InitializeState())),
+              // resizeToAvoidBottomInset: true,
+              // floatingActionButton: FloatingActionButton(
+              //   elevation: 2.0,
+              //   backgroundColor: Colors.white,
+              //   onPressed: () {},
+              //   child: Container(
+              //     padding: const EdgeInsets.all(Dimens.paddingSmall),
+              //     child: Image.asset(
+              //       'assets/images/logo_black.png',
+              //       fit: BoxFit.cover,
+              //       color: Colors.black,
+              //     ),
+              //   ),
+              // ),
+              // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
             );
           },
         ),

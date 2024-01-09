@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/foodslist/view/food_list_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/recipes/view/recipes_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/recommendations/view/recommendations_tab.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 
 class RecommendationsTabHolder extends StatefulWidget {
   static const routeName = '/recommendations_holder';
@@ -26,16 +28,18 @@ class _RecommendationsTabHolderState extends State<RecommendationsTabHolder> wit
       if (_selectedTab == 0) {
         title = AppLocalizations.of(context)!.recommendations;
       } else if (_selectedTab == 1) {
-        title = AppLocalizations.of(context)!.recipes;
-      } else if (_selectedTab == 2) {
+        // title = AppLocalizations.of(context)!.recipes;
         title = AppLocalizations.of(context)!.foods_list;
       }
+      // else if (_selectedTab == 2) {
+      //   title = AppLocalizations.of(context)!.foods_list;
+      // }
     });
   }
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
         setState(() {
           _selectedTab = _tabController.index;
@@ -80,7 +84,7 @@ class _RecommendationsTabHolderState extends State<RecommendationsTabHolder> wit
             indicatorColor: Colors.black,
             tabs: [
               Tab(text: AppLocalizations.of(context)!.tips.toUpperCase()),
-              Tab(text: AppLocalizations.of(context)!.recipes.toUpperCase()),
+              // Tab(text: AppLocalizations.of(context)!.recipes.toUpperCase()),
               Tab(text: AppLocalizations.of(context)!.list.toUpperCase()),
             ],
           ),
@@ -90,10 +94,11 @@ class _RecommendationsTabHolderState extends State<RecommendationsTabHolder> wit
           controller: _tabController,
           children: [
             const RecommendationsTab(),
-            RecipesTab(foodItems: recommendationsBloc.state.foodItems ?? []),
+            // RecipesTab(foodItems: recommendationsBloc.state.foodItems ?? []),
             FoodListScreen(foodItems: recommendationsBloc.state.foodItems ?? []),
           ],
         ),
+        bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.TIPS),
       ),
     );
   }

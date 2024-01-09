@@ -124,10 +124,10 @@ domain.UserProfileModel mapToUserProfileModelFromProfileEntity(entity.UserProfil
       : domain.FemaleCharacteristics(
       menstruation: domain.Menstruation(
         regularity: profileEntity.femaleCharacteristics!.menstruation!.regularity,
-        daysOfCycle: profileEntity.femaleCharacteristics!.menstruation!.regularity == 1
+        daysOfCycle: profileEntity.femaleCharacteristics!.menstruation!.regularity == 0
             ? profileEntity.femaleCharacteristics!.menstruation!.daysOfCycle
             : null,
-        lastStartDate: profileEntity.femaleCharacteristics!.menstruation!.regularity == 1
+        lastStartDate: profileEntity.femaleCharacteristics!.menstruation!.regularity == 0
             ? profileEntity.femaleCharacteristics!.menstruation!.lastStartDate
             : null,
       ),

@@ -222,6 +222,8 @@
     "removed_food" : "Your food has been successfully removed!",
     "keep" : "Keep",
     "tips": "Tips",
+    "discover": "Discover",
+    "my_recipes": "My Recipes",
     "micronutrients" : "Micronutrients",
     "macronutrients" : "Macronutrients",
     "weekly_nutrients" : "Weekly Nutrients",

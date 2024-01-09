@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 
 class FillHorizontalBar extends StatelessWidget {
   final double? fractionToFill;
@@ -51,7 +52,7 @@ class FillHorizontalBar extends StatelessWidget {
                         child: Container(
                           alignment: Alignment.centerLeft,
                           decoration: BoxDecoration(
-                            color: fillColor ?? Colors.teal,
+                            color: fillColor ?? AppColors.mountainMeadow,
                             borderRadius: BorderRadius.circular(20.00,),
                             shape: BoxShape.rectangle,
                           ),
