@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/num_constants.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/forgottenpassword/view/fogotten_password_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/provider/login_provider_new.dart';
 import 'package:nutrenaissance_flutter/presentation/privacypolicy/privacy_policy.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/registry/view/registry_screen.dart';
@@ -430,13 +431,16 @@ class _LoginScreenState extends State<LoginScreen>
                           padding: const EdgeInsets.only(top: Dimens.heightXXSmall,left: Dimens.heightXSmall,right: Dimens.heightXSmall,bottom: Dimens.heightSmall),
                           child: SizedBox(
                               width: double.infinity,
-                              child: Text(
-                                AppLocalizations.of(context)!
-                                    .forgotten_password,
-                                textAlign: TextAlign.right,
-                                style: const TextStyle(
-                                    decoration: TextDecoration.underline,
-                                    color: AppColors.mountainMeadow,),
+                              child: InkWell(
+                                child: Text(
+                                  AppLocalizations.of(context)!
+                                      .forgotten_password,
+                                  textAlign: TextAlign.right,
+                                  style: const TextStyle(
+                                      decoration: TextDecoration.underline,
+                                      color: AppColors.mountainMeadow,),
+                                ),
+                                onTap: () => Navigator.pushNamed(context, ForgottenPasswordScreen.routeName),
                               ),),
                         ),
                         Container(

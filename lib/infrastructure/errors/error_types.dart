@@ -48,6 +48,8 @@ enum ErrorTypes {
   signInError,
   signOutError,
   synchronizeEventsError,
+  emailSendError,
+  confirmationCodeError,
 }
 
 enum FormErrorTypes {
@@ -57,4 +59,5 @@ enum FormErrorTypes {
   emptyPasswordError,
   emptyRepeatPassword,
   repeatPasswordError,
+  emptyConfirmationCode,
 }
