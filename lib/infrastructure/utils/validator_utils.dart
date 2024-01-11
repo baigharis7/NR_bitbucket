@@ -36,7 +36,8 @@ FormErrorTypes? validatePasswordOrNull(bool? isLogin,String? password) {
 }
 
 bool _isPasswordValid(String password) {
-  const pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$';
+  const pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$';
+  // const pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$';
   final regExp = RegExp(pattern);
 
   if (!regExp.hasMatch(password)) {

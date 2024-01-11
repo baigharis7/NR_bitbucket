@@ -303,9 +303,9 @@ class _LoginScreenState extends State<LoginScreen>
   Widget build(BuildContext context) {
     final provider = LoginProviderNew();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
       provider.initialize((ErrorTypes errorType) => showErrorSnackBar(context, resolveError(context, errorType)));
-    });
+    // });
 
     return ChangeNotifierProvider<LoginProviderNew>(
       create: (context) => provider,

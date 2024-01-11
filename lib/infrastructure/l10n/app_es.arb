@@ -159,7 +159,7 @@
     "locally_saving_food_event_error" : "Ha habido un error al guardar tu evento de comida en local. Prueba de nuevo más tarde.",
     "uploading_food_event_error" : "Ha habido un error al subir tu evento de comida. Prueba de nuevo más tarde.",
     "retrieve_food_events_error" : "Ha habido un error al recuperar tus eventos de comida. Prueba de nuevo más tarde.",
-    "invalid_password_error" : "La contraseña debe tener al menos 8 caracteres, y contener una letra en minúscula, una letra en mayúscula y un número al menos.",
+    "invalid_password_error" : "La contraseña debe tener al menos 8 caracteres y contener al menos una letra minúscula, una letra mayúscula, un carácter especial y un número.",
     "username_empty_or_null_error" : "Tienes que introducir un nombre de usuario",
     "email_format_error" : "El email introducido contiene errores",
     "empty_repeat_password" : "Este campo no puede estar vacío",
