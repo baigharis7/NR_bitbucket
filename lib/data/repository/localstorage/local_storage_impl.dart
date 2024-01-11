@@ -686,7 +686,7 @@ class LocalStorageImpl extends LocalStorageRepository {
 
   @override
   Future<void> removeFoodEvent(FoodEventComplete foodEventComplete) async {
-    var foodEventEntity = FoodEventEntity(foodEventComplete.userId, foodEventComplete.eventDate, foodEventComplete.mealType, foodEventComplete.foodName, foodEventComplete.comment, [], foodEventComplete.eventKcals);
+    var foodEventEntity = FoodEventEntity(foodEventComplete.userId, foodEventComplete.eventDate, foodEventComplete.eventId, foodEventComplete.mealType, foodEventComplete.foodName, foodEventComplete.comment, [], foodEventComplete.eventKcals);
     try {
       await foodEventEntity.delete();
     } catch (error) {
