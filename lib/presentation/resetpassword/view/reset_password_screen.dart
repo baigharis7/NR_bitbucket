@@ -84,8 +84,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             } else {
               LoadingScreen.instance().hide();
             }
-            if (state.onError != null)
-              showErrorSnackBar(context, resolveError(ctx, state.onError!));
+            if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
           },
           builder: (context, state) {
             return Scaffold(
@@ -93,7 +92,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 key: _formKey,
                 child: Container(
                   margin: const EdgeInsets.symmetric(
-                      horizontal: Dimens.marginXXLarge),
+                      horizontal: Dimens.marginXXLarge,),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -129,6 +128,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         height: Dimens.heightXSmall,
                       ),
                       TextFormField(
+                        obscureText: state.isPasswordVisible ?? false,
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(
@@ -137,6 +137,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           ),
                           hintText: AppLocalizations.of(context)!.new_password,
                           errorMaxLines: 3,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              (state.isPasswordVisible ?? false) ? Icons.visibility : Icons.visibility_off,
+                            ),
+                            onPressed: () => bloc.add(ChangePasswordVisibilityEventAction()),
+                          ),
                         ),
                         controller: _newPasswordController,
                         validator: (value) => resolveFormError(
