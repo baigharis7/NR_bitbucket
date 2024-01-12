@@ -15,7 +15,9 @@ class ConfirmResetPasswordEventAction extends ResetPasswordEvent {
       {required this.username,
       required this.password,
       required this.confirmationCode,
-      required this.onFinish});
+      required this.onFinish,});
 }
 
 class ChangePasswordVisibilityEventAction extends ResetPasswordEvent {}
+
+class ChangeRepeatPasswordVisibilityEventAction extends ResetPasswordEvent {}

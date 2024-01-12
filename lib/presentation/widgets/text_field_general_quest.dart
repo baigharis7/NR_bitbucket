@@ -10,7 +10,7 @@ class TextFieldGeneralQuest extends StatefulWidget {
   final Color errorBorderColor;
   final int? value;
 
-  TextFieldGeneralQuest(
+  const TextFieldGeneralQuest(
       {Key? key,
       required this.title,
       required this.onChanged,
@@ -56,10 +56,7 @@ class _TextFieldGeneralQuestState extends State<TextFieldGeneralQuest> {
                       controller: textController,
                       decoration: const InputDecoration(),
                       onChanged: (value) {
-                        if (textController.text != '') {
-                          widget.onChanged
-                              .call(int.parse(textController.text.orEmpty()));
-                        }
+                        widget.onChanged.call(int.parse(textController.text.toString().isEmpty ? '-1' : textController.text));
                       },
                     ),
                   ],

@@ -11,7 +11,7 @@ part 'reset_password_state.dart';
 
 class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
   final LoginRepository loginRepository;
-  ResetPasswordBloc({required this.loginRepository}) : super(ResetPasswordState(isLoading: false, isPasswordVisible: false)) {
+  ResetPasswordBloc({required this.loginRepository}) : super(ResetPasswordState(isLoading: false, isPasswordVisible: false, isRepeatPasswordVisible: false)) {
     on<InitializeEventAction>((event, emit) {
       // TODO: implement event handler
     });
@@ -33,7 +33,12 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
       emit(state.copyWith(isLoading: true));
       state.isPasswordVisible = state.isPasswordVisible! ? false : true;
 
-      print(state.isPasswordVisible);
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<ChangeRepeatPasswordVisibilityEventAction>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      state.isRepeatPasswordVisible = state.isRepeatPasswordVisible! ? false : true;
 
       emit(state.copyWith(isLoading: false));
     },);

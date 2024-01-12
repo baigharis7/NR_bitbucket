@@ -23,43 +23,45 @@ class ObjectivesScreen extends StatefulWidget {
 
 class _ObjectivesScreenState extends State<ObjectivesScreen> {
   showObjectivesErrorDialog(BuildContext context) {
-    final mediaQuerySize = MediaQuery.of(context).size;
+    // final mediaQuerySize = MediaQuery.of(context).size;
     showDialog(
         context: context,
-        builder: (ctx) => Container(padding: EdgeInsets.all(Dimens.paddingLarge),
-              decoration: BoxDecoration(
+        builder: (ctx) => Container(
+              padding: const EdgeInsets.all(Dimens.paddingLarge),
+              decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
-                  color: Colors.red),
-              margin: EdgeInsets.symmetric(
-                  vertical: Dimens.margin6XLarge,
-                  horizontal: 75.0),
-              child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  color: Colors.red,),
+              margin: const EdgeInsets.symmetric(
+                  vertical: Dimens.margin6XLarge, horizontal: 75.0,),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(alignment: AlignmentDirectional.centerEnd,
-                    child: Container()
-                    // Icon(
-                    //   Icons.cancel,
-                    //   color: Colors.white,
-                    //   size: 24.0,
-                    // ),
-                  ),
+                  Container(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: Container()
+                      // const Icon(
+                      //   Icons.cancel,
+                      //   color: Colors.white,
+                      //   size: 24.0,
+                      // )
+                      ,),
                   Expanded(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(AppLocalizations.of(context)!.select_objective,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: Dimens.fontSizeMedium,
-                                decoration: TextDecoration.none),
-                            textAlign: TextAlign.center),
+                                decoration: TextDecoration.none,),
+                            textAlign: TextAlign.center,),
                       ],
                     ),
                   ),
                 ],
               ),
-            ));
+            ),);
   }
 
   @override
@@ -104,9 +106,9 @@ class _ObjectivesScreenState extends State<ObjectivesScreen> {
                 Expanded(
                   child: SingleChildScrollView(
                     child: Container(
-                      margin: EdgeInsets.symmetric(
+                      margin: const EdgeInsets.symmetric(
                           horizontal: Dimens.marginLarge,
-                          vertical: Dimens.marginLarge),
+                          vertical: Dimens.marginLarge,),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -130,59 +132,96 @@ class _ObjectivesScreenState extends State<ObjectivesScreen> {
                               ),
                             ),
                           ),
-                          Column(crossAxisAlignment: CrossAxisAlignment.start,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
-                                  child: const Text('', style: TextStyle(
-                                    fontSize: Dimens.fontSizeNormal,
-                                    fontWeight: FontWeight.bold,
-                                  ),)),
-                              ...state.objectivesInfoMaster!.objectives.map((objective) =>
-                                  TextCheckboxBox(
-                                    title: objective.translate(context),
-                                    checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
-                                    onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
-                                    overflow: TextOverflow.clip,
-                                  ),
-                              ).toList(),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: Dimens.marginXSmall,
+                                      vertical: Dimens.marginSmall,),
+                                  child: const Text(
+                                    '',
+                                    style: TextStyle(
+                                      fontSize: Dimens.fontSizeNormal,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),),
+                              ...state.objectivesInfoMaster!.objectives
+                                  .map(
+                                    (objective) => TextCheckboxBox(
+                                      title: objective.translate(context),
+                                      checkboxValue: state.profile!.objectives
+                                          .orEmpty()
+                                          .contains(objective.id),
+                                      onChangedCheckbox: () => bloc.add(
+                                          AddObjectiveToListAction(
+                                              id: objective.id,),),
+                                      overflow: TextOverflow.clip,
+                                    ),
+                                  )
+                                  .toList(),
                             ],
                           ),
-                          Column(crossAxisAlignment: CrossAxisAlignment.start,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
-                                  child: const Text('Metabolic objectives', style: TextStyle(
-                                    fontSize: Dimens.fontSizeNormal,
-                                    fontWeight: FontWeight.bold,
-                                  ),)),
-                              ...state.objectivesInfoMaster!.metabolicObjectives.map((objective) =>
-                                  TextCheckboxBox(
-                                    title: objective.translate(context),
-                                    checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
-                                    onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
-                                    overflow: TextOverflow.clip,
-                                  ),
-                              ).toList(),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: Dimens.marginXSmall,
+                                      vertical: Dimens.marginSmall,),
+                                  child: const Text(
+                                    'Metabolic objectives',
+                                    style: TextStyle(
+                                      fontSize: Dimens.fontSizeNormal,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),),
+                              ...state.objectivesInfoMaster!.metabolicObjectives
+                                  .map(
+                                    (objective) => TextCheckboxBox(
+                                      title: objective.translate(context),
+                                      checkboxValue: state.profile!.objectives
+                                          .orEmpty()
+                                          .contains(objective.id),
+                                      onChangedCheckbox: () => bloc.add(
+                                          AddObjectiveToListAction(
+                                              id: objective.id,),),
+                                      overflow: TextOverflow.clip,
+                                    ),
+                                  )
+                                  .toList(),
                             ],
                           ),
-                          Column(crossAxisAlignment: CrossAxisAlignment.start,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
-                                  child: const Text('Body composition objectives', style: TextStyle(
-                                    fontSize: Dimens.fontSizeNormal,
-                                    fontWeight: FontWeight.bold,
-                                  ),)),
-                              ...state.objectivesInfoMaster!.bodyCompositionObjectives.map((objective) =>
-                                  TextRadioButtonExpansible(
-                                    title: objective.translate(context),
-                                    isSelected: state.profile!.objectives.orEmpty().contains(objective.id),
-                                    onPressed: () => bloc.add(AddRadioObjectiveToListAction(id: objective.id)),
-                                    // overflow: TextOverflow.clip,
-                                    explanation: '',
-                                  ),
-                              ).toList(),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: Dimens.marginXSmall,
+                                      vertical: Dimens.marginSmall,),
+                                  child: const Text(
+                                    'Body composition objectives',
+                                    style: TextStyle(
+                                      fontSize: Dimens.fontSizeNormal,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),),
+                              ...state.objectivesInfoMaster!
+                                  .bodyCompositionObjectives
+                                  .map(
+                                    (objective) => TextRadioButtonExpansible(
+                                      title: objective.translate(context),
+                                      isSelected: state.profile!.objectives
+                                          .orEmpty()
+                                          .contains(objective.id),
+                                      onPressed: () => bloc.add(
+                                          AddRadioObjectiveToListAction(
+                                              id: objective.id,),),
+                                      // overflow: TextOverflow.clip,
+                                      explanation: '',
+                                    ),
+                                  )
+                                  .toList(),
                             ],
                           ),
                         ],
@@ -191,21 +230,22 @@ class _ObjectivesScreenState extends State<ObjectivesScreen> {
                   ),
                 ),
                 Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),),
                   child: Container(
-                      margin:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20,),
                       child: RoundedCustomButton(
                         onPressed: () {
                           if (state.profile!.objectives!.isNotEmpty) {
                             // bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, GeneralQuestionsScreen.routeName)));
-                            Navigator.popAndPushNamed(context, GeneralQuestionsScreen.routeName);
+                            Navigator.popAndPushNamed(
+                                context, GeneralQuestionsScreen.routeName,);
                           } else {
                             showObjectivesErrorDialog(context);
                           }
                         },
-                      )),
+                      ),),
                 ),
               ],
             );
@@ -213,6 +253,6 @@ class _ObjectivesScreenState extends State<ObjectivesScreen> {
         ),
         // bottomNavigationBar: ,
       ),
-    ));
+    ),);
   }
 }

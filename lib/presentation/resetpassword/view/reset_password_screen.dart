@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -58,7 +57,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         width: mediaQuerySize.width,
         color: const Color.fromARGB(148, 104, 96, 96),
         child: ConfirmationDialog(
-            message: AppLocalizations.of(context)!.password_save_successfully),
+          message: AppLocalizations.of(context)!.password_save_successfully,
+        ),
       ),
     ).then(
       (value) => Navigator.pushNamedAndRemoveUntil(
@@ -92,7 +92,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 key: _formKey,
                 child: Container(
                   margin: const EdgeInsets.symmetric(
-                      horizontal: Dimens.marginXXLarge,),
+                    horizontal: Dimens.marginXXLarge,
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -118,17 +119,18 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         ),
                         controller: _emailController,
                         validator: (value) => resolveFormError(
-                            context,
-                            isEmail(value)
-                                ? null
-                                : FormErrorTypes.emailFormatError),
+                          context,
+                          isEmail(value)
+                              ? null
+                              : FormErrorTypes.emailFormatError,
+                        ),
                         onChanged: (value) => _formKey.currentState!.validate(),
                       ),
                       const SizedBox(
                         height: Dimens.heightXSmall,
                       ),
                       TextFormField(
-                        obscureText: state.isPasswordVisible ?? false,
+                        obscureText: !(state.isPasswordVisible ?? false),
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(
@@ -139,20 +141,26 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           errorMaxLines: 3,
                           suffixIcon: IconButton(
                             icon: Icon(
-                              (state.isPasswordVisible ?? false) ? Icons.visibility : Icons.visibility_off,
+                              (state.isPasswordVisible ?? false)
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                             ),
-                            onPressed: () => bloc.add(ChangePasswordVisibilityEventAction()),
+                            onPressed: () =>
+                                bloc.add(ChangePasswordVisibilityEventAction()),
                           ),
                         ),
                         controller: _newPasswordController,
                         validator: (value) => resolveFormError(
-                            context, validatePasswordOrNull(false, value)),
+                          context,
+                          validatePasswordOrNull(false, value),
+                        ),
                         onChanged: (value) => _formKey.currentState!.validate(),
                       ),
                       const SizedBox(
                         height: Dimens.heightXSmall,
                       ),
                       TextFormField(
+                        obscureText: !(state.isRepeatPasswordVisible ?? false),
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(
@@ -162,13 +170,23 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           hintText:
                               AppLocalizations.of(context)!.repeat_password,
                           errorMaxLines: 3,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              (state.isRepeatPasswordVisible ?? false)
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () => bloc.add(
+                                ChangeRepeatPasswordVisibilityEventAction(),),
+                          ),
                         ),
                         controller: _repeatPasswordController,
                         validator: (value) => resolveFormError(
-                            context,
-                            value != _newPasswordController.text
-                                ? FormErrorTypes.repeatPasswordError
-                                : null),
+                          context,
+                          value != _newPasswordController.text
+                              ? FormErrorTypes.repeatPasswordError
+                              : null,
+                        ),
                         onChanged: (value) => _formKey.currentState!.validate(),
                       ),
                       const SizedBox(
@@ -187,10 +205,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         ),
                         controller: _confirmationCodeController,
                         validator: (value) => resolveFormError(
-                            context,
-                            value.isEmptyOrNull()
-                                ? FormErrorTypes.emptyConfirmationCode
-                                : null,),
+                          context,
+                          value.isEmptyOrNull()
+                              ? FormErrorTypes.emptyConfirmationCode
+                              : null,
+                        ),
                         onChanged: (value) => _formKey.currentState!.validate(),
                         keyboardType: TextInputType.number,
                       ),
