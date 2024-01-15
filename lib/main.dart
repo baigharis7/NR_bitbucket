@@ -425,6 +425,7 @@ void main() async {
     getUserIdInteractor: getUserIdInteractor,
     saveLiquidEventInteractor: saveLiquidEventInteractor,
     uploadLiquidEventInteractor: uploadLiquidEventInteractor,
+    getWeekLiquidEventsInteractor: getWeekLiquidEventsInteractor,
   );
 
   final journalFoodBloc = JournalFoodBloc(

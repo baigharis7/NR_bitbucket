@@ -33,22 +33,26 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
     final mediaQuerySize = MediaQuery.of(context).size;
 
-    showDialog(context: context, builder: (ctx) => Container(
-      height: mediaQuerySize.height,
-      width: mediaQuerySize.width,
-      color: const Color.fromARGB(148, 104, 96, 96),
-      child: ConfirmationDialog(message: AppLocalizations.of(context)!.liquid_event_successfully_saved,),
-    ),).then((value) =>
-        Navigator.pop(context),
+    showDialog(
+      context: context,
+      builder: (ctx) => Container(
+        height: mediaQuerySize.height,
+        width: mediaQuerySize.width,
+        color: const Color.fromARGB(148, 104, 96, 96),
+        child: ConfirmationDialog(
+          message:
+              AppLocalizations.of(context)!.liquid_event_successfully_saved,
+        ),
+      ),
+    ).then(
+      (value) => Navigator.pop(context),
     );
   }
 
-
-
   Future<void> showAddLiquidEventDialog(
-      String liquidName,
-      LiquidInEvent liquid,
-    ) async {
+    String liquidName,
+    LiquidInEvent liquid,
+  ) async {
     final bloc = BlocProvider.of<LiquidEventBloc>(context);
 
     await showDialog(
@@ -114,13 +118,16 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuerySize = MediaQuery.of(context).size;
+
     final bloc = BlocProvider.of<LiquidEventBloc>(context);
     final currentLanguage = Localizations.localeOf(context).languageCode;
     final infoReceived = ModalRoute.of(context)!.settings.arguments;
     if (infoReceived != null) {
       if (infoReceived is LiquidEventSimple?) {
         final liquidEventSimple = infoReceived as LiquidEventSimple?;
-        bloc.add(ReceiveLiquidsInEventFromNavigationAction(liquidEventSimple: liquidEventSimple!));
+        bloc.add(ReceiveLiquidsInEventFromNavigationAction(
+            liquidEventSimple: liquidEventSimple!));
       } else if (infoReceived is DateTime?) {
         final eventDate = infoReceived as DateTime?;
         bloc.add(ReceiveEventDateAction(dateTime: eventDate!));
@@ -136,7 +143,10 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
             elevation: 0,
             titleSpacing: Dimens.marginNormal,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios, color: Colors.black,),
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              ),
               onPressed: () => Navigator.pop(context),
             ),
             title: Row(
@@ -150,8 +160,11 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
                   ),
                 ),
                 SizedBox(
-                  child: Image.asset('assets/icon/drink_icon.png', height: 28,),
-                )
+                  child: Image.asset(
+                    'assets/icon/drink_icon.png',
+                    height: 28,
+                  ),
+                ),
               ],
             ),
           ),
@@ -175,12 +188,15 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
                 },
                 child: SingleChildScrollView(
                   child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: Dimens.marginNormal),
                     child: Column(
                       children: [
                         Container(
                           alignment: Alignment.center,
-                          margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal,),
+                          margin: const EdgeInsets.symmetric(
+                            vertical: Dimens.marginNormal,
+                          ),
                           child: Text(
                             AppLocalizations.of(context)!.add_liquid_title,
                             style: const TextStyle(
@@ -190,29 +206,34 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
                         ),
                         Container(
                           alignment: Alignment.center,
-                          margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
+                          margin: const EdgeInsets.symmetric(
+                              vertical: Dimens.marginNormal),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal, vertical: Dimens.paddingSmall),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: Dimens.paddingNormal,
+                                vertical: Dimens.paddingSmall),
                             child: Autocomplete<String>(
                               fieldViewBuilder: (
-                                  BuildContext context,
-                                  TextEditingController textEditingController,
-                                  FocusNode focusNode,
-                                  VoidCallback onFieldSubmitted,
-                                  ) {
+                                BuildContext context,
+                                TextEditingController textEditingController,
+                                FocusNode focusNode,
+                                VoidCallback onFieldSubmitted,
+                              ) {
                                 _foodInputController = textEditingController;
                                 return TextField(
                                   decoration: InputDecoration(
                                     fillColor: Colors.black,
-                                    labelText: AppLocalizations.of(context)!.write_here_hint,
+                                    labelText: AppLocalizations.of(context)!
+                                        .write_here_hint,
                                     suffixIcon: IconButton(
                                       icon: textEditingController.text != ''
                                           ? const Icon(
-                                        Icons.highlight_remove,
-                                        color: Colors.black,
-                                      )
+                                              Icons.highlight_remove,
+                                              color: Colors.black,
+                                            )
                                           : Container(),
-                                      onPressed: () => setState(() => textEditingController.text = ''),
+                                      onPressed: () => setState(() =>
+                                          textEditingController.text = ''),
                                     ),
                                   ),
                                   controller: textEditingController,
@@ -222,15 +243,23 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
                                   }),
                                 );
                               },
-                              optionsBuilder: (TextEditingValue textEditingValue) {
-                                if (textEditingValue.text == '' || textEditingValue.text.length < 2) return const Iterable<String>.empty();
-                                return state.liquidNames!.foodsAndDrinksNames!.drinkNames!
+                              optionsBuilder:
+                                  (TextEditingValue textEditingValue) {
+                                if (textEditingValue.text == '' ||
+                                    textEditingValue.text.length < 2)
+                                  return const Iterable<String>.empty();
+                                return state.liquidNames!.foodsAndDrinksNames!
+                                    .drinkNames!
                                     .map((item) => item.translate(context))
-                                    .where((String option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                                    .where((String option) => option
+                                        .toLowerCase()
+                                        .contains(textEditingValue.text
+                                            .toLowerCase()));
                               },
                               onSelected: (option) {
                                 // TODO: manage possible errors
-                                final food = bloc.findLiquidId(option, currentLanguage);
+                                final food =
+                                    bloc.findLiquidId(option, currentLanguage);
                                 showAddLiquidEventDialog(
                                   option,
                                   food!,
@@ -241,43 +270,121 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
                         ),
                         Column(
                           children: [
-                            _foodInputController.text == '' && state.liquidsInEvent != null && state.liquidsInEvent!.isEmpty
-                            // TODO: aquí saldrían los FAVORITOS.
-                                ? Container()
+                            _foodInputController.text == '' &&
+                                    state.liquidsInEvent != null &&
+                                    state.liquidsInEvent!.isEmpty
+                                // TODO: aquí saldrían los FAVORITOS.
+                                ? state.weeklyFrequentLiquids.orEmpty().isNotEmpty ? GridView(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: Dimens.paddingLarge,),
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      mainAxisSpacing: 0,
+                                      crossAxisSpacing: Dimens.marginNormal,
+                                      mainAxisExtent: 55.0,
+                                      childAspectRatio: 3 / 1,
+                                    ),
+                                    shrinkWrap: true,
+                                    children: [
+                                      ...state.weeklyFrequentLiquids.orEmpty()
+                                          .map(
+                                            (liquid) => Card(
+                                              elevation: 3.00,
+                                              shadowColor: Colors.black,
+                                              child: Container(
+                                                alignment: Alignment.center,
+                                                padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall),
+                                                decoration: BoxDecoration(
+                                                  color: state.frequentLiquidAdded?.foodInfo!.map((favorite) => favorite.translate(context)).join(', ') == liquid.foodInfo!.map((favorite) => favorite.translate(context)).join(', ') ? Colors.amber : Colors.white,
+                                                  borderRadius:
+                                                      const BorderRadius.all(
+                                                          Radius.circular(5),),
+                                                ),
+                                                child: InkWell(
+                                                  borderRadius:
+                                                      const BorderRadius.all(
+                                                          Radius.circular(10),),
+                                                  onTap: () {
+                                                    bloc.add(AddLiquidFrequentEventAction(liquidFrequent: liquid));
+                                                  },
+                                                  child: Text(
+                                                    liquid.foodInfo!.map((favorite) => favorite.translate(context)).join(', '),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                    style: const TextStyle(
+                                                      fontSize: Dimens
+                                                          .fontSizeSmall,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ).toList(),
+                                    ],
+                                  ) : Container()
                                 : Column(
-                              children: [
-                                ...state.liquidsInEvent.orEmpty().map((liquidInEvent) => LiquidCard(
-                                    liquidName: EventsHelper().findFoodNameFromId(liquidInEvent.id, context, state.liquidNames!.foodsAndDrinksNames!.drinkNames!),
-                                    quantity: liquidInEvent.qty.toString(),
-                                    removeLiquid: () => bloc.add(
-                                        RemoveLiquidFromEventAction(
-                                            liquid: liquidInEvent,
-                                        ),),
-                                    editLiquid: () {
-                                      final option = bloc.findLiquidNameFromId(
-                                          liquidInEvent.id, context,);
-                                      showAddLiquidEventDialog(
-                                        option,
-                                        liquidInEvent,
-                                      );
-                                    },
-                                  ),
-                                ).toList()
-                              ],
-                            )
+                                    children: [
+                                      ...state.liquidsInEvent
+                                          .orEmpty()
+                                          .map(
+                                            (liquidInEvent) => LiquidCard(
+                                              liquidName: EventsHelper()
+                                                  .findFoodNameFromId(
+                                                      liquidInEvent.id,
+                                                      context,
+                                                      state
+                                                          .liquidNames!
+                                                          .foodsAndDrinksNames!
+                                                          .drinkNames!),
+                                              quantity:
+                                                  liquidInEvent.qty.toString(),
+                                              removeLiquid: () => bloc.add(
+                                                RemoveLiquidFromEventAction(
+                                                  liquid: liquidInEvent,
+                                                ),
+                                              ),
+                                              editLiquid: () {
+                                                final option =
+                                                    bloc.findLiquidNameFromId(
+                                                  liquidInEvent.id,
+                                                  context,
+                                                );
+                                                showAddLiquidEventDialog(
+                                                  option,
+                                                  liquidInEvent,
+                                                );
+                                              },
+                                            ),
+                                          )
+                                          .toList()
+                                    ],
+                                  )
                           ],
                         ),
                         Container(
-                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge),
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: Dimens.marginXLarge),
                           child: RoundedCustomButton(
                             onPressed: () {
-                              state.liquidsInEvent!.isEmpty
-                                  ? ToastHelper().showToast(text: AppLocalizations.of(context)!.no_foods_in_event)
-                                  : bloc.add(FinishLiquidEventAction(onFinish: () => _showConfirmationDialog(context),
-                              ),);
+                              if (state.liquidsInEvent!.isEmpty) {
+                                if (!state.frequentLiquidAdded.isNull()) {
+                                  bloc.add(FinishFrequentLiquidEventAction(onFinish: () => _showConfirmationDialog(context),));
+                                }
+                              }
+                              else {
+                                bloc.add(
+                                  FinishLiquidEventAction(
+                                    onFinish: () =>
+                                        _showConfirmationDialog(context),
+                                  ),
+                                );
+                              }
                             },
                           ),
-                        )],
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -288,5 +395,4 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
       ),
     );
   }
-
 }

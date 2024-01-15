@@ -521,7 +521,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                     top: Dimens.marginXLarge),
                                 child: RoundedCustomButton(
                                   onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
+                                    if (_formKey.currentState!.validate() && ((state.profile?.physicalCharacteristics?.height ?? 0) > 0) && ((state.profile?.physicalCharacteristics?.weight ?? 0) > 0)) {
                                       // ToastHelper().showToast(text: 'validate');
                                       bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName)));
                                       // bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, GeneralQuestionsScreen.routeName)));
