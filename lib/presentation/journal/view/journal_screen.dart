@@ -13,6 +13,7 @@ import 'package:nutrenaissance_flutter/presentation/favorites/food/view/create_n
 import 'package:nutrenaissance_flutter/presentation/favorites/food/view/favorite_foods_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/create_new_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/favorite_sports_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces_urine_tab_holder.dart';
 import 'package:nutrenaissance_flutter/presentation/food/view/food_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_actions.dart';
@@ -194,6 +195,13 @@ class _JournalScreenState extends State<JournalScreen> {
                               showWatchButton: true,
                               onAdd: () => Navigator.pushNamed(context, CreateNewSportFavoriteScreen.routeName),
                               onWatch: () => Navigator.pushNamed(context, FavoriteSportsScreen.routeName),
+                              showAddButton: true,
+                            ),
+                            TextIconBox(
+                              title: AppLocalizations.of(context)!.feces_urine,
+                              color: Colors.grey,
+                              onAdd: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName),
+                              icon: Icons.accessibility_new_sharp,
                               showAddButton: true,
                             ),
                           ],

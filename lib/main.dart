@@ -187,6 +187,8 @@ import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/sport_f
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/create_new_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/favorite_sports_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/fecesurine/bloc/feces_urine_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces_urine_tab_holder.dart';
 import 'package:nutrenaissance_flutter/presentation/fiber_detail/bloc/fiber_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/fiber_detail/view/fiber_detail_Screen.dart';
 import 'package:nutrenaissance_flutter/presentation/food/bloc/food_bloc.dart';
@@ -248,7 +250,7 @@ import 'presentation/waterevent/view/add_water_event_screen.dart';
 
 import 'package:chuck_interceptor/chuck.dart';
 void main() async {
-  const String environmentName = String.fromEnvironment(Environment.DEV, defaultValue: Environment.DEV);
+  const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -548,6 +550,8 @@ void main() async {
     saveExplainingCardInteractionInteractor: saveExplainingCardInteractionInteractor,
   );
 
+  final fecesUrineBloc = FecesUrineBloc();
+
   final profileBloc = ProfileBloc(
     getProfileInteractor: getProfileInteractor,
     getUserIdInteractor: getUserIdInteractor,
@@ -619,6 +623,7 @@ void main() async {
         BlocProvider<WeeklyDashboardDetailBloc>(create: (ctx) => weeklyDashboardDetailBloc),
         BlocProvider<ForgottenPasswordBloc>(create: (ctx) => forgottenPasswordBloc),
         BlocProvider<ResetPasswordBloc>(create: (ctx) => resetPasswordBloc),
+        BlocProvider<FecesUrineBloc>(create: (ctx) => fecesUrineBloc),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -701,6 +706,7 @@ void main() async {
           RecipesTabsHolder.routeName: (_) => const RecipesTabsHolder(),
           ForgottenPasswordScreen.routeName: (_) => const ForgottenPasswordScreen(),
           ResetPasswordScreen.routeName: (_) => const ResetPasswordScreen(),
+          FecesUrineTabHolder.routeName: (_) => const FecesUrineTabHolder(),
         },
       ),
     ),
