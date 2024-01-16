@@ -9,5 +9,7 @@ abstract class LoginRepository {
   Future<ResendSignUpCodeResult> resendVerificationCode(String username);
   Future<void> deleteUser();
   Future<void> saveUserInUsersRemoteDatabase(SimpleUser simpleUser);
+  Future<ResetPasswordResult> resetPassword(String username);
+  Future<UpdatePasswordResult> confirmResetPassword(String username, String newPassword, String confirmationCode);
 
 }

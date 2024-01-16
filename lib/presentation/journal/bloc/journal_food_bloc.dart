@@ -154,20 +154,32 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
 
 
   bool isFoodFavourite(FoodEventComplete foodEvent) {
-    List<FoodFavorite> favFoodList = state.foodFavorites!;
+    // List<FoodFavorite> favFoodList = state.foodFavorites!;
     var isFavourite = false;
 
-    for (FoodFavorite favFood in favFoodList) {
-      isFavourite = favFood.title.contains(foodEvent.foodName.toString());
-      if(isFavourite) {
-        break;
+    // for (FoodFavorite favFood in favFoodList) {
+    //   isFavourite = favFood.title.contains(foodEvent.foodName.toString());
+    //   if(isFavourite) {
+    //     break;
+    //   }
+    //   // for (FoodInFavorite favFoodItem in favFood.ingredients) {
+    //   //   for(FoodInfo food in foodEvent.foodInfo ?? []) {
+    //   //     isFavourite = favFoodItem.name_en == food.name_es && favFoodItem.cookingMethod == food.eventInfo?.cookingMethod && food.eventInfo?.qty?.toDouble() == favFoodItem.qty.toDouble();
+    //   //     }
+    //   // }
+    // }
+
+
+    parentLoop:for (FoodFavorite favFood in state.foodFavorites ?? []) {
+
+      if (favFood.ingredients.length == (foodEvent.foodInfo?.length ?? 0)) {
+        childLoop:for (FoodInfo foodInfoItem in foodEvent.foodInfo!) {
+          isFavourite = favFood.ingredients.any((ingredientItem) => ingredientItem.id == foodInfoItem.id && ingredientItem.cookingMethod == foodInfoItem.eventInfo!.cookingMethod && ingredientItem.qty == foodInfoItem.eventInfo!.qty);
+          if (!isFavourite) break childLoop;
+        }
       }
-      // for (FoodInFavorite favFoodItem in favFood.ingredients) {
-      //   for(FoodInfo food in foodEvent.foodInfo ?? []) {
-      //     isFavourite = favFoodItem.name_en == food.name_es && favFoodItem.cookingMethod == food.eventInfo?.cookingMethod && food.eventInfo?.qty?.toDouble() == favFoodItem.qty.toDouble();
-      //     }
-      // }
     }
+
     return isFavourite;
   }
 

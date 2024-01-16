@@ -4,7 +4,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HorizontalWaterBar extends StatelessWidget {
-  final int waterTaken;
+  final double waterTaken;
   final double fractionToFill;
   final Function onAddWater;
   final double? cardElevation;
@@ -33,7 +33,7 @@ class HorizontalWaterBar extends StatelessWidget {
                 child: Text(
                   '$waterTaken L',
                   style: const TextStyle(
-                    fontSize: 32,
+                    fontSize: Dimens.fontSizeLarge,
                   ),
                 ),
               ),

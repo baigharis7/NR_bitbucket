@@ -1,3 +1,4 @@
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_simple.dart';
 
 class LiquidEventActions {
@@ -40,5 +41,17 @@ class FinishLiquidEventAction extends LiquidEventActions {
   Function onFinish;
 
   FinishLiquidEventAction({required this.onFinish});
+}
+
+class AddLiquidFrequentEventAction extends LiquidEventActions {
+  final FoodEventComplete liquidFrequent;
+
+  AddLiquidFrequentEventAction({required this.liquidFrequent});
+}
+
+class FinishFrequentLiquidEventAction extends LiquidEventActions {
+  final Function onFinish;
+
+  FinishFrequentLiquidEventAction({required this.onFinish});
 }
 

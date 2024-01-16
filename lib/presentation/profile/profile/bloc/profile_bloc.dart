@@ -29,8 +29,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../infrastructure/utils/constants.dart';
 
-class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> 
-{
+
+class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
   final GetProfileInteractor getProfileInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetUserIdInteractor getUserIdInteractor;
@@ -279,7 +279,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState>
           menstruation: Menstruation(
             regularity: state.profile?.femaleCharacteristics?.menstruation?.regularity ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
             // TODO: estos dos pueden ir a null si regularity es irregular.
-            daysOfCycle: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.daysOfCycle,
+            daysOfCycle: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile?.femaleCharacteristics?.menstruation?.daysOfCycle ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
             lastStartDate: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.lastStartDate,),);
       } else {
         femaleCharacteristics = null;
@@ -344,7 +344,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState>
         femaleCharacteristics = FemaleCharacteristics(
           menstruation: Menstruation(
             regularity: state.profile?.femaleCharacteristics?.menstruation?.regularity ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
-            daysOfCycle: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.daysOfCycle,
+            daysOfCycle: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile?.femaleCharacteristics?.menstruation?.daysOfCycle ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
             lastStartDate: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.lastStartDate,
           ),
         );

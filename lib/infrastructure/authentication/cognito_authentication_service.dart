@@ -78,4 +78,14 @@ class CognitoAuthenticationService implements AuthenticationService {
     await getAuthorization().deleteUser();
   }
 
+  @override
+  Future<ResetPasswordResult> resetPassword(String username) async {
+    return await getAuthorization().resetPassword(username: username);
+  }
+
+  @override
+  Future<UpdatePasswordResult> confirmResetPassword(String username, String newPassword, String confirmationCode) async {
+    return await getAuthorization().confirmResetPassword(username: username, newPassword: newPassword, confirmationCode: confirmationCode);
+  }
+
 }

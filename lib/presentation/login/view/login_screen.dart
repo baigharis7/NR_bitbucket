@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/num_constants.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/forgottenpassword/view/fogotten_password_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/provider/login_provider_new.dart';
 import 'package:nutrenaissance_flutter/presentation/privacypolicy/privacy_policy.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/registry/view/registry_screen.dart';
@@ -302,9 +303,9 @@ class _LoginScreenState extends State<LoginScreen>
   Widget build(BuildContext context) {
     final provider = LoginProviderNew();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
       provider.initialize((ErrorTypes errorType) => showErrorSnackBar(context, resolveError(context, errorType)));
-    });
+    // });
 
     return ChangeNotifierProvider<LoginProviderNew>(
       create: (context) => provider,
@@ -340,7 +341,9 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
                             controller: _usernameController,
                             validator: (value) => resolveFormError(context, model.validateUsername(value)),
-                          onChanged: (value) => _formKey.currentState!.validate(),),
+                          // onChanged: (value) => _formKey.currentState!.validate(),
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                          ),
                         ),
                         if (!model.isLogin) AnimatedContainer(
                           constraints: BoxConstraints(
@@ -365,7 +368,8 @@ class _LoginScreenState extends State<LoginScreen>
                                   ),
                                   controller: _emailController,
                                   validator: (value) => resolveFormError(context, model.validateEmail(value)),
-                                  onChanged: (value) => _formKey.currentState!.validate(),
+                                  // onChanged: (value) => _formKey.currentState!.validate(),
+                                  autovalidateMode: AutovalidateMode.onUserInteraction,
                                 ),
                               ),
                             ),
@@ -388,7 +392,8 @@ class _LoginScreenState extends State<LoginScreen>
                             controller: _passwordController,
                             obscureText: !model.isPasswordVisible,
                             validator: (value) => resolveFormError(context, model.validatePassword(value)),
-                            onChanged: (value) => _formKey.currentState!.validate(),
+                            // onChanged: (value) => _formKey.currentState!.validate(),
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
                           ),
                         ),
                         if (!model.isLogin)
@@ -420,7 +425,8 @@ class _LoginScreenState extends State<LoginScreen>
                                     controller: _repeatPasswordController,
                                     obscureText: !model.isRepeatPasswordVisible,
                                     validator: (value) => resolveFormError(context, model.validateRepeatPassword(value, _passwordController.text)),
-                                    onChanged: (value) => _formKey.currentState!.validate(),
+                                    // onChanged: (value) => _formKey.currentState!.validate(),
+                                    autovalidateMode: AutovalidateMode.onUserInteraction,
                                   ),
                                 ),
                               ),
@@ -430,13 +436,16 @@ class _LoginScreenState extends State<LoginScreen>
                           padding: const EdgeInsets.only(top: Dimens.heightXXSmall,left: Dimens.heightXSmall,right: Dimens.heightXSmall,bottom: Dimens.heightSmall),
                           child: SizedBox(
                               width: double.infinity,
-                              child: Text(
-                                AppLocalizations.of(context)!
-                                    .forgotten_password,
-                                textAlign: TextAlign.right,
-                                style: const TextStyle(
-                                    decoration: TextDecoration.underline,
-                                    color: AppColors.mountainMeadow,),
+                              child: InkWell(
+                                child: Text(
+                                  AppLocalizations.of(context)!
+                                      .forgotten_password,
+                                  textAlign: TextAlign.right,
+                                  style: const TextStyle(
+                                      decoration: TextDecoration.underline,
+                                      color: AppColors.mountainMeadow,),
+                                ),
+                                onTap: () => Navigator.pushNamed(context, ForgottenPasswordScreen.routeName),
                               ),),
                         ),
                         Container(

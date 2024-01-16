@@ -150,6 +150,7 @@ entity.FoodEventEntity mapToFoodEventEntity(UploadFoodEvent uploadFoodEvent) {
   return entity.FoodEventEntity(
     uploadFoodEvent.userId,
     uploadFoodEvent.eventDate,
+    uploadFoodEvent.eventId,
     uploadFoodEvent.mealType,
     uploadFoodEvent.foodName,
     uploadFoodEvent.comment,
@@ -304,6 +305,7 @@ domain.FoodEventComplete mapToFoodEventComplete(entity.FoodEventEntity foodEvent
   return domain.FoodEventComplete(
     userId: foodEventEntity.userId,
     eventDate: foodEventEntity.eventDate,
+    eventId: foodEventEntity.eventId,
     foodName: foodEventEntity.foodName,
     comment: foodEventEntity.comment,
     mealType: foodEventEntity.mealType,

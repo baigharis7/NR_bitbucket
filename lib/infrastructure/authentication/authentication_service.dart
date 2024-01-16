@@ -7,4 +7,6 @@ abstract class AuthenticationService {
   Future<SignInResult> signIn(String username, String password);
   Future<CognitoAuthSession> fetchUserAttributes();
   Future<SignOutResult> signOut();
+  Future<ResetPasswordResult> resetPassword(String username);
+  Future<UpdatePasswordResult> confirmResetPassword(String username, String newPassword, String confirmationCode);
 }

@@ -20,30 +20,33 @@ class FoodEventEntityAdapter extends TypeAdapter<FoodEventEntity> {
       fields[0] as String?,
       fields[1] as int?,
       fields[2] as int?,
-      fields[3] as String?,
+      fields[3] as int?,
       fields[4] as String?,
-      (fields[5] as List?)?.cast<FoodInfo>(),
-      fields[6] as int?,
+      fields[5] as String?,
+      (fields[6] as List?)?.cast<FoodInfo>(),
+      fields[7] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, FoodEventEntity obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
       ..write(obj.eventDate)
       ..writeByte(2)
-      ..write(obj.mealType)
+      ..write(obj.eventId)
       ..writeByte(3)
-      ..write(obj.foodName)
+      ..write(obj.mealType)
       ..writeByte(4)
-      ..write(obj.comment)
+      ..write(obj.foodName)
       ..writeByte(5)
-      ..write(obj.foodInfo)
+      ..write(obj.comment)
       ..writeByte(6)
+      ..write(obj.foodInfo)
+      ..writeByte(7)
       ..write(obj.eventKcals);
   }
 
@@ -539,6 +542,7 @@ FoodEventEntity _$FoodEventEntityFromJson(Map<String, dynamic> json) =>
     FoodEventEntity(
       json['userId'] as String?,
       json['eventDate'] as int?,
+      json['eventId'] as int?,
       json['mealType'] as int?,
       json['foodName'] as String?,
       json['comment'] as String?,
@@ -552,6 +556,7 @@ Map<String, dynamic> _$FoodEventEntityToJson(FoodEventEntity instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'eventDate': instance.eventDate,
+      'eventId': instance.eventId,
       'mealType': instance.mealType,
       'foodName': instance.foodName,
       'comment': instance.comment,

@@ -40,6 +40,7 @@ import 'package:nutrenaissance_flutter/data/repository/favorites/favorites_repos
 import 'package:nutrenaissance_flutter/data/repository/foodevents/food_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/liquidevents/liquid_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/localstorage/local_storage_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/login/login_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/masterfiles/master_files_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_repository_impl.dart';
@@ -149,6 +150,7 @@ import 'package:nutrenaissance_flutter/domain/repository/favorites/favorites_rep
 import 'package:nutrenaissance_flutter/domain/repository/foodevents/food_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/liquidevents/liquid_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
+import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/masterfiles/master_files_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
@@ -191,6 +193,8 @@ import 'package:nutrenaissance_flutter/presentation/food/bloc/food_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/food/view/food_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/forgottenpassword/bloc/forgotten_password_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/forgottenpassword/view/fogotten_password_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_food_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_liquid_bloc.dart';
@@ -219,6 +223,8 @@ import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile
 import 'package:nutrenaissance_flutter/presentation/profile/registry/view/registry_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/recipes/common/view/recipe_tabs_holder.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/resetpassword/bloc/reset_password_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/resetpassword/view/reset_password_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
@@ -337,6 +343,7 @@ void main() async {
   final DeleteFoodEventInteractor deleteFoodEventInteractor = DeleteFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
   final RemoveSportEventInteractor removeSportEventInteractor = RemoveSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
   final DeleteSportEventInteractor deleteSportEventInteractor = DeleteSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
+  final LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService, profileApi: profileApi);
 
 
   final dashboardBloc = DashboardBloc(
@@ -386,6 +393,10 @@ void main() async {
 
   final liquidSummaryDetailBloc = LiquidSummaryDetailBloc();
 
+  final forgottenPasswordBloc = ForgottenPasswordBloc(loginRepository: loginRepository);
+
+  final resetPasswordBloc = ResetPasswordBloc(loginRepository: loginRepository);
+
   final weeklyDashboardDetailBloc = WeeklyDashboardDetailBloc(
     getProfileInteractor: getProfileInteractor,
     getUserRdasInteractor: getUserRdasInteractor,
@@ -431,6 +442,7 @@ void main() async {
     getUserIdInteractor: getUserIdInteractor,
     saveLiquidEventInteractor: saveLiquidEventInteractor,
     uploadLiquidEventInteractor: uploadLiquidEventInteractor,
+    getWeekLiquidEventsInteractor: getWeekLiquidEventsInteractor,
   );
 
   final journalFoodBloc = JournalFoodBloc(
@@ -605,6 +617,8 @@ void main() async {
         BlocProvider<FiberDetailBloc>(create: (ctx) => fiberDetailBloc),
         BlocProvider<LiquidSummaryDetailBloc>(create: (ctx) => liquidSummaryDetailBloc),
         BlocProvider<WeeklyDashboardDetailBloc>(create: (ctx) => weeklyDashboardDetailBloc),
+        BlocProvider<ForgottenPasswordBloc>(create: (ctx) => forgottenPasswordBloc),
+        BlocProvider<ResetPasswordBloc>(create: (ctx) => resetPasswordBloc),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -685,6 +699,8 @@ void main() async {
           LiquidSummaryDetailScreen.routeName: (_) => const LiquidSummaryDetailScreen(),
           WeeklyDashboardDetailScreen.routeName: (_) => const WeeklyDashboardDetailScreen(),
           RecipesTabsHolder.routeName: (_) => const RecipesTabsHolder(),
+          ForgottenPasswordScreen.routeName: (_) => const ForgottenPasswordScreen(),
+          ResetPasswordScreen.routeName: (_) => const ResetPasswordScreen(),
         },
       ),
     ),

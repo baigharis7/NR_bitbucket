@@ -37,7 +37,7 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
     case ErrorTypes.savingRdasError:
       return stringResolver.saving_rdas_error;
     case ErrorTypes.uploadingProfileError:
-      return stringResolver.uploading_food_event_error;
+      return stringResolver.uploading_profile_error;
     case ErrorTypes.retrievingMasterFileError:
       return stringResolver.retrieving_master_file_error;
     case ErrorTypes.recommendationError:
@@ -104,6 +104,10 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.sign_out_error;
     case ErrorTypes.synchronizeEventsError:
       return stringResolver.synchronize_events_error;
+    case ErrorTypes.emailSendError:
+      return stringResolver.email_sent_error;
+    case ErrorTypes.confirmationCodeError:
+      return stringResolver.incorrect_confirmation_code;
   }
 }
 
@@ -124,5 +128,7 @@ String? resolveFormError(BuildContext context, FormErrorTypes? formErrorTypes) {
       return stringResolver.empty_repeat_password;
     case FormErrorTypes.repeatPasswordError:
       return stringResolver.repeat_password_error;
+    case FormErrorTypes.emptyConfirmationCode:
+      return stringResolver.error_confirmation_code;
   }
 }

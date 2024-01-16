@@ -280,7 +280,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                           ),
                         ],),
                         Container(
-                          margin: EdgeInsets.only(left: Dimens.marginLarge, right: Dimens.marginLarge, ),
+                          margin: const EdgeInsets.only(left: Dimens.marginLarge, right: Dimens.marginLarge, ),
                           child: RoundedCustomButton(
                             onPressed: () {
                               if (state.sportFromFavorite?.isEmpty ?? true) {

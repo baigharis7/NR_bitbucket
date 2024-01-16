@@ -34,4 +34,10 @@ class LoginRepositoryImpl extends LoginRepository {
   @override
   Future<void> saveUserInUsersRemoteDatabase(SimpleUser simpleUser) => profileApi.saveUser(simpleUser);
 
+  @override
+  Future<ResetPasswordResult> resetPassword(String username) => authenticationService.resetPassword(username);
+
+  @override
+  Future<UpdatePasswordResult> confirmResetPassword(String username, String newPassword, String confirmationCode) => authenticationService.confirmResetPassword(username, newPassword, confirmationCode);
+
 }
