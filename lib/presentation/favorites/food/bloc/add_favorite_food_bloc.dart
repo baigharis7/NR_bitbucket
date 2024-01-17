@@ -1,5 +1,7 @@
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/delete_food_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/get_food_favorites_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/remove_food_favorite_from_local_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/save_food_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/upload_food_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart';
@@ -31,6 +33,8 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
   final SaveFoodEventInteractor saveFoodEventInteractor;
   final GetUserIdInteractor getUserIdInteractor;
   final GetFoodFavoritesInteractor getFoodFavoritesInteractor;
+  final DeleteFoodFavoriteInteractor deleteFoodFavoriteInteractor;
+  final RemoveFoodFavoriteFromLocalInteractor removeFoodFavoriteFromLocalInteractor;
 
   AddFavoriteFoodBloc({
     required this.getMasterFileInteractor,
@@ -40,6 +44,8 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
     required this.saveFoodEventInteractor,
     required this.getUserIdInteractor,
     required this.getFoodFavoritesInteractor,
+    required this.deleteFoodFavoriteInteractor,
+    required this.removeFoodFavoriteFromLocalInteractor,
   }) : super(AddFavoriteFoodState(
     isLoading: false,
     onError: null,
@@ -165,10 +171,69 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
         emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
       }
     });
+
+    on<RemoveFavoriteFoodEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+
+      try {
+        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite.eventDate);
+        try {
+          await removeFoodFavoriteFromLocalInteractor.execute(event.foodFavorite);
+          // state.foodFavorites = await getFoodFavoritesInteractor.execute();
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
+        } catch (error) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeFoodFavoriteError));
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteFoodFavoriteError));
+      }
+    });
+
+    on<FinishFoodFavoriteCommentAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true,));
+
+      final foodFavorite = FoodFavorite(
+        title: event.foodFavorite.title.orEmpty(),
+        eventDate: event.foodFavorite.eventDate ?? DateTimeHelper().provideCurrentDate().millisecondsSinceEpoch,
+        ingredients: event.foodFavorite.ingredients,
+        drinks: [],
+        mealTime: event.foodFavorite.mealTime,
+        comment: state.comment,
+      );
+
+      try {
+        final uploadFavorite = await uploadFoodFavoriteInteractor.execute(foodFavorite);
+        if (uploadFavorite) {
+          try {
+            await saveFoodFavoriteInteractor.execute(foodFavorite, true);
+            event.onFinish.call();
+            emit(state.copyWith(isLoading: false));
+          } catch (error) {
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveFoodFavoriteError));
+          }
+        } else {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadFoodFavoriteError));
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadFoodFavoriteError));
+      }
+    },);
   }
 
   bool isFoodFavourite(FoodEventComplete foodEvent) {
-    return state.favoriteFoods?.any((favFood) => favFood.title.toString() == foodEvent.foodName.toString()) ?? false;
+    var isFavourite = false;
+    parentLoop:for (FoodFavorite favFood in state.favoriteFoods ?? []) {
+
+      if (favFood.ingredients.length == (foodEvent.foodInfo?.length ?? 0)) {
+        childLoop:for (FoodInfo foodInfoItem in foodEvent.foodInfo!) {
+          isFavourite = favFood.ingredients.any((ingredientItem) => ingredientItem.id == foodInfoItem.id && ingredientItem.cookingMethod == foodInfoItem.eventInfo!.cookingMethod && ingredientItem.qty == foodInfoItem.eventInfo!.qty);
+          if (!isFavourite) break childLoop;
+        }
+      }
+    }
+
+    return isFavourite;
   }
 
 }

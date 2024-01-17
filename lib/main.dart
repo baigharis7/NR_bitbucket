@@ -493,7 +493,9 @@ void main() async {
     uploadFoodEventInteractor: uploadFoodEventInteractor,
     saveFoodEventInteractor: saveFoodEventInteractor,
     getUserIdInteractor: getUserIdInteractor,
-    getFoodFavoritesInteractor: getFoodFavoritesInteractor
+    getFoodFavoritesInteractor: getFoodFavoritesInteractor,
+    deleteFoodFavoriteInteractor: deleteFoodFavoriteInteractor,
+    removeFoodFavoriteFromLocalInteractor: removeFoodFavoriteFromLocalInteractor,
   );
 
   final createNewFoodFavoriteBloc = CreateNewFoodFavoriteBloc(
