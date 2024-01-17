@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorit
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -185,31 +186,46 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                                         ),
                                       );
                                     } else if (arguments is FoodEventComplete
-                                        ? !bloc.isFoodFavourite(arguments)
-                                        : false) {
-                                      showAddFavoriteDialog(
-                                        context: ctx,
-                                        onNameChange: (String foodName) =>
-                                            bloc.add(
-                                          AddFoodNameAction(
-                                            name: foodName,
-                                          ),
-                                        ),
-                                        onMealTimeChange: (int mealTime) =>
-                                            bloc.add(
-                                          AddMealTimeAction(
-                                            mealTime: mealTime,
-                                          ),
-                                        ),
-                                        onFinish: () => bloc.add(
-                                          FinishAddingFavoriteAction(
-                                            onFinish: () =>
-                                                _showConfirmationDialog(
-                                              context,
+                                        /*? !bloc.isFoodFavourite(arguments)
+                                        : false*/) {
+                                      if (bloc.isFoodFavourite(arguments)) {
+                                        showUndoFavoriteDialog(
+                                          context: context,
+                                          foodTitle: (arguments).foodName ?? '',
+                                          onUndoFavorite: () => bloc.add(
+                                            RemoveFavoriteFoodEventAction(
+                                              onFinish: () =>
+                                                  Navigator.pop(context),
+                                              foodFavorite: mapToFoodFavoriteFromFoodEvent(arguments),
                                             ),
                                           ),
-                                        ),
-                                      );
+                                        );
+                                      }
+                                      else {
+                                        showAddFavoriteDialog(
+                                          context: ctx,
+                                          onNameChange: (String foodName) =>
+                                              bloc.add(
+                                                AddFoodNameAction(
+                                                  name: foodName,
+                                                ),
+                                              ),
+                                          onMealTimeChange: (int mealTime) =>
+                                              bloc.add(
+                                                AddMealTimeAction(
+                                                  mealTime: mealTime,
+                                                ),
+                                              ),
+                                          onFinish: () => bloc.add(
+                                            FinishAddingFavoriteAction(
+                                              onFinish: () =>
+                                                  _showConfirmationDialog(
+                                                    context,
+                                                  ),
+                                            ),
+                                          ),
+                                        );
+                                      }
                                     }
                                   }
                                   // (arguments is FoodFavorite || (arguments is FoodEventComplete ? !bloc.isFoodFavourite(arguments) : true)) ? () {

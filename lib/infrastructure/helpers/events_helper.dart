@@ -70,7 +70,8 @@ class EventsHelper {
       for (var event in waterEvents) {
         amount = amount + event.qty!;
       }
-      return amount;
+      // if (amount > 1) amount = 1.0;
+      return double.parse(amount.toStringAsFixed(2));
     } else {
       return 0.0;
     }

@@ -436,7 +436,10 @@ void main() async {
     isNecessaryToShowExplainingCardInteractor: isNecessaryToShowExplainingCardInteractor,
     saveExplainingCardInteractionInteractor: saveExplainingCardInteractionInteractor,
     saveFoodFavoriteInteractor: saveFoodFavoriteInteractor,
-    uploadFoodFavoriteInteractor: uploadFoodFavoriteInteractor
+    uploadFoodFavoriteInteractor: uploadFoodFavoriteInteractor,
+    removeFoodFavoriteFromLocalInteractor: removeFoodFavoriteFromLocalInteractor,
+    deleteFoodFavoriteInteractor: deleteFoodFavoriteInteractor,
+    getUserIdInteractor: getUserIdInteractor,
   );
 
   final journalSportBloc = JournalSportBloc(
