@@ -455,7 +455,10 @@ void main() async {
     isNecessaryToShowExplainingCardInteractor: isNecessaryToShowExplainingCardInteractor,
     saveExplainingCardInteractionInteractor: saveExplainingCardInteractionInteractor,
     saveFoodFavoriteInteractor: saveFoodFavoriteInteractor,
-    uploadFoodFavoriteInteractor: uploadFoodFavoriteInteractor
+    uploadFoodFavoriteInteractor: uploadFoodFavoriteInteractor,
+    removeFoodFavoriteFromLocalInteractor: removeFoodFavoriteFromLocalInteractor,
+    deleteFoodFavoriteInteractor: deleteFoodFavoriteInteractor,
+    getUserIdInteractor: getUserIdInteractor,
   );
 
   final journalSportBloc = JournalSportBloc(
@@ -512,7 +515,9 @@ void main() async {
     uploadFoodEventInteractor: uploadFoodEventInteractor,
     saveFoodEventInteractor: saveFoodEventInteractor,
     getUserIdInteractor: getUserIdInteractor,
-    getFoodFavoritesInteractor: getFoodFavoritesInteractor
+    getFoodFavoritesInteractor: getFoodFavoritesInteractor,
+    deleteFoodFavoriteInteractor: deleteFoodFavoriteInteractor,
+    removeFoodFavoriteFromLocalInteractor: removeFoodFavoriteFromLocalInteractor,
   );
 
   final createNewFoodFavoriteBloc = CreateNewFoodFavoriteBloc(

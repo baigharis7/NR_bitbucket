@@ -5,7 +5,7 @@ import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorit
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -19,6 +19,8 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 
 import '../../../foodevent/view/add_food_event_screen.dart';
+import '../../common/undo_favorite_dialog.dart';
+
 class AddFoodFavoriteScreen extends StatefulWidget {
   static const routeName = '/add_food_favorite';
 
@@ -29,18 +31,21 @@ class AddFoodFavoriteScreen extends StatefulWidget {
 }
 
 class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
-
   void _showConfirmationDialog(BuildContext context) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
     final mediaQuerySize = MediaQuery.of(context).size;
 
-    showDialog(context: context, builder: (ctx) => Container(
-      height: mediaQuerySize.height,
-      width: mediaQuerySize.width,
-      color: const Color.fromARGB(148, 104, 96, 96),
-      child: ConfirmationDialog(message: AppLocalizations.of(context)!.favorite_saved),
-    ),).then((value) =>
-        Navigator.pop(context),
+    showDialog(
+      context: context,
+      builder: (ctx) => Container(
+        height: mediaQuerySize.height,
+        width: mediaQuerySize.width,
+        color: const Color.fromARGB(148, 104, 96, 96),
+        child: ConfirmationDialog(
+            message: AppLocalizations.of(context)!.favorite_saved),
+      ),
+    ).then(
+      (value) => Navigator.pop(context),
     );
   }
 
@@ -56,7 +61,7 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
         onEdit: (String comment) => onAddComment.call(comment),
         onSaveClick: () => onSaveComment.call(),
       ),
-    );
+    ).then((value) => Navigator.pop(context));
   }
 
   Future<void> showAddFavoriteDialog({
@@ -77,6 +82,21 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
     ).then((_) => Navigator.pop(context));
   }
 
+  Future<void> showUndoFavoriteDialog({
+    required BuildContext context,
+    required String foodTitle,
+    required Function onUndoFavorite,
+  }) async {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return UndoFavoriteDialog(
+          title: foodTitle,
+          onUndoFavorite: () => onUndoFavorite.call(),
+        );
+      },
+    ).then((value) => Navigator.pop(context));
+  }
 
   @override
   void initState() {
@@ -111,28 +131,37 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
             } else {
               LoadingScreen.instance().hide();
             }
-            if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
+            if (state.onError != null)
+              showErrorSnackBar(context, resolveError(ctx, state.onError!));
           },
           builder: (ctx, state) {
             return Scaffold(
-              body: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: Column(
                       children: [
                         Container(
-                          margin: const EdgeInsets.only(top: Dimens.marginXLarge),
+                          margin:
+                              const EdgeInsets.only(top: Dimens.marginXLarge),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Expanded(
                                 flex: 1,
-                                child: IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.arrow_back_ios, size: 24)),
+                                child: IconButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    icon: const Icon(Icons.arrow_back_ios,
+                                        size: 24)),
                               ),
                               Expanded(
                                 flex: 4,
                                 child: Text(
-                                  state.foodsInFavorite!.map((favorite) => favorite.translate(ctx)).join(', '),
+                                  state.foodsInFavorite!
+                                      .map(
+                                          (favorite) => favorite.translate(ctx))
+                                      .join(', '),
                                   style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: Dimens.fontSizeLarge,
@@ -142,15 +171,85 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                               ),
                               Expanded(
                                 flex: 1,
-                                child: InkWell(onTap: (arguments is FoodFavorite || (arguments is FoodEventComplete ? !bloc.isFoodFavourite(arguments) : true)) ? () {
-                                  showAddFavoriteDialog(
-                                    context: ctx,
-                                    onNameChange: (String foodName) => bloc.add(AddFoodNameAction(name: foodName)),
-                                    onMealTimeChange: (int mealTime) => bloc.add(AddMealTimeAction(mealTime: mealTime)),
-                                    onFinish: () => bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context))),
-                                  );
-                                } : () {}, child: (arguments is FoodFavorite || (arguments is FoodEventComplete ? bloc.isFoodFavourite(arguments) : true)) ? const Icon(Icons.favorite, color: Colors.red,) : const Icon(Icons.favorite_border, color: Colors.red,),
-                              ),
+                                child: InkWell(
+                                  onTap: () {
+                                    if (arguments is FoodFavorite) {
+                                      showUndoFavoriteDialog(
+                                        context: context,
+                                        foodTitle: arguments.title,
+                                        onUndoFavorite: () => bloc.add(
+                                          RemoveFavoriteFoodEventAction(
+                                            onFinish: () =>
+                                                Navigator.pop(context),
+                                            foodFavorite: arguments,
+                                          ),
+                                        ),
+                                      );
+                                    } else if (arguments is FoodEventComplete
+                                        /*? !bloc.isFoodFavourite(arguments)
+                                        : false*/) {
+                                      if (bloc.isFoodFavourite(arguments)) {
+                                        showUndoFavoriteDialog(
+                                          context: context,
+                                          foodTitle: (arguments).foodName ?? '',
+                                          onUndoFavorite: () => bloc.add(
+                                            RemoveFavoriteFoodEventAction(
+                                              onFinish: () =>
+                                                  Navigator.pop(context),
+                                              foodFavorite: mapToFoodFavoriteFromFoodEvent(arguments),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      else {
+                                        showAddFavoriteDialog(
+                                          context: ctx,
+                                          onNameChange: (String foodName) =>
+                                              bloc.add(
+                                                AddFoodNameAction(
+                                                  name: foodName,
+                                                ),
+                                              ),
+                                          onMealTimeChange: (int mealTime) =>
+                                              bloc.add(
+                                                AddMealTimeAction(
+                                                  mealTime: mealTime,
+                                                ),
+                                              ),
+                                          onFinish: () => bloc.add(
+                                            FinishAddingFavoriteAction(
+                                              onFinish: () =>
+                                                  _showConfirmationDialog(
+                                                    context,
+                                                  ),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  }
+                                  // (arguments is FoodFavorite || (arguments is FoodEventComplete ? !bloc.isFoodFavourite(arguments) : true)) ? () {
+                                  //   showAddFavoriteDialog(
+                                  //     context: ctx,
+                                  //     onNameChange: (String foodName) => bloc.add(AddFoodNameAction(name: foodName)),
+                                  //     onMealTimeChange: (int mealTime) => bloc.add(AddMealTimeAction(mealTime: mealTime)),
+                                  //     onFinish: () => bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context))),
+                                  //   );
+                                  // } : () {}
+                                  ,
+                                  child: (arguments is FoodFavorite ||
+                                          (arguments is FoodEventComplete
+                                              ? bloc.isFoodFavourite(arguments)
+                                              : true))
+                                      ? const Icon(
+                                          Icons.favorite,
+                                          color: Colors.red,
+                                        )
+                                      : const Icon(
+                                          Icons.favorite_border,
+                                          color: Colors.red,
+                                        ),
+                                ),
                               )
                             ],
                           ),
@@ -158,44 +257,62 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                         Expanded(
                           child: SingleChildScrollView(
                             child: Container(
-                              padding: const EdgeInsets.all(Dimens.paddingNormal),
+                              padding:
+                                  const EdgeInsets.all(Dimens.paddingNormal),
                               margin: const EdgeInsets.all(Dimens.marginNormal),
                               child: Column(
                                 children: [
-                                  ...state.foodsInFavorite!.map((foodInFavorite) => FoodCard(
-                                    foodName: eventHelper.findFoodNameFromId(foodInFavorite.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!),
-                                    cookingMethod: eventHelper.findCookingMethodName(
-                                      ctx,
-                                      foodInFavorite.cookingMethod,
-                                      state.cookingMethodsInfoMaster!.cookingMethodsInfo!,
+                                  ...state.foodsInFavorite!.map(
+                                    (foodInFavorite) => FoodCard(
+                                      foodName: eventHelper.findFoodNameFromId(
+                                          foodInFavorite.id,
+                                          context,
+                                          state.foodNames!.foodsAndDrinksNames!
+                                              .foodNames!),
+                                      cookingMethod:
+                                          eventHelper.findCookingMethodName(
+                                        ctx,
+                                        foodInFavorite.cookingMethod,
+                                        state.cookingMethodsInfoMaster!
+                                            .cookingMethodsInfo!,
+                                      ),
+                                      quantity: foodInFavorite.qty.toString(),
+                                      unit: eventHelper
+                                          .findUnitName(
+                                              foodInFavorite.unit,
+                                              state.unitsInfoMaster!
+                                                  .unitsInfoMaster)
+                                          .translate(context),
+                                      removeFood: () {},
+                                      editFood: () {},
                                     ),
-                                    quantity: foodInFavorite.qty.toString(),
-                                    unit: eventHelper.findUnitName(foodInFavorite.unit, state.unitsInfoMaster!.unitsInfoMaster).translate(context),
-                                    removeFood: () {},
-                                    editFood: () {},
-                                  ),),
-                                  if (state.comment.isNotEmptyOrNull()) Container(
-                                    margin: const EdgeInsets.all(Dimens.marginNormal),
-                                    child: Card(
-                                      child: Container(
-                                        alignment: Alignment.centerLeft,
-                                        margin: const EdgeInsets.all(Dimens.marginNormal),
-                                        child: Row(
-                                          children: [
-                                            Container(
-                                              margin: const EdgeInsets.all(Dimens.marginNormal),
-                                              child: Text(
-                                                state.comment.orEmpty(),
-                                                style: const TextStyle(
-                                                  overflow: TextOverflow.clip,
+                                  ),
+                                  if (state.comment.isNotEmptyOrNull())
+                                    Container(
+                                      margin: const EdgeInsets.all(
+                                          Dimens.marginNormal),
+                                      child: Card(
+                                        child: Container(
+                                          alignment: Alignment.centerLeft,
+                                          margin: const EdgeInsets.all(
+                                              Dimens.marginNormal),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.all(
+                                                    Dimens.marginNormal),
+                                                child: Text(
+                                                  state.comment.orEmpty(),
+                                                  style: const TextStyle(
+                                                    overflow: TextOverflow.clip,
+                                                  ),
                                                 ),
-                                              ),
-                                            )
-                                          ],
+                                              )
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
                                 ],
                               ),
                             ),
@@ -205,13 +322,21 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingLarge),
-                    decoration: const BoxDecoration(borderRadius: BorderRadiusDirectional.vertical(top: Radius.circular(5.0)),color: Colors.white,boxShadow: [BoxShadow(blurRadius: 5.0)]),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: Dimens.paddingXLarge,
+                        vertical: Dimens.paddingLarge),
+                    decoration: const BoxDecoration(
+                        borderRadius: BorderRadiusDirectional.vertical(
+                            top: Radius.circular(5.0)),
+                        color: Colors.white,
+                        boxShadow: [BoxShadow(blurRadius: 5.0)]),
                     child: Column(children: [
                       InkWell(
                         child: Container(
                           margin: const EdgeInsets.all(Dimens.marginSmall),
-                          padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: Dimens.paddingLarge,
+                              vertical: Dimens.paddingSmall),
                           decoration: BoxDecoration(
                             shape: BoxShape.rectangle,
                             color: Colors.yellow[200],
@@ -220,20 +345,26 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(AppLocalizations.of(context)!.add_new_ingredient),
+                              Text(AppLocalizations.of(context)!
+                                  .add_new_ingredient),
                               const Icon(Icons.add_circle)
                             ],
                           ),
                         ),
                         onTap: () {
                           // if (arguments is FoodEventComplete)
-                            Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: arguments).then((value) => Navigator.pop(context));
+                          Navigator.pushNamed(
+                                  context, AddFoodEventScreen.routeName,
+                                  arguments: arguments)
+                              .then((value) => Navigator.pop(context));
                         },
                       ),
                       InkWell(
                         child: Container(
                           margin: const EdgeInsets.all(Dimens.marginSmall),
-                          padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: Dimens.paddingLarge,
+                              vertical: Dimens.paddingSmall),
                           decoration: BoxDecoration(
                             shape: BoxShape.rectangle,
                             color: Colors.yellow[200],
@@ -249,13 +380,31 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                         ),
                         onTap: () => showAddCommentDialog(
                           context: ctx,
-                          onAddComment: (String comment) => bloc.add(AddCommentToFavoriteActions(
-                            comment: comment,),),
-                          onSaveComment: () => arguments is FoodEventComplete ? bloc.add(FinishFoodCommentAction(foodEventComplete: arguments, onFinish: () => _showConfirmationDialog(context),),) : Navigator.pop(context),
+                          onAddComment: (String comment) => bloc.add(
+                            AddCommentToFavoriteActions(
+                              comment: comment,
+                            ),
+                          ),
+                          onSaveComment: () => arguments is FoodEventComplete
+                              ? bloc.add(
+                                  FinishFoodCommentAction(
+                                    foodEventComplete: arguments,
+                                    onFinish: () =>
+                                        _showConfirmationDialog(context),
+                                  ),
+                                )
+                              : bloc.add(
+                            FinishFoodFavoriteCommentAction(
+                              foodFavorite: arguments as FoodFavorite,
+                              onFinish: () =>
+                                  _showConfirmationDialog(context),
+                            ),
+                          ),
                         ),
                       ),
-                    ]),)
-                ],
+                    ],),
+                  )
+                ,],
               ),
             );
           },
@@ -263,5 +412,4 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
       ),
     );
   }
-
 }

@@ -52,3 +52,17 @@ class FinishFoodCommentAction extends AddFavoriteFoodActions {
 
   FinishFoodCommentAction({required this.foodEventComplete, required this.onFinish});
 }
+
+class FinishFoodFavoriteCommentAction extends AddFavoriteFoodActions {
+  final Function onFinish;
+  final FoodFavorite foodFavorite;
+
+  FinishFoodFavoriteCommentAction({required this.foodFavorite, required this.onFinish});
+}
+
+class RemoveFavoriteFoodEventAction extends AddFavoriteFoodActions {
+  final FoodFavorite foodFavorite;
+  final Function onFinish;
+
+  RemoveFavoriteFoodEventAction({required this.onFinish, required this.foodFavorite});
+}

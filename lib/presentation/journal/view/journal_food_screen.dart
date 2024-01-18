@@ -25,6 +25,8 @@ import '../../common/view/confirmation_dialog.dart';
 import '../../favorites/common/add_favorite_dialog.dart';
 import 'package:collection/collection.dart';
 
+import '../../favorites/common/undo_favorite_dialog.dart';
+
 class JournalFoodScreen extends StatefulWidget {
   const JournalFoodScreen({Key? key}) : super(key: key);
 
@@ -68,6 +70,22 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
         onPop: () => Navigator.pop(context),
       ),
     ).then((_) => Navigator.pop(context));
+  }
+
+  Future<void> showUndoFavoriteDialog({
+    required BuildContext context,
+    required String foodTitle,
+    required Function onUndoFavorite,
+  }) async {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return UndoFavoriteDialog(
+          title: foodTitle,
+          onUndoFavorite: () => onUndoFavorite.call(),
+        );
+      },
+    ).then((value) => Navigator.pop(context));
   }
 
   @override
@@ -186,8 +204,20 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                                     onNameChange: (String foodName) => bloc.add(AddFoodNameAction(name: foodName)),
                                     onMealTimeChange: (int mealTime) => bloc.add(AddMealTimeAction(mealTime: mealTime)),
                                     onFinish: () => bloc.add(FinishAddingFavoriteAction(foodEvent: foodEvent, onFinish: () => _showConfirmationDialog(context))),
-                                  )
-                                } : () {}
+                                  ),
+                                } : () {
+                                  showUndoFavoriteDialog(
+                                    context: context,
+                                    foodTitle: foodEvent.foodName ?? '',
+                                    onUndoFavorite: () => bloc.add(
+                                      RemoveFavoriteAction(
+                                        onFinish: () =>
+                                            Navigator.pop(context),
+                                        foodFavorite: mapToFoodFavoriteFromFoodEvent(foodEvent),
+                                      ),
+                                    ),
+                                  );
+                                }
                               ,);
                             }).toList()
                           ],

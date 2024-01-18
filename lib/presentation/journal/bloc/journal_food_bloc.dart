@@ -1,7 +1,10 @@
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/delete_food_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/remove_food_favorite_from_local_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_kcal_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
@@ -27,6 +30,9 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
   final SaveExplainingCardInteractionInteractor saveExplainingCardInteractionInteractor;
   final SaveFoodFavoriteInteractor saveFoodFavoriteInteractor;
   final UploadFoodFavoriteInteractor uploadFoodFavoriteInteractor;
+  final GetUserIdInteractor getUserIdInteractor;
+  final RemoveFoodFavoriteFromLocalInteractor removeFoodFavoriteFromLocalInteractor;
+  final DeleteFoodFavoriteInteractor deleteFoodFavoriteInteractor;
 
   JournalFoodBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -36,7 +42,10 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
     required this.isNecessaryToShowExplainingCardInteractor,
     required this.saveExplainingCardInteractionInteractor,
     required this.saveFoodFavoriteInteractor,
-    required this.uploadFoodFavoriteInteractor
+    required this.uploadFoodFavoriteInteractor,
+    required this.getUserIdInteractor,
+    required this.removeFoodFavoriteFromLocalInteractor,
+    required this.deleteFoodFavoriteInteractor,
   }) : super(JournalFoodState(
     isLoading: false,
     todayFoodEvents: [],
@@ -109,9 +118,9 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
       emit(state.copyWith(isLoading: true));
 
       try {
-        // await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite.eventDate);
+        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite.eventDate);
         try {
-          // await removeFoodFavoriteFromLocalInteractor.execute(event.foodFavorite);
+          await removeFoodFavoriteFromLocalInteractor.execute(event.foodFavorite);
           state.foodFavorites = await getFoodFavoritesInteractor.execute();
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));

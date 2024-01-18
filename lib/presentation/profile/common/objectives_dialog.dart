@@ -10,6 +10,7 @@ import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/text_checkbox_box.dart';
 
+import '../../widgets/text_radio_button.dart';
 import '../../widgets/text_radio_button_expansible.dart';
 
 class ObjectivesDialog extends StatefulWidget {
@@ -112,12 +113,10 @@ class _ObjectivesDialogState extends State<ObjectivesDialog> {
                                 fontWeight: FontWeight.bold,
                               ),)),
                           ...state.objectivesInfoMaster!.bodyCompositionObjectives.map((objective) =>
-                              TextRadioButtonExpansible(
+                              TextRadioButton(
                                 title: objective.translate(context),
                                 isSelected: state.profile!.objectives.orEmpty().contains(objective.id),
                                 onPressed: () => bloc.add(AddRadioObjectiveToListAction(id: objective.id)),
-                                // overflow: TextOverflow.clip,
-                                explanation: '',
                               ),
                           ).toList(),
                         ],

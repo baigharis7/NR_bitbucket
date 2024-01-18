@@ -36,6 +36,7 @@ class AddFoodEventScreen extends StatefulWidget {
 }
 
 class _AddFoodEventState extends State<AddFoodEventScreen> {
+  late AddFoodEventBloc bloc;
   TextEditingController _foodInputController = TextEditingController();
 
   // TODO: si esto permanece se puede convertir en un widget en un momento.
@@ -98,7 +99,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
 
   @override
   void initState() {
-    final bloc = BlocProvider.of<AddFoodEventBloc>(context);
+    bloc = BlocProvider.of<AddFoodEventBloc>(context);
     bloc.add(InitializeStateAction());
     super.initState();
     var infoReceived;
@@ -131,7 +132,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<AddFoodEventBloc>(context);
+    // final bloc = BlocProvider.of<AddFoodEventBloc>(context);
     final currentLanguage = Localizations.localeOf(context).languageCode;
     final eventHelper = EventsHelper();
 
