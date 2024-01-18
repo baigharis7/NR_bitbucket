@@ -239,6 +239,7 @@
     "energy_balance_title" : "Energy balance (net Kcal)",
     "raw_kcal_title" : "Raw kcal (taken)",
     "spent_kcal_title" : "Kcal spent",
+    "kcal_ingested" : "Kcal ingested",
     "average_spent_kcal" : "Kcal average spent",
     "sugar" : "Sugar",
     "steps" : "Steps",

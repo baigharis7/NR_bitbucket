@@ -240,6 +240,7 @@
     "raw_kcal_title" : "Kilocalorías brutas (ingeridas)",
     "spent_kcal_title" : "Kilocalorías gastadas",
     "spent_kcal_title" : "Kcal gastadas",
+    "kcal_ingested" : "Kcal ingeridas",
     "average_spent_kcal" : "Kcal medias gastadas:",
     "sugar" : "Azúcar",
     "steps" : "Pasos",

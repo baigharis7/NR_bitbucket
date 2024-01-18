@@ -48,4 +48,11 @@ class UpdateProfileEventAction extends DashboardActions {
   UpdateProfileEventAction({required this.value});
 }
 
+class FinishWaterEventAction extends DashboardActions {
+  double qty;
+  final Function onFinish;
+
+  FinishWaterEventAction({required this.qty, required this.onFinish});
+}
+
 

@@ -32,7 +32,10 @@ import '../../../domain/interactor/foodevents/get_week_food_events_interactor.da
 import '../../../domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
 import '../../../domain/interactor/liquidevents/get_week_liquid_events_interactor.dart';
 import '../../../domain/interactor/sportevents/get_week_sports_interactor.dart';
+import '../../../domain/interactor/waterevents/save_water_event_interactor.dart';
+import '../../../domain/interactor/waterevents/upload_water_event_interactor.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
+import '../../../domain/models/watervents/water_event_master.dart';
 
 class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
@@ -53,6 +56,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final GetWeekSportsInteractor getWeekSportsInteractor;
   final UploadProfileInteractor uploadProfileInteractor;
   final SaveProfileInteractor saveProfileInteractor;
+  final UploadWaterEventInteractor uploadWaterEventInteractor;
+  final SaveWaterEventInteractor saveWaterEventInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -73,6 +78,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.getWeekSportsInteractor,
     required this.uploadProfileInteractor,
     required this.saveProfileInteractor,
+    required this.uploadWaterEventInteractor,
+    required this.saveWaterEventInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -121,7 +128,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               nutrientInfoMaster: getNutrientInfo(macronutrient),
               fractionToFill: getFractionToFillMacros(macronutrient),
               unit: getUnitForMicronutrient(macronutrient),
-              rda: getNutrientRda(macronutrient),
+              rda: getMacroNutrientRda(macronutrient),
               // rda: 0.3,
             ),
       ).toList();
@@ -268,6 +275,32 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingProfileError));
       }
     });
+
+    on<FinishWaterEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true, onError: null,));
+
+      final waterEventMaster = WaterEventMaster(
+        getUserIdInteractor.execute(),
+        DateTimeHelper().provideCurrentDate().millisecondsSinceEpoch,
+        DateTimeHelper().provideCurrentDate().millisecondsSinceEpoch,
+        event.qty,
+      );
+
+      try {
+        final uploadSuccess = await uploadWaterEventInteractor.execute(waterEventMaster);
+        if (uploadSuccess) {
+          try {
+            saveWaterEventInteractor.execute(waterEventMaster);
+            event.onFinish.call();
+            emit(state.copyWith(isLoading: false, onError: null));
+          } catch (error) {
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.locallySavingWaterEventError));
+          }
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingWaterEventError));
+      }
+    });
   }
 
   NutrientInfoMaster getNutrientInfo(String nutrientName) {
@@ -332,6 +365,20 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     double returnQuantity = nutrientQuantitySoFar / gramsPerNutrient;
     if (returnQuantity > 1) returnQuantity = 1;
     return returnQuantity;
+  }
+
+  num getMacroNutrientRda(String macronutrient) {
+    // num macroRda = 0.0;
+    var tEE = state.userKcal ?? 0;
+    if (state.userObjectives?.contains(50) ?? false) {
+      tEE = tEE + tEE~/100*15;
+    }
+    if (state.userObjectives?.contains(51) ?? false) {
+      tEE = tEE - tEE~/100*20;
+    }
+    int kcalPerNutrient = tEE~/100 * getPercentageByMacro(macronutrient);
+    int gramsPerNutrient = kcalPerNutrient ~/ getKcalPerGram(macronutrient);
+    return gramsPerNutrient;
   }
 
   double getFractionToFillKcal(int caloriesConsumed) {

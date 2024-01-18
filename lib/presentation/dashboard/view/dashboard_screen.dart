@@ -161,6 +161,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                     fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents),
                                     onReloadData: () => bloc.add(ReloadWaterInfoAction()),
                                     screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState())),
+                                    addWaterCall: () => bloc.add(FinishWaterEventAction(qty: 0.250, onFinish: () => bloc.add(InitializeState()))),
                                   ),
                                 ),
                                 Expanded(
@@ -303,7 +304,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                   (state.sugarAndFiberModel?.requiredFiber.toString() ?? '0').appendGram(),
                                   style: const TextStyle(fontSize: Dimens.fontSizeSmall),
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),

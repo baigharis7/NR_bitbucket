@@ -42,7 +42,7 @@ class EnergyBalanceWidget extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: IconButton(onPressed: () => screenToMove.call(), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -71,6 +71,23 @@ class EnergyBalanceWidget extends StatelessWidget {
             ),
           ),
           Container(
+            margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal, right: Dimens.marginNormal, bottom: Dimens.marginLarge),
+            alignment: Alignment.centerRight,
+            // child: Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+                // Expanded(
+                //     flex: 4,
+                //     child: Text(
+                //       AppLocalizations.of(context)!.required_kcal,
+                //       overflow: TextOverflow.clip,
+                //     ),
+                // ),
+                child: Text('${(energyModel?.totalKcal ?? 0)} kcal'),
+              // ],
+            // ),
+          ),
+          Container(
             margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal, right: Dimens.marginNormal),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -78,11 +95,11 @@ class EnergyBalanceWidget extends StatelessWidget {
                 Expanded(
                     flex: 4,
                     child: Text(
-                      AppLocalizations.of(context)!.required_kcal,
+                      AppLocalizations.of(context)!.kcal_ingested,
                       overflow: TextOverflow.clip,
                     ),
                 ),
-                Text('${(energyModel?.totalKcal ?? 0)} kcal')
+                Text('${(energyModel?.rawKcalTaken ?? 0)} kcal'),
               ],
             ),
           ),
@@ -92,15 +109,12 @@ class EnergyBalanceWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  flex: 4,
                   child: Text(
                     AppLocalizations.of(context)!.spent_kcal_title,
                     overflow: TextOverflow.clip,
                   ),
                 ),
-                Expanded(
-                  child: Text('${energyModel?.spentKcal ?? 0} kcal'),
-                )
+                Text('${energyModel?.spentKcal ?? 0} kcal'),
               ],
             ),
           ),

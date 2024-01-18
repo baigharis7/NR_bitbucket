@@ -367,6 +367,8 @@ void main() async {
     getWeekSportsInteractor: getWeekSportsInteractor,
     uploadProfileInteractor: uploadProfileInteractor,
     saveProfileInteractor: saveProfileInteractor,
+    uploadWaterEventInteractor: uploadWaterEventInteractor,
+    saveWaterEventInteractor: saveWaterEventInteractor,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(
