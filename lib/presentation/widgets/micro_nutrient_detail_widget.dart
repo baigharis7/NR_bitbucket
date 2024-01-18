@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/nutrients_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 
 import '../../infrastructure/utils/dimens.dart';
 import '../../infrastructure/utils/string_utils.dart';
@@ -23,7 +24,7 @@ class _MicroNutrientDetailWidgetState extends State<MicroNutrientDetailWidget> {
     return Card(
       margin: const EdgeInsets.all(Dimens.marginSmall),
       child: Container(
-        margin: EdgeInsets.all(Dimens.marginSmall),
+        margin: const EdgeInsets.all(Dimens.marginSmall),
         child: Column(
           children: [
             Row(
@@ -38,9 +39,9 @@ class _MicroNutrientDetailWidgetState extends State<MicroNutrientDetailWidget> {
                     ),
                     child: SizedBox(
                       child: Text(
-                        '${getNutrientName(widget.nutrientsModel.nutrientInfoMaster.translate(context))}',
+                        getNutrientName(widget.nutrientsModel.nutrientInfoMaster.translate(context)),
                         style: const TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium
+                          color: Colors.black, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium,
                         ),
                       ),
                     ),
@@ -52,18 +53,31 @@ class _MicroNutrientDetailWidgetState extends State<MicroNutrientDetailWidget> {
                     margin: const EdgeInsets.only(
                       right: Dimens.marginLarge,
                     ),
-                    child: FillHorizontalBar(
-                      fractionToFill: widget.nutrientsModel.fractionToFill,
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        FillHorizontalBar(
+                          fractionToFill: widget.nutrientsModel.fractionToFill,
+                        backgroundBarColor: AppColors.cardGreen_200),
+                        Container(
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.only(top: Dimens.marginXSmall),
+                          child: Text(
+                            '${(widget.nutrientsModel.quantityConsumed)} ${widget.nutrientsModel.unit}',
+                            style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
             Container(
               alignment: Alignment.centerRight,
               margin: const EdgeInsets.only(right: Dimens.marginNormal),
               child: Text(
-                '${widget.nutrientsModel.quantityConsumed} ${widget.nutrientsModel.unit}',
+                '${widget.nutrientsModel.rda} ${widget.nutrientsModel.unit}',
                 style: const TextStyle(
                   fontSize: Dimens.fontSizeSmall,
                 ),
@@ -71,7 +85,7 @@ class _MicroNutrientDetailWidgetState extends State<MicroNutrientDetailWidget> {
             ),
             Container(
               margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge, horizontal: Dimens.marginXLarge),
-              child: Text(widget.nutrientsModel.nutrientInfoMaster.description_en ?? AppLocalizations.of(context)!.lorem_ipsum),)
+              child: Text(widget.nutrientsModel.nutrientInfoMaster.description_en ?? AppLocalizations.of(context)!.lorem_ipsum),),
           ],
         ),
       ),

@@ -5,11 +5,13 @@ class NutrientsModel {
   final NutrientInfoMaster nutrientInfoMaster;
   final double fractionToFill;
   final String? unit;
+  final num rda;
 
   NutrientsModel({
     required this.quantityConsumed,
     required this.nutrientInfoMaster,
     required this.fractionToFill,
     required this.unit,
+    required this.rda,
   });
 }

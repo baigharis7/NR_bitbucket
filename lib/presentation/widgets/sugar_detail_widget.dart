@@ -43,14 +43,27 @@ class _SugarDetailWidgetState extends State<SugarDetailWidget> {
                 ),
               ),
             ),
-            SizedBox(height: Dimens.heightXSmall,),
+            const SizedBox(height: Dimens.heightXSmall,),
             Container(
               margin: const EdgeInsets.symmetric(
                 horizontal: Dimens.marginLarge,
               ),
-              child: FillHorizontalBar(
-                backgroundBarColor: AppColors.mountainMeadow,
-                fractionToFill: widget.sugarAndFiberModel?.fractionToFillSugar ?? 0.0,
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  FillHorizontalBar(
+                    backgroundBarColor: AppColors.mountainMeadow,
+                    fractionToFill: widget.sugarAndFiberModel?.fractionToFillSugar ?? 0.0,
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.only(top: Dimens.marginXSmall),
+                    child: Text(
+                      '${widget.sugarAndFiberModel?.totalSugarConsumed ?? 0.0}',
+                      style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: Dimens.heightXXSmall,),
@@ -58,7 +71,7 @@ class _SugarDetailWidgetState extends State<SugarDetailWidget> {
               alignment: Alignment.centerRight,
               margin: const EdgeInsets.only(right: Dimens.marginNormal),
               child: Text(
-                widget.sugarAndFiberModel?.totalSugar.toString().appendGram() ?? '0.0 g',
+                widget.sugarAndFiberModel?.requiredSugar.toString().appendGram() ?? '0.0 g',
                 style: const TextStyle(
                   fontSize: Dimens.fontSizeSmall,
                 ),

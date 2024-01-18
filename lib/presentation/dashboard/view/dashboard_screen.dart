@@ -187,7 +187,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                                 Container(
                                                   alignment: Alignment.centerRight,
                                                   child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
-                                                )
+                                                ),
                                               ],
                                             ),
                                           ),
@@ -237,13 +237,25 @@ class _DashboardScreen extends State<DashboardScreen>
                               ),
                               Container(
                                 margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                                child: FillHorizontalBar(fractionToFill: state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
+                                child: Stack(
+                                  alignment: Alignment.bottomCenter,
+                                  children: [
+                                  FillHorizontalBar(fractionToFill: state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    margin: const EdgeInsets.only(top: Dimens.marginXSmall),
+                                    child: Text(
+                                        '${state.sugarAndFiberModel?.totalSugarConsumed ?? 0.0}',
+                                      style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
+                                    ),
+                                  ),
+                                ],),
                               ),
                               Container(
                                 margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  (state.sugarAndFiberModel?.totalSugar.toString() ?? '0').appendGram(),
+                                  (state.sugarAndFiberModel?.requiredSugar.toString() ?? '0').appendGram(),
                                   style: const TextStyle(fontSize: Dimens.fontSizeSmall),
                                 ),
                               )
@@ -270,13 +282,25 @@ class _DashboardScreen extends State<DashboardScreen>
                               ),
                               Container(
                                 margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                                child: FillHorizontalBar(fractionToFill: state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
+                                child: Stack(
+                                  alignment: Alignment.bottomCenter,
+                                  children: [
+                                  FillHorizontalBar(fractionToFill: state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    margin: const EdgeInsets.only(top: Dimens.marginXSmall),
+                                    child: Text(
+                                      '${state.sugarAndFiberModel?.totalFiberConsumed ?? 0.0}',
+                                      style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
+                                    ),
+                                  ),
+                                ],),
                               ),
                               Container(
                                 margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  (state.sugarAndFiberModel?.totalFiber.toString() ?? '0').appendGram(),
+                                  (state.sugarAndFiberModel?.requiredFiber.toString() ?? '0').appendGram(),
                                   style: const TextStyle(fontSize: Dimens.fontSizeSmall),
                                 ),
                               )

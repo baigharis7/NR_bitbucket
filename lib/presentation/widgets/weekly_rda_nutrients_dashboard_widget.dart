@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/nutrients_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/string_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
@@ -78,7 +79,7 @@ class _WeeklyRDANutrientsDashboardWidgetState extends State<WeeklyRDANutrientsDa
                                   ),
                                   child: SizedBox(
                                     child: Text(
-                                      '${getNutrientName(nutrient.nutrientInfoMaster.translate(context))}:',
+                                      getNutrientName(nutrient.nutrientInfoMaster.translate(context)),
                                       style: const TextStyle(
                                         color: Colors.black,
                                       ),
@@ -92,16 +93,28 @@ class _WeeklyRDANutrientsDashboardWidgetState extends State<WeeklyRDANutrientsDa
                                   margin: const EdgeInsets.only(
                                       right: Dimens.marginLarge,
                                   ),
-                                  child: FillHorizontalBar(fractionToFill: nutrient.fractionToFill,),
+                                  child: Stack(
+                                    alignment: Alignment.bottomCenter,
+                                    children: [
+                                    FillHorizontalBar(backgroundBarColor: AppColors.mountainMeadow, fractionToFill: nutrient.fractionToFill,),
+                                    Container(
+                                      alignment: Alignment.center,
+                                      margin: const EdgeInsets.only(top: Dimens.marginXSmall),
+                                      child: Text(
+                                        '${(nutrient.quantityConsumed)} ${nutrient.unit}',
+                                        style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
+                                      ),
+                                    ),
+                                  ],),
                                 ),
-                              )
+                              ),
                             ],
                            ),
                            Container(
                              alignment: Alignment.centerRight,
                              margin: const EdgeInsets.only(right: Dimens.marginNormal),
                              child: Text(
-                               '${nutrient.quantityConsumed} ${nutrient.unit}',
+                               '${nutrient.rda} ${nutrient.unit}',
                                style: const TextStyle(
                                  fontSize: Dimens.fontSizeSmall,
                                ),

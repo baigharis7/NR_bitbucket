@@ -88,7 +88,7 @@ class _SugarDetailScreenState extends State<SugarDetailScreen> {
                     child:
                     Text(bloc.getTodayMessage(AppLocalizations.of(context)!.today, Localizations.localeOf(context).languageCode), style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: Dimens.fontSizeMedium)),
+                        fontSize: Dimens.fontSizeMedium,),),
                   ),
                   Expanded(
                     child: SingleChildScrollView(

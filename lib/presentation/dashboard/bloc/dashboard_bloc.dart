@@ -108,6 +108,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               nutrientInfoMaster: getNutrientInfo(micronutrient),
               fractionToFill: getFractionToFillMicros(micronutrient),
               unit: getUnitForMicronutrient(micronutrient),
+              rda: getNutrientRda(micronutrient),
+              // rda: 0.2,
             ),
       ).toList();
       state.micronutrients?.sort((a, b) => b.fractionToFill.compareTo(a.fractionToFill),);
@@ -119,6 +121,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               nutrientInfoMaster: getNutrientInfo(macronutrient),
               fractionToFill: getFractionToFillMacros(macronutrient),
               unit: getUnitForMicronutrient(macronutrient),
+              rda: getNutrientRda(macronutrient),
+              // rda: 0.3,
             ),
       ).toList();
       final caloriesConsumed = await getDayCaloriesInteractor.execute();
@@ -129,11 +133,15 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         spentKcal: caloriesConsumed ?? 0,
       );
       state.waterEvents = await getWaterEventsTodayInteractor.execute();
+      var totalSugarRequired = state.userKcal ?? 0;
+      totalSugarRequired = totalSugarRequired~/100*5;
       state.sugarAndFiberModel = SugarAndFiberModel(
-          fractionToFillSugar: calculateTodaySugar(),
-          totalSugar: calculateTodayConsumedSugar(),
+          fractionToFillSugar: calculateTodaySugar(totalSugarRequired),
+          totalSugarConsumed: calculateTodayConsumedSugar(totalSugarRequired),
+          requiredSugar: totalSugarRequired.toDouble(),
           fractionToFillFiber: calculateTodayFiber(),
-          totalFiber: calculateTodayConsumedFiber(),
+          totalFiberConsumed: calculateTodayConsumedFiber(),
+        requiredFiber: 25,
       );
       state.weeklyMicronutrients = state.userRdas
           .orEmpty()
@@ -141,8 +149,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           quantityConsumed: getWeeklyConsumedNutrient(nutrientRda),
           nutrientInfoMaster: getNutrientInfo(nutrientRda.name),
           fractionToFill: getWeeklyFractionFill(nutrientRda),
-          unit: getUnitForMicronutrient(nutrientRda.name)))
-          .toList();
+          unit: getUnitForMicronutrient(nutrientRda.name),
+          rda: nutrientRda.rda,),).toList();
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
 
       emit(state.copyWith(
@@ -290,6 +298,19 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     return returnQuantity;
   }
 
+  num getNutrientRda(String micronutrient) {
+    num rda = 0.0;
+    loop:for (UserRda userRda in state.userRdas ?? []) {
+      if (userRda.name == micronutrient) {
+        rda = userRda.rda;
+        break loop;
+      }
+    }
+
+    // final num = state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
+    return rda;
+  }
+
   double getFractionToFillMacros(String macronutrient) {
     double nutrientQuantitySoFar = 0.0;
     for (var foodEvent in state.foodEvents!) {
@@ -322,7 +343,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
 
-    double returnQuantity = (kcalQuantitySoFar.toInt() + getTodayKcalFromLiquids(state.todayLiquidEvents!)) / (state.userKcal! + caloriesConsumed);
+    // double returnQuantity = (kcalQuantitySoFar.toInt() + getTodayKcalFromLiquids(state.todayLiquidEvents!)) / (state.userKcal! + caloriesConsumed);
+    double returnQuantity = ((kcalQuantitySoFar.toInt() + getTodayKcalFromLiquids(state.todayLiquidEvents!)) - caloriesConsumed) / state.userKcal!;
     if (returnQuantity > 1) returnQuantity = 1;
     if (returnQuantity < 0) returnQuantity = 0.0;
     return returnQuantity;
@@ -351,7 +373,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     return double.parse((nutrientQuantitySoFar).toStringAsFixed(2));
   }
 
-  double calculateTodaySugar() {
+  double calculateTodaySugar(int totalSugarRequired) {
     double sugarConsumedToday = 0.0;
     for(var foodEvent in state.foodEvents!) {
       for (var food in foodEvent.foodInfo!) {
@@ -365,13 +387,15 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
 
-    sugarConsumedToday = sugarConsumedToday/20;
-    if (sugarConsumedToday > 1) sugarConsumedToday = 1;
-    if (sugarConsumedToday < 0) sugarConsumedToday = 0.0;
+    // sugarConsumedToday = sugarConsumedToday;
+    sugarConsumedToday = (sugarConsumedToday*4)/totalSugarRequired;
+    sugarConsumedToday = sugarConsumedToday/4;
+    // if (sugarConsumedToday > 1) sugarConsumedToday = 1;
+    // if (sugarConsumedToday < 0) sugarConsumedToday = 0.0;
     return double.parse(sugarConsumedToday.toStringAsFixed(2));
   }
 
-  double calculateTodayConsumedSugar() {
+  double calculateTodayConsumedSugar(int totalSugarRequired) {
     double sugarConsumedToday = 0.0;
     for(var foodEvent in state.foodEvents!) {
       for (var food in foodEvent.foodInfo!) {
@@ -385,9 +409,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
 
-    var tEE = state.userKcal ?? 0;
-    tEE = tEE~/100*5;
-    sugarConsumedToday = (sugarConsumedToday*4)/tEE;
+    // var tEE = state.userKcal ?? 0;
+    // tEE = tEE~/100*5;
+    sugarConsumedToday = (sugarConsumedToday*4)/totalSugarRequired;
     sugarConsumedToday = sugarConsumedToday/4;
     return double.parse(sugarConsumedToday.toStringAsFixed(2));
   }
@@ -414,7 +438,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
 
-    fiberConsumedToday = fiberConsumedToday/25;
+    // fiberConsumedToday = fiberConsumedToday/25;
     return double.parse(fiberConsumedToday.toStringAsFixed(2));
   }
 

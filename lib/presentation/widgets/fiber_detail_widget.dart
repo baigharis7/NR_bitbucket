@@ -48,9 +48,22 @@ class _FiberDetailWidgetState extends State<FiberDetailWidget> {
               margin: const EdgeInsets.symmetric(
                 horizontal: Dimens.marginLarge,
               ),
-              child: FillHorizontalBar(
-                backgroundBarColor: AppColors.mountainMeadow,
-                fractionToFill: widget.sugarAndFiberModel?.fractionToFillFiber ?? 0.0,
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  FillHorizontalBar(
+                    backgroundBarColor: AppColors.mountainMeadow,
+                    fractionToFill: widget.sugarAndFiberModel?.fractionToFillFiber ?? 0.0,
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.only(top: Dimens.marginXSmall),
+                    child: Text(
+                      '${widget.sugarAndFiberModel?.totalFiberConsumed ?? 0.0}',
+                      style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: Dimens.heightXXSmall,),
@@ -58,7 +71,7 @@ class _FiberDetailWidgetState extends State<FiberDetailWidget> {
               alignment: Alignment.centerRight,
               margin: const EdgeInsets.only(right: Dimens.marginNormal),
               child: Text(
-                widget.sugarAndFiberModel?.totalFiber.toString().appendGram() ?? '0.0 g',
+                widget.sugarAndFiberModel?.requiredFiber.toString().appendGram() ?? '0.0 g',
                 style: const TextStyle(
                   fontSize: Dimens.fontSizeSmall,
                 ),

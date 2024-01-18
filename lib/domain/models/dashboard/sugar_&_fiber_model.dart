@@ -1,14 +1,18 @@
 class SugarAndFiberModel {
   final double fractionToFillSugar;
-  final double totalSugar;
+  final double totalSugarConsumed;
+  final double requiredSugar;
   final double fractionToFillFiber;
-  final double totalFiber;
+  final double totalFiberConsumed;
+  final double requiredFiber;
 
   SugarAndFiberModel({
     required this.fractionToFillSugar,
-    required this.totalSugar,
+    required this.totalSugarConsumed,
+    required this.requiredSugar,
     required this.fractionToFillFiber,
-    required this.totalFiber,
+    required this.totalFiberConsumed,
+    required this.requiredFiber,
   });
 
 }
