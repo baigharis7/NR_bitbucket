@@ -19,7 +19,7 @@ class RoundedCustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: Dimens.marginNormal, right: Dimens.marginNormal, top: Dimens.marginNormal),
+      margin: const EdgeInsets.symmetric(/*left: Dimens.marginNormal, right: Dimens.marginNormal, */vertical: Dimens.marginXXLarge),
       child: CustomButton1(
         enable: enableButton,
         style: ElevatedButton.styleFrom(

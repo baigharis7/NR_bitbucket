@@ -17,6 +17,7 @@ FoodEventComplete _$FoodEventCompleteFromJson(Map<String, dynamic> json) =>
       foodInfo: (json['foodInfo'] as List<dynamic>?)
           ?.map((e) => FoodInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
+      dish: json['dish'] as bool?,
       eventKcals: json['eventKcals'] as int?,
     );
 
@@ -29,6 +30,7 @@ Map<String, dynamic> _$FoodEventCompleteToJson(FoodEventComplete instance) =>
       'foodName': instance.foodName,
       'comment': instance.comment,
       'foodInfo': instance.foodInfo?.map((e) => e.toJson()).toList(),
+      'dish': instance.dish,
       'eventKcals': instance.eventKcals,
     };
 

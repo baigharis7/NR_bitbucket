@@ -3,6 +3,8 @@ import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_mast
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/explaining_card_ui_model.dart';
 
+import '../../../domain/models/liquidevents/liquid_event_complete.dart';
+
 class JournalState {
   bool isLoading;
   ErrorTypes? onError;
@@ -10,6 +12,7 @@ class JournalState {
   List<Map<String, dynamic>>? weeklyData;
   List<SportEventComplete>? todaySportEvents;
   List<WaterEventMaster>? waterEvents;
+  List<LiquidEventComplete>? todayLiquidEvents;
   bool? showGeneralCard;
   ExplainingCardUIModel? calendarCard;
   ExplainingCardUIModel? foodsCard;
@@ -23,6 +26,7 @@ class JournalState {
     this.weeklyData,
     this.todaySportEvents,
     this.waterEvents,
+    this.todayLiquidEvents,
     this.showGeneralCard,
     this.calendarCard,
     this.foodsCard,
@@ -37,6 +41,7 @@ class JournalState {
     List<Map<String, dynamic>>? weeklyData,
     List<SportEventComplete>? todaySportEvents,
     List<WaterEventMaster>? waterEvents,
+    List<LiquidEventComplete>? todayLiquidEvents,
     bool? showGeneralCard,
     ExplainingCardUIModel? calendarCard,
     ExplainingCardUIModel? foodsCard,
@@ -50,6 +55,7 @@ class JournalState {
       weeklyData: weeklyData ?? this.weeklyData,
       todaySportEvents: todaySportEvents ?? this.todaySportEvents,
       waterEvents: waterEvents ?? this.waterEvents,
+      todayLiquidEvents: todayLiquidEvents ?? this.todayLiquidEvents,
       showGeneralCard: showGeneralCard ?? this.showGeneralCard,
       calendarCard: calendarCard ?? this.calendarCard,
       foodsCard: foodsCard ?? this.foodsCard,

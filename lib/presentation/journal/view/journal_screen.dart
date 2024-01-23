@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
@@ -134,7 +135,7 @@ class _JournalScreenState extends State<JournalScreen> {
                                           height: 90,
                                           width: 15,
                                           child: FillVerticalBar(
-                                            fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents),
+                                            fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty()),
                                             barColor: Colors.blue,
                                           ),
                                         ),

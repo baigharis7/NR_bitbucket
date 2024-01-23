@@ -58,11 +58,11 @@ class FillHorizontalBar extends StatelessWidget {
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         );
       },

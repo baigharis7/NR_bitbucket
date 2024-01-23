@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/energy_model.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -55,6 +57,7 @@ class EnergyBalanceWidget extends StatelessWidget {
             child: Stack(
               children: [
                 FillHorizontalBar(
+                  fillColor: (energyModel?.fractionToFill.orZero() ?? 0) >= 1 ? AppColors.errorRed : AppColors.mountainMeadow,
                   height: 30,
                   fractionToFill: energyModel!.fractionToFill.isNaN ? 0.0 : energyModel?.fractionToFill.toDouble() ?? 0.0,
                   backgroundBarColor: Colors.teal[100],

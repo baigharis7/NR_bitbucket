@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
@@ -122,7 +123,7 @@ class _DashboardScreen extends State<DashboardScreen>
                             Text(bloc.getTodayMessage(AppLocalizations.of(context)!.today, Localizations.localeOf(context).languageCode),),
                           ],
                         ),
-                        SwitchDashboardWidget(
+                        if ((state.profile?.sex?.index ?? -1) == SexType.female.index) SwitchDashboardWidget(
                             title: AppLocalizations.of(context)!.menstruation,
                             currentState: state.isMenstruation ?? false,
                             onStateChange: (value) => bloc.add(UpdateMenstruationStateAction(isMenstruation: value)),
@@ -157,11 +158,11 @@ class _DashboardScreen extends State<DashboardScreen>
                                 Expanded(
                                   flex: 1,
                                   child: LiquidSummaryWidget(
-                                    quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents),
-                                    fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents),
+                                    quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty()),
+                                    fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty()),
                                     onReloadData: () => bloc.add(ReloadWaterInfoAction()),
                                     screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState())),
-                                    addWaterCall: () => bloc.add(FinishWaterEventAction(qty: 0.250, onFinish: () => bloc.add(InitializeState()))),
+                                    addWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState()))),
                                   ),
                                 ),
                                 Expanded(
@@ -241,7 +242,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                 child: Stack(
                                   alignment: Alignment.bottomCenter,
                                   children: [
-                                  FillHorizontalBar(fractionToFill: state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
+                                  FillHorizontalBar(fillColor: (state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0) >= 1.0 ? AppColors.errorRed : AppColors.mountainMeadow, fractionToFill: state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
                                   Container(
                                     alignment: Alignment.center,
                                     margin: const EdgeInsets.only(top: Dimens.marginXSmall),
@@ -286,7 +287,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                 child: Stack(
                                   alignment: Alignment.bottomCenter,
                                   children: [
-                                  FillHorizontalBar(fractionToFill: state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
+                                  FillHorizontalBar(fillColor: (state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0) >= 1.0 ? AppColors.errorRed : AppColors.mountainMeadow, fractionToFill: state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
                                   Container(
                                     alignment: Alignment.center,
                                     margin: const EdgeInsets.only(top: Dimens.marginXSmall),

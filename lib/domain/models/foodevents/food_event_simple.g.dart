@@ -20,6 +20,7 @@ FoodEventSimple _$FoodEventSimpleFromJson(Map<String, dynamic> json) =>
       drinks: (json['drinks'] as List<dynamic>?)
           ?.map((e) => FoodInEvent.fromJson(e as Map<String, dynamic>))
           .toList(),
+          dish: json['dish'] as bool?,
     );
 
 Map<String, dynamic> _$FoodEventSimpleToJson(FoodEventSimple instance) =>
@@ -32,6 +33,7 @@ Map<String, dynamic> _$FoodEventSimpleToJson(FoodEventSimple instance) =>
       'comment': instance.comment,
       'ingredients': instance.ingredients?.map((e) => e.toJson()).toList(),
       'drinks': instance.drinks?.map((e) => e.toJson()).toList(),
+      'dish': instance.dish,
     };
 
 FoodInEvent _$FoodInEventFromJson(Map<String, dynamic> json) => FoodInEvent(

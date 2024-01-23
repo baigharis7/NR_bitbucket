@@ -96,7 +96,7 @@ class _WeeklyRDANutrientsDashboardWidgetState extends State<WeeklyRDANutrientsDa
                                   child: Stack(
                                     alignment: Alignment.bottomCenter,
                                     children: [
-                                    FillHorizontalBar(backgroundBarColor: AppColors.mountainMeadow, fractionToFill: nutrient.fractionToFill,),
+                                    FillHorizontalBar(fillColor: nutrient.fractionToFill >= 1 ? AppColors.errorRed : AppColors.mountainMeadow, backgroundBarColor: AppColors.mountainMeadow, fractionToFill: nutrient.fractionToFill,),
                                     Container(
                                       alignment: Alignment.center,
                                       margin: const EdgeInsets.only(top: Dimens.marginXSmall),

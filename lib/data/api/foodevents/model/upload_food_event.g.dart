@@ -17,6 +17,7 @@ UploadFoodEvent _$UploadFoodEventFromJson(Map<String, dynamic> json) =>
       (json['foodInfo'] as List<dynamic>?)
           ?.map((e) => FoodInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
+      json['dish'] as bool?,
       json['eventKcals'] as int?,
       uploadSuccess: json['uploadSuccess'] as bool? ?? false,
     );
@@ -30,6 +31,7 @@ Map<String, dynamic> _$UploadFoodEventToJson(UploadFoodEvent instance) =>
       'foodName': instance.foodName,
       'comment': instance.comment,
       'foodInfo': instance.foodInfo?.map((e) => e.toJson()).toList(),
+      'dish': instance.dish,
       'uploadSuccess': instance.uploadSuccess,
       'eventKcals': instance.eventKcals,
     };

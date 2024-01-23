@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/calendar/calendar_events.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
+import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
@@ -10,6 +11,7 @@ import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_com
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 
 class EventsHelper {
   final DateTimeHelper _dateTimeHelper = DateTimeHelper();
@@ -64,25 +66,38 @@ class EventsHelper {
 
   List<double> generateWaterQuantities() => [0.2, 0.5, 0.75, 1, 1.5, 2];
 
-  double getWaterIntakeAddition(List<WaterEventMaster>? waterEvents) {
-    double amount = 0;
+  double getWaterIntakeAddition(List<WaterEventMaster>? waterEvents, List<LiquidEventComplete> liquidTodayEvents) {
+    double amount = 0.0;
     if (waterEvents != null && waterEvents.isNotEmpty) {
       for (var event in waterEvents) {
         amount = amount + event.qty!;
       }
-      // if (amount > 1) amount = 1.0;
-      return double.parse(amount.toStringAsFixed(2));
-    } else {
-      return 0.0;
     }
-  }
 
-  double getWaterFractionToFillFromEvents(List<WaterEventMaster>? waterEvents) {
-    if (waterEvents != null && waterEvents.isNotEmpty) {
-      return _getFractionToFillWater(getWaterIntakeAddition(waterEvents));
-    } else {
-      return 0.0;
+      if (liquidTodayEvents.isNotEmpty) {
+        for (var liquidEvent in liquidTodayEvents) {
+          for (var eventInfo in liquidEvent.foodInfo.orEmpty()) {
+            if (eventInfo.id == Constants.TAP_WATER_ID) {
+              amount = amount + ((eventInfo.eventInfo?.qty ?? 0)/1000);
+            }
+          }
+        }
+      }
+
+
+      return double.parse(amount.toStringAsFixed(2));
     }
+    // else {
+    //   return 0.0;
+    // }
+  // }
+
+  double getWaterFractionToFillFromEvents(List<WaterEventMaster>? waterEvents, List<LiquidEventComplete> liquidTodayEvents) {
+    // if (waterEvents != null && waterEvents.isNotEmpty) {
+      return _getFractionToFillWater(getWaterIntakeAddition(waterEvents, liquidTodayEvents));
+    // } else {
+    //   return 0.0;
+    // }
   }
 
   List getEventsFromGivenDate(CalendarEvents calendarEvents, DateTime date) {

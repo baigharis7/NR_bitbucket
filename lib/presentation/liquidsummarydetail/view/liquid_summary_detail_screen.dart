@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/bloc/liquid_summary_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
@@ -63,68 +64,83 @@ class _LiquidSummaryDetailScreenState extends State<LiquidSummaryDetailScreen> {
           // if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
         },
         builder: (context, state) => Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            leading: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                // size: 18,
-                color: Colors.black,
-              ),
-            ),
-            actions: [
-              IconButton(
-                onPressed: () =>
-                    Navigator.popAndPushNamed(context, ProfileScreen.routeName)
-                        .then((value) {}),
-                iconSize: 35.0,
-                icon: Image.asset(
-                  'assets/icon/profile_icon.png',
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              leading: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  // size: 18,
                   color: Colors.black,
-                  height: 29,
-                  width: 29,
-                ),
-              )
-            ],
-          ),
-          body: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.all(Dimens.marginLarge),
-                child:
-                Text(bloc.getTodayMessage(AppLocalizations.of(context)!.today, Localizations.localeOf(context).languageCode), style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: Dimens.fontSizeMedium)),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(children: [
-                    LiquidDetailWidget(quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents), fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents),)
-                  ],),
                 ),
               ),
-            ],
-          ),
-          bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD)
-          // CustomBottomAppBar(initStateCallback: () => null),
-          // resizeToAvoidBottomInset: true,
-          // floatingActionButton: FloatingActionButton(
-          //   elevation: 2.0,
-          //   backgroundColor: Colors.white,
-          //   onPressed: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
-          //   child: Container(
-          //     padding: const EdgeInsets.all(Dimens.paddingSmall),
-          //     child: Image.asset(
-          //       'assets/images/logo_black.png',
-          //       fit: BoxFit.cover,
-          //       color: Colors.black,
-          //     ),
-          //   ),
-          // ),
-          // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        ),
+              actions: [
+                IconButton(
+                  onPressed: () => Navigator.popAndPushNamed(
+                          context, ProfileScreen.routeName)
+                      .then((value) {}),
+                  iconSize: 35.0,
+                  icon: Image.asset(
+                    'assets/icon/profile_icon.png',
+                    color: Colors.black,
+                    height: 29,
+                    width: 29,
+                  ),
+                )
+              ],
+            ),
+            body: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(Dimens.marginLarge),
+                  child: Text(
+                      bloc.getTodayMessage(AppLocalizations.of(context)!.today,
+                          Localizations.localeOf(context).languageCode),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: Dimens.fontSizeMedium)),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        LiquidDetailWidget(
+                          quantityTaken: EventsHelper().getWaterIntakeAddition(
+                            state.waterEvents,
+                            state.todayLiquidEvents.orEmpty(),
+                          ),
+                          fractionToFill:
+                              EventsHelper().getWaterFractionToFillFromEvents(
+                            state.waterEvents,
+                            state.todayLiquidEvents.orEmpty(),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            bottomNavigationBar: const CustomBottomNaviBarWidget(
+                activePosition: Constants.DASHBOARD)
+            // CustomBottomAppBar(initStateCallback: () => null),
+            // resizeToAvoidBottomInset: true,
+            // floatingActionButton: FloatingActionButton(
+            //   elevation: 2.0,
+            //   backgroundColor: Colors.white,
+            //   onPressed: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
+            //   child: Container(
+            //     padding: const EdgeInsets.all(Dimens.paddingSmall),
+            //     child: Image.asset(
+            //       'assets/images/logo_black.png',
+            //       fit: BoxFit.cover,
+            //       color: Colors.black,
+            //     ),
+            //   ),
+            // ),
+            // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            ),
       )),
     );
     // SafeArea(child: Scaffold());

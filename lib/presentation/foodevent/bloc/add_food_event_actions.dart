@@ -41,12 +41,6 @@ class UpdateFoodCookingMethodEventAction extends AddFoodEventActions {
   UpdateFoodCookingMethodEventAction({required this.foodInEvent});
 }
 
-// class SelectCookingMethodAction extends AddFoodEventActions {
-//   FoodInEvent foodInEvent;
-//
-//   SelectCookingMethodAction({required this.foodInEvent});
-// }
-
 class FinishFoodEventAction extends AddFoodEventActions {
   Function onFinish;
 

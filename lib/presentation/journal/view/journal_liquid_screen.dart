@@ -130,8 +130,8 @@ class _JournalLiquidScreen extends State<JournalLiquidScreen> {
                         ),
                       ),
                       HorizontalWaterBar(
-                        waterTaken: eventsHelper.getWaterIntakeAddition(state.waterEvents),
-                        fractionToFill: eventsHelper.getWaterFractionToFillFromEvents(state.waterEvents),
+                        waterTaken: eventsHelper.getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty()),
+                        fractionToFill: eventsHelper.getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty()),
                         onAddWater: () => Navigator.pushNamed(context, AddWaterEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
                         cardElevation: 2,
                       ),

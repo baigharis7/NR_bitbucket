@@ -12,6 +12,8 @@ import 'package:nutrenaissance_flutter/presentation/common/view/explaining_card_
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_state.dart';
 
+import '../../../domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
+
 class JournalBloc extends BaseBloc<JournalActions, JournalState> {
   final GetUserKcalInteractor getUserKcalInteractor;
   final GetWeekSportsInteractor getWeekSportsInteractor;
@@ -19,6 +21,7 @@ class JournalBloc extends BaseBloc<JournalActions, JournalState> {
   final GetWaterEventsTodayInteractor getWaterEventsTodayInteractor;
   final IsNecessaryToShowExplainingCardInteractor isNecessaryToShowExplainingCardInteractor;
   final SaveExplainingCardInteractionInteractor saveExplainingCardInteractionInteractor;
+  final GetTodayLiquidEventsInteractor getLiquidEventsOfTodayInteractor;
 
   JournalBloc({
     required this.getUserKcalInteractor,
@@ -27,6 +30,7 @@ class JournalBloc extends BaseBloc<JournalActions, JournalState> {
     required this.getWaterEventsTodayInteractor,
     required this.isNecessaryToShowExplainingCardInteractor,
     required this.saveExplainingCardInteractionInteractor,
+    required this.getLiquidEventsOfTodayInteractor,
   }) : super(JournalState(
     isLoading: false,
     onError: null,
@@ -47,6 +51,7 @@ class JournalBloc extends BaseBloc<JournalActions, JournalState> {
       state.weeklyData = EventsHelper().getWeeklyDataFormatted(completeWeekData, state.userKcals!);
       state.todaySportEvents = await getTodaySportsInteractor.execute();
       state.waterEvents = await getWaterEventsTodayInteractor.execute();
+      state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute();
       state.showGeneralCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.journalGeneral.index);
 
       emit(state.copyWith(isLoading: false, onError: null),);

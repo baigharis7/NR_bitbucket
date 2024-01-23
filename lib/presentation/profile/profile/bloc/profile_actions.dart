@@ -11,8 +11,8 @@ class InitializeStateFromRegistryAction extends ProfileActions {
 }
 
 class InitializeStateFromProfileAction extends ProfileActions {
-  final BuildContext context;
-  InitializeStateFromProfileAction({required this.context});
+  final BuildContext? context;
+  InitializeStateFromProfileAction({this.context});
 }
 
 enum BodyParameters {

@@ -77,9 +77,9 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       }
       state.foodFavorites = await getFoodFavoritesInteractor.execute();
       state.weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
-      if (state.weeklyFoodEvents.orEmpty().isNotEmpty && state.foodFavorites.orEmpty().isNotEmpty) {
-        addFrequentFromWeek(state.weeklyFoodEvents!, state.foodFavorites!);
-      }
+      // if (state.weeklyFoodEvents.orEmpty().isNotEmpty && state.foodFavorites.orEmpty().isNotEmpty) {
+        addFrequentFromWeek(state.weeklyFoodEvents.orEmpty(), state.foodFavorites.orEmpty());
+      // }
 
       emit(state.copyWith(isLoading: false, onError: null,));
     },);
@@ -143,11 +143,6 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: false, onError: null,));
     },);
 
-    // on<SelectCookingMethodAction>((event, emit) {
-    //   state.foodsInEvent!.add(event.foodInEvent);
-    //   emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
-    // });
-
     on<FinishFoodEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null,));
 
@@ -157,10 +152,11 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         eventId: state.eventId ?? DateTime.now().millisecondsSinceEpoch,
         mealType: state.mealType,
         foodName: state.foodName ?? '',
-        comment: state.comment
+        comment: state.comment,
       );
       foodEvent.ingredients = state.foodsInEvent.orEmpty();
       foodEvent.drinks = []; // TODO: is it necessary to implement drinks in food events?
+      foodEvent.dish = (state.foodsInEvent.orEmpty().length > 1) ? true : false;
 
       try {
         final uploadFoodEvent = await uploadFoodEventInteractor.execute(foodEvent);

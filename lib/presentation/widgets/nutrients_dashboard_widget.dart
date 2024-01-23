@@ -96,7 +96,7 @@ class _NutrientsDashboardWidgetState extends State<NutrientsDashboardWidget> {
                                   child: Stack(
                                     alignment: Alignment.bottomCenter,
                                     children: [
-                                    FillHorizontalBar(backgroundBarColor: AppColors.cardGreen_200, fractionToFill: nutrient.fractionToFill,),
+                                    FillHorizontalBar(fillColor: nutrient.fractionToFill >= 1 ? AppColors.errorRed : AppColors.mountainMeadow, backgroundBarColor: AppColors.cardGreen_200, fractionToFill: nutrient.fractionToFill,),
                                     Container(
                                       alignment: Alignment.center,
                                       margin: const EdgeInsets.only(top: Dimens.marginXSmall),

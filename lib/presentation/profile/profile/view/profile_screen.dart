@@ -24,6 +24,7 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/swith_with_function_widget.dart';
 
+import '../../../../data/api/profile/model/upload_user_profile.dart';
 import '../../../dashboard/bloc/dashboard_actions.dart';
 import '../../../widgets/custom_bottom_app_bar.dart';
 
@@ -187,7 +188,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                       ),
                       onAdd: () => Navigator.pushNamed(context, PhysicalActivityScreen.routeName).then((value) => bloc.add(SaveChangesAction())),
                     ),
-                    SwitchDashboardWidget(
+                    if ((state.profile?.sex?.index ?? -1) == SexType.female.index) SwitchDashboardWidget(
                         title: AppLocalizations.of(context)!.menstruation,
                         currentState: state.isMenstruation ?? false,
                         onStateChange: (value) {

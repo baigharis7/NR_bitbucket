@@ -65,7 +65,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
       state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo,);
       state.foodsAndDrinksNamesMaster = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames,);
       state.recommendationGroupsMaster = await getMasterFileInteractor.execute(MasterFilesType.recommendationGroups);
-      state.aversionsUI = populateAversions(event.context);
+      if (event.context != null) state.aversionsUI = populateAversions(event.context!);
       state.allergens = Allergens.listAllAllergens();
       state.dietTypes = DietType.listInitialDietTypes();
       state.intolerances = Intolerances.listAllIntolerances();
@@ -326,6 +326,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
           profile.kcal = userProfileResponse.kcal;
           try {
             await saveProfileInteractor.execute(profile);
+            add(InitializeStateFromProfileAction(context: null));
             emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {
             emit(state.copyWith(isLoading: false, onError: ErrorTypes.savingProfileError));

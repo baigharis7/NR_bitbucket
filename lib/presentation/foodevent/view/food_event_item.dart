@@ -11,6 +11,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/simple_item_helper
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/box_type_radio_text_widget.dart';
 
 class FoodEventItem extends StatefulWidget {
   final FoodInEvent foodInEvent;
@@ -176,9 +177,8 @@ class _FoodEventItemState extends State<FoodEventItem> {
           decoration: BoxDecoration(
             border: Border.fromBorderSide(BorderSide(color: _error ? AppColors.errorRed : AppColors.cardGreen_200, width: 2)),
               borderRadius: BorderRadius.circular(5),
-              color: _error ? AppColors.dirty_white : AppColors.cardGreen_200),
-          margin: const EdgeInsets.symmetric(
-              horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
+              color: _error ? AppColors.dirty_white : AppColors.cardGreen_200,),
+          margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge,),
           padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal),
           child: Column(
             children: [
@@ -338,7 +338,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
             ],
           ),
         ),
-        if (_error) Container(margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),child: Text(AppLocalizations.of(context)!.must_complete_field, style: const TextStyle(color: Colors.red,)),alignment: Alignment.centerLeft,)
+        if (_error) Container(child: Text(AppLocalizations.of(context)!.must_complete_field, style: const TextStyle(color: Colors.red,)),alignment: Alignment.centerLeft,),
       ],
     );
   }

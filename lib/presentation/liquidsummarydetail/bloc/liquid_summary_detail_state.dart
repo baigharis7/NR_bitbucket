@@ -6,14 +6,23 @@ part of 'liquid_summary_detail_bloc.dart';
 class LiquidSummaryDetailState {
   bool isLoading;
   List<WaterEventMaster>? waterEvents;
+  List<LiquidEventComplete>? todayLiquidEvents;
 
-  LiquidSummaryDetailState({required this.isLoading, this.waterEvents});
+  LiquidSummaryDetailState({
+    required this.isLoading,
+    this.waterEvents,
+    this.todayLiquidEvents,
+  });
 
-  LiquidSummaryDetailState copyWith(
-      {required bool isLoading, List<WaterEventMaster>? waterEvents}) {
+  LiquidSummaryDetailState copyWith({
+    required bool isLoading,
+    List<WaterEventMaster>? waterEvents,
+    List<LiquidEventComplete>? todayLiquidEvents,
+  }) {
     return LiquidSummaryDetailState(
       isLoading: isLoading,
       waterEvents: waterEvents ?? this.waterEvents,
+      todayLiquidEvents: todayLiquidEvents ?? this.todayLiquidEvents,
     );
   }
 }

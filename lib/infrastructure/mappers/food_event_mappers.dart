@@ -155,6 +155,7 @@ entity.FoodEventEntity mapToFoodEventEntity(UploadFoodEvent uploadFoodEvent) {
     uploadFoodEvent.foodName,
     uploadFoodEvent.comment,
     foodInfoEntity,
+    uploadFoodEvent.dish,
     uploadFoodEvent.eventKcals,
   );
 
@@ -310,6 +311,7 @@ domain.FoodEventComplete mapToFoodEventComplete(entity.FoodEventEntity foodEvent
     comment: foodEventEntity.comment,
     mealType: foodEventEntity.mealType,
     foodInfo: foodInfoEntity,
+    dish: foodEventEntity.dish,
     eventKcals: foodEventEntity.eventKcals,
   );
 }

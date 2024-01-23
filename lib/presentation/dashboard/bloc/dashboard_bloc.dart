@@ -148,7 +148,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           requiredSugar: totalSugarRequired.toDouble(),
           fractionToFillFiber: calculateTodayFiber(),
           totalFiberConsumed: calculateTodayConsumedFiber(),
-        requiredFiber: 25,
+        requiredFiber: Constants.FIBER_TOTAL_REQUIRED,
       );
       state.weeklyMicronutrients = state.userRdas
           .orEmpty()
@@ -157,7 +157,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           nutrientInfoMaster: getNutrientInfo(nutrientRda.name),
           fractionToFill: getWeeklyFractionFill(nutrientRda),
           unit: getUnitForMicronutrient(nutrientRda.name),
-          rda: nutrientRda.rda,),).toList();
+          rda: double.parse((nutrientRda.rda * 7).toStringAsFixed(2)),),).toList();
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
 
       emit(state.copyWith(
@@ -263,7 +263,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           profile.kcal = userProfileResponse.kcal;
           try {
             await saveProfileInteractor.execute(profile);
-            // event.nextScreen.call();
+            add(InitializeState());
             emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {
             emit(state.copyWith(isLoading: false, onError: ErrorTypes.savingProfileError));
@@ -435,10 +435,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     }
 
     // sugarConsumedToday = sugarConsumedToday;
-    sugarConsumedToday = (sugarConsumedToday*4)/totalSugarRequired;
-    sugarConsumedToday = sugarConsumedToday/4;
-    // if (sugarConsumedToday > 1) sugarConsumedToday = 1;
-    // if (sugarConsumedToday < 0) sugarConsumedToday = 0.0;
+    sugarConsumedToday = sugarConsumedToday / (totalSugarRequired/4);
+    if (sugarConsumedToday > 1) sugarConsumedToday = 1.0;
+    if (sugarConsumedToday < 0) sugarConsumedToday = 0.0;
     return double.parse(sugarConsumedToday.toStringAsFixed(2));
   }
 
@@ -458,8 +457,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
     // var tEE = state.userKcal ?? 0;
     // tEE = tEE~/100*5;
-    sugarConsumedToday = (sugarConsumedToday*4)/totalSugarRequired;
-    sugarConsumedToday = sugarConsumedToday/4;
+    // sugarConsumedToday = (sugarConsumedToday*4)/totalSugarRequired;
+    // sugarConsumedToday = sugarConsumedToday/4;
     return double.parse(sugarConsumedToday.toStringAsFixed(2));
   }
 
