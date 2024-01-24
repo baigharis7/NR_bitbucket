@@ -12,10 +12,13 @@ import 'package:nutrenaissance_flutter/presentation/favorites/common/add_favorit
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/create_new_food_favorite_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/create_new_food_favorite_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/create_new_food_favorite_state.dart';
-import 'package:nutrenaissance_flutter/presentation/favorites/food/view/add_food_favorite_dialog.dart';
-import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_card.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
+import '../../../../domain/models/favorites/food/meal_time.dart';
+import '../../../widgets/add_item_name_dialog.dart';
+import '../../../widgets/box_type_radio_text_widget.dart';
+import '../../../widgets/food_event_foods_cluster.dart';
+import '../../../widgets/meal_type_selection_widget.dart';
 import 'food_fav_item.dart';
 
 class CreateNewFoodFavoriteScreen extends StatefulWidget {
@@ -86,6 +89,23 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
     );
   }
 
+  Future<void> showAddFoodNameDialog({
+    required BuildContext context,
+    required Function onFinish,
+    required Function onNameChange,
+  }) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AddItemNameDialog(
+        title: '${AppLocalizations.of(context)!.food_name}:',
+        onNameChange: (String foodName) => onNameChange.call(foodName),
+        onFinish: () => onFinish.call(),
+        onCancel: () => Navigator.pop(context),
+      ),
+    ).then((_) => Navigator.pop(context));
+  }
+
   @override
   void initState() {
     final bloc = BlocProvider.of<CreateNewFoodFavoriteBloc>(context);
@@ -110,13 +130,45 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
       child: SafeArea(
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios, color: Colors.black,),
               onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back_ios, size: 24),
+            ),
+            title: Row(
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.journal,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: Dimens.fontSizeXXLarge,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal), child: Image.asset('assets/icon/journal_icon.png', height: 28)),
+              ],
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(Dimens.heightSmall),
+              child: Container(
+                alignment: Alignment.center,
+                margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge,),
+                child: Text(
+                  AppLocalizations.of(context)!.add_favorite,
+                  style: const TextStyle(fontSize: Dimens.fontSizeXXLarge,),
+                ),
+              ),
             ),
           ),
+          // AppBar(
+          //   backgroundColor: Colors.transparent,
+          //   elevation: 0,
+          //   leading: IconButton(
+          //     icon: const Icon(Icons.arrow_back_ios, color: Colors.black,),
+          //     onPressed: () => Navigator.pop(context),
+          //   ),
+          // ),
           body: BlocConsumer<CreateNewFoodFavoriteBloc, CreateNewFoodFavoriteState>(
             listener: (ctx, state) {
               if (state.isLoading) {
@@ -129,155 +181,184 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
               }
             },
             builder: (context, state) {
-              return SingleChildScrollView(
-                child: Column(
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXXLarge, vertical: Dimens.marginLarge),
+                child: (state.mealTime ?? -1) <= -1 ? MealTypeSelectionWidget(onSaveMealType: (mealType) => bloc.add(AddMealTimeAction(mealTime: mealType))) : Column(
                   children: [
-                    Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        AppLocalizations.of(context)!.add_favorite,
-                        style: const TextStyle(
-                          fontSize: Dimens.fontSizeXXLarge,
-                        ),
-                      ),
+                    Autocomplete<String>(
+                      fieldViewBuilder: (
+                          BuildContext context,
+                          TextEditingController textEditingController,
+                          FocusNode focusNode,
+                          VoidCallback onFieldSubmitted,
+                          ) {
+                        _foodInputController = textEditingController;
+                        return TextField(
+                          decoration: InputDecoration(
+                            fillColor: Colors.black,
+                            labelText: AppLocalizations.of(context)!.write_here_hint,
+                            suffixIcon: IconButton(
+                              icon: textEditingController.text != ''
+                                  ? const Icon(
+                                Icons.highlight_remove,
+                                color: Colors.black,
+                              )
+                                  : Container(),
+                              onPressed: () => setState(() {
+                                textEditingController.text = '';
+                              }),
+                            ),
+                          ),
+                          controller: textEditingController,
+                          focusNode: focusNode,
+                          onChanged: (value) {
+                            setState(() {
+                              textEditingController;
+                            });
+                          },
+                        );
+                      },
+                      optionsBuilder: (TextEditingValue textEditingValue) {
+                        if (textEditingValue.text == '' || textEditingValue.text.length < 3) return const Iterable<String>.empty();
+                        return state.foodNames!.foodsAndDrinksNames!.foodNames!
+                            .map((item) => item.translate(context))
+                            .where((String option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                      },
+                      onSelected: (option) {
+                        // TODO: manage possible errors
+                        final currentLanguage = Localizations.localeOf(context).languageCode;
+                        final food = eventHelper.findFoodIdToFavorite(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                        final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                        bloc.add(AddFoodFromFavoriteAction(foodInFavorite: food!));
+                        _foodInputController.text = '';
+                        // showAddFoodFavoriteDialog(
+                        //   AddFoodFavoriteDialog(
+                        //       foodInFavorite: food!,
+                        //       foodGroup: foodGroup.orEmpty(),
+                        //       cookingMethodsMaster: state.cookingMethodsMaster!,
+                        //       cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
+                        //       unitsInfoMaster: state.unitsInfoMaster!,
+                        //       unitsFoodsMaster: state.unitsFoodsMaster!,
+                        //   ),
+                        //   option,
+                        // );
+                      },
                     ),
-                    Container(
-                      alignment: Alignment.center,
-                      margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingSmall),
-                        child: Autocomplete<String>(
-                          fieldViewBuilder: (
-                              BuildContext context,
-                              TextEditingController textEditingController,
-                              FocusNode focusNode,
-                              VoidCallback onFieldSubmitted,
-                              ) {
-                            _foodInputController = textEditingController;
-                            return TextField(
-                              decoration: InputDecoration(
-                                fillColor: Colors.black,
-                                labelText: AppLocalizations.of(context)!.write_here_hint,
-                                suffixIcon: IconButton(
-                                  icon: textEditingController.text != ''
-                                      ? const Icon(
-                                    Icons.highlight_remove,
-                                    color: Colors.black,
-                                  )
-                                      : Container(),
-                                  onPressed: () => setState(() {
-                                    textEditingController.text = '';
-                                  }),
-                                ),
-                              ),
-                              controller: textEditingController,
-                              focusNode: focusNode,
-                              onChanged: (value) {
-                                setState(() {
-                                  textEditingController;
-                                });
-                              },
-                            );
-                          },
-                          optionsBuilder: (TextEditingValue textEditingValue) {
-                            if (textEditingValue.text == '' || textEditingValue.text.length < 3) return const Iterable<String>.empty();
-                            return state.foodNames!.foodsAndDrinksNames!.foodNames!
-                                .map((item) => item.translate(context))
-                                .where((String option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
-                          },
-                          onSelected: (option) {
-                            // TODO: manage possible errors
-                            final currentLanguage = Localizations.localeOf(context).languageCode;
-                            final food = eventHelper.findFoodIdToFavorite(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                            final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                            bloc.add(AddFoodFromFavoriteAction(foodInFavorite: food!));
-                            _foodInputController.text = '';
-                            // showAddFoodFavoriteDialog(
-                            //   AddFoodFavoriteDialog(
-                            //       foodInFavorite: food!,
-                            //       foodGroup: foodGroup.orEmpty(),
-                            //       cookingMethodsMaster: state.cookingMethodsMaster!,
-                            //       cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
-                            //       unitsInfoMaster: state.unitsInfoMaster!,
-                            //       unitsFoodsMaster: state.unitsFoodsMaster!,
-                            //   ),
-                            //   option,
-                            // );
-                          },
-                        ),
-                      ),
-                    ),
-                    Column(
-                      children: [
-                        _foodInputController.text == '' && state.foodsInFavorite != null && state.foodsInFavorite!.isEmpty
-                        // TODO: aquí saldrían los FAVORITOS.
-                            ? Container()
-                            : Column(
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(vertical: Dimens.paddingLarge),
+                        child: Column(
                           children: [
-                            ...state.foodsInFavorite.orEmpty().map((foodInFavorite) {
-                              final option = eventHelper.findFoodNameFromId(foodInFavorite.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                              final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                              return FoodFavItem(
-                                  foodInFavorite: foodInFavorite,
-                                  foodGroup: foodGroup,
-                                  cookingMethodsMaster: state.cookingMethodsMaster!,
-                                  cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
-                                  unitsInfoMaster: state.unitsInfoMaster!,
-                                  unitsFoodsMaster: state.unitsFoodsMaster!,
-                                  options: option,
-                                  onRemove: () => bloc.add(RemoveFoodFromFavoriteAction(foodInFavorite: foodInFavorite)),
-                                  onQtyChange: (foodFav) => bloc.add(UpdateQuantityAction(foodInFavorite: foodFav)),
-                                  onUnitChange: (foodFav) => bloc.add(UpdateUnitAction(foodInFavorite: foodFav)),
-                                  onCookingMethodChange: (foodFav) => bloc.add(UpdateCookingMethodAction(foodInFavorite: foodFav)),
-                              );
-                            }
-                                // FoodCard(
-                                //   foodName: state.foodNames!.foodsAndDrinksNames!.foodNames!
-                                //       .firstWhere((foodItemMaster) => foodItemMaster.id == foodInFavorite.id)
-                                //       .translate(context),
-                                //   cookingMethod: eventHelper.findCookingMethodName(context, foodInFavorite.cookingMethod, state.cookingMethodsInfoMaster!.cookingMethodsInfo!),
-                                //   quantity: foodInFavorite.qty.toString(),
-                                //   unit: eventHelper.findUnitName(foodInFavorite.unit, state.unitsInfoMaster!.unitsInfoMaster).translate(context),
-                                //   removeFood: () => context.read<CreateNewFoodFavoriteBloc>().add(RemoveFoodFromFavoriteAction(foodInFavorite: foodInFavorite)),
-                                //   editFood: () {
-                                //     final option = eventHelper.findFoodNameFromId(foodInFavorite.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                                //     final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                                //     showAddFoodFavoriteDialog(
-                                //       AddFoodFavoriteDialog(
-                                //         foodInFavorite: foodInFavorite,
-                                //         foodGroup: foodGroup.orEmpty(),
-                                //         cookingMethodsMaster: state.cookingMethodsMaster!,
-                                //         cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
-                                //         unitsInfoMaster: state.unitsInfoMaster!,
-                                //         unitsFoodsMaster: state.unitsFoodsMaster!,
-                                //       ),
-                                //       option,
-                                //     );
-                                //   },
-                                // ),
-                            ).toList()
+                            _foodInputController.text == '' && state.foodsInFavorite != null && state.foodsInFavorite!.isEmpty
+                            // TODO: aquí saldrían los FAVORITOS.
+                                ? Container(child: state.foodsInFavorite.orEmpty().isNotEmpty ? Container()
+                                : Column(
+                              children: [
+                                if (bloc.getFoodListByType(MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.mealTime ?? -1))).isNotEmpty) FoodEventFoodsCluster(
+                                  clusterName: '${MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.mealTime ?? -1)).name}s :',
+                                  selectedFoodName: state.favoriteName,
+                                  onSelect: (food) => bloc.add(AddFavFoodFromFrequent(frequentFood: food)),
+                                  foodList: bloc.getFoodListByType(MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.mealTime ?? -1))),
+                                ),
+                              ],
+                            ),
+                            )
+                                : Column(
+                              children: [
+                                ...state.foodsInFavorite.orEmpty().map((foodInFavorite) {
+                                  final option = eventHelper.findFoodNameFromId(foodInFavorite.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                                  final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                                  return FoodFavItem(
+                                      foodInFavorite: foodInFavorite,
+                                      foodGroup: foodGroup,
+                                      cookingMethodsMaster: state.cookingMethodsMaster!,
+                                      cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
+                                      unitsInfoMaster: state.unitsInfoMaster!,
+                                      unitsFoodsMaster: state.unitsFoodsMaster!,
+                                      options: option,
+                                      onRemove: () => bloc.add(RemoveFoodFromFavoriteAction(foodInFavorite: foodInFavorite)),
+                                      onQtyChange: (foodFav) => bloc.add(UpdateQuantityAction(foodInFavorite: foodFav)),
+                                      onUnitChange: (foodFav) => bloc.add(UpdateUnitAction(foodInFavorite: foodFav)),
+                                      onCookingMethodChange: (foodFav) => bloc.add(UpdateCookingMethodAction(foodInFavorite: foodFav)),
+                                  );
+                                }
+                                    // FoodCard(
+                                    //   foodName: state.foodNames!.foodsAndDrinksNames!.foodNames!
+                                    //       .firstWhere((foodItemMaster) => foodItemMaster.id == foodInFavorite.id)
+                                    //       .translate(context),
+                                    //   cookingMethod: eventHelper.findCookingMethodName(context, foodInFavorite.cookingMethod, state.cookingMethodsInfoMaster!.cookingMethodsInfo!),
+                                    //   quantity: foodInFavorite.qty.toString(),
+                                    //   unit: eventHelper.findUnitName(foodInFavorite.unit, state.unitsInfoMaster!.unitsInfoMaster).translate(context),
+                                    //   removeFood: () => context.read<CreateNewFoodFavoriteBloc>().add(RemoveFoodFromFavoriteAction(foodInFavorite: foodInFavorite)),
+                                    //   editFood: () {
+                                    //     final option = eventHelper.findFoodNameFromId(foodInFavorite.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                                    //     final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                                    //     showAddFoodFavoriteDialog(
+                                    //       AddFoodFavoriteDialog(
+                                    //         foodInFavorite: foodInFavorite,
+                                    //         foodGroup: foodGroup.orEmpty(),
+                                    //         cookingMethodsMaster: state.cookingMethodsMaster!,
+                                    //         cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
+                                    //         unitsInfoMaster: state.unitsInfoMaster!,
+                                    //         unitsFoodsMaster: state.unitsFoodsMaster!,
+                                    //       ),
+                                    //       option,
+                                    //     );
+                                    //   },
+                                    // ),
+                                ).toList(),
+                                if ((state.foodsInFavorite?.length ?? -1) > 1) BoxTypeRadioTextWidget(onPressed: () => {}, isSelected: true, title: AppLocalizations.of(context)!.create_dish),
+                              ],
+                            ),
+                            RoundedCustomButton(
+                              onPressed: () {
+                                if(state.foodsInFavorite.orEmpty().isEmpty) {
+                                  if (state.foodsFromFrequent.orEmpty().isNotEmpty) {
+                                    bloc.add(FinishFrequentFoodToAddFavorite(onFinish: () => _showConfirmationDialog(context, (){}),),);
+                                  }
+                                }
+                                else {
+
+                                if (bloc.isFoodFavValidateList()) return;
+
+                                if ((state.foodsInFavorite?.length ?? 0) > 1) {
+                                  showAddFoodNameDialog(
+                                    context: context,
+                                    onFinish: () {
+                                      bloc.add(FinishFoodFavoriteAction(
+                                        onFinish: () =>
+                                            _showConfirmationDialog(context, () {}),
+                                      ),);
+                                    },
+                                    onNameChange: (foodName) {
+                                      bloc.add(AddFoodNameAction(
+                                        name: foodName,),);
+                                    },
+                                  );
+                                }
+                                else {
+                                  state.favoriteName = state.foodsInFavorite!.map((e) => eventHelper.findFoodNameFromId(e.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!)).toString();
+                                  bloc.add(FinishFoodFavoriteAction(onFinish: () => _showConfirmationDialog(context, () {})));
+                                }
+                                }
+
+                                // if (!bloc.isFoodFavValidateList()) {
+                                //   state.foodsInFavorite!.isEmpty
+                                //     ? ToastHelper().showToast(text: AppLocalizations.of(context)!.no_foods_in_event)
+                                //     : showAddFavoriteDialog(
+                                //   context: context,
+                                //   onNameChange: (String foodName) => bloc.add(AddFoodNameAction(name: foodName)),
+                                //   onMealTimeChange: (int mealTime) => bloc.add(AddMealTimeAction(mealTime: mealTime)),
+                                //   onFinish: () => bloc.add(FinishFoodFavoriteAction(onFinish: () => _showConfirmationDialog(context, () => Navigator.pop(context)))),
+                                // );
+                                // }
+                              },
+                            ),
                           ],
-                        )
-                      ],
-                    ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                      child: RoundedCustomButton(
-                        buttonText: AppLocalizations.of(context)!.save_favorite,
-                        onPressed: () {
-                          if (!bloc.isFoodFavValidateList()) {
-                            state.foodsInFavorite!.isEmpty
-                              ? ToastHelper().showToast(text: AppLocalizations.of(context)!.no_foods_in_event)
-                              : showAddFavoriteDialog(
-                            context: context,
-                            onNameChange: (String foodName) => bloc.add(AddFoodNameAction(name: foodName)),
-                            onMealTimeChange: (int mealTime) => bloc.add(AddMealTimeAction(mealTime: mealTime)),
-                            onFinish: () => bloc.add(FinishFoodFavoriteAction(onFinish: () => _showConfirmationDialog(context, () => Navigator.pop(context)))),
-                          );
-                          }
-                        },
+                        ),
                       ),
                     ),
+
                   ],
                 ),
               );

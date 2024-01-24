@@ -11,19 +11,27 @@ import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/create_n
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/create_new_food_favorite_state.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
+import '../../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
+import '../../../../domain/models/favorites/food/meal_time.dart';
+import '../../../../domain/models/foodevents/food_event_complete.dart';
+import '../../../../infrastructure/mappers/favorites_mapper.dart';
+
 class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, CreateNewFoodFavoriteState> {
   final GetUserIdInteractor getUserIdInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final SaveFoodFavoriteInteractor saveFoodFavoriteInteractor;
   final UploadFoodFavoriteInteractor uploadFoodFavoriteInteractor;
+  final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor;
 
   CreateNewFoodFavoriteBloc({
     required this.getUserIdInteractor,
     required this.getMasterFileInteractor,
     required this.saveFoodFavoriteInteractor,
     required this.uploadFoodFavoriteInteractor,
+    required this.getWeekFoodEventsInteractor,
   }) : super(CreateNewFoodFavoriteState(isLoading: false)) {
     on<InitializeStateAction>((event, emit) async {
+      _clearData();
       emit(state.copyWith(isLoading: true));
       state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
       state.cookingMethodsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
@@ -31,6 +39,9 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
       state.unitsFoodsMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsFoods);
       state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
       state.foodsInFavorite = [];
+      // var weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
+      // addFrequentFromWeek(weeklyFoodEvents.orEmpty(), state.frequentFoodEvents.orEmpty());
+      state.frequentFoodEvents = addFrequentFromWeek(await getWeekFoodEventsInteractor.execute());
 
       emit(state.copyWith(isLoading: false, onError: null));
     });
@@ -100,6 +111,7 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
         ingredients: state.foodsInFavorite!,
         drinks: [],
         mealTime: state.mealTime!,
+        dish: (state.foodsInFavorite.orEmpty().length > 1) ? true : false,
       );
 
       try {
@@ -107,6 +119,7 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
         if (uploadFavorite) {
           try {
             await saveFoodFavoriteInteractor.execute(foodFavorite, false);
+            _clearData();
             event.onFinish.call();
             emit(state.copyWith(isLoading: false));
           } catch (error) {
@@ -119,9 +132,105 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadFoodFavoriteError));
       }
     });
+
+    on<AddFavFoodFromFrequent>((event, emit) {
+      state.favoriteName = event.frequentFood.title;
+      state.comment = event.frequentFood.comment;
+      state.foodsFromFrequent = event.frequentFood.ingredients;
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<FinishFrequentFoodToAddFavorite>((event, emit) async {
+      emit(state.copyWith(isLoading: true,));
+
+      final foodFavorite = FoodFavorite(
+        title: state.favoriteName.orEmpty(),
+        eventDate: DateTimeHelper().provideCurrentDate().millisecondsSinceEpoch,
+        ingredients: state.foodsFromFrequent.orEmpty(),
+        drinks: [],
+        mealTime: state.mealTime ?? -1,
+        dish: (state.foodsFromFrequent.orEmpty().length > 1) ? true : false,
+        comment: state.comment,
+      );
+
+      try {
+        final uploadFavorite = await uploadFoodFavoriteInteractor.execute(foodFavorite);
+        if (uploadFavorite) {
+          try {
+            await saveFoodFavoriteInteractor.execute(foodFavorite, false);
+            _clearData();
+            event.onFinish.call();
+            emit(state.copyWith(isLoading: false));
+          } catch (error) {
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveFoodFavoriteError));
+          }
+        } else {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadFoodFavoriteError));
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadFoodFavoriteError));
+      }
+    },);
+  }
+
+  _clearData() {
+    state.foodsInFavorite?.clear();
+    state.foodsFromFrequent?.clear();
+    state.mealTime = null;
+    state.onError = null;
+    state.favoriteName = '';
+    state.comment = '';
   }
 
   bool isFoodFavValidateList() {
-      return state.foodsInFavorite?.any((foodFav) { return foodFav.qty <= 0; },) ?? true;
+    if (state.foodsInFavorite.orEmpty().isNotEmpty) {
+      return state.foodsInFavorite.orEmpty().any((foodFav) { return foodFav.qty <= 0; },);
+    } else {
+      return true;
+    }
+  }
+
+  List<FoodFavorite> addFrequentFromWeek(List<FoodEventComplete> foodList,) {
+    List<FoodFavorite> favoriteList = [];
+    for (int i = 0; i < foodList.length; i++) {
+      int count = 1;
+      for (int j = i + 1; j < foodList.length; j++) {
+        FoodEventComplete selectedItem = foodList[i];
+        FoodEventComplete matchableItem = foodList[j];
+        if (areFoodInfoListsEqual(selectedItem.foodInfo!, matchableItem.foodInfo!)) {
+          count = count + 1;
+        }
+      }
+      if (count == 3) {
+        favoriteList.add(mapToFoodFavoriteFromFoodEvent(foodList[i]));
+      }
+    }
+    return favoriteList;
+  }
+
+  bool areFoodInfoListsEqual(List<FoodInfo> list1, List<FoodInfo> list2) {
+    if (list1.length != list2.length) {
+      return false;
+    }
+    for (int i = 0; i < list1.length; i++) {
+      if (!areFoodInfoObjectsEqual(list1[i], list2[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+  bool areFoodInfoObjectsEqual(FoodInfo obj1, FoodInfo obj2) {
+    return (obj1.id == obj2.id && obj1.eventInfo!.qty == obj2.eventInfo!.qty && obj1.eventInfo!.unit == obj2.eventInfo!.unit && obj1.eventInfo!.cookingMethod == obj2.eventInfo!.cookingMethod);
+  }
+
+  List<FoodFavorite> getFoodListByType(MealTime mealTime) {
+    final list = <FoodFavorite>[];
+    for (var favorite in state.frequentFoodEvents.orEmpty()) {
+      if (favorite.mealTime == mealTime.id) {
+        list.add(favorite);
+      }
+    }
+    return list;
   }
 }

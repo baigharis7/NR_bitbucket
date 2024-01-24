@@ -23,6 +23,7 @@ FoodFavorite mapToFoodFavoriteFromEntity(FoodFavoriteEntity foodFavoriteEntity) 
     drinks: foodFavoriteEntity.drinks.map((drink) => FoodInFavorite(id: drink.id, name_en: drink.name_en.orEmpty(), name_es: drink.name_es.orEmpty(), qty: drink.qty, unit: drink.unit, cookingMethod: drink.cookingMethod, unitsEquivalences: drink.unitsEquivalences)).toList(),
     mealTime: foodFavoriteEntity.mealTime,
     comment: foodFavoriteEntity.comment,
+    dish: foodFavoriteEntity.dish,
   );
 }
 
@@ -45,6 +46,7 @@ FoodFavoriteEntity mapToFoodFavoriteEntity(FoodFavorite foodFavorite) {
     drinks: foodFavorite.drinks.map((drink) => FoodInFavoriteEntity(id: drink.id, name_en: drink.name_en.orEmpty(), name_es: drink.name_es.orEmpty(), qty: drink.qty, unit: drink.unit, cookingMethod: drink.cookingMethod, unitsEquivalences: drink.unitsEquivalences)).toList(),
     mealTime: foodFavorite.mealTime,
     comment: foodFavorite.comment,
+    dish: foodFavorite.dish,
   );
 }
 

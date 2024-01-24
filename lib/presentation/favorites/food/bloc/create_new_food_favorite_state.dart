@@ -6,6 +6,8 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_mas
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 
+import '../../../../domain/models/foodevents/food_event_complete.dart';
+
 class CreateNewFoodFavoriteState {
   bool isLoading;
   ErrorTypes? onError;
@@ -17,6 +19,9 @@ class CreateNewFoodFavoriteState {
   UnitsInfoMaster? unitsInfoMaster;
   String? favoriteName;
   int? mealTime;
+  String? comment;
+  List<FoodFavorite>? frequentFoodEvents;
+  List<FoodInFavorite>? foodsFromFrequent;
 
   CreateNewFoodFavoriteState({
     required this.isLoading,
@@ -29,6 +34,9 @@ class CreateNewFoodFavoriteState {
     this.unitsInfoMaster,
     this.favoriteName,
     this.mealTime,
+    this.comment,
+    this.frequentFoodEvents,
+    this.foodsFromFrequent,
   });
 
   CreateNewFoodFavoriteState copyWith({
@@ -42,6 +50,9 @@ class CreateNewFoodFavoriteState {
     UnitsInfoMaster? unitsInfoMaster,
     String? favoriteName,
     int? mealTime,
+    String? comment,
+    List<FoodFavorite>? frequentFoodEvents,
+    List<FoodInFavorite>? foodsFromFrequent,
   }) {
     return CreateNewFoodFavoriteState(
       isLoading: isLoading,
@@ -54,6 +65,9 @@ class CreateNewFoodFavoriteState {
       unitsInfoMaster: unitsInfoMaster ?? this.unitsInfoMaster,
       favoriteName: favoriteName ?? this.favoriteName,
       mealTime: mealTime ?? this.mealTime,
+      comment: comment ?? this.comment,
+      frequentFoodEvents: frequentFoodEvents ?? this.frequentFoodEvents,
+      foodsFromFrequent: foodsFromFrequent ?? this.foodsFromFrequent,
     );
   }
 

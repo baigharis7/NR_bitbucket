@@ -10,7 +10,7 @@
     "login": "Entrar",
     "username": "Nombre de usuario",
     "enter_username_or_email": "Introduce tu nombre de usuario o email",
-    "write_here_hint": "Escribe aquí",
+    "write_here_hint": "Introduce...",
     "password": "Contraseña",
     "confirm_password": "Confirma tu contraseña",
     "email": "Email",

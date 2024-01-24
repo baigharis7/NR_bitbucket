@@ -15,6 +15,7 @@ class FoodFavoriteEntity extends HiveObject  {
   @HiveField(3) int mealTime;
   @HiveField(4) String title;
   @HiveField(5) int eventDate;
+  @HiveField(5) bool? dish;
 
 
   FoodFavoriteEntity({
@@ -24,6 +25,7 @@ class FoodFavoriteEntity extends HiveObject  {
     required this.mealTime,
     required this.title,
     required this.eventDate,
+    this.dish,
   });
 
   factory FoodFavoriteEntity.fromJson(Map<String, dynamic> json) => _$FoodFavoriteEntityFromJson(json);

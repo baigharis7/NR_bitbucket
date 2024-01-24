@@ -530,6 +530,7 @@ void main() async {
     getUserIdInteractor: getUserIdInteractor,
     saveFoodFavoriteInteractor: saveFoodFavoriteInteractor,
     uploadFoodFavoriteInteractor: uploadFoodFavoriteInteractor,
+    getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
   );
 
   final addSportFavoriteBloc = AddFavoriteSportBloc(

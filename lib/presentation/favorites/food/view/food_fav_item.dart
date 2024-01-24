@@ -177,10 +177,9 @@ class _FoodFavItemState extends State<FoodFavItem> {
           decoration: BoxDecoration(
             border: Border.fromBorderSide(BorderSide(color: _error ? AppColors.errorRed : AppColors.cardGreen_200, width: 2)),
               borderRadius: BorderRadius.circular(5),
-              color: _error ? AppColors.dirty_white : AppColors.cardGreen_200),
-          margin: const EdgeInsets.symmetric(
-              horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
-          padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal),
+              color: _error ? AppColors.dirty_white : AppColors.cardGreen_200,),
+          margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
+          padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal,),
           child: Column(
             children: [
               Container(
@@ -339,7 +338,7 @@ class _FoodFavItemState extends State<FoodFavItem> {
             ],
           ),
         ),
-        if (_error) Container(margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),child: Text(AppLocalizations.of(context)!.must_complete_field, style: const TextStyle(color: Colors.red,)),alignment: Alignment.centerLeft,)
+        if (_error) Container(child: Text(AppLocalizations.of(context)!.must_complete_field, style: const TextStyle(color: Colors.red,)), alignment: Alignment.centerLeft,),
       ],
     );
   }

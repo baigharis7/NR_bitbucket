@@ -333,14 +333,14 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                         ],
                       ),
                     RoundedCustomButton(onPressed: () {
-                      if (bloc.validateList() ?? true) return;
-
                       if(state.foodsInEvent!.isEmpty) {
                         if (state.foodsFromFavorite!.isNotEmpty) {
                           bloc.add(FinishFoodFavouriteEventAction(onFinish: () => _showConfirmationDialog(context),),);
                         }
                       }
                       else {
+                        if (bloc.validateList() ?? true) return;
+
                         if ((state.foodsInEvent?.length ?? 0) > 1) {
                             showAddFoodNameDialog(
                               context: context,

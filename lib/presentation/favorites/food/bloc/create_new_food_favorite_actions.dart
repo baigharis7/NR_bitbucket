@@ -55,3 +55,15 @@ class FinishFoodFavoriteAction extends CreateNewFoodFavoriteActions {
 
   FinishFoodFavoriteAction({required this.onFinish});
 }
+
+class AddFavFoodFromFrequent extends CreateNewFoodFavoriteActions {
+  final FoodFavorite frequentFood;
+
+  AddFavFoodFromFrequent({required this.frequentFood});
+}
+
+class FinishFrequentFoodToAddFavorite extends CreateNewFoodFavoriteActions {
+  final Function onFinish;
+
+  FinishFrequentFoodToAddFavorite({required this.onFinish});
+}
