@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/explaining_card_ui_model.dart';
 
 import '../../../domain/models/liquidevents/liquid_event_complete.dart';
+import '../../../domain/models/profile/user_profile_model.dart';
 
 class JournalState {
   bool isLoading;
@@ -18,6 +19,7 @@ class JournalState {
   ExplainingCardUIModel? foodsCard;
   ExplainingCardUIModel? sportsCard;
   ExplainingCardUIModel? liquidsCard;
+  UserProfileModel? userProfile;
 
   JournalState({
     required this.isLoading,
@@ -32,6 +34,7 @@ class JournalState {
     this.foodsCard,
     this.sportsCard,
     this.liquidsCard,
+    this.userProfile,
   });
 
   JournalState copyWith({
@@ -47,6 +50,7 @@ class JournalState {
     ExplainingCardUIModel? foodsCard,
     ExplainingCardUIModel? sportsCard,
     ExplainingCardUIModel? liquidsCard,
+    UserProfileModel? userProfile,
   }) {
     return JournalState(
       isLoading: isLoading,
@@ -61,6 +65,7 @@ class JournalState {
       foodsCard: foodsCard ?? this.foodsCard,
       sportsCard: sportsCard ?? this.sportsCard,
       liquidsCard: liquidsCard ?? this.liquidsCard,
+      userProfile: userProfile ?? this.userProfile,
     );
   }
 

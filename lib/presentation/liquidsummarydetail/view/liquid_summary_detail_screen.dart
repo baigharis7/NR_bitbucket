@@ -114,8 +114,9 @@ class _LiquidSummaryDetailScreenState extends State<LiquidSummaryDetailScreen> {
                               EventsHelper().getWaterFractionToFillFromEvents(
                             state.waterEvents,
                             state.todayLiquidEvents.orEmpty(),
+                                ((state.userProfile?.physicalCharacteristics?.weight ?? 0) * 0.35).toInt(),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),

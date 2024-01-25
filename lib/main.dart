@@ -397,6 +397,7 @@ void main() async {
 
   final liquidSummaryDetailBloc = LiquidSummaryDetailBloc(
     getLiquidEventsOfTodayInteractor: getTodayLiquidEventsInteractor,
+    getProfileInteractor: getProfileInteractor,
   );
 
   final forgottenPasswordBloc = ForgottenPasswordBloc(loginRepository: loginRepository);
@@ -421,6 +422,7 @@ void main() async {
     isNecessaryToShowExplainingCardInteractor: isNecessaryToShowExplainingCardInteractor,
     saveExplainingCardInteractionInteractor: saveExplainingCardInteractionInteractor,
     getLiquidEventsOfTodayInteractor: getTodayLiquidEventsInteractor,
+    getProfileInteractor: getProfileInteractor,
   );
 
   final addFoodEventBloc = AddFoodEventBloc(
@@ -486,6 +488,7 @@ void main() async {
     isNecessaryToShowExplainingCardInteractor: isNecessaryToShowExplainingCardInteractor,
     saveExplainingCardInteractionInteractor: saveExplainingCardInteractionInteractor,
     getWaterEventsTodayInteractor: getWaterEventsTodayInteractor,
+    getProfileInteractor: getProfileInteractor,
   );
 
   final waterEventBloc = WaterEventBloc(

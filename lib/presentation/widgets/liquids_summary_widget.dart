@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/waterevent/view/add_water_event_screen.dart';
@@ -8,6 +9,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/fill_vertical_bar.da
 class LiquidSummaryWidget extends StatelessWidget {
   final double quantityTaken;
   final double? width;
+  final int? totalWater;
   final double fractionToFill;
   final Function? onReloadData;
   final Function screenToMove;
@@ -17,6 +19,7 @@ class LiquidSummaryWidget extends StatelessWidget {
     Key? key,
     required this.quantityTaken,
     this.width,
+    this.totalWater,
     required this.fractionToFill,
     this.onReloadData,
     this.addWaterCall,
@@ -67,7 +70,7 @@ class LiquidSummaryWidget extends StatelessWidget {
                   alignment: Alignment.center,
                   margin: const EdgeInsets.only(top: Dimens.marginXSmall),
                   child: Text(
-                    '${quantityTaken.toString()} L',
+                    '$quantityTaken L',
                     style: TextStyle(color: Colors.grey.shade400, fontSize: Dimens.fontSizeSmall),
                   ),
                 ),
@@ -77,9 +80,9 @@ class LiquidSummaryWidget extends StatelessWidget {
           Container(
             alignment: Alignment.centerRight,
             margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-            child: const Text(
-              '2 L',
-              style: TextStyle(
+            child: Text(
+              '$totalWater L',
+              style: const TextStyle(
                 fontSize: Dimens.fontSizeSmall,
               ),
             ),

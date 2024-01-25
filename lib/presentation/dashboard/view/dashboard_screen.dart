@@ -159,7 +159,8 @@ class _DashboardScreen extends State<DashboardScreen>
                                   flex: 1,
                                   child: LiquidSummaryWidget(
                                     quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty()),
-                                    fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty()),
+                                    fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.35).toInt()),
+                                    totalWater: ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.35).toInt(),
                                     onReloadData: () => bloc.add(ReloadWaterInfoAction()),
                                     screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState())),
                                     addWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState()))),

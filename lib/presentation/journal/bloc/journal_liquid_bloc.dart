@@ -2,10 +2,12 @@ import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_nece
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_week_liquid_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_kcal_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
@@ -19,6 +21,7 @@ class JournalLiquidBloc extends BaseBloc<JournalLiquidActions, JournalLiquidStat
   final IsNecessaryToShowExplainingCardInteractor isNecessaryToShowExplainingCardInteractor;
   final SaveExplainingCardInteractionInteractor saveExplainingCardInteractionInteractor;
   final GetWaterEventsTodayInteractor getWaterEventsTodayInteractor;
+  final GetProfileInteractor getProfileInteractor;
 
   JournalLiquidBloc({
     required this.getLiquidEventsOfTodayInteractor,
@@ -27,6 +30,7 @@ class JournalLiquidBloc extends BaseBloc<JournalLiquidActions, JournalLiquidStat
     required this.isNecessaryToShowExplainingCardInteractor,
     required this.saveExplainingCardInteractionInteractor,
     required this.getWaterEventsTodayInteractor,
+    required this.getProfileInteractor,
   }) : super(JournalLiquidState(
     isLoading: false,
     todayLiquidEvents: [],
@@ -39,6 +43,7 @@ class JournalLiquidBloc extends BaseBloc<JournalLiquidActions, JournalLiquidStat
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.userKcal = await getUserKcalInteractor.execute();
+      state.userProfile = await getProfileInteractor.execute();
       state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute();
       final completeWeekData = await getWeekLiquidEventsInteractor.execute();
       state.weeklyData = getWeeklyDataFormatted(completeWeekData);

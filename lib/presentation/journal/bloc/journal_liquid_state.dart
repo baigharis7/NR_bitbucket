@@ -2,6 +2,8 @@ import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_c
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 
+import '../../../domain/models/profile/user_profile_model.dart';
+
 class JournalLiquidState {
   bool isLoading;
   ErrorTypes? onError;
@@ -11,6 +13,7 @@ class JournalLiquidState {
   int? userKcal;
   int? kcalConsumed;
   bool? showCard;
+  UserProfileModel? userProfile;
 
   JournalLiquidState({
     required this.isLoading,
@@ -21,6 +24,7 @@ class JournalLiquidState {
     this.userKcal,
     this.kcalConsumed,
     this.showCard,
+    this.userProfile,
   });
 
   JournalLiquidState copyWith({
@@ -32,6 +36,7 @@ class JournalLiquidState {
     int? userKcal,
     int? kcalConsumed,
     bool? showCard,
+    UserProfileModel? userProfile,
   }) {
     return JournalLiquidState(
       isLoading: isLoading,
@@ -42,6 +47,7 @@ class JournalLiquidState {
       userKcal: userKcal ?? this.userKcal,
       kcalConsumed: kcalConsumed ?? this.kcalConsumed,
       showCard: showCard ?? this.showCard,
+      userProfile: userProfile ?? this.userProfile,
     );
   }
 

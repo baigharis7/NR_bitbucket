@@ -1,5 +1,6 @@
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_kcal_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_week_sports_interactor.dart';
@@ -22,6 +23,7 @@ class JournalBloc extends BaseBloc<JournalActions, JournalState> {
   final IsNecessaryToShowExplainingCardInteractor isNecessaryToShowExplainingCardInteractor;
   final SaveExplainingCardInteractionInteractor saveExplainingCardInteractionInteractor;
   final GetTodayLiquidEventsInteractor getLiquidEventsOfTodayInteractor;
+  final GetProfileInteractor getProfileInteractor;
 
   JournalBloc({
     required this.getUserKcalInteractor,
@@ -31,6 +33,7 @@ class JournalBloc extends BaseBloc<JournalActions, JournalState> {
     required this.isNecessaryToShowExplainingCardInteractor,
     required this.saveExplainingCardInteractionInteractor,
     required this.getLiquidEventsOfTodayInteractor,
+    required this.getProfileInteractor,
   }) : super(JournalState(
     isLoading: false,
     onError: null,
@@ -47,6 +50,7 @@ class JournalBloc extends BaseBloc<JournalActions, JournalState> {
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null, ),);
       state.userKcals = await getUserKcalInteractor.execute();
+      state.userProfile = await getProfileInteractor.execute();
       final completeWeekData = await getWeekSportsInteractor.execute();
       state.weeklyData = EventsHelper().getWeeklyDataFormatted(completeWeekData, state.userKcals!);
       state.todaySportEvents = await getTodaySportsInteractor.execute();
