@@ -199,12 +199,7 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                                   bloc.add(InitializeStateAction());
                                 }),
                                 onFavorite: !bloc.isFoodFavourite(foodEvent) ? () => {
-                                  showAddFavoriteDialog(
-                                    context: ctx,
-                                    onNameChange: (String foodName) => bloc.add(AddFoodNameAction(name: foodName)),
-                                    onMealTimeChange: (int mealTime) => bloc.add(AddMealTimeAction(mealTime: mealTime)),
-                                    onFinish: () => bloc.add(FinishAddingFavoriteAction(foodEvent: foodEvent, onFinish: () => _showConfirmationDialog(context))),
-                                  ),
+                                  bloc.add(FinishAddingFavoriteAction(foodEvent: foodEvent, onFinish: () => _showConfirmationDialog(context))),
                                 } : () {
                                   showUndoFavoriteDialog(
                                     context: context,
@@ -213,7 +208,8 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                                       RemoveFavoriteAction(
                                         onFinish: () =>
                                             Navigator.pop(context),
-                                        foodFavorite: mapToFoodFavoriteFromFoodEvent(foodEvent),
+                                        // foodFavorite: mapToFoodFavoriteFromFoodEvent(foodEvent),
+                                        foodFavorite: bloc.isFoundObjectFromFavoriteList(mapToFoodFavoriteFromFoodEvent(foodEvent)),
                                       ),
                                     ),
                                   );

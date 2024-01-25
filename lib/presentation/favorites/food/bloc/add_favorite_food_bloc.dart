@@ -75,6 +75,7 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
 
       state.foodsInFavorite = mapToFoodFavoriteList(event.foodsInFavorite.foodInfo!);
       state.comment = event.foodsInFavorite.comment;
+      state.dish = event.foodsInFavorite.dish;
       emit(state.copyWith(isLoading: false,));
     });
 
@@ -100,6 +101,7 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
       state.favoriteName = event.foodFavorite.title;
       state.mealTime = event.foodFavorite.mealTime;
       state.comment = event.foodFavorite.comment;
+      state.dish = event.foodFavorite.dish;
       state.foodsInFavorite = event.foodFavorite.ingredients;
       state.isEdit = true;
       state.eventDate = event.foodFavorite.eventDate;
@@ -117,6 +119,7 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
         drinks: [],
         mealTime: state.mealTime!,
         comment: state.comment,
+        dish: state.dish,
       );
 
       try {
@@ -145,7 +148,8 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
           eventDate: event.foodEventComplete.eventDate ?? DateTime.now().millisecondsSinceEpoch,
           eventId: event.foodEventComplete.eventDate ?? DateTime.now().millisecondsSinceEpoch,
           foodName: event.foodEventComplete.foodName ?? '',
-          comment: state.comment
+          comment: state.comment,
+        dish: state.dish,
       );
       state.isEdit = true;
       foodEvent.ingredients = state.foodsInFavorite?.map((food) => FoodInEvent(id: food.id, qty: food.qty, unit: food.unit, cookingMethod: food.cookingMethod)).toList();
@@ -200,6 +204,7 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
         drinks: [],
         mealTime: event.foodFavorite.mealTime,
         comment: state.comment,
+        dish: state.dish,
       );
 
       try {

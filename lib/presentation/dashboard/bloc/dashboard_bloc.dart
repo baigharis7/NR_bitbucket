@@ -359,8 +359,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     // if (state.userObjectives?.contains(51) ?? false) {
     //   tEE = tEE - tEE~/100*20;
     // }
-    int kcalPerNutrient = state.userKcal.orZero()~/100 * getPercentageByMacro(macronutrient);
-    int gramsPerNutrient = kcalPerNutrient ~/ getKcalPerGram(macronutrient);
+    double kcalPerNutrient = (state.userKcal.orZero()/100) * getPercentageByMacro(macronutrient);
+    double gramsPerNutrient = kcalPerNutrient / getKcalPerGram(macronutrient);
     double returnQuantity = nutrientQuantitySoFar / gramsPerNutrient;
     if (returnQuantity > 1) returnQuantity = 1;
     return returnQuantity;
@@ -375,9 +375,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     // if (state.userObjectives?.contains(51) ?? false) {
     //   tEE = tEE - tEE~/100*20;
     // }
-    int kcalPerNutrient = state.userKcal.orZero()~/100 * getPercentageByMacro(macronutrient);
-    int gramsPerNutrient = kcalPerNutrient ~/ getKcalPerGram(macronutrient);
-    return gramsPerNutrient;
+    double kcalPerNutrient = state.userKcal.orZero()/100 * getPercentageByMacro(macronutrient);
+    double gramsPerNutrient = kcalPerNutrient / getKcalPerGram(macronutrient);
+    return gramsPerNutrient.toInt();
   }
 
   double getFractionToFillKcal(int caloriesConsumed) {

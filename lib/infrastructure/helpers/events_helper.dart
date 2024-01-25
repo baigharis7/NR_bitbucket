@@ -92,7 +92,7 @@ class EventsHelper {
     // }
   // }
 
-  double getWaterFractionToFillFromEvents(List<WaterEventMaster>? waterEvents, List<LiquidEventComplete> liquidTodayEvents, int? totalRequired) {
+  double getWaterFractionToFillFromEvents(List<WaterEventMaster>? waterEvents, List<LiquidEventComplete> liquidTodayEvents, double? totalRequired) {
     // if (waterEvents != null && waterEvents.isNotEmpty) {
       return _getFractionToFillWater(getWaterIntakeAddition(waterEvents, liquidTodayEvents), totalRequired.orZero());
     // } else {
@@ -227,7 +227,7 @@ class EventsHelper {
     }
   }
 
-  double _getFractionToFillWater(double? waterAmount, int totalRequired) {
+  double _getFractionToFillWater(double? waterAmount, double totalRequired) {
     if (waterAmount != null) {
       double returnQuantity = waterAmount / totalRequired;
       if (returnQuantity > 1) returnQuantity = 1;

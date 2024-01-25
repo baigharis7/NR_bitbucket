@@ -17,6 +17,7 @@ class AddFavoriteFoodState {
   UnitsFoodsMaster? unitsFoodsMaster;
   UnitsInfoMaster? unitsInfoMaster;
   String? comment;
+  bool? dish;
   String? favoriteName;
   int? mealTime;
   bool? isEdit;
@@ -33,6 +34,7 @@ class AddFavoriteFoodState {
     this.unitsFoodsMaster,
     this.unitsInfoMaster,
     this.comment,
+    this.dish,
     this.favoriteName,
     this.mealTime,
     this.isEdit,
@@ -50,6 +52,7 @@ class AddFavoriteFoodState {
     UnitsFoodsMaster? unitsFoodsMaster,
     UnitsInfoMaster? unitsInfoMaster,
     String? comment,
+    bool? dish,
     String? favoriteName,
     int? mealTime,
     bool? isEdit,
@@ -66,6 +69,7 @@ class AddFavoriteFoodState {
       unitsInfoMaster: unitsInfoMaster ?? this.unitsInfoMaster,
       unitsFoodsMaster: unitsFoodsMaster ?? this.unitsFoodsMaster,
       comment: comment ?? this.comment,
+      dish: dish ?? this.dish,
       favoriteName: favoriteName ?? this.favoriteName,
       mealTime: mealTime ?? this.mealTime,
       isEdit: isEdit ?? this.isEdit,

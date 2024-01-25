@@ -19,6 +19,7 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 
 import '../../../foodevent/view/add_food_event_screen.dart';
+import '../../../widgets/box_type_radio_text_widget.dart';
 import '../../common/undo_favorite_dialog.dart';
 
 class AddFoodFavoriteScreen extends StatefulWidget {
@@ -287,6 +288,7 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                                       editFood: () {},
                                     ),
                                   ),
+                                  if (state.dish ?? false) Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge), child: BoxTypeRadioTextWidget(onPressed: () => {}, isSelected: true, title: AppLocalizations.of(context)!.create_dish)),
                                   if (state.comment.isNotEmptyOrNull())
                                     Container(
                                       margin: const EdgeInsets.all(

@@ -9,7 +9,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/fill_vertical_bar.da
 class LiquidSummaryWidget extends StatelessWidget {
   final double quantityTaken;
   final double? width;
-  final int? totalWater;
+  final String? totalWater;
   final double fractionToFill;
   final Function? onReloadData;
   final Function screenToMove;

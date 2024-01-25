@@ -59,6 +59,7 @@ UploadFoodFavorite mapToUploadFoodFavorite(FoodFavorite foodFavorite, String use
     drinks: foodFavorite.drinks.map((drink) => UploadFoodInFavorite(id: drink.id, name_en: drink.name_en.orEmpty(), name_es: drink.name_es.orEmpty(), qty: drink.qty, unit: drink.unit, cookingMethod: drink.cookingMethod, unitsEquivalences: drink.unitsEquivalences)).toList(),
     mealTime: foodFavorite.mealTime,
     comment: foodFavorite.comment,
+    dish: foodFavorite.dish,
   );
 }
 

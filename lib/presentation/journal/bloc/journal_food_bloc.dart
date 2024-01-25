@@ -88,12 +88,13 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
       List<FoodInFavorite>? ingredients = event.foodEvent.foodInfo?.map((ingredient) => FoodInFavorite(id: ingredient.id!, name_en: ingredient.name_en!, name_es: ingredient.name_es!, qty: ingredient.eventInfo?.qty?.toInt() ?? 0, unit: ingredient.eventInfo?.unit ?? 0, cookingMethod: ingredient.eventInfo?.cookingMethod ?? 0)).toList();
 
       final foodFavorite = FoodFavorite(
-        title: state.favoriteName.orEmpty(),
-        eventDate: event.foodEvent.eventDate ?? DateTimeHelper().provideCurrentDate().millisecondsSinceEpoch,
-        ingredients: ingredients ?? [],
+        title: event.foodEvent.foodName.orEmpty(),
+        eventDate: DateTimeHelper().provideCurrentDate().millisecondsSinceEpoch,
+        ingredients: ingredients.orEmpty(),
         drinks: [],
-        mealTime: state.mealTime!,
+        mealTime: event.foodEvent.mealType ?? -1,
         comment: event.foodEvent.comment,
+        dish: event.foodEvent.dish,
       );
 
       try {
@@ -115,12 +116,13 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
     });
 
     on<RemoveFavoriteAction>((event, emit) async {
+      if (event.foodFavorite.isNull()) return;
       emit(state.copyWith(isLoading: true));
 
       try {
-        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite.eventDate);
+        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite!.eventDate);
         try {
-          await removeFoodFavoriteFromLocalInteractor.execute(event.foodFavorite);
+          await removeFoodFavoriteFromLocalInteractor.execute(event.foodFavorite!);
           state.foodFavorites = await getFoodFavoritesInteractor.execute();
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
@@ -190,6 +192,21 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
     }
 
     return isFavourite;
+  }
+
+  FoodFavorite? isFoundObjectFromFavoriteList(FoodFavorite foodFavoriteFromEvent) {
+    FoodFavorite? object;
+    bool isFound = false;
+    parentLoop: for (FoodFavorite favObject in state.foodFavorites.orEmpty()) {
+      object = favObject;
+      if (favObject.ingredients.length == foodFavoriteFromEvent.ingredients.length) {
+        childLoop: for (FoodInFavorite matchingObject in foodFavoriteFromEvent.ingredients) {
+          isFound = favObject.ingredients.any((ingredientItem) => ingredientItem.id == matchingObject.id && ingredientItem.cookingMethod == matchingObject.cookingMethod && ingredientItem.qty == matchingObject.qty);
+          if (!isFound) break childLoop;
+        }
+      }
+    }
+    return isFound ? object : null;
   }
 
 }

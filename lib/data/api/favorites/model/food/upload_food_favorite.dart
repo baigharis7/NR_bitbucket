@@ -11,6 +11,7 @@ class UploadFoodFavorite {
   List<UploadFoodInFavorite> drinks = [];
   String? comment;
   int mealTime;
+  bool? dish;
 
   UploadFoodFavorite({
     required this.userId,
@@ -19,6 +20,7 @@ class UploadFoodFavorite {
     required this.ingredients,
     required this.drinks,
     this.comment,
+    this.dish,
     required this.mealTime,
   });
 
