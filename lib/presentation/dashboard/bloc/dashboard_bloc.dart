@@ -104,7 +104,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo,);
       state.profile = await getProfileInteractor.execute();
-      state.userKcal = state.profile!.kcal;
+      state.userKcal = getUserKcalSelectiveObjectives(state.profile?.kcal ?? 0);
       state.isMenstruation = state.profile?.objectives?.contains(28);
       state.isCold = state.profile?.objectives?.contains(18);
       state.micronutrients = state.userMicronutrients!
@@ -134,14 +134,13 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       ).toList();
       final caloriesConsumed = await getDayCaloriesInteractor.execute();
       state.energyModel = EnergyModel(
-        fractionToFill: getFractionToFillKcal(caloriesConsumed ?? 0),
-        totalKcal: state.userKcal!,
+        fractionToFill: getFractionToFillKcal(caloriesConsumed.orZero()),
+        totalKcal: state.userKcal.orZero(),
         rawKcalTaken: getTotalKcalTakenToday(),
-        spentKcal: caloriesConsumed ?? 0,
+        spentKcal: caloriesConsumed.orZero(),
       );
       state.waterEvents = await getWaterEventsTodayInteractor.execute();
-      var totalSugarRequired = state.userKcal ?? 0;
-      totalSugarRequired = totalSugarRequired~/100*5;
+      var totalSugarRequired = (state.userKcal.orZero()~/100*5)~/4;
       state.sugarAndFiberModel = SugarAndFiberModel(
           fractionToFillSugar: calculateTodaySugar(totalSugarRequired),
           totalSugarConsumed: calculateTodayConsumedSugar(totalSugarRequired),
@@ -353,14 +352,14 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
 
-    var tEE = state.userKcal ?? 0;
-    if (state.userObjectives?.contains(50) ?? false) {
-      tEE = tEE + tEE~/100*15;
-    }
-    if (state.userObjectives?.contains(51) ?? false) {
-      tEE = tEE - tEE~/100*20;
-    }
-    int kcalPerNutrient = tEE~/100 * getPercentageByMacro(macronutrient);
+    // var tEE = state.userKcal ?? 0;
+    // if (state.userObjectives?.contains(50) ?? false) {
+    //   tEE = tEE + tEE~/100*15;
+    // }
+    // if (state.userObjectives?.contains(51) ?? false) {
+    //   tEE = tEE - tEE~/100*20;
+    // }
+    int kcalPerNutrient = state.userKcal.orZero()~/100 * getPercentageByMacro(macronutrient);
     int gramsPerNutrient = kcalPerNutrient ~/ getKcalPerGram(macronutrient);
     double returnQuantity = nutrientQuantitySoFar / gramsPerNutrient;
     if (returnQuantity > 1) returnQuantity = 1;
@@ -369,14 +368,14 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   num getMacroNutrientRda(String macronutrient) {
     // num macroRda = 0.0;
-    var tEE = state.userKcal ?? 0;
-    if (state.userObjectives?.contains(50) ?? false) {
-      tEE = tEE + tEE~/100*15;
-    }
-    if (state.userObjectives?.contains(51) ?? false) {
-      tEE = tEE - tEE~/100*20;
-    }
-    int kcalPerNutrient = tEE~/100 * getPercentageByMacro(macronutrient);
+    // var tEE = state.userKcal ?? 0;
+    // if (state.userObjectives?.contains(50) ?? false) {
+    //   tEE = tEE + tEE~/100*15;
+    // }
+    // if (state.userObjectives?.contains(51) ?? false) {
+    //   tEE = tEE - tEE~/100*20;
+    // }
+    int kcalPerNutrient = state.userKcal.orZero()~/100 * getPercentageByMacro(macronutrient);
     int gramsPerNutrient = kcalPerNutrient ~/ getKcalPerGram(macronutrient);
     return gramsPerNutrient;
   }
@@ -434,8 +433,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
 
-    // sugarConsumedToday = sugarConsumedToday;
-    sugarConsumedToday = sugarConsumedToday / (totalSugarRequired/4);
+    sugarConsumedToday = sugarConsumedToday / totalSugarRequired;
     if (sugarConsumedToday > 1) sugarConsumedToday = 1.0;
     if (sugarConsumedToday < 0) sugarConsumedToday = 0.0;
     return double.parse(sugarConsumedToday.toStringAsFixed(2));
@@ -511,13 +509,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   int getPercentageByMacro(String macro) {
     var macroo = 0;
-    if (state.userObjectives?.contains(50) ?? false) {
+    if ((state.userObjectives?.contains(50) ?? false) || (state.userObjectives?.contains(51) ?? false)) {
       macroo = macro == 'carbsAvailable' ? 40 : 30;
     }
-    if(state.userObjectives?.contains(51) ?? false) {
-      macroo = macro == 'carbsAvailable' ? 40 : 30;
-    }
-    if(state.userObjectives?.contains(52) ?? false) {
+    else if(state.userObjectives?.contains(52) ?? false) {
       macroo = macro == 'carbsAvailable' ? 50 : macro == 'proteinSci' ? 20 : 30;
     }
     else {
@@ -573,6 +568,19 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     state.profile!.objectives!.contains(objective)
         ? state.profile!.objectives!.remove(objective)
         : state.profile!.objectives!.add(objective);
+  }
+
+  int getUserKcalSelectiveObjectives(int userKcal) {
+    int changedKcal = userKcal;
+
+    if (state.userObjectives?.contains(50) ?? false) {
+      changedKcal = changedKcal + changedKcal~/100*15;
+    }
+    if (state.userObjectives?.contains(51) ?? false) {
+      changedKcal = changedKcal - changedKcal~/100*20;
+    }
+
+    return changedKcal;
   }
 
 }
