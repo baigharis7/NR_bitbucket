@@ -10,6 +10,8 @@ import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/model/aversions_ui_model.dart';
 
+import '../../../../domain/models/profile/height_weight_units.dart';
+
 class ProfileState {
   bool isLoading;
   ErrorTypes? onError;
@@ -30,6 +32,7 @@ class ProfileState {
   List<ObjectiveInfoMaster>? filteredObjectives;
   bool? isMenstruation;
   bool? isCold;
+  HeightWeightUnits? unitWeightHeight;
 
   ProfileState({
     required this.isLoading,
@@ -51,6 +54,7 @@ class ProfileState {
     this.filteredObjectives,
     this.isMenstruation,
     this.isCold,
+    this.unitWeightHeight,
   });
 
   ProfileState copyWith({
@@ -73,6 +77,7 @@ class ProfileState {
     List<ObjectiveInfoMaster>? filteredObjectives,
     bool? isMenstruation,
     bool? isCold,
+    HeightWeightUnits? unitWeightHeight,
   }) {
     return ProfileState(
       isLoading: isLoading,
@@ -94,6 +99,7 @@ class ProfileState {
       filteredObjectives: filteredObjectives ?? this.filteredObjectives,
       isMenstruation: isMenstruation ?? this.isMenstruation,
       isCold: isCold ?? this.isCold,
+      unitWeightHeight: unitWeightHeight ?? this.unitWeightHeight,
     );
   }
 }

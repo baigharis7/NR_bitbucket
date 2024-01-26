@@ -6,6 +6,8 @@ import 'package:nutrenaissance_flutter/presentation/waterevent/view/add_water_ev
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_vertical_bar.dart';
 
+import '../../infrastructure/utils/constants.dart';
+
 class LiquidSummaryWidget extends StatelessWidget {
   final double quantityTaken;
   final double? width;
@@ -52,9 +54,10 @@ class LiquidSummaryWidget extends StatelessWidget {
               ],
             ),
           ),
+          const Text('${Constants.DEFAULT_ADD_WATER_QUANTITY} L'),
           InkWell(
             onTap: () => addWaterCall?.call(),
-              child: Image.asset('assets/images/water.png', height: 80)),
+              child: Image.asset('assets/images/water.png', height: 65)),
           Container(
             margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal, horizontal: Dimens.marginXLarge,),
             alignment: Alignment.centerRight,

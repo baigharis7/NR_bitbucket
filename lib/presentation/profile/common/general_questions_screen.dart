@@ -1,8 +1,11 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/height_weight_units.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_picker_helper.dart';
@@ -35,13 +38,14 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
   final _commonNameController = TextEditingController();
   final _dateController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _heightWeightTypeList = HeightWeightUnits.getAllUnits();
+  late List<String> _dropdownList;
 
-  String? _nameErrorText;
-  String? _dateErrorText;
-  bool _borderError = false;
-  bool _heightError = false;
-  bool _widthError = false;
-
+  @override
+  void initState() {
+    _dropdownList = _heightWeightTypeList.map((e) => e.unit.toString()).toList();
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -438,6 +442,37 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                           ),
                           child: Column(
                             children: [
+                              Card(
+                                margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall, horizontal: Dimens.marginSmall),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5),side: const BorderSide(color: Colors.black12)),
+                                child: Container(
+                                  height: Dimens.heightSmall - 20,
+                                  padding: const EdgeInsets.symmetric(vertical: Dimens.paddingSmall -4, horizontal: Dimens.paddingSmall -2),
+                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginNormal),
+                                  child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    value: state.unitWeightHeight?.unit ?? _dropdownList.first,
+                                    // icon: const Icon(Icons.arrow_downward),
+                                    // elevation: 16,
+                                    // style: const TextStyle(color: Colors.deepPurple),
+                                    underline: Container(),
+                                    onChanged: (String? value) {
+                                      // This is called when the user selects an item.
+                                      // setState(() {
+                                      //   dropdownValue = value.orEmpty();
+                                      // });
+                                      
+                                      bloc.add(SetUnitWeightHeight(unitWeightHeight: _heightWeightTypeList.firstWhere((element) => element.unit == value,)));
+                                    },
+                                    items: _dropdownList.map<DropdownMenuItem<String>>((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ),
                               Row(
                                 children: [
                                   Expanded(
@@ -446,7 +481,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       isNumeric: true,
                                       value: state.profile!
                                           .physicalCharacteristics!.height,
-                                      title: AppLocalizations.of(ctx)!.height,
+                                      title: state.unitWeightHeight?.height ?? AppLocalizations.of(ctx)!.height,
                                       onChanged: (height) {
                                         bloc.add(
                                           SetBodyParameterAction(
@@ -463,7 +498,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       isNumeric: true,
                                       value: state.profile!
                                           .physicalCharacteristics!.weight,
-                                      title: AppLocalizations.of(ctx)!.weight,
+                                      title: state.unitWeightHeight?.weight ?? AppLocalizations.of(ctx)!.weight,
                                       onChanged: (weight) {
                                         bloc.add(
                                           SetBodyParameterAction(

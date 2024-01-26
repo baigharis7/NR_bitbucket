@@ -30,7 +30,8 @@ class EnergyBalanceDetailBloc extends Bloc<EnergyBalanceDetailEvent, EnergyBalan
 }) : super(EnergyBalanceDetailState(isLoading: false)) {
     on<InitializeEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
-      state.weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
+      final a = await getWeekFoodEventsInteractor.execute();
+      state.weeklyFoodEvents = a;
       state.weeklyLiquidEvents = await getWeekLiquidEventsInteractor.execute();
       state.weeklySportEvents = await getWeekSportsInteractor.execute();
       state.userProfile = await getProfileInteractor.execute();

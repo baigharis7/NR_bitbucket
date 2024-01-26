@@ -87,7 +87,7 @@
     "high_cholesterol": "High cholesterol",
     "high_triglycerides": "High triglycerides",
     "other_diseases": "Other disease",
-    "none": "None",
+    "none": "None / Raw",
     "common_diseases_question": "Do you have any of these diseases?",
     "medication_question": "Are you under pharmaceutical treatment?",
     "omnivorous": "Omnivorous",

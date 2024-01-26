@@ -75,6 +75,8 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
 
       state.foodsInFavorite = mapToFoodFavoriteList(event.foodsInFavorite.foodInfo!);
       state.comment = event.foodsInFavorite.comment;
+      state.mealTime = event.foodsInFavorite.mealType;
+      state.favoriteName = event.foodsInFavorite.foodName;
       state.dish = event.foodsInFavorite.dish;
       emit(state.copyWith(isLoading: false,));
     });
@@ -127,6 +129,7 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
         if (uploadFavorite) {
           try {
             await saveFoodFavoriteInteractor.execute(foodFavorite, state.isEdit!);
+            _clearData();
             event.onFinish.call();
             emit(state.copyWith(isLoading: false));
           } catch (error) {
@@ -160,6 +163,7 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
         if (uploadFoodEvent.uploadSuccess) {
           try {
             await saveFoodEventInteractor.execute(uploadFoodEvent, state.isEdit!);
+            _clearData();
             emit(state.copyWith(isLoading: false, onError: null, eventDate: null));
             event.onFinish.call();
           } catch (error) {
@@ -177,13 +181,14 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
     });
 
     on<RemoveFavoriteFoodEventAction>((event, emit) async {
+      if(event.foodFavorite.isNull()) return;
       emit(state.copyWith(isLoading: true));
 
       try {
-        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite.eventDate);
+        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite!.eventDate);
         try {
-          await removeFoodFavoriteFromLocalInteractor.execute(event.foodFavorite);
-          // state.foodFavorites = await getFoodFavoritesInteractor.execute();
+          await removeFoodFavoriteFromLocalInteractor.execute(event.foodFavorite!);
+          _clearData();
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
         } catch (error) {
@@ -212,6 +217,7 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
         if (uploadFavorite) {
           try {
             await saveFoodFavoriteInteractor.execute(foodFavorite, true);
+            _clearData();
             event.onFinish.call();
             emit(state.copyWith(isLoading: false));
           } catch (error) {
@@ -239,6 +245,31 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
     }
 
     return isFavourite;
+  }
+
+  void _clearData() {
+    state.comment = null;
+    state.dish = null;
+    state.favoriteName = null;
+    state.mealTime = null;
+    state.isEdit = false;
+    state.eventDate = null;
+    state.foodsInFavorite?.clear();
+  }
+
+  FoodFavorite? isFoundObjectFromFavoriteList(FoodFavorite foodFavoriteFromEvent) {
+    FoodFavorite? object;
+    bool isFound = false;
+    parentLoop: for (FoodFavorite favObject in state.favoriteFoods.orEmpty()) {
+      object = favObject;
+      if (favObject.ingredients.length == foodFavoriteFromEvent.ingredients.length) {
+        childLoop: for (FoodInFavorite matchingObject in foodFavoriteFromEvent.ingredients) {
+          isFound = favObject.ingredients.any((ingredientItem) => ingredientItem.id == matchingObject.id && ingredientItem.cookingMethod == matchingObject.cookingMethod && ingredientItem.qty == matchingObject.qty);
+          if (!isFound) break childLoop;
+        }
+      }
+    }
+    return isFound ? object : null;
   }
 
 }

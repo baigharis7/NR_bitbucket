@@ -91,6 +91,10 @@ class AppLocalizationsHelper {
       'mild_dehydration' : 'Mild dehydration',
       'medium_dehydration' : 'Medium dehydration',
       'high_dehydration' : 'High dehydration',
+      'height_cm':'Height (cm)',
+      'weight_kg':'Weight (kg)',
+      'height_feet':'Height (feet)',
+      'weight_lb':'Weight (lb)',
     },
     'es': {
       'masculine': 'Masculino',
@@ -172,6 +176,10 @@ class AppLocalizationsHelper {
       'mild_dehydration' : 'Deshidratación leve',
       'medium_dehydration' : 'Deshidratación media',
       'high_dehydration' : 'Deshidratación alta',
+      'height_cm' : 'Altura (cm)',
+      'weight_kg':'Peso (kg)',
+      'height_feet' : 'Altura (feet)',
+      'weight_lb':'Peso (lb)',
     },
   };
 

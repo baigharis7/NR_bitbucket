@@ -33,7 +33,8 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
 
     on<InitializationEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
-      state.weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
+      final a = await getWeekFoodEventsInteractor.execute();
+      state.weeklyFoodEvents = a;
       state.userMicronutrients = await getUserMicronutrientsInteractor.execute() ?? [];
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       state.userRdas = await getUserRdasInteractor.execute();

@@ -61,7 +61,7 @@ class FinishFoodFavoriteCommentAction extends AddFavoriteFoodActions {
 }
 
 class RemoveFavoriteFoodEventAction extends AddFavoriteFoodActions {
-  final FoodFavorite foodFavorite;
+  final FoodFavorite? foodFavorite;
   final Function onFinish;
 
   RemoveFavoriteFoodEventAction({required this.onFinish, required this.foodFavorite});

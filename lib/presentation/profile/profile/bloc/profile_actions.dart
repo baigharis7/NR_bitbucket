@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 
+import '../../../../domain/models/profile/height_weight_units.dart';
+
 class ProfileActions {
   ProfileActions();
 }
@@ -160,4 +162,10 @@ class SetMenstruationStateAction extends ProfileActions {
   final Function onFinish;
 
   SetMenstruationStateAction({ required this.isMenstruation, required this.onFinish });
+}
+
+class SetUnitWeightHeight extends ProfileActions {
+  final HeightWeightUnits? unitWeightHeight;
+
+  SetUnitWeightHeight({required this.unitWeightHeight});
 }

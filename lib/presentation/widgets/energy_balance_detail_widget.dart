@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 
 import '../../domain/models/dashboard/energy_model.dart';
@@ -50,6 +51,7 @@ class _EnergyBalanceDetailWidgetState extends State<EnergyBalanceDetailWidget> {
               child: Stack(
                 children: [
                   FillHorizontalBar(
+                    fillColor: (widget.energyModel?.fractionToFill.orZero() ?? 0) >= 1 ? AppColors.errorRed : AppColors.mountainMeadow,
                     height: 30,
                     backgroundBarColor: AppColors.cardGreen_200,
                     fractionToFill: widget.energyModel?.fractionToFill ?? 0.0,
@@ -65,15 +67,64 @@ class _EnergyBalanceDetailWidgetState extends State<EnergyBalanceDetailWidget> {
                 ],
               ),
             ),
-            const SizedBox(height: Dimens.heightSmall,),
-            Row(
-              children: [
-                Expanded(child: Text(AppLocalizations.of(context)!.gross_kcal, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium))),
-                Text('${widget.energyModel?.rawKcalTaken} Kcal', style: const TextStyle(color: AppColors.mountainMeadow, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium)),
-              ],
+            Container(
+              margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal, right: Dimens.marginNormal,),
+              alignment: Alignment.centerRight,
+              child: Text('${(widget.energyModel?.totalKcal ?? 0)} kcal'),
+            ),
+            // const SizedBox(height: Dimens.heightSmall,),
+            // Row(
+            //   children: [
+            //     Expanded(child: Text(AppLocalizations.of(context)!.gross_kcal, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium))),
+            //     Text('${widget.energyModel?.rawKcalTaken} Kcal', style: const TextStyle(color: AppColors.mountainMeadow, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium)),
+            //   ],
+            // ),
+            Container(
+              alignment: Alignment.centerLeft,
+              margin: const EdgeInsets.only(
+                left: Dimens.marginNormal,
+                top: Dimens.marginSmall,
+              ),
+              child: SizedBox(
+                child: Text(
+                  AppLocalizations.of(context)!.gross_kcal,
+                  style: const TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: Dimens.heightXSmall,),
-            Container(child: Text(AppLocalizations.of(context)!.gross_description,),),
+            Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: Dimens.marginSmall,
+                vertical: Dimens.marginXSmall,
+              ),
+              child: Stack(
+                children: [
+                  FillHorizontalBar(
+                    height: 30,
+                    backgroundBarColor: AppColors.cardGreen_200,
+                    fractionToFill: (widget.energyModel!.rawKcalTaken.orZero() / widget.energyModel!.totalKcal) > 1 ? 1.0 : (widget.energyModel!.rawKcalTaken.orZero() / widget.energyModel!.totalKcal),
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.only(top: Dimens.marginXSmall),
+                    child: Text(
+                      '${(widget.energyModel?.rawKcalTaken ?? 0)} kcal',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal, right: Dimens.marginNormal,),
+              alignment: Alignment.centerRight,
+              child: Text('${(widget.energyModel?.totalKcal ?? 0)} kcal'),
+            ),
+            const SizedBox(height: Dimens.heightXSmall,),
+            Text(AppLocalizations.of(context)!.gross_description,),
             const SizedBox(height: Dimens.heightSmall,),
             Row(
               children: [

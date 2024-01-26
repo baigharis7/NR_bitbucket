@@ -128,6 +128,11 @@ class _DashboardScreen extends State<DashboardScreen>
                             currentState: state.isMenstruation ?? false,
                             onStateChange: (value) => bloc.add(UpdateMenstruationStateAction(isMenstruation: value)),
                         ),
+                        SwitchDashboardWidget(
+                          title: AppLocalizations.of(context)!.cold,
+                          currentState: state.isCold ?? false,
+                          onStateChange: (value) => bloc.add(UpdateColdStateAction(isCold: value)),
+                        ),
                         NutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.micronutrients,
                           nutrients: state.micronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList(),
@@ -309,11 +314,6 @@ class _DashboardScreen extends State<DashboardScreen>
                               ),
                             ],
                           ),
-                        ),
-                        SwitchDashboardWidget(
-                            title: AppLocalizations.of(context)!.cold,
-                            currentState: state.isCold ?? false,
-                            onStateChange: (value) => bloc.add(UpdateColdStateAction(isCold: value)),
                         ),
                       ],
                     ),

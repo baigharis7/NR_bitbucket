@@ -58,6 +58,7 @@ class _MacroNutrientDetailWidgetState extends State<MacroNutrientDetailWidget> {
                       alignment: Alignment.bottomCenter,
                       children: [
                         FillHorizontalBar(
+                          fillColor: widget.nutrientsModel.fractionToFill >= 1 ? AppColors.errorRed : AppColors.mountainMeadow,
                           fractionToFill: widget.nutrientsModel.fractionToFill,
                           backgroundBarColor: AppColors.mountainMeadow,
                         ),

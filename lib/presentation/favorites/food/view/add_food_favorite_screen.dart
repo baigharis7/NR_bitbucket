@@ -197,35 +197,20 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                                             RemoveFavoriteFoodEventAction(
                                               onFinish: () =>
                                                   Navigator.pop(context),
-                                              foodFavorite: mapToFoodFavoriteFromFoodEvent(arguments),
+                                              foodFavorite: bloc.isFoundObjectFromFavoriteList(mapToFoodFavoriteFromFoodEvent(arguments)),
                                             ),
                                           ),
                                         );
                                       }
                                       else {
-                                        showAddFavoriteDialog(
-                                          context: ctx,
-                                          onNameChange: (String foodName) =>
-                                              bloc.add(
-                                                AddFoodNameAction(
-                                                  name: foodName,
-                                                ),
-                                              ),
-                                          onMealTimeChange: (int mealTime) =>
-                                              bloc.add(
-                                                AddMealTimeAction(
-                                                  mealTime: mealTime,
-                                                ),
-                                              ),
-                                          onFinish: () => bloc.add(
+                                        bloc.add(
                                             FinishAddingFavoriteAction(
                                               onFinish: () =>
                                                   _showConfirmationDialog(
                                                     context,
                                                   ),
                                             ),
-                                          ),
-                                        );
+                                          );
                                       }
                                     }
                                   }

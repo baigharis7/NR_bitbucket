@@ -439,6 +439,12 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
 
       // emit(state.copyWith(isLoading: false, onError: null));
     },);
+
+    on<SetUnitWeightHeight>((event, emit) {
+      state.unitWeightHeight = event.unitWeightHeight;
+
+      emit(state.copyWith(isLoading: false, onError: null));
+    },);
   }
 
   void manageObjectives(int objective) {
