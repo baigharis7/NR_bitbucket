@@ -109,17 +109,24 @@ class _EnergyBalanceDetailScreenState extends State<EnergyBalanceDetailScreen> {
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
-                              Container(
-                                margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
-                                child: WeeklyEnergyGraphWidget(
-                                  title: AppLocalizations.of(context)!.energy_balance_title,
-                                  data: state.weeklyEnergyBalance ?? [],
-                                  averageConsumed: state.averageConsumedKcal ?? 0.0,
-                                  averageSpent: state.averageSpentKcal ?? 0.0,
-                                ),
-                              ),
+                              // Container(
+                              //   margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
+                              //   child: WeeklyEnergyGraphWidget(
+                              //     title: AppLocalizations.of(context)!.energy_balance_title,
+                              //     data: state.weeklyEnergyBalance ?? [],
+                              //     averageConsumed: state.averageConsumedKcal ?? 0.0,
+                              //     averageSpent: state.averageSpentKcal ?? 0.0,
+                              //   ),
+                              // ),
                               // EnergyBalanceDetailWidget(energyModel: EnergyModel(fractionToFill: 0.2, rawKcalTaken: 10, spentKcal: 2, totalKcal: 20)),
-                              EnergyBalanceDetailWidget(energyModel: state.energyModel),
+                              EnergyBalanceDetailWidget(
+                                energyModel: state.energyModel,
+                                weeklyEnergyWidget: WeeklyEnergyGraphWidget(
+                                title: AppLocalizations.of(context)!.energy_balance_title,
+                                data: state.weeklyEnergyBalance ?? [],
+                                averageConsumed: state.averageConsumedKcal ?? 0.0,
+                                averageSpent: state.averageSpentKcal ?? 0.0,
+                              ),),
                             ],
                           ),
                         ),

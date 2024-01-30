@@ -42,7 +42,7 @@ class RefreshBirthdateAction extends ProfileActions {
 }
 
 class SetBodyParameterAction extends ProfileActions {
-  int parameter;
+  double parameter;
   BodyParameters type;
 
   SetBodyParameterAction({required this.parameter, required this.type,});

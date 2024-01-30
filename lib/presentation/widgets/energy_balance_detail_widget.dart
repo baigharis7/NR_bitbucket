@@ -11,7 +11,8 @@ import 'fill_horizontal_bar.dart';
 
 class EnergyBalanceDetailWidget extends StatefulWidget {
   final EnergyModel? energyModel;
-  const EnergyBalanceDetailWidget({super.key, required this.energyModel});
+  final Widget? weeklyEnergyWidget;
+  const EnergyBalanceDetailWidget({super.key, required this.energyModel, required this.weeklyEnergyWidget});
 
   @override
   State<EnergyBalanceDetailWidget> createState() =>
@@ -134,6 +135,8 @@ class _EnergyBalanceDetailWidgetState extends State<EnergyBalanceDetailWidget> {
             ),
             const SizedBox(height: Dimens.heightXSmall,),
             Container(child: Text(AppLocalizations.of(context)!.spent_Kcal_description),),
+            const SizedBox(height: Dimens.heightXSmall,),
+            if (!widget.weeklyEnergyWidget.isNull()) widget.weeklyEnergyWidget ?? Container(),
             const SizedBox(height: Dimens.heightSmall,),
             Container(width: double.infinity, child: Text(AppLocalizations.of(context)!.basal_metabolic,
                 style: const TextStyle(

@@ -21,6 +21,8 @@ class UserProfileModel {
   List<int>? objectives;
   List<String>? micronutrients;
   UserRdas? userRdas;
+  int? feces;
+  int? urine;
   int? kcal;
 
   UserProfileModel({
@@ -41,6 +43,8 @@ class UserProfileModel {
     this.objectives,
     this.micronutrients,
     this.userRdas,
+    this.feces,
+    this.urine,
     this.kcal,
   });
 
@@ -62,6 +66,8 @@ class UserProfileModel {
     objectives = [];
     micronutrients = [];
     userRdas = UserRdas(userRdas: []);
+    feces = null;
+    urine = null;
     kcal = null;
   }
 
@@ -83,14 +89,16 @@ class MedicalSituation{
 
 @JsonSerializable(explicitToJson: true)
 class PhysicalCharacteristics{
-  int? height;
-  int? weight;
+  double? height;
+  double? weight;
+  String? unit;
   int? bodyFat;
   int? waistMeasurement;
 
   PhysicalCharacteristics({
     this.height,
     this.weight,
+    this.unit,
     this.bodyFat,
     this.waistMeasurement,
   });

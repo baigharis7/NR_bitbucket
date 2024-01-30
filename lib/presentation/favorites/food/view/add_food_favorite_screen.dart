@@ -14,6 +14,7 @@ import 'package:nutrenaissance_flutter/presentation/favorites/common/add_favorit
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/add_favorite_food_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/add_favorite_food_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/add_favorite_food_state.dart';
+import 'package:nutrenaissance_flutter/presentation/favorites/food/view/create_new_food_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_card.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
@@ -339,11 +340,15 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                           ),
                         ),
                         onTap: () {
-                          // if (arguments is FoodEventComplete)
-                          Navigator.pushNamed(
+                          if (arguments is FoodEventComplete) {
+                            Navigator.pushNamed(
                                   context, AddFoodEventScreen.routeName,
                                   arguments: arguments)
                               .then((value) => Navigator.pop(context));
+                          }
+                          else if (arguments is FoodFavorite) {
+                            Navigator.pushNamed(context, CreateNewFoodFavoriteScreen.routeName, arguments: arguments).then((value) => Navigator.pop(context));
+                          }
                         },
                       ),
                       InkWell(

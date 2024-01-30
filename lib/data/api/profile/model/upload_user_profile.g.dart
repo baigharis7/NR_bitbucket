@@ -40,6 +40,8 @@ UploadUserProfile _$UploadUserProfileFromJson(Map<String, dynamic> json) =>
       userRdas: (json['userRdas'] as List<dynamic>?)
           ?.map((e) => UserRda.fromJson(e as Map<String, dynamic>))
           .toList(),
+      feces: json['feces'] as int?,
+      urine: json['urine'] as int?,
       kcal: json['kcal'] as int?,
     );
 
@@ -60,6 +62,8 @@ Map<String, dynamic> _$UploadUserProfileToJson(UploadUserProfile instance) =>
       'objectives': instance.objectives,
       'micronutrients': instance.micronutrients,
       'userRdas': instance.userRdas?.map((e) => e.toJson()).toList(),
+      'feces': instance.feces,
+      'urine': instance.urine,
       'kcal': instance.kcal,
     };
 
@@ -84,8 +88,9 @@ Map<String, dynamic> _$MedicalSituationToJson(MedicalSituation instance) =>
 PhysicalCharacteristics _$PhysicalCharacteristicsFromJson(
         Map<String, dynamic> json) =>
     PhysicalCharacteristics(
-      height: json['height'] as int,
-      weight: json['weight'] as int,
+      height: double.parse((json['height']).toString()),
+      weight: double.parse((json['weight']).toString()),
+      unit: json['unit'] as String?,
       bodyFat: json['bodyFat'] as int?,
       waistMeasurement: json['waistMeasurement'] as int?,
     );
@@ -95,6 +100,7 @@ Map<String, dynamic> _$PhysicalCharacteristicsToJson(
     <String, dynamic>{
       'height': instance.height,
       'weight': instance.weight,
+      'unit': instance.unit,
       'bodyFat': instance.bodyFat,
       'waistMeasurement': instance.waistMeasurement,
     };

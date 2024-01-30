@@ -46,6 +46,8 @@ UserProfileModel _$UserProfileModelFromJson(Map<String, dynamic> json) =>
       userRdas: json['userRdas'] == null
           ? null
           : UserRdas.fromJson(json['userRdas'] as Map<String, dynamic>),
+      feces: json['feces'] as int?,
+      urine: json['urine'] as int?,
       kcal: json['kcal'] as int?,
     );
 
@@ -68,6 +70,8 @@ Map<String, dynamic> _$UserProfileModelToJson(UserProfileModel instance) =>
       'objectives': instance.objectives,
       'micronutrients': instance.micronutrients,
       'userRdas': instance.userRdas?.toJson(),
+      'feces': instance.feces,
+      'urine': instance.urine,
       'kcal': instance.kcal,
     };
 
@@ -98,8 +102,9 @@ Map<String, dynamic> _$MedicalSituationToJson(MedicalSituation instance) =>
 PhysicalCharacteristics _$PhysicalCharacteristicsFromJson(
         Map<String, dynamic> json) =>
     PhysicalCharacteristics(
-      height: json['height'] as int?,
-      weight: json['weight'] as int?,
+      height: json['height'] as double?,
+      weight: json['weight'] as double?,
+      unit: json['unit'] as String?,
       bodyFat: json['bodyFat'] as int?,
       waistMeasurement: json['waistMeasurement'] as int?,
     );
@@ -109,6 +114,7 @@ Map<String, dynamic> _$PhysicalCharacteristicsToJson(
     <String, dynamic>{
       'height': instance.height,
       'weight': instance.weight,
+      'unit': instance.unit,
       'bodyFat': instance.bodyFat,
       'waistMeasurement': instance.waistMeasurement,
     };

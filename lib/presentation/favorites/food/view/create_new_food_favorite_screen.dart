@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/add_food_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
@@ -14,6 +13,7 @@ import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/create_n
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/create_new_food_favorite_state.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
+import '../../../../domain/models/favorites/food/food_favorite.dart';
 import '../../../../domain/models/favorites/food/meal_time.dart';
 import '../../../widgets/add_item_name_dialog.dart';
 import '../../../widgets/box_type_radio_text_widget.dart';
@@ -33,6 +33,8 @@ class CreateNewFoodFavoriteScreen extends StatefulWidget {
 
 class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScreen> {
   TextEditingController _foodInputController = TextEditingController();
+  late CreateNewFoodFavoriteBloc bloc;
+  late Object? arguments;
 
   void _showConfirmationDialog(BuildContext context, Function onFinish) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
@@ -54,7 +56,7 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
       Widget widget,
       String foodName,
       ) async {
-    final bloc = BlocProvider.of<CreateNewFoodFavoriteBloc>(context);
+    // final bloc = BlocProvider.of<CreateNewFoodFavoriteBloc>(context);
 
     await showDialog(
       barrierDismissible: false,
@@ -108,8 +110,20 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
 
   @override
   void initState() {
-    final bloc = BlocProvider.of<CreateNewFoodFavoriteBloc>(context);
+    bloc = BlocProvider.of<CreateNewFoodFavoriteBloc>(context);
     bloc.add(InitializeStateAction());
+
+    final widgetsBinding = WidgetsBinding.instance;
+    widgetsBinding.addPostFrameCallback((callback) {
+      if (ModalRoute.of(context)?.settings.arguments != null) {
+        var infoReceived = ModalRoute.of(context)?.settings.arguments;
+        if (infoReceived != null) {
+          if (infoReceived is FoodFavorite?) {
+            bloc.add(SetFavFoodFromFavoriteDetailNavigation(foodFavorite: infoReceived as FoodFavorite));
+          }
+        }
+      }
+    });
     super.initState();
   }
 
@@ -121,7 +135,6 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
 
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<CreateNewFoodFavoriteBloc>(context);
     String currentLanguage = Localizations.localeOf(context).languageCode;
     final eventHelper = EventsHelper();
 

@@ -5,22 +5,33 @@ part of 'feces_urine_bloc.dart';
 
 class FecesUrineState {
   bool isLoading;
-  ErrorTypes? error;
+  ErrorTypes? onError;
   List<Feces>? fecesList;
   List<Urines>? urinesList;
-  int? fecesSelected;
-  int? urinesSelected;
+  UserProfileModel? profile;
 
-  FecesUrineState({required this.isLoading, this.error, this.fecesList, this.urinesList, this.fecesSelected, this.urinesSelected});
+  FecesUrineState({
+    required this.isLoading,
+    this.onError,
+    this.fecesList,
+    this.urinesList,
+    this.profile,
+  });
 
-  FecesUrineState copyWith({required bool isLoading, ErrorTypes? error, List<Feces>? fecesList, List<Urines>? urinesList, int? fecesSelected, int? urinesSelected}) {
+  FecesUrineState copyWith(
+      {required bool isLoading,
+      ErrorTypes? onError,
+      List<Feces>? fecesList,
+      List<Urines>? urinesList,
+      UserProfileModel? profile,
+      int? fecesSelected,
+      int? urinesSelected}) {
     return FecesUrineState(
       isLoading: isLoading,
-      error: error,
+      onError: onError,
       fecesList: fecesList ?? this.fecesList,
       urinesList: urinesList ?? this.urinesList,
-      fecesSelected: fecesSelected ?? this.fecesSelected,
-      urinesSelected: urinesSelected ?? this.urinesSelected,
+      profile: profile ?? this.profile,
     );
   }
 }

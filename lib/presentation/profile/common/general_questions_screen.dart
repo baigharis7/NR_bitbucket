@@ -485,7 +485,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       onChanged: (height) {
                                         bloc.add(
                                           SetBodyParameterAction(
-                                            parameter: height,
+                                            parameter: double.parse(height),
                                             type: BodyParameters.height,
                                           ),
                                         );
@@ -502,7 +502,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       onChanged: (weight) {
                                         bloc.add(
                                           SetBodyParameterAction(
-                                            parameter: weight,
+                                            parameter: double.parse(weight),
                                             type: BodyParameters.weight,
                                           ),
                                         );
@@ -518,12 +518,12 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       errorBorderColor: Colors.grey.shade100,
                                       isNumeric: true,
                                       value: state.profile!
-                                          .physicalCharacteristics!.bodyFat,
+                                          .physicalCharacteristics!.bodyFat!.toDouble(),
                                       title: AppLocalizations.of(ctx)!.body_fat,
                                       onChanged: (bodyFat) {
                                         bloc.add(
                                           SetBodyParameterAction(
-                                            parameter: bodyFat,
+                                            parameter: double.parse(bodyFat.toString()),
                                             type: BodyParameters.bodyFat,
                                           ),
                                         );
@@ -537,12 +537,12 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       value: state
                                           .profile!
                                           .physicalCharacteristics!
-                                          .waistMeasurement,
+                                          .waistMeasurement!.toDouble(),
                                       title: AppLocalizations.of(ctx)!.waist,
                                       onChanged: (bodyFat) {
                                         bloc.add(
                                           SetBodyParameterAction(
-                                            parameter: bodyFat,
+                                            parameter: double.parse(bodyFat),
                                             type: BodyParameters.waist,
                                           ),
                                         );

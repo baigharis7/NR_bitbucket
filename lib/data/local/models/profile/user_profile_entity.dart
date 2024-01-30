@@ -22,7 +22,9 @@ class UserProfileEntity extends HiveObject {
   @HiveField(14) List<int> objectives;
   @HiveField(15) List<String>? micronutrients;
   @HiveField(16) UserRdasEntity? userRdas;
-  @HiveField(17) int? kcal;
+  @HiveField(17) int? feces;
+  @HiveField(18) int? urine;
+  @HiveField(19) int? kcal;
 
   static const boxName = 'profile';
 
@@ -44,6 +46,8 @@ class UserProfileEntity extends HiveObject {
     required this.objectives,
     this.micronutrients,
     this.userRdas,
+    this.feces,
+    this.urine,
     this.kcal,
   });
 
@@ -60,14 +64,16 @@ class MedicalSituation{
 
 @HiveType(typeId: HiveTypeIds.physicalCharacteristics)
 class PhysicalCharacteristics{
-  @HiveField(0) late int height;
-  @HiveField(1) late int weight;
-  @HiveField(2) int? bodyFat;
-  @HiveField(3) int? waistMeasurement;
+  @HiveField(0) late double height;
+  @HiveField(1) late double weight;
+  @HiveField(2) late String? unit;
+  @HiveField(3) int? bodyFat;
+  @HiveField(4) int? waistMeasurement;
 
   PhysicalCharacteristics({
     required this.height,
     required this.weight,
+    this.unit,
     this.bodyFat,
     this.waistMeasurement,
   });

@@ -33,7 +33,7 @@ class _UrineTabState extends State<UrineTab> {
               child: Column(
                 children: [
                   ...?state.urinesList?.map((urine) => RadioTitleDescImage(
-                      isSelected: state.urinesSelected == urine.id,
+                      isSelected: state.profile?.urine == urine.id,
                       fece: Feces(urine.id, urine.title, '', urine.image), onSelect: (id) => fecesUrineBloc.add(UpdateUrineEventAction(urineId: id)),
                   ),
                   ),

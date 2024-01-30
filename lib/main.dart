@@ -564,7 +564,12 @@ void main() async {
     saveExplainingCardInteractionInteractor: saveExplainingCardInteractionInteractor,
   );
 
-  final fecesUrineBloc = FecesUrineBloc();
+  final fecesUrineBloc = FecesUrineBloc(
+    getUserIdInteractor: getUserIdInteractor,
+    getProfileInteractor: getProfileInteractor,
+    uploadProfileInteractor: uploadProfileInteractor,
+    saveProfileInteractor: saveProfileInteractor,
+  );
 
   final profileBloc = ProfileBloc(
     getProfileInteractor: getProfileInteractor,

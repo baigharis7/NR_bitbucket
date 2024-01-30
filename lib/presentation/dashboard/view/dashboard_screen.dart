@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
@@ -10,6 +9,7 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -30,12 +30,11 @@ import 'package:nutrenaissance_flutter/presentation/widgets/liquids_summary_widg
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/swith_with_function_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_rda_nutrients_dashboard_widget.dart';
-import 'package:table_calendar/table_calendar.dart';
+
+import 'package:pedometer/pedometer.dart';
 
 import '../../../infrastructure/utils/constants.dart';
 import '../../fiber_detail/view/fiber_detail_Screen.dart';
-import '../../journal/view/journal_screen.dart';
-import '../../recommendations/common/view/recommendations_tabs_holder.dart';
 
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -133,6 +132,10 @@ class _DashboardScreen extends State<DashboardScreen>
                           currentState: state.isCold ?? false,
                           onStateChange: (value) => bloc.add(UpdateColdStateAction(isCold: value)),
                         ),
+                        EnergyBalanceWidget(
+                          energyModel: state.energyModel,
+                          screenToMove: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: state.energyModel).then((value) => bloc.add(InitializeState())),
+                        ),
                         NutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.micronutrients,
                           nutrients: state.micronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList(),
@@ -151,10 +154,6 @@ class _DashboardScreen extends State<DashboardScreen>
                           nutrients: state.weeklyMicronutrients.orEmpty(),
                           isEmpty: false,
                           screenToMove: () {},
-                        ),
-                        EnergyBalanceWidget(
-                          energyModel: state.energyModel,
-                          screenToMove: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: state.energyModel).then((value) => bloc.add(InitializeState())),
                         ),
                         SizedBox(
                           height: 200,

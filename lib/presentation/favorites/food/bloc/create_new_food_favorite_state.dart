@@ -11,6 +11,8 @@ import '../../../../domain/models/foodevents/food_event_complete.dart';
 class CreateNewFoodFavoriteState {
   bool isLoading;
   ErrorTypes? onError;
+  int? eventDate;
+  bool? isEdit;
   FoodsAndDrinksNamesMaster? foodNames;
   List<FoodInFavorite>? foodsInFavorite;
   CookingMethodsMaster? cookingMethodsMaster;
@@ -26,6 +28,8 @@ class CreateNewFoodFavoriteState {
   CreateNewFoodFavoriteState({
     required this.isLoading,
     this.onError,
+    this.eventDate,
+    this.isEdit,
     this.foodNames,
     this.foodsInFavorite,
     this.cookingMethodsMaster,
@@ -42,6 +46,8 @@ class CreateNewFoodFavoriteState {
   CreateNewFoodFavoriteState copyWith({
     required bool isLoading,
     ErrorTypes? onError,
+    int? eventDate,
+    bool? isEdit,
     FoodsAndDrinksNamesMaster? foodNames,
     List<FoodInFavorite>? foodsInFavorite,
     CookingMethodsMaster? cookingMethodsMaster,
@@ -57,6 +63,8 @@ class CreateNewFoodFavoriteState {
     return CreateNewFoodFavoriteState(
       isLoading: isLoading,
       onError: onError ?? this.onError,
+      eventDate: eventDate ?? this.eventDate,
+      isEdit: isEdit ?? this.isEdit,
       foodNames: foodNames ?? this.foodNames,
       foodsInFavorite: foodsInFavorite ?? this.foodsInFavorite,
       cookingMethodsMaster: cookingMethodsMaster ?? this.cookingMethodsMaster,

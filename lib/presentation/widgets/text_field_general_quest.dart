@@ -8,7 +8,7 @@ class TextFieldGeneralQuest extends StatefulWidget {
   final Function onChanged;
   final bool isNumeric;
   final Color errorBorderColor;
-  final int? value;
+  final double? value;
 
   const TextFieldGeneralQuest(
       {Key? key,
@@ -29,7 +29,7 @@ class _TextFieldGeneralQuestState extends State<TextFieldGeneralQuest> {
   @override
   Widget build(BuildContext context) {
     if (textController.text == '') {
-      textController.text = widget.value.isNull() ? '' : widget.value.toString() == '-1' ? '' : widget.value.toString();
+      textController.text = widget.value.orZero() <= 0 ? '' : widget.value.toString();
     }
 
     return Card(
@@ -56,7 +56,7 @@ class _TextFieldGeneralQuestState extends State<TextFieldGeneralQuest> {
                       controller: textController,
                       decoration: const InputDecoration(),
                       onChanged: (value) {
-                        widget.onChanged.call(int.parse(textController.text.toString().isEmpty ? '-1' : textController.text));
+                        widget.onChanged.call(textController.text.toString().isEmpty ? '-1' : textController.text);
                       },
                     ),
                   ],

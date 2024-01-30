@@ -34,11 +34,12 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
       _clearData();
       emit(state.copyWith(isLoading: true));
       state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
-      state.cookingMethodsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
+      final a  = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
+      state.cookingMethodsInfoMaster = a;
       state.cookingMethodsMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethods);
       state.unitsFoodsMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsFoods);
       state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
-      state.foodsInFavorite = [];
+      // state.foodsInFavorite = [];
       // var weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
       // addFrequentFromWeek(weeklyFoodEvents.orEmpty(), state.frequentFoodEvents.orEmpty());
       state.frequentFoodEvents = addFrequentFromWeek(await getWeekFoodEventsInteractor.execute());
@@ -107,7 +108,7 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
 
       final foodFavorite = FoodFavorite(
         title: state.favoriteName.orEmpty(),
-        eventDate: DateTimeHelper().provideCurrentDate().millisecondsSinceEpoch,
+        eventDate: state.eventDate ?? DateTimeHelper().provideCurrentDate().millisecondsSinceEpoch,
         ingredients: state.foodsInFavorite!,
         drinks: [],
         mealTime: state.mealTime!,
@@ -118,7 +119,7 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
         final uploadFavorite = await uploadFoodFavoriteInteractor.execute(foodFavorite);
         if (uploadFavorite) {
           try {
-            await saveFoodFavoriteInteractor.execute(foodFavorite, false);
+            await saveFoodFavoriteInteractor.execute(foodFavorite, state.isEdit ?? false);
             _clearData();
             event.onFinish.call();
             emit(state.copyWith(isLoading: false));
@@ -172,6 +173,19 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadFoodFavoriteError));
       }
     },);
+
+    on<SetFavFoodFromFavoriteDetailNavigation>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      state.foodsInFavorite = event.foodFavorite.ingredients;
+      state.eventDate = event.foodFavorite.eventDate;
+      state.mealTime = event.foodFavorite.mealTime;
+      state.comment = event.foodFavorite.comment;
+      state.favoriteName = event.foodFavorite.title;
+      state.isEdit = true;
+
+
+      emit(state.copyWith(isLoading: false));
+    },);
   }
 
   _clearData() {
@@ -181,6 +195,8 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
     state.onError = null;
     state.favoriteName = '';
     state.comment = '';
+    state.eventDate = null;
+    state.isEdit = null;
   }
 
   bool isFoodFavValidateList() {

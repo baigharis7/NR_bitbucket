@@ -16,3 +16,5 @@ class UpdateFecesEventAction extends FecesUrineEvent {
 
   UpdateFecesEventAction({required this.feceId});
 }
+
+class UpdateProfileEventAction extends FecesUrineEvent {}

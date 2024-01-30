@@ -98,13 +98,11 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
   void initState() {
     bloc = BlocProvider.of<AddFoodEventBloc>(context);
     bloc.add(InitializeStateAction());
-    super.initState();
-    var infoReceived;
+
     final widgetsBinding = WidgetsBinding.instance;
     widgetsBinding.addPostFrameCallback((callback) {
       if (ModalRoute.of(context)?.settings.arguments != null) {
-        infoReceived = ModalRoute.of(context)?.settings.arguments;
-        // infoReceived = ModalRoute.of(context)?.settings.arguments;
+        var infoReceived = ModalRoute.of(context)?.settings.arguments;
         if (infoReceived != null) {
           if (infoReceived is FoodEventSimple?) {
             final foodEventSimple = infoReceived as FoodEventSimple?;
@@ -119,6 +117,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
         }
       }
     });
+    super.initState();
   }
 
   @override

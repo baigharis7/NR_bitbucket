@@ -20,6 +20,8 @@ class UploadUserProfile {
   List<int> objectives;
   List<String>? micronutrients;
   List<UserRda>? userRdas;
+  int? feces;
+  int? urine;
   int? kcal;
 
   UploadUserProfile({
@@ -39,6 +41,8 @@ class UploadUserProfile {
     required this.objectives,
     this.micronutrients,
     this.userRdas,
+    this.feces,
+    this.urine,
     this.kcal,
   });
 
@@ -60,14 +64,16 @@ class MedicalSituation{
 
 @JsonSerializable(explicitToJson: true)
 class PhysicalCharacteristics{
-  late int height;
-  late int weight;
+  late double height;
+  late double weight;
+  String? unit;
   int? bodyFat;
   int? waistMeasurement;
 
   PhysicalCharacteristics({
     required this.height,
     required this.weight,
+    required this.unit,
     this.bodyFat,
     this.waistMeasurement,
   });

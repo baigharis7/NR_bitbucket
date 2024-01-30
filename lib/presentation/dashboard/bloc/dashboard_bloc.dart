@@ -234,6 +234,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         physicalCharacteristics: PhysicalCharacteristics(
           height: state.profile!.physicalCharacteristics!.height,
           weight: state.profile!.physicalCharacteristics!.weight,
+          unit: state.profile?.physicalCharacteristics?.unit,
           bodyFat: state.profile!.physicalCharacteristics!.bodyFat,
           waistMeasurement: state.profile!.physicalCharacteristics!.waistMeasurement,),
         femaleCharacteristics: femaleCharacteristics,
@@ -249,6 +250,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         // symptoms: , // Añadir cuando esté implementado
         guts: 0,
         objectives: state.profile!.objectives,
+        feces: state.profile?.feces ?? -1,
+        urine: state.profile?.urine ?? -1,
       );
 
       UserProfileResponse userProfileResponse;

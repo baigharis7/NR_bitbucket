@@ -64,7 +64,8 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
       }
       if (state.cookingMethodsInfoMaster!.cookingMethodsInfo!.isEmpty) {
-        state.cookingMethodsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
+        final a = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
+        state.cookingMethodsInfoMaster = a;
       }
       if (state.cookingMethodsMaster!.cookingMethods.isEmpty) {
         state.cookingMethodsMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethods);
@@ -267,6 +268,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       state.eventId = event.foodEventComplete.eventId;
       state.foodName = event.foodEventComplete.foodName;
       state.comment = event.foodEventComplete.comment;
+      state.mealType = event.foodEventComplete.mealType;
       state.isEdit = true;
       state.foodsInEvent = event.foodEventComplete.foodInfo?.map((food) => FoodInEvent(id: food.id!, qty: food.eventInfo!.qty!.toInt(), unit: food.eventInfo!.unit!, cookingMethod: food.eventInfo!.cookingMethod!)).toList();
       emit(state.copyWith(isLoading: false,));

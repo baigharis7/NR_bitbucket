@@ -34,14 +34,16 @@ class UserProfileEntityAdapter extends TypeAdapter<UserProfileEntity> {
       objectives: (fields[14] as List).cast<int>(),
       micronutrients: (fields[15] as List?)?.cast<String>(),
       userRdas: fields[16] as UserRdasEntity?,
-      kcal: fields[17] as int?,
+      feces: fields[17] as int?,
+      urine:  fields[18] as int?,
+      kcal: fields[19] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfileEntity obj) {
     writer
-      ..writeByte(18)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -77,6 +79,10 @@ class UserProfileEntityAdapter extends TypeAdapter<UserProfileEntity> {
       ..writeByte(16)
       ..write(obj.userRdas)
       ..writeByte(17)
+      ..write(obj.feces)
+      ..writeByte(18)
+      ..write(obj.urine)
+      ..writeByte(19)
       ..write(obj.kcal);
   }
 
@@ -143,24 +149,27 @@ class PhysicalCharacteristicsAdapter
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return PhysicalCharacteristics(
-      height: fields[0] as int,
-      weight: fields[1] as int,
-      bodyFat: fields[2] as int?,
-      waistMeasurement: fields[3] as int?,
+      height: fields[0] as double,
+      weight: fields[1] as double,
+      unit: fields[2] as String?,
+      bodyFat: fields[3] as int?,
+      waistMeasurement: fields[4] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, PhysicalCharacteristics obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.height)
       ..writeByte(1)
       ..write(obj.weight)
       ..writeByte(2)
-      ..write(obj.bodyFat)
+      ..write(obj.unit)
       ..writeByte(3)
+      ..write(obj.bodyFat)
+      ..writeByte(4)
       ..write(obj.waistMeasurement);
   }
 

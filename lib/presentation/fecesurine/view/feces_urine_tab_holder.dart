@@ -2,21 +2,26 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/bloc/feces_urine_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/urine_tab.dart';
 
 import '../../../infrastructure/utils/dimens.dart';
+import '../../widgets/rounded_custom_button.dart';
 
 class FecesUrineTabHolder extends StatefulWidget {
   static const routeName = '/feces_urine_tab';
+
   const FecesUrineTabHolder({super.key});
 
   @override
   State<FecesUrineTabHolder> createState() => _FecesUrineTabHolderState();
 }
 
-class _FecesUrineTabHolderState extends State<FecesUrineTabHolder> with SingleTickerProviderStateMixin {
+class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
+    with SingleTickerProviderStateMixin {
+  late FecesUrineBloc fecesUrineBloc;
   String? title;
   late TabController _tabController;
   int _selectedTab = 0;
@@ -33,7 +38,7 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder> with SingleTi
 
   @override
   void initState() {
-    final fecesUrineBloc = BlocProvider.of<FecesUrineBloc>(context);
+    fecesUrineBloc = BlocProvider.of<FecesUrineBloc>(context);
     fecesUrineBloc.add(InitializationEventAction());
 
     _tabController = TabController(length: 2, vsync: this);
@@ -54,52 +59,71 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder> with SingleTi
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        titleSpacing: Dimens.marginNormal,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black,),
-          onPressed: () => Navigator.pop(context),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          automaticallyImplyLeading: false,
+          titleSpacing: Dimens.marginNormal,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: Row(
+            children: [
+              Text(
+                AppLocalizations.of(context)!.journal,
+                style: const TextStyle(
+                  fontSize: Dimens.fontSizeXXLarge,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Container(
+                height: 28,
+                margin: const EdgeInsets.only(left: Dimens.marginNormal),
+                child: Image.asset('assets/icon/journal_icon.png'),
+              ),
+            ],
+          ),
+          bottom: TabBar(
+            controller: _tabController,
+            onTap: (index) => _manageTabChange(context),
+            labelColor: Colors.black,
+            indicatorColor: Colors.black,
+            tabs: [
+              Tab(text: AppLocalizations.of(context)!.feces.toUpperCase()),
+              Tab(text: AppLocalizations.of(context)!.urine.toUpperCase()),
+            ],
+          ),
         ),
-        title: Row(
+        body: Column(
           children: [
-            Text(
-              AppLocalizations.of(context)!.journal,
-              style: const TextStyle(
-                fontSize: Dimens.fontSizeXXLarge,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
+            Expanded(
+              child: TabBarView(
+                // physics: const NeverScrollableScrollPhysics(),
+                controller: _tabController,
+                children: const [
+                  FecesTab(),
+                  UrineTab(),
+                ],
               ),
             ),
             Container(
-              height: 28,
-              margin: const EdgeInsets.only(left: Dimens.marginNormal),
-              child: Image.asset('assets/icon/journal_icon.png'),
+              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+              child: RoundedCustomButton(
+                onPressed: () {
+                  fecesUrineBloc.add(UpdateProfileEventAction());
+                },
+              ),
             ),
           ],
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: (index) => _manageTabChange(context),
-          labelColor: Colors.black,
-          indicatorColor: Colors.black,
-          tabs: [
-            Tab(text: AppLocalizations.of(context)!.feces.toUpperCase()),
-            Tab(text: AppLocalizations.of(context)!.urine.toUpperCase()),
-          ],
-        ),
       ),
-      body: TabBarView(
-        // physics: const NeverScrollableScrollPhysics(),
-        controller: _tabController,
-        children: [
-          FecesTab(),
-          UrineTab(),
-        ],
-      ),
-    ));
+    );
   }
 }

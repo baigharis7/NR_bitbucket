@@ -9,6 +9,7 @@ upload.UploadUserProfile mapToUploadUserProfileModel(domain.UserProfileModel use
   final upload.PhysicalCharacteristics physicalCharacteristics = upload.PhysicalCharacteristics(
     height: userProfileModel.physicalCharacteristics!.height!,
     weight: userProfileModel.physicalCharacteristics!.weight!,
+    unit: userProfileModel.physicalCharacteristics?.unit,
     bodyFat: userProfileModel.physicalCharacteristics!.bodyFat,
     waistMeasurement: userProfileModel.physicalCharacteristics!.waistMeasurement,
   );
@@ -58,6 +59,8 @@ upload.UploadUserProfile mapToUploadUserProfileModel(domain.UserProfileModel use
     guts: userProfileModel.guts ?? 0,
     micronutrients: userProfileModel.micronutrients,
     userRdas: uploadUserRdas.userRdas,
+    feces: userProfileModel.feces,
+    urine: userProfileModel.urine,
     kcal: userProfileModel.kcal,
   );
 
@@ -82,6 +85,7 @@ entity.UserProfileEntity mapToProfileEntity(domain.UserProfileModel profileModel
         weight: profileModel.physicalCharacteristics!.weight!,
         height: profileModel.physicalCharacteristics!.height!,
         // TODO: estos dos no son necesarios. No hay por qué poner valor.
+      unit: profileModel.physicalCharacteristics?.unit,
         bodyFat: profileModel.physicalCharacteristics!.bodyFat,
         waistMeasurement: profileModel.physicalCharacteristics!.waistMeasurement,
     ),
@@ -107,6 +111,8 @@ entity.UserProfileEntity mapToProfileEntity(domain.UserProfileModel profileModel
     guts: profileModel.guts,
     micronutrients: profileModel.micronutrients,
     userRdas: entity.UserRdasEntity(userRdasEntity: profileModel.userRdas!.userRdas.map((userRdas) => entity.UserRdaEntity(n: userRdas.name, rda: userRdas.rda.toDouble(), ul: userRdas.ul.toDouble())).toList()),
+    feces: profileModel.feces,
+    urine: profileModel.urine,
     kcal: profileModel.kcal,
   );
 }
@@ -115,6 +121,7 @@ domain.UserProfileModel mapToUserProfileModelFromProfileEntity(entity.UserProfil
   final domain.PhysicalCharacteristics physicalCharacteristics = domain.PhysicalCharacteristics(
     height: profileEntity.physicalCharacteristics!.height,
     weight: profileEntity.physicalCharacteristics!.weight,
+    unit: profileEntity.physicalCharacteristics?.unit,
     bodyFat: profileEntity.physicalCharacteristics!.bodyFat,
     waistMeasurement: profileEntity.physicalCharacteristics!.waistMeasurement,
   );
@@ -167,6 +174,8 @@ domain.UserProfileModel mapToUserProfileModelFromProfileEntity(entity.UserProfil
     guts: profileEntity.guts,
     micronutrients: profileEntity.micronutrients,
     userRdas: userRdas,
+    feces: profileEntity.feces,
+    urine: profileEntity.urine,
     kcal: profileEntity.kcal,
   );
 }
@@ -175,6 +184,7 @@ domain.UserProfileModel mapToUserProfileModelFromUploadUser(upload.UploadUserPro
   final domain.PhysicalCharacteristics physicalCharacteristics = domain.PhysicalCharacteristics(
       height: uploadUserProfile.physicalCharacteristics!.height,
       weight: uploadUserProfile.physicalCharacteristics!.weight,
+      unit: uploadUserProfile.physicalCharacteristics?.unit,
       bodyFat: uploadUserProfile.physicalCharacteristics!.bodyFat,
       waistMeasurement: uploadUserProfile.physicalCharacteristics!.waistMeasurement,
   );
@@ -227,6 +237,8 @@ domain.UserProfileModel mapToUserProfileModelFromUploadUser(upload.UploadUserPro
     guts: uploadUserProfile.guts,
     micronutrients: uploadUserProfile.micronutrients,
     userRdas: userRdas,
+    feces: uploadUserProfile.feces,
+    urine: uploadUserProfile.urine,
     kcal: uploadUserProfile.kcal,
   );
 }

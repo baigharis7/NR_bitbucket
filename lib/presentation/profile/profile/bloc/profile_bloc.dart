@@ -16,6 +16,7 @@ import 'package:nutrenaissance_flutter/domain/models/profile/activity_by_occupat
 import 'package:nutrenaissance_flutter/domain/models/profile/allergens.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/common_diseases.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/diet_type.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/height_weight_units.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/intolerances.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
@@ -75,6 +76,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
       state.filteredObjectives = getObjectives(combineList);
       state.isMenstruation = state.profile?.objectives?.contains(28);
       state.isCold = state.profile?.objectives?.contains(18);
+      state.unitWeightHeight = HeightWeightUnits.getAllUnits().firstWhere((element) => element.unit == state.profile?.physicalCharacteristics?.unit,);
       emit(state.copyWith(
         isLoading: false,
         onError: null,
@@ -295,6 +297,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         physicalCharacteristics: PhysicalCharacteristics(
           height: state.profile!.physicalCharacteristics!.height,
           weight: state.profile!.physicalCharacteristics!.weight,
+          unit: state.profile!.physicalCharacteristics?.unit,
           bodyFat: state.profile!.physicalCharacteristics!.bodyFat,
           waistMeasurement: state.profile!.physicalCharacteristics!.waistMeasurement,),
         femaleCharacteristics: femaleCharacteristics,
@@ -312,6 +315,8 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         objectives: state.profile!.objectives,
         micronutrients: state.profile!.micronutrients,
         userRdas: state.profile!.userRdas,
+        feces: state.profile?.feces ?? -1,
+        urine: state.profile?.urine ?? -1,
         kcal: state.profile!.kcal,
       );
 
@@ -363,6 +368,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         physicalCharacteristics: PhysicalCharacteristics(
           height: state.profile!.physicalCharacteristics!.height,
           weight: state.profile!.physicalCharacteristics!.weight,
+          unit: state.profile?.physicalCharacteristics?.unit,
           bodyFat: state.profile!.physicalCharacteristics!.bodyFat,
           waistMeasurement: state.profile!.physicalCharacteristics!.waistMeasurement,),
         femaleCharacteristics: femaleCharacteristics,
@@ -378,6 +384,8 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         // symptoms: , // Añadir cuando esté implementado
         guts: 0,
         objectives: state.profile!.objectives,
+        feces: state.profile?.feces ?? -1,
+        urine: state.profile?.urine ?? -1,
       );
 
       UserProfileResponse userProfileResponse;
@@ -442,6 +450,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
 
     on<SetUnitWeightHeight>((event, emit) {
       state.unitWeightHeight = event.unitWeightHeight;
+      state.profile?.physicalCharacteristics?.unit = event.unitWeightHeight?.unit;
 
       emit(state.copyWith(isLoading: false, onError: null));
     },);
@@ -472,16 +481,16 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
   void manageBodyParameters(SetBodyParameterAction event) {
     switch (event.type) {
       case BodyParameters.height:
-        state.profile!.physicalCharacteristics?.height = event.parameter;
+        state.profile!.physicalCharacteristics?.height = double.parse(event.parameter.toStringAsFixed(2));
         break;
       case BodyParameters.weight:
-        state.profile!.physicalCharacteristics?.weight = event.parameter;
+        state.profile!.physicalCharacteristics?.weight = double.parse(event.parameter.toStringAsFixed(2));
         break;
       case BodyParameters.bodyFat:
-        state.profile!.physicalCharacteristics?.bodyFat = event.parameter;
+        state.profile!.physicalCharacteristics?.bodyFat = event.parameter.toInt();
         break;
       case BodyParameters.waist:
-        state.profile!.physicalCharacteristics?.waistMeasurement = event.parameter;
+        state.profile!.physicalCharacteristics?.waistMeasurement = event.parameter.toInt();
         break;
     }
   }
