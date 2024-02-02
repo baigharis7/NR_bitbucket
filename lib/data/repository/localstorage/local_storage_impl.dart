@@ -64,6 +64,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _favoriteLiquidsBox;
   Box? _explainingCardsBox;
   Box? _subjectiveAnalysisResultsBox;
+  Box? _userStepsInfoBox;
 
   Future<Box> _openProfileBox() async => openBox(_profileBox, UserProfileEntity.boxName);
   Future<Box> _openFoodEventsBox() async => openBox(_foodEventsBox, FoodEventEntity.boxName);
@@ -99,6 +100,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> _openLiquidFavoritesBox() async => openBox(_favoriteLiquidsBox, LiquidFavoriteEntity.boxName);
   Future<Box> _openExplainingCardsBox() async => openBox(_explainingCardsBox, ExplainingCardEntity.boxName);
   Future<Box> _openSubjectiveAnalysisResultsBox() async => openBox(_subjectiveAnalysisResultsBox, SubjectiveAnalysisResultEntity.boxName);
+  Future<Box> _openUserStepsInfoBox() async => openBox(_userStepsInfoBox, 'boxName');
 
   Future<Box> get _getProfileBox async => await _openProfileBox();
   Future<Box> get _getFoodEventsBox async => await _openFoodEventsBox();
@@ -111,6 +113,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> get _getLiquidFavoritesBox async => await _openLiquidFavoritesBox();
   Future<Box> get _getExplainingCardsBox async => await _openExplainingCardsBox();
   Future<Box> get _getSubjectiveAnalysisResultsBox async => await _openSubjectiveAnalysisResultsBox();
+  Future<Box> get _getUserStepsInfoBox async => await _openUserStepsInfoBox();
 
   @override
   Future<void> saveProfile(UserProfileEntity profileEntity) async {
@@ -727,6 +730,15 @@ class LocalStorageImpl extends LocalStorageRepository {
       } catch (error) {
         rethrow;
       }
+    }
+  }
+
+  @override
+  Future<void> saveSteps() async {
+    try {
+
+    } catch(error) {
+      rethrow;
     }
   }
 

@@ -56,4 +56,5 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<EventsSynchronizationRequest> getAllEventIds();
   Future<bool> eraseDatabaseInformation();
   Future<bool> saveSubjectiveAnalysis(SubjectiveAnalysisResult subjectiveAnalysis);
+  Future<void> saveSteps();
 }

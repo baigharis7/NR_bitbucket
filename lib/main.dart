@@ -12,6 +12,7 @@ import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
 import 'package:nutrenaissance_flutter/data/api/recipes/recipes_api.dart';
 import 'package:nutrenaissance_flutter/data/api/recommendations/recommendations_api.dart';
 import 'package:nutrenaissance_flutter/data/api/sportevents/sport_events_api.dart';
+import 'package:nutrenaissance_flutter/data/api/steps/steps_api.dart';
 import 'package:nutrenaissance_flutter/data/api/waterevents/water_events_api.dart';
 import 'package:nutrenaissance_flutter/data/local/models/analysis/subjective/subjective_analysis_result_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/explainingcards/explaining_card_entity.dart';
@@ -48,6 +49,7 @@ import 'package:nutrenaissance_flutter/data/repository/profile/profile_repositor
 import 'package:nutrenaissance_flutter/data/repository/recipes/recipes_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/recommendations/recommendations_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/sportevents/sport_events_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/steps/steps_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/waterevents/water_event_repository_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor_impl.dart';
@@ -137,6 +139,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/save_water_event_interactor.dart';
@@ -158,6 +162,7 @@ import 'package:nutrenaissance_flutter/domain/repository/profile/profile_reposit
 import 'package:nutrenaissance_flutter/domain/repository/recipes/recipes_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/recommendations/recommendations_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_events_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/steps/steps_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/waterevents/water_events_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/cognito_authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/environment/environment.dart';
@@ -346,6 +351,9 @@ void main() async {
   final RemoveSportEventInteractor removeSportEventInteractor = RemoveSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
   final DeleteSportEventInteractor deleteSportEventInteractor = DeleteSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
   final LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService, profileApi: profileApi);
+  final StepsApi stepsApi = StepsApi(prefsRepository, authenticationService, chuck);
+  final StepsRepository stepsRepository = StepsRepositoryImpl(stepsApi: stepsApi, localStorageRepository: localStorageRepository);
+  final UploadStepsInteractor uploadStepsInteractor = UploadStepsInteractorImpl(stepsRepository: stepsRepository);
 
 
   final dashboardBloc = DashboardBloc(
@@ -369,6 +377,7 @@ void main() async {
     saveProfileInteractor: saveProfileInteractor,
     uploadWaterEventInteractor: uploadWaterEventInteractor,
     saveWaterEventInteractor: saveWaterEventInteractor,
+    uploadStepsInteractor: uploadStepsInteractor,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(

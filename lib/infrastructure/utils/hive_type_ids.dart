@@ -56,5 +56,6 @@ class HiveTypeIds {
   static const subjectiveAnalysisTestAnswerResultEntity = 53;
   static const addSportFavoriteEntity = 54;
   static const addSportFavoriteInfoEntity = 55;
+  static const addStepsEntity = 56;
 
 }

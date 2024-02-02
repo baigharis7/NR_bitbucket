@@ -12,6 +12,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_i
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_day_calories_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/energy_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/nutrients_model.dart';
@@ -58,6 +59,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final SaveProfileInteractor saveProfileInteractor;
   final UploadWaterEventInteractor uploadWaterEventInteractor;
   final SaveWaterEventInteractor saveWaterEventInteractor;
+  final UploadStepsInteractor uploadStepsInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -80,6 +82,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.saveProfileInteractor,
     required this.uploadWaterEventInteractor,
     required this.saveWaterEventInteractor,
+    required this.uploadStepsInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
