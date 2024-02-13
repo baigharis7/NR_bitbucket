@@ -1,4 +1,5 @@
 import 'package:chuck_interceptor/chuck.dart';
+import 'package:nutrenaissance_flutter/data/api/steps/models/upload_step_event_response.dart';
 import 'package:nutrenaissance_flutter/infrastructure/http/api_helper.dart';
 
 import '../../../domain/repository/preferences/preferences_repository.dart';
@@ -10,11 +11,11 @@ class StepsApi extends ApiHelper {
       AuthenticationService authenticationService, Chuck chuck)
       : super(preferencesRepository, authenticationService, chuck);
 
-  Future<void> uploadSteps() => post(
+  Future<void> uploadSteps(UploadStepEventResponse uploadStepEventResponse) => post(
         Uri.https(
           Environment().config!.baseUrl,
-          '${Environment().config!.distributionPath}/food-event/amplify',
+          '${Environment().config!.distributionPath}/steps-count',
         ),
-        'foodEventSimple',
+        uploadStepEventResponse,
       );
 }

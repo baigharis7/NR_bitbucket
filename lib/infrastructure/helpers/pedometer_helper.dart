@@ -1,7 +1,7 @@
 import 'package:pedometer/pedometer.dart';
 
 class PedometerManager {
-  Stream<StepCount> _pedometerCountStream;
+  final Stream<StepCount> _pedometerCountStream;
   Function (StepCount)? _onData;
   Function (dynamic)? _onError;
 
@@ -26,11 +26,6 @@ class PedometerManager {
 
   void execute() {
     _pedometerCountStream.listen(_onData, onError: _onError, cancelOnError: true);
-    var a = _pedometerCountStream.where((event){
-      print("Here : " + event.timeStamp.toString());
-      return event.steps == 91;
-    });
-    print(a);
   }
 
 }

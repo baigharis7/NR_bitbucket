@@ -54,131 +54,30 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreen extends State<DashboardScreen>
     with SingleTickerProviderStateMixin {
 
-  String muestrePasos = "";
-  String _km = "Unknown";
-  String _calories = "Unknown";
-
   StepCount? _stepCountValue;
-
-  late StreamSubscription<StepCount> _subscription;
-  late Stream<StepCount> pedometerCountStream;
-
-  late double _numerox; //numero pasos
-  late double _convert;
-  late double _kmx;
-  late double burnedx;
-  late double _porciento;
 
   @override
   void initState() {
     final bloc = BlocProvider.of<DashboardBloc>(context);
     bloc.add(InitializeState());
 
-    RequestPermissionManager(PermissionType.activityRecognition)
-        .onPermissionDenied(() {
-          ToastHelper().showToast(backgroundColor: AppColors.mountainMeadow, textColor: Colors.white, text: 'You\'ve to give permission to use physical activity feature' );
-    }).onPermissionGranted(() {
-      PedometerManager.init().onData((stepCount) {
-        setState(() {
-          _stepCountValue = stepCount;
-        });
-      }).onError((error) {
-        ToastHelper().showToast(text: '$error');
-      }).execute();
-    }).onPermissionPermanentlyDenied(() {
-      showErrorSnackBar(context, 'Can\'t Access Activity Recognition', actionLabel: 'Open App Settings', action: () => openAppSettings());
-    }).execute();
+    // RequestPermissionManager(PermissionType.activityRecognition)
+    //     .onPermissionDenied(() {
+    //       ToastHelper().showToast(backgroundColor: AppColors.mountainMeadow, textColor: Colors.white, text: 'You\'ve to give permission to use physical activity feature' );
+    // }).onPermissionGranted(() {
+    //   PedometerManager.init().onData((stepCount) {
+    //     setState(() {
+    //       _stepCountValue = stepCount;
+    //     });
+    //   }).onError((error) {
+    //     ToastHelper().showToast(text: '$error');
+    //   }).execute();
+    // }).onPermissionPermanentlyDenied(() {
+    //   showErrorSnackBar(context, 'Can\'t Access Activity Recognition', actionLabel: 'Open App Settings', action: () => openAppSettings());
+    // }).execute();
 
     super.initState();
   }
-
-  //inicia codigo pedometer
-  void setUpPedometer() {
-    // _subscription = Pedometer.stepCountStream.listen(_onData,
-    //     onError: _onError, onDone: _onDone, cancelOnError: true);
-    // pedometerCountStream = Pedometer.stepCountStream;
-    // pedometerCountStream.listen((event) { });
-  }
-
-  void _onDa (int step) {
-
-  }
-
-  void _onData(StepCount stepCountValue) async {
-    // print(stepCountValue); //impresion numero pasos por consola
-    setState(() {
-      _stepCountValue = stepCountValue;
-      // print(_stepCountValue);
-      ToastHelper().showToast(text: stepCountValue.toString());
-    });
-
-    // var dist = stepCountValue.steps; //pasamos el entero a una variable llamada dist
-    // double y = (dist + .0); //lo convertimos a double una forma de varias
-    //
-    // setState(() {
-    //   _numerox =
-    //       y; //lo pasamos a un estado para ser capturado ya convertido a double
-    // });
-    //
-    // num long3 = (_numerox);
-    // long3 = num.parse(y.toStringAsFixed(2));
-    // var long4 = (long3 / 10000);
-    //
-    // int decimals = 1;
-    // num fac = pow(10, decimals);
-    // double d = long4;
-    // d = (d * fac).round() / fac;
-    // print("d: $d");
-    //
-    // getDistanceRun(_numerox);
-    //
-    // setState(() {
-    //   _convert = d;
-    //   print(_convert);
-    // });
-  }
-
-  // void reset() {
-  //   setState(() {
-  //     int stepCountValue = 0;
-  //     stepCountValue = 0;
-  //     _stepCountValue = null;
-  //     ToastHelper().showToast(text: stepCountValue.toString());
-  //   });
-  // }
-
-  void _onDone() {}
-
-  void _onError(error) {
-    print("Flutter Pedometer Error: $error");
-    ToastHelper().showToast(text: error.toString());
-  }
-
-  // void getDistanceRun(double _numerox) {
-  //   num distance = ((_numerox * 78) / 100000);
-  //   distance = num.parse(distance.toStringAsFixed(2)); //dos decimales
-  //   var distancekmx = distance * 34;
-  //   distancekmx = num.parse(distancekmx.toStringAsFixed(2));
-  //   //print(distance.runtimeType);
-  //   setState(() {
-  //     _km = "$distance";
-  //     ToastHelper().showToast(text: distance.toString());
-  //     //print(_km);
-  //   });
-  //   setState(() {
-  //     _kmx = num.parse(distancekmx.toStringAsFixed(2)).toDouble();
-  //   });
-  // }
-
-  //function to determine the calories burned in kilometers using number of steps
-  // void getBurnedRun() {
-  //   setState(() {
-  //     var calories = _kmx; //dos decimales
-  //     _calories = "$calories";
-  //     ToastHelper().showToast(text: calories.toString());
-  //     //print(_calories);
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -293,6 +192,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                     onReloadData: () => bloc.add(ReloadWaterInfoAction()),
                                     screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState())),
                                     addWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState()))),
+                                    removeWaterCall: () => bloc.add(FinishWaterEventAction(qty: -0.250, onFinish: () => bloc.add(InitializeState()))),
                                   ),
                                 ),
                                 Expanded(
@@ -329,15 +229,15 @@ class _DashboardScreen extends State<DashboardScreen>
                                               shape: BoxShape.circle,
                                               color: Colors.grey,
                                             ),
-                                            child: Center(child: Text(_stepCountValue?.steps.orZero().toString() ?? '0'),),
+                                            child: const Center(child: Text('0'),),
                                           ),
                                           Container(
                                             margin: const EdgeInsets.only(top: Dimens.marginNormal),
-                                            child: Row(
+                                            child: const Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                               children: [
-                                                Text('${_stepCountValue?.timeStamp}'),
-                                                // Text('98 min')
+                                                Text(' Km'),
+                                                Text('98 min'),
                                               ],
                                             ),
                                           ),

@@ -1,6 +1,11 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:nutrenaissance_flutter/data/api/advices/advices_api.dart';
@@ -139,6 +144,12 @@ import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/get_steps_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/get_steps_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/get_today_step_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/get_today_step_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/save_steps_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/save_steps_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
@@ -242,6 +253,7 @@ import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/bloc/w
 import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/view/weekly_dashboard_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/welcome/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'data/local/models/steps/steps_entity.dart';
 import 'domain/interactor/foodevents/delete_food_event_interactor.dart';
 import 'domain/interactor/foodevents/delete_food_event_interactor_impl.dart';
 import 'domain/interactor/foodevents/remove_food_event_interactor_impl.dart';
@@ -254,6 +266,7 @@ import 'presentation/recommendations/common/view/recommendations_tabs_holder.dar
 import 'presentation/waterevent/view/add_water_event_screen.dart';
 
 import 'package:chuck_interceptor/chuck.dart';
+
 void main() async {
   const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
   Environment().initConfig(environmentName);
@@ -354,6 +367,9 @@ void main() async {
   final StepsApi stepsApi = StepsApi(prefsRepository, authenticationService, chuck);
   final StepsRepository stepsRepository = StepsRepositoryImpl(stepsApi: stepsApi, localStorageRepository: localStorageRepository);
   final UploadStepsInteractor uploadStepsInteractor = UploadStepsInteractorImpl(stepsRepository: stepsRepository);
+  final SaveStepsInteractor saveStepsInteractor = SaveStepsInteractorImpl(stepsRepository: stepsRepository);
+  final GetStepsInteractor getStepsInteractor = GetStepsInteractorImpl(stepsRepository: stepsRepository);
+  final GetTodayStepInteractor getTodayStepInteractor = GetTodayStepInteractorImpl(stepsRepository: stepsRepository);
 
 
   final dashboardBloc = DashboardBloc(
@@ -378,6 +394,9 @@ void main() async {
     uploadWaterEventInteractor: uploadWaterEventInteractor,
     saveWaterEventInteractor: saveWaterEventInteractor,
     uploadStepsInteractor: uploadStepsInteractor,
+    saveStepsInteractor: saveStepsInteractor,
+    getStepsInteractor: getStepsInteractor,
+    getTodayStepInteractor: getTodayStepInteractor,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(
@@ -407,6 +426,9 @@ void main() async {
   final liquidSummaryDetailBloc = LiquidSummaryDetailBloc(
     getLiquidEventsOfTodayInteractor: getTodayLiquidEventsInteractor,
     getProfileInteractor: getProfileInteractor,
+    getUserIdInteractor: getUserIdInteractor,
+    uploadWaterEventInteractor: uploadWaterEventInteractor,
+    saveWaterEventInteractor: saveWaterEventInteractor,
   );
 
   final forgottenPasswordBloc = ForgottenPasswordBloc(loginRepository: loginRepository);
@@ -452,7 +474,8 @@ void main() async {
     getUserIdInteractor: getUserIdInteractor,
     uploadSportsEventInteractor: uploadSportEventsInteractor,
     saveSportEventInteractor: saveSportEventInteractor,
-    getSportFavoritesInteractor: getSportFavoritesInteractor
+    getSportFavoritesInteractor: getSportFavoritesInteractor,
+    getWeekSportsInteractor: getWeekSportsInteractor,
   );
 
   final liquidEventBloc = LiquidEventBloc(
@@ -797,4 +820,5 @@ void initLocalStorage() async {
   Hive.registerAdapter(SubjectiveAnalysisResultEntityAdapter());
   Hive.registerAdapter(SubjectiveAnalysisAnswerResultEntityAdapter());
   Hive.registerAdapter(SubjectiveAnalysisTestAnswerResultEntityAdapter());
+  Hive.registerAdapter(StepsEntityAdapter());
 }

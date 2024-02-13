@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/data/api/steps/models/step_event_response.dart';
+import 'package:pedometer/pedometer.dart';
 
 class DashboardActions {
   DashboardActions();
@@ -33,13 +35,13 @@ class ReloadWaterInfoAction extends DashboardActions {
 class UpdateMenstruationStateAction extends DashboardActions {
   final bool isMenstruation;
 
-  UpdateMenstruationStateAction({ required this.isMenstruation });
+  UpdateMenstruationStateAction({required this.isMenstruation});
 }
 
 class UpdateColdStateAction extends DashboardActions {
   final bool isCold;
 
-  UpdateColdStateAction({ required this.isCold });
+  UpdateColdStateAction({required this.isCold});
 }
 
 class UpdateProfileEventAction extends DashboardActions {
@@ -55,4 +57,8 @@ class FinishWaterEventAction extends DashboardActions {
   FinishWaterEventAction({required this.qty, required this.onFinish});
 }
 
+class UploadStepsEventAction extends DashboardActions {
+  final StepCount stepCount;
 
+  UploadStepsEventAction({required this.stepCount});
+}

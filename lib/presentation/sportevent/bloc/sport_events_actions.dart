@@ -102,3 +102,5 @@ class AddSportEventFromDetailNavigation extends SportEventsActions {
 
   AddSportEventFromDetailNavigation({required this.sportEventComplete});
 }
+
+class UpdateCreateRoutine extends SportEventsActions {}

@@ -15,9 +15,14 @@ import 'fill_vertical_bar.dart';
 class LiquidDetailWidget extends StatefulWidget {
   final double quantityTaken;
   final double fractionToFill;
+  final Function? addWaterCall;
+  final Function? removeWaterCall;
+
   const LiquidDetailWidget({super.key,
     required this.quantityTaken,
     required this.fractionToFill,
+    this.addWaterCall,
+    this.removeWaterCall,
   });
 
   @override
@@ -34,12 +39,15 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
           Container(
             margin: const EdgeInsets.all(Dimens.marginLarge),
             alignment: Alignment.centerLeft,
-            child: Text(
-              AppLocalizations.of(context)!.ingested_water,
-              style: const TextStyle(
-                fontSize: Dimens.fontSizeNormal,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
+            child: InkWell(
+              onTap: () => widget.removeWaterCall?.call(),
+              child: Text(
+                AppLocalizations.of(context)!.ingested_water,
+                style: const TextStyle(
+                  fontSize: Dimens.fontSizeNormal,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),

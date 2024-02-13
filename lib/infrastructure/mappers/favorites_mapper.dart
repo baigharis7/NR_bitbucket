@@ -165,3 +165,25 @@ FoodFavorite mapToFoodFavoriteFromFoodEvent(FoodEventComplete foodEventComplete)
       mealTime: foodEventComplete.mealType ?? -1,
   );
 }
+
+AddSportFavorite mapToSportFavoriteFromEventComplete(
+    SportEventComplete sportEventComplete) {
+  return AddSportFavorite(
+    userId: sportEventComplete.userId,
+    eventDate: sportEventComplete.eventDate,
+    comment: sportEventComplete.comment,
+    title: sportEventComplete.sportName,
+    info: sportEventComplete.info
+        ?.map(
+          (sportItem) => AddSportFavInfo(
+        id: sportItem.id,
+        minutes: sportItem.minutes,
+        intensity: sportItem.intensity,
+        timeStart: sportItem.timeStart,
+        name_en: sportItem.name_en,
+        name_es: sportItem.name_es,
+      ),
+    )
+        .toList(),
+  );
+}

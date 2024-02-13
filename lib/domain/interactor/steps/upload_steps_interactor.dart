@@ -1,3 +1,5 @@
+import 'package:nutrenaissance_flutter/data/api/steps/models/step_event_response.dart';
+
 abstract class UploadStepsInteractor {
-  Future<void> execute();
+  Future<bool> execute(StepEventResponse stepEventResponse);
 }

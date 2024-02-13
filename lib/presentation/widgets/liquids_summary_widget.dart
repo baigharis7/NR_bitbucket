@@ -16,6 +16,7 @@ class LiquidSummaryWidget extends StatelessWidget {
   final Function? onReloadData;
   final Function screenToMove;
   final Function? addWaterCall;
+  final Function? removeWaterCall;
 
   const LiquidSummaryWidget({
     Key? key,
@@ -25,6 +26,7 @@ class LiquidSummaryWidget extends StatelessWidget {
     required this.fractionToFill,
     this.onReloadData,
     this.addWaterCall,
+    this.removeWaterCall,
     required this.screenToMove,
   }) : super(key: key);
 
@@ -54,7 +56,9 @@ class LiquidSummaryWidget extends StatelessWidget {
               ],
             ),
           ),
-          const Text('${Constants.DEFAULT_ADD_WATER_QUANTITY} L'),
+          InkWell(
+            onTap: () => removeWaterCall?.call(),
+              child: const Text('${Constants.DEFAULT_ADD_WATER_QUANTITY} L')),
           InkWell(
             onTap: () => addWaterCall?.call(),
               child: Image.asset('assets/images/water.png', height: 65)),

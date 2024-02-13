@@ -20,6 +20,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/watervents/water_event_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/analysis/subjective/subjective_analysis_result.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
@@ -100,7 +101,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> _openLiquidFavoritesBox() async => openBox(_favoriteLiquidsBox, LiquidFavoriteEntity.boxName);
   Future<Box> _openExplainingCardsBox() async => openBox(_explainingCardsBox, ExplainingCardEntity.boxName);
   Future<Box> _openSubjectiveAnalysisResultsBox() async => openBox(_subjectiveAnalysisResultsBox, SubjectiveAnalysisResultEntity.boxName);
-  Future<Box> _openUserStepsInfoBox() async => openBox(_userStepsInfoBox, 'boxName');
+  Future<Box> _openUserStepsInfoBox() async => openBox(_userStepsInfoBox, StepsEntity.boxName);
 
   Future<Box> get _getProfileBox async => await _openProfileBox();
   Future<Box> get _getFoodEventsBox async => await _openFoodEventsBox();
@@ -734,12 +735,50 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<void> saveSteps() async {
+  Future<void> saveSteps(StepsEntity stepsEntity, {bool? isEdit = false}) async {
     try {
-
+      await stepsEntity.save();
     } catch(error) {
-      rethrow;
+      try {
+        _getUserStepsInfoBox.then((box) {
+            final stepEventsMap = box.toMap();
+            if (stepEventsMap.isNotEmpty) {
+              stepEventsMap.forEach((key, value) {
+                if ((value as StepsEntity).eventId == stepsEntity.eventId) {
+                  box.put(key, stepsEntity);
+                } else {
+                  box.add(stepsEntity);
+                }
+              });
+            } else {
+              box.add(stepsEntity);
+            }
+        },);
+      } catch (error) {
+        rethrow;
+      }
     }
+  }
+
+  @override
+  Future<List> getTodaySteps() async {
+    List allStepEvents = await _getUserStepsInfoBox.then((box) {
+      return box.values.toList();
+    },);
+
+    // final midnightTime = DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch;
+    // return allStepEvents.where((stepEvent) => stepEvent.eventId! > midnightTime).toList();
+    return allStepEvents;
+  }
+
+  @override
+  Future<StepsEntity> getTodayStep() async {
+    List allStepEvents = await _getUserStepsInfoBox.then((box) {
+      return box.values.toList();
+    },);
+
+    final midnightTime = DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch;
+    return allStepEvents.firstWhere((stepEvent) => stepEvent.eventId == midnightTime, orElse: () => StepsEntity(eventId: null, initialSteps:  null, actualSteps:  null));
   }
 
 }

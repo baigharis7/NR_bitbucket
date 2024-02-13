@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 
+import '../../../data/api/steps/models/step_event_response.dart';
 import '../../../domain/models/dashboard/nutrients_weekly_model.dart';
 import '../../../domain/models/liquidevents/liquid_event_complete.dart';
 import '../../../domain/models/masterfiles/objectives_info_master.dart';
@@ -37,6 +38,7 @@ class DashboardState {
   List<NutrientsModel>? weeklyMicronutrients;
   bool? isMenstruation;
   bool? isCold;
+  StepEventResponse? todayStep;
 
   DashboardState({
     required this.isLoading,
@@ -63,6 +65,7 @@ class DashboardState {
     this.weeklyMicronutrients,
     this.isMenstruation,
     this.isCold,
+    this.todayStep,
   });
 
   DashboardState copyWith({
@@ -91,6 +94,7 @@ class DashboardState {
     List<NutrientsModel>? weeklyMicronutrients,
     bool? isMenstruation,
     bool? isCold,
+    StepEventResponse? todayStep,
   }) {
     return DashboardState(
       isLoading: isLoading,
@@ -117,6 +121,7 @@ class DashboardState {
       weeklyMicronutrients: weeklyMicronutrients ?? this.weeklyMicronutrients,
       isMenstruation: isMenstruation ?? this.isMenstruation,
       isCold: isCold ?? this.isCold,
+      todayStep: todayStep ?? this.todayStep,
     );
   }
 

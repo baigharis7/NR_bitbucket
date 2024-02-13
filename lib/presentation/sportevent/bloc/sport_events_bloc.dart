@@ -3,6 +3,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_file
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/get_sport_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_week_sports_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
@@ -12,9 +13,12 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_state.dart';
+
+import '../../../domain/models/sportevents/sport_event_complete.dart';
 
 class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
   final GetUserIdInteractor getUserIdInteractor;
@@ -22,6 +26,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
   final UploadSportEventsInteractor uploadSportsEventInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetSportFavoritesInteractor getSportFavoritesInteractor;
+  final GetWeekSportsInteractor getWeekSportsInteractor;
 
   SportEventsBloc({
     required this.getUserIdInteractor,
@@ -29,6 +34,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
     required this.uploadSportsEventInteractor,
     required this.getMasterFileInteractor,
     required this.getSportFavoritesInteractor,
+    required this.getWeekSportsInteractor,
   }) : super(SportEventsState(
     isLoading: false,
     dateStart: DateTimeHelper().provideCurrentDate(),
@@ -47,6 +53,9 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       if (state.sportsInfo!.sportsInfoMaster.isEmpty) {
         state.sportsInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
       }
+      state.weeklySports = await getWeekSportsInteractor.execute();
+      addFrequentFromWeek(state.weeklySports.orEmpty(), state.sportsFavorite.orEmpty());
+
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
@@ -240,6 +249,12 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       state.info = event.sportEventComplete.info?.map((sport) => SportInfo(id: sport.id, minutes: sport.minutes, intensity: sport.intensity, timeStart: sport.timeStart, name_en: sport.name_en, name_es: sport.name_es)).toList();
       // emit(state.copyWith(isLoading: false, onError: null));
     },);
+
+    on<UpdateCreateRoutine>((event, emit) {
+      state.isCreateRoutine = (state.isCreateRoutine ?? false) ? false : true;
+
+      emit(state.copyWith(isLoading: false, onError: null));
+    },);
   }
 
 
@@ -281,11 +296,43 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
     state.comment = null;
     state.isEdit = false;
     state.eventDate = null;
+    state.isCreateRoutine = false;
   }
 
-  bool validateSportList() {
+  bool? validateSportList() {
     return state.info?.any((sport) {
       return sport.minutes == null || sport.intensity == null || sport.timeStart == null;
-    },) ?? true;
+    },);
+  }
+
+  void addFrequentFromWeek(List<SportEventComplete> sportList, List<AddSportFavorite> favoriteList) {
+    for (int i = 0; i < sportList.length; i++) {
+      int count = 1;
+      for (int j = i + 1; j < sportList.length; j++) {
+        SportEventComplete selectedItem = sportList[i];
+        SportEventComplete matchableItem = sportList[j];
+        if (areFoodInfoListsEqual(selectedItem.info!, matchableItem.info!)) {
+          count = count + 1;
+        }
+      }
+      if (count == 3) {
+        favoriteList.add(mapToSportFavoriteFromEventComplete(sportList[i]));
+      }
+    }
+  }
+
+  bool areFoodInfoListsEqual(List<SportEventInfo> list1, List<SportEventInfo> list2) {
+    if (list1.length != list2.length) {
+      return false;
+    }
+    for (int i = 0; i < list1.length; i++) {
+      if (!areFoodInfoObjectsEqual(list1[i], list2[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+  bool areFoodInfoObjectsEqual(SportEventInfo obj1, SportEventInfo obj2) {
+    return (obj1.id == obj2.id && obj1.intensity == obj2.intensity && obj1.minutes == obj2.minutes);
   }
 }

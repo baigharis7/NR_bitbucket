@@ -8,7 +8,9 @@ import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/bloc/liq
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 
 import '../../../domain/models/watervents/water_event_master.dart';
+import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
+import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../dashboard/view/dashboard_screen.dart';
@@ -61,7 +63,7 @@ class _LiquidSummaryDetailScreenState extends State<LiquidSummaryDetailScreen> {
           } else {
             LoadingScreen.instance().hide();
           }
-          // if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
+          if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
         },
         builder: (context, state) => Scaffold(
             appBar: AppBar(
@@ -116,6 +118,7 @@ class _LiquidSummaryDetailScreenState extends State<LiquidSummaryDetailScreen> {
                             state.todayLiquidEvents.orEmpty(),
                                 ((state.userProfile?.physicalCharacteristics?.weight ?? 0) * 0.035),
                           ),
+                          removeWaterCall: () => bloc.add(FinishWaterEventAction(qty: -0.250, onFinish: () => Navigator.pop(context))),
                         ),
                       ],
                     ),

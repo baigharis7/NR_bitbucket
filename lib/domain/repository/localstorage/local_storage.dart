@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_eve
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/analysis/subjective/subjective_analysis_result.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/liquid/liquid_favorite.dart';
@@ -56,5 +57,7 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<EventsSynchronizationRequest> getAllEventIds();
   Future<bool> eraseDatabaseInformation();
   Future<bool> saveSubjectiveAnalysis(SubjectiveAnalysisResult subjectiveAnalysis);
-  Future<void> saveSteps();
+  Future<void> saveSteps(StepsEntity stepsEntity);
+  Future<List> getTodaySteps();
+  Future<StepsEntity> getTodayStep();
 }

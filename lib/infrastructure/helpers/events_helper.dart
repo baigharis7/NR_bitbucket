@@ -83,9 +83,8 @@ class EventsHelper {
           }
         }
       }
-
-
-      return double.parse(amount.toStringAsFixed(2));
+    if (amount < 0) amount = 0;
+    return double.parse(amount.toStringAsFixed(2));
     }
     // else {
     //   return 0.0;
@@ -231,6 +230,7 @@ class EventsHelper {
     if (waterAmount != null) {
       double returnQuantity = waterAmount / totalRequired;
       if (returnQuantity > 1) returnQuantity = 1;
+      if (returnQuantity < 0) returnQuantity = 0;
       return double.parse((returnQuantity).toStringAsFixed(2));
     } else {
       return 0.0;

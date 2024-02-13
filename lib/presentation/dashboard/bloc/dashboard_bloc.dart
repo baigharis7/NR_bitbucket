@@ -1,3 +1,4 @@
+import 'package:nutrenaissance_flutter/data/api/steps/models/step_event_response.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
@@ -12,6 +13,9 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_i
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_day_calories_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/get_steps_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/get_today_step_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/save_steps_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/energy_model.dart';
@@ -27,6 +31,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
+import 'package:pedometer/pedometer.dart';
 
 import '../../../data/api/profile/model/user_profile_response.dart';
 import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
@@ -60,6 +65,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final UploadWaterEventInteractor uploadWaterEventInteractor;
   final SaveWaterEventInteractor saveWaterEventInteractor;
   final UploadStepsInteractor uploadStepsInteractor;
+  final SaveStepsInteractor saveStepsInteractor;
+  final GetStepsInteractor getStepsInteractor;
+  final GetTodayStepInteractor getTodayStepInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -83,6 +91,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.uploadWaterEventInteractor,
     required this.saveWaterEventInteractor,
     required this.uploadStepsInteractor,
+    required this.saveStepsInteractor,
+    required this.getStepsInteractor,
+    required this.getTodayStepInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -110,6 +121,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.userKcal = getUserKcalSelectiveObjectives(state.profile?.kcal ?? 0);
       state.isMenstruation = state.profile?.objectives?.contains(28);
       state.isCold = state.profile?.objectives?.contains(18);
+      state.todayStep = await getTodayStepInteractor.execute();
       state.micronutrients = state.userMicronutrients!
           .map(
             (micronutrient) =>
@@ -306,6 +318,30 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingWaterEventError));
       }
     });
+
+    on<UploadStepsEventAction>((event, emit) async {
+      // emit(state.copyWith(isLoading: true));
+
+      var stepEventResponse = StepEventResponse(
+          eventId: state.todayStep?.eventId ?? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch,
+          initialSteps: event.stepCount.steps,
+          // actualSteps: event.stepCount.steps - (state.todayStep?.actualSteps ?? 0),
+          actualSteps: await calculateActualSteps(event.stepCount),
+      );
+
+      try {
+        final result = await uploadStepsInteractor.execute(stepEventResponse);
+        try {
+          await saveStepsInteractor.execute(stepEventResponse);
+          state.todayStep = await getTodayStepInteractor.execute();
+          emit(state.copyWith(isLoading: false));
+        } catch(_) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+        }
+      } catch (_) {
+       emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+      }
+    },);
   }
 
   NutrientInfoMaster getNutrientInfo(String nutrientName) {
@@ -587,6 +623,31 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     }
 
     return changedKcal;
+  }
+
+  Future<int> calculateActualSteps(StepCount stepCount) async {
+    final todayValues = await getTodayStepInteractor.execute();
+    final initialSteps = todayValues.initialSteps ?? 0;
+    final actualSteps = todayValues.actualSteps ?? 0;
+
+    var actualStepsUpdated = 0;
+
+    // if (initialSteps == stepCount.steps) {
+    //   actualStepsUpdated = actualSteps;
+    // }
+    // else
+    if (initialSteps < stepCount.steps) {
+
+      actualStepsUpdated = actualSteps + (stepCount.steps - initialSteps);
+    } else {
+      actualStepsUpdated = actualSteps;
+    }
+
+    // actualStepsUpdated = initialSteps > 0 ? stepCount.steps - initialSteps : ;
+
+
+
+    return actualStepsUpdated;
   }
 
 }

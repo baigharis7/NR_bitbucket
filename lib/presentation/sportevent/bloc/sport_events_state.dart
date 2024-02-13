@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_sim
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 
 import '../../../domain/models/favorites/sport/sport_favorite.dart';
+import '../../../domain/models/sportevents/sport_event_complete.dart';
 
 class SportEventsState {
   bool isLoading;
@@ -25,6 +26,8 @@ class SportEventsState {
   String? comment;
   String? eventSportName;
   List<SportInfo>? info;
+  bool? isCreateRoutine;
+  List<SportEventComplete>? weeklySports;
 
   SportEventsState({
     required this.isLoading,
@@ -45,11 +48,13 @@ class SportEventsState {
     this.comment,
     this.eventSportName,
     this.info,
+    this.isCreateRoutine,
+    this.weeklySports,
   });
 
   SportEventsState copyWith({
     required bool isLoading,
-    required ErrorTypes? onError,
+    ErrorTypes? onError,
     SportsInfoMaster? sportsInfo,
     SportEventSimple? sportEventSimple,
     List<AddSportFavorite>? sportsFavorite,
@@ -66,10 +71,12 @@ class SportEventsState {
     String? comment,
     String? eventSportName,
     List<SportInfo>? info,
+    bool? isCreateRoutine,
+    List<SportEventComplete>? weeklySports,
   }) {
     return SportEventsState(
       isLoading: isLoading,
-      onError: onError,
+      onError: onError ?? this.onError,
       sportsInfo: sportsInfo ?? this.sportsInfo,
       sportEventSimple: sportEventSimple ?? this.sportEventSimple,
       sportsFavorite: sportsFavorite ?? this.sportsFavorite,
@@ -86,6 +93,8 @@ class SportEventsState {
       comment: comment ?? this.comment,
       eventSportName: eventSportName ?? this.eventSportName,
       info: info ?? this.info,
+      isCreateRoutine: isCreateRoutine ?? this.isCreateRoutine,
+      weeklySports: weeklySports ?? this.weeklySports,
     );
   }
 
