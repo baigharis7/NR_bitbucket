@@ -1,4 +1,5 @@
 
+import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../domain/models/sportevents/sport_event_complete.dart';
 
 class JournalSportActions {
@@ -24,4 +25,11 @@ class FinishAddSportToFavoriteAction extends JournalSportActions {
   final SportEventComplete sportEvent;
 
   FinishAddSportToFavoriteAction({required this.onFinish, required this.sportEvent});
+}
+
+class RemoveFavoriteSportAction extends JournalSportActions {
+  final AddSportFavorite? sportFavorite;
+  final Function onFinish;
+
+  RemoveFavoriteSportAction({required this.onFinish, required this.sportFavorite});
 }

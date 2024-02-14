@@ -32,54 +32,48 @@ class _AddCommentDialogState extends State<AddCommentDialog> {
 
     return SimpleDialog(
       backgroundColor: Colors.grey[200],
+      contentPadding: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       children: [
         SizedBox(
           width: mediaQuerySize.width,
-          height: mediaQuerySize.height/2,
+          height: mediaQuerySize.height/1.5,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    alignment: Alignment.centerRight,
-                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                    child: IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.clear,),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                    child: Card(
-                      elevation: 4,
-                      color: Colors.white,
-                      child: Container(
-                        alignment: Alignment.centerLeft,
-                        height: 100,
-                        margin: const EdgeInsets.all(Dimens.marginNormal),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: AppLocalizations.of(context)!.enter,
-                          ),
-                          controller: _commentController,
-                          onChanged: (comment) {
-                            widget.onEdit.call(comment);
-                          },
+              Container(
+                alignment: Alignment.centerRight,
+                child: IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.clear,),
+                ),
+              ),
+              Expanded(child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge),
+                child: Column(children: [
+                  Card(
+                    elevation: 4,
+                    color: Colors.white,
+                    child: Container(
+                      alignment: Alignment.centerLeft,
+                      margin: const EdgeInsets.only(right: Dimens.marginNormal, left: Dimens.marginNormal, top: Dimens.marginNormal, bottom: Dimens.marginXXXXLarge),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context)!.enter,
                         ),
+                        controller: _commentController,
+                        onChanged: (comment) {
+                          widget.onEdit.call(comment);
+                        },
                       ),
                     ),
                   ),
-                ],
-              ),
-              Container(
-                alignment: Alignment.bottomCenter,
-                child: RoundedCustomButton(
-                  buttonText: AppLocalizations.of(context)!.add_comment,
-                  onPressed: () => widget.onSaveClick.call(),
-                ),
-              )
+                  const Spacer(),
+                  RoundedCustomButton(
+                    buttonText: AppLocalizations.of(context)!.add_comment,
+                    onPressed: () => widget.onSaveClick.call(),
+                  ),
+                ],),
+              ),),
             ],
           ),
         ),

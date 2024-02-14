@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -14,10 +15,12 @@ import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/add_fav
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_favorite_dialog.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/create_new_sport_favorite_screen.dart';
 
 import '../../../../domain/models/sportevents/sport_event_complete.dart';
 import '../../../sportevent/view/add_sport_event_screen.dart';
 import '../../common/undo_favorite_dialog.dart';
+import '../../food/view/create_new_food_favorite_screen.dart';
 
 class AddSportFavoriteScreen extends StatefulWidget {
   static const routeName = '/add_sport_favorite';
@@ -163,34 +166,70 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                                 const Spacer(),
                                 Container(
                                   margin: const EdgeInsets.symmetric(horizontal: 20),
-                                  child: InkWell(onTap: (arguments is AddSportFavorite || (arguments is SportEventComplete ? bloc.isSportFavo(arguments) : true)) ? () {
-                                    showUndoFavoriteDialog(
-                                      context: ctx,
-                                      title: (arguments as AddSportFavorite).title.orEmpty(),
-                                      onUndoFavorite: (){
-                                        bloc.add(
-                                          RemoveFavoriteAction(
-                                            sportFavorite: arguments,
-                                            onFinish: () => Navigator.pop(context),
-                                          ),
+                                  child: InkWell(onTap: () {
+                                    if (arguments is AddSportFavorite) {
+                                      showUndoFavoriteDialog(
+                                              context: ctx,
+                                              title: (arguments).title.orEmpty(),
+                                          reloadScreen: () => bloc.add(InitializeStateAction()),
+                                              onUndoFavorite: (){
+                                                bloc.add(
+                                                  RemoveFavoriteAction(
+                                                    sportFavorite: arguments,
+                                                    onFinish: () => Navigator.pop(context),
+                                                  ),
+                                                );
+                                                },
+                                      );
+                                    } else if (arguments is SportEventComplete) {
+                                      if (bloc.isSportFavo(arguments)) {
+                                        showUndoFavoriteDialog(
+                                          context: ctx,
+                                          title: (arguments).sportName.orEmpty(),
+                                          reloadScreen: () => bloc.add(InitializeStateAction()),
+                                          onUndoFavorite: () {
+                                            bloc.add(
+                                              RemoveFavoriteAction(
+                                                sportFavorite: bloc.isFoundObjectFromFavoriteList(mapToSportFavoriteFromEventComplete(arguments)),
+                                                onFinish: () => Navigator.pop(context),
+                                              ),
+                                            );
+                                          },
                                         );
-                                      },
-                                      //     () => bloc.add(
-                                      //   RemoveFavoriteAction(
-                                      //     sportFavorite: arguments,
-                                      //     onFinish: () => Navigator.pop(context),
-                                      //   ),
-                                      // ),
-                                      reloadScreen: () => bloc.add(InitializeStateAction()),
-                                    );
-                                  } : () {
-                                    showAddFavoriteDialog(
-                                      context: ctx,
-                                      onNameChange: (String sportName) => bloc.add(SetSportFavoriteNameAction(favoriteName: sportName)),
-                                      onFinish: () => bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context))),
-                                    );
-                                  }, child: (arguments is AddSportFavorite || (arguments is SportEventComplete ? bloc.isSportFavo(arguments) : true)) ? Icon(Icons.favorite, color: Colors.red,) : Icon(Icons.favorite_border, color: Colors.red,)),
-                                )
+                                      } else {
+                                        bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context)));
+                                      }
+                                    }
+                                  }
+                                  // (arguments is AddSportFavorite || (arguments is SportEventComplete ? bloc.isSportFavo(arguments) : true)) ? () {
+                                  //   showUndoFavoriteDialog(
+                                  //     context: ctx,
+                                  //     title: (arguments as AddSportFavorite).title.orEmpty(),
+                                  //     onUndoFavorite: (){
+                                  //       bloc.add(
+                                  //         RemoveFavoriteAction(
+                                  //           sportFavorite: arguments,
+                                  //           onFinish: () => Navigator.pop(context),
+                                  //         ),
+                                  //       );
+                                  //     },
+                                  //     //     () => bloc.add(
+                                  //     //   RemoveFavoriteAction(
+                                  //     //     sportFavorite: arguments,
+                                  //     //     onFinish: () => Navigator.pop(context),
+                                  //     //   ),
+                                  //     // ),
+                                  //     reloadScreen: () => bloc.add(InitializeStateAction()),
+                                  //   );
+                                  // } : () {
+                                  //   showAddFavoriteDialog(
+                                  //     context: ctx,
+                                  //     onNameChange: (String sportName) => bloc.add(SetSportFavoriteNameAction(favoriteName: sportName)),
+                                  //     onFinish: () => bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context))),
+                                  //   );
+                                  // }
+                                  , child: (arguments is AddSportFavorite || (arguments is SportEventComplete ? bloc.isSportFavo(arguments) : true)) ? const Icon(Icons.favorite, color: Colors.red,) : const Icon(Icons.favorite_border, color: Colors.red,),),
+                                ),
                               ],
                             ),
                           ),
@@ -247,7 +286,7 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                                                   child: Text(
                                                     AppLocalizations.of(context)!.minutes.toLowerCase(),
                                                   ),
-                                                )
+                                                ),
                                               ],
                                             ),
                                             Row(
@@ -262,7 +301,7 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                                                     margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
                                                     child: Text(bloc.getIntensityName(ctx, sport.intensity)),
                                                   ),
-                                                )
+                                                ),
                                               ],
                                             ),
                                             Container(
@@ -300,7 +339,7 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                                                     overflow: TextOverflow.clip,
                                                   ),
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -316,8 +355,8 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingLarge),
-                    decoration: BoxDecoration(borderRadius: BorderRadiusDirectional.vertical(top: Radius.circular(5.0)),color: Colors.white,boxShadow: [BoxShadow(blurRadius: 5.0)]),
+                    padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingLarge),
+                    decoration: const BoxDecoration(borderRadius: BorderRadiusDirectional.vertical(top: Radius.circular(5.0)),color: Colors.white,boxShadow: [BoxShadow(blurRadius: 5.0)]),
                     child: Column(children: [
                       Container(
                         alignment: Alignment.centerLeft,
@@ -329,19 +368,22 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                         margin: const EdgeInsets.all(Dimens.marginXSmall),
                         child: Container(
                           margin: const EdgeInsets.all(Dimens.marginSmall),
-                          padding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+                          padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
                           child: InkWell(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(AppLocalizations.of(context)!.add_new_sport_button_text),
-                                const Icon(Icons.add_circle)
+                                const Icon(Icons.add_circle),
                               ],
                             ),
                             onTap: () {
-                              // if (arguments is FoodEventComplete)
-                              Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: arguments).then((value) => Navigator.pop(context));
-                            },
+                              if (arguments is SportEventComplete) {
+                                Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: arguments).then((value) => Navigator.pop(context));
+                              } else if (arguments is AddSportFavorite) {
+                                Navigator.pushNamed(context, CreateNewSportFavoriteScreen.routeName, arguments: arguments).then((value) => Navigator.pop(context));
+                              }
+                              },
                           ),
                         ),
                       ),
@@ -356,12 +398,12 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                         child: InkWell(
                           child: Container(
                             margin: const EdgeInsets.all(Dimens.marginSmall),
-                            padding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+                            padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(AppLocalizations.of(context)!.add_comment),
-                                const Icon(Icons.mode_comment_outlined)
+                                const Icon(Icons.mode_comment_outlined),
                               ],
                             ),
                           ),

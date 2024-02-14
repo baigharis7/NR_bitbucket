@@ -343,7 +343,7 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                           if (arguments is FoodEventComplete) {
                             Navigator.pushNamed(
                                   context, AddFoodEventScreen.routeName,
-                                  arguments: arguments)
+                                      arguments: arguments)
                               .then((value) => Navigator.pop(context));
                           }
                           else if (arguments is FoodFavorite) {

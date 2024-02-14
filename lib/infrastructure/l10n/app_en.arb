@@ -373,7 +373,7 @@
     "absorption_expense" : "It is the expense we have for the digestion, absorption, metabolization and storage of food. And in general it represents 10% of daily expenses.",
     "energy_expenditure" : "Energy expenditure by activity",
     "energy_expenditure_description" : "It is the most variable expense since it depends on voluntary exercise, time and intensity. It can account for between 30-80% of daily energy expenditure.",
-    "sugar_description" : "Free sugars are those that are added to food and drinks, as well as sugars found naturally in honey, syrups, fruit juices, and fruit juice concentrates. Not healthy and the less the better.\n\n\nAbove all, we find them in ultra-processed foods: cookies, pastries, sweets, candys, sauces, soft drinks, colas, sugary and flavored dairy products, ices creams.",
+    "sugar_description" : "Free sugars are those that are added to food and drinks, as well as sugars found naturally in honey, syrups, fruit juices, and fruit juice concentrates.\n\n\n Above all, we find them in ultra-processed foods: cookies, pastries, sweets, candys, sauces, soft drinks, colas, sugary and flavored dairy products, ice creams. Not healthy and the less the better.",
     "fiber_description" : "Its effects on health are multiple and it is essential to have a healthy microbiota.\n\n\nWe obtain it from foods of plant origin. Above all, if we consume them whole and whole.",
     "water_description" : "Water is the best option to hydrate ourselves.\n\nWe also obtain water from infusions, broths, purees, vegetables or fruits.",
     "minimum_water_required" : "Minimum liquids required",

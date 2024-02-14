@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
@@ -19,7 +20,9 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_favorite_dialog.dart';
 
+import '../../../infrastructure/mappers/favorites_mapper.dart';
 import '../../common/view/confirmation_dialog.dart';
+import '../../favorites/common/undo_favorite_dialog.dart';
 
 class JournalSportScreen extends StatefulWidget {
   const JournalSportScreen({Key? key}) : super(key: key);
@@ -59,6 +62,23 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
       child: ConfirmationDialog(message: AppLocalizations.of(context)!.sport_event_successfully_saved,),
     ),
     ).then((value) => Navigator.pop(context));
+  }
+
+  Future<void> showUndoFavoriteDialog({
+    required BuildContext context,
+    required String title,
+    required Function onUndoFavorite,
+    required reloadScreen,
+  }) async {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return UndoFavoriteDialog(
+          title: title,
+          onUndoFavorite: () => onUndoFavorite.call(),
+        );
+      },
+    ).then((_) => Navigator.pop(context));
   }
 
   @override
@@ -163,11 +183,21 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                               },
                               onFavorite: () {
                                 if(!bloc.isSportFavorite(sportEvent)) {
-                                  showAddFavoriteDialog(
-                                  context: ctx,
-                                  onNameChange: (String sportName) => bloc.add(AddSportFavNameAction(sportFavName: sportName)),
-                                  onFinish: () => bloc.add(FinishAddSportToFavoriteAction(onFinish: () => _showConfirmationDialog(context), sportEvent: sportEvent)),
-                                );
+                                  bloc.add(FinishAddSportToFavoriteAction(onFinish: () => _showConfirmationDialog(context), sportEvent: sportEvent));
+                                } else {
+                                  showUndoFavoriteDialog(
+                                    context: ctx,
+                                    title: sportEvent.sportName.orEmpty(),
+                                    reloadScreen: () => bloc.add(InitializeStateAction()),
+                                    onUndoFavorite: () {
+                                      bloc.add(
+                                        RemoveFavoriteSportAction(
+                                          sportFavorite: bloc.isFoundObjectFromFavoriteList(mapToSportFavoriteFromEventComplete(sportEvent)),
+                                          onFinish: () => Navigator.pop(context),
+                                        ),
+                                      );
+                                    },
+                                  );
                                 }
                               },
                             );

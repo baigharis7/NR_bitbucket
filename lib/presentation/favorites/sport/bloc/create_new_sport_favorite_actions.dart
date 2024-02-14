@@ -64,3 +64,11 @@ class AddFavSportAction extends CreateNewSportFavoriteActions{
 
   AddFavSportAction(this.addSportFavInfo);
 }
+
+class UpdateCreateRoutineAction extends CreateNewSportFavoriteActions {}
+
+class SetDataFromDetailNaviAction extends CreateNewSportFavoriteActions {
+  final AddSportFavorite favoritesSport;
+
+  SetDataFromDetailNaviAction({required this.favoritesSport});
+}

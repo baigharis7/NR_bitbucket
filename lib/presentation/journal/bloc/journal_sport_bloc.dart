@@ -17,6 +17,8 @@ import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_sport_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_sport_state.dart';
 
+import '../../../domain/interactor/favorites/sport/delete_sport_favorite_interactor.dart';
+import '../../../domain/interactor/favorites/sport/remove_sport_favorite_from_local_interactor.dart';
 import '../../../domain/interactor/favorites/sport/save_sport_favorite_interactor.dart';
 import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../infrastructure/errors/error_types.dart';
@@ -32,6 +34,8 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
   final UploadSportFavoriteInteractor uploadSportFavoriteInteractor;
   final SaveSportFavoriteInteractor saveSportFavoriteInteractor;
   final GetUserIdInteractor getUserIdInteractor;
+  final DeleteSportFavoriteInteractor deleteSportFavoriteInteractor;
+  final RemoveSportFavoriteInteractor removeSportFavoriteInteractor;
 
   JournalSportBloc({
     required this.getMasterFileInteractor,
@@ -44,6 +48,8 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
     required this.uploadSportFavoriteInteractor,
     required this.saveSportFavoriteInteractor,
     required this.getUserIdInteractor,
+    required this.deleteSportFavoriteInteractor,
+    required this.removeSportFavoriteInteractor,
   }) : super(
     JournalSportState(
       isLoading: false,
@@ -85,7 +91,7 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
         eventDate: event.sportEvent.eventDate,
         info: event.sportEvent.info?.map((sport) => AddSportFavInfo(id: sport.id, name_en: sport.name_en, name_es: sport.name_es, minutes: sport.minutes, intensity: sport.intensity, timeStart: sport.timeStart)).toList(),
         comment: event.sportEvent.comment,
-        title: state.sportFavName,
+        title: event.sportEvent.sportName,
       );
 
       try {
@@ -105,6 +111,33 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
       }
     },);
 
+    on<RemoveFavoriteSportAction>((event, emit) async {
+      if(event.sportFavorite.isNull()) return;
+      emit(state.copyWith(isLoading: true));
+
+      final userId = getUserIdInteractor.execute();
+      try {
+        final deleteFavorite = await deleteSportFavoriteInteractor.execute(userId, event.sportFavorite!.eventDate!);
+        if (deleteFavorite) {
+          try {
+            final removeFromLocalResult = await removeSportFavoriteInteractor.execute(event.sportFavorite!);
+            if (removeFromLocalResult) {
+              event.onFinish.call();
+              emit(state.copyWith(isLoading: false, onError: null));
+            } else {
+              emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeSportFavoriteError));
+            }
+          } catch (error) {
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeSportFavoriteError));
+          }
+        } else {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteSportFavoriteError));
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteSportFavoriteError));
+      }
+    },);
+
   }
 
   String getSportName(int sportId, BuildContext context) {
@@ -112,7 +145,34 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
   }
 
   bool isSportFavorite(SportEventComplete sportEvent) {
-    return state.sportsFavorite?.any((sportFav) => sportFav.title.toString() == sportEvent.sportName.toString()) ?? false;
+    // return state.sportsFavorite?.any((sportFav) => sportFav.title.toString() == sportEvent.sportName.toString()) ?? false;
+    var isFavourite = false;
+    parentLoop:for (AddSportFavorite favSport in state.sportsFavorite ?? []) {
+
+      if (favSport.info?.length == (sportEvent.info?.length ?? 0)) {
+        childLoop:for (SportEventInfo sportInfoItem in sportEvent.info!) {
+          isFavourite = favSport.info.orEmpty().any((itemInfo) => itemInfo.id == sportInfoItem.id && itemInfo.minutes == sportInfoItem.minutes && itemInfo.intensity == sportInfoItem.intensity);
+          if (!isFavourite) break childLoop;
+        }
+      }
+    }
+
+    return isFavourite;
+  }
+
+  AddSportFavorite? isFoundObjectFromFavoriteList(AddSportFavorite sportFavoriteFromEvent) {
+    AddSportFavorite? object;
+    bool isFound = false;
+    parentLoop: for (AddSportFavorite favObject in state.sportsFavorite.orEmpty()) {
+      object = favObject;
+      if (favObject.info?.length == sportFavoriteFromEvent.info?.length) {
+        childLoop: for (AddSportFavInfo matchingObject in sportFavoriteFromEvent.info.orEmpty()) {
+          isFound = favObject.info.orEmpty().any((sportItem) => sportItem.id == matchingObject.id && sportItem.intensity == matchingObject.intensity && sportItem.minutes == matchingObject.minutes);
+          if (!isFound) break childLoop;
+        }
+      }
+    }
+    return isFound ? object : null;
   }
 
 }

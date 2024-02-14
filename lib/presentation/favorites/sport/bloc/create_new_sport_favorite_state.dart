@@ -10,10 +10,12 @@ class CreateNewSportFavoriteState {
   bool isLoading;
   ErrorTypes? onError;
   SportsInfoMaster? sportsInfo;
-  DateTime? eventDate;
+  int? eventDate;
   String? favoriteSportName;
   List<AddSportFavInfo>? info;
   String? comment;
+  bool? isCreateRoutine;
+  bool? isEdit;
 
   CreateNewSportFavoriteState({
     required this.isLoading,
@@ -23,16 +25,20 @@ class CreateNewSportFavoriteState {
     this.favoriteSportName,
     this.info,
     this.comment,
+    this.isCreateRoutine,
+    this.isEdit,
   });
 
   CreateNewSportFavoriteState copyWith({
     required bool isLoading,
     ErrorTypes? onError,
     SportsInfoMaster? sportsInfo,
-    DateTime? eventDate,
+    int? eventDate,
     String? favoriteSportName,
     List<AddSportFavInfo>? info,
     String? comment,
+    bool? isCreateRoutine,
+    bool? isEdit,
   }) {
     return CreateNewSportFavoriteState(
       isLoading: isLoading,
@@ -42,6 +48,8 @@ class CreateNewSportFavoriteState {
       favoriteSportName: favoriteSportName ?? this.favoriteSportName,
       info: info ?? this.info,
       comment: comment ?? this.comment,
+      isCreateRoutine: isCreateRoutine ?? this.isCreateRoutine,
+      isEdit: isEdit ?? this.isEdit,
     );
   }
 

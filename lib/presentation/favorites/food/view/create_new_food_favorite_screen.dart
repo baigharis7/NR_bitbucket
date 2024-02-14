@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/add_food_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
@@ -15,6 +16,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 
 import '../../../../domain/models/favorites/food/food_favorite.dart';
 import '../../../../domain/models/favorites/food/meal_time.dart';
+import '../../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../widgets/add_item_name_dialog.dart';
 import '../../../widgets/box_type_radio_text_widget.dart';
 import '../../../widgets/food_event_foods_cluster.dart';

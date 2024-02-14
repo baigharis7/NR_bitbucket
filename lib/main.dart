@@ -511,6 +511,8 @@ void main() async {
     uploadSportFavoriteInteractor: uploadSportFavoriteInteractor,
     saveSportFavoriteInteractor: saveSportFavoriteInteractor,
     getUserIdInteractor: getUserIdInteractor,
+    deleteSportFavoriteInteractor: deleteSportFavoriteInteractor,
+    removeSportFavoriteInteractor: removeSportFavoriteInteractor,
   );
 
   final journalLiquidBloc = JournalLiquidBloc(

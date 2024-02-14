@@ -96,7 +96,7 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
 
       final sportFavorite = AddSportFavorite(
         userId: getUserIdInteractor.execute(),
-        eventDate: DateTime.now().millisecondsSinceEpoch,
+        eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
         title: state.favoriteSportName,
         comment: state.comment,
         info: state.info,
@@ -105,7 +105,7 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
       try {
         final uploadResult = await uploadSportFavoriteInteractor.execute(sportFavorite);
         if (uploadResult) {
-          await saveSportFavoriteInteractor.execute(sportFavorite, false);
+          await saveSportFavoriteInteractor.execute(sportFavorite, state.isEdit ?? false);
 
           _resetSportInfo();
           event.onFinish.call();
@@ -123,6 +123,23 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
 
       emit(state.copyWith(isLoading: false, onError: null,));
     });
+
+    on<UpdateCreateRoutineAction>((event, emit) {
+      state.isCreateRoutine = (state.isCreateRoutine ?? false) ? false : true;
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<SetDataFromDetailNaviAction>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      state.eventDate = event.favoritesSport.eventDate;
+      state.info = event.favoritesSport.info;
+      state.comment = event.favoritesSport.comment;
+      state.favoriteSportName = event.favoritesSport.title;
+      state.isEdit = true;
+
+      emit(state.copyWith(isLoading: false));
+    },);
   }
 
   void _resetSportInfo() {
@@ -130,16 +147,18 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
     state.eventDate = null;
     state.favoriteSportName = null;
     state.comment = null;
+    state.isCreateRoutine = null;
+    state.isEdit = null;
   }
 
   SportInfoMaster findSportById(int sportId) {
     return state.sportsInfo!.sportsInfoMaster.firstWhere((sport) => sport.id == sportId);
   }
 
-  bool validateFavSportList() {
+  bool? validateFavSportList() {
     return state.info?.any((sport) {
       return sport.minutes == null || sport.intensity == null || sport.timeStart == null;
-    },) ?? true;
+    },);
   }
 
 }
