@@ -6,6 +6,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/create_new_food_favorite_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/create_new_food_favorite_state.dart';
@@ -29,7 +30,7 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
     required this.saveFoodFavoriteInteractor,
     required this.uploadFoodFavoriteInteractor,
     required this.getWeekFoodEventsInteractor,
-  }) : super(CreateNewFoodFavoriteState(isLoading: false)) {
+  }) : super(CreateNewFoodFavoriteState(isLoading: false, foodsInFavorite: [])) {
     on<InitializeStateAction>((event, emit) async {
       _clearData();
       emit(state.copyWith(isLoading: true));
@@ -151,7 +152,7 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
         ingredients: state.foodsFromFrequent.orEmpty(),
         drinks: [],
         mealTime: state.mealTime ?? -1,
-        dish: (state.foodsFromFrequent.orEmpty().length > 1) ? true : false,
+        dish: state.isCreateDish ?? false,
         comment: state.comment,
       );
 
@@ -186,6 +187,49 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
 
       emit(state.copyWith(isLoading: false));
     },);
+
+    on<UpdateCreateDishAction>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      state.isCreateDish = (state.isCreateDish ?? false) ? false : true;
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<FinishFavoriteFoodWithoutCreateDishAction>((event, emit) async {
+      for (FoodInFavorite favFood in state.foodsInFavorite.orEmpty()) {
+        emit(state.copyWith(isLoading: true));
+        final favFoodName = EventsHelper().findFoodNameFromId(favFood.id, event.context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+
+        final foodFavorite = FoodFavorite(
+          title: favFoodName,
+          eventDate: state.eventDate ?? DateTimeHelper().provideCurrentDate().millisecondsSinceEpoch,
+          ingredients: [favFood],
+          drinks: [],
+          mealTime: state.mealTime!,
+          dish: state.isCreateDish ?? false,
+        );
+
+        try {
+          final uploadFavorite = await uploadFoodFavoriteInteractor.execute(foodFavorite);
+          if (uploadFavorite) {
+            try {
+              await saveFoodFavoriteInteractor.execute(foodFavorite, state.isEdit ?? false);
+              // _clearData();
+              // event.onFinish.call();
+              emit(state.copyWith(isLoading: false));
+            } catch (error) {
+              emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveFoodFavoriteError));
+            }
+          } else {
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadFoodFavoriteError));
+          }
+        } catch (error) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadFoodFavoriteError));
+        }
+
+      }
+      if (state.foodsInFavorite.orEmpty().isNotEmpty) event.onFinish.call();
+    },);
   }
 
   _clearData() {
@@ -197,6 +241,7 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
     state.comment = '';
     state.eventDate = null;
     state.isEdit = null;
+    state.isCreateDish = null;
   }
 
   bool isFoodFavValidateList() {

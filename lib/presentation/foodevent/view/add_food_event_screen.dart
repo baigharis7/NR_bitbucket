@@ -324,7 +324,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                     //   },
                                     // ),
                                   ).toList(),
-                                  if ((state.foodsInEvent?.length ?? -1) > 1) BoxTypeRadioTextWidget(onPressed: () => {}, isSelected: true, title: AppLocalizations.of(context)!.create_dish),
+                                  BoxTypeRadioTextWidget(onPressed: () => bloc.add(UpdateCreteDishEventAction()), isSelected: state.isCreateDish ?? false, title: AppLocalizations.of(context)!.create_dish),
                                 ],
                               ),
                             ],
@@ -340,7 +340,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                       else {
                         if (bloc.validateList() ?? true) return;
 
-                        if ((state.foodsInEvent?.length ?? 0) > 1) {
+                        if (state.isCreateDish ?? false) {
                             showAddFoodNameDialog(
                               context: context,
                               onFinish: () {
@@ -356,8 +356,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                             );
                         }
                         else {
-                          state.foodName = state.foodsInEvent!.map((e) => eventHelper.findFoodNameFromId(e.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!)).toString();
-                          bloc.add(FinishFoodEventAction(onFinish: () => _showConfirmationDialog(context)));
+                          // state.foodName = state.foodsInEvent!.map((e) => eventHelper.findFoodNameFromId(e.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!)).toString();
+                          // bloc.add(FinishFoodEventAction(onFinish: () => _showConfirmationDialog(context)));
+                          bloc.add(FinishFoodWithoutCreateDishEventAction(context: context, onFinish: () => _showConfirmationDialog(context)));
                         }
                       }
                       },

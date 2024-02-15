@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 
@@ -89,4 +90,13 @@ class AddFoodEventFromDetailNavigation extends AddFoodEventActions {
   final FoodEventComplete foodEventComplete;
 
   AddFoodEventFromDetailNavigation(this.foodEventComplete);
+}
+
+class UpdateCreteDishEventAction extends AddFoodEventActions {}
+
+class FinishFoodWithoutCreateDishEventAction extends AddFoodEventActions {
+  final Function onFinish;
+  final BuildContext context;
+
+  FinishFoodWithoutCreateDishEventAction({required this.context, required this.onFinish});
 }

@@ -15,6 +15,7 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_mas
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_actions.dart';
@@ -157,7 +158,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       );
       foodEvent.ingredients = state.foodsInEvent.orEmpty();
       foodEvent.drinks = []; // TODO: is it necessary to implement drinks in food events?
-      foodEvent.dish = (state.foodsInEvent.orEmpty().length > 1) ? true : false;
+      foodEvent.dish = state.isCreateDish ?? false;
 
       try {
         final uploadFoodEvent = await uploadFoodEventInteractor.execute(foodEvent);
@@ -189,6 +190,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       state.eventId = event.foodEventSimple.eventId;
       state.mealType = event.foodEventSimple.mealType;
       state.foodsInEvent = event.foodEventSimple.ingredients;
+      state.isCreateDish = event.foodEventSimple.dish;
       if (state.foodNames!.foodsAndDrinksNames!.foodNames!.isEmpty) {
         state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
       }
@@ -269,9 +271,59 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       state.foodName = event.foodEventComplete.foodName;
       state.comment = event.foodEventComplete.comment;
       state.mealType = event.foodEventComplete.mealType;
+      state.isCreateDish = event.foodEventComplete.dish;
       state.isEdit = true;
       state.foodsInEvent = event.foodEventComplete.foodInfo?.map((food) => FoodInEvent(id: food.id!, qty: food.eventInfo!.qty!.toInt(), unit: food.eventInfo!.unit!, cookingMethod: food.eventInfo!.cookingMethod!)).toList();
       emit(state.copyWith(isLoading: false,));
+    },);
+
+    on<UpdateCreteDishEventAction>((event, emit) {
+      state.isCreateDish = (state.isCreateDish ?? false) ? false : true;
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<FinishFoodWithoutCreateDishEventAction>((event, emit) async {
+      for (FoodInEvent food in state.foodsInEvent.orEmpty()) {
+        emit(state.copyWith(isLoading: true));
+
+        final foodName = EventsHelper().findFoodNameFromId(food.id, event.context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+        final foodEvent = FoodEventSimple(
+          userId: getUserIdInteractor.execute(),
+          eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+          eventId: state.eventId ?? DateTime.now().millisecondsSinceEpoch,
+          mealType: state.mealType,
+          foodName: foodName,
+          comment: state.comment,
+        );
+        foodEvent.ingredients = [food];
+        foodEvent.drinks = []; // TODO: is it necessary to implement drinks in food events?
+        foodEvent.dish = state.isCreateDish ?? false;
+
+        try {
+          final uploadFoodEvent = await uploadFoodEventInteractor.execute(foodEvent);
+          if (uploadFoodEvent.uploadSuccess) {
+            try {
+              await saveFoodEventInteractor.execute(uploadFoodEvent, state.isEdit!);
+
+              // _clearFields();
+              emit(state.copyWith(isLoading: false, onError: null, eventDate: null));
+              // event.onFinish.call();
+            } catch (error) {
+              state.onError = ErrorTypes.locallySavingFoodEventError;
+              emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+            }
+          } else {
+            state.onError = ErrorTypes.uploadingFoodEventError;
+            emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+          }
+        } catch (error) {
+          state.onError = ErrorTypes.uploadingFoodEventError;
+          emit(state.copyWith(isLoading: false,));
+        }
+      }
+
+      if (state.foodsInEvent.orEmpty().isNotEmpty) event.onFinish.call();
     },);
   }
 
@@ -284,6 +336,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     state.eventId = null;
     state.mealType = null;
     state.isEdit = false;
+    state.isCreateDish = null;
   }
 
   UnitInfoMaster findUnitName(int unitId) {

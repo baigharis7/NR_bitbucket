@@ -24,6 +24,7 @@ class CreateNewFoodFavoriteState {
   String? comment;
   List<FoodFavorite>? frequentFoodEvents;
   List<FoodInFavorite>? foodsFromFrequent;
+  bool? isCreateDish;
 
   CreateNewFoodFavoriteState({
     required this.isLoading,
@@ -41,6 +42,7 @@ class CreateNewFoodFavoriteState {
     this.comment,
     this.frequentFoodEvents,
     this.foodsFromFrequent,
+    this.isCreateDish,
   });
 
   CreateNewFoodFavoriteState copyWith({
@@ -59,6 +61,7 @@ class CreateNewFoodFavoriteState {
     String? comment,
     List<FoodFavorite>? frequentFoodEvents,
     List<FoodInFavorite>? foodsFromFrequent,
+    bool? isCreateDish,
   }) {
     return CreateNewFoodFavoriteState(
       isLoading: isLoading,
@@ -76,6 +79,7 @@ class CreateNewFoodFavoriteState {
       comment: comment ?? this.comment,
       frequentFoodEvents: frequentFoodEvents ?? this.frequentFoodEvents,
       foodsFromFrequent: foodsFromFrequent ?? this.foodsFromFrequent,
+      isCreateDish: isCreateDish ?? this.isCreateDish,
     );
   }
 

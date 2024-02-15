@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 
 class CreateNewFoodFavoriteActions {
@@ -72,4 +73,13 @@ class SetFavFoodFromFavoriteDetailNavigation extends CreateNewFoodFavoriteAction
   final FoodFavorite foodFavorite;
 
   SetFavFoodFromFavoriteDetailNavigation({required this.foodFavorite});
+}
+
+class UpdateCreateDishAction extends CreateNewFoodFavoriteActions {}
+
+class FinishFavoriteFoodWithoutCreateDishAction extends CreateNewFoodFavoriteActions {
+  final Function onFinish;
+  final BuildContext context;
+
+  FinishFavoriteFoodWithoutCreateDishAction({required this.onFinish, required this.context});
 }

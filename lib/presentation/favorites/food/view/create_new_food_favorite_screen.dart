@@ -322,7 +322,7 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
                                     //   },
                                     // ),
                                 ).toList(),
-                                if ((state.foodsInFavorite?.length ?? -1) > 1) BoxTypeRadioTextWidget(onPressed: () => {}, isSelected: true, title: AppLocalizations.of(context)!.create_dish),
+                                if (state.foodsInFavorite.orEmpty().isNotEmpty) BoxTypeRadioTextWidget(onPressed: () => bloc.add(UpdateCreateDishAction()), isSelected: state.isCreateDish ?? false, title: AppLocalizations.of(context)!.create_dish),
                               ],
                             ),
                             RoundedCustomButton(
@@ -336,7 +336,7 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
 
                                 if (bloc.isFoodFavValidateList()) return;
 
-                                if ((state.foodsInFavorite?.length ?? 0) > 1) {
+                                if (state.isCreateDish ?? false) {
                                   showAddFoodNameDialog(
                                     context: context,
                                     onFinish: () {
@@ -352,8 +352,9 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
                                   );
                                 }
                                 else {
-                                  state.favoriteName = state.foodsInFavorite!.map((e) => eventHelper.findFoodNameFromId(e.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!)).toString();
-                                  bloc.add(FinishFoodFavoriteAction(onFinish: () => _showConfirmationDialog(context, () {})));
+                                  // state.favoriteName = state.foodsInFavorite!.map((e) => eventHelper.findFoodNameFromId(e.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!)).toString();
+                                  // bloc.add(FinishFoodFavoriteAction(onFinish: () => _showConfirmationDialog(context, () {})));
+                                  bloc.add(FinishFavoriteFoodWithoutCreateDishAction(onFinish: () => _showConfirmationDialog(context, () {}), context: context));
                                 }
                                 }
 
