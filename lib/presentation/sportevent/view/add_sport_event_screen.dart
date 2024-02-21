@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
@@ -364,6 +365,10 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                             isSelected:
                                                 state.isCreateRoutine ?? false,
                                             showHourDays: true,
+                                            routineHour: DateTimeHelper.formatTimeOfDay(state.routineHour, context),
+                                            changeHour: (timeOfDay) => bloc.add(UpdateRoutineHourEventAction(timeOfDay: timeOfDay)),
+                                            changeDate: (dateTime) => bloc.add(UpdateRoutineDateEventAction(dateTime: dateTime)),
+                                            routineDay: DateTimeHelper.formatDateTimeToDay(state.routineDate),
                                             title: AppLocalizations.of(context)!
                                                 .create_routine),
                                       ],
@@ -376,54 +381,34 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                         onPressed: () {
                           if (state.sportFromFavorite?.isEmpty ?? true) {
                             if (bloc.validateSportList() ?? true) return;
-                            if (state.info.orEmpty().isNotEmpty) {
-                              if (state.info.orEmpty().length > 1) {
-                                showAddSportNameDialog(
-                                  context: context,
-                                  onFinish: () {
-                                    if (state.eventSportName?.isNotEmpty ??
-                                        false) {
-                                      bloc.add(
-                                        FinishSportEventAction(
-                                          onFinish: () =>
-                                              _showConfirmationDialog(
-                                            context: ctx,
-                                            onResetState: () => bloc
-                                                .add(ResetSportInfoAction()),
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  onNameChange: (sportEventName) {
-                                    bloc.add(SetEventSportNameAction(
-                                        sportEventName: sportEventName));
-                                  },
-                                );
+                            if (state.info.orEmpty().isEmpty) return;
+
+                              if (state.isCreateRoutine ?? false) {
+                                if(state.routineHour.isNull() || state.routineDate.isNull()) return;
+                                if (state.info.orEmpty().length > 1) {
+                                  showAddSportNameDialog(
+                                    context: context,
+                                    onFinish: () => bloc.add(FinishCreateRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),),),),
+                                    onNameChange: (sportEventName) => bloc.add(SetEventSportNameAction(sportEventName: sportEventName)),
+                                  );
+                                } else {
+                                  state.eventSportName = state.info.orEmpty().map((e) => bloc.findSportById(e.id!).translate(context)).toString();
+                                  bloc.add(FinishCreateRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),),),);
+                                }
                               } else {
-                                state.eventSportName = state.info
-                                    .orEmpty()
-                                    .map((e) => bloc
-                                        .findSportById(e.id!)
-                                        .translate(context))
-                                    .toString();
-                                bloc.add(
-                                  FinishSportEventAction(
-                                    onFinish: () => _showConfirmationDialog(
-                                      context: ctx,
-                                      onResetState: () =>
-                                          bloc.add(ResetSportInfoAction()),
-                                    ),
-                                  ),
-                                );
+                                // state.eventSportName = state.info.orEmpty().map((e) => bloc.findSportById(e.id!).translate(context)).toString();
+                                // if(state.info.orEmpty().length > 1) {
+                                //   showAddSportNameDialog(
+                                //     context: context,
+                                //     onFinish: () => bloc.add(FinishWithoutRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),), context: context),),
+                                //     onNameChange: (sportEventName) => bloc.add(SetEventSportNameAction(sportEventName: sportEventName)),
+                                //   );
+                                // } else {
+                                  bloc.add(FinishWithoutRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),),context: context),);
+                                // }
                               }
-                            }
                           } else {
-                            bloc.add(FinishSportFavoriteAction(
-                                onFinish: () => _showConfirmationDialog(
-                                    context: ctx,
-                                    onResetState: () =>
-                                        bloc.add(ResetSportInfoAction()))));
+                            bloc.add(FinishSportFavoriteAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()))));
                           }
                         },
                       ),

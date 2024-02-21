@@ -104,3 +104,28 @@ class AddSportEventFromDetailNavigation extends SportEventsActions {
 }
 
 class UpdateCreateRoutine extends SportEventsActions {}
+
+class UpdateRoutineHourEventAction extends SportEventsActions {
+  final TimeOfDay? timeOfDay;
+
+  UpdateRoutineHourEventAction({required this.timeOfDay});
+}
+
+class UpdateRoutineDateEventAction extends SportEventsActions {
+  final DateTime? dateTime;
+
+  UpdateRoutineDateEventAction({required this.dateTime});
+}
+
+class FinishCreateRoutineEventAction extends SportEventsActions {
+  final Function onFinish;
+
+  FinishCreateRoutineEventAction({required this.onFinish});
+}
+
+class FinishWithoutRoutineEventAction extends SportEventsActions {
+  final Function onFinish;
+  final BuildContext context;
+
+  FinishWithoutRoutineEventAction({required this.onFinish, required this.context});
+}

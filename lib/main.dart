@@ -16,6 +16,7 @@ import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dar
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
 import 'package:nutrenaissance_flutter/data/api/recipes/recipes_api.dart';
 import 'package:nutrenaissance_flutter/data/api/recommendations/recommendations_api.dart';
+import 'package:nutrenaissance_flutter/data/api/routines/routines_api.dart';
 import 'package:nutrenaissance_flutter/data/api/sportevents/sport_events_api.dart';
 import 'package:nutrenaissance_flutter/data/api/steps/steps_api.dart';
 import 'package:nutrenaissance_flutter/data/api/waterevents/water_events_api.dart';
@@ -53,6 +54,7 @@ import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_r
 import 'package:nutrenaissance_flutter/data/repository/profile/profile_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/recipes/recipes_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/recommendations/recommendations_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/routines/routines_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/sportevents/sport_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/steps/steps_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/waterevents/water_event_repository_impl.dart';
@@ -130,6 +132,10 @@ import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for
 import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for_foods_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/get_routines_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/get_routines_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/upload_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/upload_routine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_sport_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_sport_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_day_calories_interactor.dart';
@@ -172,6 +178,7 @@ import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences
 import 'package:nutrenaissance_flutter/domain/repository/profile/profile_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/recipes/recipes_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/recommendations/recommendations_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/routines/routines_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/steps/steps_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/waterevents/water_events_repository.dart';
@@ -243,6 +250,8 @@ import 'package:nutrenaissance_flutter/presentation/recipes/common/view/recipe_t
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/resetpassword/bloc/reset_password_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/resetpassword/view/reset_password_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/routines/bloc/routines_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/routines/view/routines_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
@@ -268,7 +277,7 @@ import 'presentation/waterevent/view/add_water_event_screen.dart';
 import 'package:chuck_interceptor/chuck.dart';
 
 void main() async {
-  const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
+  const String environmentName = String.fromEnvironment(Environment.DEV, defaultValue: Environment.DEV);
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -370,6 +379,10 @@ void main() async {
   final SaveStepsInteractor saveStepsInteractor = SaveStepsInteractorImpl(stepsRepository: stepsRepository);
   final GetStepsInteractor getStepsInteractor = GetStepsInteractorImpl(stepsRepository: stepsRepository);
   final GetTodayStepInteractor getTodayStepInteractor = GetTodayStepInteractorImpl(stepsRepository: stepsRepository);
+  final RoutinesApi routinesApi = RoutinesApi(prefsRepository, authenticationService, chuck);
+  final RoutinesRepository routinesRepository = RoutinesRepositoryImpl(routinesApi: routinesApi, localStorageRepository: localStorageRepository);
+  final UploadRoutineInteractor uploadRoutineInteractor = UploadRoutineInteractorImpl(routinesRepository: routinesRepository);
+  final GetRoutinesInteractor getRoutinesInteractor = GetRoutinesInteractorImpl(routinesRepository: routinesRepository);
 
 
   final dashboardBloc = DashboardBloc(
@@ -476,6 +489,7 @@ void main() async {
     saveSportEventInteractor: saveSportEventInteractor,
     getSportFavoritesInteractor: getSportFavoritesInteractor,
     getWeekSportsInteractor: getWeekSportsInteractor,
+    uploadRoutineInteractor: uploadRoutineInteractor,
   );
 
   final liquidEventBloc = LiquidEventBloc(
@@ -513,6 +527,10 @@ void main() async {
     getUserIdInteractor: getUserIdInteractor,
     deleteSportFavoriteInteractor: deleteSportFavoriteInteractor,
     removeSportFavoriteInteractor: removeSportFavoriteInteractor,
+  );
+
+  final routineBloc = RoutinesBloc(
+    getRoutinesInteractor: getRoutinesInteractor,
   );
 
   final journalLiquidBloc = JournalLiquidBloc(
@@ -677,6 +695,7 @@ void main() async {
         BlocProvider<ForgottenPasswordBloc>(create: (ctx) => forgottenPasswordBloc),
         BlocProvider<ResetPasswordBloc>(create: (ctx) => resetPasswordBloc),
         BlocProvider<FecesUrineBloc>(create: (ctx) => fecesUrineBloc),
+        BlocProvider<RoutinesBloc>(create: (context) => routineBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -760,6 +779,7 @@ void main() async {
           ForgottenPasswordScreen.routeName: (_) => const ForgottenPasswordScreen(),
           ResetPasswordScreen.routeName: (_) => const ResetPasswordScreen(),
           FecesUrineTabHolder.routeName: (_) => const FecesUrineTabHolder(),
+          RoutinesScreen.routeName: (_) => const RoutinesScreen(),
         },
       ),
     ),

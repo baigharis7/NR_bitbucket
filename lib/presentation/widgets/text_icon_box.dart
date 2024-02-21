@@ -51,7 +51,7 @@ class _TextIconBox extends State<TextIconBox> {
                   if (widget.showAddButton!) SizedBox(
                     child: IconButton(
                       onPressed: () => widget.onAdd.call(),
-                      icon: widget.icon != null ? Icon(widget.icon, size: 30,) : const Icon(Icons.add_circle_outline_sharp, size: 26,),
+                      icon: widget.icon != null ? Icon(widget.icon, size: /*30*/26,) : const Icon(Icons.add_circle_outline_sharp, size: 26,),
                     ),
                   )
                 ],

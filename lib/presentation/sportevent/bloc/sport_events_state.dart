@@ -28,6 +28,8 @@ class SportEventsState {
   List<SportInfo>? info;
   bool? isCreateRoutine;
   List<SportEventComplete>? weeklySports;
+  TimeOfDay? routineHour;
+  DateTime? routineDate;
 
   SportEventsState({
     required this.isLoading,
@@ -50,6 +52,8 @@ class SportEventsState {
     this.info,
     this.isCreateRoutine,
     this.weeklySports,
+    this.routineHour,
+    this.routineDate,
   });
 
   SportEventsState copyWith({
@@ -73,6 +77,8 @@ class SportEventsState {
     List<SportInfo>? info,
     bool? isCreateRoutine,
     List<SportEventComplete>? weeklySports,
+    TimeOfDay? routineHour,
+    DateTime? routineDate,
   }) {
     return SportEventsState(
       isLoading: isLoading,
@@ -95,6 +101,8 @@ class SportEventsState {
       info: info ?? this.info,
       isCreateRoutine: isCreateRoutine ?? this.isCreateRoutine,
       weeklySports: weeklySports ?? this.weeklySports,
+      routineHour: routineHour ?? this.routineHour,
+      routineDate: routineDate ?? this.routineDate,
     );
   }
 

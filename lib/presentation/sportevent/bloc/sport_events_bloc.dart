@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/get_sport_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
@@ -8,6 +9,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_completed.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
@@ -18,6 +20,7 @@ import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_state.dart';
 
+import '../../../domain/interactor/routines/upload_routine_interactor.dart';
 import '../../../domain/models/sportevents/sport_event_complete.dart';
 
 class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
@@ -27,6 +30,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetSportFavoritesInteractor getSportFavoritesInteractor;
   final GetWeekSportsInteractor getWeekSportsInteractor;
+  final UploadRoutineInteractor uploadRoutineInteractor;
 
   SportEventsBloc({
     required this.getUserIdInteractor,
@@ -35,6 +39,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
     required this.getMasterFileInteractor,
     required this.getSportFavoritesInteractor,
     required this.getWeekSportsInteractor,
+    required this.uploadRoutineInteractor,
   }) : super(SportEventsState(
     isLoading: false,
     dateStart: DateTimeHelper().provideCurrentDate(),
@@ -255,6 +260,80 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
 
       emit(state.copyWith(isLoading: false, onError: null));
     },);
+
+    on<UpdateRoutineHourEventAction>((event, emit) {
+      state.routineHour = event.timeOfDay;
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<UpdateRoutineDateEventAction>((event, emit) {
+      state.routineDate = event.dateTime;
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<FinishCreateRoutineEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      final sportRoutine = SportRoutineCompleted(
+        userId: getUserIdInteractor.execute(),
+        eventId: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+        info: state.info.orEmpty().map((e) => Info(id: e.id, nameEn: e.name_en, nameEs: e.name_es, intensity: e.intensity, minutes: e.minutes, timeStart: e.timeStart)).toList(),
+        comment: state.comment,
+        sportName: state.eventSportName,
+        routineTime: calculateMillisecondsStart(state.routineHour!, state.routineDate!).toString(),
+      );
+
+      try {
+        final sportRoutineComplete = await uploadRoutineInteractor.execute(sportRoutine);
+        try {
+          // await saveSportEventInteractor.execute(sportEventComplete, state.isEdit ?? false);
+
+          _clearFields();
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
+        } catch (error) {
+          state.onError = ErrorTypes.locallySavingSportEventError;
+          emit(state.copyWith(isLoading: false, onError: state.onError,));
+        }
+      } catch (error) {
+        state.onError = ErrorTypes.uploadingSportRoutineError;
+        emit(state.copyWith(isLoading: false, onError: state.onError,));
+      }
+    },);
+
+    on<FinishWithoutRoutineEventAction>((event, emit) async {
+      for (SportInfo sportInfo in state.info.orEmpty()) {
+        final sportNam = findSportById(sportInfo.id!).translate(event.context).toString();
+
+        final sportEventSimple = SportEventSimple(
+          userId: getUserIdInteractor.execute(),
+          eventId: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+          info: state.info,
+          comment: state.comment,
+          sportName: sportNam,
+        );
+
+        try {
+          final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
+          try {
+            await saveSportEventInteractor.execute(sportEventComplete, state.isEdit ?? false);
+
+            _clearFields();
+            event.onFinish.call();
+            emit(state.copyWith(isLoading: false, onError: null));
+          } catch (error) {
+            state.onError = ErrorTypes.locallySavingSportEventError;
+            emit(state.copyWith(isLoading: false, onError: state.onError,));
+          }
+        } catch (error) {
+          state.onError = ErrorTypes.uploadingSportEventError;
+          emit(state.copyWith(isLoading: false, onError: state.onError,));
+        }
+      }
+
+      if (state.info.orEmpty().isNotEmpty) event.onFinish.call();
+    },);
   }
 
 
@@ -297,6 +376,8 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
     state.isEdit = false;
     state.eventDate = null;
     state.isCreateRoutine = false;
+    state.routineHour = null;
+    state.routineDate = null;
   }
 
   bool? validateSportList() {

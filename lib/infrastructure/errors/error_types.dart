@@ -24,6 +24,7 @@ enum ErrorTypes {
   retrieveFoodEventsError,
   locallySavingSportEventError,
   uploadingSportEventError,
+  uploadingSportRoutineError,
   locallySavingWaterEventError,
   uploadingWaterEventError,
   retrieveSportEventsError,

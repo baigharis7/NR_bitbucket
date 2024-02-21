@@ -24,6 +24,7 @@ import 'package:nutrenaissance_flutter/presentation/journal/view/journal_food_sc
 import 'package:nutrenaissance_flutter/presentation/journal/view/journal_liquid_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/view/journal_sport_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidevent/view/add_liquid_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/routines/view/routines_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
@@ -188,6 +189,13 @@ class _JournalScreenState extends State<JournalScreen> {
                               showWatchButton: true,
                               onAdd: () => Navigator.pushNamed(context, CreateNewFoodFavoriteScreen.routeName,),
                               onWatch: () => Navigator.pushNamed(context, FavoriteFoodsScreen.routeName),
+                              showAddButton: true,
+                            ),
+                            TextIconBox(
+                              title: AppLocalizations.of(context)!.routines,
+                              color: Colors.grey,
+                              onAdd: () => Navigator.pushNamed(context, RoutinesScreen.routeName),
+                              icon: Icons.remove_red_eye_outlined,
                               showAddButton: true,
                             ),
                             TextIconBox(

@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 
 import '../../infrastructure/utils/dimens.dart';
@@ -10,7 +12,11 @@ class BoxTypeRadioTextWidget extends StatefulWidget {
   final bool isSelected;
   final String title;
   final bool showHourDays;
-  const BoxTypeRadioTextWidget({super.key, required this.onPressed, required this.isSelected, required this.title, this.showHourDays = false});
+  final String? routineHour;
+  final Function(TimeOfDay?)? changeHour;
+  final String? routineDay;
+  final Function(DateTime?)? changeDate;
+  const BoxTypeRadioTextWidget({super.key, required this.onPressed, required this.isSelected, required this.title, this.showHourDays = false, this.routineHour, this.changeHour, this.routineDay, this.changeDate});
 
   @override
   State<BoxTypeRadioTextWidget> createState() => _BoxTypeRadioTextWidgetState();
@@ -66,10 +72,20 @@ class _BoxTypeRadioTextWidgetState extends State<BoxTypeRadioTextWidget> {
               if (widget.showHourDays && widget.isSelected) const SizedBox(height: Dimens.heightXSmall,),
               if (widget.showHourDays && widget.isSelected) Row(children: [
                 Expanded(child: Text(AppLocalizations.of(context)!.hour)),
-                Expanded(child: Container(padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginSmall), color: AppColors.cardGreen_200, child: const Text('00:00'))),
+                Expanded(flex: 2, child: InkWell(onTap: () async {
+                  var selectedTime = await showTimePicker(
+                    initialTime: TimeOfDay.now(),
+                    context: context,
+                  );
+                  // print(selectedTime?.format(context));
+                  widget.changeHour?.call(selectedTime);
+                }, child: Container(padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginSmall), color: AppColors.cardGreen_200, child: Text(widget.routineHour ?? '00:00')))),
                 const Spacer(),
                 Expanded(child: Text(AppLocalizations.of(context)!.day)),
-                Expanded(child: Container(padding: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge, vertical: Dimens.marginSmall), color: AppColors.cardGreen_200, child: const Icon(Icons.calendar_today_outlined, size: 22,))),
+                Expanded(flex: 2, child: InkWell(onTap: () async {
+                  var selectedDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime(DateTime.now().year + 1));
+                  widget.changeDate?.call(selectedDate);
+                }, child: Container(decoration: BoxDecoration(border: Border.all(color: AppColors.errorRed, width: 1)), padding: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge, vertical: Dimens.marginSmall), color: AppColors.cardGreen_200, child: widget.routineDay.isNull() ? const Icon(Icons.calendar_today_outlined, size: 22,) : Text(widget.routineDay ?? '')))),
               ],),
             ],
           ),

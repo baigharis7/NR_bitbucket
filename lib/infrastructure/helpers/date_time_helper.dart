@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 class DateTimeHelper {
   DateTime provideCurrentDate() {
@@ -81,6 +82,27 @@ class DateTimeHelper {
   String formatDayMonthYearDate(int date) {
     final dateTime = DateTimeHelper().setDateFromMilliseconds(date);
     return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+  }
+
+  static String? formatTimeOfDay(TimeOfDay? timeOfDay, BuildContext context) {
+    if (!timeOfDay.isNull()) {
+      var df = DateFormat('h:mm a');
+      var dt = df.parse(timeOfDay?.format(context) ?? '00:00');
+      var finalTime =  DateFormat('HH:mm').format(dt);
+      return finalTime;
+    }
+    else {
+      return null;
+    }
+  }
+
+  static String? formatDateTimeToDay (DateTime? dateTime) {
+    if (dateTime != null) {
+      var date = DateFormat('EEE').format(dateTime);
+      return date;
+    } else {
+      return null;
+    }
   }
 
   String formatDayMonthYearDate2(int date) => DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(date));

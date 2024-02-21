@@ -108,6 +108,8 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.email_sent_error;
     case ErrorTypes.confirmationCodeError:
       return stringResolver.incorrect_confirmation_code;
+    case ErrorTypes.uploadingSportRoutineError:
+      return stringResolver.uploading_sport_routine_error;
   }
 }
 
