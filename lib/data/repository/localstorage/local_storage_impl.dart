@@ -19,6 +19,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/watervents/water_event_entity.dart';
@@ -57,6 +58,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _recommendationGroupsBox;
   Box? _sportsInfoBox;
   Box? _sportEventsBox;
+  Box? _sportRoutinesBox;
   Box? _unitsInfoBox;
   Box? _unitsFoodsBox;
   Box? _subjectiveAnalysisBox;
@@ -96,6 +98,7 @@ class LocalStorageImpl extends LocalStorageRepository {
     }
   }
   Future<Box> _openSportEventsBox() async => openBox(_sportEventsBox, SportEventEntity.boxName);
+  Future<Box> _openSportRoutinesBox() async => openBox(_sportRoutinesBox, SportRoutineEntity.boxName);
   Future<Box> _openFoodFavoritesBox() async => openBox(_favoriteFoodsBox, FoodFavoriteEntity.boxName);
   Future<Box> _openSportFavoritesBox() async => openBox(_favoriteSportsBox, SportFavoriteEntity.boxName);
   Future<Box> _openLiquidFavoritesBox() async => openBox(_favoriteLiquidsBox, LiquidFavoriteEntity.boxName);
@@ -109,6 +112,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> get _getWaterEventsBox async => await _openWaterEventsBox();
   Future<Box> _getMasterFilesBox(MasterFilesType masterFilesType) async => await _openMasterFilesBox(masterFilesType);
   Future<Box> get _getSportEventsBox async => await _openSportEventsBox();
+  Future<Box> get _getSportRoutinesBox async => await _openSportRoutinesBox();
   Future<Box> get _getFoodFavoritesBox async => await _openFoodFavoritesBox();
   Future<Box> get _getSportFavoritesBox async => await _openSportFavoritesBox();
   Future<Box> get _getLiquidFavoritesBox async => await _openLiquidFavoritesBox();
@@ -611,6 +615,10 @@ class LocalStorageImpl extends LocalStorageRepository {
     final sportEvents = <int>[];
     sportEventsMap.forEach((key, value) => sportEvents.add((value as SportEventEntity).eventDate));
 
+    final sportRoutinesMap = await _getSportRoutinesBox.then((box) => box.toMap());
+    final sportRoutines = <int>[];
+    sportRoutinesMap.forEach((key, value) => sportRoutines.add((value as SportRoutineEntity).eventId!));
+
     final liquidEventsMap = await _getLiquidEventsBox.then((box) => box.toMap());
     final liquidEvents = <int>[];
     liquidEventsMap.forEach((key, value) => liquidEvents.add((value as LiquidEventEntity).eventDate!));
@@ -638,6 +646,7 @@ class LocalStorageImpl extends LocalStorageRepository {
     return EventsSynchronizationRequest(
       foodEvents: foodEvents,
       sportEvents: sportEvents,
+      sportRoutines: sportRoutines,
       liquidEvents: liquidEvents,
       waterEvents: waterEvents,
       foodFavorites: foodFavorites,
@@ -654,6 +663,7 @@ class LocalStorageImpl extends LocalStorageRepository {
     await _clearBox(_getLiquidEventsBox);
     await _clearBox(_getWaterEventsBox);
     await _clearBox(_getSportEventsBox);
+    await _clearBox(_getSportRoutinesBox);
     await _clearBox(_getFoodFavoritesBox);
     await _clearBox(_getSportFavoritesBox);
     await _clearBox(_getLiquidFavoritesBox);
@@ -779,6 +789,38 @@ class LocalStorageImpl extends LocalStorageRepository {
 
     final midnightTime = DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch;
     return allStepEvents.firstWhere((stepEvent) => stepEvent.eventId == midnightTime, orElse: () => StepsEntity(eventId: null, initialSteps:  null, actualSteps:  null));
+  }
+
+  @override
+  Future<List> getSportRoutines() async {
+    List allRoutines = await _getSportRoutinesBox.then((box) {
+      return box.values.toList();
+    });
+    return allRoutines;
+  }
+
+  @override
+  Future<void> saveSportRoutine(SportRoutineEntity sportRoutineEntity, {bool isEdit = false}) async {
+    try {
+      await sportRoutineEntity.save();
+    } catch(error) {
+      try {
+        _getSportRoutinesBox.then((box) {
+        final spoRoutinesMap = box.toMap();
+        if (isEdit) {
+          spoRoutinesMap.forEach((key, value) {
+            if ((value as SportRoutineEntity).eventId == sportRoutineEntity.eventId) {
+              box.put(key, sportRoutineEntity);
+            }
+          });
+        } else {
+          box.add(sportRoutineEntity);
+        }
+      },);
+      } catch(error) {
+        rethrow;
+      }
+    }
   }
 
 }

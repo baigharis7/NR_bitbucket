@@ -20,6 +20,7 @@ import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_state.dart';
 
+import '../../../domain/interactor/routines/save_routine_interactor.dart';
 import '../../../domain/interactor/routines/upload_routine_interactor.dart';
 import '../../../domain/models/sportevents/sport_event_complete.dart';
 
@@ -31,6 +32,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
   final GetSportFavoritesInteractor getSportFavoritesInteractor;
   final GetWeekSportsInteractor getWeekSportsInteractor;
   final UploadRoutineInteractor uploadRoutineInteractor;
+  final SaveRoutineInteractor saveRoutineInteractor;
 
   SportEventsBloc({
     required this.getUserIdInteractor,
@@ -40,6 +42,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
     required this.getSportFavoritesInteractor,
     required this.getWeekSportsInteractor,
     required this.uploadRoutineInteractor,
+    required this.saveRoutineInteractor,
   }) : super(SportEventsState(
     isLoading: false,
     dateStart: DateTimeHelper().provideCurrentDate(),
@@ -287,7 +290,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       try {
         final sportRoutineComplete = await uploadRoutineInteractor.execute(sportRoutine);
         try {
-          // await saveSportEventInteractor.execute(sportEventComplete, state.isEdit ?? false);
+          await saveRoutineInteractor.execute(sportRoutine, state.isEdit ?? false);
 
           _clearFields();
           event.onFinish.call();

@@ -7,6 +7,8 @@ import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers
 import 'package:nutrenaissance_flutter/infrastructure/mappers/liquid_event_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/sport_event_mappers.dart';
 
+import '../../../infrastructure/mappers/sport_routine_mappers.dart';
+
 class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRequestRepository {
   final LocalStorageRepository localStorageRepository;
   final EventsSyncApi eventsSyncApi;
@@ -24,6 +26,7 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
         userId.orEmpty(),
         allEventsIds.foodEvents.map((e) => e.toString()).toList(),
         allEventsIds.sportEvents.map((e) => e.toString()).toList(),
+        allEventsIds.sportRoutines.map((e) => e.toString()).toList(),
         allEventsIds.liquidEvents.map((e) => e.toString()).toList(),
         allEventsIds.waterEvents.map((e) => e.toString()).toList(),
         allEventsIds.foodFavorites.map((e) => e.toString()).toList(),
@@ -47,6 +50,11 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
     if (eventsSynchronizationResponse.sportEvents.isNotEmpty) {
       for (var sportEvent in eventsSynchronizationResponse.sportEvents) {
         await localStorageRepository.saveSportEvent(mapToSportEventEntity(sportEvent), false);
+      }
+    }
+    if (eventsSynchronizationResponse.sportRoutines.isNotEmpty) {
+      for (var sportRoutine in eventsSynchronizationResponse.sportRoutines) {
+        await localStorageRepository.saveSportRoutine(mapToSportRoutineEntity(sportRoutine), isEdit: false);
       }
     }
     if (eventsSynchronizationResponse.liquidEvents.isNotEmpty) {

@@ -85,7 +85,7 @@ class _BoxTypeRadioTextWidgetState extends State<BoxTypeRadioTextWidget> {
                 Expanded(flex: 2, child: InkWell(onTap: () async {
                   var selectedDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime(DateTime.now().year + 1));
                   widget.changeDate?.call(selectedDate);
-                }, child: Container(decoration: BoxDecoration(border: Border.all(color: AppColors.errorRed, width: 1)), padding: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge, vertical: Dimens.marginSmall), color: AppColors.cardGreen_200, child: widget.routineDay.isNull() ? const Icon(Icons.calendar_today_outlined, size: 22,) : Text(widget.routineDay ?? '')))),
+                }, child: Container(decoration: BoxDecoration(border: Border.all(color: AppColors.errorRed, width: 1), color: AppColors.cardGreen_200), padding: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge, vertical: Dimens.marginSmall), child: widget.routineDay.isNull() ? const Icon(Icons.calendar_today_outlined, size: 22,) : Text(widget.routineDay ?? '')))),
               ],),
             ],
           ),

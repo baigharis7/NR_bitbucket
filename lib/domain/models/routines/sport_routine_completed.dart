@@ -1,6 +1,10 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'sport_routine_completed.g.dart';
+@JsonSerializable(explicitToJson: true)
 class SportRoutineCompleted {
   String? userId;
-  num? eventId;
+  int? eventId;
   String? comment;
   String? sportName;
   String? routineTime;
@@ -14,35 +18,9 @@ class SportRoutineCompleted {
     this.routineTime,
     this.info,
   });
-
-  SportRoutineCompleted.fromJson(dynamic json) {
-    userId = json['userId'];
-    eventId = json['eventId'];
-    comment = json['comment'];
-    sportName = json['sportName'];
-    routineTime = json['routineTime'];
-    if (json['info'] != null) {
-      info = [];
-      json['info'].forEach((v) {
-        info?.add(Info.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['userId'] = userId;
-    map['eventId'] = eventId;
-    map['comment'] = comment;
-    map['sportName'] = sportName;
-    map['routineTime'] = routineTime;
-    if (info != null) {
-      map['info'] = info?.map((v) => v.toJson()).toList();
-    }
-    return map;
-  }
 }
 
+@JsonSerializable(explicitToJson: true)
 class Info {
   num? id;
   String? nameEn;
@@ -59,24 +37,4 @@ class Info {
     this.intensity,
     this.minutes,
   });
-
-  Info.fromJson(dynamic json) {
-    id = json['id'];
-    nameEn = json['name_en'];
-    nameEs = json['name_es'];
-    timeStart = json['timeStart'];
-    intensity = json['intensity'];
-    minutes = json['minutes'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['id'] = id;
-    map['name_en'] = nameEn;
-    map['name_es'] = nameEs;
-    map['timeStart'] = timeStart;
-    map['intensity'] = intensity;
-    map['minutes'] = minutes;
-    return map;
-  }
 }

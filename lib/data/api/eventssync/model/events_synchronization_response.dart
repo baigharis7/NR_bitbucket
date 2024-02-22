@@ -9,12 +9,15 @@ import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favor
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 
+import '../../../../domain/models/routines/sport_routine_completed.dart';
+
 part 'events_synchronization_response.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class EventsSynchronizationResponse {
   List<UploadFoodEvent> foodEvents;
   List<SportEventComplete> sportEvents;
+  List<SportRoutineCompleted> sportRoutines;
   List<UploadLiquidEvent> liquidEvents;
   List<WaterEventMaster> waterEvents;
   List<FoodFavorite> foodFavorites;
@@ -25,6 +28,7 @@ class EventsSynchronizationResponse {
   EventsSynchronizationResponse({
     required this.foodEvents,
     required this.sportEvents,
+    required this.sportRoutines,
     required this.liquidEvents,
     required this.waterEvents,
     required this.foodFavorites,

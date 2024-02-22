@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_e
 import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/analysis/subjective/subjective_analysis_result.dart';
@@ -60,4 +61,6 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<void> saveSteps(StepsEntity stepsEntity);
   Future<List> getTodaySteps();
   Future<StepsEntity> getTodayStep();
+  Future<void> saveSportRoutine(SportRoutineEntity sportRoutineEntity, {bool isEdit = false});
+  Future<List> getSportRoutines();
 }

@@ -38,6 +38,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/watervents/water_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/advices/advices_repository_impl.dart';
@@ -134,6 +135,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_rec
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/routines/get_routines_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/routines/get_routines_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/save_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/save_routine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/routines/upload_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/routines/upload_routine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_sport_event_interactor.dart';
@@ -383,6 +386,7 @@ void main() async {
   final RoutinesRepository routinesRepository = RoutinesRepositoryImpl(routinesApi: routinesApi, localStorageRepository: localStorageRepository);
   final UploadRoutineInteractor uploadRoutineInteractor = UploadRoutineInteractorImpl(routinesRepository: routinesRepository);
   final GetRoutinesInteractor getRoutinesInteractor = GetRoutinesInteractorImpl(routinesRepository: routinesRepository);
+  final SaveRoutineInteractor saveRoutineInteractor = SaveRoutineInteractorImpl(routinesRepository: routinesRepository);
 
 
   final dashboardBloc = DashboardBloc(
@@ -490,6 +494,7 @@ void main() async {
     getSportFavoritesInteractor: getSportFavoritesInteractor,
     getWeekSportsInteractor: getWeekSportsInteractor,
     uploadRoutineInteractor: uploadRoutineInteractor,
+    saveRoutineInteractor: saveRoutineInteractor,
   );
 
   final liquidEventBloc = LiquidEventBloc(
@@ -843,4 +848,5 @@ void initLocalStorage() async {
   Hive.registerAdapter(SubjectiveAnalysisAnswerResultEntityAdapter());
   Hive.registerAdapter(SubjectiveAnalysisTestAnswerResultEntityAdapter());
   Hive.registerAdapter(StepsEntityAdapter());
+  Hive.registerAdapter(SportRoutineEntityAdapter());
 }

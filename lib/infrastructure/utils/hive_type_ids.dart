@@ -57,5 +57,7 @@ class HiveTypeIds {
   static const addSportFavoriteEntity = 54;
   static const addSportFavoriteInfoEntity = 55;
   static const addStepsEntity = 56;
+  static const sportRoutineEntity = 57;
+  static const sportRoutineInfoEntity = 58;
 
 }
