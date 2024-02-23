@@ -16,6 +16,8 @@ class CreateNewSportFavoriteState {
   String? comment;
   bool? isCreateRoutine;
   bool? isEdit;
+  TimeOfDay? routineHour;
+  DateTime? routineDate;
 
   CreateNewSportFavoriteState({
     required this.isLoading,
@@ -27,6 +29,8 @@ class CreateNewSportFavoriteState {
     this.comment,
     this.isCreateRoutine,
     this.isEdit,
+    this.routineHour,
+    this.routineDate,
   });
 
   CreateNewSportFavoriteState copyWith({
@@ -39,6 +43,8 @@ class CreateNewSportFavoriteState {
     String? comment,
     bool? isCreateRoutine,
     bool? isEdit,
+    TimeOfDay? routineHour,
+    DateTime? routineDate,
   }) {
     return CreateNewSportFavoriteState(
       isLoading: isLoading,
@@ -50,6 +56,8 @@ class CreateNewSportFavoriteState {
       comment: comment ?? this.comment,
       isCreateRoutine: isCreateRoutine ?? this.isCreateRoutine,
       isEdit: isEdit ?? this.isEdit,
+      routineHour: routineHour ?? this.routineHour,
+      routineDate: routineDate ?? this.routineDate,
     );
   }
 

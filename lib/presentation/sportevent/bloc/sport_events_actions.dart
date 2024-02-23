@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_completed.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 
 import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
@@ -128,4 +129,10 @@ class FinishWithoutRoutineEventAction extends SportEventsActions {
   final BuildContext context;
 
   FinishWithoutRoutineEventAction({required this.onFinish, required this.context});
+}
+
+class AddSportRoutineFromRoutineEventAction extends SportEventsActions {
+  final SportRoutineCompleted sportRoutineCompleted;
+
+  AddSportRoutineFromRoutineEventAction({required this.sportRoutineCompleted});
 }

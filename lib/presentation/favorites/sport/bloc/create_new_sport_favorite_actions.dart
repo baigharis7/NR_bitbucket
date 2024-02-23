@@ -72,3 +72,28 @@ class SetDataFromDetailNaviAction extends CreateNewSportFavoriteActions {
 
   SetDataFromDetailNaviAction({required this.favoritesSport});
 }
+
+class UpdateRoutineHourAction extends CreateNewSportFavoriteActions {
+  final TimeOfDay? timeOfDay;
+
+  UpdateRoutineHourAction({required this.timeOfDay});
+}
+
+class UpdateRoutineDateAction extends CreateNewSportFavoriteActions {
+  final DateTime? dateTime;
+
+  UpdateRoutineDateAction({required this.dateTime});
+}
+
+class FinishCreateRoutineAction extends CreateNewSportFavoriteActions {
+  final Function onFinish;
+
+  FinishCreateRoutineAction({required this.onFinish});
+}
+
+class FinishSportFavWithoutCreateRoutineAction extends CreateNewSportFavoriteActions {
+  final Function onFinish;
+  final BuildContext context;
+
+  FinishSportFavWithoutCreateRoutineAction({required this.onFinish, required this.context});
+}

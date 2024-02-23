@@ -133,8 +133,12 @@ import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for
 import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for_foods_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/delete_sport_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/delete_sport_routine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/routines/get_routines_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/routines/get_routines_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/remove_sport_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/remove_sport_routine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/routines/save_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/routines/save_routine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/routines/upload_routine_interactor.dart';
@@ -387,6 +391,8 @@ void main() async {
   final UploadRoutineInteractor uploadRoutineInteractor = UploadRoutineInteractorImpl(routinesRepository: routinesRepository);
   final GetRoutinesInteractor getRoutinesInteractor = GetRoutinesInteractorImpl(routinesRepository: routinesRepository);
   final SaveRoutineInteractor saveRoutineInteractor = SaveRoutineInteractorImpl(routinesRepository: routinesRepository);
+  final DeleteSportRoutineInteractor deleteSportRoutineInteractor = DeleteSportRoutineInteractorImpl(routinesRepository: routinesRepository);
+  final RemoveSportRoutineInteractor removeSportRoutineInteractor = RemoveSportRoutineInteractorImpl(routinesRepository: routinesRepository);
 
 
   final dashboardBloc = DashboardBloc(
@@ -536,6 +542,9 @@ void main() async {
 
   final routineBloc = RoutinesBloc(
     getRoutinesInteractor: getRoutinesInteractor,
+    getUserIdInteractor: getUserIdInteractor,
+    deleteSportRoutineInteractor: deleteSportRoutineInteractor,
+    removeSportRoutineInteractor: removeSportRoutineInteractor,
   );
 
   final journalLiquidBloc = JournalLiquidBloc(
@@ -849,4 +858,5 @@ void initLocalStorage() async {
   Hive.registerAdapter(SubjectiveAnalysisTestAnswerResultEntityAdapter());
   Hive.registerAdapter(StepsEntityAdapter());
   Hive.registerAdapter(SportRoutineEntityAdapter());
+  Hive.registerAdapter(SportRoutineInfoEntityAdapter());
 }

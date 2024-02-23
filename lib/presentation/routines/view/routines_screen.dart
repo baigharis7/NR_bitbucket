@@ -4,9 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/presentation/routines/bloc/routines_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/calender_event_list_item.dart';
 
+import '../../../infrastructure/errors/error_resolver.dart';
+import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
+import '../../common/view/loading_screen.dart';
 
 class RoutinesScreen extends StatefulWidget {
   static const routeName = 'routines_screen';
@@ -33,7 +37,17 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
       value: bloc,
       child: SafeArea(
           child: BlocConsumer<RoutinesBloc, RoutinesState>(
-        listener: (context, state) {},
+        listener: (ctx, state) {
+          if (state.isLoading) {
+            LoadingScreen.instance().show(
+              context: ctx,
+              text: AppLocalizations.of(ctx)!.loading,
+            );
+          } else {
+            LoadingScreen.instance().hide();
+          }
+          if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
+        },
         builder: (context, state) => Scaffold(
           appBar: AppBar(
             leading: IconButton(
@@ -79,7 +93,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
             ),
           ),
           body: Column(children: [
-            ...state.routines.orEmpty().map((e) => CalenderEventListItem(title: e.sportName.toString(), onEdit: () {}, onDelete: () {})),
+            ...state.routines.orEmpty().map((sportRoutine) => CalenderEventListItem(title: sportRoutine.sportName.toString(), onEdit: () { Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: sportRoutine); }, onDelete: () => bloc.add(RoutineDeleteEventAction(sportRoutineCompleted: sportRoutine, onFinish: () => Navigator.pop(context))))),
           ],),
         ),
       ),),

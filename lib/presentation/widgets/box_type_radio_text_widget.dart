@@ -27,7 +27,7 @@ class _BoxTypeRadioTextWidgetState extends State<BoxTypeRadioTextWidget> {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5),side: const BorderSide(color: Colors.black12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5),side: BorderSide(color: (widget.showHourDays && widget.isSelected && (widget.routineHour.isNull() || widget.routineDay.isNull())) ? Colors.red : Colors.black12, width: 2)),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: Dimens.paddingSmall, horizontal: Dimens.paddingSmall),
           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginNormal),
@@ -85,7 +85,7 @@ class _BoxTypeRadioTextWidgetState extends State<BoxTypeRadioTextWidget> {
                 Expanded(flex: 2, child: InkWell(onTap: () async {
                   var selectedDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime(DateTime.now().year + 1));
                   widget.changeDate?.call(selectedDate);
-                }, child: Container(decoration: BoxDecoration(border: Border.all(color: AppColors.errorRed, width: 1), color: AppColors.cardGreen_200), padding: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge, vertical: Dimens.marginSmall), child: widget.routineDay.isNull() ? const Icon(Icons.calendar_today_outlined, size: 22,) : Text(widget.routineDay ?? '')))),
+                }, child: Container(color: AppColors.cardGreen_200, padding: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge, vertical: Dimens.marginSmall), child: widget.routineDay.isNull() ? const Icon(Icons.calendar_today_outlined, size: 22,) : Text(widget.routineDay ?? '')))),
               ],),
             ],
           ),

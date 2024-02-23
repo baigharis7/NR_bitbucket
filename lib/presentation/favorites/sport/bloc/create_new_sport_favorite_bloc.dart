@@ -6,6 +6,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/create_new_sport_favorite_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/create_new_sport_favorite_state.dart';
@@ -137,8 +139,81 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
       state.comment = event.favoritesSport.comment;
       state.favoriteSportName = event.favoritesSport.title;
       state.isEdit = true;
+      state.isCreateRoutine = !event.favoritesSport.routineTime.isNull();
+      state.routineHour = DateTimeHelper.timeOfDayFromMillis(int.tryParse(event.favoritesSport.routineTime.orEmpty()));
+      state.routineDate = DateTimeHelper.dateTimeFromMilliseconds(int.tryParse(event.favoritesSport.routineTime.orEmpty()));
 
       emit(state.copyWith(isLoading: false));
+    },);
+
+    on<UpdateRoutineHourAction>((event, emit) {
+      state.routineHour = event.timeOfDay;
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<UpdateRoutineDateAction>((event, emit) {
+      state.routineDate = event.dateTime;
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<FinishCreateRoutineAction>((event, emit) async {
+      final sportFavorite = AddSportFavorite(
+        userId: getUserIdInteractor.execute(),
+        eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+        title: state.favoriteSportName,
+        comment: state.comment,
+        info: state.info,
+        routineTime: DateTimeHelper.calculateMillisecondsFromTimeOfDayDateTime(state.routineHour, state.routineDate).toString(),
+      );
+
+      try {
+        final uploadResult = await uploadSportFavoriteInteractor.execute(sportFavorite);
+        if (uploadResult) {
+          await saveSportFavoriteInteractor.execute(sportFavorite, state.isEdit ?? false);
+
+          _resetSportInfo();
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null,));
+        } else {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+      }
+    },);
+
+    on<FinishSportFavWithoutCreateRoutineAction>((event, emit) async {
+      for (AddSportFavInfo sport in state.info.orEmpty()) {
+        emit(state.copyWith(isLoading: true));
+        final favSportName = sport.translate(event.context);
+
+        final sportFavorite = AddSportFavorite(
+          userId: getUserIdInteractor.execute(),
+          eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+          title: favSportName,
+          comment: state.comment,
+          info: state.info,
+        );
+
+        try {
+          final uploadResult = await uploadSportFavoriteInteractor.execute(sportFavorite);
+          if (uploadResult) {
+            await saveSportFavoriteInteractor.execute(sportFavorite, state.isEdit ?? false);
+
+            // _resetSportInfo();
+            // event.onFinish.call();
+            emit(state.copyWith(isLoading: false, onError: null,));
+          } else {
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+          }
+        } catch (error) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+        }
+      }
+
+      if (state.info.orEmpty().isNotEmpty) event.onFinish.call();
     },);
   }
 

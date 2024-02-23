@@ -18,6 +18,9 @@ class SportRoutineCompleted {
     this.routineTime,
     this.info,
   });
+
+  factory SportRoutineCompleted.fromJson(Map<String, dynamic> json) => _$SportRoutineCompletedFromJson(json);
+  Map<String, dynamic> toJson() => _$SportRoutineCompletedToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -37,4 +40,7 @@ class Info {
     this.intensity,
     this.minutes,
   });
+
+  factory Info.fromJson(Map<String, dynamic> json) => _$InfoFromJson(json);
+  Map<String, dynamic> toJson() => _$InfoToJson(this);
 }

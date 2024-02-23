@@ -16,4 +16,15 @@ class RoutinesApi extends ApiHelper {
     ),
     sportRoutineCompleted,
   );
+
+  Future<Map<String, dynamic>> deleteSportRoutine(String userId, int eventId) => delete(
+    Uri.https(
+      Environment().config!.baseUrl,
+    '${Environment().config!.distributionPath}/sport-routine',
+    ),
+    {
+      'userId': userId,
+      'eventId': eventId,
+    },
+  );
 }

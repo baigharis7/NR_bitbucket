@@ -63,4 +63,5 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<StepsEntity> getTodayStep();
   Future<void> saveSportRoutine(SportRoutineEntity sportRoutineEntity, {bool isEdit = false});
   Future<List> getSportRoutines();
+  Future<void> removeSportRoutines(SportRoutineEntity sportRoutineEntity);
 }

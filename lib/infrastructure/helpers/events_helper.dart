@@ -191,8 +191,8 @@ class EventsHelper {
   }
 
   int? getChosenSportIntensities(String? sportName, SportsInfoMaster sportsInfo, String currentLanguage) {
-    if (sportName == null) return null;
-    final sportChosen = sportsInfo.sportsInfoMaster.firstWhere((sport) {
+    if (sportName == null || sportsInfo.sportsInfoMaster.isEmpty) return null;
+    final sportChosen = sportsInfo.sportsInfoMaster.orEmpty().firstWhere((sport) {
       if (currentLanguage == 'es') {
         return sport.es == sportName;
       } else {

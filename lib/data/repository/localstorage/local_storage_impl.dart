@@ -806,8 +806,8 @@ class LocalStorageImpl extends LocalStorageRepository {
     } catch(error) {
       try {
         _getSportRoutinesBox.then((box) {
-        final spoRoutinesMap = box.toMap();
         if (isEdit) {
+          final spoRoutinesMap = box.toMap();
           spoRoutinesMap.forEach((key, value) {
             if ((value as SportRoutineEntity).eventId == sportRoutineEntity.eventId) {
               box.put(key, sportRoutineEntity);
@@ -818,6 +818,28 @@ class LocalStorageImpl extends LocalStorageRepository {
         }
       },);
       } catch(error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<void> removeSportRoutines(SportRoutineEntity sportRoutineEntity) async {
+    try {
+      await sportRoutineEntity.delete();
+    } catch (error) {
+      try {
+        _getSportRoutinesBox.then((box) {
+          final sportRoutineMap = box.toMap();
+          dynamic desiredKey;
+          sportRoutineMap.forEach((key, value) {
+            if ((value as SportRoutineEntity).eventId == sportRoutineEntity.eventId) {
+              desiredKey = key;
+            }
+          });
+          box.delete(desiredKey);
+        });
+      } catch (error) {
         rethrow;
       }
     }

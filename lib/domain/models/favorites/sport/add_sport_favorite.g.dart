@@ -15,6 +15,7 @@ AddSportFavorite _$AddSportFavoriteFromJson(Map<String, dynamic> json) =>
       info: (json['info'] as List<dynamic>?)
           ?.map((e) => AddSportFavInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
+      routineTime: json['routineTime'] as String?,
     );
 
 Map<String, dynamic> _$AddSportFavoriteToJson(AddSportFavorite instance) =>
@@ -24,6 +25,7 @@ Map<String, dynamic> _$AddSportFavoriteToJson(AddSportFavorite instance) =>
       'comment': instance.comment,
       'title': instance.title,
       'info': instance.info?.map((e) => e.toJson()).toList(),
+      'routineTime': instance.routineTime,
     };
 
 AddSportFavInfo _$AddSportFavInfoFromJson(Map<String, dynamic> json) =>

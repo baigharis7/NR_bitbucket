@@ -37,4 +37,16 @@ class RoutinesRepositoryImpl extends RoutinesRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<void> deleteSportRoutine(String userId, int eventId) async {
+    try {
+      final result = await routinesApi.deleteSportRoutine(userId, eventId);
+    } catch (_) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> removeSportRoutine(SportRoutineCompleted sportRoutineCompleted) => localStorageRepository.removeSportRoutines(mapToSportRoutineEntity(sportRoutineCompleted));
 }

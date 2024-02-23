@@ -57,10 +57,10 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       emit(state.copyWith(isLoading: true, onError: null));
       _clearFields();
       state.sportsFavorite = await getSportFavoritesInteractor.execute();
-      state.sportEventSimple!.userId = getUserIdInteractor.execute();
-      if (state.sportsInfo!.sportsInfoMaster.isEmpty) {
+      state.sportEventSimple?.userId = getUserIdInteractor.execute();
+      // if (state.sportsInfo!.sportsInfoMaster.isEmpty) {
         state.sportsInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
-      }
+      // }
       state.weeklySports = await getWeekSportsInteractor.execute();
       addFrequentFromWeek(state.weeklySports.orEmpty(), state.sportsFavorite.orEmpty());
 
@@ -138,6 +138,9 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       state.eventSportName = event.sportInfo.title;
       state.comment = event.sportInfo.comment;
       state.sportFromFavorite = event.sportInfo.info;
+      state.isCreateRoutine = !event.sportInfo.routineTime.isNull();
+      state.routineHour = DateTimeHelper.timeOfDayFromMillis(int.tryParse(event.sportInfo.routineTime.orEmpty()));
+      state.routineDate = DateTimeHelper.dateTimeFromMilliseconds(int.tryParse(event.sportInfo.routineTime.orEmpty()));
       emit(state.copyWith(isLoading: false, onError: null));
     },);
 
@@ -336,6 +339,19 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       }
 
       if (state.info.orEmpty().isNotEmpty) event.onFinish.call();
+    },);
+
+    on<AddSportRoutineFromRoutineEventAction>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      state.eventDate = event.sportRoutineCompleted.eventId;
+      state.info = event.sportRoutineCompleted.info.orEmpty().map((sportRoutine) => SportInfo(id: sportRoutine.id?.toInt(), name_en: sportRoutine.nameEn, name_es: sportRoutine.nameEs, intensity: sportRoutine.intensity?.toInt(), minutes: sportRoutine.minutes?.toInt(),  timeStart: sportRoutine.timeStart?.toInt())).toList();
+      state.comment = event.sportRoutineCompleted.comment;
+      state.isEdit = true;
+      state.eventSportName = event.sportRoutineCompleted.sportName;
+      state.isCreateRoutine = event.sportRoutineCompleted.routineTime.isNotNull();
+      state.routineHour = DateTimeHelper.timeOfDayFromMillis(int.tryParse(event.sportRoutineCompleted.routineTime.orEmpty()));
+      state.routineDate = DateTimeHelper.dateTimeFromMilliseconds(int.tryParse(event.sportRoutineCompleted.routineTime.orEmpty()));
+      emit(state.copyWith(isLoading: false));
     },);
   }
 

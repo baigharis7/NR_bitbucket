@@ -10,6 +10,7 @@ class AddSportFavorite extends Translatable {
   String? comment;
   String? title;
   List<AddSportFavInfo>? info;
+  String? routineTime;
 
   AddSportFavorite({
     this.userId,
@@ -17,6 +18,7 @@ class AddSportFavorite extends Translatable {
     this.comment,
     this.title,
     this.info,
+    this.routineTime,
   });
 
   factory AddSportFavorite.fromJson(Map<String, dynamic> json) => _$AddSportFavoriteFromJson(json);

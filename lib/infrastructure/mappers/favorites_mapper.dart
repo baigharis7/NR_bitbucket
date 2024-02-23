@@ -98,6 +98,7 @@ SportFavoriteEntity mapToSportFavoriteEntity(AddSportFavorite sportFavorite) {
     comment: sportFavorite.comment,
     title: sportFavorite.title,
     info: sportFavorite.info?.map((item) => SportFavoriteInfoEntity(id: item.id, intensity: item.intensity, minutes: item.minutes, timeStart: item.timeStart, name_en: item.name_en, name_es: item.name_es)).toList(),
+    routineTime: sportFavorite.routineTime,
   );
 }
 
@@ -108,8 +109,9 @@ AddSportFavorite mapToSportFavoriteFromEntity(SportFavoriteEntity sportFavoriteE
     eventDate: sportFavoriteEntity.eventDate,
     comment: sportFavoriteEntity.comment,
     title: sportFavoriteEntity.title,
-    info: sportFavoriteEntity.info?.map((sportItem) => AddSportFavInfo(id: sportItem.id, minutes: sportItem.minutes, intensity: sportItem.intensity, timeStart: sportItem.timeStart, name_en: sportItem.name_en, name_es: sportItem.name_es)).toList()
-  ,);
+    info: sportFavoriteEntity.info?.map((sportItem) => AddSportFavInfo(id: sportItem.id, minutes: sportItem.minutes, intensity: sportItem.intensity, timeStart: sportItem.timeStart, name_en: sportItem.name_en, name_es: sportItem.name_es)).toList(),
+    routineTime: sportFavoriteEntity.routineTime,
+  );
 }
 
 LiquidFavorite mapToLiquidFavoriteFromEntity(LiquidFavoriteEntity liquidFavoriteEntity) {

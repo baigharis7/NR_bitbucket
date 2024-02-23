@@ -105,6 +105,33 @@ class DateTimeHelper {
     }
   }
 
+  static TimeOfDay? timeOfDayFromMillis (int? milliseconds) {
+    if (milliseconds != null) {
+      final dateTime = DateTimeHelper().setDateFromMilliseconds(milliseconds);
+      final timeOfDay = TimeOfDay(hour: dateTime.hour, minute: dateTime.minute);
+      return timeOfDay;
+    } else {
+      return null;
+    }
+  }
+
+  static DateTime? dateTimeFromMilliseconds(int? milliseconds) {
+    if (milliseconds != null) {
+      return DateTime.fromMillisecondsSinceEpoch(milliseconds);
+    } else {
+      return null;
+    }
+  }
+
+  static int? calculateMillisecondsFromTimeOfDayDateTime(TimeOfDay? timeStart, DateTime? dateStart) {
+    if (timeStart != null && dateStart != null) {
+      DateTime dateTime = DateTime(dateStart.year, dateStart.month, dateStart.day, timeStart.hour, timeStart.minute);
+      return dateTime.millisecondsSinceEpoch;
+    } else {
+      return null;
+    }
+  }
+
   String formatDayMonthYearDate2(int date) => DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(date));
 
 }

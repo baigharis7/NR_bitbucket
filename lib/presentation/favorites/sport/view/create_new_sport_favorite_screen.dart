@@ -19,6 +19,7 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 
 import '../../../../domain/models/favorites/sport/add_sport_favorite.dart';
+import '../../../../infrastructure/helpers/date_time_helper.dart';
 import '../../../sportevent/view/sport_event_item.dart';
 import '../../../widgets/box_type_radio_text_widget.dart';
 
@@ -227,6 +228,10 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                               isSelected:
                               state.isCreateRoutine ?? false,
                               showHourDays: true,
+                              routineHour: DateTimeHelper.formatTimeOfDay(state.routineHour, context),
+                              changeHour: (timeOfDay) => bloc.add(UpdateRoutineHourAction(timeOfDay: timeOfDay)),
+                              changeDate: (dateTime) => bloc.add(UpdateRoutineDateAction(dateTime: dateTime)),
+                              routineDay: DateTimeHelper.formatDateTimeToDay(state.routineDate),
                               title: AppLocalizations.of(context)!
                                   .create_routine,),
                         ],),
@@ -236,16 +241,22 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                       onPressed: () {
                         if (bloc.validateFavSportList() ?? true) return;
                           if (state.info.orEmpty().isNotEmpty) {
-                            if (state.info.orEmpty().length > 1) {
-                              showAddFavoriteDialog(
-                                context: ctx,
-                                onNameChange: (String sportName) => bloc.add(UpdateSportFavoriteNameAction(favoriteSportName: sportName)),
-                                onFinish: () => bloc.add(FinishCreateSportFavoriteAction(currentLanguage: currentLanguage, onFinish: () => _showConfirmationDialog(context))),
-                                onResetInfo: () => bloc.add(ResetFavoriteSportInfoAction()),
-                              );
+                            if (state.isCreateRoutine ?? false) {
+                              if(state.routineHour.isNull() || state.routineDate.isNull()) return;
+
+                              if (state.info.orEmpty().length > 1) {
+                                showAddFavoriteDialog(
+                                  context: ctx,
+                                  onNameChange: (String sportName) => bloc.add(UpdateSportFavoriteNameAction(favoriteSportName: sportName)),
+                                  onFinish: () => bloc.add(FinishCreateRoutineAction(onFinish: () => _showConfirmationDialog(context))),
+                                  onResetInfo: () => bloc.add(ResetFavoriteSportInfoAction()),
+                                );
+                              } else {
+                                bloc.add(FinishSportFavWithoutCreateRoutineAction(onFinish: () => _showConfirmationDialog(context), context: context));
+                              }
                             } else {
-                              state.favoriteSportName = state.info.orEmpty().map((sport) => sport.translate(context)).toString();
-                              bloc.add(FinishCreateSportFavoriteAction(currentLanguage: currentLanguage, onFinish: () => _showConfirmationDialog(context)));
+                              // state.favoriteSportName = state.info.orEmpty().map((sport) => sport.translate(context)).toString();
+                              bloc.add(FinishSportFavWithoutCreateRoutineAction(onFinish: () => _showConfirmationDialog(context), context: context));
                             }
                           }
                       },

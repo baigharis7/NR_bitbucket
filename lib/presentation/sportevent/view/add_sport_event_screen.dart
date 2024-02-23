@@ -15,6 +15,7 @@ import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/sport_event_item.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
+import '../../../domain/models/routines/sport_routine_completed.dart';
 import '../../../domain/models/sportevents/sport_event_complete.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
 import '../../widgets/add_item_name_dialog.dart';
@@ -33,6 +34,7 @@ class AddSportEventScreen extends StatefulWidget {
 
 class _AddSportEventScreenState extends State<AddSportEventScreen> {
   TextEditingController _sportInputController = TextEditingController();
+  late SportEventsBloc bloc;
 
   void _showConfirmationDialog(
       {required BuildContext context, required Function onResetState}) {
@@ -75,56 +77,53 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
 
   @override
   void initState() {
-    final bloc = BlocProvider.of<SportEventsBloc>(context);
+    bloc = BlocProvider.of<SportEventsBloc>(context);
     bloc.add(InitializeStateAction());
     super.initState();
 
-    // final widgetsBinding = WidgetsBinding.instance;
-    // widgetsBinding.addPostFrameCallback((callback) {
-    //   if (ModalRoute.of(context)?.settings.arguments != null) {
-    //     final infoReceived = ModalRoute.of(context)!.settings.arguments;
-    //     if (infoReceived != null) {
-    //       if (infoReceived is SportEventSimple?) {
-    //         final sportEventSimple = infoReceived as SportEventSimple?;
-    //         bloc.add(ReceiveSportEventInfoAction(sportEventSimple: sportEventSimple!, context: context));
-    //       } else if (infoReceived is DateTime?) {
-    //         final eventDate = ModalRoute.of(context)!.settings.arguments as DateTime?;
-    //         if (eventDate != null) {
-    //           bloc.add(ReceiveEventDateAction(eventDate: eventDate));
-    //         }
-    //       } else if (infoReceived is SportEventComplete) {
-    //         final sportEventComplete = ModalRoute.of(context)!.settings.arguments as SportEventComplete;
-    //         bloc.add(AddSportEventFromDetailNavigation(sportEventComplete: sportEventComplete));
-    //       }
-    //     }
-    //   }
-    // });
+    final widgetsBinding = WidgetsBinding.instance;
+    widgetsBinding.addPostFrameCallback((callback) {
+      if (ModalRoute.of(context)?.settings.arguments != null) {
+        final infoReceived = ModalRoute.of(context)!.settings.arguments;
+        if (infoReceived != null) {
+          if (infoReceived is SportEventSimple?) {
+            bloc.add(ReceiveSportEventInfoAction(sportEventSimple: infoReceived as SportEventSimple, context: context));
+          } else if (infoReceived is DateTime?) {
+              bloc.add(ReceiveEventDateAction(eventDate: infoReceived as DateTime));
+          } else if (infoReceived is SportEventComplete) {
+            bloc.add(AddSportEventFromDetailNavigation(sportEventComplete: infoReceived));
+          } else if (infoReceived is SportRoutineCompleted) {
+            bloc.add(AddSportRoutineFromRoutineEventAction(sportRoutineCompleted: infoReceived));
+          }
+        }
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<SportEventsBloc>(context);
+    // final bloc = BlocProvider.of<SportEventsBloc>(context);
     final currentLanguage = Localizations.localeOf(context).languageCode;
     final eventsHelper = EventsHelper();
-    final infoReceived = ModalRoute.of(context)!.settings.arguments;
-    if (infoReceived != null) {
-      if (infoReceived is SportEventSimple?) {
-        final sportEventSimple = infoReceived as SportEventSimple?;
-        bloc.add(ReceiveSportEventInfoAction(
-            sportEventSimple: sportEventSimple!, context: context));
-      } else if (infoReceived is DateTime?) {
-        final eventDate =
-            ModalRoute.of(context)!.settings.arguments as DateTime?;
-        if (eventDate != null) {
-          bloc.add(ReceiveEventDateAction(eventDate: eventDate));
-        }
-      } else if (infoReceived is SportEventComplete) {
-        final sportEventComplete =
-            ModalRoute.of(context)!.settings.arguments as SportEventComplete;
-        bloc.add(AddSportEventFromDetailNavigation(
-            sportEventComplete: sportEventComplete));
-      }
-    }
+    // final infoReceived = ModalRoute.of(context)!.settings.arguments;
+    // if (infoReceived != null) {
+    //   if (infoReceived is SportEventSimple?) {
+    //     final sportEventSimple = infoReceived as SportEventSimple?;
+    //     bloc.add(ReceiveSportEventInfoAction(
+    //         sportEventSimple: sportEventSimple!, context: context));
+    //   } else if (infoReceived is DateTime?) {
+    //     final eventDate =
+    //         ModalRoute.of(context)!.settings.arguments as DateTime?;
+    //     if (eventDate != null) {
+    //       bloc.add(ReceiveEventDateAction(eventDate: eventDate));
+    //     }
+    //   } else if (infoReceived is SportEventComplete) {
+    //     final sportEventComplete =
+    //         ModalRoute.of(context)!.settings.arguments as SportEventComplete;
+    //     bloc.add(AddSportEventFromDetailNavigation(
+    //         sportEventComplete: sportEventComplete));
+    //   }
+    // }
 
     return BlocProvider.value(
       value: bloc,
