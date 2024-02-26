@@ -7,7 +7,7 @@ import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_sim
 
 entity.FoodEventEntity mapToFoodEventEntity(UploadFoodEvent uploadFoodEvent) {
   final List<entity.FoodInfo> foodInfoEntity = [];
-  
+
   for (var foodInfoFromComplete in uploadFoodEvent.foodInfo!) {
     entity.Params params = entity.Params(
         foodInfoFromComplete.params!.alanine,
@@ -143,6 +143,7 @@ entity.FoodEventEntity mapToFoodEventEntity(UploadFoodEvent uploadFoodEvent) {
       foodInfoFromComplete.recommendable,
       eventInfo,
       params,
+      foodInfoFromComplete.freeSugar,
     );
 
     foodInfoEntity.add(foodInfo);
@@ -299,6 +300,7 @@ domain.FoodEventComplete mapToFoodEventComplete(entity.FoodEventEntity foodEvent
         foodInfoFromEntity.recommendable,
         eventInfo,
         params,
+        foodInfoFromEntity.freeSugar,
     );
 
     foodInfoEntity.add(foodInfo);

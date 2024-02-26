@@ -38,6 +38,7 @@ class LiquidInfo {
   @HiveField(4) int? recommendable;
   @HiveField(5) LiquidEventInfo? eventInfo;
   @HiveField(6) LiquidParams? params;
+  @HiveField(7) String? freeSugar;
 
   factory LiquidInfo.fromJson(Map<String, dynamic> json) => _$LiquidInfoFromJson(json);
 
@@ -50,6 +51,7 @@ class LiquidInfo {
       this.recommendable,
       this.eventInfo,
       this.params,
+      this.freeSugar,
       );
 }
 

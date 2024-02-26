@@ -82,13 +82,14 @@ class FoodInfoAdapter extends TypeAdapter<FoodInfo> {
       fields[4] as int?,
       fields[5] as EventInfo?,
       fields[6] as Params?,
+      fields[7] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, FoodInfo obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.group)
       ..writeByte(1)
@@ -102,7 +103,9 @@ class FoodInfoAdapter extends TypeAdapter<FoodInfo> {
       ..writeByte(5)
       ..write(obj.eventInfo)
       ..writeByte(6)
-      ..write(obj.params);
+      ..write(obj.params)
+      ..writeByte(7)
+      ..write(obj.freeSugar);
   }
 
   @override
@@ -570,9 +573,9 @@ Map<String, dynamic> _$FoodEventEntityToJson(FoodEventEntity instance) =>
     };
 
 FoodInfo _$FoodInfoFromJson(Map<String, dynamic> json) => FoodInfo(
-      json['group'] as String?,
-      json['id'] as int?,
-      json['name_en'] as String?,
+    json['group'] as String?,
+    json['id'] as int?,
+    json['name_en'] as String?,
       json['name_es'] as String?,
       json['recommendable'] as int?,
       json['eventInfo'] == null
@@ -581,6 +584,7 @@ FoodInfo _$FoodInfoFromJson(Map<String, dynamic> json) => FoodInfo(
       json['params'] == null
           ? null
           : Params.fromJson(json['params'] as Map<String, dynamic>),
+    json['freeSugar'] as String?,
     );
 
 Map<String, dynamic> _$FoodInfoToJson(FoodInfo instance) => <String, dynamic>{
@@ -591,6 +595,7 @@ Map<String, dynamic> _$FoodInfoToJson(FoodInfo instance) => <String, dynamic>{
       'recommendable': instance.recommendable,
       'eventInfo': instance.eventInfo?.toJson(),
       'params': instance.params?.toJson(),
+      'freeSugar': instance.freeSugar,
     };
 
 EventInfo _$EventInfoFromJson(Map<String, dynamic> json) => EventInfo(

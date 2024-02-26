@@ -67,13 +67,14 @@ class LiquidInfoAdapter extends TypeAdapter<LiquidInfo> {
       fields[4] as int?,
       fields[5] as LiquidEventInfo?,
       fields[6] as LiquidParams?,
+      fields[7] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, LiquidInfo obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.group)
       ..writeByte(1)
@@ -87,7 +88,9 @@ class LiquidInfoAdapter extends TypeAdapter<LiquidInfo> {
       ..writeByte(5)
       ..write(obj.eventInfo)
       ..writeByte(6)
-      ..write(obj.params);
+      ..write(obj.params)
+      ..writeByte(7)
+      ..write(obj.freeSugar);
   }
 
   @override
@@ -556,6 +559,7 @@ LiquidInfo _$LiquidInfoFromJson(Map<String, dynamic> json) => LiquidInfo(
       json['params'] == null
           ? null
           : LiquidParams.fromJson(json['params'] as Map<String, dynamic>),
+      json['freeSugar'] as String?,
     );
 
 Map<String, dynamic> _$LiquidInfoToJson(LiquidInfo instance) =>
@@ -567,6 +571,7 @@ Map<String, dynamic> _$LiquidInfoToJson(LiquidInfo instance) =>
       'recommendable': instance.recommendable,
       'eventInfo': instance.eventInfo?.toJson(),
       'params': instance.params?.toJson(),
+      'freeSugar': instance.freeSugar,
     };
 
 LiquidEventInfo _$LiquidEventInfoFromJson(Map<String, dynamic> json) =>

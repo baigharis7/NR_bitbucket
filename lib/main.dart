@@ -284,7 +284,7 @@ import 'presentation/waterevent/view/add_water_event_screen.dart';
 import 'package:chuck_interceptor/chuck.dart';
 
 void main() async {
-  const String environmentName = String.fromEnvironment(Environment.DEV, defaultValue: Environment.DEV);
+  const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
 

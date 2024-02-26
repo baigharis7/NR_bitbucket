@@ -270,8 +270,8 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                                               state.unitsInfoMaster!
                                                   .unitsInfoMaster)
                                           .translate(context),
-                                      removeFood: () {},
-                                      editFood: () {},
+                                      removeFood: null,
+                                      editFood: null,
                                     ),
                                   ),
                                   if (state.dish ?? false) Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge), child: BoxTypeRadioTextWidget(onPressed: () => {}, isSelected: true, title: AppLocalizations.of(context)!.create_dish)),

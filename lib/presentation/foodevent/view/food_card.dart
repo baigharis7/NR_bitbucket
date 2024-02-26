@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 class FoodCard extends StatelessWidget {
@@ -7,8 +8,8 @@ class FoodCard extends StatelessWidget {
   final String cookingMethod;
   final String quantity;
   final String unit;
-  final Function removeFood;
-  final Function editFood;
+  final Function? removeFood;
+  final Function? editFood;
 
   const FoodCard({
     Key? key,
@@ -16,8 +17,8 @@ class FoodCard extends StatelessWidget {
     required this.cookingMethod,
     required this.quantity,
     required this.unit,
-    required this.removeFood,
-    required this.editFood,
+    this.removeFood,
+    this.editFood,
   }) : super(key: key);
 
   @override
@@ -52,10 +53,10 @@ class FoodCard extends StatelessWidget {
                               ),
                             ),
                           ),
-                          Expanded(
+                          if (!removeFood.isNull()) Expanded(
                             flex: 1,
                             child: IconButton(
-                              onPressed: () => removeFood.call(),
+                              onPressed: () => removeFood?.call(),
                               icon: const Icon(Icons.clear),
                             ),
                           )
@@ -93,22 +94,22 @@ class FoodCard extends StatelessWidget {
                               flex: 1,
                               // TODO: buscar en la tabla de cooking methods.
                               child: Text(cookingMethod.isEmpty ? 'None' : cookingMethod),
-                          )
+                          ),
                         ],
                       ),
                     ),
-                    Container(
+                    (editFood != null) ? Container(
                       alignment: Alignment.centerRight,
                       child: IconButton(
-                        onPressed: () => editFood.call(),
+                        onPressed: () => editFood?.call(),
                         icon: const Icon(Icons.edit),
                       ),
-                    )
+                    ) : const SizedBox(height: Dimens.heightXXSmall,),
                   ],
                 ),
               ),
             ),
-            if(int.parse(quantity) < 0) Container(margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),child: Text(AppLocalizations.of(context)!.must_complete_field, style: TextStyle(color: Colors.red,)),alignment: Alignment.centerLeft,)
+            if(int.parse(quantity) < 0) Container(margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),child: Text(AppLocalizations.of(context)!.must_complete_field, style: TextStyle(color: Colors.red,)),alignment: Alignment.centerLeft,)
           ],
         ),
       ),

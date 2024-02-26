@@ -358,7 +358,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   // TODO: review this, dont know if ot's ok, just put it here to fit.
   double getFractionToFillMicros(String micronutrient) {
-    final rdaForUser = state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
+    final rdaForUser = getNutrientRda(micronutrient);
     double nutrientQuantitySoFar = 0.0;
     for (var foodEvent in state.foodEvents!) {
       for (var food in foodEvent.foodInfo!) {
@@ -377,6 +377,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     loop:for (UserRda userRda in state.userRdas ?? []) {
       if (userRda.name == micronutrient) {
         rda = userRda.rda;
+        if (userRda.name == Constants.VITAMIN_C) {
+          rda = (state.profile?.sex == SexType.male) ? 220: 190;
+        }
         break loop;
       }
     }
@@ -465,13 +468,17 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     double sugarConsumedToday = 0.0;
     for(var foodEvent in state.foodEvents!) {
       for (var food in foodEvent.foodInfo!) {
-        sugarConsumedToday = sugarConsumedToday + (food.params?.sugarsTotal ?? 0.0);
+        if (food.freeSugar.orEmpty() == Constants.FREE_SUGAR) {
+          sugarConsumedToday = sugarConsumedToday + (food.params?.sugarsTotal ?? 0.0);
+        }
       }
     }
 
     for(var liquidEvent in state.todayLiquidEvents!) {
       for (var liquid in liquidEvent.foodInfo!) {
-        sugarConsumedToday = sugarConsumedToday + (liquid.params?.sugarsTotal ?? 0.0);
+        if (liquid.freeSugar.orEmpty() == Constants.FREE_SUGAR) {
+          sugarConsumedToday = sugarConsumedToday + (liquid.params?.sugarsTotal ?? 0.0);
+        }
       }
     }
 
@@ -485,7 +492,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     double sugarConsumedToday = 0.0;
     for(var foodEvent in state.foodEvents!) {
       for (var food in foodEvent.foodInfo!) {
-        sugarConsumedToday = sugarConsumedToday + (food.params?.sugarsTotal ?? 0.0);
+        if (food.freeSugar.orEmpty() == Constants.FREE_SUGAR) {
+          sugarConsumedToday = sugarConsumedToday + (food.params?.sugarsTotal ?? 0.0);
+        }
       }
     }
 

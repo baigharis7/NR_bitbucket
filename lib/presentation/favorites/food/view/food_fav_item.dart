@@ -152,14 +152,14 @@ class _FoodFavItemState extends State<FoodFavItem> {
       ingredient.qty = widget.foodInFavorite.qty;
     }
 
-    if (widget.foodInFavorite.cookingMethod != -1) {
+    // if (widget.foodInFavorite.cookingMethod != -1) {
       _cookingMethodName = _cookingMethodName ??
           cookingMethods
               .firstWhere((cookingMethod) =>
                   cookingMethod.id == widget.foodInFavorite.cookingMethod)
               .name;
       ingredient.cookingMethod = widget.foodInFavorite.cookingMethod;
-    }
+    // }
 
     // if (widget.foodInEvent.unit != -1) {
       _unitName = _unitName ??

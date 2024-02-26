@@ -54,13 +54,15 @@ class _FoodEventItemState extends State<FoodEventItem> {
   List<SimpleItem> findCookingMethodsForFood(
       String foodGroup, BuildContext context) {
     // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
-    final List<int> groupCookingMethods =
+    List<int> groupCookingMethods =
         widget.cookingMethodsMaster.cookingMethods
             .firstWhere(
               (cookingMethod) => cookingMethod.group == foodGroup,
               orElse: () => CookingMethod.empty(),
             )
             .methods;
+    // groupCookingMethods.add(-1);
+    // widget.cookingMethodsInfoMaster.cookingMethodsInfo?.add(CookingMethodInfo(id: -1, en: 'None / Raw', es: 'Ninguna / cruda'));
     final cookingMethodsInfo = groupCookingMethods.map((cookingMethodId) {
       String name = widget.cookingMethodsInfoMaster.cookingMethodsInfo!
           .firstWhere((methodInfo) => methodInfo.id == cookingMethodId)
@@ -152,14 +154,14 @@ class _FoodEventItemState extends State<FoodEventItem> {
       ingredient.qty = widget.foodInEvent.qty;
     }
 
-    if (widget.foodInEvent.cookingMethod != -1) {
+    // if (widget.foodInEvent.cookingMethod != -1) {
       _cookingMethodName = _cookingMethodName ??
           cookingMethods
               .firstWhere((cookingMethod) =>
                   cookingMethod.id == widget.foodInEvent.cookingMethod)
               .name;
       ingredient.cookingMethod = widget.foodInEvent.cookingMethod;
-    }
+    // }
 
     // if (widget.foodInEvent.unit != -1) {
       _unitName = _unitName ??

@@ -51,6 +51,7 @@ class FoodInfo {
   @HiveField(4) int? recommendable;
   @HiveField(5) EventInfo? eventInfo;
   @HiveField(6) Params? params;
+  @HiveField(7) String? freeSugar;
 
   factory FoodInfo.fromJson(Map<String, dynamic> json) => _$FoodInfoFromJson(json);
 
@@ -66,6 +67,7 @@ class FoodInfo {
       this.recommendable,
       this.eventInfo,
       this.params,
+      this.freeSugar,
       );
 }
 

@@ -32,6 +32,8 @@ class Constants {
   static const USERID_QUERY = 'userId';
   static const MENSTRUATION = 'During menstruation';
   static const IMPROVE_HUMAN_SYSTEM = 'Improve the immune system';
+  static const FREE_SUGAR = '1';
+  static const VITAMIN_C = 'vitC';
 
   //Navigation id's
   static const DASHBOARD = 0;

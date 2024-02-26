@@ -67,6 +67,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       if (state.cookingMethodsInfoMaster!.cookingMethodsInfo!.isEmpty) {
         final a = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
         state.cookingMethodsInfoMaster = a;
+        // state.cookingMethodsInfoMaster?.cookingMethodsInfo?.add(CookingMethodInfo(id: -1, en: 'None / Raw', es: 'Ninguna / cruda'));
       }
       if (state.cookingMethodsMaster!.cookingMethods.isEmpty) {
         state.cookingMethodsMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethods);

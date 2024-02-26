@@ -38,6 +38,7 @@ LiquidInfo _$LiquidInfoFromJson(Map<String, dynamic> json) => LiquidInfo(
       json['params'] == null
           ? null
           : Params.fromJson(json['params'] as Map<String, dynamic>),
+      json['freeSugar'] as String?,
     );
 
 Map<String, dynamic> _$LiquidInfoToJson(LiquidInfo instance) =>
@@ -49,6 +50,7 @@ Map<String, dynamic> _$LiquidInfoToJson(LiquidInfo instance) =>
       'name_es': instance.name_es,
       'recommendable': instance.recommendable,
       'params': instance.params?.toJson(),
+      'freeSugar': instance.freeSugar,
     };
 
 EventInfo _$EventInfoFromJson(Map<String, dynamic> json) => EventInfo(

@@ -37,6 +37,7 @@ class FoodInfo {
   EventInfo? eventInfo;
   // int? exchangePortion;
   // String? exchangePortionDaily;
+  String? freeSugar;
   String? group;
   int? id;
   // TODO: quitar "name"
@@ -51,6 +52,7 @@ class FoodInfo {
     this.eventInfo,
     // this.exchangePortion,
     // this.exchangePortionDaily,
+    this.freeSugar,
     this.group,
     this.id,
     this.name_en,

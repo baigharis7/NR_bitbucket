@@ -46,6 +46,7 @@ FoodInfo _$FoodInfoFromJson(Map<String, dynamic> json) => FoodInfo(
       json['params'] == null
           ? null
           : Params.fromJson(json['params'] as Map<String, dynamic>),
+      json['freeSugar'] as String?,
     )
       ..exchangePortion = json['exchangePortion'] as int?
       ..portionSenc = json['portionSenc'] as String?;
@@ -60,6 +61,7 @@ Map<String, dynamic> _$FoodInfoToJson(FoodInfo instance) => <String, dynamic>{
       'recommendable': instance.recommendable,
       'eventInfo': instance.eventInfo?.toJson(),
       'params': instance.params?.toJson(),
+      'freeSugar': instance.freeSugar,
     };
 
 EventInfo _$EventInfoFromJson(Map<String, dynamic> json) => EventInfo(

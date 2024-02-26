@@ -140,6 +140,7 @@ entity.LiquidEventEntity mapToLiquidEventEntity(upload.UploadLiquidEvent uploadL
       liquidInfoFromComplete.recommendable,
       eventInfo,
       params,
+      liquidInfoFromComplete.freeSugar,
     );
 
     liquidInfoEntity.add(foodInfo);
@@ -288,6 +289,8 @@ domain.LiquidEventComplete mapToLiquidEventComplete(entity.LiquidEventEntity liq
         liquidInfoFromEntity.recommendable,
         eventInfo,
         params,
+        liquidInfoFromEntity.freeSugar,
+
     );
 
     liquidInfoEntity.add(foodInfo);

@@ -45,6 +45,7 @@ class FoodInfo extends Translatable {
   int? recommendable;
   EventInfo? eventInfo;
   Params? params;
+  String? freeSugar;
 
   FoodInfo(
       this.group,
@@ -54,6 +55,7 @@ class FoodInfo extends Translatable {
       this.recommendable,
       this.eventInfo,
       this.params,
+      this.freeSugar,
   );
 
   factory FoodInfo.fromJson(Map<String, dynamic> json) => _$FoodInfoFromJson(json);

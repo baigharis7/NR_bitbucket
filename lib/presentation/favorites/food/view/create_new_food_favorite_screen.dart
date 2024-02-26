@@ -333,7 +333,6 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
                                   }
                                 }
                                 else {
-
                                 if (bloc.isFoodFavValidateList()) return;
 
                                 if (state.isCreateDish ?? false) {

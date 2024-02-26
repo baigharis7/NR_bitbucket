@@ -32,6 +32,7 @@ class LiquidInfo {
   String? name_es;
   int? recommendable;
   Params? params;
+  String? freeSugar;
 
   LiquidInfo(
       this.eventInfo,
@@ -41,6 +42,7 @@ class LiquidInfo {
       this.name_es,
       this.recommendable,
       this.params,
+      this.freeSugar,
       );
 
   factory LiquidInfo.fromJson(Map<String, dynamic> json) => _$LiquidInfoFromJson(json);
