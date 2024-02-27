@@ -154,6 +154,7 @@ class _JournalLiquidScreen extends State<JournalLiquidScreen> {
                                 AddFoodFavoriteScreen.routeName,
                                 arguments: mapToFoodFavoriteList(liquidEvent.foodInfo!),
                               ),
+                              onDelete: () {},
                             );
                           }).toList()
                         ],

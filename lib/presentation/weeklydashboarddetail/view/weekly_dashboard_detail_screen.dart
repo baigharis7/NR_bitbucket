@@ -106,7 +106,7 @@ class _WeeklyDashboardDetailScreenState
                         const SizedBox(
                           height: Dimens.heightXSmall,
                         ),
-                        WeeklyEnergyGraphWidget(title: AppLocalizations.of(context)!.energy_balance_title,data: state.weeklyEnergyBalance ?? [], averageConsumed: state.averageConsumedKcal ?? 0.0, averageSpent: state.averageSpentKcal ?? 0.0),
+                        WeeklyEnergyGraphWidget(title: AppLocalizations.of(context)!.energy_balance_title,data: state.weeklyEnergyBalance ?? [], averageConsumed: state.averageConsumedKcal ?? 0.0, averageSpent: state.averageSpentKcal ?? 0.0, total: 0.0),
                       ],
                     ),
                   ),

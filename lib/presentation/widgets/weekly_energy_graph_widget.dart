@@ -13,11 +13,12 @@ class WeeklyEnergyGraphWidget extends StatelessWidget {
   final List<Map<String, dynamic>> data;
   final double averageConsumed;
   final double averageSpent;
+  final num total;
 
   const WeeklyEnergyGraphWidget({
     Key? key,
     required this.data,
-    required this.title, required this.averageConsumed, required this.averageSpent,
+    required this.title, required this.averageConsumed, required this.averageSpent, required this.total,
   }) : super(key: key);
 
   @override
@@ -71,7 +72,7 @@ class WeeklyEnergyGraphWidget extends StatelessWidget {
                         child: Row(
                           children: [
                             SizedBox(
-                              height: 100,
+                              height: 120,
                               child: Container(
                                 margin: const EdgeInsets.only(
                                     bottom: Dimens.marginXLarge),
@@ -82,7 +83,22 @@ class WeeklyEnergyGraphWidget extends StatelessWidget {
                             Column(
                               children: [
                                 SizedBox(
-                                  width: 240,
+                                  width: 250,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          margin: const EdgeInsets.only(right: Dimens.marginNormal),
+                                          color: Colors.grey.shade400,
+                                          height: 1,
+                                        ),
+                                      ),
+                                      Text('$total Kcal'),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 250,
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,

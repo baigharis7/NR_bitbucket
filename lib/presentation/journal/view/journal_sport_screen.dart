@@ -159,14 +159,7 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                         child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold)),
                       ),
                       state.todaySportEvents!.isNotEmpty
-                          ? GridView(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 0,
-                          childAspectRatio: 3/2,
-                        ),
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
+                          ? Column(
                         children: [
                           ...state.todaySportEvents!.map((sportEvent) {
                             return EventItemWithEditAndLike(
@@ -200,6 +193,7 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                                   );
                                 }
                               },
+                              onDelete: () {},
                             );
                           }).toList()
                         ],

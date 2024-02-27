@@ -39,6 +39,7 @@ class DashboardState {
   bool? isMenstruation;
   bool? isCold;
   StepEventResponse? todayStep;
+  List<NutrientsModel>? supplements;
 
   DashboardState({
     required this.isLoading,
@@ -66,6 +67,7 @@ class DashboardState {
     this.isMenstruation,
     this.isCold,
     this.todayStep,
+    this.supplements,
   });
 
   DashboardState copyWith({
@@ -95,6 +97,7 @@ class DashboardState {
     bool? isMenstruation,
     bool? isCold,
     StepEventResponse? todayStep,
+    List<NutrientsModel>? supplements,
   }) {
     return DashboardState(
       isLoading: isLoading,
@@ -122,6 +125,7 @@ class DashboardState {
       isMenstruation: isMenstruation ?? this.isMenstruation,
       isCold: isCold ?? this.isCold,
       todayStep: todayStep ?? this.todayStep,
+      supplements: supplements ?? this.supplements,
     );
   }
 

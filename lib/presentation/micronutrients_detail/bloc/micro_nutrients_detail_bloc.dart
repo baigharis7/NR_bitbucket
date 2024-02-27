@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micron
 import '../../../data/local/models/masterfiles/master_files_type.dart';
 import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import '../../../domain/interactor/masterfiles/get_master_file_interactor.dart';
+import '../../../domain/interactor/profile/get_profile_interactor.dart';
 import '../../../domain/interactor/profile/get_user_rdas_interactor.dart';
 import '../../../domain/models/dashboard/nutrients_model.dart';
 import '../../../domain/models/dashboard/nutrients_weekly_model.dart';
@@ -11,6 +12,8 @@ import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../../domain/models/masterfiles/nutrients_info_master.dart';
 import '../../../infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+
+import '../../../infrastructure/utils/constants.dart';
 
 part 'micro_nutrients_detail_event.dart';
 part 'micro_nutrients_detail_state.dart';
@@ -20,12 +23,14 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
   final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetUserRdasInteractor getUserRdasInteractor;
+  final GetProfileInteractor getProfileInteractor;
 
   MicroNutrientsDetailBloc({
     required this.getWeekFoodEventsInteractor,
     required this.getUserMicronutrientsInteractor,
     required this.getMasterFileInteractor,
     required this.getUserRdasInteractor,
+    required this.getProfileInteractor,
   }) : super(MicroNutrientsDetailState(
     isLoading: false,
   ),
@@ -38,13 +43,16 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
       state.userMicronutrients = await getUserMicronutrientsInteractor.execute() ?? [];
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       state.userRdas = await getUserRdasInteractor.execute();
+      state.profile = await getProfileInteractor.execute();
 
       state.micronutrientsWeekly = state.userMicronutrients!
           .map(
               (micronutrient) => NutrientsWeeklyModel(
               nutrientInfoMaster: getNutrientInfo(micronutrient),
-              weeklyData: getWeeklyMicroNutrientsDataFormatted(
-                  state.weeklyFoodEvents ?? [], micronutrient))).toList();
+              weeklyData: getWeeklyMicroNutrientsDataFormatted(state.weeklyFoodEvents ?? [], micronutrient),
+              rda: getNutrientRda(micronutrient),
+              ),
+      ).toList();
 
       emit(state.copyWith(isLoading: false));
     },);
@@ -108,5 +116,21 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
 
     weeklyData.sort((a, b) => (a['day']!).compareTo(b['day']!));
     return weeklyData;
+  }
+
+  num getNutrientRda(String micronutrient) {
+    num rda = 0.0;
+    loop:for (UserRda userRda in state.userRdas ?? []) {
+      if (userRda.name == micronutrient) {
+        rda = userRda.rda;
+        if (userRda.name == Constants.VITAMIN_C) {
+          rda = (state.profile?.sex == SexType.male) ? 220: 190;
+        }
+        break loop;
+      }
+    }
+
+    // final num = state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
+    return rda;
   }
 }

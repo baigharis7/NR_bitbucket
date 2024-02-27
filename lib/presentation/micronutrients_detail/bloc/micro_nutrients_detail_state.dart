@@ -8,6 +8,7 @@ class MicroNutrientsDetailState {
   List<NutrientsWeeklyModel>? micronutrientsWeekly;
   NutrientsInfoMaster? nutrientsInfoMaster;
   List<UserRda>? userRdas;
+  UserProfileModel? profile;
 
   MicroNutrientsDetailState({
     required this.isLoading,
@@ -17,6 +18,7 @@ class MicroNutrientsDetailState {
     this.micronutrientsWeekly,
     this.nutrientsInfoMaster,
     this.userRdas,
+    this.profile,
   });
 
   MicroNutrientsDetailState copyWith({
@@ -27,6 +29,7 @@ class MicroNutrientsDetailState {
     List<NutrientsWeeklyModel>? micronutrientsWeekly,
     NutrientsInfoMaster? nutrientsInfoMaster,
     List<UserRda>? userRdas,
+    UserProfileModel? profile,
   }) {
     return MicroNutrientsDetailState(
       isLoading: isLoading,
@@ -36,6 +39,7 @@ class MicroNutrientsDetailState {
       micronutrientsWeekly: micronutrientsWeekly ?? this.micronutrientsWeekly,
       nutrientsInfoMaster: nutrientsInfoMaster ?? this.nutrientsInfoMaster,
       userRdas: userRdas ?? this.userRdas,
+      profile: profile ?? this.profile,
     );
   }
 }

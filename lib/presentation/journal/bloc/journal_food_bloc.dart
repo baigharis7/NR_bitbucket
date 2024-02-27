@@ -2,8 +2,10 @@ import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_nece
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/delete_food_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/remove_food_favorite_from_local_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_kcal_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
@@ -33,6 +35,8 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
   final GetUserIdInteractor getUserIdInteractor;
   final RemoveFoodFavoriteFromLocalInteractor removeFoodFavoriteFromLocalInteractor;
   final DeleteFoodFavoriteInteractor deleteFoodFavoriteInteractor;
+  final DeleteFoodEventInteractor deleteFoodEventInteractor;
+  final RemoveFoodEventInteractor removeFoodEventInteractor;
 
   JournalFoodBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -46,6 +50,8 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
     required this.getUserIdInteractor,
     required this.removeFoodFavoriteFromLocalInteractor,
     required this.deleteFoodFavoriteInteractor,
+    required this.deleteFoodEventInteractor,
+    required this.removeFoodEventInteractor,
   }) : super(JournalFoodState(
     isLoading: false,
     todayFoodEvents: [],
@@ -133,6 +139,24 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteFoodFavoriteError));
       }
     });
+
+    on<DeleteFoodEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+
+      try {
+        await deleteFoodEventInteractor.execute(getUserIdInteractor.execute(), event.foodEventComplete.eventId!);
+        try {
+          await removeFoodEventInteractor.execute(event.foodEventComplete);
+          state.foodFavorites = await getFoodFavoritesInteractor.execute();
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
+        } catch (error) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeFoodFavoriteError));
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteFoodFavoriteError));
+      }
+    },);
   }
 
   List<Map<String, dynamic>> getWeeklyDataFormatted(List<FoodEventComplete> completeWeekData) {

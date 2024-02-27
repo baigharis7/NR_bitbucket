@@ -126,6 +126,7 @@ class _EnergyBalanceDetailScreenState extends State<EnergyBalanceDetailScreen> {
                                 data: state.weeklyEnergyBalance ?? [],
                                 averageConsumed: state.averageConsumedKcal ?? 0.0,
                                 averageSpent: state.averageSpentKcal ?? 0.0,
+                                  total: state.energyModel?.totalKcal ?? 0.0,
                               ),),
                             ],
                           ),

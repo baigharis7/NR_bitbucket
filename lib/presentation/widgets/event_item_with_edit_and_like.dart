@@ -6,6 +6,7 @@ class EventItemWithEditAndLike extends StatelessWidget {
   final bool isFavorite;
   final Function onFavorite;
   final Function onEdit;
+  final Function onDelete;
   final bool? isCentered;
 
   const EventItemWithEditAndLike({
@@ -14,6 +15,7 @@ class EventItemWithEditAndLike extends StatelessWidget {
     required this.isFavorite,
     required this.onFavorite,
     required this.onEdit,
+    required this.onDelete,
     this.isCentered,
   }) : super(key: key);
 
@@ -36,25 +38,22 @@ class EventItemWithEditAndLike extends StatelessWidget {
                     child: Text(name, overflow: TextOverflow.clip,),
                   ),
                 ),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      onPressed: () => onEdit.call(),
-                      icon: const Icon(Icons.edit),
-                    ),
+                Container(
+                  alignment: Alignment.bottomRight,
+                  child: IconButton(
+                    onPressed: () => onFavorite.call(),
+                    icon: isFavorite ? const Icon(Icons.favorite, color: Colors.red,) : const Icon(Icons.favorite_border, color: Colors.red,),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    onPressed: () => onDelete.call(),
+                    icon: const Icon(Icons.delete),
                   ),
                 ),
               ],
             ),
-            Container(
-              alignment: Alignment.bottomRight,
-              child: IconButton(
-                onPressed: () => onFavorite.call(),
-                icon: isFavorite ? const Icon(Icons.favorite, color: Colors.red,) : const Icon(Icons.favorite_border, color: Colors.red,),
-              ),
-            )
           ],
         ),
       ),

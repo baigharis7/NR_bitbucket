@@ -246,7 +246,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                       ),
                                     ),
                                   ),
-                                )
+                                ),
                               ],
                           ),
                         ),
@@ -339,6 +339,12 @@ class _DashboardScreen extends State<DashboardScreen>
                               ),
                             ],
                           ),
+                        ),
+                        NutrientsDashboardWidget(
+                          title: AppLocalizations.of(context)!.supplements,
+                          nutrients: state.supplements.orEmpty(),
+                          isEmpty: false,
+                          screenToMove: () {},
                         ),
                       ],
                     ),

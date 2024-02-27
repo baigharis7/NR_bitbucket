@@ -172,6 +172,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           fractionToFill: getWeeklyFractionFill(nutrientRda),
           unit: getUnitForMicronutrient(nutrientRda.name),
           rda: double.parse((nutrientRda.rda * 7).toStringAsFixed(2)),),).toList();
+      state.supplements = [NutrientsModel(unit: 'g', rda: userRdaforSupplement(), fractionToFill: 0.0, nutrientInfoMaster: NutrientInfoMaster(unit: 'g', es: 'Creatina', en: 'Creatine', officialName: 'hu hu'), quantityConsumed: 0.0),NutrientsModel(unit: 'g', rda: 10, fractionToFill: 0.0, nutrientInfoMaster: NutrientInfoMaster(unit: 'g', es: 'Colágeno', en: 'Collagen', officialName: 'hu hu'), quantityConsumed: 0.0)];
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
 
       emit(state.copyWith(
@@ -412,14 +413,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   }
 
   num getMacroNutrientRda(String macronutrient) {
-    // num macroRda = 0.0;
-    // var tEE = state.userKcal ?? 0;
-    // if (state.userObjectives?.contains(50) ?? false) {
-    //   tEE = tEE + tEE~/100*15;
-    // }
-    // if (state.userObjectives?.contains(51) ?? false) {
-    //   tEE = tEE - tEE~/100*20;
-    // }
     double kcalPerNutrient = state.userKcal.orZero()/100 * getPercentageByMacro(macronutrient);
     double gramsPerNutrient = kcalPerNutrient / getKcalPerGram(macronutrient);
     return gramsPerNutrient.toInt();
@@ -563,7 +556,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     if ((state.userObjectives?.contains(50) ?? false) || (state.userObjectives?.contains(51) ?? false)) {
       macroo = macro == 'carbsAvailable' ? 40 : 30;
     }
-    else if(state.userObjectives?.contains(52) ?? false) {
+    else if (state.userObjectives?.contains(52) ?? false) {
       macroo = macro == 'carbsAvailable' ? 50 : macro == 'proteinSci' ? 20 : 30;
     }
     else {
@@ -657,6 +650,16 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
 
     return actualStepsUpdated;
+  }
+
+  num userRdaforSupplement() {
+    num creatine = 0.0;
+    double userWeight = state.profile?.physicalCharacteristics?.weight ?? 0;
+    if (state.profile?.physicalCharacteristics?.unit == 'feet - lb') {
+      userWeight = userWeight * 2.20462;
+    }
+    creatine = 0.08 / (userWeight * 1000);
+    return double.parse(creatine.toStringAsFixed(2));
   }
 
 }

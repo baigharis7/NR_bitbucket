@@ -284,7 +284,7 @@ import 'presentation/waterevent/view/add_water_event_screen.dart';
 import 'package:chuck_interceptor/chuck.dart';
 
 void main() async {
-  const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
+  const String environmentName = String.fromEnvironment(Environment.DEV, defaultValue: Environment.DEV);
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -427,6 +427,7 @@ void main() async {
     getUserMicronutrientsInteractor: getUserMicronutrientsInteractor,
     getUserRdasInteractor: getUserRdasInteractor,
     getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
+    getProfileInteractor: getProfileInteractor,
   );
 
   final macronutrientsDetailBloc = MacroNutrientsDetailBloc(
@@ -523,6 +524,8 @@ void main() async {
     removeFoodFavoriteFromLocalInteractor: removeFoodFavoriteFromLocalInteractor,
     deleteFoodFavoriteInteractor: deleteFoodFavoriteInteractor,
     getUserIdInteractor: getUserIdInteractor,
+    deleteFoodEventInteractor: deleteFoodEventInteractor,
+    removeFoodEventInteractor: removeFoodEventInteractor,
   );
 
   final journalSportBloc = JournalSportBloc(

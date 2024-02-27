@@ -53,10 +53,10 @@ class WeeklyNutrientGraphic extends StatelessWidget {
                       child: Row(
                         children: [
                           SizedBox(
-                            height: 100,
+                            height: 120,
                             child: Container(
                               margin: const EdgeInsets.only(
-                                  bottom: Dimens.marginXLarge),
+                                  bottom: Dimens.marginXLarge,),
                               color: Colors.black,
                               width: 1,
                             ),
@@ -64,7 +64,22 @@ class WeeklyNutrientGraphic extends StatelessWidget {
                           Column(
                             children: [
                               SizedBox(
-                                width: 240,
+                                width: 250,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        margin: const EdgeInsets.only(right: Dimens.marginNormal),
+                                        color: Colors.grey.shade400,
+                                        height: 1,
+                                      ),
+                                    ),
+                                    Text('${nutrientItem.rda.toString()} ${nutrientItem.nutrientInfoMaster.unit}'),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                width: 250,
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,

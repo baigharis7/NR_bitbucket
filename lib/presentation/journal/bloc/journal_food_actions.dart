@@ -39,3 +39,10 @@ class RemoveFavoriteAction extends JournalFoodActions {
 
   RemoveFavoriteAction({required this.onFinish, required this.foodFavorite});
 }
+
+class DeleteFoodEventAction extends JournalFoodActions {
+  final FoodEventComplete foodEventComplete;
+  final Function onFinish;
+
+  DeleteFoodEventAction({required this.foodEventComplete, required this.onFinish});
+}

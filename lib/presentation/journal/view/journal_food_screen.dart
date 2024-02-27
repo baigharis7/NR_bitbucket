@@ -120,56 +120,51 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
               backgroundColor: Colors.white,
               // TODO: meter AppBar en un widget configurable.
               appBar: AppBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
                 leading: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.black,),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    // bloc.add(ResetFoodEventInfoAction());
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.arrow_back_ios, size: 24),
                 ),
                 title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.food,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: Dimens.fontSizeXXLarge,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Container(
-                          height: 28,
-                          margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                          child: Image.asset('assets/icon/fork_knife.png'),
-                        ),
-                      ],
+                    Text(
+                      AppLocalizations.of(context)!.food,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: Dimens.fontSizeXXLarge,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    Row(
+                    Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal), child: Image.asset('assets/icon/fork_knife.png', height: 28)),
+                  ],
+                ),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(Dimens.heightSmall),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
+                    child: Row(
                       children: [
+                        Expanded(child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold,),)),
                         IconButton(
                           onPressed: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
                           icon: const Icon(Icons.add_circle, color: Colors.teal,),
                         )
                       ],
-                    )
-                  ],
+                    ),
+                  ),
                 ),
               ),
               body: SizedBox(
                 width: mediaQuerySize.width,
                 child: SingleChildScrollView(
                   child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginLarge),
                     child: Column(
                       children: [
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall, vertical: Dimens.marginNormal),
-                          child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold,),),
-                        ),
                         if (state.showCard != null && state.showCard!) ExplainingCardsHelper().getExplainingCardWithId(
                           context: context,
                           explainingCardId: ExplainingCardRefs.addNewFoodEvent.index,
@@ -177,14 +172,7 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                           onPressedButton: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName),
                         ),
                         state.todayFoodEvents!.isNotEmpty
-                        ? GridView(
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 0,
-                            childAspectRatio: 3/2,
-                          ),
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
+                        ? Column(
                           children: [
                             ...state.todayFoodEvents!.map((foodEvent) {
                               return EventItemWithEditAndLike(
@@ -214,24 +202,25 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                                     ),
                                   );
                                 }
-                              ,);
-                            }).toList()
+                              ,
+                              onDelete: () => bloc.add(DeleteFoodEventAction(foodEventComplete: foodEvent, onFinish: () => _showConfirmationDialog(context))),);
+                            }),
                           ],
                         )
                         : Container(
                           margin: const EdgeInsets.only(bottom: Dimens.marginNormal),
                           child: Text(AppLocalizations.of(context)!.no_food_events),
                         ),
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
-                          child: Text(AppLocalizations.of(context)!.this_week, style: const TextStyle(fontWeight: FontWeight.bold,),),
-                        ),
-                        WeeklyInfoCard(
-                          weeklyData: state.weeklyData ?? [],
-                          kcals: state.userKcal!,
-                          cardElevation: 4,
-                        ),
+                        // Container(
+                        //   alignment: Alignment.centerLeft,
+                        //   margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
+                        //   child: Text(AppLocalizations.of(context)!.this_week, style: const TextStyle(fontWeight: FontWeight.bold,),),
+                        // ),
+                        // WeeklyInfoCard(
+                        //   weeklyData: state.weeklyData ?? [],
+                        //   kcals: state.userKcal!,
+                        //   cardElevation: 4,
+                        // ),
                       ],
                     ),
                   ),

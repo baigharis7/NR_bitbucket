@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
 import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
@@ -11,6 +12,7 @@ import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../../domain/models/masterfiles/nutrients_info_master.dart';
 import '../../../domain/models/profile/user_profile_model.dart';
 import '../../../infrastructure/helpers/date_time_helper.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 part 'macro_nutrients_detail_event.dart';
 part 'macro_nutrients_detail_state.dart';
@@ -29,15 +31,18 @@ class MacroNutrientsDetailBloc extends Bloc<MacroNutrientsDetailEvent, MacroNutr
     on<InitializeEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
-      state.userProfile = await getProfileInteractor.execute();
+      final a = await getProfileInteractor.execute();
+      state.userProfile = a;
+      state.userProfile?.kcal = getUserKcalSelectiveObjectives(state.userProfile?.kcal ?? 0);
       state.weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
 
       state.macronutrientsWeekly = ['proteinSci', 'carbsAvailable', 'fatTotal']
           .map(
             (macronutrient) => NutrientsWeeklyModel(
             nutrientInfoMaster: getNutrientInfo(macronutrient),
-            weeklyData: getWeeklyMacroNutrientsDataFormatted(
-                state.weeklyFoodEvents ?? [], macronutrient)),
+            weeklyData: getWeeklyMacroNutrientsDataFormatted(state.weeklyFoodEvents ?? [], macronutrient),
+              rda: getMacroNutrientRda(macronutrient),
+            ),
       )
           .toList();
 
@@ -107,23 +112,36 @@ class MacroNutrientsDetailBloc extends Bloc<MacroNutrientsDetailEvent, MacroNutr
 
   int getPercentageByMacro(String macro) {
     var macroo = 0;
-    if (state.userProfile?.objectives?.contains(50) ?? false) {
+    if ((state.userProfile?.objectives?.contains(50) ?? false) || (state.userProfile?.objectives?.contains(51) ?? false)) {
       macroo = macro == 'carbsAvailable' ? 40 : 30;
     }
-    if (state.userProfile?.objectives?.contains(51) ?? false) {
-      macroo = macro == 'carbsAvailable' ? 40 : 30;
+    else if (state.userProfile?.objectives?.contains(52) ?? false) {
+      macroo = macro == 'carbsAvailable' ? 50 : macro == 'proteinSci' ? 20 : 30;
     }
-    if (state.userProfile?.objectives?.contains(52) ?? false) {
-      macroo = macro == 'carbsAvailable'
-          ? 50
-          : macro == 'proteinSci'
-          ? 20
-          : 30;
-    } else {
+    else {
       macroo = macro == 'carbsAvailable' ? 30 : 35;
     }
     return macroo;
   }
 
   int getKcalPerGram(String macro) => macro == 'fatTotal' ? 9 : 4;
+
+  num getMacroNutrientRda(String macronutrient) {
+    double kcalPerNutrient = (state.userProfile?.kcal ?? 0) / 100 * getPercentageByMacro(macronutrient);
+    double gramsPerNutrient = kcalPerNutrient / getKcalPerGram(macronutrient);
+    return gramsPerNutrient.toInt();
+  }
+
+  int getUserKcalSelectiveObjectives(int userKcal) {
+    int changedKcal = userKcal;
+
+    if (state.userProfile?.objectives?.contains(50) ?? false) {
+      changedKcal = changedKcal + changedKcal~/100*15;
+    }
+    if (state.userProfile?.objectives?.contains(51) ?? false) {
+      changedKcal = changedKcal - changedKcal~/100*20;
+    }
+
+    return changedKcal;
+  }
 }
