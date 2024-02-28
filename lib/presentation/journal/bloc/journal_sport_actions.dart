@@ -33,3 +33,10 @@ class RemoveFavoriteSportAction extends JournalSportActions {
 
   RemoveFavoriteSportAction({required this.onFinish, required this.sportFavorite});
 }
+
+class DeleteSportEventAction extends JournalSportActions {
+  final SportEventComplete sportEventComplete;
+  final Function onFinish;
+
+  DeleteSportEventAction({required this.sportEventComplete, required this.onFinish});
+}

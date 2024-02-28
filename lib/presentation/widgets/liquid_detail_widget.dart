@@ -39,15 +39,12 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
           Container(
             margin: const EdgeInsets.all(Dimens.marginLarge),
             alignment: Alignment.centerLeft,
-            child: InkWell(
-              onTap: () => widget.removeWaterCall?.call(),
-              child: Text(
-                AppLocalizations.of(context)!.ingested_water,
-                style: const TextStyle(
-                  fontSize: Dimens.fontSizeNormal,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
+            child: Text(
+              AppLocalizations.of(context)!.ingested_water,
+              style: const TextStyle(
+                fontSize: Dimens.fontSizeNormal,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -101,21 +98,23 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
+                          Container(
+                            alignment: Alignment.bottomRight,
+                            child: IconButton(
+                              onPressed: () => widget.addWaterCall?.call(),
+                              icon: const Icon(Icons.add_circle_outline_sharp, size: 30, color: Colors.blue,),
+                            ),
+                          ),
                           Text(AppLocalizations.of(context)!.water_description, style: const TextStyle(fontSize: Dimens.fontSizeSmall),),
                           Container(
                             alignment: Alignment.bottomRight,
                             child: IconButton(
-                              onPressed: () => Navigator.pushNamed(
-                                      context, AddWaterEventScreen.routeName)
-                                  .then((_) {
-                                    Navigator.pop(context);
-                                /*onReloadData?.call();*/
-                              }),
-                              icon: const Icon(Icons.add_circle_outline_sharp, size: 30, color: Colors.blue,),
+                              onPressed: () => widget.removeWaterCall?.call(),
+                              icon: const Icon(Icons.remove_circle_outline_sharp, size: 30, color: Colors.blue,),
                             ),
-                          )
+                          ),
                         ],
-                      ))
+                      ),),
                 ],
               ),
             ),

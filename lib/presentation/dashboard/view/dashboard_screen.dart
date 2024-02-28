@@ -92,7 +92,7 @@ class _DashboardScreen extends State<DashboardScreen>
             if (state.isLoading) {
               LoadingScreen.instance().show(
                 context: ctx,
-                text: AppLocalizations.of(ctx)!.loading,
+                text: AppLocalizations.of(ctx)!.recal_nutrients,
               );
             } else {
               LoadingScreen.instance().hide();
@@ -192,59 +192,64 @@ class _DashboardScreen extends State<DashboardScreen>
                                     onReloadData: () => bloc.add(ReloadWaterInfoAction()),
                                     screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState())),
                                     addWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState()))),
-                                    removeWaterCall: () => bloc.add(FinishWaterEventAction(qty: -0.250, onFinish: () => bloc.add(InitializeState()))),
+                                    removeWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState()))),
                                   ),
                                 ),
                                 Expanded(
                                   flex: 1,
-                                  child: Opacity(
-                                    opacity: 0.4,
-                                    child: Card(
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                                            alignment: Alignment.centerLeft,
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Text(
-                                                  AppLocalizations.of(context)!.steps,
-                                                  style: const TextStyle(
-                                                    fontSize: Dimens.fontSizeNormal,
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
+                                  child: Stack(
+                                    children: [
+                                      Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0,), color: Colors.black,), child: const Center(child: Text('Comming Soon', style: TextStyle(color: Colors.white),),)),
+                                      Opacity(
+                                        opacity: 0.4,
+                                        child: Card(
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.only(left: Dimens.marginNormal),
+                                                alignment: Alignment.centerLeft,
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      AppLocalizations.of(context)!.steps,
+                                                      style: const TextStyle(
+                                                        fontSize: Dimens.fontSizeNormal,
+                                                        color: Colors.black,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      alignment: Alignment.centerRight,
+                                                      child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                                                    ),
+                                                  ],
                                                 ),
-                                                Container(
-                                                  alignment: Alignment.centerRight,
-                                                  child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                                              ),
+                                              Container(
+                                                height: 80,
+                                                decoration: const BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Colors.grey,
                                                 ),
-                                              ],
-                                            ),
+                                                child: const Center(child: Text('0'),),
+                                              ),
+                                              Container(
+                                                margin: const EdgeInsets.only(top: Dimens.marginNormal),
+                                                child: const Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                  children: [
+                                                    Text(' Km'),
+                                                    Text('98 min'),
+                                                  ],
+                                                ),
+                                              ),
+                                              // Text('${_stepCountValue}'),
+                                            ],
                                           ),
-                                          Container(
-                                            height: 80,
-                                            decoration: const BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: Colors.grey,
-                                            ),
-                                            child: const Center(child: Text('0'),),
-                                          ),
-                                          Container(
-                                            margin: const EdgeInsets.only(top: Dimens.marginNormal),
-                                            child: const Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Text(' Km'),
-                                                Text('98 min'),
-                                              ],
-                                            ),
-                                          ),
-                                          // Text('${_stepCountValue}'),
-                                        ],
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ),
                               ],

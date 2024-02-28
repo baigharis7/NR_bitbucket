@@ -23,6 +23,7 @@ class Constants {
   static const SYMPTOMS_SIZE = 3;
   static const DASHBOARD_LIST_SIZE = 3;
   static const DEFAULT_ADD_WATER_QUANTITY = 0.250;
+  static const DEFAULT_REMOVE_WATER_QUANTITY = -0.250;
   static const FIBER_TOTAL_REQUIRED = 25.0;
   static const TAP_WATER_ID = 53;
   static const UPLOAD_SUCCESS = 'uploadSuccess';

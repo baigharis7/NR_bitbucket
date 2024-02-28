@@ -310,6 +310,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
 
     on<FinishWithoutRoutineEventAction>((event, emit) async {
       for (SportInfo sportInfo in state.info.orEmpty()) {
+        emit(state.copyWith(isLoading: true));
         final sportNam = findSportById(sportInfo.id!).translate(event.context).toString();
 
         final sportEventSimple = SportEventSimple(

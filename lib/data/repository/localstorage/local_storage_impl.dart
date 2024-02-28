@@ -845,4 +845,26 @@ class LocalStorageImpl extends LocalStorageRepository {
     }
   }
 
+  @override
+  Future<void> removeLiquidEvent(LiquidEventEntity liquidEventEntity) async {
+    try {
+      await liquidEventEntity.delete();
+    } catch (error) {
+      try {
+        _getLiquidEventsBox.then((box) {
+          final liquidEventsMap = box.toMap();
+          dynamic desiredKey;
+          liquidEventsMap.forEach((key, value) {
+            if ((value as LiquidEventEntity).eventDate == liquidEventEntity.eventDate) {
+              desiredKey = key;
+            }
+          });
+          box.delete(desiredKey);
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
 }

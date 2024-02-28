@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_kcal_i
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
@@ -14,14 +15,24 @@ import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_liquid_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_liquid_state.dart';
 
-class JournalLiquidBloc extends BaseBloc<JournalLiquidActions, JournalLiquidState> {
+import '../../../domain/interactor/liquidevents/delete_liquid_event_interactor.dart';
+import '../../../domain/interactor/liquidevents/remove_liquid_event_interactor.dart';
+import '../../../domain/interactor/preferences/get_user_id_interactor.dart';
+
+class JournalLiquidBloc
+    extends BaseBloc<JournalLiquidActions, JournalLiquidState> {
   final GetTodayLiquidEventsInteractor getLiquidEventsOfTodayInteractor;
   final GetWeekLiquidEventsInteractor getWeekLiquidEventsInteractor;
   final GetUserKcalInteractor getUserKcalInteractor;
-  final IsNecessaryToShowExplainingCardInteractor isNecessaryToShowExplainingCardInteractor;
-  final SaveExplainingCardInteractionInteractor saveExplainingCardInteractionInteractor;
+  final IsNecessaryToShowExplainingCardInteractor
+      isNecessaryToShowExplainingCardInteractor;
+  final SaveExplainingCardInteractionInteractor
+      saveExplainingCardInteractionInteractor;
   final GetWaterEventsTodayInteractor getWaterEventsTodayInteractor;
   final GetProfileInteractor getProfileInteractor;
+  final DeleteLiquidEventInteractor deleteLiquidEventInteractor;
+  final RemoveLiquidEventInteractor removeLiquidEventInteractor;
+  final GetUserIdInteractor getUserIdInteractor;
 
   JournalLiquidBloc({
     required this.getLiquidEventsOfTodayInteractor,
@@ -31,24 +42,31 @@ class JournalLiquidBloc extends BaseBloc<JournalLiquidActions, JournalLiquidStat
     required this.saveExplainingCardInteractionInteractor,
     required this.getWaterEventsTodayInteractor,
     required this.getProfileInteractor,
-  }) : super(JournalLiquidState(
-    isLoading: false,
-    todayLiquidEvents: [],
-    weeklyData: [],
-    userKcal: 0,
-    kcalConsumed: 0,
-    waterEvents: [],
-    showCard: false,
-  ),){
+    required this.deleteLiquidEventInteractor,
+    required this.removeLiquidEventInteractor,
+    required this.getUserIdInteractor,
+  }) : super(
+          JournalLiquidState(
+            isLoading: false,
+            todayLiquidEvents: [],
+            weeklyData: [],
+            userKcal: 0,
+            kcalConsumed: 0,
+            waterEvents: [],
+            showCard: false,
+          ),
+        ) {
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.userKcal = await getUserKcalInteractor.execute();
       state.userProfile = await getProfileInteractor.execute();
-      state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute();
+      state.todayLiquidEvents =
+          await getLiquidEventsOfTodayInteractor.execute();
       final completeWeekData = await getWeekLiquidEventsInteractor.execute();
       state.weeklyData = getWeeklyDataFormatted(completeWeekData);
       state.kcalConsumed = getTodayKcalFromLiquids(state.todayLiquidEvents!);
-      state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.addNewLiquidEvent.index);
+      state.showCard = await isNecessaryToShowExplainingCardInteractor
+          .execute(ExplainingCardRefs.addNewLiquidEvent.index);
       state.waterEvents = await getWaterEventsTodayInteractor.execute();
 
       emit(state.copyWith(isLoading: false));
@@ -56,24 +74,47 @@ class JournalLiquidBloc extends BaseBloc<JournalLiquidActions, JournalLiquidStat
 
     on<HideExplainingCardAction>((event, emit) {
       state.showCard = false;
-      saveExplainingCardInteractionInteractor.execute(ExplainingCardRefs.addNewLiquidEvent.index);
+      saveExplainingCardInteractionInteractor
+          .execute(ExplainingCardRefs.addNewLiquidEvent.index);
 
       emit(state.copyWith(isLoading: false));
     });
+
+    on<DeleteLiquidEventAction>(
+      (event, emit) async {
+        emit(state.copyWith(isLoading: true));
+        try {
+          final userId = getUserIdInteractor.execute();
+          await deleteLiquidEventInteractor.execute(userId, event.liquidEventComplete.eventDate!);
+          try {
+            await removeLiquidEventInteractor.execute(event.liquidEventComplete);
+            event.onFinish.call();
+            emit(state.copyWith(isLoading: false, onError: null));
+          } catch (_) {
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeLiquidEventError));
+          }
+        } catch (_) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteLiquidEventError));
+        }
+      },
+    );
   }
 
-  List<Map<String, dynamic>> getWeeklyDataFormatted(List<FoodEventComplete> completeWeekData) {
+  List<Map<String, dynamic>> getWeeklyDataFormatted(
+      List<FoodEventComplete> completeWeekData) {
     List<Map<String, dynamic>> weeklyData = [];
     int latestDate = 1;
     for (var event in completeWeekData) {
-      int weekDay = DateTimeHelper().setDateFromMilliseconds(event.eventDate!).weekday;
+      int weekDay =
+          DateTimeHelper().setDateFromMilliseconds(event.eventDate!).weekday;
       if (weekDay > latestDate) latestDate = weekDay;
     }
 
     for (var eventWeekDay = 1; eventWeekDay <= 7; eventWeekDay++) {
       final eventsOfWeekDay = <FoodEventComplete>[];
       for (var event in completeWeekData) {
-        final eventDate = DateTimeHelper().setDateFromMilliseconds(event.eventDate!).weekday;
+        final eventDate =
+            DateTimeHelper().setDateFromMilliseconds(event.eventDate!).weekday;
         if (eventDate == eventWeekDay) {
           eventsOfWeekDay.add(event);
         }
@@ -83,7 +124,11 @@ class JournalLiquidBloc extends BaseBloc<JournalLiquidActions, JournalLiquidStat
         kcalConsumed = kcalConsumed + event.eventKcals!;
       }
 
-      weeklyData.add({'day': eventWeekDay, 'kcal': EventsHelper().getFractionToFillKcal(kcalConsumed, state.userKcal!)});
+      weeklyData.add({
+        'day': eventWeekDay,
+        'kcal':
+            EventsHelper().getFractionToFillKcal(kcalConsumed, state.userKcal!)
+      });
     }
 
     weeklyData.sort((a, b) => (a['day']!).compareTo(b['day']!));
@@ -98,5 +143,4 @@ class JournalLiquidBloc extends BaseBloc<JournalLiquidActions, JournalLiquidStat
 
     return kcals;
   }
-
 }

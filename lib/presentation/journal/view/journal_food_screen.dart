@@ -124,7 +124,6 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                 foregroundColor: Colors.black,
                 leading: IconButton(
                   onPressed: () {
-                    // bloc.add(ResetFoodEventInfoAction());
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.arrow_back_ios, size: 24),

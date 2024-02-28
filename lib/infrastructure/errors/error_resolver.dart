@@ -110,6 +110,18 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.incorrect_confirmation_code;
     case ErrorTypes.uploadingSportRoutineError:
       return stringResolver.uploading_sport_routine_error;
+    case ErrorTypes.deleteFoodEventError:
+      return stringResolver.delete_food_event_error;
+    case ErrorTypes.removeFoodEventError:
+      return stringResolver.remove_food_event_error;
+    case ErrorTypes.deleteSportEventError:
+      return stringResolver.delete_sport_event_error;
+    case ErrorTypes.removeSportEventError:
+      return stringResolver.remove_sport_event_error;
+    case ErrorTypes.deleteLiquidEventError:
+      return stringResolver.delete_liquid_event_error;
+    case ErrorTypes.removeLiquidEventError:
+      return stringResolver.remove_liquid_event_error;
   }
 }
 

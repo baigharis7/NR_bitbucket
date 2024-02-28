@@ -43,4 +43,16 @@ class LiquidEventsRepositoryImpl extends LiquidEventsRepository{
     return allEvents.map((liquidEvent) => mapToLiquidEventComplete(liquidEvent as LiquidEventEntity)).toList();
   }
 
+  @override
+  Future<void> deleteLiquidEvent(String userId, int eventDate) => liquidEventsApi.deleteLiquidEvent(userId, eventDate);
+
+  @override
+  Future<void> removeLiquidEvent(LiquidEventComplete liquidEventComplete) async {
+    try {
+      await localStorageRepository.removeLiquidEvent(mapToLiquidEventEntityFromComplete(liquidEventComplete));
+    } catch (error) {
+      rethrow;
+    }
+  }
+
 }

@@ -139,33 +139,41 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
       child: SafeArea(
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            titleSpacing: Dimens.marginNormal,
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
             leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                color: Colors.black,
-              ),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.arrow_back_ios, size: 24),
             ),
             title: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   AppLocalizations.of(context)!.liquids,
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: Dimens.fontSizeXXLarge,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(
-                  child: Image.asset(
-                    'assets/icon/drink_icon.png',
-                    height: 28,
-                  ),
-                ),
+                Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal), child: Image.asset('assets/icon/drink_icon.png', height: 28)),
               ],
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(Dimens.heightSmall),
+              child: Container(
+                alignment: Alignment.center,
+                margin: const EdgeInsets.symmetric(
+                  vertical: Dimens.marginLarge,
+                ),
+                child: Text(
+                  AppLocalizations.of(context)!.add_liquid_title,
+                  style: const TextStyle(
+                    fontSize: Dimens.fontSizeXXLarge,
+                  ),
+                ),
+              ),
             ),
           ),
           body: BlocConsumer<LiquidEventBloc, LiquidEventState>(
@@ -192,18 +200,6 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
                         horizontal: Dimens.marginNormal),
                     child: Column(
                       children: [
-                        Container(
-                          alignment: Alignment.center,
-                          margin: const EdgeInsets.symmetric(
-                            vertical: Dimens.marginNormal,
-                          ),
-                          child: Text(
-                            AppLocalizations.of(context)!.add_liquid_title,
-                            style: const TextStyle(
-                              fontSize: Dimens.fontSizeXXLarge,
-                            ),
-                          ),
-                        ),
                         Container(
                           alignment: Alignment.center,
                           margin: const EdgeInsets.symmetric(

@@ -24,6 +24,8 @@ import 'package:nutrenaissance_flutter/presentation/widgets/event_item_with_edit
 import 'package:nutrenaissance_flutter/presentation/widgets/horizontal_water_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_info_card.dart';
 
+import '../../common/view/confirmation_dialog.dart';
+
 class JournalLiquidScreen extends StatefulWidget {
   static const routeName = '/journal_liquid';
 
@@ -40,6 +42,24 @@ class _JournalLiquidScreen extends State<JournalLiquidScreen> {
     final bloc = BlocProvider.of<JournalLiquidBloc>(context);
     bloc.add(InitializeStateAction());
     super.initState();
+  }
+
+  void _showConfirmationDialog(BuildContext context) {
+    Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
+    final mediaQuerySize = MediaQuery.of(context).size;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => Container(
+        height: mediaQuerySize.height,
+        width: mediaQuerySize.width,
+        color: const Color.fromARGB(148, 104, 96, 96),
+        child: ConfirmationDialog(
+            message: AppLocalizations.of(context)!.delete_liquid),
+      ),
+    ).then(
+          (value) => Navigator.pop(context),
+    );
   }
   
   @override
@@ -67,45 +87,41 @@ class _JournalLiquidScreen extends State<JournalLiquidScreen> {
             return Scaffold(
               backgroundColor: Colors.white,
               appBar: AppBar(
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-                titleSpacing: Dimens.marginNormal,
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
                 leading: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.black,),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                  },
+                  icon: const Icon(Icons.arrow_back_ios, size: 24),
                 ),
                 title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                    Text(
+                      AppLocalizations.of(context)!.liquids,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: Dimens.fontSizeXXLarge,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    // Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal), child: Image.asset('assets/icon/drink_icon.png', height: 28)),
+                  ],
+                ),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(Dimens.heightSmall),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
+                    child: Row(
                       children: [
-                        Text(
-                          AppLocalizations.of(context)!.liquids,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: Dimens.fontSizeXXLarge,
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                          child: Image.asset(
-                            'assets/icon/drink_icon.png',
-                            height: 32,
-                            width: 32,
-                          ),
+                        Expanded(child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold,),)),
+                        IconButton(
+                          onPressed: () => Navigator.pushNamed(ctx, AddLiquidEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
+                          icon: const Icon(Icons.add_circle, color: Colors.teal,),
                         ),
                       ],
                     ),
-                    IconButton(
-                      onPressed: () => Navigator.pushNamed(ctx, AddLiquidEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
-                      icon: const Icon(
-                        Icons.add_circle,
-                        color: Colors.blue,
-                        size: 30,
-                      ),
-                    )
-                  ],
+                  ),
                 ),
               ),
               body: SingleChildScrollView(
@@ -119,22 +135,12 @@ class _JournalLiquidScreen extends State<JournalLiquidScreen> {
                         onHideCard: () => bloc.add(HideExplainingCardAction()),
                         onPressedButton: () => Navigator.pushNamed(context, AddLiquidEventScreen.routeName),
                       ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
-                        child: Text(
-                          AppLocalizations.of(context)!.today,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      HorizontalWaterBar(
-                        waterTaken: eventsHelper.getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty()),
-                        fractionToFill: eventsHelper.getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), ((state.userProfile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
-                        onAddWater: () => Navigator.pushNamed(context, AddWaterEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
-                        cardElevation: 2,
-                      ),
+                      // HorizontalWaterBar(
+                      //   waterTaken: eventsHelper.getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty()),
+                      //   fractionToFill: eventsHelper.getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), ((state.userProfile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
+                      //   onAddWater: () => Navigator.pushNamed(context, AddWaterEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
+                      //   cardElevation: 2,
+                      // ),
                       state.todayLiquidEvents!.isNotEmpty
                           ? Column(
                         children: [
@@ -154,30 +160,30 @@ class _JournalLiquidScreen extends State<JournalLiquidScreen> {
                                 AddFoodFavoriteScreen.routeName,
                                 arguments: mapToFoodFavoriteList(liquidEvent.foodInfo!),
                               ),
-                              onDelete: () {},
+                              onDelete: () => bloc.add(DeleteLiquidEventAction(liquidEventComplete: liquidEvent, onFinish: () => _showConfirmationDialog(context))),
                             );
-                          }).toList()
+                          }),
                         ],
                       )
                           : Container(
                               margin: const EdgeInsets.only(bottom: Dimens.marginLarge, top: Dimens.marginLarge),
                               child: Text(AppLocalizations.of(context)!.no_liquid_events),
                             ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
-                        child: Text(
-                          AppLocalizations.of(context)!.this_week,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      WeeklyInfoCard(
-                        weeklyData: state.weeklyData ?? [],
-                        kcals: state.userKcal!,
-                        cardElevation: 2,
-                      ),
+                      // Container(
+                      //   alignment: Alignment.centerLeft,
+                      //   margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
+                      //   child: Text(
+                      //     AppLocalizations.of(context)!.this_week,
+                      //     style: const TextStyle(
+                      //       fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),
+                      // ),
+                      // WeeklyInfoCard(
+                      //   weeklyData: state.weeklyData ?? [],
+                      //   kcals: state.userKcal!,
+                      //   cardElevation: 2,
+                      // ),
                     ],
                   ),
                 ),

@@ -111,52 +111,55 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
           builder: (ctx, state) {
             return Scaffold(
               backgroundColor: Colors.white,
+              appBar: AppBar(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                leading: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.arrow_back_ios, size: 24),
+                ),
+                title: Row(
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.sport,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: Dimens.fontSizeXXLarge,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal), child: Image.asset('assets/icon/sport_icon.png', height: 28)),
+                  ],
+                ),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(Dimens.heightSmall),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
+                    child: Row(
+                      children: [
+                        Expanded(child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold,),)),
+                        IconButton(
+                          onPressed: () => Navigator.pushNamed(context, AddSportEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
+                          icon: const Icon(Icons.add_circle, color: Colors.teal,),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
               body: SingleChildScrollView(
                 child: Container(
                   margin: const EdgeInsets.only(left: Dimens.marginNormal, right: Dimens.marginNormal, top: Dimens.marginNormal),
                   width: mediaQuerySize.width,
                   child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.arrow_back_ios, size: 25)),
-                              Text(
-                                AppLocalizations.of(context)!.sport,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: Dimens.fontSizeLarge,
-                                ),
-                              ),
-                              Container(
-                                height: 28,
-                                margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                                child: Image.asset('assets/icon/sport_icon.png'),),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              IconButton(
-                                onPressed: () => Navigator.pushNamed(context, AddSportEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
-                                icon: const Icon(Icons.add_circle, color: Colors.teal, size: 30),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
                       if (state.showCard != null && state.showCard!) ExplainingCardsHelper().getExplainingCardWithId(
                         context: context,
                         explainingCardId: ExplainingCardRefs.addNewSportEvent.index,
                         onHideCard: () => bloc.add(HideExplainingCardAction()),
                         onPressedButton: () => Navigator.pushNamed(context, AddSportEventScreen.routeName),
-                      ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
-                        child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold)),
                       ),
                       state.todaySportEvents!.isNotEmpty
                           ? Column(
@@ -193,7 +196,7 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                                   );
                                 }
                               },
-                              onDelete: () {},
+                              onDelete: () => bloc.add(DeleteSportEventAction(sportEventComplete: sportEvent, onFinish: () => _showConfirmationDialog(context))),
                             );
                           }).toList()
                         ],
@@ -202,18 +205,18 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                               margin: const EdgeInsets.only(bottom: Dimens.marginNormal),
                               child: Text(AppLocalizations.of(context)!.no_sport_events),
                             ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        margin: const EdgeInsets.only(left: Dimens.marginNormal, right: Dimens.marginNormal, top: Dimens.marginLarge),
-                        child: Text(AppLocalizations.of(context)!.this_week),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(bottom: Dimens.marginLarge),
-                        child: WeeklyInfoCard(
-                          weeklyData: state.weeklyData ?? [],
-                          kcals: state.userKcal ?? 0,
-                        ),
-                      ),
+                      // Container(
+                      //   alignment: Alignment.centerLeft,
+                      //   margin: const EdgeInsets.only(left: Dimens.marginNormal, right: Dimens.marginNormal, top: Dimens.marginLarge),
+                      //   child: Text(AppLocalizations.of(context)!.this_week),
+                      // ),
+                      // Container(
+                      //   margin: const EdgeInsets.only(bottom: Dimens.marginLarge),
+                      //   child: WeeklyInfoCard(
+                      //     weeklyData: state.weeklyData ?? [],
+                      //     kcals: state.userKcal ?? 0,
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

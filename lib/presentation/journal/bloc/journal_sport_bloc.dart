@@ -20,6 +20,8 @@ import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_sport_s
 import '../../../domain/interactor/favorites/sport/delete_sport_favorite_interactor.dart';
 import '../../../domain/interactor/favorites/sport/remove_sport_favorite_from_local_interactor.dart';
 import '../../../domain/interactor/favorites/sport/save_sport_favorite_interactor.dart';
+import '../../../domain/interactor/sportevents/delete_sport_event_interactor.dart';
+import '../../../domain/interactor/sportevents/remove_sport_event_interactor.dart';
 import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../infrastructure/errors/error_types.dart';
 
@@ -36,6 +38,8 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
   final GetUserIdInteractor getUserIdInteractor;
   final DeleteSportFavoriteInteractor deleteSportFavoriteInteractor;
   final RemoveSportFavoriteInteractor removeSportFavoriteInteractor;
+  final DeleteSportEventInteractor deleteSportEventInteractor;
+  final RemoveSportEventInteractor removeSportEventInteractor;
 
   JournalSportBloc({
     required this.getMasterFileInteractor,
@@ -50,6 +54,8 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
     required this.getUserIdInteractor,
     required this.deleteSportFavoriteInteractor,
     required this.removeSportFavoriteInteractor,
+    required this.deleteSportEventInteractor,
+    required this.removeSportEventInteractor,
   }) : super(
     JournalSportState(
       isLoading: false,
@@ -138,6 +144,23 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
       }
     },);
 
+    on<DeleteSportEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+
+      final userId = getUserIdInteractor.execute();
+      try {
+        await deleteSportEventInteractor.execute(userId, event.sportEventComplete.eventDate);
+          try {
+            final removeFromLocalResult = await removeSportEventInteractor.execute(event.sportEventComplete);
+              event.onFinish.call();
+              emit(state.copyWith(isLoading: false, onError: null));
+          } catch (error) {
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeSportEventError));
+          }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteSportEventError));
+      }
+    },);
   }
 
   String getSportName(int sportId, BuildContext context) {

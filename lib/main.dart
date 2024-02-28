@@ -100,10 +100,14 @@ import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_ev
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/delete_liquid_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/delete_liquid_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_today_liquid_events_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_week_liquid_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_week_liquid_events_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/remove_liquid_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/remove_liquid_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/save_liquid_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/save_liquid_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/upload_liquid_event_interactor.dart';
@@ -393,6 +397,8 @@ void main() async {
   final SaveRoutineInteractor saveRoutineInteractor = SaveRoutineInteractorImpl(routinesRepository: routinesRepository);
   final DeleteSportRoutineInteractor deleteSportRoutineInteractor = DeleteSportRoutineInteractorImpl(routinesRepository: routinesRepository);
   final RemoveSportRoutineInteractor removeSportRoutineInteractor = RemoveSportRoutineInteractorImpl(routinesRepository: routinesRepository);
+  final DeleteLiquidEventInteractor deleteLiquidEventInteractor = DeleteLiquidEventInteractorImpl(liquidEventsRepository: liquidEventsRepository);
+  final RemoveLiquidEventInteractor removeLiquidEventInteractor = RemoveLiquidEventInteractorImpl(liquidEventsRepository: liquidEventsRepository);
 
 
   final dashboardBloc = DashboardBloc(
@@ -541,6 +547,8 @@ void main() async {
     getUserIdInteractor: getUserIdInteractor,
     deleteSportFavoriteInteractor: deleteSportFavoriteInteractor,
     removeSportFavoriteInteractor: removeSportFavoriteInteractor,
+    deleteSportEventInteractor: deleteSportEventInteractor,
+    removeSportEventInteractor: removeSportEventInteractor,
   );
 
   final routineBloc = RoutinesBloc(
@@ -558,6 +566,9 @@ void main() async {
     saveExplainingCardInteractionInteractor: saveExplainingCardInteractionInteractor,
     getWaterEventsTodayInteractor: getWaterEventsTodayInteractor,
     getProfileInteractor: getProfileInteractor,
+    deleteLiquidEventInteractor: deleteLiquidEventInteractor,
+    removeLiquidEventInteractor: removeLiquidEventInteractor,
+    getUserIdInteractor: getUserIdInteractor,
   );
 
   final waterEventBloc = WaterEventBloc(

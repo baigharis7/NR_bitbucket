@@ -8,4 +8,6 @@ abstract class LiquidEventsRepository {
   Future<List<LiquidEventComplete>> getTodayLiquidEvents();
   Future<List<LiquidEventComplete>> getWeeklyLiquidEvents();
   Future<List<LiquidEventComplete>> getAllLiquidEvents();
+  Future<void> deleteLiquidEvent(String userId, int eventDate);
+  Future<void> removeLiquidEvent(LiquidEventComplete liquidEventComplete);
 }

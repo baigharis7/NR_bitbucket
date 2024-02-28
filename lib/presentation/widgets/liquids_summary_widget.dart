@@ -33,68 +33,74 @@ class LiquidSummaryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.only(left: Dimens.marginLarge),
-            alignment: Alignment.centerLeft,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.water,
-                  style: const TextStyle(
-                    fontSize: Dimens.fontSizeNormal,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge, vertical: Dimens.marginNormal),
+        child: Column(
+          children: [
+            // Container(
+            //   margin: const EdgeInsets.only(left: Dimens.marginLarge),
+            //   alignment: Alignment.centerLeft,
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       Text(
+            //         AppLocalizations.of(context)!.water,
+            //         style: const TextStyle(
+            //           fontSize: Dimens.fontSizeNormal,
+            //           color: Colors.black,
+            //           fontWeight: FontWeight.bold,
+            //         ),
+            //       ),
+            //       Container(
+            //         alignment: Alignment.centerRight,
+            //         child: IconButton(onPressed: () => screenToMove.call(), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+            //       )
+            //     ],
+            //   ),
+            // ),
+            Row(children: [
+              InkWell(onTap: () => removeWaterCall?.call(), child: Image.asset('assets/images/water_minus.png', height: 20)),
+              const Spacer(),
+              InkWell(onTap: () => addWaterCall?.call(), child: Image.asset('assets/images/water_plus.png', height: 23)),
+            ],),
+            const Text('${Constants.DEFAULT_ADD_WATER_QUANTITY} L'),
+            InkWell(
+              onTap: () => screenToMove.call(),
+                child: Image.asset('assets/images/water.png', height: 70,),),
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal,),
+              alignment: Alignment.centerRight,
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  FillHorizontalBar(
+                    fractionToFill: fractionToFill,
+                    fillColor: Colors.blue,
+                    // backgroundBarColor: ,
                   ),
-                ),
-                Container(
-                  alignment: Alignment.centerRight,
-                  child: IconButton(onPressed: () => screenToMove.call(), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
-                )
-              ],
-            ),
-          ),
-          InkWell(
-            onTap: () => removeWaterCall?.call(),
-              child: const Text('${Constants.DEFAULT_ADD_WATER_QUANTITY} L')),
-          InkWell(
-            onTap: () => addWaterCall?.call(),
-              child: Image.asset('assets/images/water.png', height: 65)),
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal, horizontal: Dimens.marginXLarge,),
-            alignment: Alignment.centerRight,
-            child: Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                FillHorizontalBar(
-                  fractionToFill: fractionToFill,
-                  fillColor: Colors.blue,
-                  // backgroundBarColor: ,
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  margin: const EdgeInsets.only(top: Dimens.marginXSmall),
-                  child: Text(
-                    '$quantityTaken L',
-                    style: TextStyle(color: Colors.grey.shade400, fontSize: Dimens.fontSizeSmall),
+                  Container(
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.only(top: Dimens.marginXSmall),
+                    child: Text(
+                      '$quantityTaken L',
+                      style: TextStyle(color: Colors.grey.shade400, fontSize: Dimens.fontSizeSmall),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            alignment: Alignment.centerRight,
-            margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-            child: Text(
-              '$totalWater L',
-              style: const TextStyle(
-                fontSize: Dimens.fontSizeSmall,
+                ],
               ),
             ),
-          )
-        ],
+            Container(
+              alignment: Alignment.centerRight,
+              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+              child: Text(
+                '$totalWater L',
+                style: const TextStyle(
+                  fontSize: Dimens.fontSizeSmall,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
