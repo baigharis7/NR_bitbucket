@@ -35,6 +35,7 @@ class CreateNewSportFavoriteScreen extends StatefulWidget {
 
 class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScreen> {
   TextEditingController _sportInputController = TextEditingController();
+  late FocusNode _focusInputController;
 
   void _showConfirmationDialog(BuildContext context) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
@@ -175,6 +176,7 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                           VoidCallback onFieldSubmitted,
                           ) {
                         _sportInputController = textEditingController;
+                        _focusInputController = focusNode;
                         return TextField(
                           decoration: InputDecoration(
                             fillColor: Colors.black,
@@ -223,6 +225,10 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                             editIntensity: (updatedSport) { bloc.add(UpdateIntensitySportFavAction(addSportFavInfo: AddSportFavInfo(id: updatedSport.id, minutes: updatedSport.minutes, intensity: updatedSport.intensity, timeStart: updatedSport.timeStart, name_en: updatedSport.name_en, name_es: updatedSport.name_es))); },
                             editDateTime: (updatedSport) { bloc.add(UpdateTimeStartSportFavAction(addSportFavInfo: AddSportFavInfo(id: updatedSport.id, minutes: updatedSport.minutes, intensity: updatedSport.intensity, timeStart: updatedSport.timeStart, name_en: updatedSport.name_en, name_es: updatedSport.name_es))); },
                           ),),
+                          if (state.info.orEmpty().isNotEmpty) IconButton(
+                            onPressed: () { _focusInputController.requestFocus(); },
+                            icon: const Icon(Icons.add_circle, color: Colors.teal, size: 28),
+                          ),
                           if (state.info.orEmpty().isNotEmpty) BoxTypeRadioTextWidget(
                               onPressed: () => bloc.add(UpdateCreateRoutineAction()),
                               isSelected:

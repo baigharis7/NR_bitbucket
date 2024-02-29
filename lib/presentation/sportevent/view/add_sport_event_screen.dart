@@ -34,6 +34,7 @@ class AddSportEventScreen extends StatefulWidget {
 
 class _AddSportEventScreenState extends State<AddSportEventScreen> {
   TextEditingController _sportInputController = TextEditingController();
+  late FocusNode _sporFocustInputController;
   late SportEventsBloc bloc;
 
   void _showConfirmationDialog(
@@ -207,6 +208,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                           VoidCallback onFieldSubmitted,
                         ) {
                           _sportInputController = textEditingController;
+                          _sporFocustInputController = focusNode;
                           return TextField(
                             decoration: InputDecoration(
                               fillColor: Colors.black,
@@ -358,6 +360,10 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                                                   updatedSport)),
                                                 ),
                                               ),
+                                        IconButton(
+                                          onPressed: () { _sporFocustInputController.requestFocus(); },
+                                          icon: const Icon(Icons.add_circle, color: Colors.teal, size: 28),
+                                        ),
                                         BoxTypeRadioTextWidget(
                                             onPressed: () =>
                                                 bloc.add(UpdateCreateRoutine()),

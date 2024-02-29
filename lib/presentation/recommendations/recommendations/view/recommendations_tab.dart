@@ -76,7 +76,7 @@ class _RecommendationsTabState extends State<RecommendationsTab> {
                           ),
                         ),);
                         },
-                      isChecked: (int id) => state.foodItems!.map((simpleItem) => simpleItem.id).toList().contains(id),
+                      isChecked: (int id) => state.foodItems.orEmpty().map((simpleItem) => simpleItem.id).toList().contains(id),
                     );
                   }).toList(),
                 ],

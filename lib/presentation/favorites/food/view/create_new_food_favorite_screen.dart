@@ -37,6 +37,7 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
   TextEditingController _foodInputController = TextEditingController();
   late CreateNewFoodFavoriteBloc bloc;
   late Object? arguments;
+  late FocusNode _focusInputController;
 
   void _showConfirmationDialog(BuildContext context, Function onFinish) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
@@ -208,6 +209,7 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
                           VoidCallback onFieldSubmitted,
                           ) {
                         _foodInputController = textEditingController;
+                        _focusInputController = focusNode;
                         return TextField(
                           decoration: InputDecoration(
                             fillColor: Colors.black,
@@ -322,6 +324,10 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
                                     //   },
                                     // ),
                                 ).toList(),
+                                if (state.foodsInFavorite.orEmpty().isNotEmpty) IconButton(
+                                  onPressed: () => _focusInputController.requestFocus(),
+                                  icon: const Icon(Icons.add_circle, color: Colors.teal, size: 28),
+                                ),
                                 if (state.foodsInFavorite.orEmpty().isNotEmpty) BoxTypeRadioTextWidget(onPressed: () => bloc.add(UpdateCreateDishAction()), isSelected: state.isCreateDish ?? false, title: AppLocalizations.of(context)!.create_dish),
                               ],
                             ),

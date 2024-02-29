@@ -151,7 +151,7 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                         IconButton(
                           onPressed: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
                           icon: const Icon(Icons.add_circle, color: Colors.teal,),
-                        )
+                        ),
                       ],
                     ),
                   ),

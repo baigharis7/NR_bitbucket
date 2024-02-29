@@ -3,6 +3,7 @@ import 'package:nutrenaissance_flutter/domain/models/recommendations/recommendat
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/recommendations_item.dart';
@@ -23,7 +24,7 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.blue[100],
+      color: AppColors.anti_flash_white,
       child: Column(
         children: [
           Container(
@@ -39,7 +40,7 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
                     ),
                     child: Text(
                       recommendationsFoodItem.recommendationGroup.translate(context),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.mountainMeadow),
                       overflow: TextOverflow.clip,
                     ),
                   ),
@@ -65,7 +66,7 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
               ],
             ),
           ),
-          ...recommendationsFoodItem.recommendedFoods.map((food) {
+          ...recommendationsFoodItem.recommendedFoods.take(Constants.DASHBOARD_LIST_SIZE).map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodItemMaster.id);
             return Container(
               color: Colors.white,
@@ -77,7 +78,7 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
               ),
             );
           }).toList(),
-          ...recommendationsFoodItem.frequentFoods.map((food) {
+          ...recommendationsFoodItem.frequentFoods.take(Constants.DASHBOARD_LIST_SIZE).map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodItemMaster.id);
             return Container(
               color: AppColors.cardGreen_200,

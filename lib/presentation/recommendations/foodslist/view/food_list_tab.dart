@@ -33,18 +33,18 @@ class _FoodListScreen extends State<FoodListScreen> {
 
   void _showDelFoodDialog({required Function onDelFood,}) {
     showDialog(context: context, builder: (context) => SimpleDialog(
-      backgroundColor: AppColors.light_cyan,
+      backgroundColor: AppColors.mountainMeadowLight,
       contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10),),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: const BorderSide(color: AppColors.mountainMeadow, width: 2)),
       children: [
-        SizedBox(child: IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.cancel_outlined, color: AppColors.true_blue,), alignment: Alignment.centerRight), width: double.infinity),
+        SizedBox(child: IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.cancel_outlined, color: AppColors.mountainMeadow,), alignment: Alignment.centerRight), width: double.infinity),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall, vertical: Dimens.marginSmall),
           child: Column(
             children: [
               Text(AppLocalizations.of(context)!.remove_food, style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: AppColors.true_blue,
+                  color: AppColors.mountainMeadow,
                   fontSize: Dimens.fontSizeNormal), textAlign: TextAlign.center),
               const SizedBox(height: Dimens.heightXSmall),
               Container(
@@ -55,18 +55,18 @@ class _FoodListScreen extends State<FoodListScreen> {
                       InkWell(
                         onTap: () => Navigator.pop(context),
                         child: Container(padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXXLarge, vertical: Dimens.paddingNormal),
-                          decoration: const BoxDecoration(color: AppColors.true_blue,shape: BoxShape.rectangle, borderRadius: BorderRadiusDirectional.only(topStart: Radius.circular(5), bottomStart: Radius.circular(5))),
+                          decoration: const BoxDecoration(color: AppColors.mountainMeadow,shape: BoxShape.rectangle, borderRadius: BorderRadiusDirectional.only(topStart: Radius.circular(5), bottomStart: Radius.circular(5))),
                           child: Text(AppLocalizations.of(context)!.keep, style: const TextStyle(color: Colors.white),),),
                       ),
                       const SizedBox(width: 2,),
                       InkWell(
-                        onTap: () {onDelFood.call(); Navigator.pop(context);},
+                        onTap: () { onDelFood.call(); Navigator.pop(context); },
                         child: Container(padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingNormal),
-                          decoration: const BoxDecoration(color: AppColors.true_blue,shape: BoxShape.rectangle, borderRadius: BorderRadiusDirectional.only(topEnd: Radius.circular(5), bottomEnd: Radius.circular(5))),
+                          decoration: const BoxDecoration(color: AppColors.mountainMeadow,shape: BoxShape.rectangle, borderRadius: BorderRadiusDirectional.only(topEnd: Radius.circular(5), bottomEnd: Radius.circular(5))),
                           child: Text(AppLocalizations.of(context)!.remove, style: const TextStyle(color: Colors.white),),),
                       ),
                     ],),
-                  alignment: Alignment.centerRight
+                  alignment: Alignment.centerRight,
               ),
               const SizedBox(height: Dimens.heightXSmall),
             ],),
@@ -107,6 +107,17 @@ class _FoodListScreen extends State<FoodListScreen> {
                       onHideCard: () => bloc.add(HideFoodListExplainingCardAction()),
                     ),
                     Container(
+                      alignment: Alignment.centerLeft,
+                      margin: const EdgeInsets.all(Dimens.marginNormal),
+                      child: Text(
+                        AppLocalizations.of(context)!.my_foods_list.appendColon(),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: Dimens.fontSizeNormal,
+                        ),
+                      ),
+                    ),
+                    Container(
                       margin: const EdgeInsets.only(top: Dimens.marginNormal),
                     ),
                     Card(
@@ -115,17 +126,6 @@ class _FoodListScreen extends State<FoodListScreen> {
                       ),
                       child: Column(
                         children: [
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            margin: const EdgeInsets.all(Dimens.marginNormal),
-                            child: Text(
-                              AppLocalizations.of(context)!.my_foods_list.appendColon(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: Dimens.fontSizeNormal,
-                              ),
-                            ),
-                          ),
                           ...state.foodItems!.map((foodItem) => FoodListItem(
                             foodName: foodItem.name,
                             // onDelete: () => bloc.add(OnDeleteFoodIdFromList(foodItem: foodItem)),

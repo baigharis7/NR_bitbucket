@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/square_checkbox.dart';
 
@@ -56,6 +57,7 @@ class _RecommendationsItemState extends State<RecommendationsItem> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SquareCheckbox(
+                  color: AppColors.mountainMeadow,
                   isChecked: widget.isChecked,
                   onChanged: () => widget.onAdd.call(),
                 ),

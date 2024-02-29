@@ -49,12 +49,17 @@ class _RecipeCarousel extends State<RecipeCarousel> {
             ),
           ),
           Expanded(
-            flex: 5,
-            child: SizedBox(
-              // margin: const EdgeInsets.all(Dimens.marginNormal),
-              child: Stack(
-                children: [
-                  PageView.builder(
+            child: Row(
+              children: [
+                if (widget.recipesList.orEmpty().length > 1 && _activePage != 0) IconButton(
+                  onPressed: () => _pageController.previousPage(duration: const Duration(milliseconds: 500), curve:Curves.easeIn),
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new,
+                    size: 20,
+                  ),
+                ),
+                Expanded(
+                  child: PageView.builder(
                     controller: _pageController,
                     itemBuilder: (context, index) {
                       return RecipeCard(
@@ -71,33 +76,15 @@ class _RecipeCarousel extends State<RecipeCarousel> {
                       });
                     },
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        child: IconButton(
-                          onPressed: () => _pageController.previousPage(duration: const Duration(milliseconds: 500), curve:Curves.easeIn),
-                          icon: const Icon(
-                            Icons.arrow_back_ios_new,
-                            size: 40,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        alignment: Alignment.centerRight,
-                        child: IconButton(
-                          onPressed: () => _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeIn),
-                          icon: const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 40,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
+                ),
+                if (widget.recipesList.orEmpty().length > 1 && widget.recipesList.orEmpty().length != _activePage + 1) IconButton(
+                  onPressed: () => _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeIn),
+                  icon: const Icon(
+                    Icons.arrow_forward_ios,
+                    size: 20,
+                  ),
+                ),
+              ],
             ),
           ),
 

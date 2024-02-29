@@ -14,6 +14,7 @@ import 'package:nutrenaissance_flutter/domain/models/recipes/recipes_master.dart
 import 'package:nutrenaissance_flutter/domain/models/recommendations/recommendation.dart';
 import 'package:nutrenaissance_flutter/domain/models/recommendations/recommendations_food_item.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/recipes_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_state.dart';
@@ -174,6 +175,18 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
   }
 
   List<RecommendationFoodInfo> getRecommendationFoodInfo(List<int> foodList) {
+    // List<RecommendationFoodInfo> list = [];
+    // for (int foodId in foodList) {
+    //   FoodItemMaster foodItemMaster = findFood(foodId);
+    //   if (!foodItemMaster.id.isNull()) {
+    //     list.add(RecommendationFoodInfo(
+    //           foodItemMaster: findFood(foodId),
+    //           foodNutrients: /** DUMMY, must receive from backend */[],
+    //         ),);
+    //   }
+    // }
+
+
     final list = foodList.map((foodId) => RecommendationFoodInfo(
       foodItemMaster: findFood(foodId),
       foodNutrients: /** DUMMY, must receive from backend */[],

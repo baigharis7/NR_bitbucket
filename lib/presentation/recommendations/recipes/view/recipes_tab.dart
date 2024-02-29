@@ -74,45 +74,45 @@ class _RecipesTab extends State<RecipesTab> {
                     Container(
                       margin: const EdgeInsets.only(top: Dimens.marginNormal),
                     ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                      padding: const EdgeInsets.only(bottom: Dimens.marginNormal, right: Dimens.marginSmall),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          // border: OutlineInputBorder(
-                          //   borderRadius: BorderRadius.circular(20),
-                          //   borderSide: const BorderSide(width: 1, color: Colors.grey),
-                          // ),
-                          labelText: AppLocalizations.of(context)!.search,
-                          alignLabelWithHint: true,
-                          icon: Container(
-                            margin: const EdgeInsets.only(left: Dimens.marginSmall),
-                            child: const Icon(Icons.search, color: Colors.black,),
-                          ),
-                          suffixIcon: IconButton(
-                            icon: _searchController.text != ''
-                                ? const Icon(
-                              Icons.highlight_remove,
-                              color: Colors.black,
-                            )
-                                : Container(),
-                            onPressed: () => _searchController.text = '',
-                          ),
-                        ),
-                        onChanged: (String foodName) {
-                          setState(() => _searchController);
-                          if (foodName.length >= 3) {
-
-                          }
-                        },
-                      ),
-                    ),
+                    // Container(
+                    //   margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                    //   padding: const EdgeInsets.only(bottom: Dimens.marginNormal, right: Dimens.marginSmall),
+                    //   decoration: const BoxDecoration(
+                    //     color: Colors.white,
+                    //     shape: BoxShape.rectangle,
+                    //     borderRadius: BorderRadius.all(Radius.circular(10)),
+                    //   ),
+                    //   child: TextField(
+                    //     controller: _searchController,
+                    //     decoration: InputDecoration(
+                    //       // border: OutlineInputBorder(
+                    //       //   borderRadius: BorderRadius.circular(20),
+                    //       //   borderSide: const BorderSide(width: 1, color: Colors.grey),
+                    //       // ),
+                    //       labelText: AppLocalizations.of(context)!.search,
+                    //       alignLabelWithHint: true,
+                    //       icon: Container(
+                    //         margin: const EdgeInsets.only(left: Dimens.marginSmall),
+                    //         child: const Icon(Icons.search, color: Colors.black,),
+                    //       ),
+                    //       suffixIcon: IconButton(
+                    //         icon: _searchController.text != ''
+                    //             ? const Icon(
+                    //           Icons.highlight_remove,
+                    //           color: Colors.black,
+                    //         )
+                    //             : Container(),
+                    //         onPressed: () => _searchController.text = '',
+                    //       ),
+                    //     ),
+                    //     onChanged: (String foodName) {
+                    //       setState(() => _searchController);
+                    //       if (foodName.length >= 3) {
+                    //
+                    //       }
+                    //     },
+                    //   ),
+                    // ),
                     state.recipesList!.isEmpty
                         ? Container(
                           margin: const EdgeInsets.all(Dimens.marginLarge),

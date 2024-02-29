@@ -37,6 +37,7 @@ class AddFoodEventScreen extends StatefulWidget {
 class _AddFoodEventState extends State<AddFoodEventScreen> {
   late AddFoodEventBloc bloc;
   TextEditingController _foodInputController = TextEditingController();
+  late FocusNode _focusInputController;
 
   // TODO: si esto permanece se puede convertir en un widget en un momento.
   void _showConfirmationDialog(BuildContext context) {
@@ -200,6 +201,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                 VoidCallback onFieldSubmitted,
                                 ) {
                               _foodInputController = textEditingController;
+                              _focusInputController = focusNode;
                               return TextField(
                                 decoration: InputDecoration(
                                   fillColor: Colors.black,
@@ -324,6 +326,10 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                     //   },
                                     // ),
                                   ).toList(),
+                                  IconButton(
+                                    onPressed: () { _focusInputController.requestFocus(); },
+                                    icon: const Icon(Icons.add_circle, color: Colors.teal, size: 28),
+                                  ),
                                   BoxTypeRadioTextWidget(onPressed: () => bloc.add(UpdateCreteDishEventAction()), isSelected: state.isCreateDish ?? false, title: AppLocalizations.of(context)!.create_dish),
                                 ],
                               ),
