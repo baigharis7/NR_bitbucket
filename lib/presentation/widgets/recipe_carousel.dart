@@ -4,18 +4,22 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/recipe_card.dart';
 
+import '../../domain/models/masterfiles/food_names_master.dart';
+
 class RecipeCarousel extends StatefulWidget {
   final String mealTime;
   final List<RecipeMaster> recipesList;
-  final List<List<String>> ingredientsNames;
   final List<String> imagesList;
+  final List<FoodItemMaster> Function(List<RecipeIngredient> ingredients) getIngredients;
+  final Function(RecipeMaster itemRecipe) screenToMove;
 
   const RecipeCarousel({
     Key? key,
     required this.mealTime,
     required this.recipesList,
-    required this.ingredientsNames,
     required this.imagesList,
+    required this.getIngredients,
+    required this.screenToMove,
   }) : super(key: key);
 
   @override
@@ -33,16 +37,13 @@ class _RecipeCarousel extends State<RecipeCarousel> {
       child: Column(
         children: [
           Container(
-            margin: const EdgeInsets.only(
-              left: Dimens.marginSmall,
-              right: Dimens.marginNormal,
-              top: Dimens.marginLarge,
-            ),
+            margin: const EdgeInsets.only(left: Dimens.marginSmall, right: Dimens.marginSmall, top: Dimens.marginLarge, bottom: Dimens.marginXSmall),
             child: Container(
               alignment: Alignment.centerLeft,
               child: Text(
                 widget.mealTime.appendColon(),
                 style: const TextStyle(
+                  fontSize: Dimens.fontSizeMedium,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -62,10 +63,12 @@ class _RecipeCarousel extends State<RecipeCarousel> {
                   child: PageView.builder(
                     controller: _pageController,
                     itemBuilder: (context, index) {
+                      final itemRecipe = widget.recipesList[index];
                       return RecipeCard(
-                        recipeMaster: widget.recipesList[index],
-                        ingredientsNames: widget.ingredientsNames[index],
+                        recipeMaster: itemRecipe,
+                        ingredientsNames: widget.getIngredients.call(itemRecipe.ingredients),
                         image: widget.imagesList[index],
+                        screenToMove: () => widget.screenToMove.call(itemRecipe),
                       );
                     },
                     scrollDirection: Axis.horizontal,

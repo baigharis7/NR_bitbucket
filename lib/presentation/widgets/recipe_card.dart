@@ -4,16 +4,20 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
+import '../../domain/models/masterfiles/food_names_master.dart';
+
 class RecipeCard extends StatefulWidget {
   final RecipeMaster recipeMaster;
-  final List<String> ingredientsNames;
+  final List<FoodItemMaster> ingredientsNames;
   final String image;
+  final Function screenToMove;
 
   const RecipeCard({
     Key? key,
     required this.recipeMaster,
     required this.ingredientsNames,
     required this.image,
+    required this.screenToMove,
   }) : super(key: key);
 
   @override
@@ -52,14 +56,17 @@ class _RecipeCard extends State<RecipeCard> {
               ],
             ),
             Expanded(
-              child: Container(
-                margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
-                width: mediaQuerySize.width,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
-                    widget.image,
-                    fit: BoxFit.cover,
+              child: InkWell(
+                onTap: () => widget.screenToMove.call(),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
+                  width: mediaQuerySize.width,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      widget.image,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
@@ -72,7 +79,7 @@ class _RecipeCard extends State<RecipeCard> {
                     child: Row(
                       children: [
                         // ...widget.ingredientsNames
-                        ...['Avena','Nueces','Pasa','Avena','Nueces','Pasa',].map((name) =>
+                        .../*['Avena','Nueces','Pasa','Avena','Nueces','Pasa',]*/widget.ingredientsNames.map((name) =>
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall, vertical: Dimens.marginSmall),
                               margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
@@ -81,7 +88,7 @@ class _RecipeCard extends State<RecipeCard> {
                                 shape: BoxShape.rectangle,
                                 borderRadius: BorderRadius.circular(3.0),
                               ),
-                              child: Text(name),
+                              child: Text(name.translate(context)),
                             ),
                         ),
                       ],

@@ -207,20 +207,33 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
 
   bool areRecipesForMealTime(int mealTime) => state.recipesList!.any((recipe) => recipe.meal.contains(mealTime));
 
-  List<List<FoodItemMaster>> getIngredientsNames(List<RecipeMaster> recipeMasterList, List<int> foodIds) {
-    final ingredientsList = recipeMasterList.map((recipe) => recipe.ingredients).toList();
-    final List<List<FoodItemMaster>> ingredientsFoodItemMaster = [];
-    for (var ingredients in ingredientsList) {
-      final List<FoodItemMaster> ingredientsItems = [];
-      for (var ingredient in ingredients) {
-        if (foodIds.contains(ingredient.id)) {
-          final foodItemMaster = getFoodNameByFoodId(ingredient.id);
-          if (!ingredientsItems.contains(foodItemMaster)) ingredientsItems.add(foodItemMaster);
-        }
+  // List<List<FoodItemMaster>> getIngredientsNames(List<RecipeMaster> recipeMasterList, List<int> foodIds) {
+  //   final ingredientsList = recipeMasterList.map((recipe) => recipe.ingredients).toList();
+  //   final List<List<FoodItemMaster>> ingredientsFoodItemMaster = [];
+  //   for (var ingredients in ingredientsList) {
+  //     final List<FoodItemMaster> ingredientsItems = [];
+  //     for (var ingredient in ingredients) {
+  //       if (foodIds.contains(ingredient.id)) {
+  //         final foodItemMaster = getFoodNameByFoodId(ingredient.id);
+  //         if (!ingredientsItems.contains(foodItemMaster)) ingredientsItems.add(foodItemMaster);
+  //       }
+  //     }
+  //     ingredientsFoodItemMaster.add([...ingredientsItems]);
+  //   }
+  //   return ingredientsFoodItemMaster;
+  // }
+
+  List<FoodItemMaster> getIngredientsInfo(List<RecipeIngredient> ingredients) {
+    List<FoodItemMaster> listOfIngredientInfo = [];
+
+    for (var ingredient in ingredients) {
+      final ingredientInfo = getFoodNameByFoodId(ingredient.id);
+      if (ingredientInfo.en.orEmpty().isNotEmpty && ingredientInfo.en.orEmpty().isNotEmpty) {
+        listOfIngredientInfo.add(ingredientInfo);
       }
-      ingredientsFoodItemMaster.add([...ingredientsItems]);
     }
-    return ingredientsFoodItemMaster;
+
+    return listOfIngredientInfo;
   }
 
   FoodItemMaster getFoodNameByFoodId(int foodId) {

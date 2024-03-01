@@ -260,6 +260,7 @@ import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/registry/view/registry_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/recipes/common/view/recipe_tabs_holder.dart';
+import 'package:nutrenaissance_flutter/presentation/recipes/recipe_detail/view/recipe_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/resetpassword/bloc/reset_password_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/resetpassword/view/reset_password_screen.dart';
@@ -814,6 +815,7 @@ void main() async {
           FecesUrineTabHolder.routeName: (_) => const FecesUrineTabHolder(),
           RoutinesScreen.routeName: (_) => const RoutinesScreen(),
           WeeklyAllNutrientsDetailScreen.routeName: (_) => const WeeklyAllNutrientsDetailScreen(),
+          RecipeDetailScreen.routeName:(_) => const RecipeDetailScreen(),
         },
       ),
     ),

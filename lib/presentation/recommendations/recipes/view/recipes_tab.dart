@@ -7,9 +7,11 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/image_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/recipes/recipe_detail/view/recipe_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_state.dart';
@@ -19,11 +21,9 @@ import 'package:nutrenaissance_flutter/presentation/widgets/recipe_carousel.dart
 import '../../../widgets/custom_bottom_navi_bar_widget.dart';
 
 class RecipesTab extends StatefulWidget {
-  final List<SimpleItem> foodItems;
 
   const RecipesTab({
     Key? key,
-    required this.foodItems,
   }) : super(key: key);
 
   @override
@@ -43,7 +43,7 @@ class _RecipesTab extends State<RecipesTab> {
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<RecommendationsGeneralBloc>(context);
     final imagesHelper = ImageHelper();
-    bloc.add(SetFoodIdsAndGetRecipesAction());
+    // bloc.add(SetFoodIdsAndGetRecipesAction());
 
     return BlocProvider.value(
       value: bloc,
@@ -125,26 +125,30 @@ class _RecipesTab extends State<RecipesTab> {
                                 if (bloc.areRecipesForMealTime(0)) RecipeCarousel(
                                   mealTime: AppLocalizationsHelper.instance.translate('breakfast'),
                                   recipesList: bloc.getRecipesForMealTime(0),
-                                  ingredientsNames: bloc.getIngredientsNames(bloc.getRecipesForMealTime(0), state.foodItems!.map((e) => e.id).toList()).map((foodItemMasterList) => foodItemMasterList.map((foodItemMaster) => foodItemMaster.translate(context)).toList()).toList(),
                                   imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(0).length),
+                                  getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
+                                  screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
                                 ),
                                 if (bloc.areRecipesForMealTime(1)) RecipeCarousel(
                                   mealTime: AppLocalizationsHelper.instance.translate('lunch'),
                                   recipesList:bloc.getRecipesForMealTime(1),
-                                  ingredientsNames: bloc.getIngredientsNames(bloc.getRecipesForMealTime(1), state.foodItems!.map((e) => e.id).toList()).map((foodItemMasterList) => foodItemMasterList.map((foodItemMaster) => foodItemMaster.translate(context)).toList()).toList(),
                                   imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(1).length),
+                                  getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
+                                  screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
                                 ),
                                 if (bloc.areRecipesForMealTime(2)) RecipeCarousel(
                                   mealTime: AppLocalizationsHelper.instance.translate('dinner'),
                                   recipesList: bloc.getRecipesForMealTime(2),
-                                  ingredientsNames: bloc.getIngredientsNames(bloc.getRecipesForMealTime(2), state.foodItems!.map((e) => e.id).toList()).map((foodItemMasterList) => foodItemMasterList.map((foodItemMaster) => foodItemMaster.translate(context)).toList()).toList(),
                                   imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(2).length),
+                                  getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
+                                  screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
                                 ),
                                 if (bloc.areRecipesForMealTime(3)) RecipeCarousel(
                                   mealTime: AppLocalizationsHelper.instance.translate('snack'),
                                   recipesList: bloc.getRecipesForMealTime(3),
-                                  ingredientsNames: bloc.getIngredientsNames(bloc.getRecipesForMealTime(3), state.foodItems!.map((e) => e.id).toList()).map((foodItemMasterList) => foodItemMasterList.map((foodItemMaster) => foodItemMaster.translate(context)).toList()).toList(),
                                   imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(3).length),
+                                  getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
+                                  screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
                                 ),
                               ],
                     ),

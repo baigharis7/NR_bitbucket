@@ -119,8 +119,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo,);
       state.profile = await getProfileInteractor.execute();
       state.userKcal = getUserKcalSelectiveObjectives(state.profile?.kcal ?? 0);
-      state.isMenstruation = state.profile?.objectives?.contains(28);
-      state.isCold = state.profile?.objectives?.contains(18);
+      state.isMenstruation = state.profile?.objectives?.contains(Constants.DURING_MENSTRUATION);
+      state.isCold = state.profile?.objectives?.contains(Constants.IMPROVE_THE_IMMUNE_SYSTEM);
       state.todayStep = await getTodayStepInteractor.execute();
       state.micronutrients = state.userMicronutrients!
           .map(
@@ -378,7 +378,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     loop:for (UserRda userRda in state.userRdas ?? []) {
       if (userRda.name == micronutrient) {
         rda = userRda.rda;
-        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(47) == true) {
+        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
           rda = (state.profile?.sex == SexType.male) ? 220: 190;
         }
         break loop;

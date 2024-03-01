@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/presentation/recipes/discover/discover_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 
 import '../../../../infrastructure/utils/dimens.dart';
@@ -77,8 +78,8 @@ class _RecipesTabsHolderState extends State<RecipesTabsHolder> with SingleTicker
 
             controller: _tabController,
             children: const [
-              RecipesTab(foodItems: []),
-              Scaffold(body: Text('Hamza')),
+              DiscoverTab(),
+              RecipesTab(),
           ],),
           
           bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.RECIPES),
