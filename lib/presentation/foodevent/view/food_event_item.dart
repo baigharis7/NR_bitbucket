@@ -61,8 +61,6 @@ class _FoodEventItemState extends State<FoodEventItem> {
               orElse: () => CookingMethod.empty(),
             )
             .methods;
-    // groupCookingMethods.add(-1);
-    // widget.cookingMethodsInfoMaster.cookingMethodsInfo?.add(CookingMethodInfo(id: -1, en: 'None / Raw', es: 'Ninguna / cruda'));
     final cookingMethodsInfo = groupCookingMethods.map((cookingMethodId) {
       String name = widget.cookingMethodsInfoMaster.cookingMethodsInfo!
           .firstWhere((methodInfo) => methodInfo.id == cookingMethodId)
@@ -145,7 +143,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
     String unitsEquivalences = widget.unitsFoodsMaster.unitsFoodsMaster
         .firstWhere(
           (unitFood) => unitFood.id == widget.foodInEvent.id,
-        )
+        orElse: () => UnitFoodMaster.empty(),)
         .units;
     ingredient.unitsEquivalences = unitsEquivalences;
 

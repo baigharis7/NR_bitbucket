@@ -336,7 +336,7 @@ class _LoginScreenState extends State<LoginScreen>
                           child: TextFormField(
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge))),
-                              hintText: AppLocalizations.of(context)!.login_hint,
+                              hintText: model.isLogin ? AppLocalizations.of(context)!.email : AppLocalizations.of(context)!.name ,
                               errorMaxLines: 3,
                             ),
                             controller: _usernameController,

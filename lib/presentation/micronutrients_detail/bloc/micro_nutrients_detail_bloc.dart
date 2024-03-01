@@ -123,7 +123,7 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
     loop:for (UserRda userRda in state.userRdas ?? []) {
       if (userRda.name == micronutrient) {
         rda = userRda.rda;
-        if (userRda.name == Constants.VITAMIN_C) {
+        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(47) == true) {
           rda = (state.profile?.sex == SexType.male) ? 220: 190;
         }
         break loop;

@@ -25,6 +25,7 @@ import 'package:nutrenaissance_flutter/presentation/energy_balance_detail/view/e
 import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/view/liquid_summary_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/nutrients_detail/view/weekly_all_nutrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
@@ -175,9 +176,9 @@ class _DashboardScreen extends State<DashboardScreen>
                         ),
                         WeeklyRDANutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.weekly_nutrients,
-                          nutrients: state.weeklyMicronutrients.orEmpty(),
+                          nutrients: state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList(),
                           isEmpty: false,
-                          screenToMove: () {},
+                          screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()),
                         ),
                         SizedBox(
                           height: 200,

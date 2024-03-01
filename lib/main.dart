@@ -248,6 +248,8 @@ import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/bloc/m
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/bloc/micro_nutrients_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/nutrients_detail/bloc/weekly_all_nutrients_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/nutrients_detail/view/weekly_all_nutrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/privacypolicy/privacy_policy.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/diet_questions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/food_list_aversions_screen.dart';
@@ -452,6 +454,8 @@ void main() async {
   final sugarDetailBloc = SugarDetailBloc();
 
   final fiberDetailBloc = FiberDetailBloc();
+
+  final weeklyAllNutrientsBloc = WeeklyAllNutrientsBloc();
 
   final liquidSummaryDetailBloc = LiquidSummaryDetailBloc(
     getLiquidEventsOfTodayInteractor: getTodayLiquidEventsInteractor,
@@ -724,6 +728,7 @@ void main() async {
         BlocProvider<ResetPasswordBloc>(create: (ctx) => resetPasswordBloc),
         BlocProvider<FecesUrineBloc>(create: (ctx) => fecesUrineBloc),
         BlocProvider<RoutinesBloc>(create: (context) => routineBloc,),
+        BlocProvider<WeeklyAllNutrientsBloc>(create: (context) => weeklyAllNutrientsBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -808,6 +813,7 @@ void main() async {
           ResetPasswordScreen.routeName: (_) => const ResetPasswordScreen(),
           FecesUrineTabHolder.routeName: (_) => const FecesUrineTabHolder(),
           RoutinesScreen.routeName: (_) => const RoutinesScreen(),
+          WeeklyAllNutrientsDetailScreen.routeName: (_) => const WeeklyAllNutrientsDetailScreen(),
         },
       ),
     ),
