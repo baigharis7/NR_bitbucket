@@ -228,6 +228,7 @@
     "hour" : "Hour",
     "day" : "Days",
     "add_new_ingredient" : "Add new ingredient",
+    "ingredients" : "Ingredients",
     "grames" : "Grames",
     "cooking_method" : "Cooking method",
     "no_cooking_methods" : "This food does not have cooking methods.",
