@@ -66,12 +66,15 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
         try {
           final recommendation = await getRecommendationInteractor.execute(getUserIdInteractor.execute(),);
           state.recommendation = recommendation;
+          state.recommendationFoodsItems = [];
           state.recommendationFoodsItems = state.recommendation!.foodList
               .map((groupRecommendation) =>
               RecommendationsFoodItem(
                 recommendationGroup: findRecommendationGroup(groupRecommendation.recGroup,),
                 recommendedFoods: getRecommendationFoodInfo(groupRecommendation.foods,),
-                frequentFoods: getRecommendationFoodInfo(groupRecommendation.usualFoods),
+                frequentFoods: getRecommendationFoodInfo([]),
+                // usualHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualHealthyFoods.orEmpty()),
+                // usualUnHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualUnhealthyFoods.orEmpty()),
               ),).toList();
           state.showRecommendationCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.recommendations.index);
           state.showRecipesCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.recipes.index);
@@ -238,6 +241,22 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
 
   FoodItemMaster getFoodNameByFoodId(int foodId) {
     return state.foodAndDrinksNames!.firstWhere((foodItemMaster) => foodItemMaster.id == foodId, orElse: () => FoodItemMaster.empty());
+  }
+
+  List<UsualFoodsItem> getRecommendationOfUsualFoods(List<UsualFoodItem> usualHealthyFoods) {
+    List<UsualFoodsItem> list = [];
+    for (var usualFoodItem in usualHealthyFoods) {
+      var foodItem = UsualFoodsItem(
+          foodInfo: RecommendationFoodInfo(
+            foodItemMaster: findFood(usualFoodItem.foodId),
+            foodNutrients: /** DUMMY, must receive from backend */[],
+          ),
+          alternativeUsualHealthyFoods: getRecommendationFoodInfo(usualFoodItem.alternativeUsualHealthyFood.orEmpty()),
+          alternativeUsualUnHealthyFoods: getRecommendationFoodInfo(usualFoodItem.alternativeUsualUnhealthyFoods.orEmpty()),
+      );
+    list.add(foodItem);
+    }
+    return list;
   }
 
 }

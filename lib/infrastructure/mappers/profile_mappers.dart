@@ -61,6 +61,7 @@ upload.UploadUserProfile mapToUploadUserProfileModel(domain.UserProfileModel use
     userRdas: uploadUserRdas.userRdas,
     feces: userProfileModel.feces,
     urine: userProfileModel.urine,
+    recommededIds: userProfileModel.recommededIds,
     kcal: userProfileModel.kcal,
   );
 
@@ -113,6 +114,7 @@ entity.UserProfileEntity mapToProfileEntity(domain.UserProfileModel profileModel
     userRdas: entity.UserRdasEntity(userRdasEntity: profileModel.userRdas!.userRdas.map((userRdas) => entity.UserRdaEntity(n: userRdas.name, rda: userRdas.rda.toDouble(), ul: userRdas.ul.toDouble())).toList()),
     feces: profileModel.feces,
     urine: profileModel.urine,
+    recommededIds: profileModel.recommededIds,
     kcal: profileModel.kcal,
   );
 }
@@ -176,6 +178,7 @@ domain.UserProfileModel mapToUserProfileModelFromProfileEntity(entity.UserProfil
     userRdas: userRdas,
     feces: profileEntity.feces,
     urine: profileEntity.urine,
+    recommededIds: profileEntity.recommededIds,
     kcal: profileEntity.kcal,
   );
 }
@@ -239,6 +242,7 @@ domain.UserProfileModel mapToUserProfileModelFromUploadUser(upload.UploadUserPro
     userRdas: userRdas,
     feces: uploadUserProfile.feces,
     urine: uploadUserProfile.urine,
+    recommededIds: uploadUserProfile.recommededIds,
     kcal: uploadUserProfile.kcal,
   );
 }

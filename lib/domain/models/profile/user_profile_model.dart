@@ -23,6 +23,7 @@ class UserProfileModel {
   UserRdas? userRdas;
   int? feces;
   int? urine;
+  List<int>? recommededIds;
   int? kcal;
 
   UserProfileModel({
@@ -45,6 +46,7 @@ class UserProfileModel {
     this.userRdas,
     this.feces,
     this.urine,
+    this.recommededIds,
     this.kcal,
   });
 

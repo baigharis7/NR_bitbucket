@@ -22,6 +22,7 @@ class UploadUserProfile {
   List<UserRda>? userRdas;
   int? feces;
   int? urine;
+  List<int>? recommededIds;
   int? kcal;
 
   UploadUserProfile({
@@ -43,6 +44,7 @@ class UploadUserProfile {
     this.userRdas,
     this.feces,
     this.urine,
+    this.recommededIds,
     this.kcal,
   });
 

@@ -15,6 +15,7 @@ import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/recommendations_food_group_card.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
 class RecommendationsTab extends StatefulWidget {
 
@@ -53,34 +54,39 @@ class _RecommendationsTabState extends State<RecommendationsTab> {
         builder: (ctx, state) {
           return Scaffold(
             backgroundColor: Colors.grey[200],
-            body: SingleChildScrollView(
-              child: Column(
-                children: [
-                  if (state.showRecommendationCard != null && state.showRecommendationCard!) ExplainingCardsHelper().getExplainingCardWithId(
-                    context: context,
-                    explainingCardId: ExplainingCardRefs.recommendations.index,
-                    onHideCard: () => bloc.add(HideRecommendationsExplainingCardAction()),
+            body: Column(
+              children: [
+                if (state.showRecommendationCard != null && state.showRecommendationCard!) ExplainingCardsHelper().getExplainingCardWithId(
+                  context: context,
+                  explainingCardId: ExplainingCardRefs.recommendations.index,
+                  onHideCard: () => bloc.add(HideRecommendationsExplainingCardAction()),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: Dimens.marginNormal),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(children: [
+                      ...state.recommendationFoodsItems!.map((recommendationItem) {
+                        return RecommendationsFoodGroupCard(
+                          recommendationsFoodItem: recommendationItem,
+                          onAdd: (FoodItemMaster foodItemMaster) {
+                            final name = foodItemMaster.translate(ctx);
+                            bloc.add(ManageFoodToListAction(
+                              foodItem: SimpleItem(
+                                id: foodItemMaster.id!,
+                                name: name,
+                              ),
+                            ),);
+                          },
+                          isChecked: (int id) => state.foodItems.orEmpty().map((simpleItem) => simpleItem.id).toList().contains(id),
+                        );
+                      }),
+                    ],),
                   ),
-                  Container(
-                    margin: const EdgeInsets.only(top: Dimens.marginNormal),
-                  ),
-                  ...state.recommendationFoodsItems!.map((recommendationItem) {
-                    return RecommendationsFoodGroupCard(
-                      recommendationsFoodItem: recommendationItem,
-                      onAdd: (FoodItemMaster foodItemMaster) {
-                        final name = foodItemMaster.translate(ctx);
-                        bloc.add(ManageFoodToListAction(
-                          foodItem: SimpleItem(
-                            id: foodItemMaster.id!,
-                            name: name,
-                          ),
-                        ),);
-                        },
-                      isChecked: (int id) => state.foodItems.orEmpty().map((simpleItem) => simpleItem.id).toList().contains(id),
-                    );
-                  }).toList(),
-                ],
-              ),
+                ),
+                Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall), child: RoundedCustomButton(onPressed: () {})),
+              ],
             ),
             // bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: 2,)
             // CustomBottomAppBar(initStateCallback: () => initState()),

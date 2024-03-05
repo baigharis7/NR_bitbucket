@@ -24,7 +24,8 @@ class UserProfileEntity extends HiveObject {
   @HiveField(16) UserRdasEntity? userRdas;
   @HiveField(17) int? feces;
   @HiveField(18) int? urine;
-  @HiveField(19) int? kcal;
+  @HiveField(19) List<int>? recommededIds;
+  @HiveField(20) int? kcal;
 
   static const boxName = 'profile';
 
@@ -48,6 +49,7 @@ class UserProfileEntity extends HiveObject {
     this.userRdas,
     this.feces,
     this.urine,
+    this.recommededIds,
     this.kcal,
   });
 

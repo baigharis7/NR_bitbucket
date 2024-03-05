@@ -36,7 +36,8 @@ class UserProfileEntityAdapter extends TypeAdapter<UserProfileEntity> {
       userRdas: fields[16] as UserRdasEntity?,
       feces: fields[17] as int?,
       urine:  fields[18] as int?,
-      kcal: fields[19] as int?,
+      recommededIds:  fields[19] as List<int>?,
+      kcal: fields[20] as int?,
     );
   }
 
@@ -83,6 +84,8 @@ class UserProfileEntityAdapter extends TypeAdapter<UserProfileEntity> {
       ..writeByte(18)
       ..write(obj.urine)
       ..writeByte(19)
+      ..write(obj.recommededIds)
+      ..writeByte(20)
       ..write(obj.kcal);
   }
 

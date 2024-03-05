@@ -317,6 +317,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         userRdas: state.profile!.userRdas,
         feces: state.profile?.feces ?? -1,
         urine: state.profile?.urine ?? -1,
+        recommededIds: state.profile?.recommededIds.orEmpty(),
         kcal: state.profile!.kcal,
       );
 
@@ -386,6 +387,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         objectives: state.profile!.objectives,
         feces: state.profile?.feces ?? -1,
         urine: state.profile?.urine ?? -1,
+        recommededIds: state.profile?.recommededIds.orEmpty(),
       );
 
       UserProfileResponse userProfileResponse;

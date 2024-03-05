@@ -48,6 +48,7 @@ UserProfileModel _$UserProfileModelFromJson(Map<String, dynamic> json) =>
           : UserRdas.fromJson(json['userRdas'] as Map<String, dynamic>),
       feces: json['feces'] as int?,
       urine: json['urine'] as int?,
+      recommededIds: json['recommededIds'] as List<int>?,
       kcal: json['kcal'] as int?,
     );
 
@@ -72,6 +73,7 @@ Map<String, dynamic> _$UserProfileModelToJson(UserProfileModel instance) =>
       'userRdas': instance.userRdas?.toJson(),
       'feces': instance.feces,
       'urine': instance.urine,
+      'recommededIds': instance.recommededIds,
       'kcal': instance.kcal,
     };
 

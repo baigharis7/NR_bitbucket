@@ -5,11 +5,15 @@ class RecommendationsFoodItem {
   RecommendationGroup recommendationGroup;
   List<RecommendationFoodInfo> recommendedFoods;
   List<RecommendationFoodInfo> frequentFoods;
+  // List<UsualFoodsItem>? usualHealthyFoods;
+  // List<UsualFoodsItem>? usualUnHealthyFoods;
 
   RecommendationsFoodItem({
     required this.recommendationGroup,
     required this.recommendedFoods,
     required this.frequentFoods,
+    // this.usualHealthyFoods,
+    // this.usualUnHealthyFoods,
   });
 
 }
@@ -23,4 +27,12 @@ class RecommendationFoodInfo {
     required this.foodNutrients,
   });
 
+}
+
+class UsualFoodsItem {
+  RecommendationFoodInfo foodInfo;
+  List<RecommendationFoodInfo> alternativeUsualHealthyFoods;
+  List<RecommendationFoodInfo> alternativeUsualUnHealthyFoods;
+
+  UsualFoodsItem({required this.foodInfo, required this.alternativeUsualHealthyFoods, required this.alternativeUsualUnHealthyFoods});
 }

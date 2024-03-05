@@ -268,6 +268,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         objectives: state.profile!.objectives,
         feces: state.profile?.feces ?? -1,
         urine: state.profile?.urine ?? -1,
+        recommededIds: state.profile?.recommededIds.orEmpty()
       );
 
       UserProfileResponse userProfileResponse;
