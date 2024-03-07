@@ -77,19 +77,31 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
                 isChecked: isCheckBoxChecked,
               ),
             );
-          }).toList(),
-          ...recommendationsFoodItem.frequentFoods.take(Constants.DASHBOARD_LIST_SIZE).map((food) {
-            final bool isCheckBoxChecked = isChecked.call(food.foodItemMaster.id);
+          }),
+          ...recommendationsFoodItem.usualUnHealthyFoods.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).map((food) {
+            final bool isCheckBoxChecked = isChecked.call(food.foodInfo.foodItemMaster.id);
             return Container(
               color: AppColors.cardGreen_200,
               child: RecommendationsItem(
-                foodItemMaster: food.foodItemMaster,
+                foodItemMaster: food.foodInfo.foodItemMaster,
                 onAlternative: () => {/** TODO: mandar a back el id de la comida*/},
-                onAdd: () => onAdd.call(food.foodItemMaster),
+                onAdd: () => onAdd.call(food.foodInfo.foodItemMaster),
                 isChecked: isCheckBoxChecked,
               ),
             );
-          }).toList(),
+          }),
+          ...recommendationsFoodItem.usualHealthyFoods.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).map((food) {
+            final bool isCheckBoxChecked = isChecked.call(food.foodInfo.foodItemMaster.id);
+            return Container(
+              color: AppColors.errorRedLight,
+              child: RecommendationsItem(
+                foodItemMaster: food.foodInfo.foodItemMaster,
+                onAlternative: () => {/** TODO: mandar a back el id de la comida*/},
+                onAdd: () => onAdd.call(food.foodInfo.foodItemMaster),
+                isChecked: isCheckBoxChecked,
+              ),
+            );
+          }),
         ],
       ),
     );

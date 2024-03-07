@@ -36,6 +36,7 @@ class EventsSyncApi extends ApiHelper {
         'sportFavorites': sportFavorites,
         'liquidFavorites': liquidFavorites,
         'subjectiveAnalysis': subjectiveAnalysis,
+        'recipeFavorites': [],
       },
     );
   }

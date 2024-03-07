@@ -6,10 +6,13 @@ import 'package:nutrenaissance_flutter/domain/models/recommendations/recommendat
 import 'package:nutrenaissance_flutter/domain/models/recommendations/recommendations_food_item.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 
+import '../../../../domain/models/profile/user_profile_model.dart';
+
 class RecommendationsGeneralState {
   bool isLoading;
   ErrorTypes? onError;
   Recommendation? recommendation;
+  UserProfileModel? profile;
   RecommendationGroupsMaster? recommendationGroups;
   List<FoodItemMaster>? foodAndDrinksNames;
   List<RecommendationsFoodItem>? recommendationFoodsItems;
@@ -25,8 +28,9 @@ class RecommendationsGeneralState {
 
   RecommendationsGeneralState({
     required this.isLoading,
-    required this.onError,
+    this.onError,
     this.recommendation,
+    this.profile,
     this.recommendationGroups,
     this.foodAndDrinksNames,
     this.recommendationFoodsItems,
@@ -42,8 +46,9 @@ class RecommendationsGeneralState {
 
   RecommendationsGeneralState copyWith({
     required bool isLoading,
-    required ErrorTypes? onError,
+    ErrorTypes? onError,
     Recommendation? recommendation,
+    UserProfileModel? profile,
     RecommendationGroupsMaster? recommendationGroups,
     List<FoodItemMaster>? foodAndDrinksNames,
     List<RecommendationsFoodItem>? recommendationFoodsItems,
@@ -58,8 +63,9 @@ class RecommendationsGeneralState {
   }) {
     return RecommendationsGeneralState(
       isLoading: isLoading,
-      onError: onError,
+      onError: onError ?? this.onError,
       recommendation: recommendation ?? this.recommendation,
+      profile: profile ?? this.profile,
       recommendationGroups: recommendationGroups ?? this.recommendationGroups,
       foodAndDrinksNames: foodAndDrinksNames ?? this.foodAndDrinksNames,
       recommendationFoodsItems: recommendationFoodsItems ?? this.recommendationFoodsItems,

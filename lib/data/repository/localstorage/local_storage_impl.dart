@@ -30,6 +30,7 @@ import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_f
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/recipes/upload_recipe_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
@@ -865,6 +866,16 @@ class LocalStorageImpl extends LocalStorageRepository {
         rethrow;
       }
     }
+  }
+
+  @override
+  Future<void> saveRecipeFavorite(UploadRecipeFavorite uploadRecipeFavorite) {
+    try {
+
+    } catch(_) {
+      rethrow;
+    }
+    throw UnimplementedError();
   }
 
 }

@@ -37,6 +37,10 @@ EventsSynchronizationResponse _$EventsSynchronizationResponseFromJson(
           .map((e) =>
               SubjectiveAnalysisResult.fromJson(e as Map<String, dynamic>))
           .toList(),
+      recipeFavorites: (json['recipeFavorites'] as List<dynamic>)
+          .map((e) =>
+              UploadRecipeFavorite.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$EventsSynchronizationResponseToJson(
@@ -53,4 +57,6 @@ Map<String, dynamic> _$EventsSynchronizationResponseToJson(
           instance.liquidFavorites.map((e) => e.toJson()).toList(),
       'subjectiveAnalysis':
           instance.subjectiveAnalysis.map((e) => e.toJson()).toList(),
+      'recipeFavorites':
+          instance.recipeFavorites.map((e) => e.toJson()).toList(),
     };

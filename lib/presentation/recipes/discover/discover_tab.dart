@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/presentation/recipes/common/bloc/recipe_tab_bloc.dart';
 import '../../../infrastructure/helpers/i10n_helper.dart';
 import '../../../infrastructure/helpers/image_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
@@ -21,13 +23,12 @@ class DiscoverTab extends StatefulWidget {
 class _DiscoverTabState extends State<DiscoverTab> {
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<RecommendationsGeneralBloc>(context);
+    final bloc = BlocProvider.of<RecipeTabBloc>(context);
     final imagesHelper = ImageHelper();
-    bloc.add(SetFoodIdsAndGetRecipesAction());
 
     return BlocProvider.value(
       value: bloc,
-      child: BlocConsumer<RecommendationsGeneralBloc, RecommendationsGeneralState>(
+      child: BlocConsumer<RecipeTabBloc, RecipeTabState>(
         listener: (ctx, state) {
           if (state.isLoading) {
             LoadingScreen.instance().show(
@@ -46,15 +47,10 @@ class _DiscoverTabState extends State<DiscoverTab> {
                 margin: const EdgeInsets.only(bottom: Dimens.marginNormal),
                 child: Column(
                   children: [
-                    // if (state.showRecipesCard != null && state.showRecipesCard!) ExplainingCardsHelper().getExplainingCardWithId(
-                    //   context: context,
-                    //   explainingCardId: ExplainingCardRefs.recipes.index,
-                    //   onHideCard: () => bloc.add(HideRecipeExplainingCardAction()),
-                    // ),
                     Container(
                       margin: const EdgeInsets.only(top: Dimens.marginNormal),
                     ),
-                    state.recipesList!.isEmpty
+                    state.recipes.orEmpty().isEmpty
                         ? Container(
                       margin: const EdgeInsets.all(Dimens.marginLarge),
                       child: Text(AppLocalizations.of(context)!.no_discovers),
@@ -69,6 +65,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                             imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(0).length),
                             getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
                             screenToMove: (itemRecipe) {},
+                            heartClick: (itemRecipe) => bloc.add(RecipeFavoriteRecipeAction(itemRecipe: itemRecipe)),
                           ),
                           if (bloc.areRecipesForMealTime(1)) RecipeCarousel(
                             mealTime: AppLocalizationsHelper.instance.translate('lunch'),
@@ -76,6 +73,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                             imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(1).length),
                             getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
                             screenToMove: (itemRecipe) {},
+                            heartClick: (itemRecipe) => bloc.add(RecipeFavoriteRecipeAction(itemRecipe: itemRecipe)),
                           ),
                           if (bloc.areRecipesForMealTime(2)) RecipeCarousel(
                             mealTime: AppLocalizationsHelper.instance.translate('dinner'),
@@ -83,6 +81,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                             imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(2).length),
                             getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
                             screenToMove: (itemRecipe) {},
+                            heartClick: (itemRecipe) => bloc.add(RecipeFavoriteRecipeAction(itemRecipe: itemRecipe)),
                           ),
                           if (bloc.areRecipesForMealTime(3)) RecipeCarousel(
                             mealTime: AppLocalizationsHelper.instance.translate('snack'),
@@ -90,30 +89,15 @@ class _DiscoverTabState extends State<DiscoverTab> {
                             imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(3).length),
                             getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
                             screenToMove: (itemRecipe) {},
+                            heartClick: (itemRecipe) => bloc.add(RecipeFavoriteRecipeAction(itemRecipe: itemRecipe)),
                           ),
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
             ),
-            // bottomNavigationBar: CustomBottomAppBar(initStateCallback: () => initState()),
-            // resizeToAvoidBottomInset: true,
-            // floatingActionButton: FloatingActionButton(
-            //   elevation: 2.0,
-            //   backgroundColor: Colors.white,
-            //   onPressed: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
-            //   child: Container(
-            //     padding: const EdgeInsets.all(Dimens.paddingSmall),
-            //     child: Image.asset(
-            //       'assets/images/logo_black.png',
-            //       fit: BoxFit.cover,
-            //       color: Colors.black,
-            //     ),
-            //   ),
-            // ),
-            // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           );
         },
       ),

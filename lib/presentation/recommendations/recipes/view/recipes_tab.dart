@@ -128,6 +128,7 @@ class _RecipesTab extends State<RecipesTab> {
                                   imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(0).length),
                                   getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
                                   screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
+                                  heartClick: (itemRecipe) {},
                                 ),
                                 if (bloc.areRecipesForMealTime(1)) RecipeCarousel(
                                   mealTime: AppLocalizationsHelper.instance.translate('lunch'),
@@ -135,6 +136,7 @@ class _RecipesTab extends State<RecipesTab> {
                                   imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(1).length),
                                   getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
                                   screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
+                                  heartClick: (itemRecipe) {},
                                 ),
                                 if (bloc.areRecipesForMealTime(2)) RecipeCarousel(
                                   mealTime: AppLocalizationsHelper.instance.translate('dinner'),
@@ -142,6 +144,7 @@ class _RecipesTab extends State<RecipesTab> {
                                   imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(2).length),
                                   getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
                                   screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
+                                  heartClick: (itemRecipe) {},
                                 ),
                                 if (bloc.areRecipesForMealTime(3)) RecipeCarousel(
                                   mealTime: AppLocalizationsHelper.instance.translate('snack'),
@@ -149,6 +152,7 @@ class _RecipesTab extends State<RecipesTab> {
                                   imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(3).length),
                                   getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
                                   screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
+                                  heartClick: (itemRecipe) {},
                                 ),
                               ],
                     ),

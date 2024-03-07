@@ -14,4 +14,5 @@ class AppColors {
   static const true_blue = Color(0xFF0078ce);
   static const light_carmin_pink = Color(0xFFE7726B);
   static const anti_flash_white = Color(0xFFE9F8F3);
+  static const errorRedLight = Color(0xFFFAB7B7);
 }

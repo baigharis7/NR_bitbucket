@@ -6,6 +6,7 @@ import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorit
 import 'package:nutrenaissance_flutter/domain/models/favorites/liquid/liquid_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/recipes/upload_recipe_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 
@@ -24,6 +25,7 @@ class EventsSynchronizationResponse {
   List<AddSportFavorite> sportFavorites;
   List<LiquidFavorite> liquidFavorites;
   List<SubjectiveAnalysisResult> subjectiveAnalysis;
+  List<UploadRecipeFavorite> recipeFavorites;
 
   EventsSynchronizationResponse({
     required this.foodEvents,
@@ -35,6 +37,7 @@ class EventsSynchronizationResponse {
     required this.sportFavorites,
     required this.liquidFavorites,
     required this.subjectiveAnalysis,
+    required this.recipeFavorites,
   });
 
   factory EventsSynchronizationResponse.fromJson(Map<String, dynamic> json) => _$EventsSynchronizationResponseFromJson(json);

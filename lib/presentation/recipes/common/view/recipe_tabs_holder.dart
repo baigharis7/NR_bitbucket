@@ -1,25 +1,33 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/presentation/recipes/common/bloc/recipe_tab_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/recipes/discover/discover_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 
+import '../../../../infrastructure/errors/error_resolver.dart';
+import '../../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../../infrastructure/utils/dimens.dart';
+import '../../../common/view/loading_screen.dart';
 import '../../../recommendations/recipes/view/recipes_tab.dart';
-
 
 class RecipesTabsHolder extends StatefulWidget {
   static const routeName = '/recipes_tab_holder';
+
   const RecipesTabsHolder({super.key});
 
   @override
   State<RecipesTabsHolder> createState() => _RecipesTabsHolderState();
 }
 
-class _RecipesTabsHolderState extends State<RecipesTabsHolder> with SingleTickerProviderStateMixin {
+class _RecipesTabsHolderState extends State<RecipesTabsHolder>
+    with SingleTickerProviderStateMixin {
   String? title;
   late TabController _tabController;
+  late RecipeTabBloc blocRecipe;
   int _selectedTab = 0;
 
   @override
@@ -31,6 +39,8 @@ class _RecipesTabsHolderState extends State<RecipesTabsHolder> with SingleTicker
         // _manageTabChange(context);
       });
     });
+    blocRecipe = BlocProvider.of<RecipeTabBloc>(context);
+    blocRecipe.add(InitializationRecipeAction());
     super.initState();
   }
 
@@ -52,15 +62,20 @@ class _RecipesTabsHolderState extends State<RecipesTabsHolder> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return BlocProvider.value(
+      value: blocRecipe,
+      child: SafeArea(
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.white,
-            title: Text(AppLocalizations.of(context)!.recipes, style: const TextStyle(
-              fontSize: Dimens.fontSizeLarge,
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),),
+            title: Text(
+              AppLocalizations.of(context)!.recipes,
+              style: const TextStyle(
+                fontSize: Dimens.fontSizeLarge,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             centerTitle: true,
             bottom: TabBar(
               controller: _tabController,
@@ -73,17 +88,30 @@ class _RecipesTabsHolderState extends State<RecipesTabsHolder> with SingleTicker
               ],
             ),
           ),
-          body: TabBarView(
-            // physics: BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.normal,),
-
-            controller: _tabController,
-            children: const [
-              DiscoverTab(),
-              RecipesTab(),
-          ],),
-          
-          bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.RECIPES),
-        )
+          body: BlocConsumer<RecipeTabBloc, RecipeTabState>(
+            listener: (ctx, state) {
+              if (state.isLoading) {
+                LoadingScreen.instance().show(
+                  context: ctx,
+                  text: AppLocalizations.of(ctx)!.loading,
+                );
+              } else {
+                LoadingScreen.instance().hide();
+              }
+              if (!state.onError.isNull()) showErrorSnackBar(ctx, resolveError(context, state.onError!));
+            },
+            builder: (context, state) => TabBarView(
+              controller: _tabController,
+              children: const [
+                DiscoverTab(),
+                RecipesTab(),
+              ],
+            ),
+          ),
+          bottomNavigationBar: const CustomBottomNaviBarWidget(
+              activePosition: Constants.RECIPES,),
+        ),
+      ),
     );
   }
 }

@@ -4,16 +4,14 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/recommendation_
 class RecommendationsFoodItem {
   RecommendationGroup recommendationGroup;
   List<RecommendationFoodInfo> recommendedFoods;
-  List<RecommendationFoodInfo> frequentFoods;
-  // List<UsualFoodsItem>? usualHealthyFoods;
-  // List<UsualFoodsItem>? usualUnHealthyFoods;
+  List<UsualFoodsItem>? usualHealthyFoods;
+  List<UsualFoodsItem>? usualUnHealthyFoods;
 
   RecommendationsFoodItem({
     required this.recommendationGroup,
     required this.recommendedFoods,
-    required this.frequentFoods,
-    // this.usualHealthyFoods,
-    // this.usualUnHealthyFoods,
+    this.usualHealthyFoods,
+    this.usualUnHealthyFoods,
   });
 
 }

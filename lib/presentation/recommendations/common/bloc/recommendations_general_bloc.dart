@@ -5,8 +5,10 @@ import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_ex
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_exclusions_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for_foods_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/recommendation_groups_master.dart';
@@ -16,8 +18,13 @@ import 'package:nutrenaissance_flutter/domain/models/recommendations/recommendat
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/recipes_helper.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_state.dart';
+
+import '../../../../data/api/profile/model/user_profile_response.dart';
+import '../../../../domain/interactor/profile/get_profile_interactor.dart';
+import '../../../../domain/interactor/profile/save_profile_entity_interactor.dart';
 
 class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, RecommendationsGeneralState> {
   final GetUserIdInteractor getUserIdInteractor;
@@ -27,6 +34,9 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
   final SaveExplainingCardInteractionInteractor saveExplainingCardInteractionInteractor;
   final GetRecipesForFoodsInteractor getRecipesForFoodsInteractor;
   final GetUserExclusionsInteractor getUserExclusionsInteractor;
+  final GetProfileInteractor getProfileInteractor;
+  final UploadProfileInteractor uploadProfileInteractor;
+  final SaveProfileInteractor saveProfileInteractor;
 
   RecommendationsGeneralBloc({
     required this.getRecommendationInteractor,
@@ -36,6 +46,9 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
     required this.saveExplainingCardInteractionInteractor,
     required this.getRecipesForFoodsInteractor,
     required this.getUserExclusionsInteractor,
+    required this.getProfileInteractor,
+    required this.uploadProfileInteractor,
+    required this.saveProfileInteractor,
   }) : super(RecommendationsGeneralState(
     isLoading: false,
     onError: null,
@@ -56,6 +69,8 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
     on<InitialStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
       if (state.recommendationGroups!.recommendationGroups.isEmpty) state.recommendationGroups = await getMasterFileInteractor.execute(MasterFilesType.recommendationGroups);
+      state.profile = await getProfileInteractor.execute();
+      state.foodItems = getFoodItemFromIds(state.profile?.recommededIds.orEmpty() ?? []);
       if (state.foodAndDrinksNames!.isEmpty) {
         final foodAndDrinksMasterFile = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames) as FoodsAndDrinksNamesMaster;
         state.foodAndDrinksNames = foodAndDrinksMasterFile.foodsAndDrinksNames!.foodNames?..addAll(foodAndDrinksMasterFile.foodsAndDrinksNames!.drinkNames!.toList());
@@ -66,15 +81,15 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
         try {
           final recommendation = await getRecommendationInteractor.execute(getUserIdInteractor.execute(),);
           state.recommendation = recommendation;
-          state.recommendationFoodsItems = [];
+          // state.recommendationFoodsItems = [];
           state.recommendationFoodsItems = state.recommendation!.foodList
               .map((groupRecommendation) =>
               RecommendationsFoodItem(
                 recommendationGroup: findRecommendationGroup(groupRecommendation.recGroup,),
                 recommendedFoods: getRecommendationFoodInfo(groupRecommendation.foods,),
-                frequentFoods: getRecommendationFoodInfo([]),
-                // usualHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualHealthyFoods.orEmpty()),
-                // usualUnHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualUnhealthyFoods.orEmpty()),
+                // frequentFoods: getRecommendationFoodInfo([]),
+                usualHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualHealthyFoods.orEmpty()),
+                usualUnHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualUnhealthyFoods.orEmpty()),
               ),).toList();
           state.showRecommendationCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.recommendations.index);
           state.showRecipesCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.recipes.index);
@@ -167,6 +182,74 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
 
       emit(state.copyWith(isLoading: false, onError: null,));
     });
+
+    on<UpdateProfileAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      // FemaleCharacteristics? femaleCharacteristics;
+      // if (state.profile!.sex == SexType.female) {
+      //   femaleCharacteristics = FemaleCharacteristics(
+      //     menstruation: Menstruation(
+      //       regularity: state.profile!.femaleCharacteristics!.menstruation!.regularity,
+      //       daysOfCycle: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.daysOfCycle,
+      //       lastStartDate: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.lastStartDate,
+      //     ),
+      //   );
+      // } else {
+      //   femaleCharacteristics = null;
+      // }
+      //
+      // UserProfileModel profile = UserProfileModel(
+      //     userId: getUserIdInteractor.execute(),
+      //     commonName: state.profile!.commonName.orEmpty(),
+      //     birthDate: state.profile!.birthDate,
+      //     sex: state.profile!.sex,
+      //     occupationActivityFactor: state.profile!.occupationActivityFactor ?? 1.2,
+      //     physicalCharacteristics: PhysicalCharacteristics(
+      //       height: state.profile!.physicalCharacteristics!.height,
+      //       weight: state.profile!.physicalCharacteristics!.weight,
+      //       unit: state.profile?.physicalCharacteristics?.unit,
+      //       bodyFat: state.profile!.physicalCharacteristics!.bodyFat,
+      //       waistMeasurement: state.profile!.physicalCharacteristics!.waistMeasurement,),
+      //     femaleCharacteristics: femaleCharacteristics,
+      //     medicalSituation: MedicalSituation(
+      //       commonDiseases: state.profile!.medicalSituation!.commonDiseases,
+      //       otherDiseases: [], // Añadir a pantalla
+      //       // underPharmaceuticalTreatment: isUnderTreatment,
+      //     ),
+      //     foodAversions: state.profile!.foodAversions,
+      //     dietType: state.profile!.dietType ?? 0,
+      //     exclusions: Exclusions(exclusions: state.profile!.exclusions!.exclusions),
+      //     intolerances: state.profile!.intolerances,
+      //     // symptoms: , // Añadir cuando esté implementado
+      //     guts: 0,
+      //     objectives: state.profile!.objectives,
+      //     feces: state.profile?.feces ?? -1,
+      //     urine: state.profile?.urine ?? -1,
+      //     recommededIds: state.profile?.recommededIds.orEmpty()
+      // );
+      state.profile?.recommededIds = state.foodItems.orEmpty().map((e) => e.id).toList();
+      UserProfileResponse userProfileResponse;
+      try {
+        userProfileResponse = await uploadProfileInteractor.execute(state.profile!);
+        if (userProfileResponse.uploadSuccess) {
+          state.profile?.micronutrients = userProfileResponse.micronutrients;
+          state.profile?.userRdas = UserRdas(
+            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul)).toList(),
+          );
+          state.profile?.kcal = userProfileResponse.kcal;
+          try {
+            await saveProfileInteractor.execute(state.profile!);
+            emit(state.copyWith(isLoading: false, onError: null));
+          } catch (error) {
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.savingProfileError));
+          }
+        } else {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingProfileError));
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingProfileError));
+      }
+    },);
   }
 
   RecommendationGroup findRecommendationGroup(int groupId) {
@@ -255,6 +338,14 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
           alternativeUsualUnHealthyFoods: getRecommendationFoodInfo(usualFoodItem.alternativeUsualUnhealthyFoods.orEmpty()),
       );
     list.add(foodItem);
+    }
+    return list;
+  }
+
+  List<SimpleItem>? getFoodItemFromIds(List<int> foodItems) {
+    List<SimpleItem> list = [];
+    for (var item in foodItems) {
+      list.add(SimpleItem(name: '', id: item));
     }
     return list;
   }

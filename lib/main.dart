@@ -135,6 +135,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for_foods_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for_foods_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/recipes/upload_recipe_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/recipes/upload_recipe_favorite_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/routines/delete_sport_routine_interactor.dart';
@@ -175,6 +177,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/waterevents/save_water_
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/save_water_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/upload_water_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/upload_water_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/models/recipes/upload_recipe_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/repository/advices/advices_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/calendar/calendar_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/explainingcards/explaining_cards_repository.dart';
@@ -259,6 +262,7 @@ import 'package:nutrenaissance_flutter/presentation/profile/common/physical_acti
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/registry/view/registry_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/recipes/common/bloc/recipe_tab_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/recipes/common/view/recipe_tabs_holder.dart';
 import 'package:nutrenaissance_flutter/presentation/recipes/recipe_detail/view/recipe_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
@@ -291,7 +295,7 @@ import 'presentation/waterevent/view/add_water_event_screen.dart';
 import 'package:chuck_interceptor/chuck.dart';
 
 void main() async {
-  const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
+  const String environmentName = String.fromEnvironment(Environment.DEV, defaultValue: Environment.DEV);
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -402,6 +406,7 @@ void main() async {
   final RemoveSportRoutineInteractor removeSportRoutineInteractor = RemoveSportRoutineInteractorImpl(routinesRepository: routinesRepository);
   final DeleteLiquidEventInteractor deleteLiquidEventInteractor = DeleteLiquidEventInteractorImpl(liquidEventsRepository: liquidEventsRepository);
   final RemoveLiquidEventInteractor removeLiquidEventInteractor = RemoveLiquidEventInteractorImpl(liquidEventsRepository: liquidEventsRepository);
+  final UploadRecipeFavoriteInteractor uploadRecipeFavoriteInteractor = UploadRecipeFavoriteInteractorImpl(recipesRepository: recipesRepository);
 
 
   final dashboardBloc = DashboardBloc(
@@ -687,6 +692,17 @@ void main() async {
     saveExplainingCardInteractionInteractor: saveExplainingCardInteractionInteractor,
     getRecipesForFoodsInteractor: getRecipesForFoodsInteractor,
     getUserExclusionsInteractor: getUserExclusionsInteractor,
+    getProfileInteractor: getProfileInteractor,
+    uploadProfileInteractor: uploadProfileInteractor,
+    saveProfileInteractor: saveProfileInteractor,
+  );
+
+  final recipeTabBloc = RecipeTabBloc(
+      getUserIdInteractor: getUserIdInteractor,
+      getProfileInteractor: getProfileInteractor,
+      getRecipesForFoodsInteractor: getRecipesForFoodsInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
+    uploadRecipeFavoriteInteractor: uploadRecipeFavoriteInteractor,
   );
 
   runApp(
@@ -730,6 +746,7 @@ void main() async {
         BlocProvider<FecesUrineBloc>(create: (ctx) => fecesUrineBloc),
         BlocProvider<RoutinesBloc>(create: (context) => routineBloc,),
         BlocProvider<WeeklyAllNutrientsBloc>(create: (context) => weeklyAllNutrientsBloc,),
+        BlocProvider<RecipeTabBloc>(create: (context) => recipeTabBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),

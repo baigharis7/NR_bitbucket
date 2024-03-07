@@ -4,6 +4,8 @@ import 'package:nutrenaissance_flutter/infrastructure/authentication/authenticat
 import 'package:nutrenaissance_flutter/infrastructure/environment/environment.dart';
 import 'package:nutrenaissance_flutter/infrastructure/http/api_helper.dart';
 
+import '../../../domain/models/recipes/upload_recipe_favorite.dart';
+
 class RecipesApi extends ApiHelper {
   RecipesApi(PreferencesRepository preferencesRepository, AuthenticationService authenticationService, Chuck chuck) : super(preferencesRepository, authenticationService, chuck);
 
@@ -17,5 +19,14 @@ class RecipesApi extends ApiHelper {
                 'exclusions' : exclusions.join(','),
               }
           ),
+      );
+
+  Future<Map<String, dynamic>> uploadRecipeFavorite(UploadRecipeFavorite uploadRecipeFavorite) =>
+      post(
+          Uri.https(
+              Environment().config!.baseUrl,
+              '${Environment().config!.distributionPath}/favorites/recipe',
+          ),
+        uploadRecipeFavorite,
       );
 }

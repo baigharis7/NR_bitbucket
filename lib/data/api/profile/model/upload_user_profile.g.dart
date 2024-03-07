@@ -42,7 +42,7 @@ UploadUserProfile _$UploadUserProfileFromJson(Map<String, dynamic> json) =>
           .toList(),
       feces: json['feces'] as int?,
       urine: json['urine'] as int?,
-      recommededIds: json['recommededIds'] as List<int>?,
+      recommededIds: (json['recommededIds'] as List<dynamic>?)?.map((e) => e as int).toList(),
       kcal: json['kcal'] as int?,
     );
 

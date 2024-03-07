@@ -85,7 +85,7 @@ class _RecommendationsTabState extends State<RecommendationsTab> {
                     ],),
                   ),
                 ),
-                Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall), child: RoundedCustomButton(onPressed: () {})),
+                Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall), child: RoundedCustomButton(onPressed: () => bloc.add(UpdateProfileAction()))),
               ],
             ),
             // bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: 2,)

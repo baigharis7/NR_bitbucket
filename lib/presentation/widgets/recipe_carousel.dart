@@ -12,6 +12,7 @@ class RecipeCarousel extends StatefulWidget {
   final List<String> imagesList;
   final List<FoodItemMaster> Function(List<RecipeIngredient> ingredients) getIngredients;
   final Function(RecipeMaster itemRecipe) screenToMove;
+  final Function(RecipeMaster itemRecipe) heartClick;
 
   const RecipeCarousel({
     Key? key,
@@ -20,6 +21,7 @@ class RecipeCarousel extends StatefulWidget {
     required this.imagesList,
     required this.getIngredients,
     required this.screenToMove,
+    required this.heartClick,
   }) : super(key: key);
 
   @override
@@ -69,6 +71,7 @@ class _RecipeCarousel extends State<RecipeCarousel> {
                         ingredientsNames: widget.getIngredients.call(itemRecipe.ingredients),
                         image: widget.imagesList[index],
                         screenToMove: () => widget.screenToMove.call(itemRecipe),
+                        heartClick: () => widget.heartClick.call(itemRecipe),
                       );
                     },
                     scrollDirection: Axis.horizontal,

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/recipes/recipes_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
@@ -11,6 +13,7 @@ class RecipeCard extends StatefulWidget {
   final List<FoodItemMaster> ingredientsNames;
   final String image;
   final Function screenToMove;
+  final Function heartClick;
 
   const RecipeCard({
     Key? key,
@@ -18,6 +21,7 @@ class RecipeCard extends StatefulWidget {
     required this.ingredientsNames,
     required this.image,
     required this.screenToMove,
+    required this.heartClick,
   }) : super(key: key);
 
   @override
@@ -96,7 +100,7 @@ class _RecipeCard extends State<RecipeCard> {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () => widget.heartClick.call(),
                   icon: const Icon(Icons.favorite_border, size: 30),
                 ),
               ],

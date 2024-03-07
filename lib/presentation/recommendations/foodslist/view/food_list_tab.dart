@@ -127,7 +127,7 @@ class _FoodListScreen extends State<FoodListScreen> {
                       child: Column(
                         children: [
                           ...state.foodItems!.map((foodItem) => FoodListItem(
-                            foodName: foodItem.name,
+                            foodName: bloc.findFood(foodItem.id).translate(context),
                             // onDelete: () => bloc.add(OnDeleteFoodIdFromList(foodItem: foodItem)),
                             onDelete: () {
                               _showDelFoodDialog(onDelFood: () => bloc.add(OnDeleteFoodIdFromList(foodItem: foodItem)));

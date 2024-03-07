@@ -14,6 +14,7 @@ import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_f
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/recipes/upload_recipe_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 
@@ -65,4 +66,5 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<List> getSportRoutines();
   Future<void> removeSportRoutines(SportRoutineEntity sportRoutineEntity);
   Future<void> removeLiquidEvent(LiquidEventEntity liquidEventEntity);
+  Future<void> saveRecipeFavorite(UploadRecipeFavorite uploadRecipeFavorite);
 }
