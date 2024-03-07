@@ -38,8 +38,7 @@ EventsSynchronizationResponse _$EventsSynchronizationResponseFromJson(
               SubjectiveAnalysisResult.fromJson(e as Map<String, dynamic>))
           .toList(),
       recipeFavorites: (json['recipeFavorites'] as List<dynamic>)
-          .map((e) =>
-              UploadRecipeFavorite.fromJson(e as Map<String, dynamic>))
+          .map((e) => UploadRecipeFavorite.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 

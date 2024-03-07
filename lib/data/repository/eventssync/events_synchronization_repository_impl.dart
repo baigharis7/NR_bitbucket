@@ -87,6 +87,11 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
         await localStorageRepository.saveSubjectiveAnalysis(subjectiveAnalysis);
       }
     }
+    if (eventsSynchronizationResponse.recipeFavorites.isNotEmpty) {
+      for (var uploadRecipeEntity in eventsSynchronizationResponse.recipeFavorites) {
+        await localStorageRepository.saveRecipeFavorite(uploadRecipeEntity);
+      }
+    }
 
     return true;
   }

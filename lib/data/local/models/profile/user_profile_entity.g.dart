@@ -44,7 +44,7 @@ class UserProfileEntityAdapter extends TypeAdapter<UserProfileEntity> {
   @override
   void write(BinaryWriter writer, UserProfileEntity obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)

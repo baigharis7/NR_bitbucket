@@ -19,6 +19,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/recipes/recipe_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart';
@@ -69,6 +70,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _explainingCardsBox;
   Box? _subjectiveAnalysisResultsBox;
   Box? _userStepsInfoBox;
+  Box? _recipeFavoritesBox;
 
   Future<Box> _openProfileBox() async => openBox(_profileBox, UserProfileEntity.boxName);
   Future<Box> _openFoodEventsBox() async => openBox(_foodEventsBox, FoodEventEntity.boxName);
@@ -106,6 +108,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> _openExplainingCardsBox() async => openBox(_explainingCardsBox, ExplainingCardEntity.boxName);
   Future<Box> _openSubjectiveAnalysisResultsBox() async => openBox(_subjectiveAnalysisResultsBox, SubjectiveAnalysisResultEntity.boxName);
   Future<Box> _openUserStepsInfoBox() async => openBox(_userStepsInfoBox, StepsEntity.boxName);
+  Future<Box> _openRecipeFavoritesBox() async => openBox(_recipeFavoritesBox, RecipeFavoriteEntity.boxName);
 
   Future<Box> get _getProfileBox async => await _openProfileBox();
   Future<Box> get _getFoodEventsBox async => await _openFoodEventsBox();
@@ -120,6 +123,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> get _getExplainingCardsBox async => await _openExplainingCardsBox();
   Future<Box> get _getSubjectiveAnalysisResultsBox async => await _openSubjectiveAnalysisResultsBox();
   Future<Box> get _getUserStepsInfoBox async => await _openUserStepsInfoBox();
+  Future<Box> get _getRecipeFavoritesBox async => await _openRecipeFavoritesBox();
 
   @override
   Future<void> saveProfile(UserProfileEntity profileEntity) async {

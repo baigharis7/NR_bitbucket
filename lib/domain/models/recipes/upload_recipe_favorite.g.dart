@@ -1,3 +1,5 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
 part of 'upload_recipe_favorite.dart';
 
 // **************************************************************************
@@ -7,9 +9,10 @@ part of 'upload_recipe_favorite.dart';
 UploadRecipeFavorite _$UploadRecipeFavoriteFromJson(
         Map<String, dynamic> json) =>
     UploadRecipeFavorite(
-      userId: json['userId'],
-      eventDate: int.parse(json['eventDate']),
-      itemRecipe: RecipeMaster.fromJson(json['itemRecipe']),
+      userId: json['userId'] as String,
+      eventDate: json['eventDate'] as int,
+      itemRecipe:
+          RecipeMaster.fromJson(json['itemRecipe'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$UploadRecipeFavoriteToJson(
@@ -17,5 +20,5 @@ Map<String, dynamic> _$UploadRecipeFavoriteToJson(
     <String, dynamic>{
       'userId': instance.userId,
       'eventDate': instance.eventDate,
-      'itemRecipe': instance.itemRecipe,
+      'itemRecipe': instance.itemRecipe.toJson(),
     };

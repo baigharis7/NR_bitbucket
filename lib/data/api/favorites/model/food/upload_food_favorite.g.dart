@@ -30,8 +30,8 @@ Map<String, dynamic> _$UploadFoodFavoriteToJson(UploadFoodFavorite instance) =>
       'ingredients': instance.ingredients.map((e) => e.toJson()).toList(),
       'drinks': instance.drinks.map((e) => e.toJson()).toList(),
       'comment': instance.comment,
-      'dish': instance.dish,
       'mealTime': instance.mealTime,
+      'dish': instance.dish,
     };
 
 UploadFoodInFavorite _$UploadFoodInFavoriteFromJson(
