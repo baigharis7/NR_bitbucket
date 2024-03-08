@@ -873,13 +873,58 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<void> saveRecipeFavorite(UploadRecipeFavorite uploadRecipeFavorite) {
+  Future<void> saveRecipeFavorite(RecipeFavoriteEntity recipeFavoriteEntity, {bool isEdit = false}) async {
     try {
-
+      await recipeFavoriteEntity.save();
     } catch(_) {
-      rethrow;
+      try {
+        _getRecipeFavoritesBox.then((box) {
+          if (isEdit) {
+            final recipeFavoritesMap = box.toMap();
+            recipeFavoritesMap.forEach((key, value) {
+              if ((value as RecipeFavoriteEntity).eventDate == recipeFavoriteEntity.eventDate) {
+                box.put(key, recipeFavoriteEntity);
+              }
+            });
+          } else {
+            box.add(recipeFavoriteEntity);
+          }
+        });
+      } catch (error) {
+        rethrow;
+      }
     }
-    throw UnimplementedError();
+  }
+
+  @override
+  Future<List> getRecipeFavorites() async {
+    List list = await _getRecipeFavoritesBox.then((box) {
+      return box.values.toList();
+    });
+
+    return list;
+  }
+
+  @override
+  Future<void> removeRecipeFavorite(RecipeFavoriteEntity recipeFavoriteEntity) async {
+    try {
+      await recipeFavoriteEntity.delete();
+    } catch (error) {
+      try {
+        _getRecipeFavoritesBox.then((box) {
+          final liquidEventsMap = box.toMap();
+          dynamic desiredKey;
+          liquidEventsMap.forEach((key, value) {
+            if ((value as RecipeFavoriteEntity).eventDate == recipeFavoriteEntity.eventDate) {
+              desiredKey = key;
+            }
+          });
+          box.delete(desiredKey);
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
   }
 
 }

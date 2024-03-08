@@ -4,4 +4,8 @@ import 'package:nutrenaissance_flutter/domain/models/recipes/upload_recipe_favor
 abstract class RecipesRepository {
   Future<List<RecipeMaster>> getRecipes(List<int> foodIds, List<int> exclusions);
   Future<void> uploadRecipeFavorite(UploadRecipeFavorite uploadRecipeFavorite);
+  Future<List<UploadRecipeFavorite>> getRecipeFavorites();
+  Future<void> saveRecipeFavorite(UploadRecipeFavorite uploadRecipeFavorite);
+  Future<void> deleteRecipeFavorite(String userId, int eventDate);
+  Future<void> removeRecipeFavorite(UploadRecipeFavorite uploadRecipeFavorite);
 }

@@ -11,6 +11,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart'
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/recipes/common/bloc/recipe_tab_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/recipes/recipe_detail/view/recipe_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_actions.dart';
@@ -19,6 +20,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_ba
 import 'package:nutrenaissance_flutter/presentation/widgets/recipe_carousel.dart';
 
 import '../../../widgets/custom_bottom_navi_bar_widget.dart';
+import '../../../widgets/recipe_favorite_carousel.dart';
 
 class RecipesTab extends StatefulWidget {
 
@@ -32,6 +34,7 @@ class RecipesTab extends StatefulWidget {
 
 class _RecipesTab extends State<RecipesTab> {
   final _searchController = TextEditingController();
+  late RecipeTabBloc recipeTabBloc;
 
   @override
   void dispose() {
@@ -40,14 +43,19 @@ class _RecipesTab extends State<RecipesTab> {
   }
 
   @override
+  void initState() {
+    recipeTabBloc = BlocProvider.of<RecipeTabBloc>(context);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<RecommendationsGeneralBloc>(context);
     final imagesHelper = ImageHelper();
     // bloc.add(SetFoodIdsAndGetRecipesAction());
 
     return BlocProvider.value(
-      value: bloc,
-      child: BlocConsumer<RecommendationsGeneralBloc, RecommendationsGeneralState>(
+      value: recipeTabBloc,
+      child: BlocConsumer<RecipeTabBloc, RecipeTabState>(
         listener: (ctx, state) {
           if (state.isLoading) {
             LoadingScreen.instance().show(
@@ -66,11 +74,11 @@ class _RecipesTab extends State<RecipesTab> {
                 margin: const EdgeInsets.only(bottom: Dimens.marginNormal),
                 child: Column(
                   children: [
-                    if (state.showRecipesCard != null && state.showRecipesCard!) ExplainingCardsHelper().getExplainingCardWithId(
-                      context: context,
-                      explainingCardId: ExplainingCardRefs.recipes.index,
-                      onHideCard: () => bloc.add(HideRecipeExplainingCardAction()),
-                    ),
+                    // if (state.showRecipesCard != null && state.showRecipesCard!) ExplainingCardsHelper().getExplainingCardWithId(
+                    //   context: context,
+                    //   explainingCardId: ExplainingCardRefs.recipes.index,
+                    //   onHideCard: () => bloc.add(HideRecipeExplainingCardAction()),
+                    // ),
                     Container(
                       margin: const EdgeInsets.only(top: Dimens.marginNormal),
                     ),
@@ -113,7 +121,7 @@ class _RecipesTab extends State<RecipesTab> {
                     //     },
                     //   ),
                     // ),
-                    state.recipesList!.isEmpty
+                    state.recipesFavorites.orEmpty().isEmpty
                         ? Container(
                           margin: const EdgeInsets.all(Dimens.marginLarge),
                           child: Text(AppLocalizations.of(context)!.no_recipes),
@@ -122,37 +130,41 @@ class _RecipesTab extends State<RecipesTab> {
                           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
                           child: Column(
                               children: [
-                                if (bloc.areRecipesForMealTime(0)) RecipeCarousel(
+                                if (recipeTabBloc.areRecipeFavoritesForMealTime(0)) RecipeFavoriteCarousel(
                                   mealTime: AppLocalizationsHelper.instance.translate('breakfast'),
-                                  recipesList: bloc.getRecipesForMealTime(0),
-                                  imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(0).length),
-                                  getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
+                                  recipesFavorites: recipeTabBloc.getRecipeFavoritesForMealTime(0),
+                                  imagesList: imagesHelper.getImagesList(recipeTabBloc.getRecipeFavoritesForMealTime(0).length),
+                                  getIngredients: (ingredientsList) => recipeTabBloc.getIngredientsInfo(ingredientsList),
                                   screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
                                   heartClick: (itemRecipe) {},
+                                  deleteItemRecipe: (itemRecipe) => recipeTabBloc.add(DeleteRecipeFavoriteAction(uploadRecipeFavorite: itemRecipe)),
                                 ),
-                                if (bloc.areRecipesForMealTime(1)) RecipeCarousel(
+                                if (recipeTabBloc.areRecipeFavoritesForMealTime(1)) RecipeFavoriteCarousel(
                                   mealTime: AppLocalizationsHelper.instance.translate('lunch'),
-                                  recipesList:bloc.getRecipesForMealTime(1),
-                                  imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(1).length),
-                                  getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
+                                  recipesFavorites:recipeTabBloc.getRecipeFavoritesForMealTime(1),
+                                  imagesList: imagesHelper.getImagesList(recipeTabBloc.getRecipesForMealTime(1).length),
+                                  getIngredients: (ingredientsList) => recipeTabBloc.getIngredientsInfo(ingredientsList),
                                   screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
                                   heartClick: (itemRecipe) {},
+                                  deleteItemRecipe: (itemRecipe) => recipeTabBloc.add(DeleteRecipeFavoriteAction(uploadRecipeFavorite: itemRecipe)),
                                 ),
-                                if (bloc.areRecipesForMealTime(2)) RecipeCarousel(
+                                if (recipeTabBloc.areRecipeFavoritesForMealTime(2)) RecipeFavoriteCarousel(
                                   mealTime: AppLocalizationsHelper.instance.translate('dinner'),
-                                  recipesList: bloc.getRecipesForMealTime(2),
-                                  imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(2).length),
-                                  getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
+                                  recipesFavorites: recipeTabBloc.getRecipeFavoritesForMealTime(2),
+                                  imagesList: imagesHelper.getImagesList(recipeTabBloc.getRecipesForMealTime(2).length),
+                                  getIngredients: (ingredientsList) => recipeTabBloc.getIngredientsInfo(ingredientsList),
                                   screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
                                   heartClick: (itemRecipe) {},
+                                  deleteItemRecipe: (itemRecipe) => recipeTabBloc.add(DeleteRecipeFavoriteAction(uploadRecipeFavorite: itemRecipe)),
                                 ),
-                                if (bloc.areRecipesForMealTime(3)) RecipeCarousel(
+                                if (recipeTabBloc.areRecipeFavoritesForMealTime(3)) RecipeFavoriteCarousel(
                                   mealTime: AppLocalizationsHelper.instance.translate('snack'),
-                                  recipesList: bloc.getRecipesForMealTime(3),
-                                  imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(3).length),
-                                  getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
+                                  recipesFavorites: recipeTabBloc.getRecipeFavoritesForMealTime(3),
+                                  imagesList: imagesHelper.getImagesList(recipeTabBloc.getRecipesForMealTime(3).length),
+                                  getIngredients: (ingredientsList) => recipeTabBloc.getIngredientsInfo(ingredientsList),
                                   screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
                                   heartClick: (itemRecipe) {},
+                                  deleteItemRecipe: (itemRecipe) => recipeTabBloc.add(DeleteRecipeFavoriteAction(uploadRecipeFavorite: itemRecipe)),
                                 ),
                               ],
                     ),

@@ -10,3 +10,9 @@ class RecipeFavoriteRecipeAction extends RecipeTabEvent {
 
   RecipeFavoriteRecipeAction({required this.itemRecipe});
 }
+
+class DeleteRecipeFavoriteAction extends RecipeTabEvent {
+  UploadRecipeFavorite uploadRecipeFavorite;
+
+  DeleteRecipeFavoriteAction({required this.uploadRecipeFavorite});
+}

@@ -29,4 +29,16 @@ class RecipesApi extends ApiHelper {
           ),
         uploadRecipeFavorite,
       );
+
+  Future<Map<String, dynamic>> deleteRecipeFavorite(String userId, int eventDate) =>
+      delete(
+          Uri.https(
+              Environment().config!.baseUrl,
+              '${Environment().config!.distributionPath}/favorites/recipe',
+          ),
+        {
+          'userId': userId,
+          'eventDate': eventDate,
+        },
+      );
 }

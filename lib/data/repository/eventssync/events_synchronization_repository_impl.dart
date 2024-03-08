@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_stor
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/liquid_event_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/recipes_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/sport_event_mappers.dart';
 
 import '../../../infrastructure/mappers/sport_routine_mappers.dart';
@@ -88,8 +89,8 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
       }
     }
     if (eventsSynchronizationResponse.recipeFavorites.isNotEmpty) {
-      for (var uploadRecipeEntity in eventsSynchronizationResponse.recipeFavorites) {
-        await localStorageRepository.saveRecipeFavorite(uploadRecipeEntity);
+      for (var uploadRecipeFavorite in eventsSynchronizationResponse.recipeFavorites) {
+        await localStorageRepository.saveRecipeFavorite(mapToRecipeFavoriteEntity(uploadRecipeFavorite));
       }
     }
 

@@ -9,6 +9,7 @@ class RecipeTabState {
   UserProfileModel? profile;
   List<FoodItemMaster>? foodAndDrinksNames;
   List<RecipeMaster>? recipes;
+  List<UploadRecipeFavorite>? recipesFavorites;
 
   RecipeTabState({
     required this.isLoading,
@@ -16,6 +17,7 @@ class RecipeTabState {
     this.profile,
     this.foodAndDrinksNames,
     this.recipes,
+    this.recipesFavorites,
   });
 
   RecipeTabState copyWith({
@@ -24,6 +26,7 @@ class RecipeTabState {
     UserProfileModel? profile,
     List<FoodItemMaster>? foodAndDrinksNames,
     List<RecipeMaster>? recipes,
+    List<UploadRecipeFavorite>? recipesFavorites,
   }) {
     return RecipeTabState(
       isLoading: isLoading,
@@ -31,6 +34,7 @@ class RecipeTabState {
       profile: profile ?? this.profile,
       foodAndDrinksNames: foodAndDrinksNames ?? this.foodAndDrinksNames,
       recipes: recipes ?? this.recipes,
+      recipesFavorites: recipesFavorites ?? this.recipesFavorites,
     );
   }
 }

@@ -38,6 +38,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/recipes/recipe_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/watervents/water_event_entity.dart';
@@ -133,8 +134,16 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_intera
 import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/recipes/delete_recipe_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/recipes/delete_recipe_favorite_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipe_favorites_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipe_favorites_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for_foods_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for_foods_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/recipes/remove_recipe_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/recipes/remove_recipe_favorite_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/recipes/save_recipe_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/recipes/save_recipe_favorite_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recipes/upload_recipe_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recipes/upload_recipe_favorite_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
@@ -375,7 +384,7 @@ void main() async {
   final DeleteSportFavoriteInteractor deleteSportFavoriteInteractor = DeleteSportFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
   final RemoveSportFavoriteInteractor removeSportFavoriteInteractor = RemoveSportFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
   final RecipesApi recipesApi = RecipesApi(prefsRepository, authenticationService, chuck);
-  final RecipesRepository recipesRepository = RecipesRepositoryImpl(recipesApi: recipesApi);
+  final RecipesRepository recipesRepository = RecipesRepositoryImpl(recipesApi: recipesApi, localStorageRepository: localStorageRepository);
   final GetRecipesForFoodsInteractor getRecipesForFoodsInteractor = GetRecipesForFoodsInteractorImpl(recipesRepository: recipesRepository);
   final GetUserExclusionsInteractor getUserExclusionsInteractor = GetUserExclusionsInteractorImpl(profileRepository: profileRepository);
   final SaveLiquidFavoriteInteractor saveLiquidFavoriteInteractor = SaveLiquidFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
@@ -407,7 +416,10 @@ void main() async {
   final DeleteLiquidEventInteractor deleteLiquidEventInteractor = DeleteLiquidEventInteractorImpl(liquidEventsRepository: liquidEventsRepository);
   final RemoveLiquidEventInteractor removeLiquidEventInteractor = RemoveLiquidEventInteractorImpl(liquidEventsRepository: liquidEventsRepository);
   final UploadRecipeFavoriteInteractor uploadRecipeFavoriteInteractor = UploadRecipeFavoriteInteractorImpl(recipesRepository: recipesRepository);
-
+  final GetRecipeFavoritesInteractor getRecipeFavoritesInteractor = GetRecipeFavoritesInteractorImpl(recipesRepository: recipesRepository);
+  final SaveRecipeFavoriteInteractor saveRecipeFavoriteInteractor = SaveRecipeFavoriteInteractorImpl(recipesRepository: recipesRepository);
+  final DeleteRecipeFavoriteInteractor deleteRecipeFavoriteInteractor = DeleteRecipeFavoriteInteractorImpl(recipesRepository: recipesRepository);
+  final RemoveRecipeFavoriteInteractor removeRecipeFavoriteInteractor = RemoveRecipeFavoriteInteractorImpl(recipesRepository: recipesRepository);
 
   final dashboardBloc = DashboardBloc(
     getAdviceInteractor: getAdviceInteractor,
@@ -703,6 +715,10 @@ void main() async {
       getRecipesForFoodsInteractor: getRecipesForFoodsInteractor,
     getMasterFileInteractor: getMasterFileInteractor,
     uploadRecipeFavoriteInteractor: uploadRecipeFavoriteInteractor,
+    getRecipeFavoritesInteractor: getRecipeFavoritesInteractor,
+    saveRecipeFavoriteInteractor: saveRecipeFavoriteInteractor,
+    deleteRecipeFavoriteInteractor: deleteRecipeFavoriteInteractor,
+    removeRecipeFavoriteInteractor: removeRecipeFavoriteInteractor,
   );
 
   runApp(
@@ -898,4 +914,9 @@ void initLocalStorage() async {
   Hive.registerAdapter(StepsEntityAdapter());
   Hive.registerAdapter(SportRoutineEntityAdapter());
   Hive.registerAdapter(SportRoutineInfoEntityAdapter());
+  Hive.registerAdapter(RecipeFavoriteEntityAdapter());
+  Hive.registerAdapter(RecipeMasterEntityAdapter());
+  Hive.registerAdapter(RecipeIngredientEntityAdapter());
+  Hive.registerAdapter(RecipeStepsEntityAdapter());
+  Hive.registerAdapter(RecipeStepEntityAdapter());
 }

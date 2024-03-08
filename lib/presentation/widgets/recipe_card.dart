@@ -14,6 +14,8 @@ class RecipeCard extends StatefulWidget {
   final String image;
   final Function screenToMove;
   final Function heartClick;
+  final bool? isFavorite;
+  final Function? ondeleteItemRecipe;
 
   const RecipeCard({
     Key? key,
@@ -22,6 +24,8 @@ class RecipeCard extends StatefulWidget {
     required this.image,
     required this.screenToMove,
     required this.heartClick,
+    this.isFavorite,
+    this.ondeleteItemRecipe,
   }) : super(key: key);
 
   @override
@@ -100,8 +104,8 @@ class _RecipeCard extends State<RecipeCard> {
                   ),
                 ),
                 IconButton(
-                  onPressed: () => widget.heartClick.call(),
-                  icon: const Icon(Icons.favorite_border, size: 30),
+                  onPressed: () => widget.isFavorite ?? false ? widget.ondeleteItemRecipe?.call() : widget.heartClick.call(),
+                  icon: widget.isFavorite ?? false ? const Icon(Icons.favorite, size: 30, color: AppColors.errorRed,) : const Icon(Icons.favorite_border, size: 30),
                 ),
               ],
             ),

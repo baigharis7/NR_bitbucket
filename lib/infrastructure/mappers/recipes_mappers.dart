@@ -1,5 +1,7 @@
 import 'package:nutrenaissance_flutter/data/api/recipes/model/recipes_response.dart';
+import 'package:nutrenaissance_flutter/data/local/models/recipes/recipe_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/recipes/recipes_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/recipes/upload_recipe_favorite.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 List<RecipeMaster> mapToRecipeMasterList(RecipesListResponse recipesListResponse) {
@@ -70,5 +72,82 @@ RecipeSteps _getRecipeSteps(String recipeStepsCoded) {
   }).toList();
 
   return RecipeSteps(steps: recipeSteps);
-
 }
+
+RecipeFavoriteEntity mapToRecipeFavoriteEntity(
+    UploadRecipeFavorite uploadRecipeFavorite) {
+  return RecipeFavoriteEntity(
+    userId: uploadRecipeFavorite.userId,
+    eventDate: uploadRecipeFavorite.eventDate,
+    itemRecipe: mapToRecipeMasterEntity(uploadRecipeFavorite.itemRecipe),
+  );
+}
+
+RecipeMasterEntity mapToRecipeMasterEntity(RecipeMaster itemRecipe) {
+  return RecipeMasterEntity(
+    id: itemRecipe.id,
+    meal: itemRecipe.meal,
+    name_es: itemRecipe.name_es,
+    name_en: itemRecipe.name_en,
+    ingredients: mapToRecipeIngredientsEntity(itemRecipe.ingredients),
+    steps_es: mapToRecipeStepsEntity(itemRecipe.steps_es),
+    steps_en: mapToRecipeStepsEntity(itemRecipe.steps_en),
+    time: itemRecipe.time,
+    difficulty: itemRecipe.difficulty,
+    servings: itemRecipe.servings,
+    source: itemRecipe.source,
+    exclusions: itemRecipe.exclusions,
+  );
+}
+
+List<RecipeIngredientEntity> mapToRecipeIngredientsEntity(List<RecipeIngredient> ingredients) {
+  return ingredients.map((ingredient) => RecipeIngredientEntity(id: ingredient.id, qtyGrams: ingredient.qtyGrams, qtyUnit: ingredient.qtyUnit, unit: ingredient.unit)).toList();
+}
+
+RecipeStepsEntity mapToRecipeStepsEntity(RecipeSteps? steps) {
+  return RecipeStepsEntity(steps: mapToRecipeStepEntity(steps));
+}
+
+List<RecipeStepEntity> mapToRecipeStepEntity(RecipeSteps? steps) {
+  return steps?.steps.orEmpty().map((step) => RecipeStepEntity(stepTitle: step.stepTitle, subSteps: step.subSteps)).toList() ?? [];
+}
+
+UploadRecipeFavorite mapToUploadRecipeFavorite(
+    RecipeFavoriteEntity uploadRecipeFavoriteEntity) {
+  return UploadRecipeFavorite(
+    userId: uploadRecipeFavoriteEntity.userId,
+    eventDate: uploadRecipeFavoriteEntity.eventDate,
+    itemRecipe: mapToRecipeMaster(uploadRecipeFavoriteEntity.itemRecipe),
+  );
+}
+
+RecipeMaster mapToRecipeMaster(RecipeMasterEntity itemRecipe) {
+  return RecipeMaster(
+    id: itemRecipe.id,
+    meal: itemRecipe.meal,
+    name_es: itemRecipe.name_es,
+    name_en: itemRecipe.name_en,
+    ingredients: mapToRecipeIngredients(itemRecipe.ingredients),
+    steps_es: mapToRecipeSteps(itemRecipe.steps_es),
+    steps_en: mapToRecipeSteps(itemRecipe.steps_en),
+    time: itemRecipe.time,
+    difficulty: itemRecipe.difficulty,
+    servings: itemRecipe.servings,
+    source: itemRecipe.source,
+    exclusions: itemRecipe.exclusions,
+  );
+}
+
+List<RecipeIngredient> mapToRecipeIngredients(List<RecipeIngredientEntity> ingredients) {
+  return ingredients.map((ingredient) => RecipeIngredient(id: ingredient.id, qtyGrams: ingredient.qtyGrams, qtyUnit: ingredient.qtyUnit, unit: ingredient.unit)).toList();
+}
+
+RecipeSteps mapToRecipeSteps(RecipeStepsEntity? steps) {
+  return RecipeSteps(steps: mapToRecipeStep(steps));
+}
+
+List<Step> mapToRecipeStep(RecipeStepsEntity? steps) {
+  return steps?.steps.orEmpty().map((step) => Step(stepTitle: step.stepTitle, subSteps: step.subSteps)).toList() ?? [];
+}
+
+
