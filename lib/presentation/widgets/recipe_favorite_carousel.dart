@@ -12,7 +12,7 @@ class RecipeFavoriteCarousel extends StatefulWidget {
   final List<UploadRecipeFavorite> recipesFavorites;
   final List<String> imagesList;
   final List<FoodItemMaster> Function(List<RecipeIngredient> ingredients) getIngredients;
-  final Function(RecipeMaster itemRecipe) screenToMove;
+  final Function(UploadRecipeFavorite itemRecipe) screenToMove;
   final Function(RecipeMaster itemRecipe) heartClick;
   final Function(UploadRecipeFavorite uploadRecipeFavorite) deleteItemRecipe;
 
@@ -73,7 +73,7 @@ class _RecipeFavoriteCarousel extends State<RecipeFavoriteCarousel> {
                         recipeMaster: itemRecipe.itemRecipe,
                         ingredientsNames: widget.getIngredients.call(itemRecipe.itemRecipe.ingredients),
                         image: widget.imagesList[index],
-                        screenToMove: () => widget.screenToMove.call(itemRecipe.itemRecipe),
+                        screenToMove: () => widget.screenToMove.call(itemRecipe),
                         heartClick: () => widget.heartClick.call(itemRecipe.itemRecipe),
                         isFavorite: true,
                         ondeleteItemRecipe: () => widget.deleteItemRecipe.call(itemRecipe),

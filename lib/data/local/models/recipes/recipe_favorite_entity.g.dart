@@ -17,8 +17,8 @@ class RecipeFavoriteEntityAdapter extends TypeAdapter<RecipeFavoriteEntity> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return RecipeFavoriteEntity(
-      userId: fields[0] as String,
-      eventDate: fields[1] as int,
+      userId: fields[0] as String?,
+      eventDate: fields[1] as int?,
       itemRecipe: fields[2] as RecipeMasterEntity,
     );
   }

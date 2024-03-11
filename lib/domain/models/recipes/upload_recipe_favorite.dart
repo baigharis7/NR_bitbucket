@@ -6,8 +6,8 @@ part 'upload_recipe_favorite.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class UploadRecipeFavorite extends Translatable {
-  String userId;
-  int eventDate;
+  String? userId;
+  int? eventDate;
   RecipeMaster itemRecipe;
 
   UploadRecipeFavorite({required this.userId, required this.eventDate, required this.itemRecipe});

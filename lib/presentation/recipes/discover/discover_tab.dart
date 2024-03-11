@@ -12,6 +12,7 @@ import '../../recommendations/common/bloc/recommendations_general_actions.dart';
 import '../../recommendations/common/bloc/recommendations_general_bloc.dart';
 import '../../recommendations/common/bloc/recommendations_general_state.dart';
 import '../../widgets/recipe_carousel.dart';
+import '../recipe_detail/view/recipe_detail_screen.dart';
 
 class DiscoverTab extends StatefulWidget {
   const DiscoverTab({super.key});
@@ -64,7 +65,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                             recipesList: bloc.getRecipesForMealTime(0),
                             imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(0).length),
                             getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
-                            screenToMove: (itemRecipe) {},
+                            screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
                             heartClick: (itemRecipe) => bloc.add(RecipeFavoriteRecipeAction(itemRecipe: itemRecipe)),
                           ),
                           if (bloc.areRecipesForMealTime(1)) RecipeCarousel(
@@ -72,7 +73,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                             recipesList:bloc.getRecipesForMealTime(1),
                             imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(1).length),
                             getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
-                            screenToMove: (itemRecipe) {},
+                            screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
                             heartClick: (itemRecipe) => bloc.add(RecipeFavoriteRecipeAction(itemRecipe: itemRecipe)),
                           ),
                           if (bloc.areRecipesForMealTime(2)) RecipeCarousel(
@@ -80,7 +81,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                             recipesList: bloc.getRecipesForMealTime(2),
                             imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(2).length),
                             getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
-                            screenToMove: (itemRecipe) {},
+                            screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
                             heartClick: (itemRecipe) => bloc.add(RecipeFavoriteRecipeAction(itemRecipe: itemRecipe)),
                           ),
                           if (bloc.areRecipesForMealTime(3)) RecipeCarousel(
@@ -88,7 +89,7 @@ class _DiscoverTabState extends State<DiscoverTab> {
                             recipesList: bloc.getRecipesForMealTime(3),
                             imagesList: imagesHelper.getImagesList(bloc.getRecipesForMealTime(3).length),
                             getIngredients: (ingredientsList) => bloc.getIngredientsInfo(ingredientsList),
-                            screenToMove: (itemRecipe) {},
+                            screenToMove: (itemRecipe) => Navigator.pushNamed(context, RecipeDetailScreen.routeName, arguments: itemRecipe),
                             heartClick: (itemRecipe) => bloc.add(RecipeFavoriteRecipeAction(itemRecipe: itemRecipe)),
                           ),
                         ],

@@ -84,7 +84,7 @@ class RecipeTabBloc extends Bloc<RecipeTabEvent, RecipeTabState> {
     on<DeleteRecipeFavoriteAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       try {
-        await deleteRecipeFavoriteInteractor.execute(event.uploadRecipeFavorite.userId, event.uploadRecipeFavorite.eventDate);
+        await deleteRecipeFavoriteInteractor.execute(event.uploadRecipeFavorite.userId.orEmpty(), event.uploadRecipeFavorite.eventDate.orZero());
         try {
           await removeRecipeFavoriteInteractor.execute(event.uploadRecipeFavorite);
           add(InitializationRecipeAction());

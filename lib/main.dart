@@ -273,6 +273,7 @@ import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile
 import 'package:nutrenaissance_flutter/presentation/profile/registry/view/registry_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/recipes/common/bloc/recipe_tab_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/recipes/common/view/recipe_tabs_holder.dart';
+import 'package:nutrenaissance_flutter/presentation/recipes/recipe_detail/bloc/recipe_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/recipes/recipe_detail/view/recipe_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/resetpassword/bloc/reset_password_bloc.dart';
@@ -721,6 +722,10 @@ void main() async {
     removeRecipeFavoriteInteractor: removeRecipeFavoriteInteractor,
   );
 
+  final recipeDetailBloc = RecipeDetailBloc(
+    getMasterFileInteractor: getMasterFileInteractor,
+  );
+
   runApp(
     // MultiProvider(
     MultiBlocProvider(
@@ -763,6 +768,7 @@ void main() async {
         BlocProvider<RoutinesBloc>(create: (context) => routineBloc,),
         BlocProvider<WeeklyAllNutrientsBloc>(create: (context) => weeklyAllNutrientsBloc,),
         BlocProvider<RecipeTabBloc>(create: (context) => recipeTabBloc,),
+        BlocProvider<RecipeDetailBloc>(create: (context) => recipeDetailBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),

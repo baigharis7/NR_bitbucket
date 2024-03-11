@@ -9,8 +9,8 @@ part 'recipe_favorite_entity.g.dart';
 class RecipeFavoriteEntity extends HiveObject {
   static const boxName = 'recipe_favorite';
 
-  @HiveField(0) String userId;
-  @HiveField(1) int eventDate;
+  @HiveField(0) String? userId;
+  @HiveField(1) int? eventDate;
   @HiveField(2) RecipeMasterEntity itemRecipe;
 
   RecipeFavoriteEntity({required this.userId, required this.eventDate, required this.itemRecipe});
