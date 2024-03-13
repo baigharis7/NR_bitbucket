@@ -8,6 +8,8 @@ class EventsSynchronizationRequest {
   List<int> sportFavorites;
   List<int> liquidFavorites;
   List<int> subjectiveAnalysis;
+  List<int> recipeFavorites;
+  List<int> fecesEvents;
 
   EventsSynchronizationRequest({
     required this.foodEvents,
@@ -19,6 +21,8 @@ class EventsSynchronizationRequest {
     required this.sportFavorites,
     required this.liquidFavorites,
     required this.subjectiveAnalysis,
+    required this.recipeFavorites,
+    required this.fecesEvents,
   });
 
 }

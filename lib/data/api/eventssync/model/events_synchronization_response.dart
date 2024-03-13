@@ -11,6 +11,7 @@ import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_com
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 
 import '../../../../domain/models/routines/sport_routine_completed.dart';
+import '../../fecesurine/models/upload_feces.dart';
 
 part 'events_synchronization_response.g.dart';
 
@@ -26,6 +27,7 @@ class EventsSynchronizationResponse {
   List<LiquidFavorite> liquidFavorites;
   List<SubjectiveAnalysisResult> subjectiveAnalysis;
   List<UploadRecipeFavorite> recipeFavorites;
+  List<UploadFeces> fecesEvents;
 
   EventsSynchronizationResponse({
     required this.foodEvents,
@@ -38,6 +40,7 @@ class EventsSynchronizationResponse {
     required this.liquidFavorites,
     required this.subjectiveAnalysis,
     required this.recipeFavorites,
+    required this.fecesEvents,
   });
 
   factory EventsSynchronizationResponse.fromJson(Map<String, dynamic> json) => _$EventsSynchronizationResponseFromJson(json);

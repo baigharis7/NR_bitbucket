@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/bloc/feces_urine_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces/view/feces_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces_tab.dart';
+import 'package:nutrenaissance_flutter/presentation/fecesurine/view/urine/view/urine_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/urine_tab.dart';
 
 import '../../../infrastructure/utils/dimens.dart';
@@ -114,10 +117,35 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
               ),
             ),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-              child: RoundedCustomButton(
-                onPressed: () {
-                  fecesUrineBloc.add(UpdateProfileEventAction());
+              padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+                decoration: const BoxDecoration(
+                    borderRadius: BorderRadiusDirectional.vertical(
+                        top: Radius.circular(5.0),),
+                    color: Colors.white,
+                    boxShadow: [BoxShadow(blurRadius: 5.0)],),
+              child: InkWell(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall, vertical: Dimens.marginXXLarge),
+                  padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    color: AppColors.mountainMeadow,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(AppLocalizations.of(context)!.add_deposition, style: const TextStyle(color: Colors.white)),
+                      const Icon(Icons.add_circle, color: Colors.white),
+                    ],
+                  ),
+                ),
+                onTap: () {
+                  if (_selectedTab == 0) {
+                    Navigator.pushNamed(context, FecesScreen.routeName);
+                  } else if (_selectedTab == 1) {
+                    Navigator.pushNamed(context, UrineScreen.routeName);
+                  }
                 },
               ),
             ),

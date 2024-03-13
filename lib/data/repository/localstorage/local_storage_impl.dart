@@ -71,6 +71,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _subjectiveAnalysisResultsBox;
   Box? _userStepsInfoBox;
   Box? _recipeFavoritesBox;
+  Box? _fecesEventsBox;
 
   Future<Box> _openProfileBox() async => openBox(_profileBox, UserProfileEntity.boxName);
   Future<Box> _openFoodEventsBox() async => openBox(_foodEventsBox, FoodEventEntity.boxName);
@@ -109,6 +110,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> _openSubjectiveAnalysisResultsBox() async => openBox(_subjectiveAnalysisResultsBox, SubjectiveAnalysisResultEntity.boxName);
   Future<Box> _openUserStepsInfoBox() async => openBox(_userStepsInfoBox, StepsEntity.boxName);
   Future<Box> _openRecipeFavoritesBox() async => openBox(_recipeFavoritesBox, RecipeFavoriteEntity.boxName);
+  Future<Box> _openFecesEventsBox() async => openBox(_fecesEventsBox, 'feces_events');
 
   Future<Box> get _getProfileBox async => await _openProfileBox();
   Future<Box> get _getFoodEventsBox async => await _openFoodEventsBox();
@@ -124,6 +126,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> get _getSubjectiveAnalysisResultsBox async => await _openSubjectiveAnalysisResultsBox();
   Future<Box> get _getUserStepsInfoBox async => await _openUserStepsInfoBox();
   Future<Box> get _getRecipeFavoritesBox async => await _openRecipeFavoritesBox();
+  Future<Box> get _getFecesEventsBox async => await _openFecesEventsBox();
 
   @override
   Future<void> saveProfile(UserProfileEntity profileEntity) async {
@@ -648,6 +651,14 @@ class LocalStorageImpl extends LocalStorageRepository {
     final subjectiveAnalysisResults = <int>[];
     subjectiveAnalysisResultsMap.forEach((key, value) => subjectiveAnalysisResults.add((value as SubjectiveAnalysisResultEntity).eventDate));
 
+    final recipeFavoritesMap = await _getRecipeFavoritesBox.then((box) => box.toMap());
+    final recipeFavorites = <int>[];
+    recipeFavoritesMap.forEach((key, value) => recipeFavorites.add((value as RecipeFavoriteEntity).eventDate!));
+
+    final fecesEventsMap = await _getFecesEventsBox.then((box) => box.toMap());
+    final fecesEvents = <int>[];
+    // recipeFavoritesMap.forEach((key, value) => recipeFavorites.add((value as RecipeFavoriteEntity).eventDate!));
+
     return EventsSynchronizationRequest(
       foodEvents: foodEvents,
       sportEvents: sportEvents,
@@ -658,6 +669,8 @@ class LocalStorageImpl extends LocalStorageRepository {
       sportFavorites: sportFavorites,
       liquidFavorites: liquidFavorites,
       subjectiveAnalysis: subjectiveAnalysisResults,
+      recipeFavorites: recipeFavorites,
+      fecesEvents: [],
     );
   }
 
@@ -673,6 +686,8 @@ class LocalStorageImpl extends LocalStorageRepository {
     await _clearBox(_getSportFavoritesBox);
     await _clearBox(_getLiquidFavoritesBox);
     await _clearBox(_getSubjectiveAnalysisResultsBox);
+    await _clearBox(_getRecipeFavoritesBox);
+    await _clearBox(_getFecesEventsBox);
     return true;
   }
 

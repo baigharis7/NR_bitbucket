@@ -17,4 +17,8 @@ class UpdateFecesEventAction extends FecesUrineEvent {
   UpdateFecesEventAction({required this.feceId});
 }
 
-class UpdateProfileEventAction extends FecesUrineEvent {}
+class UploadFecesEventAction extends FecesUrineEvent {
+  final Function onFinish;
+
+  UploadFecesEventAction({required this.onFinish});
+}

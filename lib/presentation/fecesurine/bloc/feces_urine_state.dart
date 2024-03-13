@@ -8,14 +8,14 @@ class FecesUrineState {
   ErrorTypes? onError;
   List<Feces>? fecesList;
   List<Urines>? urinesList;
-  UserProfileModel? profile;
+  int? fecesId;
 
   FecesUrineState({
     required this.isLoading,
     this.onError,
     this.fecesList,
     this.urinesList,
-    this.profile,
+    this.fecesId,
   });
 
   FecesUrineState copyWith(
@@ -23,15 +23,15 @@ class FecesUrineState {
       ErrorTypes? onError,
       List<Feces>? fecesList,
       List<Urines>? urinesList,
+      int? fecesId,
       UserProfileModel? profile,
-      int? fecesSelected,
       int? urinesSelected}) {
     return FecesUrineState(
       isLoading: isLoading,
       onError: onError,
       fecesList: fecesList ?? this.fecesList,
       urinesList: urinesList ?? this.urinesList,
-      profile: profile ?? this.profile,
+      fecesId: fecesId ?? this.fecesId,
     );
   }
 }

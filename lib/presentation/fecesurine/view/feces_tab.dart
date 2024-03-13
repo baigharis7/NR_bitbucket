@@ -37,13 +37,13 @@ class _FecesTabState extends State<FecesTab> {
               ),
               child: Column(
                 children: [
-                  ...?state.fecesList?.map(
-                    (fece) => RadioTitleDescImage(
-                      isSelected: state.profile?.feces == fece.id,
-                      fece: fece,
-                      onSelect: (id) => fecesUrineBloc.add(UpdateFecesEventAction(feceId: id)),
-                    ),
-                  ),
+                  // ...?state.fecesList?.map(
+                  //   (fece) => RadioTitleDescImage(
+                  //     isSelected: state.fecesId == fece.id,
+                  //     fece: fece,
+                  //     onSelect: (id) => fecesUrineBloc.add(UpdateFecesEventAction(feceId: id)),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

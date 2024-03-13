@@ -10,6 +10,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:nutrenaissance_flutter/data/api/advices/advices_api.dart';
 import 'package:nutrenaissance_flutter/data/api/favorites/favorites_api.dart';
+import 'package:nutrenaissance_flutter/data/api/fecesurine/fece_urine_api.dart';
 import 'package:nutrenaissance_flutter/data/api/foodevents/food_events_api.dart';
 import 'package:nutrenaissance_flutter/data/api/liquidevents/liquid_events_api.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
@@ -46,6 +47,7 @@ import 'package:nutrenaissance_flutter/data/repository/advices/advices_repositor
 import 'package:nutrenaissance_flutter/data/repository/calendar/calendar_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/explainingcards/explaining_cards_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/favorites/favorites_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/fecesurine/feces_urine_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/foodevents/food_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/liquidevents/liquid_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/localstorage/local_storage_impl.dart';
@@ -92,6 +94,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sp
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sport_favorite_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_feces_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_feces_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
@@ -191,6 +195,7 @@ import 'package:nutrenaissance_flutter/domain/repository/advices/advices_reposit
 import 'package:nutrenaissance_flutter/domain/repository/calendar/calendar_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/explainingcards/explaining_cards_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/favorites/favorites_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/fecesurine/feces_urine_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/foodevents/food_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/liquidevents/liquid_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
@@ -234,7 +239,9 @@ import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_spo
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/create_new_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/favorite_sports_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/bloc/feces_urine_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces/view/feces_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces_urine_tab_holder.dart';
+import 'package:nutrenaissance_flutter/presentation/fecesurine/view/urine/view/urine_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/fiber_detail/bloc/fiber_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/fiber_detail/view/fiber_detail_Screen.dart';
 import 'package:nutrenaissance_flutter/presentation/food/bloc/food_bloc.dart';
@@ -421,6 +428,9 @@ void main() async {
   final SaveRecipeFavoriteInteractor saveRecipeFavoriteInteractor = SaveRecipeFavoriteInteractorImpl(recipesRepository: recipesRepository);
   final DeleteRecipeFavoriteInteractor deleteRecipeFavoriteInteractor = DeleteRecipeFavoriteInteractorImpl(recipesRepository: recipesRepository);
   final RemoveRecipeFavoriteInteractor removeRecipeFavoriteInteractor = RemoveRecipeFavoriteInteractorImpl(recipesRepository: recipesRepository);
+  final FecesUrineApi fecesUrineApi = FecesUrineApi(prefsRepository, authenticationService, chuck);
+  final FecesUrineRepository fecesUrineRepository = FecesUrineRepositoryImpl(fecesUrineApi: fecesUrineApi);
+  final UploadFecesInteractor uploadFecesInteractor = UploadFecesInteractorImpl(fecesUrineRepository: fecesUrineRepository);
 
   final dashboardBloc = DashboardBloc(
     getAdviceInteractor: getAdviceInteractor,
@@ -670,9 +680,7 @@ void main() async {
 
   final fecesUrineBloc = FecesUrineBloc(
     getUserIdInteractor: getUserIdInteractor,
-    getProfileInteractor: getProfileInteractor,
-    uploadProfileInteractor: uploadProfileInteractor,
-    saveProfileInteractor: saveProfileInteractor,
+    uploadFecesInteractor: uploadFecesInteractor,
   );
 
   final profileBloc = ProfileBloc(
@@ -856,6 +864,8 @@ void main() async {
           RoutinesScreen.routeName: (_) => const RoutinesScreen(),
           WeeklyAllNutrientsDetailScreen.routeName: (_) => const WeeklyAllNutrientsDetailScreen(),
           RecipeDetailScreen.routeName:(_) => const RecipeDetailScreen(),
+          FecesScreen.routeName:(_) => const FecesScreen(),
+          UrineScreen.routeName:(_) => const UrineScreen(),
         },
       ),
     ),

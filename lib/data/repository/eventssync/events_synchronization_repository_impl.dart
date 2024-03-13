@@ -34,6 +34,8 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
         allEventsIds.sportFavorites.map((e) => e.toString()).toList(),
         allEventsIds.liquidFavorites.map((e) => e.toString()).toList(),
         allEventsIds.subjectiveAnalysis.map((e) => e.toString()).toList(),
+        allEventsIds.recipeFavorites.map((e) => e.toString()).toList(),
+        allEventsIds.fecesEvents.map((e) => e.toString()).toList(),
       );
       final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
       return await _saveSynchronizedEvents(eventsSyncResponse).then((value) => value);
@@ -91,6 +93,11 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
     if (eventsSynchronizationResponse.recipeFavorites.isNotEmpty) {
       for (var uploadRecipeFavorite in eventsSynchronizationResponse.recipeFavorites) {
         await localStorageRepository.saveRecipeFavorite(mapToRecipeFavoriteEntity(uploadRecipeFavorite));
+      }
+    }
+    if (eventsSynchronizationResponse.fecesEvents.isNotEmpty) {
+      for (var fecesEvents in eventsSynchronizationResponse.fecesEvents) {
+        // await localStorageRepository.saveRecipeFavorite(mapToRecipeFavoriteEntity(uploadRecipeFavorite));
       }
     }
 

@@ -32,11 +32,11 @@ class _UrineTabState extends State<UrineTab> {
             body: SingleChildScrollView(
               child: Column(
                 children: [
-                  ...?state.urinesList?.map((urine) => RadioTitleDescImage(
-                      isSelected: state.profile?.urine == urine.id,
-                      fece: Feces(urine.id, urine.title, '', urine.image), onSelect: (id) => fecesUrineBloc.add(UpdateUrineEventAction(urineId: id)),
-                  ),
-                  ),
+                  // ...?state.urinesList?.map((urine) => RadioTitleDescImage(
+                  //     isSelected: -1 == urine.id,
+                  //     fece: Feces(urine.id, urine.title, '', urine.image), onSelect: (id) => fecesUrineBloc.add(UpdateUrineEventAction(urineId: id)),
+                  // ),
+                  // ),
                 ],
               ),
             ),
