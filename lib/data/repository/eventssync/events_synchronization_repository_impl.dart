@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/infrastructure/mappers/liquid_event_mappe
 import 'package:nutrenaissance_flutter/infrastructure/mappers/recipes_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/sport_event_mappers.dart';
 
+import '../../../infrastructure/mappers/feces_urine_mappers.dart';
 import '../../../infrastructure/mappers/sport_routine_mappers.dart';
 
 class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRequestRepository {
@@ -96,8 +97,8 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
       }
     }
     if (eventsSynchronizationResponse.fecesEvents.isNotEmpty) {
-      for (var fecesEvents in eventsSynchronizationResponse.fecesEvents) {
-        // await localStorageRepository.saveRecipeFavorite(mapToRecipeFavoriteEntity(uploadRecipeFavorite));
+      for (var uploadFecesEvent in eventsSynchronizationResponse.fecesEvents) {
+        await localStorageRepository.saveFecesEvent(mapToUploadFecesEventEntity(uploadFecesEvent));
       }
     }
 

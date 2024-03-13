@@ -1,5 +1,6 @@
 import 'package:nutrenaissance_flutter/data/api/eventssync/model/events_synchronization_request.dart';
 import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
+import 'package:nutrenaissance_flutter/data/local/models/fecesurine/upload_feces_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
@@ -71,4 +72,6 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<void> saveRecipeFavorite(RecipeFavoriteEntity recipeFavoriteEntity);
   Future<List> getRecipeFavorites();
   Future<void> removeRecipeFavorite(RecipeFavoriteEntity recipeFavoriteEntity);
+  Future<void> saveFecesEvent(UploadFecesEventEntity fecesEventEntity);
+  Future<List> getFecesEvents();
 }

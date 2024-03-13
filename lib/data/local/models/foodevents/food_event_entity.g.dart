@@ -573,9 +573,9 @@ Map<String, dynamic> _$FoodEventEntityToJson(FoodEventEntity instance) =>
     };
 
 FoodInfo _$FoodInfoFromJson(Map<String, dynamic> json) => FoodInfo(
-    json['group'] as String?,
-    json['id'] as int?,
-    json['name_en'] as String?,
+      json['group'] as String?,
+      json['id'] as int?,
+      json['name_en'] as String?,
       json['name_es'] as String?,
       json['recommendable'] as int?,
       json['eventInfo'] == null
@@ -584,7 +584,7 @@ FoodInfo _$FoodInfoFromJson(Map<String, dynamic> json) => FoodInfo(
       json['params'] == null
           ? null
           : Params.fromJson(json['params'] as Map<String, dynamic>),
-    json['freeSugar'] as String?,
+      json['freeSugar'] as String?,
     );
 
 Map<String, dynamic> _$FoodInfoToJson(FoodInfo instance) => <String, dynamic>{

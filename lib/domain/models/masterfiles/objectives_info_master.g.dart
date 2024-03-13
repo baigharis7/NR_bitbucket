@@ -15,7 +15,8 @@ ObjectivesInfoMaster _$ObjectivesInfoMasterFromJson(
       metabolicObjectives: (json['metabolicObjectives'] as List<dynamic>)
           .map((e) => ObjectiveInfoMaster.fromJson(e as Map<String, dynamic>))
           .toList(),
-      bodyCompositionObjectives: (json['bodyCompositionObjectives'] as List<dynamic>)
+      bodyCompositionObjectives: (json['bodyCompositionObjectives']
+              as List<dynamic>)
           .map((e) => ObjectiveInfoMaster.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -24,8 +25,10 @@ Map<String, dynamic> _$ObjectivesInfoMasterToJson(
         ObjectivesInfoMaster instance) =>
     <String, dynamic>{
       'objectives': instance.objectives.map((e) => e.toJson()).toList(),
-      'metabolicObjectives': instance.metabolicObjectives.map((e) => e.toJson()).toList(),
-      'bodyCompositionObjectives': instance.bodyCompositionObjectives.map((e) => e.toJson()).toList(),
+      'metabolicObjectives':
+          instance.metabolicObjectives.map((e) => e.toJson()).toList(),
+      'bodyCompositionObjectives':
+          instance.bodyCompositionObjectives.map((e) => e.toJson()).toList(),
     };
 
 ObjectiveInfoMaster _$ObjectiveInfoMasterFromJson(Map<String, dynamic> json) =>

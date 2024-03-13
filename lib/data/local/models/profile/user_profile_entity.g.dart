@@ -35,8 +35,8 @@ class UserProfileEntityAdapter extends TypeAdapter<UserProfileEntity> {
       micronutrients: (fields[15] as List?)?.cast<String>(),
       userRdas: fields[16] as UserRdasEntity?,
       feces: fields[17] as int?,
-      urine:  fields[18] as int?,
-      recommededIds:  fields[19] as List<int>?,
+      urine: fields[18] as int?,
+      recommededIds: (fields[19] as List?)?.cast<int>(),
       kcal: fields[20] as int?,
     );
   }

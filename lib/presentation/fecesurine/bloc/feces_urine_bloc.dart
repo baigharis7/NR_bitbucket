@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/data/api/fecesurine/models/upload_feces.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_feces_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_feces_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_feces_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
@@ -23,15 +25,20 @@ part 'feces_urine_state.dart';
 class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
   final GetUserIdInteractor getUserIdInteractor;
   final UploadFecesInteractor uploadFecesInteractor;
+  final GetFecesEventsInteractor getFecesEventsInteractor;
+  final SaveFecesEventInteractor saveFecesEventInteractor;
 
   FecesUrineBloc({
     required this.getUserIdInteractor,
     required this.uploadFecesInteractor,
+    required this.getFecesEventsInteractor,
+    required this.saveFecesEventInteractor,
   }) : super(FecesUrineState(isLoading: false)) {
     on<InitializationEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.fecesList = Feces.listOfAllFeces();
       state.urinesList = Urines.listOfAllUrines();
+      state.fecesEvents = await getFecesEventsInteractor.execute();
 
       emit(state.copyWith(isLoading: false));
     });
@@ -63,8 +70,13 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
       );
       try {
         await uploadFecesInteractor.execute(uploadFeces);
-        event.onFinish.call();
-        emit(state.copyWith(isLoading: false, onError: null));
+        try {
+          await saveFecesEventInteractor.execute(uploadFeces);
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
+        } catch (_) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+        }
       } catch (_) {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
       }

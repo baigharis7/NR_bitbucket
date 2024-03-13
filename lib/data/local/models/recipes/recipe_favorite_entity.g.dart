@@ -235,8 +235,8 @@ class RecipeStepEntityAdapter extends TypeAdapter<RecipeStepEntity> {
 RecipeFavoriteEntity _$RecipeFavoriteEntityFromJson(
         Map<String, dynamic> json) =>
     RecipeFavoriteEntity(
-      userId: json['userId'] as String,
-      eventDate: json['eventDate'] as int,
+      userId: json['userId'] as String?,
+      eventDate: json['eventDate'] as int?,
       itemRecipe: RecipeMasterEntity.fromJson(
           json['itemRecipe'] as Map<String, dynamic>),
     );

@@ -26,6 +26,7 @@ import 'package:nutrenaissance_flutter/data/local/models/explainingcards/explain
 import 'package:nutrenaissance_flutter/data/local/models/favorites/food/food_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/favorites/liquid/liquid_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/favorites/sport/sport_favorite_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/fecesurine/upload_feces_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
@@ -94,6 +95,10 @@ import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sp
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sport_favorite_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_feces_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_feces_events_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_feces_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_feces_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_feces_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_feces_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
@@ -312,7 +317,7 @@ import 'presentation/waterevent/view/add_water_event_screen.dart';
 import 'package:chuck_interceptor/chuck.dart';
 
 void main() async {
-  const String environmentName = String.fromEnvironment(Environment.DEV, defaultValue: Environment.DEV);
+  const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -429,8 +434,10 @@ void main() async {
   final DeleteRecipeFavoriteInteractor deleteRecipeFavoriteInteractor = DeleteRecipeFavoriteInteractorImpl(recipesRepository: recipesRepository);
   final RemoveRecipeFavoriteInteractor removeRecipeFavoriteInteractor = RemoveRecipeFavoriteInteractorImpl(recipesRepository: recipesRepository);
   final FecesUrineApi fecesUrineApi = FecesUrineApi(prefsRepository, authenticationService, chuck);
-  final FecesUrineRepository fecesUrineRepository = FecesUrineRepositoryImpl(fecesUrineApi: fecesUrineApi);
+  final FecesUrineRepository fecesUrineRepository = FecesUrineRepositoryImpl(fecesUrineApi: fecesUrineApi, localStorageRepository: localStorageRepository);
   final UploadFecesInteractor uploadFecesInteractor = UploadFecesInteractorImpl(fecesUrineRepository: fecesUrineRepository);
+  final SaveFecesEventInteractor saveFecesEventInteractor = SaveFecesEventInteractorImpl(fecesUrineRepository: fecesUrineRepository);
+  final GetFecesEventsInteractor getFecesEventsInteractor = GetFecesEventsInteractorImpl(fecesUrineRepository: fecesUrineRepository);
 
   final dashboardBloc = DashboardBloc(
     getAdviceInteractor: getAdviceInteractor,
@@ -681,6 +688,8 @@ void main() async {
   final fecesUrineBloc = FecesUrineBloc(
     getUserIdInteractor: getUserIdInteractor,
     uploadFecesInteractor: uploadFecesInteractor,
+    getFecesEventsInteractor: getFecesEventsInteractor,
+    saveFecesEventInteractor: saveFecesEventInteractor,
   );
 
   final profileBloc = ProfileBloc(
@@ -936,4 +945,5 @@ void initLocalStorage() async {
   Hive.registerAdapter(RecipeIngredientEntityAdapter());
   Hive.registerAdapter(RecipeStepsEntityAdapter());
   Hive.registerAdapter(RecipeStepEntityAdapter());
+  Hive.registerAdapter(UploadFecesEventEntityAdapter());
 }

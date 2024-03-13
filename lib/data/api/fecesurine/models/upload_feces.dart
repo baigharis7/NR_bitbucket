@@ -1,4 +1,8 @@
+import 'package:json_annotation/json_annotation.dart';
+
 part 'upload_feces.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class UploadFeces {
   String userId;
   int eventId;

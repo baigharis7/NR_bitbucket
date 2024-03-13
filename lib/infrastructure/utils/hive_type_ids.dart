@@ -64,5 +64,6 @@ class HiveTypeIds {
   static const recipeFavoriteIngredientEntity = 61;
   static const recipeFavoriteStepsEntity = 62;
   static const recipeFavoriteStepEntity = 63;
+  static const uploadFecesEventsEntity = 64;
 
 }

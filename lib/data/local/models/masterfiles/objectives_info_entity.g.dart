@@ -21,7 +21,8 @@ class ObjectivesInfoEntityAdapter extends TypeAdapter<ObjectivesInfoEntity> {
       v: fields[1] as int,
       data: (fields[2] as List).cast<ObjectiveInfoEntity>(),
       metabolicObjectives: (fields[3] as List).cast<ObjectiveInfoEntity>(),
-      bodyCompositionObjectives: (fields[4] as List).cast<ObjectiveInfoEntity>(),
+      bodyCompositionObjectives:
+          (fields[4] as List).cast<ObjectiveInfoEntity>(),
     );
   }
 
@@ -107,7 +108,8 @@ ObjectivesInfoEntity _$ObjectivesInfoEntityFromJson(
       metabolicObjectives: (json['metabolicObjectives'] as List<dynamic>)
           .map((e) => ObjectiveInfoEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
-      bodyCompositionObjectives: (json['bodyCompositionObjectives'] as List<dynamic>)
+      bodyCompositionObjectives: (json['bodyCompositionObjectives']
+              as List<dynamic>)
           .map((e) => ObjectiveInfoEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -118,8 +120,10 @@ Map<String, dynamic> _$ObjectivesInfoEntityToJson(
       'id': instance.id,
       'v': instance.v,
       'data': instance.data.map((e) => e.toJson()).toList(),
-      'metabolicObjectives': instance.metabolicObjectives.map((e) => e.toJson()).toList(),
-      'bodyCompositionObjectives': instance.bodyCompositionObjectives.map((e) => e.toJson()).toList(),
+      'metabolicObjectives':
+          instance.metabolicObjectives.map((e) => e.toJson()).toList(),
+      'bodyCompositionObjectives':
+          instance.bodyCompositionObjectives.map((e) => e.toJson()).toList(),
     };
 
 ObjectiveInfoEntity _$ObjectiveInfoEntityFromJson(Map<String, dynamic> json) =>

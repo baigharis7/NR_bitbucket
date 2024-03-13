@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/data/local/models/explainingcards/explain
 import 'package:nutrenaissance_flutter/data/local/models/favorites/food/food_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/favorites/liquid/liquid_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/favorites/sport/sport_favorite_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/fecesurine/upload_feces_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
@@ -940,6 +941,39 @@ class LocalStorageImpl extends LocalStorageRepository {
         rethrow;
       }
     }
+  }
+
+  @override
+  Future<void> saveFecesEvent(UploadFecesEventEntity fecesEventEntity, {bool isEdit = false}) async {
+    try {
+      await fecesEventEntity.save();
+    } catch (error) {
+      try {
+        _getFecesEventsBox.then((box) {
+          if (isEdit) {
+            final fecesEventsMap = box.toMap();
+            fecesEventsMap.forEach((key, value) {
+              if ((value as UploadFecesEventEntity).eventId == fecesEventEntity.eventId) {
+                box.put(key, fecesEventEntity);
+              }
+            });
+          } else {
+            box.add(fecesEventEntity);
+          }
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<List> getFecesEvents() async {
+    List list = await _getFecesEventsBox.then((box) {
+      return box.values.toList();
+    });
+
+    return list;
   }
 
 }
