@@ -68,16 +68,16 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
   ),) {
     on<InitialStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
-      if (state.recommendationGroups!.recommendationGroups.isEmpty) state.recommendationGroups = await getMasterFileInteractor.execute(MasterFilesType.recommendationGroups);
+      /*if (state.recommendationGroups!.recommendationGroups.isEmpty) */state.recommendationGroups = await getMasterFileInteractor.execute(MasterFilesType.recommendationGroups);
       state.profile = await getProfileInteractor.execute();
       state.foodItems = getFoodItemFromIds(state.profile?.recommededIds.orEmpty() ?? []);
-      if (state.foodAndDrinksNames!.isEmpty) {
+      if (state.foodAndDrinksNames.orEmpty().isEmpty) {
         final foodAndDrinksMasterFile = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames) as FoodsAndDrinksNamesMaster;
         state.foodAndDrinksNames = foodAndDrinksMasterFile.foodsAndDrinksNames!.foodNames?..addAll(foodAndDrinksMasterFile.foodsAndDrinksNames!.drinkNames!.toList());
       }
-      if (state.exclusions!.isEmpty) state.exclusions = await getUserExclusionsInteractor.execute();
+      /*if (state.exclusions!.isEmpty) */state.exclusions = await getUserExclusionsInteractor.execute();
 
-      if (state.recommendationFoodsItems!.isEmpty) {
+      // if (state.recommendationFoodsItems!.isEmpty) {
         try {
           final recommendation = await getRecommendationInteractor.execute(getUserIdInteractor.execute(),);
           state.recommendation = recommendation;
@@ -100,9 +100,9 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
           state.recommendation = null;
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.recommendationError));
         }
-      } else {
-        emit(state.copyWith(isLoading: false, onError: null));
-      }
+      // } else {
+      //   emit(state.copyWith(isLoading: false, onError: null));
+      // }
     });
 
     on<EmptyRecommendationAction>((event, emit) {

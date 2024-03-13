@@ -447,6 +447,7 @@ void main() async {
     saveStepsInteractor: saveStepsInteractor,
     getStepsInteractor: getStepsInteractor,
     getTodayStepInteractor: getTodayStepInteractor,
+    getAllEventsSortedByDateInteractor: getAllEventsSortedByDateInteractor,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(

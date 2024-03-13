@@ -1,6 +1,7 @@
 import 'package:nutrenaissance_flutter/data/api/steps/models/step_event_response.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_events_sorted_by_date_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
@@ -42,8 +43,10 @@ import '../../../domain/interactor/waterevents/save_water_event_interactor.dart'
 import '../../../domain/interactor/waterevents/upload_water_event_interactor.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../../domain/models/watervents/water_event_master.dart';
+import '../../../infrastructure/helpers/events_helper.dart';
 
 class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
+  final EventsHelper _eventsHelper = EventsHelper();
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
   final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
@@ -68,6 +71,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final SaveStepsInteractor saveStepsInteractor;
   final GetStepsInteractor getStepsInteractor;
   final GetTodayStepInteractor getTodayStepInteractor;
+  final GetAllEventsSortedByDateInteractor getAllEventsSortedByDateInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -94,6 +98,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.saveStepsInteractor,
     required this.getStepsInteractor,
     required this.getTodayStepInteractor,
+    required this.getAllEventsSortedByDateInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -122,6 +127,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.isMenstruation = state.profile?.objectives?.contains(Constants.DURING_MENSTRUATION);
       state.isCold = state.profile?.objectives?.contains(Constants.IMPROVE_THE_IMMUNE_SYSTEM);
       state.todayStep = await getTodayStepInteractor.execute();
+      state.allCalendarEvents = await getAllEventsSortedByDateInteractor.execute();
       state.micronutrients = state.userMicronutrients!
           .map(
             (micronutrient) =>
@@ -661,6 +667,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     }
     creatine = 0.08 / (userWeight * 1000);
     return double.parse(creatine.toStringAsFixed(2));
+  }
+
+  List<dynamic> getEventsForDay(DateTime dateTime) {
+    return _eventsHelper.getEventsFromGivenDate(state.allCalendarEvents!, dateTime);
   }
 
 }

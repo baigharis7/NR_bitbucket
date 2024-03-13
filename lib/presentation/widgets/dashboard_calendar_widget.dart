@@ -8,7 +8,11 @@ import '../../infrastructure/utils/app_color.dart';
 import '../../infrastructure/utils/dimens.dart';
 
 class DashboardCalendarWidget extends StatefulWidget {
-  const DashboardCalendarWidget({super.key});
+  final Function callGetAllEvents;
+  const DashboardCalendarWidget({
+    super.key,
+    required this.callGetAllEvents,
+  });
 
   @override
   State<DashboardCalendarWidget> createState() => _DashboardCalendarWidgetState();
@@ -27,11 +31,14 @@ class _DashboardCalendarWidgetState extends State<DashboardCalendarWidget> {
       daysOfWeekStyle: DaysOfWeekStyle(decoration: const BoxDecoration(color: AppColors.mountainMeadow,), weekendStyle: const TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),
         dowTextFormatter: (date, locale) => DateFormat('EEEE').format(date), weekdayStyle: const TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),),
       daysOfWeekHeight: Dimens.heightSmall-20,
+      calendarStyle: const CalendarStyle(
+        outsideDaysVisible: false,
+      ),
       firstDay: DateTime(DateTime.now().year-1),
       focusedDay: _focusedDay,
       lastDay: DateTime.now(),
       eventLoader: (day) {
-        return [];
+        return widget.callGetAllEvents.call(day);
       },
       selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
       onDaySelected: (selectedDay, focusedDay) {

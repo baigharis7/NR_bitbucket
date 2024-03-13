@@ -45,15 +45,15 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Expanded(
-                //   flex: 1,
-                //   child: Container(
-                //     alignment: Alignment.center,
-                //     child: Text(
-                //       AppLocalizations.of(context)!.alternatives,
-                //     ),
-                //   ),
-                // ),
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      AppLocalizations.of(context)!.alternatives,
+                    ),
+                  ),
+                ),
                 Expanded(
                   flex: 1,
                   child: Container(
@@ -66,37 +66,47 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
               ],
             ),
           ),
-          ...recommendationsFoodItem.recommendedFoods.take(Constants.DASHBOARD_LIST_SIZE).map((food) {
+          ...recommendationsFoodItem.recommendedFoods.map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodItemMaster.id);
             return Container(
               color: Colors.white,
               child: RecommendationsItem(
                 foodItemMaster: food.foodItemMaster,
-                onAlternative: () => {/** TODO: mandar a back el id de la comida*/},
+                alternativeUsualHealthyFoods: const [],
+                isAlternativeChecked: (id) {
+                  return null;
+                },
+                onAlternativeAdd: (recommendationFoodInfo) {
+                  // ToastHelper().showToast(text: recommendationFoodInfo?.foodItemMaster.id.toString() ?? '');
+                },
                 onAdd: () => onAdd.call(food.foodItemMaster),
                 isChecked: isCheckBoxChecked,
               ),
             );
           }),
-          ...recommendationsFoodItem.usualUnHealthyFoods.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).map((food) {
+          ...recommendationsFoodItem.usualUnHealthyFoods.orEmpty().map((food) {
+            final bool isCheckBoxChecked = isChecked.call(food.foodInfo.foodItemMaster.id);
+            return Container(
+              color: AppColors.errorRed,
+              child: RecommendationsItem(
+                foodItemMaster: food.foodInfo.foodItemMaster,
+                onAlternativeAdd: (recommendationFoodInfo) => onAdd.call(recommendationFoodInfo?.foodItemMaster),
+                onAdd: () => onAdd.call(food.foodInfo.foodItemMaster),
+                isChecked: isCheckBoxChecked,
+                alternativeUsualHealthyFoods: food.alternativeUsualHealthyFoods,
+                isAlternativeChecked: (id) => isChecked.call(id),
+              ),
+            );
+          }),
+          ...recommendationsFoodItem.usualHealthyFoods.orEmpty().map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodInfo.foodItemMaster.id);
             return Container(
               color: AppColors.cardGreen_200,
               child: RecommendationsItem(
                 foodItemMaster: food.foodInfo.foodItemMaster,
-                onAlternative: () => {/** TODO: mandar a back el id de la comida*/},
-                onAdd: () => onAdd.call(food.foodInfo.foodItemMaster),
-                isChecked: isCheckBoxChecked,
-              ),
-            );
-          }),
-          ...recommendationsFoodItem.usualHealthyFoods.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).map((food) {
-            final bool isCheckBoxChecked = isChecked.call(food.foodInfo.foodItemMaster.id);
-            return Container(
-              color: AppColors.errorRedLight,
-              child: RecommendationsItem(
-                foodItemMaster: food.foodInfo.foodItemMaster,
-                onAlternative: () => {/** TODO: mandar a back el id de la comida*/},
+                alternativeUsualHealthyFoods: food.alternativeUsualHealthyFoods,
+                onAlternativeAdd: (recommendationFoodInfo) => onAdd.call(recommendationFoodInfo?.foodItemMaster),
+                isAlternativeChecked: (id) => isChecked.call(id),
                 onAdd: () => onAdd.call(food.foodInfo.foodItemMaster),
                 isChecked: isCheckBoxChecked,
               ),

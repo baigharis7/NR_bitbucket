@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/foodslist/view/food_list_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/recipes/view/recipes_tab.dart';
@@ -21,6 +22,7 @@ class RecommendationsTabHolder extends StatefulWidget {
 class _RecommendationsTabHolderState extends State<RecommendationsTabHolder> with SingleTickerProviderStateMixin {
   String? title;
   late TabController _tabController;
+  late RecommendationsGeneralBloc _recommendationsBloc;
   int _selectedTab = 0;
 
   void _manageTabChange(BuildContext context) {
@@ -39,6 +41,8 @@ class _RecommendationsTabHolderState extends State<RecommendationsTabHolder> wit
 
   @override
   void initState() {
+    _recommendationsBloc = BlocProvider.of<RecommendationsGeneralBloc>(context);
+    _recommendationsBloc.add(InitialStateAction());
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
         setState(() {
@@ -57,7 +61,7 @@ class _RecommendationsTabHolderState extends State<RecommendationsTabHolder> wit
 
   @override
   Widget build(BuildContext context) {
-    final recommendationsBloc = BlocProvider.of<RecommendationsGeneralBloc>(context);
+    // final recommendationsBloc = BlocProvider.of<RecommendationsGeneralBloc>(context);
 
     return SafeArea(
       child: Scaffold(
@@ -95,7 +99,7 @@ class _RecommendationsTabHolderState extends State<RecommendationsTabHolder> wit
           children: [
             const RecommendationsTab(),
             // RecipesTab(foodItems: recommendationsBloc.state.foodItems ?? []),
-            FoodListScreen(foodItems: recommendationsBloc.state.foodItems ?? []),
+            FoodListScreen(foodItems: _recommendationsBloc.state.foodItems ?? []),
           ],
         ),
         bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.TIPS),

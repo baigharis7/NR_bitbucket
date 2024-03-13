@@ -57,7 +57,7 @@ Map<String, dynamic> _$UsualFoodsToJson(UsualFoods instance) =>
 UsualFoodItem _$UsualFoodItemFromJson(Map<String, dynamic> json) =>
     UsualFoodItem(
       json['foodId'] as int,
-      (json['alternativeUsualHealthyFood'] as List<dynamic>?)
+      (json['alternativeUsualHealthyFoods'] as List<dynamic>?)
           ?.map((e) => e as int)
           .toList(),
       (json['alternativeUsualUnhealthyFoods'] as List<dynamic>?)

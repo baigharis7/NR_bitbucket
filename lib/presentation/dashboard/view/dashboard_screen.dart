@@ -125,28 +125,31 @@ class _DashboardScreen extends State<DashboardScreen>
                       height: 29,
                       width: 29,
                     ),
-                  )
+                  ),
                 ],
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(Dimens.heightSmall),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      // IconButton(onPressed: () => Navigator.pushNamed(context, WeeklyDashboardDetailScreen.routeName).then((value) => bloc.add(InitializeState())), icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
+                      IconButton(onPressed: () => showDialog(context: context, builder: (context) => SimpleDialog(alignment: Alignment.topCenter,
+                        insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding5Large +5),
+                        contentPadding: EdgeInsets.zero,
+                        children: [
+                          DashboardCalendarWidget(callGetAllEvents: (day) => bloc.getEventsForDay(day)),
+                        ],
+                      ),), icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
+                      Text(bloc.getTodayMessage(AppLocalizations.of(context)!.today, Localizations.localeOf(context).languageCode),),
+                    ],
+                  ),
+                ),
               ),
               body: SingleChildScrollView(
                 child: Stack(
                   children: [
                     Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            // IconButton(onPressed: () => Navigator.pushNamed(context, WeeklyDashboardDetailScreen.routeName).then((value) => bloc.add(InitializeState())), icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
-                            IconButton(onPressed: () => showDialog(context: context, builder: (context) => const SimpleDialog(/*alignment: Alignment.topCenter, */
-                              insetPadding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
-                              contentPadding: EdgeInsets.zero,
-                              children: [
-                              DashboardCalendarWidget(),
-                            ],
-                            ),), icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
-                            Text(bloc.getTodayMessage(AppLocalizations.of(context)!.today, Localizations.localeOf(context).languageCode),),
-                          ],
-                        ),
                         if ((state.profile?.sex?.index ?? -1) == SexType.female.index) SwitchDashboardWidget(
                             title: AppLocalizations.of(context)!.menstruation,
                             currentState: state.isMenstruation ?? false,

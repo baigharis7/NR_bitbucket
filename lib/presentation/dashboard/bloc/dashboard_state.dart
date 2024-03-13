@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_mast
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 
 import '../../../data/api/steps/models/step_event_response.dart';
+import '../../../domain/models/calendar/calendar_events.dart';
 import '../../../domain/models/dashboard/nutrients_weekly_model.dart';
 import '../../../domain/models/liquidevents/liquid_event_complete.dart';
 import '../../../domain/models/masterfiles/objectives_info_master.dart';
@@ -40,6 +41,7 @@ class DashboardState {
   bool? isCold;
   StepEventResponse? todayStep;
   List<NutrientsModel>? supplements;
+  CalendarEvents? allCalendarEvents;
 
   DashboardState({
     required this.isLoading,
@@ -68,6 +70,7 @@ class DashboardState {
     this.isCold,
     this.todayStep,
     this.supplements,
+    this.allCalendarEvents,
   });
 
   DashboardState copyWith({
@@ -98,6 +101,7 @@ class DashboardState {
     bool? isCold,
     StepEventResponse? todayStep,
     List<NutrientsModel>? supplements,
+    CalendarEvents? allCalendarEvents,
   }) {
     return DashboardState(
       isLoading: isLoading,
@@ -126,6 +130,7 @@ class DashboardState {
       isCold: isCold ?? this.isCold,
       todayStep: todayStep ?? this.todayStep,
       supplements: supplements ?? this.supplements,
+      allCalendarEvents: allCalendarEvents ?? this.allCalendarEvents,
     );
   }
 

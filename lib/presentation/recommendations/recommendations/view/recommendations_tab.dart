@@ -26,17 +26,18 @@ class RecommendationsTab extends StatefulWidget {
 }
 
 class _RecommendationsTabState extends State<RecommendationsTab> {
+  late RecommendationsGeneralBloc bloc;
 
   @override
   void initState() {
     super.initState();
-    final bloc = BlocProvider.of<RecommendationsGeneralBloc>(context);
-    bloc.add(InitialStateAction());
+    bloc = BlocProvider.of<RecommendationsGeneralBloc>(context);
+    // bloc.add(InitialStateAction());
   }
 
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<RecommendationsGeneralBloc>(context);
+    // final bloc = BlocProvider.of<RecommendationsGeneralBloc>(context);
 
     return BlocProvider.value(
       value: bloc,
