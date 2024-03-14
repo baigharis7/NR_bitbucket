@@ -15,4 +15,37 @@ class FecesUrineApi extends ApiHelper {
         uploadFeces,
       );
 
+  Future<Map<String, dynamic>> uploadUrineEvent(UploadFeces uploadUrine) =>
+      post(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/urine',
+        ),
+        uploadUrine,
+      );
+
+  Future<Map<String, dynamic>> deleteFecesEvent(String userId, int eventId) =>
+      delete(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/feces',
+        ),
+        {
+          'userId': userId,
+          'eventId': eventId,
+        },
+      );
+
+  Future<Map<String, dynamic>> deleteUrineEvent(String userId, int eventId) =>
+      delete(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/urine',
+        ),
+        {
+          'userId': userId,
+          'eventId': eventId,
+        },
+      );
+
 }

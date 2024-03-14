@@ -21,6 +21,7 @@ class EventsSyncApi extends ApiHelper {
     List<String> subjectiveAnalysis,
     List<String> recipeFavorites,
     List<String> fecesEvents,
+    List<String> urineEvents,
   ) {
     return post(
       Uri.https(
@@ -40,6 +41,7 @@ class EventsSyncApi extends ApiHelper {
         'subjectiveAnalysis': subjectiveAnalysis,
         'recipeFavorites': recipeFavorites,
         'fecesEvents': fecesEvents,
+        'urineEvents': urineEvents,
       },
     );
   }

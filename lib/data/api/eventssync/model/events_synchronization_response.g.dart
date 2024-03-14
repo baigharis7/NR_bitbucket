@@ -43,6 +43,9 @@ EventsSynchronizationResponse _$EventsSynchronizationResponseFromJson(
       fecesEvents: (json['fecesEvents'] as List<dynamic>)
           .map((e) => UploadFeces.fromJson(e as Map<String, dynamic>))
           .toList(),
+          urineEvents: (json['urineEvents'] as List<dynamic>)
+          .map((e) => UploadFeces.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$EventsSynchronizationResponseToJson(
@@ -62,4 +65,5 @@ Map<String, dynamic> _$EventsSynchronizationResponseToJson(
       'recipeFavorites':
           instance.recipeFavorites.map((e) => e.toJson()).toList(),
       'fecesEvents': instance.fecesEvents.map((e) => e.toJson()).toList(),
+      'urineEvents': instance.urineEvents.map((e) => e.toJson()).toList(),
     };

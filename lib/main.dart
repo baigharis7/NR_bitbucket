@@ -95,12 +95,26 @@ import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sp
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sport_favorite_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_feces_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_feces_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_urine_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_urine_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_feces_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_feces_events_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_urine_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_urine_events_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_feces_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_feces_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_urine_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_urine_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_feces_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_feces_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_urine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_urine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_feces_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_feces_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_urine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_urine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
@@ -317,7 +331,7 @@ import 'presentation/waterevent/view/add_water_event_screen.dart';
 import 'package:chuck_interceptor/chuck.dart';
 
 void main() async {
-  const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
+  const String environmentName = String.fromEnvironment(Environment.DEV, defaultValue: Environment.DEV);
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -438,6 +452,13 @@ void main() async {
   final UploadFecesInteractor uploadFecesInteractor = UploadFecesInteractorImpl(fecesUrineRepository: fecesUrineRepository);
   final SaveFecesEventInteractor saveFecesEventInteractor = SaveFecesEventInteractorImpl(fecesUrineRepository: fecesUrineRepository);
   final GetFecesEventsInteractor getFecesEventsInteractor = GetFecesEventsInteractorImpl(fecesUrineRepository: fecesUrineRepository);
+  final UploadUrineInteractor uploadUrineInteractor = UploadUrineInteractorImpl(fecesUrineRepository: fecesUrineRepository);
+  final SaveUrineInteractor saveUrineInteractor = SaveUrineInteractorImpl(fecesUrineRepository: fecesUrineRepository);
+  final GetUrineEventsInteractor getUrineEventsInteractor = GetUrineEventsInteractorImpl(fecesUrineRepository: fecesUrineRepository);
+  final DeleteFecesEventInteractor deleteFecesEventInteractor = DeleteFecesEventInteractorImpl(fecesUrineRepository: fecesUrineRepository);
+  final RemoveFecesEventInteractor removeFecesEventInteractor = RemoveFecesEventInteractorImpl(fecesUrineRepository: fecesUrineRepository);
+  final DeleteUrineEventInteractor deleteUrineEventInteractor = DeleteUrineEventInteractorImpl(fecesUrineRepository: fecesUrineRepository);
+  final RemoveUrineEventInteractor removeUrineEventInteractor = RemoveUrineEventInteractorImpl(fecesUrineRepository: fecesUrineRepository);
 
   final dashboardBloc = DashboardBloc(
     getAdviceInteractor: getAdviceInteractor,
@@ -690,6 +711,13 @@ void main() async {
     uploadFecesInteractor: uploadFecesInteractor,
     getFecesEventsInteractor: getFecesEventsInteractor,
     saveFecesEventInteractor: saveFecesEventInteractor,
+    getUrineEventsInteractor: getUrineEventsInteractor,
+    saveUrineInteractor: saveUrineInteractor,
+    uploadUrineInteractor: uploadUrineInteractor,
+    deleteFecesEventInteractor: deleteFecesEventInteractor,
+    removeFecesEventInteractor: removeFecesEventInteractor,
+    deleteUrineEventInteractor: deleteUrineEventInteractor,
+    removeUrineEventInteractor: removeUrineEventInteractor,
   );
 
   final profileBloc = ProfileBloc(

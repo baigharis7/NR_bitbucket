@@ -73,6 +73,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _userStepsInfoBox;
   Box? _recipeFavoritesBox;
   Box? _fecesEventsBox;
+  Box? _urineEventsBox;
 
   Future<Box> _openProfileBox() async => openBox(_profileBox, UserProfileEntity.boxName);
   Future<Box> _openFoodEventsBox() async => openBox(_foodEventsBox, FoodEventEntity.boxName);
@@ -112,6 +113,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> _openUserStepsInfoBox() async => openBox(_userStepsInfoBox, StepsEntity.boxName);
   Future<Box> _openRecipeFavoritesBox() async => openBox(_recipeFavoritesBox, RecipeFavoriteEntity.boxName);
   Future<Box> _openFecesEventsBox() async => openBox(_fecesEventsBox, 'feces_events');
+  Future<Box> _openUrineEventsBox() async => openBox(_fecesEventsBox, 'urine_events');
 
   Future<Box> get _getProfileBox async => await _openProfileBox();
   Future<Box> get _getFoodEventsBox async => await _openFoodEventsBox();
@@ -128,6 +130,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> get _getUserStepsInfoBox async => await _openUserStepsInfoBox();
   Future<Box> get _getRecipeFavoritesBox async => await _openRecipeFavoritesBox();
   Future<Box> get _getFecesEventsBox async => await _openFecesEventsBox();
+  Future<Box> get _getUrineEventsBox async => await _openUrineEventsBox();
 
   @override
   Future<void> saveProfile(UserProfileEntity profileEntity) async {
@@ -658,7 +661,11 @@ class LocalStorageImpl extends LocalStorageRepository {
 
     final fecesEventsMap = await _getFecesEventsBox.then((box) => box.toMap());
     final fecesEvents = <int>[];
-    // recipeFavoritesMap.forEach((key, value) => recipeFavorites.add((value as RecipeFavoriteEntity).eventDate!));
+    fecesEventsMap.forEach((key, value) => fecesEvents.add((value as UploadFecesEventEntity).eventId));
+
+    final urineEventsMap = await _getUrineEventsBox.then((box) => box.toMap());
+    final urineEvents = <int>[];
+    urineEventsMap.forEach((key, value) => urineEvents.add((value as UploadFecesEventEntity).eventId));
 
     return EventsSynchronizationRequest(
       foodEvents: foodEvents,
@@ -671,7 +678,8 @@ class LocalStorageImpl extends LocalStorageRepository {
       liquidFavorites: liquidFavorites,
       subjectiveAnalysis: subjectiveAnalysisResults,
       recipeFavorites: recipeFavorites,
-      fecesEvents: [],
+      fecesEvents: fecesEvents,
+      urineEvents: urineEvents,
     );
   }
 
@@ -689,6 +697,7 @@ class LocalStorageImpl extends LocalStorageRepository {
     await _clearBox(_getSubjectiveAnalysisResultsBox);
     await _clearBox(_getRecipeFavoritesBox);
     await _clearBox(_getFecesEventsBox);
+    await _clearBox(_getUrineEventsBox);
     return true;
   }
 
@@ -974,6 +983,83 @@ class LocalStorageImpl extends LocalStorageRepository {
     });
 
     return list;
+  }
+
+  @override
+  Future<List> getUrineEvents() async {
+    List list = await _getUrineEventsBox.then((box) {
+      return box.values.toList();
+    });
+
+    return list;
+  }
+
+  @override
+  Future<void> saveUrineEvent(UploadFecesEventEntity urineEventEntity, {bool isEdit = false}) async {
+    try {
+      await urineEventEntity.save();
+    } catch (error) {
+      try {
+        _getUrineEventsBox.then((box) {
+          if (isEdit) {
+            final urineEventsMap = box.toMap();
+            urineEventsMap.forEach((key, value) {
+              if ((value as UploadFecesEventEntity).eventId == urineEventEntity.eventId) {
+                box.put(key, urineEventEntity);
+              }
+            });
+          } else {
+            box.add(urineEventEntity);
+          }
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<void> removeFecesEvent(UploadFecesEventEntity uploadFecesEventEntity) async {
+    try {
+      await uploadFecesEventEntity.delete();
+    } catch (error) {
+      try {
+        _getFecesEventsBox.then((box) {
+          final fecesEventsMap = box.toMap();
+          dynamic desiredKey;
+          fecesEventsMap.forEach((key, value) {
+            if ((value as UploadFecesEventEntity).eventId == uploadFecesEventEntity.eventId) {
+              desiredKey = key;
+            }
+          });
+          box.delete(desiredKey);
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<void> removeUrineEvent(UploadFecesEventEntity uploadFecesEventEntity) async {
+    try {
+      await uploadFecesEventEntity.delete();
+    } catch (error) {
+      try {
+        _getUrineEventsBox.then((box) {
+          final urineEventsMap = box.toMap();
+          dynamic desiredKey;
+          urineEventsMap.forEach((key, value) {
+            if ((value as UploadFecesEventEntity).eventId == uploadFecesEventEntity.eventId) {
+              desiredKey = key;
+            }
+          });
+          box.delete(desiredKey);
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
   }
 
 }

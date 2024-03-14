@@ -28,6 +28,7 @@ class EventsSynchronizationResponse {
   List<SubjectiveAnalysisResult> subjectiveAnalysis;
   List<UploadRecipeFavorite> recipeFavorites;
   List<UploadFeces> fecesEvents;
+  List<UploadFeces> urineEvents;
 
   EventsSynchronizationResponse({
     required this.foodEvents,
@@ -41,6 +42,7 @@ class EventsSynchronizationResponse {
     required this.subjectiveAnalysis,
     required this.recipeFavorites,
     required this.fecesEvents,
+    required this.urineEvents,
   });
 
   factory EventsSynchronizationResponse.fromJson(Map<String, dynamic> json) => _$EventsSynchronizationResponseFromJson(json);

@@ -22,3 +22,23 @@ class UploadFecesEventAction extends FecesUrineEvent {
 
   UploadFecesEventAction({required this.onFinish});
 }
+
+class UploadUrineEventAction extends FecesUrineEvent {
+  final Function onFinish;
+
+  UploadUrineEventAction({required this.onFinish});
+}
+
+class DeleteFecesEventAction extends FecesUrineEvent {
+  final UploadFeces uploadFeces;
+  final Function onFinish;
+
+  DeleteFecesEventAction({required this.uploadFeces, required this.onFinish});
+}
+
+class DeleteUrineEventAction extends FecesUrineEvent {
+  final UploadFeces uploadFeces;
+  final Function onFinish;
+
+  DeleteUrineEventAction({required this.uploadFeces, required this.onFinish});
+}

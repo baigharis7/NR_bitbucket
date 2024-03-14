@@ -2,8 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/feces.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/urine.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/bloc/feces_urine_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/radio_title_desc_image.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../../infrastructure/errors/error_resolver.dart';
+import '../../../infrastructure/helpers/snack_bar_helper.dart';
+import '../../common/view/loading_screen.dart';
 
 class UrineTab extends StatefulWidget {
   const UrineTab({super.key});
@@ -27,16 +33,30 @@ class _UrineTabState extends State<UrineTab> {
       value: fecesUrineBloc,
       child: SafeArea(
         child: BlocConsumer<FecesUrineBloc, FecesUrineState>(
-          listener: (context, state) {},
+          listener: (ctx, state) {
+            if (state.isLoading) {
+              LoadingScreen.instance().show(
+                context: ctx,
+                text: AppLocalizations.of(ctx)!.loading,
+              );
+            } else {
+              LoadingScreen.instance().hide();
+            }
+            if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
+          },
           builder: (context, state) => Scaffold(
             body: SingleChildScrollView(
               child: Column(
                 children: [
-                  // ...?state.urinesList?.map((urine) => RadioTitleDescImage(
-                  //     isSelected: -1 == urine.id,
-                  //     fece: Feces(urine.id, urine.title, '', urine.image), onSelect: (id) => fecesUrineBloc.add(UpdateUrineEventAction(urineId: id)),
-                  // ),
-                  // ),
+                  ...state.urineEvents.orEmpty().map((urine) {
+                    final urin = state.urinesList.orEmpty().firstWhere((element) => element.id == urine.fecesId);
+                    return RadioTitleDescImage(
+                      isSelected: true,
+                      fece: Feces(urin.id, urin.title, '', urin.image),
+                    onSelect: (id) => fecesUrineBloc.add(DeleteUrineEventAction(uploadFeces: urine, onFinish: () => Navigator.pop(context))),
+                  );
+                  }
+                  ),
                 ],
               ),
             ),

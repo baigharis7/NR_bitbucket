@@ -9,7 +9,9 @@ class FecesUrineState {
   List<Feces>? fecesList;
   List<Urines>? urinesList;
   List<UploadFeces>? fecesEvents;
+  List<UploadFeces>? urineEvents;
   int? fecesId;
+  int? urineId;
 
   FecesUrineState({
     required this.isLoading,
@@ -17,7 +19,9 @@ class FecesUrineState {
     this.fecesList,
     this.urinesList,
     this.fecesEvents,
+    this.urineEvents,
     this.fecesId,
+    this.urineId,
   });
 
   FecesUrineState copyWith({
@@ -26,8 +30,9 @@ class FecesUrineState {
     List<Feces>? fecesList,
     List<Urines>? urinesList,
     List<UploadFeces>? fecesEvents,
+    List<UploadFeces>? urineEvents,
     int? fecesId,
-    int? urinesSelected,
+    int? urineId,
   }) {
     return FecesUrineState(
       isLoading: isLoading,
@@ -35,7 +40,9 @@ class FecesUrineState {
       fecesList: fecesList ?? this.fecesList,
       urinesList: urinesList ?? this.urinesList,
       fecesEvents: fecesEvents ?? this.fecesEvents,
+      urineEvents: urineEvents ?? this.urineEvents,
       fecesId: fecesId ?? this.fecesId,
+      urineId: urineId ?? this.urineId,
     );
   }
 }

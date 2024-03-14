@@ -74,4 +74,8 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<void> removeRecipeFavorite(RecipeFavoriteEntity recipeFavoriteEntity);
   Future<void> saveFecesEvent(UploadFecesEventEntity fecesEventEntity);
   Future<List> getFecesEvents();
+  Future<void> saveUrineEvent(UploadFecesEventEntity fecesEventEntity);
+  Future<List> getUrineEvents();
+  Future<void> removeFecesEvent(UploadFecesEventEntity uploadFecesEventEntity);
+  Future<void> removeUrineEvent(UploadFecesEventEntity uploadFecesEventEntity);
 }

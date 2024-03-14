@@ -40,4 +40,68 @@ class FecesUrineRepositoryImpl extends FecesUrineRepository {
     }
   }
 
+  @override
+  Future<List<UploadFeces>> getUrineEvents() async {
+    try {
+      final result = await localStorageRepository.getUrineEvents();
+      return result.map((e) => mapToUploadFeces(e as UploadFecesEventEntity)).toList();
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> saveUrineEvent(UploadFeces uploadUrine) async {
+    try {
+      await localStorageRepository.saveUrineEvent(mapToUploadFecesEventEntity(uploadUrine));
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> uploadUrine(UploadFeces uploadUrine) async {
+    try {
+      await fecesUrineApi.uploadUrineEvent(uploadUrine);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteFecesEvent(String userId, int eventId) async {
+    try {
+      await fecesUrineApi.deleteFecesEvent(userId, eventId);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> removeFecesEvent(UploadFeces uploadFeces) async {
+    try {
+      await localStorageRepository.removeFecesEvent(mapToUploadFecesEventEntity(uploadFeces));
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteUrineEvent(String userId, int eventId) async {
+    try {
+      await fecesUrineApi.deleteUrineEvent(userId, eventId);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> removeUrineEvent(UploadFeces uploadUrine) async {
+    try {
+      await localStorageRepository.removeUrineEvent(mapToUploadFecesEventEntity(uploadUrine));
+    } catch (error) {
+      rethrow;
+    }
+  }
+
 }

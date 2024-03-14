@@ -4,4 +4,11 @@ abstract class FecesUrineRepository {
   Future<void> uploadFeces(UploadFeces uploadFeces);
   Future<void> saveFecesEvent(UploadFeces uploadFeces);
   Future<List<UploadFeces>> getFecesEvents();
+  Future<void> uploadUrine(UploadFeces uploadUrine);
+  Future<void> saveUrineEvent(UploadFeces uploadUrine);
+  Future<List<UploadFeces>> getUrineEvents();
+  Future<void> deleteFecesEvent(String userId, int eventId);
+  Future<void> removeFecesEvent(UploadFeces uploadFeces);
+  Future<void> deleteUrineEvent(String userId, int eventId);
+  Future<void> removeUrineEvent(UploadFeces uploadUrine);
 }

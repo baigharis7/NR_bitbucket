@@ -3,9 +3,16 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/data/api/fecesurine/models/upload_feces.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_feces_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_urine_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_feces_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_urine_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_feces_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_urine_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_feces_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_urine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_feces_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_urine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
@@ -27,18 +34,33 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
   final UploadFecesInteractor uploadFecesInteractor;
   final GetFecesEventsInteractor getFecesEventsInteractor;
   final SaveFecesEventInteractor saveFecesEventInteractor;
+  final UploadUrineInteractor uploadUrineInteractor;
+  final SaveUrineInteractor saveUrineInteractor;
+  final GetUrineEventsInteractor getUrineEventsInteractor;
+  final DeleteFecesEventInteractor deleteFecesEventInteractor;
+  final RemoveFecesEventInteractor removeFecesEventInteractor;
+  final DeleteUrineEventInteractor deleteUrineEventInteractor;
+  final RemoveUrineEventInteractor removeUrineEventInteractor;
 
   FecesUrineBloc({
     required this.getUserIdInteractor,
     required this.uploadFecesInteractor,
     required this.getFecesEventsInteractor,
     required this.saveFecesEventInteractor,
+    required this.getUrineEventsInteractor,
+    required this.uploadUrineInteractor,
+    required this.saveUrineInteractor,
+    required this.deleteFecesEventInteractor,
+    required this.removeFecesEventInteractor,
+    required this.deleteUrineEventInteractor,
+    required this.removeUrineEventInteractor,
   }) : super(FecesUrineState(isLoading: false)) {
     on<InitializationEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.fecesList = Feces.listOfAllFeces();
       state.urinesList = Urines.listOfAllUrines();
       state.fecesEvents = await getFecesEventsInteractor.execute();
+      state.urineEvents = await getUrineEventsInteractor.execute();
 
       emit(state.copyWith(isLoading: false));
     });
@@ -55,7 +77,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
     on<UpdateUrineEventAction>(
       (event, emit) {
         emit(state.copyWith(isLoading: true));
-        // state.profile?.urine = event.urineId;
+        state.urineId = event.urineId;
 
         emit(state.copyWith(isLoading: false));
       },
@@ -72,6 +94,59 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         await uploadFecesInteractor.execute(uploadFeces);
         try {
           await saveFecesEventInteractor.execute(uploadFeces);
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
+        } catch (_) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+        }
+      } catch (_) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+      }
+    },);
+
+    on<UploadUrineEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      UploadFeces uploadUrine = UploadFeces(
+        userId: getUserIdInteractor.execute(),
+        eventId: DateTime.now().millisecondsSinceEpoch,
+        fecesId: state.urineId ?? -1,
+      );
+      try {
+        await uploadUrineInteractor.execute(uploadUrine);
+        try {
+          await saveUrineInteractor.execute(uploadUrine);
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
+        } catch (_) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+        }
+      } catch (_) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+      }
+    },);
+
+    on<DeleteFecesEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      try {
+        await deleteFecesEventInteractor.execute(event.uploadFeces.userId, event.uploadFeces.eventId);
+        try {
+          await removeFecesEventInteractor.execute(event.uploadFeces);
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
+        } catch (_) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+        }
+      } catch (_) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+      }
+    },);
+
+    on<DeleteUrineEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      try {
+        await deleteUrineEventInteractor.execute(event.uploadFeces.userId, event.uploadFeces.eventId);
+        try {
+          await removeUrineEventInteractor.execute(event.uploadFeces);
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
         } catch (_) {
