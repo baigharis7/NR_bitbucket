@@ -284,6 +284,7 @@
     "spor_name" : "Sport name",
     "no_food_favorites" : "There are no favorites of this meal time",
     "remove_favorite_question" : "Are you sure you want to remove the favorite",
+    "remove_item" : "Are you sure you want to delete?",
     "remove" : "Remove",
     "choose_meal_time" : "Choose meal time",
     "save_favorite_error" : "There was a problem saving your favorite. Please try again.",

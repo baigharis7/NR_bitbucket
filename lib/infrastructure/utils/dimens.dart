@@ -10,6 +10,9 @@ class Dimens {
   static const padding4Large = 80.0;
   static const padding5Large = 100.0;
   static const padding6Large = 120.0;
+  static const padding7Large = 140.0;
+  static const padding8Large = 160.0;
+  static const padding9Large = 180.0;
   // static const heightXSmall = 20.0;
   // static const heightSmall = 50.0;
   // static const heightNormal = 100.0;

@@ -140,6 +140,16 @@ class EventsHelper {
     return list;
   }
 
+  static List isEventFoundAgainstDate(List<dynamic> listOfEvents, DateTime date) {
+    final list = [];
+    for (var event in listOfEvents) {
+      if (DateTimeHelper().isSameGivenDateAndMillisecondsDate(date, event.eventId)) {
+        list.add(event);
+      }
+    }
+    return list;
+  }
+
   String findFoodNameFromId(int foodId, BuildContext context, List<FoodItemMaster> foodNames) {
     final item = foodNames.firstWhere((foodItemMaster) => foodId == foodItemMaster.id, orElse: FoodItemMaster.empty);
     return item.translate(context);

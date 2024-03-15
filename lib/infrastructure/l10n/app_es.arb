@@ -285,6 +285,7 @@
     "spor_name" : "nombre del deporte",
     "no_food_favorites" : "No hay favoritos en esta hora de comida",
     "remove_favorite_question" : "¿Estás seguro de que quieres eliminar el favorito",
+    "remove_item" : "Are you sure you want to delete?",
     "remove" : "Eliminar",
     "choose_meal_time" : "Elige la hora",
     "save_favorite_error" : "Ha habido un problema guardando tu favorito. Por favor, intenta de nuevo",

@@ -11,14 +11,18 @@ class NutrientsDashboardWidget extends StatefulWidget {
   final String title;
   final List<NutrientsModel> nutrients;
   final bool isEmpty;
-  final Function screenToMove;
+  final Function? screenToMove;
+  final Function? onMinusClick;
+  final Function? onPlusClick;
 
   const NutrientsDashboardWidget({
     Key? key,
     required this.nutrients,
     required this.title,
     required this.isEmpty,
-    required this.screenToMove,
+    this.screenToMove,
+    this.onMinusClick,
+    this.onPlusClick,
   }) : super(key: key);
 
   @override
@@ -35,7 +39,7 @@ class _NutrientsDashboardWidgetState extends State<NutrientsDashboardWidget> {
       child: Column(
             children: [
               Container(
-                margin: const EdgeInsets.only(left: Dimens.marginLarge,),
+                margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge, vertical: Dimens.marginNormal),
                 alignment: Alignment.centerLeft,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -48,9 +52,9 @@ class _NutrientsDashboardWidgetState extends State<NutrientsDashboardWidget> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Container(
+                    if (widget.screenToMove != null) Container(
                       alignment: Alignment.centerRight,
-                      child: IconButton(onPressed: () { widget.screenToMove.call(); }, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                      child: IconButton(onPressed: () { widget.screenToMove?.call(); }, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
                     ),
                   ],
                 ),
@@ -99,10 +103,18 @@ class _NutrientsDashboardWidgetState extends State<NutrientsDashboardWidget> {
                                     FillHorizontalBar(fillColor: nutrient.fractionToFill >= 1 ? AppColors.errorRed : AppColors.mountainMeadow, backgroundBarColor: AppColors.cardGreen_200, fractionToFill: nutrient.fractionToFill,),
                                     Container(
                                       alignment: Alignment.center,
-                                      margin: const EdgeInsets.only(top: Dimens.marginXSmall),
-                                      child: Text(
-                                        '${(nutrient.quantityConsumed)} ${nutrient.unit}',
-                                        style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
+                                      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
+                                      child: Row(
+                                        children: [
+                                          if (widget.onMinusClick != null) InkWell(onTap: () => widget.onMinusClick?.call(), child: Image.asset('assets/images/water_minus.png', height: 15,  color: Colors.black)),
+                                          Expanded(
+                                            child: Text(textAlign: TextAlign.center,
+                                              '${(nutrient.quantityConsumed)} ${nutrient.unit}',
+                                              style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
+                                            ),
+                                          ),
+                                          if (widget.onPlusClick != null) InkWell(onTap: () => widget.onPlusClick?.call(), child: Image.asset('assets/images/water_plus.png', height: 15, color: Colors.black,)),
+                                        ],
                                       ),
                                     ),
                                   ],),

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/data/api/fecesurine/models/upload_feces.dart';
@@ -14,16 +12,11 @@ import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_urine_i
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_feces_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_urine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/urine.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
-
-import '../../../data/api/profile/model/user_profile_response.dart';
-import '../../../domain/interactor/profile/upload_profile_interactor.dart';
 import '../../../domain/models/profile/feces.dart';
-import '../../../domain/models/profile/user_profile_model.dart';
 import '../../../infrastructure/errors/error_types.dart';
+import '../../../infrastructure/helpers/events_helper.dart';
 
 part 'feces_urine_event.dart';
 
@@ -156,5 +149,9 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
       }
     },);
+  }
+
+  List<dynamic> getEventsForDay(List<dynamic> list, DateTime dateTime) {
+    return EventsHelper.isEventFoundAgainstDate(list, dateTime);
   }
 }
