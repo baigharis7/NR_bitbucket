@@ -353,7 +353,7 @@ class _DashboardScreen extends State<DashboardScreen>
                           title: AppLocalizations.of(context)!.supplements,
                           nutrients: state.supplements.orEmpty(),
                           isEmpty: false,
-                          onMinusClick: () {},
+                          onMinusClick: () {bloc.add(UploadCreatineEventAction(value: 5));},
                           onPlusClick: () {},
                         ),
                       ],

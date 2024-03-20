@@ -57,6 +57,7 @@ enum ErrorTypes {
   synchronizeEventsError,
   emailSendError,
   confirmationCodeError,
+  uploadCreatineError,
 }
 
 enum FormErrorTypes {

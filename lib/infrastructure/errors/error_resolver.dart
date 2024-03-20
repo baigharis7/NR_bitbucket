@@ -122,6 +122,8 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.delete_liquid_event_error;
     case ErrorTypes.removeLiquidEventError:
       return stringResolver.remove_liquid_event_error;
+    case ErrorTypes.uploadCreatineError:
+      return stringResolver.error_uploading_creatine;
   }
 }
 

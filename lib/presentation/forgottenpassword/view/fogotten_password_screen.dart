@@ -108,7 +108,7 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
                             ),
                           ),
                           hintText: AppLocalizations.of(context)!
-                              .enter_username_or_email,
+                              .email,
                           errorMaxLines: 3,
                         ),
                         controller: _emailController,

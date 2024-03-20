@@ -62,3 +62,9 @@ class UploadStepsEventAction extends DashboardActions {
 
   UploadStepsEventAction({required this.stepCount});
 }
+
+class UploadCreatineEventAction extends DashboardActions {
+  final int value;
+
+  UploadCreatineEventAction({required this.value});
+}

@@ -1,4 +1,5 @@
 import 'package:nutrenaissance_flutter/data/api/steps/models/step_event_response.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_events_sorted_by_date_interactor.dart';
@@ -18,6 +19,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/steps/get_steps_interac
 import 'package:nutrenaissance_flutter/domain/interactor/steps/get_today_step_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/save_steps_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_creatine_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/energy_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/nutrients_model.dart';
@@ -39,6 +41,7 @@ import '../../../domain/interactor/foodevents/get_week_food_events_interactor.da
 import '../../../domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
 import '../../../domain/interactor/liquidevents/get_week_liquid_events_interactor.dart';
 import '../../../domain/interactor/sportevents/get_week_sports_interactor.dart';
+import '../../../domain/interactor/supplements/get_today_creatine_event_interactor.dart';
 import '../../../domain/interactor/waterevents/save_water_event_interactor.dart';
 import '../../../domain/interactor/waterevents/upload_water_event_interactor.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
@@ -72,6 +75,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final GetStepsInteractor getStepsInteractor;
   final GetTodayStepInteractor getTodayStepInteractor;
   final GetAllEventsSortedByDateInteractor getAllEventsSortedByDateInteractor;
+  final GetTodayCreatineEventInteractor getTodayCreatineEventInteractor;
+  final UploadCreatineEventInteractor uploadCreatineEventInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -99,6 +104,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.getStepsInteractor,
     required this.getTodayStepInteractor,
     required this.getAllEventsSortedByDateInteractor,
+    required this.getTodayCreatineEventInteractor,
+    required this.uploadCreatineEventInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -128,6 +135,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.isCold = state.profile?.objectives?.contains(Constants.IMPROVE_THE_IMMUNE_SYSTEM);
       state.todayStep = await getTodayStepInteractor.execute();
       state.allCalendarEvents = await getAllEventsSortedByDateInteractor.execute();
+      final todayCreatine = await getTodayCreatineEventInteractor.execute();
       state.micronutrients = state.userMicronutrients!
           .map(
             (micronutrient) =>
@@ -348,6 +356,22 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         }
       } catch (_) {
        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+      }
+    },);
+
+    on<UploadCreatineEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      UploadSupplementEvent uploadSupplementEvent = UploadSupplementEvent(
+          userId: getUserIdInteractor.execute(),
+          eventId: DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch,
+          value: event.value,
+      );
+      try {
+        await uploadCreatineEventInteractor.execute(uploadSupplementEvent);
+
+        emit(state.copyWith(isLoading: false));
+      } catch (_) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadCreatineError));
       }
     },);
   }

@@ -497,9 +497,14 @@ class _LoginScreenState extends State<LoginScreen>
                                 Expanded(
                                   flex: 1,
                                   child: InkWell(
-                                    onTap: () => model.changeLoginMode(() {
+                                    onTap: () {
+                                      _usernameController.clear();
+                                      _emailController.clear();
+                                      _passwordController.clear();
+                                      _repeatPasswordController.clear();
+                                      model.changeLoginMode(() {
                                       _controller!.forward();
-                                    }),
+                                    });},
                                     child: Text(
                                       model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login,
                                       style: const TextStyle(color: AppColors.mountainMeadow, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge),textAlign: TextAlign.left,

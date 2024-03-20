@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ import 'package:nutrenaissance_flutter/data/api/recommendations/recommendations_
 import 'package:nutrenaissance_flutter/data/api/routines/routines_api.dart';
 import 'package:nutrenaissance_flutter/data/api/sportevents/sport_events_api.dart';
 import 'package:nutrenaissance_flutter/data/api/steps/steps_api.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/supplemets_api.dart';
 import 'package:nutrenaissance_flutter/data/api/waterevents/water_events_api.dart';
 import 'package:nutrenaissance_flutter/data/local/models/analysis/subjective/subjective_analysis_result_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/explainingcards/explaining_card_entity.dart';
@@ -62,6 +64,7 @@ import 'package:nutrenaissance_flutter/data/repository/recommendations/recommend
 import 'package:nutrenaissance_flutter/data/repository/routines/routines_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/sportevents/sport_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/steps/steps_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/supplements/supplements_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/waterevents/water_event_repository_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor_impl.dart';
@@ -203,6 +206,10 @@ import 'package:nutrenaissance_flutter/domain/interactor/steps/save_steps_intera
 import 'package:nutrenaissance_flutter/domain/interactor/steps/save_steps_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_creatine_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_creatine_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_creatine_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_creatine_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/save_water_event_interactor.dart';
@@ -228,10 +235,12 @@ import 'package:nutrenaissance_flutter/domain/repository/recommendations/recomme
 import 'package:nutrenaissance_flutter/domain/repository/routines/routines_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/steps/steps_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/supplements/supplements_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/waterevents/water_events_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/cognito_authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/environment/environment.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/calendar/bloc/calendar_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/calendar/view/calendar_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/test_bloc.dart';
@@ -329,11 +338,21 @@ import 'presentation/recommendations/common/view/recommendations_tabs_holder.dar
 import 'presentation/waterevent/view/add_water_event_screen.dart';
 
 import 'package:chuck_interceptor/chuck.dart';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+
+// @pragma('vm:entry-point')
+// void printHello() {
+// final DateTime now = DateTime.now();
+// final int isolateId = Isolate.current.hashCode;
+// print("[$now] Hello, world! isolate=$isolateId function='$printHello'");
+// ToastHelper().showToast(text: "[$now] Hello, world! isolate=$isolateId function='$printHello'");
+// }
 
 void main() async {
   const String environmentName = String.fromEnvironment(Environment.DEV, defaultValue: Environment.DEV);
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
+  // await AndroidAlarmManager.initialize();
 
   initLocalStorage();
 
@@ -459,6 +478,10 @@ void main() async {
   final RemoveFecesEventInteractor removeFecesEventInteractor = RemoveFecesEventInteractorImpl(fecesUrineRepository: fecesUrineRepository);
   final DeleteUrineEventInteractor deleteUrineEventInteractor = DeleteUrineEventInteractorImpl(fecesUrineRepository: fecesUrineRepository);
   final RemoveUrineEventInteractor removeUrineEventInteractor = RemoveUrineEventInteractorImpl(fecesUrineRepository: fecesUrineRepository);
+  final SupplementApi supplementApi = SupplementApi(prefsRepository, authenticationService, chuck);
+  final SupplementsRepository supplementsRepository = SupplementsRepositoryImpl(supplementApi: supplementApi, localStorageRepository: localStorageRepository);
+  final GetTodayCreatineEventInteractor getTodayCreatineEventInteractor = GetTodayCreatineEventInteractorImpl(supplementsRepository: supplementsRepository);
+  final UploadCreatineEventInteractor uploadCreatineEventInteractor = UploadCreatineEventInteractorImpl(supplementsRepository: supplementsRepository);
 
   final dashboardBloc = DashboardBloc(
     getAdviceInteractor: getAdviceInteractor,
@@ -486,6 +509,8 @@ void main() async {
     getStepsInteractor: getStepsInteractor,
     getTodayStepInteractor: getTodayStepInteractor,
     getAllEventsSortedByDateInteractor: getAllEventsSortedByDateInteractor,
+    getTodayCreatineEventInteractor: getTodayCreatineEventInteractor,
+    uploadCreatineEventInteractor: uploadCreatineEventInteractor,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(
@@ -771,6 +796,8 @@ void main() async {
   final recipeDetailBloc = RecipeDetailBloc(
     getMasterFileInteractor: getMasterFileInteractor,
   );
+
+  // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
 
   runApp(
     // MultiProvider(
