@@ -6,8 +6,10 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/lists/SupplementInfo.dart';
 
 import '../../../data/api/steps/models/step_event_response.dart';
+import '../../../data/api/supplements/model/upload_supplement_event.dart';
 import '../../../domain/models/calendar/calendar_events.dart';
 import '../../../domain/models/dashboard/nutrients_weekly_model.dart';
 import '../../../domain/models/liquidevents/liquid_event_complete.dart';
@@ -40,7 +42,9 @@ class DashboardState {
   bool? isMenstruation;
   bool? isCold;
   StepEventResponse? todayStep;
-  List<NutrientsModel>? supplements;
+  List<SupplementInfo>? supplements;
+  SupplementInfo? todayCreatineSupplement;
+  SupplementInfo? todayCollagenSupplement;
   CalendarEvents? allCalendarEvents;
 
   DashboardState({
@@ -70,6 +74,8 @@ class DashboardState {
     this.isCold,
     this.todayStep,
     this.supplements,
+    this.todayCreatineSupplement,
+    this.todayCollagenSupplement,
     this.allCalendarEvents,
   });
 
@@ -100,7 +106,9 @@ class DashboardState {
     bool? isMenstruation,
     bool? isCold,
     StepEventResponse? todayStep,
-    List<NutrientsModel>? supplements,
+    List<SupplementInfo>? supplements,
+    SupplementInfo? todayCreatineSupplement,
+    SupplementInfo? todayCollagenSupplement,
     CalendarEvents? allCalendarEvents,
   }) {
     return DashboardState(
@@ -130,6 +138,8 @@ class DashboardState {
       isCold: isCold ?? this.isCold,
       todayStep: todayStep ?? this.todayStep,
       supplements: supplements ?? this.supplements,
+      todayCreatineSupplement: todayCreatineSupplement ?? this.todayCreatineSupplement,
+      todayCollagenSupplement: todayCollagenSupplement ?? this.todayCollagenSupplement,
       allCalendarEvents: allCalendarEvents ?? this.allCalendarEvents,
     );
   }

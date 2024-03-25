@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nutrenaissance_flutter/data/api/steps/models/step_event_response.dart';
-import 'package:pedometer/pedometer.dart';
+import 'package:nutrenaissance_flutter/infrastructure/lists/SupplementInfo.dart';
 
 class DashboardActions {
   DashboardActions();
@@ -57,14 +56,16 @@ class FinishWaterEventAction extends DashboardActions {
   FinishWaterEventAction({required this.qty, required this.onFinish});
 }
 
-class UploadStepsEventAction extends DashboardActions {
-  final StepCount stepCount;
-
-  UploadStepsEventAction({required this.stepCount});
-}
-
 class UploadCreatineEventAction extends DashboardActions {
+  final SupplementInfo? supplementInfo;
   final int value;
 
-  UploadCreatineEventAction({required this.value});
+  UploadCreatineEventAction({required this.supplementInfo, required this.value});
+}
+
+class UploadCollagenEventAction extends DashboardActions {
+  final SupplementInfo? supplementInfo;
+  final int value;
+
+  UploadCollagenEventAction({required this.supplementInfo, required this.value});
 }

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,13 +8,9 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/pedometer_helper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/request_permission_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/permission_type.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_bloc.dart';
@@ -28,6 +22,7 @@ import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/m
 import 'package:nutrenaissance_flutter/presentation/nutrients_detail/view/weekly_all_nutrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/card_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/dashboard_calendar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/energy_balance_widget.dart';
@@ -37,11 +32,9 @@ import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_
 import 'package:nutrenaissance_flutter/presentation/widgets/swith_with_function_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_rda_nutrients_dashboard_widget.dart';
 
-import 'package:pedometer/pedometer.dart';
-import 'package:permission_handler/permission_handler.dart';
-
 import '../../../infrastructure/utils/constants.dart';
 import '../../fiber_detail/view/fiber_detail_Screen.dart';
+import '../../widgets/NutrientDetailWidget.dart';
 
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -55,7 +48,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreen extends State<DashboardScreen>
     with SingleTickerProviderStateMixin {
 
-  StepCount? _stepCountValue;
+  // StepCount? _stepCountValue;
 
   @override
   void initState() {
@@ -349,12 +342,12 @@ class _DashboardScreen extends State<DashboardScreen>
                             ],
                           ),
                         ),
-                        NutrientsDashboardWidget(
-                          title: AppLocalizations.of(context)!.supplements,
-                          nutrients: state.supplements.orEmpty(),
-                          isEmpty: false,
-                          onMinusClick: () {bloc.add(UploadCreatineEventAction(value: 5));},
-                          onPlusClick: () {},
+                        CardWidget(title: AppLocalizations.of(context)!.supplements,
+                            // children: state.supplements.orEmpty().map((creatine) => NutrientDetailWidget(todayCreatine: creatine, onMinusClick: (supplement) {}, onPlusClick: (supplement) {}),).toList()),
+                            children: [
+                              NutrientDetailWidget(todayCreatine: state.todayCreatineSupplement, onMinusClick: (supplement) => bloc.add(UploadCreatineEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCreatineEventAction(value: 2, supplementInfo: supplement,))),
+                              NutrientDetailWidget(todayCreatine: state.todayCollagenSupplement, onMinusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: 2, supplementInfo: supplement,))),
+                            ],
                         ),
                       ],
                     ),

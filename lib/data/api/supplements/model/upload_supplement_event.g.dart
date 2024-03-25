@@ -7,15 +7,15 @@ part of 'upload_supplement_event.dart';
 // **************************************************************************
 
 UploadSupplementEvent _$UploadSupplementEventFromJson(
-    Map<String, dynamic> json) =>
+        Map<String, dynamic> json) =>
     UploadSupplementEvent(
-      userId: json['userId'] as String,
-      eventId: json['eventId'] as int,
-      value: json['value'] as int,
+      userId: json['userId'] as String?,
+      eventId: json['eventId'] as int?,
+      value: json['value'] as int?,
     );
 
 Map<String, dynamic> _$UploadSupplementEventToJson(
-    UploadSupplementEvent instance) =>
+        UploadSupplementEvent instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'eventId': instance.eventId,

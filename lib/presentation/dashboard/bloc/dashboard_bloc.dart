@@ -1,4 +1,3 @@
-import 'package:nutrenaissance_flutter/data/api/steps/models/step_event_response.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart';
@@ -19,6 +18,9 @@ import 'package:nutrenaissance_flutter/domain/interactor/steps/get_steps_interac
 import 'package:nutrenaissance_flutter/domain/interactor/steps/get_today_step_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/save_steps_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_collagen_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_collagen_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_collagen_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_creatine_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/energy_model.dart';
@@ -30,11 +32,11 @@ import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/lists/SupplementInfo.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
-import 'package:pedometer/pedometer.dart';
 
 import '../../../data/api/profile/model/user_profile_response.dart';
 import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
@@ -42,6 +44,7 @@ import '../../../domain/interactor/liquidevents/get_today_liquid_events_interact
 import '../../../domain/interactor/liquidevents/get_week_liquid_events_interactor.dart';
 import '../../../domain/interactor/sportevents/get_week_sports_interactor.dart';
 import '../../../domain/interactor/supplements/get_today_creatine_event_interactor.dart';
+import '../../../domain/interactor/supplements/save_creatine_event_interactor.dart';
 import '../../../domain/interactor/waterevents/save_water_event_interactor.dart';
 import '../../../domain/interactor/waterevents/upload_water_event_interactor.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
@@ -77,6 +80,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final GetAllEventsSortedByDateInteractor getAllEventsSortedByDateInteractor;
   final GetTodayCreatineEventInteractor getTodayCreatineEventInteractor;
   final UploadCreatineEventInteractor uploadCreatineEventInteractor;
+  final SaveCreatineEventInteractor saveCreatineEventInteractor;
+  final GetTodayCollagenEventInteractor getTodayCollagenEventInteractor;
+  final UploadCollagenEventInteractor uploadCollagenEventInteractor;
+  final SaveCollagenEventInteractor saveCollagenEventInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -106,6 +113,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.getAllEventsSortedByDateInteractor,
     required this.getTodayCreatineEventInteractor,
     required this.uploadCreatineEventInteractor,
+    required this.saveCreatineEventInteractor,
+    required this.getTodayCollagenEventInteractor,
+    required this.uploadCollagenEventInteractor,
+    required this.saveCollagenEventInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -136,6 +147,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.todayStep = await getTodayStepInteractor.execute();
       state.allCalendarEvents = await getAllEventsSortedByDateInteractor.execute();
       final todayCreatine = await getTodayCreatineEventInteractor.execute();
+      final todayCollagen = await getTodayCollagenEventInteractor.execute();
       state.micronutrients = state.userMicronutrients!
           .map(
             (micronutrient) =>
@@ -186,7 +198,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           fractionToFill: getWeeklyFractionFill(nutrientRda),
           unit: getUnitForMicronutrient(nutrientRda.name),
           rda: double.parse((nutrientRda.rda * 7).toStringAsFixed(2)),),).toList();
-      state.supplements = [NutrientsModel(unit: 'g', rda: userRdaforSupplement(), fractionToFill: 0.0, nutrientInfoMaster: NutrientInfoMaster(unit: 'g', es: 'Creatina', en: 'Creatine', officialName: 'hu hu'), quantityConsumed: 0.0),NutrientsModel(unit: 'g', rda: 10, fractionToFill: 0.0, nutrientInfoMaster: NutrientInfoMaster(unit: 'g', es: 'Colágeno', en: 'Collagen', officialName: 'hu hu'), quantityConsumed: 0.0)];
+      // state.supplements = [SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement()), SupplementInfo('Collagen', 'Colágeno', todayCollagen, 10),];
+      state.todayCreatineSupplement = SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement());
+      state.todayCollagenSupplement = SupplementInfo('Collagen', 'Colágeno', todayCollagen, 10);
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
 
       emit(state.copyWith(
@@ -335,43 +349,49 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     });
 
-    on<UploadStepsEventAction>((event, emit) async {
-      // emit(state.copyWith(isLoading: true));
-
-      var stepEventResponse = StepEventResponse(
-          eventId: state.todayStep?.eventId ?? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch,
-          initialSteps: event.stepCount.steps,
-          // actualSteps: event.stepCount.steps - (state.todayStep?.actualSteps ?? 0),
-          actualSteps: await calculateActualSteps(event.stepCount),
+    on<UploadCreatineEventAction>((event, emit) async {
+      var updatingValue = (event.supplementInfo?.uploadSupplementEvent?.value ?? 0) + event.value;
+      if (updatingValue < 0) return;
+      emit(state.copyWith(isLoading: true));
+      UploadSupplementEvent uploadSupplementCreatineEvent = UploadSupplementEvent(
+          userId: getUserIdInteractor.execute(),
+          eventId: event.supplementInfo?.uploadSupplementEvent?.eventId ?? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch,
+          value: updatingValue,
       );
-
       try {
-        final result = await uploadStepsInteractor.execute(stepEventResponse);
+        await uploadCreatineEventInteractor.execute(uploadSupplementCreatineEvent);
         try {
-          await saveStepsInteractor.execute(stepEventResponse);
-          state.todayStep = await getTodayStepInteractor.execute();
+          await saveCreatineEventInteractor.execute(uploadSupplementCreatineEvent, !(event.supplementInfo?.uploadSupplementEvent?.eventId.isNull() ?? true));
           emit(state.copyWith(isLoading: false));
-        } catch(_) {
-          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+          add(InitializeState());
+        } catch (_) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveCreatineError));
         }
       } catch (_) {
-       emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadCreatineError));
       }
     },);
 
-    on<UploadCreatineEventAction>((event, emit) async {
+    on<UploadCollagenEventAction>((event, emit) async {
+      var updatingValue = (event.supplementInfo?.uploadSupplementEvent?.value ?? 0) + event.value;
+      if (updatingValue < 0) return;
       emit(state.copyWith(isLoading: true));
-      UploadSupplementEvent uploadSupplementEvent = UploadSupplementEvent(
+      UploadSupplementEvent uploadSupplementCreatineEvent = UploadSupplementEvent(
           userId: getUserIdInteractor.execute(),
-          eventId: DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch,
-          value: event.value,
+          eventId: event.supplementInfo?.uploadSupplementEvent?.eventId ?? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch,
+          value: updatingValue,
       );
       try {
-        await uploadCreatineEventInteractor.execute(uploadSupplementEvent);
-
-        emit(state.copyWith(isLoading: false));
+        await uploadCollagenEventInteractor.execute(uploadSupplementCreatineEvent);
+        try {
+          await saveCollagenEventInteractor.execute(uploadSupplementCreatineEvent, !(event.supplementInfo?.uploadSupplementEvent?.eventId.isNull() ?? true));
+          emit(state.copyWith(isLoading: false));
+          add(InitializeState());
+        } catch (_) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveCollagenError));
+        }
       } catch (_) {
-        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadCreatineError));
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadCollagenError));
       }
     },);
   }
@@ -658,43 +678,28 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     return changedKcal;
   }
 
-  Future<int> calculateActualSteps(StepCount stepCount) async {
-    final todayValues = await getTodayStepInteractor.execute();
-    final initialSteps = todayValues.initialSteps ?? 0;
-    final actualSteps = todayValues.actualSteps ?? 0;
-
-    var actualStepsUpdated = 0;
-
-    // if (initialSteps == stepCount.steps) {
-    //   actualStepsUpdated = actualSteps;
-    // }
-    // else
-    if (initialSteps < stepCount.steps) {
-
-      actualStepsUpdated = actualSteps + (stepCount.steps - initialSteps);
-    } else {
-      actualStepsUpdated = actualSteps;
-    }
-
-    // actualStepsUpdated = initialSteps > 0 ? stepCount.steps - initialSteps : ;
-
-
-
-    return actualStepsUpdated;
-  }
 
   num userRdaforSupplement() {
     num creatine = 0.0;
     double userWeight = state.profile?.physicalCharacteristics?.weight ?? 0;
     if (state.profile?.physicalCharacteristics?.unit == 'feet - lb') {
-      userWeight = userWeight * 2.20462;
+      userWeight = userWeight / 2.20462;
     }
-    creatine = 0.08 / (userWeight * 1000);
+    creatine = 0.08 * userWeight;
     return double.parse(creatine.toStringAsFixed(2));
   }
 
   List<dynamic> getEventsForDay(DateTime dateTime) {
     return _eventsHelper.getEventsFromGivenDate(state.allCalendarEvents!, dateTime);
+  }
+
+  double calculateTodayCreatineFill(UploadSupplementEvent todayCreatine) {
+    var fill = 0.0;
+    // if (toda) {
+    //
+    // }
+
+    return fill;
   }
 
 }

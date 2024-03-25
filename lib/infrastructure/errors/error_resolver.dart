@@ -124,6 +124,12 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.remove_liquid_event_error;
     case ErrorTypes.uploadCreatineError:
       return stringResolver.error_uploading_creatine;
+    case ErrorTypes.saveCreatineError:
+      return stringResolver.error_saving_creatine;
+    case ErrorTypes.uploadCollagenError:
+      return stringResolver.error_uploading_collagen;
+    case ErrorTypes.saveCollagenError:
+      return stringResolver.error_saving_collagen;
   }
 }
 

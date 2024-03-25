@@ -8,5 +8,5 @@ class GetTodayCreatineEventInteractorImpl extends GetTodayCreatineEventInteracto
 
   GetTodayCreatineEventInteractorImpl({required this.supplementsRepository});
   @override
-  Future<UploadSupplementEvent> execute() => supplementsRepository.getTodayCreatineEvent();
+  Future<UploadSupplementEvent?> execute() => supplementsRepository.getTodayCreatineEvent();
 }

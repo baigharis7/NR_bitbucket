@@ -48,7 +48,9 @@ UserProfileModel _$UserProfileModelFromJson(Map<String, dynamic> json) =>
           : UserRdas.fromJson(json['userRdas'] as Map<String, dynamic>),
       feces: json['feces'] as int?,
       urine: json['urine'] as int?,
-      recommededIds: json['recommededIds'] as List<int>?,
+      recommededIds: (json['recommededIds'] as List<dynamic>?)
+          ?.map((e) => e as int)
+          .toList(),
       kcal: json['kcal'] as int?,
     );
 
@@ -104,8 +106,8 @@ Map<String, dynamic> _$MedicalSituationToJson(MedicalSituation instance) =>
 PhysicalCharacteristics _$PhysicalCharacteristicsFromJson(
         Map<String, dynamic> json) =>
     PhysicalCharacteristics(
-      height: json['height'] as double?,
-      weight: json['weight'] as double?,
+      height: (json['height'] as num?)?.toDouble(),
+      weight: (json['weight'] as num?)?.toDouble(),
       unit: json['unit'] as String?,
       bodyFat: json['bodyFat'] as int?,
       waistMeasurement: json['waistMeasurement'] as int?,

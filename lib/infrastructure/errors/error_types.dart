@@ -58,6 +58,9 @@ enum ErrorTypes {
   emailSendError,
   confirmationCodeError,
   uploadCreatineError,
+  saveCreatineError,
+  uploadCollagenError,
+  saveCollagenError,
 }
 
 enum FormErrorTypes {

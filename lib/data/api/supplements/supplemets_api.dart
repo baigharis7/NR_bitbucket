@@ -19,4 +19,13 @@ class SupplementApi extends ApiHelper {
         uploadSupplementEvent,
       );
 
+  Future<Map<String, dynamic>> uploadCollagenEvent(UploadSupplementEvent uploadSupplementCollagenEvent) =>
+      post(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/collagen',
+        ),
+        uploadSupplementCollagenEvent,
+      );
+
 }

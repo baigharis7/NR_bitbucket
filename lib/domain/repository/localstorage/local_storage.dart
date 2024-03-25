@@ -1,4 +1,5 @@
 import 'package:nutrenaissance_flutter/data/api/eventssync/model/events_synchronization_request.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
 import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
 import 'package:nutrenaissance_flutter/data/local/models/fecesurine/upload_feces_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
@@ -8,6 +9,7 @@ import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_en
 import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/supplements/upload_supplement_event_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/analysis/subjective/subjective_analysis_result.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/liquid/liquid_favorite.dart';
@@ -78,4 +80,8 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<List> getUrineEvents();
   Future<void> removeFecesEvent(UploadFecesEventEntity uploadFecesEventEntity);
   Future<void> removeUrineEvent(UploadFecesEventEntity uploadFecesEventEntity);
+  Future<void> saveCreatineEvent(UploadSupplementEventEntity supplementCreatineEventEntity, {bool isEdit = false});
+  Future<void> saveCollagenEvent(UploadSupplementEventEntity supplementCollagenEventEntity, {bool isEdit = false});
+  Future<UploadSupplementEventEntity?> getCreatineTodayEvent();
+  Future<UploadSupplementEventEntity?> getCollagenTodayEvent();
 }

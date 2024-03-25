@@ -24,6 +24,7 @@ import 'package:nutrenaissance_flutter/data/local/models/recipes/recipe_favorite
 import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/supplements/upload_supplement_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/watervents/water_event_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/analysis/subjective/subjective_analysis_result.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
@@ -74,6 +75,8 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _recipeFavoritesBox;
   Box? _fecesEventsBox;
   Box? _urineEventsBox;
+  Box? _creatineEventsBox;
+  Box? _collagenEventsBox;
 
   Future<Box> _openProfileBox() async => openBox(_profileBox, UserProfileEntity.boxName);
   Future<Box> _openFoodEventsBox() async => openBox(_foodEventsBox, FoodEventEntity.boxName);
@@ -113,7 +116,9 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> _openUserStepsInfoBox() async => openBox(_userStepsInfoBox, StepsEntity.boxName);
   Future<Box> _openRecipeFavoritesBox() async => openBox(_recipeFavoritesBox, RecipeFavoriteEntity.boxName);
   Future<Box> _openFecesEventsBox() async => openBox(_fecesEventsBox, 'feces_events');
-  Future<Box> _openUrineEventsBox() async => openBox(_fecesEventsBox, 'urine_events');
+  Future<Box> _openUrineEventsBox() async => openBox(_urineEventsBox, 'urine_events');
+  Future<Box> _openCreatineEventsBox() async => openBox(_creatineEventsBox, UploadSupplementEventEntity.boxNameCreatine);
+  Future<Box> _openCollagenEventsBox() async => openBox(_collagenEventsBox, UploadSupplementEventEntity.boxNameCollagen);
 
   Future<Box> get _getProfileBox async => await _openProfileBox();
   Future<Box> get _getFoodEventsBox async => await _openFoodEventsBox();
@@ -131,6 +136,8 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> get _getRecipeFavoritesBox async => await _openRecipeFavoritesBox();
   Future<Box> get _getFecesEventsBox async => await _openFecesEventsBox();
   Future<Box> get _getUrineEventsBox async => await _openUrineEventsBox();
+  Future<Box> get _getCreatineEventsBox async => await _openCreatineEventsBox();
+  Future<Box> get _getCollagenEventsBox async => await _openCollagenEventsBox();
 
   @override
   Future<void> saveProfile(UserProfileEntity profileEntity) async {
@@ -667,6 +674,14 @@ class LocalStorageImpl extends LocalStorageRepository {
     final urineEvents = <int>[];
     urineEventsMap.forEach((key, value) => urineEvents.add((value as UploadFecesEventEntity).eventId));
 
+    final creatineEventsMap = await _getCreatineEventsBox.then((box) => box.toMap());
+    final creatineEvents = <int>[];
+    creatineEventsMap.forEach((key, value) => creatineEvents.add((value as UploadSupplementEventEntity).eventId!));
+
+    final collagenEventsMap = await _getCollagenEventsBox.then((box) => box.toMap());
+    final collagenEvents = <int>[];
+    collagenEventsMap.forEach((key, value) => collagenEvents.add((value as UploadSupplementEventEntity).eventId!));
+
     return EventsSynchronizationRequest(
       foodEvents: foodEvents,
       sportEvents: sportEvents,
@@ -680,6 +695,8 @@ class LocalStorageImpl extends LocalStorageRepository {
       recipeFavorites: recipeFavorites,
       fecesEvents: fecesEvents,
       urineEvents: urineEvents,
+      creatineEvents: creatineEvents,
+      collagenEvents: collagenEvents,
     );
   }
 
@@ -698,6 +715,8 @@ class LocalStorageImpl extends LocalStorageRepository {
     await _clearBox(_getRecipeFavoritesBox);
     await _clearBox(_getFecesEventsBox);
     await _clearBox(_getUrineEventsBox);
+    await _clearBox(_getCreatineEventsBox);
+    await _clearBox(_getCollagenEventsBox);
     return true;
   }
 
@@ -1060,6 +1079,74 @@ class LocalStorageImpl extends LocalStorageRepository {
         rethrow;
       }
     }
+  }
+
+  @override
+  Future<void> saveCollagenEvent(UploadSupplementEventEntity supplementCollagenEventEntity, {bool isEdit = false}) async {
+    try {
+      await supplementCollagenEventEntity.save();
+    } catch (error) {
+      try {
+        _getCollagenEventsBox.then((box) {
+          if (isEdit) {
+            final collagenEventsMap = box.toMap();
+            collagenEventsMap.forEach((key, value) {
+              if ((value as UploadSupplementEventEntity).eventId == supplementCollagenEventEntity.eventId) {
+                box.put(key, supplementCollagenEventEntity);
+              }
+            });
+          } else {
+            box.add(supplementCollagenEventEntity);
+          }
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<void> saveCreatineEvent(UploadSupplementEventEntity supplementCreatineEventEntity, {bool isEdit = false}) async {
+    try {
+      await supplementCreatineEventEntity.save();
+    } catch (error) {
+      try {
+        _getCreatineEventsBox.then((box) {
+          if (isEdit) {
+            final creatineEventsMap = box.toMap();
+            creatineEventsMap.forEach((key, value) {
+              if ((value as UploadSupplementEventEntity).eventId == supplementCreatineEventEntity.eventId) {
+                box.put(key, supplementCreatineEventEntity);
+              }
+            });
+          } else {
+            box.add(supplementCreatineEventEntity);
+          }
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<UploadSupplementEventEntity?> getCreatineTodayEvent() async {
+    List allCreatineEvents = await _getCreatineEventsBox.then((box) {
+      return box.values.toList();
+    },);
+
+    final midnightTime = DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch;
+    return allCreatineEvents.firstWhere((creatineEntity) => creatineEntity.eventId == midnightTime, orElse: () => null,);
+  }
+
+  @override
+  Future<UploadSupplementEventEntity?> getCollagenTodayEvent() async {
+    List allCreatineEvents = await _getCollagenEventsBox.then((box) {
+      return box.values.toList();
+    },);
+
+    final midnightTime = DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch;
+    return allCreatineEvents.firstWhere((creatineEntity) => creatineEntity.eventId == midnightTime, orElse: () => null,);
   }
 
 }

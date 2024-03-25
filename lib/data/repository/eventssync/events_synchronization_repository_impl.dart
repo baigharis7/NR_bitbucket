@@ -10,6 +10,7 @@ import 'package:nutrenaissance_flutter/infrastructure/mappers/sport_event_mapper
 
 import '../../../infrastructure/mappers/feces_urine_mappers.dart';
 import '../../../infrastructure/mappers/sport_routine_mappers.dart';
+import '../../../infrastructure/mappers/supplement_mappers.dart';
 
 class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRequestRepository {
   final LocalStorageRepository localStorageRepository;
@@ -38,6 +39,8 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
         allEventsIds.recipeFavorites.map((e) => e.toString()).toList(),
         allEventsIds.fecesEvents.map((e) => e.toString()).toList(),
         allEventsIds.urineEvents.map((e) => e.toString()).toList(),
+        allEventsIds.creatineEvents.map((e) => e.toString()).toList(),
+        allEventsIds.collagenEvents.map((e) => e.toString()).toList(),
       );
       final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
       return await _saveSynchronizedEvents(eventsSyncResponse).then((value) => value);
@@ -105,6 +108,18 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
     if (eventsSynchronizationResponse.urineEvents.isNotEmpty) {
       for (var uploadUrineEvent in eventsSynchronizationResponse.urineEvents) {
         await localStorageRepository.saveUrineEvent(mapToUploadFecesEventEntity(uploadUrineEvent));
+      }
+    }
+
+    if (eventsSynchronizationResponse.creatineEvents.isNotEmpty) {
+      for (var uploadCreatineEvent in eventsSynchronizationResponse.creatineEvents) {
+        await localStorageRepository.saveCreatineEvent(mapToSupplementEventEntity(uploadCreatineEvent));
+      }
+    }
+
+    if (eventsSynchronizationResponse.collagenEvents.isNotEmpty) {
+      for (var uploadCollagenEvent in eventsSynchronizationResponse.collagenEvents) {
+        await localStorageRepository.saveCollagenEvent(mapToSupplementEventEntity(uploadCollagenEvent));
       }
     }
 
