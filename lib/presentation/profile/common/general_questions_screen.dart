@@ -517,8 +517,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                     child: TextFieldGeneralQuest(
                                       errorBorderColor: Colors.grey.shade100,
                                       isNumeric: true,
-                                      value: state.profile!
-                                          .physicalCharacteristics!.bodyFat!.toDouble(),
+                                      value: state.profile?.physicalCharacteristics?.bodyFat?.toDouble(),
                                       title: AppLocalizations.of(ctx)!.body_fat,
                                       onChanged: (bodyFat) {
                                         bloc.add(
@@ -534,10 +533,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                     child: TextFieldGeneralQuest(
                                       errorBorderColor: Colors.grey.shade100,
                                       isNumeric: true,
-                                      value: state
-                                          .profile!
-                                          .physicalCharacteristics!
-                                          .waistMeasurement!.toDouble(),
+                                      value: state.profile?.physicalCharacteristics?.waistMeasurement?.toDouble(),
                                       title: AppLocalizations.of(ctx)!.waist,
                                       onChanged: (bodyFat) {
                                         bloc.add(

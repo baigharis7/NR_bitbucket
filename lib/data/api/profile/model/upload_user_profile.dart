@@ -20,8 +20,6 @@ class UploadUserProfile {
   List<int> objectives;
   List<String>? micronutrients;
   List<UserRda>? userRdas;
-  int? feces;
-  int? urine;
   List<int>? recommededIds;
   int? kcal;
 
@@ -42,8 +40,6 @@ class UploadUserProfile {
     required this.objectives,
     this.micronutrients,
     this.userRdas,
-    this.feces,
-    this.urine,
     this.recommededIds,
     this.kcal,
   });

@@ -294,8 +294,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         // symptoms: , // Añadir cuando esté implementado
         guts: 0,
         objectives: state.profile!.objectives,
-        feces: state.profile?.feces ?? -1,
-        urine: state.profile?.urine ?? -1,
         recommededIds: state.profile?.recommededIds.orEmpty()
       );
 

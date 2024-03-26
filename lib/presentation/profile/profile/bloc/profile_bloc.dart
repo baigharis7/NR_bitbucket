@@ -315,8 +315,6 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         objectives: state.profile!.objectives,
         micronutrients: state.profile!.micronutrients,
         userRdas: state.profile!.userRdas,
-        feces: state.profile?.feces ?? -1,
-        urine: state.profile?.urine ?? -1,
         recommededIds: state.profile?.recommededIds.orEmpty(),
         kcal: state.profile!.kcal,
       );
@@ -385,8 +383,6 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         // symptoms: , // Añadir cuando esté implementado
         guts: 0,
         objectives: state.profile!.objectives,
-        feces: state.profile?.feces ?? -1,
-        urine: state.profile?.urine ?? -1,
         recommededIds: state.profile?.recommededIds.orEmpty(),
       );
 

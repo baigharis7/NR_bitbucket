@@ -40,8 +40,6 @@ UploadUserProfile _$UploadUserProfileFromJson(Map<String, dynamic> json) =>
       userRdas: (json['userRdas'] as List<dynamic>?)
           ?.map((e) => UserRda.fromJson(e as Map<String, dynamic>))
           .toList(),
-      feces: json['feces'] as int?,
-      urine: json['urine'] as int?,
       recommededIds: (json['recommededIds'] as List<dynamic>?)?.map((e) => e as int).toList(),
       kcal: json['kcal'] as int?,
     );
@@ -63,8 +61,6 @@ Map<String, dynamic> _$UploadUserProfileToJson(UploadUserProfile instance) =>
       'objectives': instance.objectives,
       'micronutrients': instance.micronutrients,
       'userRdas': instance.userRdas?.map((e) => e.toJson()).toList(),
-      'feces': instance.feces,
-      'urine': instance.urine,
       'recommededIds': instance.recommededIds,
       'kcal': instance.kcal,
     };

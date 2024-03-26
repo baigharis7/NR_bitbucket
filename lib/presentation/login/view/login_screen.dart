@@ -459,7 +459,7 @@ class _LoginScreenState extends State<LoginScreen>
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 model.submitData(
-                                  username: _usernameController.text.orEmpty(),
+                                  username: _usernameController.text.trim().orEmpty(),
                                   email: _emailController.text.orEmpty(),
                                   password: _passwordController.text.orEmpty(),
                                   repeatPassword: _repeatPasswordController.text.orEmpty(),

@@ -46,8 +46,6 @@ UserProfileModel _$UserProfileModelFromJson(Map<String, dynamic> json) =>
       userRdas: json['userRdas'] == null
           ? null
           : UserRdas.fromJson(json['userRdas'] as Map<String, dynamic>),
-      feces: json['feces'] as int?,
-      urine: json['urine'] as int?,
       recommededIds: (json['recommededIds'] as List<dynamic>?)
           ?.map((e) => e as int)
           .toList(),
@@ -73,8 +71,6 @@ Map<String, dynamic> _$UserProfileModelToJson(UserProfileModel instance) =>
       'objectives': instance.objectives,
       'micronutrients': instance.micronutrients,
       'userRdas': instance.userRdas?.toJson(),
-      'feces': instance.feces,
-      'urine': instance.urine,
       'recommededIds': instance.recommededIds,
       'kcal': instance.kcal,
     };

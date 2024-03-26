@@ -59,8 +59,6 @@ upload.UploadUserProfile mapToUploadUserProfileModel(domain.UserProfileModel use
     guts: userProfileModel.guts ?? 0,
     micronutrients: userProfileModel.micronutrients,
     userRdas: uploadUserRdas.userRdas,
-    feces: userProfileModel.feces,
-    urine: userProfileModel.urine,
     recommededIds: userProfileModel.recommededIds,
     kcal: userProfileModel.kcal,
   );
@@ -112,8 +110,6 @@ entity.UserProfileEntity mapToProfileEntity(domain.UserProfileModel profileModel
     guts: profileModel.guts,
     micronutrients: profileModel.micronutrients,
     userRdas: entity.UserRdasEntity(userRdasEntity: profileModel.userRdas!.userRdas.map((userRdas) => entity.UserRdaEntity(n: userRdas.name, rda: userRdas.rda.toDouble(), ul: userRdas.ul.toDouble())).toList()),
-    feces: profileModel.feces,
-    urine: profileModel.urine,
     recommededIds: profileModel.recommededIds,
     kcal: profileModel.kcal,
   );
@@ -176,8 +172,6 @@ domain.UserProfileModel mapToUserProfileModelFromProfileEntity(entity.UserProfil
     guts: profileEntity.guts,
     micronutrients: profileEntity.micronutrients,
     userRdas: userRdas,
-    feces: profileEntity.feces,
-    urine: profileEntity.urine,
     recommededIds: profileEntity.recommededIds,
     kcal: profileEntity.kcal,
   );
@@ -240,8 +234,6 @@ domain.UserProfileModel mapToUserProfileModelFromUploadUser(upload.UploadUserPro
     guts: uploadUserProfile.guts,
     micronutrients: uploadUserProfile.micronutrients,
     userRdas: userRdas,
-    feces: uploadUserProfile.feces,
-    urine: uploadUserProfile.urine,
     recommededIds: uploadUserProfile.recommededIds,
     kcal: uploadUserProfile.kcal,
   );
