@@ -274,7 +274,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     });
 
     on<SaveChangesAction>((event, emit) async {
-      // if ((state.profile?.physicalCharacteristics?.height ?? 0) <= 0 || (state.profile?.physicalCharacteristics?.weight ?? 0) <= 0) return;
+      if ((state.profile?.physicalCharacteristics?.height ?? 0) <= 0 || (state.profile?.physicalCharacteristics?.weight ?? 0) <= 0) return;
       emit(state.copyWith(isLoading: true, onError: null));
       FemaleCharacteristics? femaleCharacteristics;
       if (state.profile!.sex == SexType.female) {
