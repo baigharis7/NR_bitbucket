@@ -149,9 +149,9 @@ class _LoginScreenState extends State<LoginScreen>
                       child: RoundedCustomButton(
                         buttonText: AppLocalizations.of(context)!.accept,
                         onPressed: () {
-                          sendVerificationCode.call(_mfaController.text);
+                          if (_mfaController.text.isNotEmpty) sendVerificationCode.call(_mfaController.text);
                           _mfaController.text = '';
-                          Navigator.pop(context);
+                          // Navigator.pop(context);
                         },
                       ),
                     ),
@@ -304,7 +304,7 @@ class _LoginScreenState extends State<LoginScreen>
     final provider = LoginProviderNew();
 
     // WidgetsBinding.instance.addPostFrameCallback((_) {
-      provider.initialize((ErrorTypes errorType) => showErrorSnackBar(context, resolveError(context, errorType)));
+      provider.initialize((Object object) => showErrorSnackBar(context, userError(context, object)));
     // });
 
     return ChangeNotifierProvider<LoginProviderNew>(

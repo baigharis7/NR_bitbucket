@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/error_type_strings.dart';
 
 String resolveError(BuildContext context, ErrorTypes errorType) {
   final stringResolver = AppLocalizations.of(context)!;
@@ -130,6 +132,8 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.error_uploading_collagen;
     case ErrorTypes.saveCollagenError:
       return stringResolver.error_saving_collagen;
+    case ErrorTypes.limitError:
+      return stringResolver.limit_error;
   }
 }
 
@@ -152,5 +156,24 @@ String? resolveFormError(BuildContext context, FormErrorTypes? formErrorTypes) {
       return stringResolver.repeat_password_error;
     case FormErrorTypes.emptyConfirmationCode:
       return stringResolver.error_confirmation_code;
+  }
+}
+
+String userError(BuildContext context, Object error) {
+  final stringResolver = AppLocalizations.of(context)!;
+  final catchError = error as dynamic;
+  final catchErrorToString = catchError.underlyingException.toString();
+  final result = catchErrorToString.subString(' ', ' (');
+
+  // return result;
+  switch (result) {
+    case ErrorTypStrings.NOT_AUTORIZED_USER:
+      return stringResolver.not_authorized_error;
+    case ErrorTypStrings.USER_ALREADY_EXISTS:
+      return stringResolver.retry_sign_up;
+    case ErrorTypStrings.INVALID_CODE:
+      return stringResolver.invalid_code;
+    default:
+      return result;
   }
 }

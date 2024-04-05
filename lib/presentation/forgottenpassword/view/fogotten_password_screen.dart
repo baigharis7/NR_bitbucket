@@ -54,8 +54,7 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
             } else {
               LoadingScreen.instance().hide();
             }
-            if (state.onError != null)
-              showErrorSnackBar(context, resolveError(ctx, state.onError!));
+            if (state.onError != null) showErrorSnackBar(context, userError(ctx, state.onError!));
           },
           builder: (context, state) {
             return Scaffold(

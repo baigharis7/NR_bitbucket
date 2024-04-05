@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 import '../../../domain/repository/login/login_repository.dart';
@@ -25,7 +24,7 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
         }
         event.onFinish.call();
       } catch(error) {
-        emit(state.copyWith(isLoading: false, error: ErrorTypes.confirmationCodeError));
+        emit(state.copyWith(isLoading: false, error: error));
       }
     },);
 

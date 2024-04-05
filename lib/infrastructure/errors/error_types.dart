@@ -5,6 +5,7 @@ enum ErrorTypes {
   emailAlreadyExistsError,
   codeExpiredError,
   resendVerificationCodeError,
+  limitError,
   usernameExistsError,
   getEmailFromTokenError,
   profileExistenceError,

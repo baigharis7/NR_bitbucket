@@ -5,11 +5,11 @@ part of 'forgotten_password_bloc.dart';
 
 class ForgottenPasswordState {
   bool isLoading;
-  ErrorTypes? onError;
+  Object? onError;
 
   ForgottenPasswordState({required this.isLoading, this.onError});
 
-  ForgottenPasswordState copyWith({required isLoading, ErrorTypes? error}) {
+  ForgottenPasswordState copyWith({required isLoading, Object? error}) {
     return ForgottenPasswordState(
       isLoading: isLoading,
       onError: error,

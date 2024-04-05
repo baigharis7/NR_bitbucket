@@ -84,157 +84,160 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             } else {
               LoadingScreen.instance().hide();
             }
-            if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
+            if (state.onError != null) showErrorSnackBar(context, userError(ctx, state.onError!));
           },
           builder: (context, state) {
             return Scaffold(
-              body: Form(
-                key: _formKey,
-                child: Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: Dimens.marginXXLarge,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.reset_your_password,
-                        style: const TextStyle(
-                          fontSize: Dimens.fontSizeXXLarge,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: Dimens.heightXSmall,
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(Dimens.borderXLarge),
-                            ),
-                          ),
-                          hintText: AppLocalizations.of(context)!
-                              .enter_username_or_email,
-                          errorMaxLines: 3,
-                        ),
-                        controller: _emailController,
-                        validator: (value) => resolveFormError(
-                          context,
-                          isEmail(value)
-                              ? null
-                              : FormErrorTypes.emailFormatError,
-                        ),
-                        onChanged: (value) => _formKey.currentState!.validate(),
-                      ),
-                      const SizedBox(
-                        height: Dimens.heightXSmall,
-                      ),
-                      TextFormField(
-                        obscureText: !(state.isPasswordVisible ?? false),
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(Dimens.borderXLarge),
-                            ),
-                          ),
-                          hintText: AppLocalizations.of(context)!.new_password,
-                          errorMaxLines: 3,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              (state.isPasswordVisible ?? false)
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
-                            onPressed: () =>
-                                bloc.add(ChangePasswordVisibilityEventAction()),
+              body: SingleChildScrollView(
+                padding: const EdgeInsets.only(top: Dimens.padding5Large),
+                child: Form(
+                  key: _formKey,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: Dimens.marginXXLarge,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.reset_your_password,
+                          style: const TextStyle(
+                            fontSize: Dimens.fontSizeXXLarge,
                           ),
                         ),
-                        controller: _newPasswordController,
-                        validator: (value) => resolveFormError(
-                          context,
-                          validatePasswordOrNull(false, value),
+                        const SizedBox(
+                          height: Dimens.heightXSmall,
                         ),
-                        onChanged: (value) => _formKey.currentState!.validate(),
-                      ),
-                      const SizedBox(
-                        height: Dimens.heightXSmall,
-                      ),
-                      TextFormField(
-                        obscureText: !(state.isRepeatPasswordVisible ?? false),
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(Dimens.borderXLarge),
-                            ),
-                          ),
-                          hintText:
-                              AppLocalizations.of(context)!.repeat_password,
-                          errorMaxLines: 3,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              (state.isRepeatPasswordVisible ?? false)
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
-                            onPressed: () => bloc.add(
-                                ChangeRepeatPasswordVisibilityEventAction(),),
-                          ),
-                        ),
-                        controller: _repeatPasswordController,
-                        validator: (value) => resolveFormError(
-                          context,
-                          value != _newPasswordController.text
-                              ? FormErrorTypes.repeatPasswordError
-                              : null,
-                        ),
-                        onChanged: (value) => _formKey.currentState!.validate(),
-                      ),
-                      const SizedBox(
-                        height: Dimens.heightXSmall,
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(Dimens.borderXLarge),
-                            ),
-                          ),
-                          hintText:
-                              AppLocalizations.of(context)!.confirmation_code,
-                          errorMaxLines: 3,
-                        ),
-                        controller: _confirmationCodeController,
-                        validator: (value) => resolveFormError(
-                          context,
-                          value.isEmptyOrNull()
-                              ? FormErrorTypes.emptyConfirmationCode
-                              : null,
-                        ),
-                        onChanged: (value) => _formKey.currentState!.validate(),
-                        keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(
-                        height: Dimens.heightXSmall,
-                      ),
-                      RoundedCustomButton(
-                        buttonText:
-                            AppLocalizations.of(context)!.reset_password,
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            bloc.add(
-                              ConfirmResetPasswordEventAction(
-                                username: _emailController.text,
-                                password: _repeatPasswordController.text,
-                                confirmationCode:
-                                    _confirmationCodeController.text,
-                                onFinish: () =>
-                                    _showConfirmationDialog(context),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(Dimens.borderXLarge),
                               ),
-                            );
-                          }
-                        },
-                      ),
-                    ],
+                            ),
+                            hintText: AppLocalizations.of(context)!
+                                .enter_username_or_email,
+                            errorMaxLines: 3,
+                          ),
+                          controller: _emailController,
+                          validator: (value) => resolveFormError(
+                            context,
+                            isEmail(value)
+                                ? null
+                                : FormErrorTypes.emailFormatError,
+                          ),
+                          onChanged: (value) => _formKey.currentState!.validate(),
+                        ),
+                        const SizedBox(
+                          height: Dimens.heightXSmall,
+                        ),
+                        TextFormField(
+                          obscureText: !(state.isPasswordVisible ?? false),
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(Dimens.borderXLarge),
+                              ),
+                            ),
+                            hintText: AppLocalizations.of(context)!.new_password,
+                            errorMaxLines: 3,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                (state.isPasswordVisible ?? false)
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () =>
+                                  bloc.add(ChangePasswordVisibilityEventAction()),
+                            ),
+                          ),
+                          controller: _newPasswordController,
+                          validator: (value) => resolveFormError(
+                            context,
+                            validatePasswordOrNull(false, value),
+                          ),
+                          onChanged: (value) => _formKey.currentState!.validate(),
+                        ),
+                        const SizedBox(
+                          height: Dimens.heightXSmall,
+                        ),
+                        TextFormField(
+                          obscureText: !(state.isRepeatPasswordVisible ?? false),
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(Dimens.borderXLarge),
+                              ),
+                            ),
+                            hintText:
+                                AppLocalizations.of(context)!.repeat_password,
+                            errorMaxLines: 3,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                (state.isRepeatPasswordVisible ?? false)
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () => bloc.add(
+                                  ChangeRepeatPasswordVisibilityEventAction(),),
+                            ),
+                          ),
+                          controller: _repeatPasswordController,
+                          validator: (value) => resolveFormError(
+                            context,
+                            value != _newPasswordController.text
+                                ? FormErrorTypes.repeatPasswordError
+                                : null,
+                          ),
+                          onChanged: (value) => _formKey.currentState!.validate(),
+                        ),
+                        const SizedBox(
+                          height: Dimens.heightXSmall,
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(Dimens.borderXLarge),
+                              ),
+                            ),
+                            hintText:
+                                AppLocalizations.of(context)!.confirmation_code,
+                            errorMaxLines: 3,
+                          ),
+                          controller: _confirmationCodeController,
+                          validator: (value) => resolveFormError(
+                            context,
+                            value.isEmptyOrNull()
+                                ? FormErrorTypes.emptyConfirmationCode
+                                : null,
+                          ),
+                          onChanged: (value) => _formKey.currentState!.validate(),
+                          keyboardType: TextInputType.number,
+                        ),
+                        const SizedBox(
+                          height: Dimens.heightXSmall,
+                        ),
+                        RoundedCustomButton(
+                          buttonText:
+                              AppLocalizations.of(context)!.reset_password,
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              bloc.add(
+                                ConfirmResetPasswordEventAction(
+                                  username: _emailController.text,
+                                  password: _repeatPasswordController.text,
+                                  confirmationCode:
+                                      _confirmationCodeController.text,
+                                  onFinish: () =>
+                                      _showConfirmationDialog(context),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

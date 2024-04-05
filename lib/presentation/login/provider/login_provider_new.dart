@@ -233,11 +233,15 @@ class LoginProviderNew extends BaseProvider {
   }
 
   void _onSignUpError(Object error) {
-    if (error is UsernameExistsException) {
-      onError?.call(ErrorTypes.usernameExistsError);
-    } else {
-      onError?.call(ErrorTypes.unknownError);
-    }
+    onError?.call(error);
+
+    // if (error is UsernameExistsException) {
+    //   onError?.call(ErrorTypes.usernameExistsError);
+    // } else if (error is LimitExceededException) {
+    //   onError?.call(ErrorTypes.limitError);
+    // } else {
+    //   onError?.call(ErrorTypes.unknownError);
+    // }
   }
 
   Future<void> _performLogin({
@@ -250,7 +254,8 @@ class LoginProviderNew extends BaseProvider {
       _signInAndFetchUserAttributes(moveToNextScreen, isFromVerificationCode: isFromVerificationCode);
     } catch (errorSignOut) {
       manageLoading(false);
-      onError?.call(ErrorTypes.unknownError);
+      onError?.call(errorSignOut);
+      // onError?.call(ErrorTypes.unknownError);
     }
   }
 
@@ -294,7 +299,7 @@ class LoginProviderNew extends BaseProvider {
           }
         } else {
           manageLoading(false);
-          onError?.call(ErrorTypes.signInError);
+          // onError?.call(ErrorTypes.signInError);
         }
       } catch (signInError) {
         manageLoading(false);
@@ -302,18 +307,20 @@ class LoginProviderNew extends BaseProvider {
       }
     } catch (signOutError) {
       manageLoading(false);
-      onError?.call(ErrorTypes.signOutError);
+      onError?.call(signOutError);
     }
   }
 
   void _onSignInError(Object error) {
-    if (error is UserNotConfirmedException) {
-      _setNotConfirmedUserTryingToLogin(true);
-    } else if (error is NotAuthorizedException) {
-      onError?.call(ErrorTypes.notAuthorizedError);
-    } else {
-      onError?.call(ErrorTypes.signInError);
-    }
+    onError?.call(error);
+
+    // if (error is UserNotConfirmedException) {
+    //   _setNotConfirmedUserTryingToLogin(true);
+    // } else if (error is NotAuthorizedException) {
+    //   onError?.call(ErrorTypes.notAuthorizedError);
+    // } else {
+    //   onError?.call(ErrorTypes.signInError);
+    // }
   }
 
   void _saveUserInRemoteUsersDatabase(String userId) async {
@@ -322,7 +329,8 @@ class LoginProviderNew extends BaseProvider {
       await saveUserInUsersRemoteDatabaseInteractor?.execute(simpleUser);
     } catch (saveUserInRemote) {
       manageLoading(false);
-      onError?.call(ErrorTypes.saveUserInRemoteDatabaseError);
+      onError?.call(saveUserInRemote);
+      // onError?.call(ErrorTypes.saveUserInRemoteDatabaseError);
     }
   }
 
@@ -346,7 +354,7 @@ class LoginProviderNew extends BaseProvider {
                   _downloadProfile(email.orEmpty(), moveToNextScreen);
                 } else {
                   manageLoading(false);
-                  onError?.call(ErrorTypes.getEmailFromTokenError);
+                  // onError?.call(ErrorTypes.getEmailFromTokenError);
                 }
               } else {
                 // Aquí lo de borrar los datos.
@@ -357,7 +365,7 @@ class LoginProviderNew extends BaseProvider {
                     _downloadProfile(email.orEmpty(), moveToNextScreen);
                   } else {
                     manageLoading(false);
-                    onError?.call(ErrorTypes.getEmailFromTokenError);
+                    // onError?.call(ErrorTypes.getEmailFromTokenError);
                   }
                 } else {
                   _manageMasterFiles(userId, moveToNextScreen);
@@ -366,7 +374,8 @@ class LoginProviderNew extends BaseProvider {
             } catch (profileExistenceError) {
               manageLoading(false);
               _setProfileChecked(false);
-              onError?.call(ErrorTypes.profileExistenceError);
+              onError?.call(profileExistenceError);
+              // onError?.call(ErrorTypes.profileExistenceError);
             }
           } else {
             if (!areMasterFilesChecked) {
@@ -385,8 +394,12 @@ class LoginProviderNew extends BaseProvider {
   void _onFetchUserAttributesError(Object error) {
     if (error is UserNotConfirmedException) {
       _setNotConfirmedUserTryingToLogin(true);
+    } else if (error is NoSuchMethodError) {
+      onError?.call();
     } else {
-      onError?.call(ErrorTypes.fetchUserCredentialsError);}
+      onError?.call(error);
+      // onError?.call(ErrorTypes.fetchUserCredentialsError);
+    }
   }
 
   void _downloadProfile(String email, Function? moveToNextScreen) async {
@@ -401,7 +414,8 @@ class LoginProviderNew extends BaseProvider {
       } catch (downloadProfileError) {
         manageLoading(false);
         _setProfileChecked(false);
-        onError?.call(ErrorTypes.downloadProfileError);
+        onError?.call(downloadProfileError);
+        // onError?.call(ErrorTypes.downloadProfileError);
       }
   }
 
@@ -413,7 +427,8 @@ class LoginProviderNew extends BaseProvider {
     } catch (saveProfileError) {
       manageLoading(false);
       _setProfileChecked(false);
-      onError?.call(ErrorTypes.saveProfileInLocalError);
+      onError?.call(saveProfileError);
+      // onError?.call(ErrorTypes.saveProfileInLocalError);
     }
   }
 
@@ -432,16 +447,24 @@ class LoginProviderNew extends BaseProvider {
       showMfaDialog.call();
     } catch (resendVerificationCodeError) {
       manageLoading(false);
-      onError?.call(ErrorTypes.resendVerificationCodeError);
+      onError?.call(resendVerificationCodeError);
+      // onError?.call(ErrorTypes.resendVerificationCodeError);
     }
   }
 
   void resendVerificationCode() async {
+    manageLoading(true);
       try {
         await resendVerificationCodeInteractor?.execute(_username.orEmpty());
-      } catch (_) {
         manageLoading(false);
-        onError?.call(ErrorTypes.resendVerificationCodeError);
+      } catch (error) {
+        manageLoading(false);
+        onError?.call(error);
+        // if (error is LimitExceededException) {
+        //   onError?.call(ErrorTypes.limitError);
+        // } else {
+        //   onError?.call(ErrorTypes.resendVerificationCodeError);
+        // }
       }
   }
 
@@ -528,13 +551,15 @@ class LoginProviderNew extends BaseProvider {
       });
     } catch (synchronizeEventError) {
       manageLoading(false);
-      onError?.call(ErrorTypes.synchronizeEventsError);
+      onError?.call(synchronizeEventError);
+      // onError?.call(ErrorTypes.synchronizeEventsError);
     }
   }
 
   void _onErrorManageMasterFiles(Object error) {
     _setMasterFilesChecked(false);
-    onError?.call(ErrorTypes.manageMasterFilesError);
+    onError?.call(error);
+    // onError?.call(ErrorTypes.manageMasterFilesError);
   }
 
   void notConfirmedUserCancelsReceiveConfirmationCode() {
@@ -553,7 +578,7 @@ class LoginProviderNew extends BaseProvider {
       _onSendVerificationCodeSuccess(signUpResult!, action);
     } catch (sendVerificationCodeError) {
       manageLoading(false);
-      _onSendVerificationCodeError(sendVerificationCodeError, /*alreadyExistsAlias*/);
+      _onSendVerificationCodeError(sendVerificationCodeError,);
     }
   }
 
@@ -562,18 +587,19 @@ class LoginProviderNew extends BaseProvider {
   }
 
   void _onSendVerificationCodeError(Object error) {
-    if (error is AliasExistsException || error is InvalidParameterException) {
-      onError?.call(ErrorTypes.emailAlreadyExistsError);
-    } else if (error is CodeExpiredException) {
-      onError?.call(ErrorTypes.codeExpiredError);
-    } else {
-      onError?.call(ErrorTypes.sendVerificationCodeError);
-    }
-    _setLoginMode(true);
+    onError?.call(error);
+    // if (error is AliasExistsException) {
+    //   onError?.call(ErrorTypes.emailAlreadyExistsError);
+    // } else if (error is CodeExpiredException) {
+    //   onError?.call(ErrorTypes.codeExpiredError);
+    // } else {
+    //   onError?.call(ErrorTypes.confirmationCodeError);
+    // }
+    // _setLoginMode(true);
   }
 
   FormErrorTypes? validateUsername(String? username) {
-    if (username == null || username.isEmpty) {
+    if (username == null || username.isEmpty || username.contains(' ')) {
       return FormErrorTypes.usernameEmptyOrNullError;
     }
     return null;

@@ -5,13 +5,13 @@ part of 'reset_password_bloc.dart';
 
 class ResetPasswordState {
   bool isLoading;
-  ErrorTypes? onError;
+  Object? onError;
   bool? isPasswordVisible;
   bool? isRepeatPasswordVisible;
 
   ResetPasswordState({required this.isLoading, this.onError, this.isPasswordVisible, this.isRepeatPasswordVisible});
 
-  ResetPasswordState copyWith({required bool isLoading, ErrorTypes? error, bool? isPasswordVisible, bool? isRepeatPasswordVisible}) {
+  ResetPasswordState copyWith({required bool isLoading, Object? error, bool? isPasswordVisible, bool? isRepeatPasswordVisible}) {
     return ResetPasswordState(
       isLoading: isLoading,
       onError: error,

@@ -84,6 +84,12 @@ extension StringExtensions on String {
   String appendGram() {
     return '$this g';
   }
+  
+  String subString(String start, String end) {
+    final indexOfStart = indexOf(start);
+    final indexOfLast = indexOf(end);
+    return substring(indexOfStart + 1, indexOfLast == -1 ? length: indexOfLast);
+  }
 }
 
 extension ListExtensions<T> on List<T> {
