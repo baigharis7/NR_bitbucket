@@ -116,7 +116,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               ),
                             ),
                             hintText: AppLocalizations.of(context)!
-                                .enter_username_or_email,
+                                .email,
                             errorMaxLines: 3,
                           ),
                           controller: _emailController,
@@ -214,6 +214,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           ),
                           onChanged: (value) => _formKey.currentState!.validate(),
                           keyboardType: TextInputType.number,
+                          maxLength: 6,
                         ),
                         const SizedBox(
                           height: Dimens.heightXSmall,

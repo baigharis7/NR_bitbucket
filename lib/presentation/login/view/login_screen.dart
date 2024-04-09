@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
@@ -136,9 +137,11 @@ class _LoginScreenState extends State<LoginScreen>
                       child: TextField(
                         decoration: InputDecoration(
                           labelText:
-                          AppLocalizations.of(context)!.write_here_hint,
+                          AppLocalizations.of(context)!.enter_otp,
                         ),
                         controller: _mfaController,
+                        keyboardType: TextInputType.number,
+                        maxLength: 6,
                       ),
                     ),
                     Padding(
@@ -316,7 +319,7 @@ class _LoginScreenState extends State<LoginScreen>
               Scaffold(
                 backgroundColor: Colors.white,
                 body: SingleChildScrollView(
-                  padding: const EdgeInsets.only(top: Dimens.heightNormal),
+                  padding: EdgeInsets.symmetric(vertical: model.isLogin ? Dimens.heightNormal : Dimens.marginSmall),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -382,10 +385,10 @@ class _LoginScreenState extends State<LoginScreen>
                               border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge))),
                               hintText: AppLocalizations.of(context)!.password_hint,
                               suffixIcon: IconButton(
-                                  icon: Icon(
-                                      model.isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                  ),
-                                  onPressed: () => model.changePasswordVisibility(),
+                                icon: Icon(
+                                  model.isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                ),
+                                onPressed: () => model.changePasswordVisibility(),
                               ),
                               errorMaxLines: 3,
                             ),
@@ -415,10 +418,10 @@ class _LoginScreenState extends State<LoginScreen>
                                       border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge))),
                                       hintText: AppLocalizations.of(context)!.repeat_password,
                                       suffixIcon: IconButton(
-                                          icon: Icon(
-                                                model.isRepeatPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                          ),
-                                          onPressed: () => model.changeRepeatPasswordVisibility(),
+                                        icon: Icon(
+                                          model.isRepeatPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                        ),
+                                        onPressed: () => model.changeRepeatPasswordVisibility(),
                                       ),
                                       errorMaxLines: 3,
                                     ),
@@ -435,19 +438,32 @@ class _LoginScreenState extends State<LoginScreen>
                         if (model.isLogin) Padding(
                           padding: const EdgeInsets.only(top: Dimens.heightXXSmall,left: Dimens.heightXSmall,right: Dimens.heightXSmall,bottom: Dimens.heightSmall),
                           child: SizedBox(
-                              width: double.infinity,
-                              child: InkWell(
-                                child: Text(
-                                  AppLocalizations.of(context)!
-                                      .forgotten_password,
-                                  textAlign: TextAlign.right,
-                                  style: const TextStyle(
-                                      decoration: TextDecoration.underline,
-                                      color: AppColors.mountainMeadow,),
-                                ),
-                                onTap: () => Navigator.pushNamed(context, ForgottenPasswordScreen.routeName),
-                              ),),
+                            width: double.infinity,
+                            child: InkWell(
+                              child: Text(
+                                AppLocalizations.of(context)!
+                                    .forgotten_password,
+                                textAlign: TextAlign.right,
+                                style: const TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  color: AppColors.mountainMeadow,),
+                              ),
+                              onTap: () => Navigator.pushNamed(context, ForgottenPasswordScreen.routeName),
+                            ),),
                         ),
+                        if (!model.isLogin) Padding(padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal),
+                          child: SizedBox(width: double.infinity, child: Row(mainAxisSize: MainAxisSize.min,mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Checkbox(value: model.isPrivacyPolicyChecked, onChanged: (value) {
+                                model.setPrivacyPolicyChecked(value!);
+                              },),
+                              Expanded(
+                                child: InkWell(onTap: () async {
+                                  Navigator.pushNamed(context, PrivacyPolicy.routeName).then((value) => model.setPrivacyPolicyChecked(value as bool));
+                                }, child: Text(AppLocalizations.of(context)!.privacy_policy, textAlign: TextAlign.start, style: const TextStyle(fontSize: Dimens.fontSizeNormal),)),
+                              ),
+                            ],
+                          )),),
                         Container(
                           padding: const EdgeInsets.only(top: 20),
                           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
@@ -480,52 +496,57 @@ class _LoginScreenState extends State<LoginScreen>
                             },
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.zero,
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal, horizontal: Dimens.marginNormal),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    AppLocalizations.of(context)!.dont_have_account,textAlign: TextAlign.right,
-                                  ),
-                                ),
-                                const SizedBox(width: Dimens.marginXSmall,),
-                                Expanded(
-                                  flex: 1,
-                                  child: InkWell(
-                                    onTap: () {
-                                      _usernameController.clear();
-                                      _emailController.clear();
-                                      _passwordController.clear();
-                                      _repeatPasswordController.clear();
-                                      model.changeLoginMode(() {
-                                      _controller!.forward();
-                                    });},
-                                    child: Text(
-                                      model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login,
-                                      style: const TextStyle(color: AppColors.mountainMeadow, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge),textAlign: TextAlign.left,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        if (!model.isLogin) Padding(padding: const EdgeInsets.symmetric(vertical: Dimens.heightSmall),
-                          child: SizedBox(width: double.infinity, child: Row(mainAxisSize: MainAxisSize.min,mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Checkbox(value: model.isPrivacyPolicyChecked, onChanged: (value) {
-                                model.setPrivacyPolicyChecked(value!);
-                              },),
-                              InkWell(onTap: () async {
-                                Navigator.pushNamed(context, PrivacyPolicy.routeName).then((value) => model.setPrivacyPolicyChecked(value as bool));
-                              },child: Text(AppLocalizations.of(context)!.privacy_policy, textAlign: TextAlign.start, style: const TextStyle(fontSize: Dimens.fontSizeSmall),)),
+                        // Padding(
+                        //   padding: EdgeInsets.zero,
+                        //   child: Container(
+                        //     margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal, horizontal: Dimens.marginNormal),
+                        //     child: Row(
+                        //       mainAxisAlignment: MainAxisAlignment.center,
+                        //       children: [
+                        //         Expanded(
+                        //           flex: 2,
+                        //           child: Text(
+                        //             model.isLogin ? AppLocalizations.of(context)!.dont_have_account : AppLocalizations.of(context)!.already_have_account,textAlign: TextAlign.right,
+                        //           ),
+                        //         ),
+                        //         const SizedBox(width: Dimens.marginXSmall,),
+                        //         Expanded(
+                        //           flex: 1,
+                        //           child: InkWell(
+                        //             onTap: () {
+                        //               _usernameController.clear();
+                        //               _emailController.clear();
+                        //               _passwordController.clear();
+                        //               _repeatPasswordController.clear();
+                        //               model.changeLoginMode(() {
+                        //               _controller!.forward();
+                        //             });},
+                        //             child: Text(
+                        //               model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login,
+                        //               style: const TextStyle(color: AppColors.mountainMeadow, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge),textAlign: TextAlign.left,
+                        //             ),
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
+                        InkWell(
+                          onTap: () {
+                            _usernameController.clear();
+                            _emailController.clear();
+                            _passwordController.clear();
+                            _repeatPasswordController.clear();
+                            model.changeLoginMode(() { _controller!.forward(); });
+                          },
+                          child: RichText(text: TextSpan(
+                            text: model.isLogin ? AppLocalizations.of(context)!.dont_have_account : AppLocalizations.of(context)!.already_have_account,
+                            style: const TextStyle(color: Colors.black, fontSize: Dimens.fontSizeMedium),
+                            children: <TextSpan>[
+                              TextSpan(text: model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login, style: const TextStyle(color: AppColors.mountainMeadow, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge)),
                             ],
-                          )),),
+                          ),),
+                        ),
                         // Padding(
                         //   padding: const EdgeInsets.symmetric(vertical: 20),
                         //   child: Center(

@@ -78,6 +78,7 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
                           style: const TextStyle(
                             fontSize: Dimens.fontSizeLarge,
                           ),
+                          textAlign: TextAlign.start,
                         ),
                       ),
                       Text(
@@ -85,7 +86,6 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
                         style: const TextStyle(
                           fontSize: Dimens.fontSizeMedium,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                       Container(
                         margin: const EdgeInsets.symmetric(
