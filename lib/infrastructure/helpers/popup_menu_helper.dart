@@ -18,6 +18,7 @@ class PopupMenuHelper {
           ...model.map((option) {
             return PopupMenuItem<int>(
               value: option.value, // TODO: va a dar error
+              onTap: () => option.onPressed.call(),
               child: InkWell(
                 onTap: () => option.onPressed.call(),
                 child: Container(
