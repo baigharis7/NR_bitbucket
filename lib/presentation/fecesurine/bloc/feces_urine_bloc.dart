@@ -89,7 +89,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         try {
           await saveFecesEventInteractor.execute(uploadFeces);
           _clearFields();
-          event.onFinish.call();
+          // event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
         } catch (_) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
@@ -111,7 +111,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         try {
           await saveUrineInteractor.execute(uploadUrine);
           _clearFields();
-          event.onFinish.call();
+          // event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
         } catch (_) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
