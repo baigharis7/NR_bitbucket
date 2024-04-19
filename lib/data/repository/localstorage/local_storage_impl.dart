@@ -281,12 +281,12 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<List> getFoodEventsOfToday() async {
+  Future<List> getFoodEventsOfToday({DateTime? dateTime}) async {
     List allFoodEvents = await _getFoodEventsBox.then((box) {
       return box.values.toList();
     });
 
-    final midnightTime = DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch;
+    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMillisecondsFromDateTime(dateTime);
     return allFoodEvents.where((foodEvent) => foodEvent.eventDate! > midnightTime).toList();
   }
 
@@ -326,12 +326,12 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<List> getSportsEventsOfToday() async {
+  Future<List> getSportsEventsOfToday({DateTime? dateTime}) async {
     List allSportEvents = await _getSportEventsBox.then((box) {
       return box.values.toList();
     });
 
-    final midnightTime = DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch;
+    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMillisecondsFromDateTime(dateTime);
     return allSportEvents.where((sportEvent) => sportEvent.eventDate! > midnightTime).toList();
   }
 
@@ -346,12 +346,12 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<List> getTodayLiquidEvents() async {
+  Future<List> getTodayLiquidEvents({DateTime? dateTime}) async {
     List allLiquidEvents = await _getLiquidEventsBox.then((box) {
       return box.values.toList();
     });
 
-    final midnightTime = DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch;
+    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMillisecondsFromDateTime(dateTime);
     return allLiquidEvents.where((liquidEvent) => liquidEvent.eventDate! > midnightTime).toList();
   }
 
@@ -383,12 +383,12 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<List> getWaterEventsToday() async {
+  Future<List> getWaterEventsToday({DateTime? dateTime}) async {
     List allWaterEvents = await _getWaterEventsBox.then((box) {
       return box.values.toList();
     });
 
-    final midnightTime = DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch;
+    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMillisecondsFromDateTime(dateTime);
     return allWaterEvents.where((waterEvent) => waterEvent.eventDate! > midnightTime).toList();
   }
 

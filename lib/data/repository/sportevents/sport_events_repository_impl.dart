@@ -29,8 +29,8 @@ class SportEventsRepositoryImpl extends SportEventsRepository {
   }
 
   @override
-  Future<List<SportEventComplete>> getTodaySportEvents() async {
-    final sportEvents = await localStorageRepository.getSportsEventsOfToday();
+  Future<List<SportEventComplete>> getTodaySportEvents({DateTime? dateTime}) async {
+    final sportEvents = await localStorageRepository.getSportsEventsOfToday(dateTime: dateTime);
     return sportEvents.map((sport) => mapToSportEventComplete(sport as SportEventEntity)).toList();
   }
 
@@ -47,8 +47,8 @@ class SportEventsRepositoryImpl extends SportEventsRepository {
   }
 
   @override
-  Future<int?> getDayCalories() async {
-    final todaysSportEvents = await getTodaySportEvents();
+  Future<int?> getDayCalories({DateTime? dateTime}) async {
+    final todaysSportEvents = await getTodaySportEvents(dateTime: dateTime);
     if (todaysSportEvents.isEmpty) {
       return 0;
     } else {

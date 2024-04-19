@@ -26,8 +26,8 @@ class LiquidEventsRepositoryImpl extends LiquidEventsRepository{
   }
 
   @override
-  Future<List<LiquidEventComplete>> getTodayLiquidEvents() async {
-    final List allEvents = await localStorageRepository.getTodayLiquidEvents();
+  Future<List<LiquidEventComplete>> getTodayLiquidEvents({DateTime? dateTime}) async {
+    final List allEvents = await localStorageRepository.getTodayLiquidEvents(dateTime: dateTime);
     return allEvents.map((liquidEvent) => mapToLiquidEventComplete(liquidEvent)).toList();
   }
 

@@ -172,6 +172,7 @@ class LiquidEventBloc extends BaseBloc<LiquidEventActions, LiquidEventState> {
     // state.drinkName = '';
     // state.comment = null;
     state.eventDate = null;
+    state.onError = null;
     state.frequentLiquidAdded = null;
     state.liquidNames = FoodsAndDrinksNamesMaster(FoodsAndDrinkListsMaster(drinkNames: [], foodNames: []));
     state.weeklyFrequentLiquids = [];

@@ -5,7 +5,7 @@ import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_s
 abstract class LiquidEventsRepository {
   Future<UploadLiquidEvent> uploadLiquidEvent(LiquidEventSimple liquidEventSimple);
   Future<void> saveLiquidEvent(UploadLiquidEvent uploadLiquidEvent, bool isEdit);
-  Future<List<LiquidEventComplete>> getTodayLiquidEvents();
+  Future<List<LiquidEventComplete>> getTodayLiquidEvents({DateTime? dateTime});
   Future<List<LiquidEventComplete>> getWeeklyLiquidEvents();
   Future<List<LiquidEventComplete>> getAllLiquidEvents();
   Future<void> deleteLiquidEvent(String userId, int eventDate);

@@ -10,6 +10,6 @@ class GetTodayLiquidEventsInteractorImpl extends GetTodayLiquidEventsInteractor 
   });
 
   @override
-  Future<List<LiquidEventComplete>> execute() async => await liquidEventsRepository.getTodayLiquidEvents();
+  Future<List<LiquidEventComplete>> execute({DateTime? dateTime}) async => await liquidEventsRepository.getTodayLiquidEvents(dateTime: dateTime);
 
 }

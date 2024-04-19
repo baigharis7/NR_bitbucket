@@ -8,6 +8,6 @@ class GetWaterEventsTodayInteractorImpl extends GetWaterEventsTodayInteractor {
   GetWaterEventsTodayInteractorImpl({required this.waterEventsRepository});
 
   @override
-  Future<List<WaterEventMaster>> execute() async => await waterEventsRepository.getWaterEventsToday();
+  Future<List<WaterEventMaster>> execute({DateTime? dateTime}) async => await waterEventsRepository.getWaterEventsToday(dateTime: dateTime);
 
 }

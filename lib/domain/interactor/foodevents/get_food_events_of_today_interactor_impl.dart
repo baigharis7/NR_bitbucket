@@ -8,6 +8,6 @@ class GetFoodEventsOfTodayInteractorImpl extends GetFoodEventsOfTodayInteractor 
   GetFoodEventsOfTodayInteractorImpl({required this.foodEventsRepository});
 
   @override
-  Future<List<FoodEventComplete>> execute() async => await foodEventsRepository.getFoodEventsOfToday();
+  Future<List<FoodEventComplete>> execute({DateTime? dateTime}) async => await foodEventsRepository.getFoodEventsOfToday(dateTime: dateTime);
 
 }

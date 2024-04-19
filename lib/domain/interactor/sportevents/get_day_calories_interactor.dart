@@ -1,3 +1,3 @@
 abstract class GetDayCaloriesInteractor {
-  Future<int?> execute();
+  Future<int?> execute({DateTime? dateTime});
 }

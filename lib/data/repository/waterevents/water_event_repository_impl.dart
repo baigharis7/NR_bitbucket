@@ -22,7 +22,7 @@ class WaterEventRepositoryImpl extends WaterEventsRepository {
   Future<void> saveWaterEvent(WaterEventMaster waterEventMaster) async => await localStorageRepository.saveWaterEvent(waterEventMaster);
 
   @override
-  Future<List<WaterEventMaster>> getWaterEventsToday() async {
+  Future<List<WaterEventMaster>> getWaterEventsToday({DateTime? dateTime}) async {
     final waterEventsEntities = await localStorageRepository.getWaterEventsToday();
     return waterEventsEntities.map((entity) => mapToWaterEventMaster(entity)).toList();
   }

@@ -134,6 +134,11 @@ class DateTimeHelper {
     }
   }
 
+  static int calculateMillisecondsFromDateTime(DateTime dateTim) {
+    DateTime dateTime = DateTime(dateTim.year, dateTim.month, dateTim.day, dateTim.hour, dateTim.minute);
+    return dateTime.millisecondsSinceEpoch;
+  }
+
   String formatDayMonthYearDate2(int date) => DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(date));
 
 }

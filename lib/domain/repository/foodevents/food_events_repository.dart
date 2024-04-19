@@ -9,6 +9,6 @@ abstract class FoodEventsRepository {
   Future<bool> deleteFoodEvent(String userId, int eventDate);
   Future<List<FoodEventComplete>> getAllFoodEvents();
   Future<FoodEventComplete> getLastFoodEvent();
-  Future<List<FoodEventComplete>> getFoodEventsOfToday();
+  Future<List<FoodEventComplete>> getFoodEventsOfToday({DateTime? dateTime});
   Future<List<FoodEventComplete>> getWeekFoodEvents();
 }

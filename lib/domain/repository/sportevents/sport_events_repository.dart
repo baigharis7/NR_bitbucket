@@ -9,5 +9,5 @@ abstract class SportEventsRepository {
   Future<List<SportEventComplete>> getTodaySportEvents();
   Future<List<SportEventComplete>> getWeeklySportEvents();
   Future<List<SportEventComplete>> getAllSportEvents();
-  Future<int?> getDayCalories();
+  Future<int?> getDayCalories({DateTime? dateTime});
 }

@@ -6,7 +6,10 @@ class DashboardActions {
 }
 
 class InitializeState extends DashboardActions {
-  InitializeState();
+  final DateTime? dateTime;
+  final Function? onFinish;
+
+  InitializeState({this.dateTime, this.onFinish});
 }
 
 class HideCardAction extends DashboardActions {

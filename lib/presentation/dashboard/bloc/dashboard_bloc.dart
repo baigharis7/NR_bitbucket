@@ -133,21 +133,27 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.userMicronutrients = await getUserMicronutrientsInteractor.execute() ?? [];
       state.userRdas = await getUserRdasInteractor.execute();
       state.userObjectives = await getUserObjectivesInteractor.execute();
-      state.foodEvents = await getFoodEventsOfTodayInteractor.execute();
-      state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute();
-      state.weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
-      state.weeklyLiquidEvents = await getWeekLiquidEventsInteractor.execute();
-      state.weeklySportEvents = await getWeekSportsInteractor.execute();
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo,);
       state.profile = await getProfileInteractor.execute();
       state.userKcal = getUserKcalSelectiveObjectives(state.profile?.kcal ?? 0);
       state.isMenstruation = state.profile?.objectives?.contains(Constants.DURING_MENSTRUATION);
       state.isCold = state.profile?.objectives?.contains(Constants.IMPROVE_THE_IMMUNE_SYSTEM);
-      state.todayStep = await getTodayStepInteractor.execute();
-      state.allCalendarEvents = await getAllEventsSortedByDateInteractor.execute();
+
+      final caloriesConsumed = await getDayCaloriesInteractor.execute();
       final todayCreatine = await getTodayCreatineEventInteractor.execute();
       final todayCollagen = await getTodayCollagenEventInteractor.execute();
+      var totalSugarRequired = (state.userKcal.orZero()~/100*5)~/4;
+
+      state.foodEvents = await getFoodEventsOfTodayInteractor.execute(dateTime: event.dateTime);
+      state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute(dateTime: event.dateTime);
+      state.weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
+      state.weeklyLiquidEvents = await getWeekLiquidEventsInteractor.execute();
+      state.weeklySportEvents = await getWeekSportsInteractor.execute();
+      state.todayStep = await getTodayStepInteractor.execute();
+      state.allCalendarEvents = await getAllEventsSortedByDateInteractor.execute();
+      state.waterEvents = await getWaterEventsTodayInteractor.execute(dateTime: event.dateTime);
+
       state.micronutrients = state.userMicronutrients!
           .map(
             (micronutrient) =>
@@ -157,7 +163,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               fractionToFill: getFractionToFillMicros(micronutrient),
               unit: getUnitForMicronutrient(micronutrient),
               rda: getNutrientRda(micronutrient),
-              // rda: 0.2,
             ),
       ).toList();
       state.micronutrients?.sort((a, b) => b.fractionToFill.compareTo(a.fractionToFill),);
@@ -170,18 +175,14 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               fractionToFill: getFractionToFillMacros(macronutrient),
               unit: getUnitForMicronutrient(macronutrient),
               rda: getMacroNutrientRda(macronutrient),
-              // rda: 0.3,
             ),
       ).toList();
-      final caloriesConsumed = await getDayCaloriesInteractor.execute();
       state.energyModel = EnergyModel(
         fractionToFill: getFractionToFillKcal(caloriesConsumed.orZero()),
         totalKcal: state.userKcal.orZero(),
         rawKcalTaken: getTotalKcalTakenToday(),
         spentKcal: caloriesConsumed.orZero(),
       );
-      state.waterEvents = await getWaterEventsTodayInteractor.execute();
-      var totalSugarRequired = (state.userKcal.orZero()~/100*5)~/4;
       state.sugarAndFiberModel = SugarAndFiberModel(
           fractionToFillSugar: calculateTodaySugar(totalSugarRequired),
           totalSugarConsumed: calculateTodayConsumedSugar(totalSugarRequired),
@@ -203,6 +204,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.todayCollagenSupplement = SupplementInfo('Collagen peptides', 'Péptidos de colágeno', todayCollagen, 10);
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
 
+      event.onFinish?.call();
       emit(state.copyWith(
         isLoading: false,
         onError: null,

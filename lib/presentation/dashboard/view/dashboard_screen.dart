@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -49,6 +50,7 @@ class _DashboardScreen extends State<DashboardScreen>
     with SingleTickerProviderStateMixin {
 
   // StepCount? _stepCountValue;
+  DateTime? selectedDateTime;
 
   @override
   void initState() {
@@ -130,7 +132,10 @@ class _DashboardScreen extends State<DashboardScreen>
                         insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding5Large +5),
                         contentPadding: EdgeInsets.zero,
                         children: [
-                          DashboardCalendarWidget(callGetAllEvents: (day) => bloc.getEventsForDay(day), selectedDateForEventsLoading: (date) {}),
+                          DashboardCalendarWidget(callGetAllEvents: (day) => bloc.getEventsForDay(day), selectedDateForEventsLoading: (date) {
+                            selectedDateTime = date;
+                            bloc.add(InitializeState(dateTime: date, onFinish: () => Navigator.pop(context)));
+                          }),
                         ],
                       ),), icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
                       Text(bloc.getTodayMessage(AppLocalizations.of(context)!.today, Localizations.localeOf(context).languageCode),),
@@ -155,26 +160,26 @@ class _DashboardScreen extends State<DashboardScreen>
                         ),
                         EnergyBalanceWidget(
                           energyModel: state.energyModel,
-                          screenToMove: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: state.energyModel).then((value) => bloc.add(InitializeState())),
+                          screenToMove: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: state.energyModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                         ),
                         NutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.micronutrients,
                           nutrients: state.micronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList(),
                           isEmpty: false,
-                          screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState())),
+                          screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
                         ),
                         NutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.macronutrients,
                           nutrients: state.macronutrients.orEmpty(),
                           // isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
                           isEmpty: false,
-                          screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState())),
+                          screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                         ),
                         WeeklyRDANutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.weekly_nutrients,
                           nutrients: state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList(),
                           isEmpty: false,
-                          screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()),
+                          screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                         ),
                         SizedBox(
                           height: 200,
@@ -187,9 +192,9 @@ class _DashboardScreen extends State<DashboardScreen>
                                     fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty(), ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
                                     totalWater: ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035).toStringAsFixed(2),
                                     onReloadData: () => bloc.add(ReloadWaterInfoAction()),
-                                    screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState())),
-                                    addWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState()))),
-                                    removeWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState()))),
+                                    screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                                    addWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState(dateTime: selectedDateTime)))),
+                                    removeWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState(dateTime: selectedDateTime)))),
                                   ),
                                 ),
                                 Expanded(
@@ -267,7 +272,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                       ),
                                     ),
                                   ),
-                                  IconButton(onPressed: () => Navigator.pushNamed(context, SugarDetailScreen.routeName, arguments: state.sugarAndFiberModel).then((value) => bloc.add(InitializeState())), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                                  IconButton(onPressed: () => Navigator.pushNamed(context, SugarDetailScreen.routeName, arguments: state.sugarAndFiberModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
                                 ],
                               ),
                               Container(
@@ -312,7 +317,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                       ),
                                     ),
                                   ),
-                                  IconButton(onPressed: () => Navigator.pushNamed(context, FiberDetailScreen.routeName, arguments: state.sugarAndFiberModel).then((value) => bloc.add(InitializeState())), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                                  IconButton(onPressed: () => Navigator.pushNamed(context, FiberDetailScreen.routeName, arguments: state.sugarAndFiberModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
                                 ],
                               ),
                               Container(

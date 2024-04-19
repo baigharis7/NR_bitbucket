@@ -51,8 +51,8 @@ class FoodEventsRepositoryImpl extends FoodEventsRepository {
   Future<FoodEventComplete> getLastFoodEvent() => localStorageRepository.getLastFoodEvent();
 
   @override
-  Future<List<FoodEventComplete>> getFoodEventsOfToday() async {
-    final List allEvents = await localStorageRepository.getFoodEventsOfToday();
+  Future<List<FoodEventComplete>> getFoodEventsOfToday({DateTime? dateTime}) async {
+    final List allEvents = await localStorageRepository.getFoodEventsOfToday(dateTime: dateTime);
     return mapToFoodEventCompleteList(allEvents);
   }
 
