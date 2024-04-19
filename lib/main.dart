@@ -562,6 +562,7 @@ void main() async {
     getUserIdInteractor: getUserIdInteractor,
     uploadWaterEventInteractor: uploadWaterEventInteractor,
     saveWaterEventInteractor: saveWaterEventInteractor,
+    getFoodEventsOfTodayInteractor: getFoodEventsOfTodayInteractor,
   );
 
   final forgottenPasswordBloc = ForgottenPasswordBloc(loginRepository: loginRepository);
@@ -587,6 +588,7 @@ void main() async {
     saveExplainingCardInteractionInteractor: saveExplainingCardInteractionInteractor,
     getLiquidEventsOfTodayInteractor: getTodayLiquidEventsInteractor,
     getProfileInteractor: getProfileInteractor,
+    getFoodEventsOfTodayInteractor: getFoodEventsOfTodayInteractor,
   );
 
   final addFoodEventBloc = AddFoodEventBloc(

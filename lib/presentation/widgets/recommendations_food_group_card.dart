@@ -66,7 +66,7 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
               ],
             ),
           ),
-          ...recommendationsFoodItem.recommendedFoods.map((food) {
+          ...recommendationsFoodItem.recommendedFoods.take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodItemMaster.id);
             return Container(
               color: Colors.white,
@@ -84,7 +84,7 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
               ),
             );
           }),
-          ...recommendationsFoodItem.usualUnHealthyFoods.orEmpty().map((food) {
+          ...recommendationsFoodItem.usualUnHealthyFoods.orEmpty().take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodInfo.foodItemMaster.id);
             return Container(
               color: AppColors.errorRed,
@@ -98,7 +98,7 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
               ),
             );
           }),
-          ...recommendationsFoodItem.usualHealthyFoods.orEmpty().map((food) {
+          ...recommendationsFoodItem.usualHealthyFoods.orEmpty().take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodInfo.foodItemMaster.id);
             return Container(
               color: AppColors.cardGreen_200,

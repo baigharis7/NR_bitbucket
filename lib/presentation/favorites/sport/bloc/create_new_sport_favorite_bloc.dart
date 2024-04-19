@@ -30,6 +30,7 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
     info: [],
   ),) {
     on<InitializeStateAction>((event, emit) async {
+      _resetSportInfo();
       emit(state.copyWith(isLoading: true, onError: null));
       state.sportsInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
 

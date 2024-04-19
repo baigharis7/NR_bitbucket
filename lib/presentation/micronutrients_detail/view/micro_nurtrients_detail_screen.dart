@@ -119,16 +119,16 @@ class _MicroNutrientsDetailScreenState
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(children: [
-                    ...state.microNutrients.orEmpty().map((item) =>
-                    // item.fractionToFill > 0 ?
-                    MicroNutrientDetailWidget(nutrientsModel: item,),
-                          // : Container(),
-                    ).toList(),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                       child: WeeklyNutrientGraphic(
                           title: AppLocalizations.of(context)!.this_week,
                           data: state.micronutrientsWeekly ?? [],),
+                    ),
+                    ...state.microNutrients.orEmpty().map((item) =>
+                    // item.fractionToFill > 0 ?
+                    MicroNutrientDetailWidget(nutrientsModel: item,),
+                      // : Container(),
                     ),
                   ],),
                 ),

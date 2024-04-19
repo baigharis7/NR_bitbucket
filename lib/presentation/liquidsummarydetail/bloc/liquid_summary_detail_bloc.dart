@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
@@ -9,6 +10,7 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import '../../../domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
 import '../../../domain/interactor/waterevents/save_water_event_interactor.dart';
 import '../../../domain/interactor/waterevents/upload_water_event_interactor.dart';
+import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../../domain/models/liquidevents/liquid_event_complete.dart';
 import '../../../domain/models/profile/user_profile_model.dart';
 import '../../../domain/models/watervents/water_event_master.dart';
@@ -23,17 +25,20 @@ class LiquidSummaryDetailBloc extends Bloc<LiquidSummaryDetailEvent, LiquidSumma
   final GetUserIdInteractor getUserIdInteractor;
   final UploadWaterEventInteractor uploadWaterEventInteractor;
   final SaveWaterEventInteractor saveWaterEventInteractor;
+  final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
   LiquidSummaryDetailBloc({
     required this.getLiquidEventsOfTodayInteractor,
     required this.getProfileInteractor,
     required this.getUserIdInteractor,
     required this.uploadWaterEventInteractor,
     required this.saveWaterEventInteractor,
+    required this.getFoodEventsOfTodayInteractor,
   }) : super(LiquidSummaryDetailState(isLoading: false)) {
     on<LoadLiquidSummaryEventAction>((event, emit) async {
       state.waterEvents = event.waterEvents;
       state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute();
       state.userProfile = await getProfileInteractor.execute();
+      state.todayFoodEvents = await getFoodEventsOfTodayInteractor.execute();
 
       emit(state.copyWith(isLoading: false));
     });

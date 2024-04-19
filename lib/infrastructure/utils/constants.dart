@@ -22,6 +22,7 @@ class Constants {
   static const INTOLERANCES_SIZE = 3;
   static const SYMPTOMS_SIZE = 3;
   static const DASHBOARD_LIST_SIZE = 3;
+  static const RECOMMENDATION_LIST_SIZE = 5;
   static const DEFAULT_ADD_WATER_QUANTITY = 0.250;
   static const DEFAULT_REMOVE_WATER_QUANTITY = -0.250;
   static const FIBER_TOTAL_REQUIRED = 25.0;
@@ -38,6 +39,8 @@ class Constants {
   static const DURING_MENSTRUATION = 28;
   static const IMPROVE_THE_IMMUNE_SYSTEM = 18;
   static const IMPROVE_SPORT_PERFORMANCE = 47;
+  static const REDUCE_RISK_OF_INJURY = 48;
+  static const RECOVERY_AFTER_SPORT_INJURY = 49;
 
   //Navigation id's
   static const DASHBOARD = 0;

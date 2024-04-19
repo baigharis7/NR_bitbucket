@@ -9,9 +9,11 @@ import '../../infrastructure/utils/dimens.dart';
 
 class DashboardCalendarWidget extends StatefulWidget {
   final Function callGetAllEvents;
+  final Function(DateTime) selectedDateForEventsLoading;
   const DashboardCalendarWidget({
     super.key,
     required this.callGetAllEvents,
+    required this.selectedDateForEventsLoading,
   });
 
   @override
@@ -27,7 +29,9 @@ class _DashboardCalendarWidgetState extends State<DashboardCalendarWidget> {
   Widget build(BuildContext context) {
     return SizedBox(width: 400,child:
     TableCalendar(
-      headerVisible: false,
+      headerStyle: const HeaderStyle(
+        formatButtonVisible: false,
+      ),
       daysOfWeekStyle: DaysOfWeekStyle(decoration: const BoxDecoration(color: AppColors.mountainMeadow,), weekendStyle: const TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),
         dowTextFormatter: (date, locale) => DateFormat('EEEE').format(date), weekdayStyle: const TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),),
       daysOfWeekHeight: Dimens.heightSmall-20,
@@ -45,7 +49,7 @@ class _DashboardCalendarWidgetState extends State<DashboardCalendarWidget> {
         setState(() {
           _selectedDay = selectedDay;
           _focusedDay = focusedDay;
-          // bloc.add(SelectDayEventsActions(selectedDay: _selectedDay));
+          widget.selectedDateForEventsLoading.call(focusedDay);
         });
       },
       onPageChanged: (focusedDay) => _focusedDay = focusedDay,

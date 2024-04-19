@@ -13,6 +13,8 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 
+import '../../domain/models/foodevents/food_event_complete.dart';
+
 class EventsHelper {
   final DateTimeHelper _dateTimeHelper = DateTimeHelper();
 
@@ -66,7 +68,7 @@ class EventsHelper {
 
   List<double> generateWaterQuantities() => [0.2, 0.5, 0.75, 1, 1.5, 2];
 
-  double getWaterIntakeAddition(List<WaterEventMaster>? waterEvents, List<LiquidEventComplete> liquidTodayEvents) {
+  double getWaterIntakeAddition(List<WaterEventMaster>? waterEvents, List<LiquidEventComplete> liquidTodayEvents, List<FoodEventComplete> foodEvents) {
     double amount = 0.0;
     if (waterEvents != null && waterEvents.isNotEmpty) {
       for (var event in waterEvents) {
@@ -83,6 +85,16 @@ class EventsHelper {
           }
         }
       }
+
+      if (foodEvents.isNotEmpty) {
+        for (var foodEvent in foodEvents) {
+          for (var eventInfo in foodEvent.foodInfo.orEmpty()) {
+            if (eventInfo.id == Constants.TAP_WATER_ID) {
+              amount = amount + (((eventInfo.eventInfo?.qty ?? 0) * Constants.DEFAULT_ADD_WATER_QUANTITY));
+            }
+          }
+        }
+      }
     if (amount < 0) amount = 0;
     return double.parse(amount.toStringAsFixed(2));
     }
@@ -91,9 +103,9 @@ class EventsHelper {
     // }
   // }
 
-  double getWaterFractionToFillFromEvents(List<WaterEventMaster>? waterEvents, List<LiquidEventComplete> liquidTodayEvents, double? totalRequired) {
+  double getWaterFractionToFillFromEvents(List<WaterEventMaster>? waterEvents, List<LiquidEventComplete> liquidTodayEvents, List<FoodEventComplete> foodEvents, double? totalRequired) {
     // if (waterEvents != null && waterEvents.isNotEmpty) {
-      return _getFractionToFillWater(getWaterIntakeAddition(waterEvents, liquidTodayEvents), totalRequired.orZero());
+      return _getFractionToFillWater(getWaterIntakeAddition(waterEvents, liquidTodayEvents, foodEvents), totalRequired.orZero());
     // } else {
     //   return 0.0;
     // }

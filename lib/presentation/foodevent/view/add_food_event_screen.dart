@@ -4,7 +4,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/add_food_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
@@ -20,9 +19,8 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 
 import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
-import '../../../infrastructure/helpers/i10n_helper.dart';
-import '../../favorites/common/add_favorite_dialog.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
+import 'package:remove_diacritic/remove_diacritic.dart';
 
 // TODO: tengo que poner lo de las bebidas en algún sitio.
 class AddFoodEventScreen extends StatefulWidget {
@@ -228,6 +226,11 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               return state.foodNames!.foodsAndDrinksNames!.foodNames!
                                   .map((item) => item.translate(context))
                                   .where((String option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                              // remove spanish accent to simple english
+                              //     .where((String option) => removeDiacritics(option).toLowerCase().contains(textEditingValue.text.toLowerCase()));
+
+                              // return state.foodNames!.foodsAndDrinksNames!.foodNames!.where((element) => removeDiacritics(element.translate(context).toLowerCase()).contains(removeDiacritics(textEditingValue.text).toLowerCase())).map((e) => e.translate(context)).toList();
+
                             },
                             onSelected: (option) {
                               // TODO: manage possible errors

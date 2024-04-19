@@ -1,5 +1,6 @@
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_kcal_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
@@ -24,6 +25,7 @@ class JournalBloc extends BaseBloc<JournalActions, JournalState> {
   final SaveExplainingCardInteractionInteractor saveExplainingCardInteractionInteractor;
   final GetTodayLiquidEventsInteractor getLiquidEventsOfTodayInteractor;
   final GetProfileInteractor getProfileInteractor;
+  final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
 
   JournalBloc({
     required this.getUserKcalInteractor,
@@ -34,6 +36,7 @@ class JournalBloc extends BaseBloc<JournalActions, JournalState> {
     required this.saveExplainingCardInteractionInteractor,
     required this.getLiquidEventsOfTodayInteractor,
     required this.getProfileInteractor,
+    required this.getFoodEventsOfTodayInteractor,
   }) : super(JournalState(
     isLoading: false,
     onError: null,
@@ -56,6 +59,7 @@ class JournalBloc extends BaseBloc<JournalActions, JournalState> {
       state.todaySportEvents = await getTodaySportsInteractor.execute();
       state.waterEvents = await getWaterEventsTodayInteractor.execute();
       state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute();
+      state.todayFoodEvents = await getFoodEventsOfTodayInteractor.execute();
       state.showGeneralCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.journalGeneral.index);
 
       emit(state.copyWith(isLoading: false, onError: null),);

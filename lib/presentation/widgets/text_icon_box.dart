@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 class TextIconBox extends StatefulWidget {
@@ -10,6 +11,7 @@ class TextIconBox extends StatefulWidget {
   final bool? showAddButton;
   final bool? showWatchButton;
   final IconData? icon;
+  final String? image;
   final bool isCentered;
 
   const TextIconBox({
@@ -22,6 +24,7 @@ class TextIconBox extends StatefulWidget {
     this.showAddButton = false,
     this.showWatchButton = false,
     this.icon,
+    this.image,
     this.isCentered = true,
   }) : super(key: key);
 
@@ -51,7 +54,7 @@ class _TextIconBox extends State<TextIconBox> {
                   if (widget.showAddButton!) SizedBox(
                     child: IconButton(
                       onPressed: () => widget.onAdd.call(),
-                      icon: widget.icon != null ? Icon(widget.icon, size: /*30*/26,) : const Icon(Icons.add_circle_outline_sharp, size: 26,),
+                      icon: widget.image.isEmptyOrNull() ? widget.icon != null ? Icon(widget.icon, size: /*30*/26,) : const Icon(Icons.add_circle_outline_sharp, size: 26,) : Image.asset(widget.image.orEmpty(), height: 26, width: 26,),
                     ),
                   )
                 ],

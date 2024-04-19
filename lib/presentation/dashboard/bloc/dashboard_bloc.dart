@@ -200,7 +200,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           rda: double.parse((nutrientRda.rda * 7).toStringAsFixed(2)),),).toList();
       // state.supplements = [SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement()), SupplementInfo('Collagen', 'Colágeno', todayCollagen, 10),];
       state.todayCreatineSupplement = SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement());
-      state.todayCollagenSupplement = SupplementInfo('Collagen', 'Colágeno', todayCollagen, 10);
+      state.todayCollagenSupplement = SupplementInfo('Collagen peptides', 'Péptidos de colágeno', todayCollagen, 10);
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
 
       emit(state.copyWith(
@@ -542,7 +542,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
     for(var liquidEvent in state.todayLiquidEvents!) {
       for (var liquid in liquidEvent.foodInfo!) {
-        sugarConsumedToday = sugarConsumedToday + (liquid.params?.sugarsTotal ?? 0.0);
+        if (liquid.freeSugar.orEmpty() == Constants.FREE_SUGAR) {
+          sugarConsumedToday = sugarConsumedToday + (liquid.params?.sugarsTotal ?? 0.0);
+        }
+        // sugarConsumedToday = sugarConsumedToday + (liquid.params?.sugarsTotal ?? 0.0);
       }
     }
 

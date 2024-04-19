@@ -42,3 +42,17 @@ class DeleteUrineEventAction extends FecesUrineEvent {
 
   DeleteUrineEventAction({required this.uploadFeces, required this.onFinish});
 }
+
+class SelectedFacesDayEvents extends FecesUrineEvent {
+  final DateTime dateTime;
+  final Function onFinish;
+
+  SelectedFacesDayEvents({required this.dateTime, required this.onFinish});
+}
+
+class SelectedUrineDayEvents extends FecesUrineEvent {
+  final DateTime dateTime;
+  final Function onFinish;
+
+  SelectedUrineDayEvents({required this.dateTime, required this.onFinish});
+}

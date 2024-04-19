@@ -90,7 +90,7 @@ class _ObjectivesDialogState extends State<ObjectivesDialog> {
                         children: [
                           Container(
                               margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
-                              child: const Text('Metabolic objectives', style: TextStyle(
+                              child: Text(AppLocalizations.of(context)!.metabolic_objectives, style: const TextStyle(
                                 fontSize: Dimens.fontSizeNormal,
                                 fontWeight: FontWeight.bold,
                               ),)),
@@ -108,7 +108,7 @@ class _ObjectivesDialogState extends State<ObjectivesDialog> {
                         children: [
                           Container(
                               margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
-                              child: const Text('Body composition objectives', style: TextStyle(
+                              child: Text(AppLocalizations.of(context)!.body_composition_objectives, style: const TextStyle(
                                 fontSize: Dimens.fontSizeNormal,
                                 fontWeight: FontWeight.bold,
                               ),)),

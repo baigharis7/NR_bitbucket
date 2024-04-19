@@ -111,11 +111,13 @@ class _LiquidSummaryDetailScreenState extends State<LiquidSummaryDetailScreen> {
                           quantityTaken: EventsHelper().getWaterIntakeAddition(
                             state.waterEvents,
                             state.todayLiquidEvents.orEmpty(),
+                            state.todayFoodEvents.orEmpty(),
                           ),
                           fractionToFill:
                               EventsHelper().getWaterFractionToFillFromEvents(
                             state.waterEvents,
                             state.todayLiquidEvents.orEmpty(),
+                                state.todayFoodEvents.orEmpty(),
                                 ((state.userProfile?.physicalCharacteristics?.weight ?? 0) * 0.035),
                           ),
                           removeWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () => Navigator.pop(context))),

@@ -10,6 +10,8 @@ class FecesUrineState {
   List<Urines>? urinesList;
   List<UploadFeces>? fecesEvents;
   List<UploadFeces>? urineEvents;
+  List<UploadFeces>? urineDayEvents;
+  List<UploadFeces>? facesDayEvents;
   int? fecesId;
   int? urineId;
 
@@ -20,6 +22,8 @@ class FecesUrineState {
     this.urinesList,
     this.fecesEvents,
     this.urineEvents,
+    this.facesDayEvents,
+    this.urineDayEvents,
     this.fecesId,
     this.urineId,
   });
@@ -31,6 +35,8 @@ class FecesUrineState {
     List<Urines>? urinesList,
     List<UploadFeces>? fecesEvents,
     List<UploadFeces>? urineEvents,
+    List<UploadFeces>? urineDayEvents,
+    List<UploadFeces>? facesDayEvents,
     int? fecesId,
     int? urineId,
   }) {
@@ -41,6 +47,8 @@ class FecesUrineState {
       urinesList: urinesList ?? this.urinesList,
       fecesEvents: fecesEvents ?? this.fecesEvents,
       urineEvents: urineEvents ?? this.urineEvents,
+      facesDayEvents: facesDayEvents ?? this.facesDayEvents,
+      urineDayEvents: urineDayEvents ?? this.urineDayEvents,
       fecesId: fecesId ?? this.fecesId,
       urineId: urineId ?? this.urineId,
     );

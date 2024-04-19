@@ -85,11 +85,13 @@ class DateTimeHelper {
   }
 
   static String? formatTimeOfDay(TimeOfDay? timeOfDay, BuildContext context) {
-    if (!timeOfDay.isNull()) {
-      var df = DateFormat('h:mm a');
-      var dt = df.parse(timeOfDay?.format(context) ?? '00:00');
-      var finalTime =  DateFormat('HH:mm').format(dt);
-      return finalTime;
+    if (timeOfDay != null) {
+    //   var df = DateFormat('hh:mm');
+    //   timeOfDay?.minute;
+    //   var dt = df.parse(timeOfDay?.format(context) ?? '00:00');
+    // var finalTime = DateFormat.Hm().format(dt);
+      // var finalTime =  DateFormat('h:mm aa').format(dt);
+      return '${timeOfDay.hour}:${timeOfDay.minute}';
     }
     else {
       return null;

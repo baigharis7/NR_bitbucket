@@ -316,7 +316,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
         final sportEventSimple = SportEventSimple(
           userId: getUserIdInteractor.execute(),
           eventId: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
-          info: state.info,
+          info: [sportInfo],
           comment: state.comment,
           sportName: sportNam,
         );
@@ -326,8 +326,8 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
           try {
             await saveSportEventInteractor.execute(sportEventComplete, state.isEdit ?? false);
 
-            _clearFields();
-            event.onFinish.call();
+            // _clearFields();
+            // event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {
             state.onError = ErrorTypes.locallySavingSportEventError;

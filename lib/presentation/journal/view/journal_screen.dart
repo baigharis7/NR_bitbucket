@@ -136,7 +136,7 @@ class _JournalScreenState extends State<JournalScreen> {
                                           height: 90,
                                           width: 15,
                                           child: FillVerticalBar(
-                                            fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), ((state.userProfile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
+                                            fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.todayFoodEvents.orEmpty(), ((state.userProfile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
                                             barColor: Colors.blue,
                                           ),
                                         ),
@@ -156,15 +156,15 @@ class _JournalScreenState extends State<JournalScreen> {
                             ),
                             Stack(
                               children: [
-                                Card(
-                                  child: TextIconBoxWithGraphicWatchAndAdd(
-                                    title: AppLocalizations.of(context)!.sport,
-                                    calories: bloc.getTodaysKcal(state.todaySportEvents!),
-                                    onAdd: () => bloc.add(SportsClickAction(action: () => Navigator.pushNamed(context, AddSportEventScreen.routeName))),
-                                    onWatch: () => bloc.add(SportsClickAction(action: () => Navigator.pushNamed(context, JournalSportScreen.routeName))),
-                                    graphic: WeeklyGraphic(data: state.weeklyData!,),
-                                  ),
-                                ),
+                                // Card(
+                                //   child: TextIconBoxWithGraphicWatchAndAdd(
+                                //     title: AppLocalizations.of(context)!.sport,
+                                //     calories: bloc.getTodaysKcal(state.todaySportEvents!),
+                                //     onAdd: () => bloc.add(SportsClickAction(action: () => Navigator.pushNamed(context, AddSportEventScreen.routeName))),
+                                //     onWatch: () => bloc.add(SportsClickAction(action: () => Navigator.pushNamed(context, JournalSportScreen.routeName))),
+                                //     graphic: WeeklyGraphic(data: state.weeklyData!,),
+                                //   ),
+                                // ),
                                 if (state.foodsCard != null && state.foodsCard!.showCard!) Center(
                                   child: _explainingCardsHelper.getExplainingCardWithId(
                                     context: context,
@@ -182,6 +182,14 @@ class _JournalScreenState extends State<JournalScreen> {
                                   ),
                                 ),
                               ],
+                            ),
+                            TextIconBox(
+                              title: AppLocalizations.of(context)!.sport,
+                              onAdd: () => bloc.add(SportsClickAction(action: () => Navigator.pushNamed(context, AddSportEventScreen.routeName))),
+                              onWatch: () => bloc.add(SportsClickAction(action: () => Navigator.pushNamed(context, JournalSportScreen.routeName))),
+                              showWatchButton: true,
+                              showAddButton: true,
+                              isCentered: true,
                             ),
                             TextIconBox(
                               title: AppLocalizations.of(context)!.food_favs,
@@ -207,10 +215,10 @@ class _JournalScreenState extends State<JournalScreen> {
                               showAddButton: true,
                             ),
                             TextIconBox(
-                              title: AppLocalizations.of(context)!.feces_urine,
+                              title: AppLocalizations.of(context)!.faeces_urine,
                               color: Colors.grey,
                               onAdd: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName),
-                              icon: Icons.accessibility_new_sharp,
+                              image: 'assets/images/intestine.png',
                               showAddButton: true,
                             ),
                           ],

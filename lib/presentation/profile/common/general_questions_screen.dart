@@ -149,7 +149,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                   // );
                                 }, decoration: InputDecoration(
                                         errorMaxLines: 2,
-                                        hintText: state.profile!.birthDate == null ? AppLocalizations.of(ctx)!.birthday_question : DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.birthDate!)),),
+                                        hintText: state.profile!.birthDate == null ? AppLocalizations.of(ctx)!.birthday_question : DateFormat('yyyy/MM/dd').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.birthDate!)),),
                                 validator: (value) => state.profile?.birthDate?.isNull() ?? true ? AppLocalizations.of(context)!.must_complete_field : null,),
                               ),
                             ),
@@ -363,14 +363,13 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
                                           child: TextFormField(
                                             decoration: InputDecoration(
-                                              hintText: state.profile!.femaleCharacteristics!.menstruation!.lastStartDate != null ? DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.femaleCharacteristics!.menstruation!.lastStartDate!,),) : '',
+                                              hintText: state.profile!.femaleCharacteristics!.menstruation!.lastStartDate != null ? DateFormat('yyyy/MM/dd').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.femaleCharacteristics!.menstruation!.lastStartDate!,),) : '',
                                               border: InputBorder.none,
                                               prefixIcon: IconButton(onPressed: () {
                                                 DatePickerHelper
                                                     .presentDatePicker(
                                                   context: context,
                                                   saveDate: (pickedDate) {
-                                                    _formKey.currentState!.validate();
                                                     context.read<ProfileBloc>().add(SetLastPeriodDateAction(date: pickedDate,),);
                                                     },
                                                 );

@@ -86,7 +86,9 @@ class _FecesTabState extends State<FecesTab> {
                           DashboardCalendarWidget(
                               callGetAllEvents: (day) =>
                                   fecesUrineBloc.getEventsForDay(
-                                      state.fecesEvents.orEmpty(), day)),
+                                      state.fecesEvents.orEmpty(), day), selectedDateForEventsLoading: (date) {
+                                fecesUrineBloc.add(SelectedFacesDayEvents(dateTime: date, onFinish: () => Navigator.pop(context)));
+                          }),
                         ],
                       ),
                     );
@@ -98,7 +100,7 @@ class _FecesTabState extends State<FecesTab> {
                       horizontal: Dimens.paddingNormal,
                     ),
                     child: Column(
-                      children: state.fecesEvents
+                      children: state.facesDayEvents
                           .orEmpty()
                           .map(
                             (fece) => RadioTitleDescImage(

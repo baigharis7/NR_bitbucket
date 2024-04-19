@@ -32,7 +32,7 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
   void _manageTabChange(BuildContext context) {
     setState(() {
       if (_selectedTab == 0) {
-        title = AppLocalizations.of(context)!.feces;
+        title = AppLocalizations.of(context)!.faeces;
       } else if (_selectedTab == 1) {
         title = AppLocalizations.of(context)!.urine;
       }
@@ -99,7 +99,7 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
             labelColor: Colors.black,
             indicatorColor: Colors.black,
             tabs: [
-              Tab(text: AppLocalizations.of(context)!.feces.toUpperCase()),
+              Tab(text: AppLocalizations.of(context)!.faeces.toUpperCase()),
               Tab(text: AppLocalizations.of(context)!.urine.toUpperCase()),
             ],
           ),

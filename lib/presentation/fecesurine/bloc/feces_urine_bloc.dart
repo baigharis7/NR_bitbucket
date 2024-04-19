@@ -14,6 +14,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_urine
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/urine.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import '../../../domain/models/profile/feces.dart';
 import '../../../infrastructure/errors/error_types.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
@@ -87,6 +88,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         await uploadFecesInteractor.execute(uploadFeces);
         try {
           await saveFecesEventInteractor.execute(uploadFeces);
+          _clearFields();
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
         } catch (_) {
@@ -108,6 +110,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         await uploadUrineInteractor.execute(uploadUrine);
         try {
           await saveUrineInteractor.execute(uploadUrine);
+          _clearFields();
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
         } catch (_) {
@@ -149,9 +152,42 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingSportEventError));
       }
     },);
+
+    on<SelectedFacesDayEvents>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      state.facesDayEvents = [];
+      for (UploadFeces item in state.fecesEvents.orEmpty()) {
+        var dateTimeFromMilli = DateTimeHelper.dateTimeFromMilliseconds(item.eventId);
+        if (dateTimeFromMilli?.year == event.dateTime.year && dateTimeFromMilli?.month == event.dateTime.month && dateTimeFromMilli?.day == event.dateTime.day) {
+          state.facesDayEvents?.add(item);
+        }
+      }
+      event.onFinish.call();
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<SelectedUrineDayEvents>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      state.urineDayEvents = [];
+      for (UploadFeces item in state.urineEvents.orEmpty()) {
+        var dateTimeFromMilli = DateTimeHelper.dateTimeFromMilliseconds(item.eventId);
+        if (dateTimeFromMilli?.year == event.dateTime.year && dateTimeFromMilli?.month == event.dateTime.month && dateTimeFromMilli?.day == event.dateTime.day) {
+          state.urineDayEvents?.add(item);
+        }
+      }
+      event.onFinish.call();
+      emit(state.copyWith(isLoading: false));
+    },);
   }
 
   List<dynamic> getEventsForDay(List<dynamic> list, DateTime dateTime) {
     return EventsHelper.isEventFoundAgainstDate(list, dateTime);
+  }
+
+
+
+  void _clearFields() {
+    state.fecesId = null;
+    state.urineId = null;
   }
 }

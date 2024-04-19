@@ -130,7 +130,7 @@ class _DashboardScreen extends State<DashboardScreen>
                         insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding5Large +5),
                         contentPadding: EdgeInsets.zero,
                         children: [
-                          DashboardCalendarWidget(callGetAllEvents: (day) => bloc.getEventsForDay(day)),
+                          DashboardCalendarWidget(callGetAllEvents: (day) => bloc.getEventsForDay(day), selectedDateForEventsLoading: (date) {}),
                         ],
                       ),), icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
                       Text(bloc.getTodayMessage(AppLocalizations.of(context)!.today, Localizations.localeOf(context).languageCode),),
@@ -183,8 +183,8 @@ class _DashboardScreen extends State<DashboardScreen>
                                 Expanded(
                                   flex: 1,
                                   child: LiquidSummaryWidget(
-                                    quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty()),
-                                    fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
+                                    quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty()),
+                                    fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty(), ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
                                     totalWater: ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035).toStringAsFixed(2),
                                     onReloadData: () => bloc.add(ReloadWaterInfoAction()),
                                     screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState())),
@@ -196,7 +196,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                   flex: 1,
                                   child: Stack(
                                     children: [
-                                      Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0,), color: Colors.black,), child: const Center(child: Text('Comming Soon', style: TextStyle(color: Colors.white),),)),
+                                      Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0,), color: Colors.black,), child: Center(child: Text(AppLocalizations.of(context)!.coming_soon, style: const TextStyle(color: Colors.white),),)),
                                       Opacity(
                                         opacity: 0.4,
                                         child: Card(
@@ -342,11 +342,11 @@ class _DashboardScreen extends State<DashboardScreen>
                             ],
                           ),
                         ),
-                        CardWidget(title: AppLocalizations.of(context)!.supplements,
+                        if  (state.profile?.objectives?.any((element) => element ==  Constants.IMPROVE_SPORT_PERFORMANCE || element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) CardWidget(title: AppLocalizations.of(context)!.supplements,
                             // children: state.supplements.orEmpty().map((creatine) => NutrientDetailWidget(todayCreatine: creatine, onMinusClick: (supplement) {}, onPlusClick: (supplement) {}),).toList()),
                             children: [
-                              NutrientDetailWidget(todayCreatine: state.todayCreatineSupplement, onMinusClick: (supplement) => bloc.add(UploadCreatineEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCreatineEventAction(value: 2, supplementInfo: supplement,))),
-                              NutrientDetailWidget(todayCreatine: state.todayCollagenSupplement, onMinusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: 2, supplementInfo: supplement,))),
+                              if  (state.profile?.objectives?.any((element) => element ==  Constants.IMPROVE_SPORT_PERFORMANCE || element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) NutrientDetailWidget(todayCreatine: state.todayCreatineSupplement, onMinusClick: (supplement) => bloc.add(UploadCreatineEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCreatineEventAction(value: 2, supplementInfo: supplement,))),
+                              if  (state.profile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) NutrientDetailWidget(todayCreatine: state.todayCollagenSupplement, onMinusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: 2, supplementInfo: supplement,))),
                             ],
                         ),
                       ],

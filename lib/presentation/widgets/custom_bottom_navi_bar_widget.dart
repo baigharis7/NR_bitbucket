@@ -2,14 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../infrastructure/helpers/toast_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../infrastructure/utils/app_color.dart';
 import '../../infrastructure/utils/dimens.dart';
 import '../dashboard/view/dashboard_screen.dart';
 import '../journal/view/journal_screen.dart';
 import '../recipes/common/view/recipe_tabs_holder.dart';
 import '../recommendations/common/view/recommendations_tabs_holder.dart';
-import '../recommendations/recipes/view/recipes_tab.dart';
 
 class CustomBottomNaviBarWidget extends StatefulWidget {
   final int activePosition;
@@ -33,16 +32,16 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget> {
       unselectedFontSize: Dimens.fontSizeSmall,
       selectedFontSize: Dimens.fontSizeSmall,
       items: [
-        BottomNavigationBarItem(icon: SvgPicture.asset('assets/images/start.svg',), label: 'Start', activeIcon: SvgPicture.asset(
+        BottomNavigationBarItem(icon: SvgPicture.asset('assets/images/start.svg',), label: AppLocalizations.of(context)!.start, activeIcon: SvgPicture.asset(
           'assets/images/start.svg',
           colorFilter: const ColorFilter.mode(AppColors.mountainMeadow, BlendMode.srcIn),
-        ),),BottomNavigationBarItem(icon: SvgPicture.asset('assets/images/diary.svg',), label: 'Diary', activeIcon: SvgPicture.asset(
+        ),),BottomNavigationBarItem(icon: SvgPicture.asset('assets/images/diary.svg',), label: AppLocalizations.of(context)!.diary, activeIcon: SvgPicture.asset(
           'assets/images/diary.svg',
           colorFilter: const ColorFilter.mode(AppColors.mountainMeadow, BlendMode.srcIn),
-        ),),BottomNavigationBarItem(icon: SvgPicture.asset('assets/images/tips.svg',), label: 'Tips', activeIcon: SvgPicture.asset(
+        ),),BottomNavigationBarItem(icon: SvgPicture.asset('assets/images/tips.svg',), label: AppLocalizations.of(context)!.tips, activeIcon: SvgPicture.asset(
           'assets/images/tips.svg',
           colorFilter: const ColorFilter.mode(AppColors.mountainMeadow, BlendMode.srcIn),
-        ),),BottomNavigationBarItem(icon: SvgPicture.asset('assets/images/recipes.svg',), label: 'Recipes', activeIcon: SvgPicture.asset(
+        ),),BottomNavigationBarItem(icon: SvgPicture.asset('assets/images/recipes.svg',), label: AppLocalizations.of(context)!.recipes, activeIcon: SvgPicture.asset(
           'assets/images/recipes.svg',
           colorFilter: const ColorFilter.mode(AppColors.mountainMeadow, BlendMode.srcIn),
         ),),

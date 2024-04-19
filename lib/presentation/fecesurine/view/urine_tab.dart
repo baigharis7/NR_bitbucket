@@ -74,7 +74,7 @@ class _UrineTabState extends State<UrineTab> {
                       insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding9Large -5),
                       contentPadding: EdgeInsets.zero,
                       children: [
-                        DashboardCalendarWidget(callGetAllEvents: (day) => fecesUrineBloc.getEventsForDay(state.urineEvents.orEmpty(), day)),
+                        DashboardCalendarWidget(callGetAllEvents: (day) => fecesUrineBloc.getEventsForDay(state.urineEvents.orEmpty(), day), selectedDateForEventsLoading: (date) => fecesUrineBloc.add(SelectedUrineDayEvents(dateTime: date, onFinish: () => Navigator.pop(context)))),
                       ],
                     ),
                     );
@@ -86,7 +86,7 @@ class _UrineTabState extends State<UrineTab> {
                       horizontal: Dimens.paddingNormal,
                     ),
                     child: Column(
-                      children: state.urineEvents.orEmpty().map((urine) {
+                      children: state.urineDayEvents.orEmpty().map((urine) {
                           final urin = state.urinesList.orEmpty().firstWhere((element) => element.id == urine.fecesId);
                           return RadioTitleDescImage(
                             isSelected: true,

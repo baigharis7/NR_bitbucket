@@ -8,6 +8,7 @@ class LiquidSummaryDetailState {
   ErrorTypes? onError;
   List<WaterEventMaster>? waterEvents;
   List<LiquidEventComplete>? todayLiquidEvents;
+  List<FoodEventComplete>? todayFoodEvents;
   UserProfileModel? userProfile;
 
   LiquidSummaryDetailState({
@@ -15,6 +16,7 @@ class LiquidSummaryDetailState {
     this.onError,
     this.waterEvents,
     this.todayLiquidEvents,
+    this.todayFoodEvents,
     this.userProfile,
   });
 
@@ -23,6 +25,7 @@ class LiquidSummaryDetailState {
     ErrorTypes? onError,
     List<WaterEventMaster>? waterEvents,
     List<LiquidEventComplete>? todayLiquidEvents,
+    List<FoodEventComplete>? todayFoodEvents,
     UserProfileModel? userProfile,
   }) {
     return LiquidSummaryDetailState(
@@ -30,6 +33,7 @@ class LiquidSummaryDetailState {
       onError: onError ?? this.onError,
       waterEvents: waterEvents ?? this.waterEvents,
       todayLiquidEvents: todayLiquidEvents ?? this.todayLiquidEvents,
+      todayFoodEvents: todayFoodEvents ?? this.todayFoodEvents,
       userProfile: userProfile ?? this.userProfile,
     );
   }

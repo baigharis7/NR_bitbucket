@@ -84,9 +84,9 @@ class _MicroNutrientDetailWidgetState extends State<MicroNutrientDetailWidget> {
                 ),
               ),
             ),
-            Container(
+            if (widget.nutrientsModel.nutrientInfoMaster.translateDescription(context).isNotEmptyOrNull()) Container(
               margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge, horizontal: Dimens.marginXLarge),
-              child: Text(widget.nutrientsModel.nutrientInfoMaster.description_en ?? AppLocalizations.of(context)!.lorem_ipsum),),
+              child: Text(widget.nutrientsModel.nutrientInfoMaster.translateDescription(context)),),
           ],
         ),
       ),
