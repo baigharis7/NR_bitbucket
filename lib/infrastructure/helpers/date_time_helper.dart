@@ -134,8 +134,14 @@ class DateTimeHelper {
     }
   }
 
-  static int calculateMillisecondsFromDateTime(DateTime dateTim) {
-    DateTime dateTime = DateTime(dateTim.year, dateTim.month, dateTim.day, dateTim.hour, dateTim.minute);
+  static int calculateMidNightMillisecondsFromDateTime(DateTime dateTim) {
+    DateTime dateTime = DateTime(dateTim.year, dateTim.month, dateTim.day, 0, 0);
+    return dateTime.millisecondsSinceEpoch;
+  }
+
+  static int calculateMidNightMillisecondsFromInt(int milliSeconds) {
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(milliSeconds);
+    dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day, 0, 0);
     return dateTime.millisecondsSinceEpoch;
   }
 

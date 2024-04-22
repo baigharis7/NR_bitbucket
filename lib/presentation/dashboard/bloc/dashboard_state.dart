@@ -11,6 +11,7 @@ import 'package:nutrenaissance_flutter/infrastructure/lists/SupplementInfo.dart'
 import '../../../data/api/steps/models/step_event_response.dart';
 import '../../../data/api/supplements/model/upload_supplement_event.dart';
 import '../../../domain/models/calendar/calendar_events.dart';
+import '../../../domain/models/calendar/dashboard_all_calendar_events.dart';
 import '../../../domain/models/dashboard/nutrients_weekly_model.dart';
 import '../../../domain/models/liquidevents/liquid_event_complete.dart';
 import '../../../domain/models/masterfiles/objectives_info_master.dart';
@@ -45,7 +46,7 @@ class DashboardState {
   List<SupplementInfo>? supplements;
   SupplementInfo? todayCreatineSupplement;
   SupplementInfo? todayCollagenSupplement;
-  CalendarEvents? allCalendarEvents;
+  DashboardAllCalendarEvents? allCalendarEvents;
 
   DashboardState({
     required this.isLoading,
@@ -109,7 +110,7 @@ class DashboardState {
     List<SupplementInfo>? supplements,
     SupplementInfo? todayCreatineSupplement,
     SupplementInfo? todayCollagenSupplement,
-    CalendarEvents? allCalendarEvents,
+    DashboardAllCalendarEvents? allCalendarEvents,
   }) {
     return DashboardState(
       isLoading: isLoading,

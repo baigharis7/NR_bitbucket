@@ -8,6 +8,6 @@ class GetTodayCollagenEventInteractorImpl extends GetTodayCollagenEventInteracto
   GetTodayCollagenEventInteractorImpl({required this.supplementsRepository});
 
   @override
-  Future<UploadSupplementEvent?> execute() => supplementsRepository.getTodayCollagenEvent();
+  Future<UploadSupplementEvent?> execute({DateTime? dateTime}) => supplementsRepository.getTodayCollagenEvent(dateTime: dateTime);
 
 }

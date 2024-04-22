@@ -1,5 +1,6 @@
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/supplemets_api.dart';
+import 'package:nutrenaissance_flutter/data/local/models/supplements/upload_supplement_event_entity.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/supplements/supplements_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/supplement_mappers.dart';
@@ -12,9 +13,9 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
   SupplementsRepositoryImpl({required this.supplementApi, required this.localStorageRepository});
 
   @override
-  Future<UploadSupplementEvent?> getTodayCreatineEvent() async {
+  Future<UploadSupplementEvent?> getTodayCreatineEvent({DateTime? dateTime}) async {
     try {
-      final result = await localStorageRepository.getCreatineTodayEvent();
+      final result = await localStorageRepository.getCreatineTodayEvent(dateTime: dateTime);
       return mapToSupplementEvent(result);
     } catch (error) {
       rethrow;
@@ -40,9 +41,9 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
   }
 
   @override
-  Future<UploadSupplementEvent?> getTodayCollagenEvent() async {
+  Future<UploadSupplementEvent?> getTodayCollagenEvent({DateTime? dateTime}) async {
     try {
-      final result = await localStorageRepository.getCollagenTodayEvent();
+      final result = await localStorageRepository.getCollagenTodayEvent(dateTime: dateTime);
       return mapToSupplementEvent(result);
     } catch (error) {
       rethrow;
@@ -65,6 +66,18 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
     } catch (error) {
       rethrow;
     }
+  }
+
+  @override
+  Future<List<UploadSupplementEvent>> getAllCreatineEvents() async {
+      final List allEvents = await localStorageRepository.getAllCreatineEvents();
+      return allEvents.map((creatineEvent) => mapToSupplementEvent(creatineEvent as UploadSupplementEventEntity)).toList();
+  }
+
+  @override
+  Future<List<UploadSupplementEvent>> getAllCollagenEvents() async {
+    final List allEvents = await localStorageRepository.getAllCreatineEvents();
+    return allEvents.map((creatineEvent) => mapToSupplementEvent(creatineEvent as UploadSupplementEventEntity)).toList();
   }
 
 }

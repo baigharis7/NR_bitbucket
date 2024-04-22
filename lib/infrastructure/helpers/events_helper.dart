@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/calendar/calendar_events.dart';
+import 'package:nutrenaissance_flutter/domain/models/calendar/dashboard_all_calendar_events.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_complete.dart';
@@ -149,6 +150,61 @@ class EventsHelper {
     list.addAll(calendarEvents.sportEvents!);
     list.addAll(calendarEvents.liquidEvents!);
     list.addAll(calendarEvents.waterEvents!);
+    return list;
+  }
+
+  List foundEventsFromGivenDate(DashboardAllCalendarEvents calendarEvents, DateTime date) {
+    final calendarEvent = DashboardAllCalendarEvents(
+      foodEvents: [],
+      sportEvents: [],
+      liquidEvents: [],
+      waterEvents: [],
+      creatineEvent: [],
+      collagenEvent: [],
+    );
+
+    for (var event in calendarEvents.foodEvents!) {
+      if (_dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, event.eventDate!)) {
+        calendarEvent.foodEvents!.add(event);
+      }
+    }
+    for (var event in calendarEvents.sportEvents!) {
+      if (_dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, event.eventDate)) {
+        calendarEvent.sportEvents!.add(event);
+      }
+    }
+    for (var event in calendarEvents.liquidEvents!) {
+      if (_dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, event.eventDate!)) {
+        calendarEvent.liquidEvents!.add(event);
+      }
+    }
+    for (var event in calendarEvents.waterEvents!) {
+      if (_dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, event.eventDate!)) {
+        calendarEvent.waterEvents!.add(event);
+      }
+    }
+    for (var event in calendarEvents.creatineEvent!) {
+      if (_dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, event.eventId!)) {
+        calendarEvent.creatineEvent!.add(event);
+      }
+    }
+    for (var event in calendarEvents.collagenEvent!) {
+      if (_dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, event.eventId!)) {
+        calendarEvent.collagenEvent!.add(event);
+      }
+    }
+
+    return joinAllCalendarEvents(calendarEvent);
+  }
+
+  List joinAllCalendarEvents(DashboardAllCalendarEvents calendarEvents) {
+    final list = [];
+    list.addAll(calendarEvents.foodEvents!);
+    list.addAll(calendarEvents.sportEvents!);
+    list.addAll(calendarEvents.liquidEvents!);
+    list.addAll(calendarEvents.waterEvents!);
+    list.addAll(calendarEvents.creatineEvent!);
+    list.addAll(calendarEvents.collagenEvent!);
     return list;
   }
 

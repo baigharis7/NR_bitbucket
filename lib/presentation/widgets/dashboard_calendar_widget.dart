@@ -10,10 +10,12 @@ import '../../infrastructure/utils/dimens.dart';
 class DashboardCalendarWidget extends StatefulWidget {
   final Function callGetAllEvents;
   final Function(DateTime) selectedDateForEventsLoading;
+  final DateTime? focused;
   const DashboardCalendarWidget({
     super.key,
     required this.callGetAllEvents,
     required this.selectedDateForEventsLoading,
+    this.focused,
   });
 
   @override
@@ -21,9 +23,16 @@ class DashboardCalendarWidget extends StatefulWidget {
 }
 
 class _DashboardCalendarWidgetState extends State<DashboardCalendarWidget> {
-  DateTime _selectedDay = DateTimeHelper().provideCurrentDate();
-  DateTime _focusedDay = DateTimeHelper().provideCurrentDate();
+  late DateTime _selectedDay;
+  late DateTime _focusedDay;
   bool isFocusedDayDate = false;
+
+  @override
+  void initState() {
+    _focusedDay = widget.focused == null ? DateTimeHelper().provideCurrentDate() : widget.focused!;
+    _selectedDay = widget.focused == null ? DateTimeHelper().provideCurrentDate() : widget.focused!;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -132,7 +132,7 @@ class _DashboardScreen extends State<DashboardScreen>
                         insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding5Large +5),
                         contentPadding: EdgeInsets.zero,
                         children: [
-                          DashboardCalendarWidget(callGetAllEvents: (day) => bloc.getEventsForDay(day), selectedDateForEventsLoading: (date) {
+                          DashboardCalendarWidget(focused: selectedDateTime, callGetAllEvents: (day) => bloc.getEventsForDay(day), selectedDateForEventsLoading: (date) {
                             selectedDateTime = date;
                             bloc.add(InitializeState(dateTime: date, onFinish: () => Navigator.pop(context)));
                           }),

@@ -69,6 +69,8 @@ import 'package:nutrenaissance_flutter/data/repository/supplements/supplements_r
 import 'package:nutrenaissance_flutter/data/repository/waterevents/water_event_repository_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_dashboard_events_sorted_by_date_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_dashboard_events_sorted_by_date_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_events_sorted_by_date_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_events_sorted_by_date_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
@@ -418,12 +420,16 @@ void main() async {
   final UploadWaterEventInteractor uploadWaterEventInteractor = UploadWaterEventInteractorImpl(waterEventsRepository: waterEventsRepository);
   final SaveWaterEventInteractor saveWaterEventInteractor = SaveWaterEventInteractorImpl(waterEventsRepository: waterEventsRepository);
   final GetWaterEventsTodayInteractor getWaterEventsTodayInteractor = GetWaterEventsTodayInteractorImpl(waterEventsRepository: waterEventsRepository);
+  final SupplementApi supplementApi = SupplementApi(prefsRepository, authenticationService, chuck);
+  final SupplementsRepository supplementsRepository = SupplementsRepositoryImpl(supplementApi: supplementApi, localStorageRepository: localStorageRepository);
   final CalendarRepository calendarRepository = CalendarRepositoryImpl(
     foodEventsRepository: foodEventsRepository,
     sportEventsRepository: sportEventsRepository,
     liquidEventsRepository: liquidEventsRepository,
     waterEventsRepository: waterEventsRepository,
+    supplementsRepository: supplementsRepository,
   );
+  final GetAllDashboardEventsSortedByDateInteractor getAllDashboardEventsSortedByDateInteractor = GetAllDashboardEventsSortedByDateInteractorImpl(calendarRepository: calendarRepository);
   final GetAllEventsSortedByDateInteractor getAllEventsSortedByDateInteractor = GetAllEventsSortedByDateInteractorImpl(calendarRepository: calendarRepository);
   final FavoritesApi favoritesApi = FavoritesApi(prefsRepository, authenticationService, chuck);
   final FavoritesRepository favoritesRepository = FavoritesRepositoryImpl(localStorageRepository: localStorageRepository, favoritesApi: favoritesApi);
@@ -486,8 +492,6 @@ void main() async {
   final RemoveFecesEventInteractor removeFecesEventInteractor = RemoveFecesEventInteractorImpl(fecesUrineRepository: fecesUrineRepository);
   final DeleteUrineEventInteractor deleteUrineEventInteractor = DeleteUrineEventInteractorImpl(fecesUrineRepository: fecesUrineRepository);
   final RemoveUrineEventInteractor removeUrineEventInteractor = RemoveUrineEventInteractorImpl(fecesUrineRepository: fecesUrineRepository);
-  final SupplementApi supplementApi = SupplementApi(prefsRepository, authenticationService, chuck);
-  final SupplementsRepository supplementsRepository = SupplementsRepositoryImpl(supplementApi: supplementApi, localStorageRepository: localStorageRepository);
   final GetTodayCreatineEventInteractor getTodayCreatineEventInteractor = GetTodayCreatineEventInteractorImpl(supplementsRepository: supplementsRepository);
   final UploadCreatineEventInteractor uploadCreatineEventInteractor = UploadCreatineEventInteractorImpl(supplementsRepository: supplementsRepository);
   final SaveCreatineEventInteractor saveCreatineEventInteractor = SaveCreatineEventInteractorImpl(supplementsRepository: supplementsRepository);
@@ -527,6 +531,7 @@ void main() async {
     getTodayCollagenEventInteractor: getTodayCollagenEventInteractor,
     uploadCollagenEventInteractor: uploadCollagenEventInteractor,
     saveCollagenEventInteractor: saveCollagenEventInteractor,
+    getAllDashboardEventsSortedByDateInteractor: getAllDashboardEventsSortedByDateInteractor,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(

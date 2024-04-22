@@ -1,6 +1,7 @@
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_dashboard_events_sorted_by_date_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_events_sorted_by_date_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
@@ -84,6 +85,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final GetTodayCollagenEventInteractor getTodayCollagenEventInteractor;
   final UploadCollagenEventInteractor uploadCollagenEventInteractor;
   final SaveCollagenEventInteractor saveCollagenEventInteractor;
+  final GetAllDashboardEventsSortedByDateInteractor getAllDashboardEventsSortedByDateInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -117,6 +119,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.getTodayCollagenEventInteractor,
     required this.uploadCollagenEventInteractor,
     required this.saveCollagenEventInteractor,
+    required this.getAllDashboardEventsSortedByDateInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -140,9 +143,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.isMenstruation = state.profile?.objectives?.contains(Constants.DURING_MENSTRUATION);
       state.isCold = state.profile?.objectives?.contains(Constants.IMPROVE_THE_IMMUNE_SYSTEM);
 
-      final caloriesConsumed = await getDayCaloriesInteractor.execute();
-      final todayCreatine = await getTodayCreatineEventInteractor.execute();
-      final todayCollagen = await getTodayCollagenEventInteractor.execute();
+      final caloriesConsumed = await getDayCaloriesInteractor.execute(dateTime: event.dateTime);
+      final todayCreatine = await getTodayCreatineEventInteractor.execute(dateTime: event.dateTime);
+      final todayCollagen = await getTodayCollagenEventInteractor.execute(dateTime: event.dateTime);
       var totalSugarRequired = (state.userKcal.orZero()~/100*5)~/4;
 
       state.foodEvents = await getFoodEventsOfTodayInteractor.execute(dateTime: event.dateTime);
@@ -151,8 +154,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.weeklyLiquidEvents = await getWeekLiquidEventsInteractor.execute();
       state.weeklySportEvents = await getWeekSportsInteractor.execute();
       state.todayStep = await getTodayStepInteractor.execute();
-      state.allCalendarEvents = await getAllEventsSortedByDateInteractor.execute();
+      // state.allCalendarEvents = await getAllEventsSortedByDateInteractor.execute();
       state.waterEvents = await getWaterEventsTodayInteractor.execute(dateTime: event.dateTime);
+      state.allCalendarEvents = await getAllDashboardEventsSortedByDateInteractor.execute();
 
       state.micronutrients = state.userMicronutrients!
           .map(
@@ -693,7 +697,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   }
 
   List<dynamic> getEventsForDay(DateTime dateTime) {
-    return _eventsHelper.getEventsFromGivenDate(state.allCalendarEvents!, dateTime);
+    return _eventsHelper.foundEventsFromGivenDate(state.allCalendarEvents!, dateTime);
   }
 
   double calculateTodayCreatineFill(UploadSupplementEvent todayCreatine) {

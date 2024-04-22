@@ -286,8 +286,8 @@ class LocalStorageImpl extends LocalStorageRepository {
       return box.values.toList();
     });
 
-    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMillisecondsFromDateTime(dateTime);
-    return allFoodEvents.where((foodEvent) => foodEvent.eventDate! > midnightTime).toList();
+    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+    return allFoodEvents.where((foodEvent) => DateTimeHelper.calculateMidNightMillisecondsFromInt(foodEvent.eventDate!) == midnightTime).toList();
   }
 
   @override
@@ -331,8 +331,8 @@ class LocalStorageImpl extends LocalStorageRepository {
       return box.values.toList();
     });
 
-    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMillisecondsFromDateTime(dateTime);
-    return allSportEvents.where((sportEvent) => sportEvent.eventDate! > midnightTime).toList();
+    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+    return allSportEvents.where((sportEvent) => DateTimeHelper.calculateMidNightMillisecondsFromInt(sportEvent.eventDate!) == midnightTime).toList();
   }
 
   @override
@@ -351,8 +351,8 @@ class LocalStorageImpl extends LocalStorageRepository {
       return box.values.toList();
     });
 
-    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMillisecondsFromDateTime(dateTime);
-    return allLiquidEvents.where((liquidEvent) => liquidEvent.eventDate! > midnightTime).toList();
+    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+    return allLiquidEvents.where((liquidEvent) => DateTimeHelper.calculateMidNightMillisecondsFromInt(liquidEvent.eventDate!) == midnightTime).toList();
   }
 
   @override
@@ -388,8 +388,8 @@ class LocalStorageImpl extends LocalStorageRepository {
       return box.values.toList();
     });
 
-    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMillisecondsFromDateTime(dateTime);
-    return allWaterEvents.where((waterEvent) => waterEvent.eventDate! > midnightTime).toList();
+    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+    return allWaterEvents.where((waterEvent) => DateTimeHelper.calculateMidNightMillisecondsFromInt(waterEvent.eventDate!) == midnightTime).toList();
   }
 
   @override
@@ -1130,23 +1130,41 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<UploadSupplementEventEntity?> getCreatineTodayEvent() async {
+  Future<UploadSupplementEventEntity?> getCreatineTodayEvent({DateTime? dateTime}) async {
     List allCreatineEvents = await _getCreatineEventsBox.then((box) {
       return box.values.toList();
     },);
 
-    final midnightTime = DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch;
+    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
     return allCreatineEvents.firstWhere((creatineEntity) => creatineEntity.eventId == midnightTime, orElse: () => null,);
   }
 
   @override
-  Future<UploadSupplementEventEntity?> getCollagenTodayEvent() async {
-    List allCreatineEvents = await _getCollagenEventsBox.then((box) {
+  Future<UploadSupplementEventEntity?> getCollagenTodayEvent({DateTime? dateTime}) async {
+    List allCollagenEvents = await _getCollagenEventsBox.then((box) {
       return box.values.toList();
     },);
 
-    final midnightTime = DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch;
-    return allCreatineEvents.firstWhere((creatineEntity) => creatineEntity.eventId == midnightTime, orElse: () => null,);
+    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+    return allCollagenEvents.firstWhere((creatineEntity) => creatineEntity.eventId == midnightTime, orElse: () => null,);
+  }
+
+  @override
+  Future<List> getAllCreatineEvents() async {
+    List allCreatineEvents = await _getCreatineEventsBox.then((box) {
+      return box.values.toList();
+    },);
+
+    return allCreatineEvents;
+  }
+
+  @override
+  Future<List> getAllCollagenEvents() async {
+    List allCollagenEvents = await _getCollagenEventsBox.then((box) {
+      return box.values.toList();
+    },);
+
+    return allCollagenEvents;
   }
 
 }
