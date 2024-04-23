@@ -186,11 +186,12 @@ class _FoodEventItemState extends State<FoodEventItem> {
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge),
                 child: Row(
                   children: [
-                    Text(
-                      widget.options,
-                      style: const TextStyle(fontSize: Dimens.fontSizeMedium),
+                    Expanded(
+                      child: Text(
+                        widget.options,
+                        style: const TextStyle(fontSize: Dimens.fontSizeMedium),
+                      ),
                     ),
-                    const Spacer(),
                     InkWell(
                       onTap: () => widget.onRemove.call(),
                       child: const Icon(Icons.cancel_outlined),
