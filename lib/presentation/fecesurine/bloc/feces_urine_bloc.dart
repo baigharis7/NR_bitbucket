@@ -55,6 +55,8 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
       state.urinesList = Urines.listOfAllUrines();
       state.fecesEvents = await getFecesEventsInteractor.execute();
       state.urineEvents = await getUrineEventsInteractor.execute();
+      state.facesDayEvents = state.fecesEvents;
+      state.urineDayEvents = state.urineEvents;
 
       emit(state.copyWith(isLoading: false));
     });
