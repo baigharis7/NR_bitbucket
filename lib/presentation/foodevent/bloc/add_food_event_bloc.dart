@@ -353,7 +353,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
 
   bool? validateList() {
      return state.foodsInEvent?.any((food) {
-      return food.qty <= 0;
+      return food.qty <= 0 || food.unit == -1;
     },);
   }
 

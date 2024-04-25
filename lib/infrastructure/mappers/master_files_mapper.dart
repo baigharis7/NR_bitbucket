@@ -152,7 +152,8 @@ UnitsInfoEntity mapToUnitsInfoEntity(UnitsInfoResponse unitsInfoResponse) {
 
 UnitsInfoMaster mapToUnitsInfoMaster(UnitsInfoEntity unitsInfoEntity) {
   List<UnitInfoMaster> unitsInfoMaster = unitsInfoEntity.data.map((item) => UnitInfoMaster(id: item.id, en: item.en, es: item.es)).toList();
-  unitsInfoMaster.add(UnitInfoMaster(id: -1, en: 'grams', es: 'gramos'));
+  unitsInfoMaster.add(UnitInfoMaster(id: -1, en: 'select', es: 'seleccionar'));
+  unitsInfoMaster.add(UnitInfoMaster(id: -2, en: 'grams', es: 'gramos'));
   return UnitsInfoMaster(unitsInfoMaster: unitsInfoMaster);
 }
 

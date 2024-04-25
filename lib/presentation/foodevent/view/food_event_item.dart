@@ -93,7 +93,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
         .units;
     List<SimpleItem> unitsList = [];
 
-    units = units.isEmpty ? '-1,1' : units + '|-1,1';
+    units = units.isEmpty ? '-1,1|-2,2' : units.replaceRange(0, 0, '-1,1|-2,2|');
     if (units.isNotEmptyOrNull()) {
       unitsList.addAll(
         units.split('|').map((unit) {
@@ -111,8 +111,8 @@ class _FoodEventItemState extends State<FoodEventItem> {
 
   String findUnitName(BuildContext context, int unitId) {
     /** REMOVE THIS AFTER NEXT LOGIN*/
-    widget.unitsInfoMaster.unitsInfoMaster
-        .add(UnitInfoMaster(id: -1, en: 'grams', es: 'gramos'));
+    // widget.unitsInfoMaster.unitsInfoMaster
+    //     .add(UnitInfoMaster(id: -1, en: 'grams', es: 'gramos'));
     final unitInfo = widget.unitsInfoMaster.unitsInfoMaster.firstWhere(
         (unitInfo) => unitInfo.id == unitId,
         orElse: () => UnitInfoMaster.empty());
@@ -167,7 +167,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
       ingredient.unit = widget.foodInEvent.unit;
     // }
 
-    _error = widget.foodInEvent.qty == 0 || _cookingMethodName.isNull();
+    _error = widget.foodInEvent.qty == 0 || _cookingMethodName.isNull() || widget.foodInEvent.unit == -1;
     // _error = widget.foodInEvent.qty == 0 || widget.foodInEvent.unit == 0;
     // _error = widget.foodInEvent.qty == 0 || widget.foodInEvent.unit == -1 || widget.foodInEvent.cookingMethod == -1;
 
@@ -242,6 +242,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                                       BorderSide(color: Colors.black54, width: 1))),
                               child: DropdownButton<String>(
                                 isExpanded: true,
+                                underline: Container(),
                                 icon: const Icon(Icons.arrow_drop_down),
                                 value: _unitName,
                                 onChanged: (String? unit) {
@@ -259,7 +260,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                                         child: SizedBox(
                                           child: Text(
                                             item.name,
-                                            overflow: TextOverflow.ellipsis,
+                                            // overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(
                                               fontSize: Dimens.fontSizeNormal,
                                             ),
