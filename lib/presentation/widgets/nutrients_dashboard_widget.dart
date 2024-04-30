@@ -12,8 +12,6 @@ class NutrientsDashboardWidget extends StatefulWidget {
   final List<NutrientsModel> nutrients;
   final bool isEmpty;
   final Function? screenToMove;
-  final Function? onMinusClick;
-  final Function? onPlusClick;
 
   const NutrientsDashboardWidget({
     Key? key,
@@ -21,8 +19,6 @@ class NutrientsDashboardWidget extends StatefulWidget {
     required this.title,
     required this.isEmpty,
     this.screenToMove,
-    this.onMinusClick,
-    this.onPlusClick,
   }) : super(key: key);
 
   @override
@@ -44,12 +40,14 @@ class _NutrientsDashboardWidgetState extends State<NutrientsDashboardWidget> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      widget.title,
-                      style: const TextStyle(
-                        fontSize: Dimens.fontSizeNormal,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Text(
+                        widget.title,
+                        style: const TextStyle(
+                          fontSize: Dimens.fontSizeNormal,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     if (widget.screenToMove != null) Container(
@@ -104,17 +102,9 @@ class _NutrientsDashboardWidgetState extends State<NutrientsDashboardWidget> {
                                     Container(
                                       alignment: Alignment.center,
                                       margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
-                                      child: Row(
-                                        children: [
-                                          if (widget.onMinusClick != null) InkWell(onTap: () => widget.onMinusClick?.call(), child: Image.asset('assets/images/water_minus.png', height: 15,  color: Colors.black)),
-                                          Expanded(
-                                            child: Text(textAlign: TextAlign.center,
-                                              '${(nutrient.quantityConsumed)} ${nutrient.unit}',
-                                              style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
-                                            ),
-                                          ),
-                                          if (widget.onPlusClick != null) InkWell(onTap: () => widget.onPlusClick?.call(), child: Image.asset('assets/images/water_plus.png', height: 15, color: Colors.black,)),
-                                        ],
+                                      child: Text(textAlign: TextAlign.center,
+                                        '${(nutrient.quantityConsumed)} ${nutrient.unit}',
+                                        style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
                                       ),
                                     ),
                                   ],),

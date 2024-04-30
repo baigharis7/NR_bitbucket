@@ -27,6 +27,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/card_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/dashboard_calendar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/energy_balance_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/expandable_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/liquids_summary_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_widget.dart';
@@ -162,11 +163,20 @@ class _DashboardScreen extends State<DashboardScreen>
                           energyModel: state.energyModel,
                           screenToMove: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: state.energyModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                         ),
-                        NutrientsDashboardWidget(
-                          title: AppLocalizations.of(context)!.micronutrients,
-                          nutrients: state.micronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList(),
+                        ExpandableWidget(
+                            titleClick: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
+                            title: AppLocalizations.of(context)!.micronutrients, nutrientsList: state.micronutrients.orEmpty()),
+                        // NutrientsDashboardWidget(
+                        //   title: AppLocalizations.of(context)!.micronutrients,
+                        //   nutrients: state.micronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList(),
+                        //   isEmpty: false,
+                        //   screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
+                        // ),
+                        WeeklyRDANutrientsDashboardWidget(
+                          title: AppLocalizations.of(context)!.weekly_nutrients,
+                          nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,
                           isEmpty: false,
-                          screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
+                          screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                         ),
                         NutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.macronutrients,
@@ -174,12 +184,6 @@ class _DashboardScreen extends State<DashboardScreen>
                           // isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
                           isEmpty: false,
                           screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
-                        ),
-                        WeeklyRDANutrientsDashboardWidget(
-                          title: AppLocalizations.of(context)!.weekly_nutrients,
-                          nutrients: state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList(),
-                          isEmpty: false,
-                          screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                         ),
                         SizedBox(
                           height: 200,

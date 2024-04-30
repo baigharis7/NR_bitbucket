@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/add_food_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
@@ -21,6 +22,7 @@ import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
 import 'package:remove_diacritic/remove_diacritic.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 // TODO: tengo que poner lo de las bebidas en algún sitio.
 class AddFoodEventScreen extends StatefulWidget {
@@ -35,7 +37,21 @@ class AddFoodEventScreen extends StatefulWidget {
 class _AddFoodEventState extends State<AddFoodEventScreen> {
   late AddFoodEventBloc bloc;
   TextEditingController _foodInputController = TextEditingController();
+  TextEditingController _testController = TextEditingController();
   late FocusNode _focusInputController;
+  int filteredListLength = 0;
+
+  static const List<String> _fruitOptions = <String>[
+    'apple',
+    'banana',
+    'orange',
+    'mango',
+    'grapes',
+    'watermelon',
+    'kiwi',
+    'strawberry',
+    'sugarcane',
+  ];
 
   // TODO: si esto permanece se puede convertir en un widget en un momento.
   void _showConfirmationDialog(BuildContext context) {
@@ -216,6 +232,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                 ),
                                 controller: textEditingController,
                                 focusNode: focusNode,
+                                buildCounter: (context, {required currentLength, required isFocused, maxLength}) => _foodInputController.text.isNotEmptyOrNull() && _foodInputController.text.length > 2 ? Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal), child: Text('$filteredListLength: ' '${filteredListLength > 1 ? AppLocalizations.of(context)!.items_found : AppLocalizations.of(context)!.item_found}',)) : Container(),
                                 onChanged: (value) => setState(() {
                                   textEditingController;
                                 }),
@@ -223,9 +240,11 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                             },
                             optionsBuilder: (TextEditingValue textEditingValue) {
                               if (textEditingValue.text == '' || textEditingValue.text.length < 3) return const Iterable<String>.empty();
-                              return state.foodNames!.foodsAndDrinksNames!.foodNames!
+                              final filteredList =  state.foodNames!.foodsAndDrinksNames!.foodNames!
                                   .map((item) => item.translate(context))
                                   .where((String option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                              filteredListLength = filteredList.length;
+                              return filteredList;
                               // remove spanish accent to simple english
                               //     .where((String option) => removeDiacritics(option).toLowerCase().contains(textEditingValue.text.toLowerCase()));
 

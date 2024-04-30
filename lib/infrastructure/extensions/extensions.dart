@@ -311,6 +311,25 @@ extension LanguageSelectorr<T> on T {
   }
 }
 
+extension LanguageSelectorrr<T> on T {
+  String foodSuggestion(BuildContext context) {
+    if (this is Translatable) {
+      String language = Localizations.localeOf(context).languageCode;
+      if (this is NutrientInfoMaster) {
+        if (language == 'es') {
+          return (this as NutrientInfoMaster).foods_es.orEmpty();
+        } else {
+          return (this as NutrientInfoMaster).foods_en.orEmpty();
+        }
+      } else {
+        return '';
+      }
+    } else {
+      return '';
+    }
+  }
+}
+
 extension GetAllFoodNames on FoodsAndDrinkListsMaster {
   List<FoodItemMaster> getFoodsAndDrinkNamesOrEmpty() => [...drinkNames!.toList(), ...foodNames!.toList()];
 }

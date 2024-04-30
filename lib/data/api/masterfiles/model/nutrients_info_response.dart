@@ -21,8 +21,10 @@ class NutrientInfoResponse {
   String name_en;
   String? description_es;
   String? description_en;
+  String? foods_es;
+  String? foods_en;
 
-  NutrientInfoResponse({required this.officialName, required this.unit, required this.name_es, required this.name_en, this.description_es, this.description_en});
+  NutrientInfoResponse({required this.officialName, required this.unit, required this.name_es, required this.name_en, this.description_es, this.description_en, this.foods_es, this.foods_en});
 
   factory NutrientInfoResponse.fromJson(Map<String, dynamic> json) => _$NutrientInfoResponseFromJson(json);
   Map<String, dynamic> toJson() => _$NutrientInfoResponseToJson(this);

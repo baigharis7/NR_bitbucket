@@ -87,6 +87,10 @@ class _MicroNutrientDetailWidgetState extends State<MicroNutrientDetailWidget> {
             if (widget.nutrientsModel.nutrientInfoMaster.translateDescription(context).isNotEmptyOrNull()) Container(
               margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge, horizontal: Dimens.marginXLarge),
               child: Text(widget.nutrientsModel.nutrientInfoMaster.translateDescription(context)),),
+            if (widget.nutrientsModel.nutrientInfoMaster.foodSuggestion(context).isNotEmptyOrNull()) Container(
+              alignment: Alignment.centerLeft,
+              margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall, horizontal: Dimens.marginXLarge),
+              child: Text(widget.nutrientsModel.nutrientInfoMaster.foodSuggestion(context)),),
           ],
         ),
       ),

@@ -70,7 +70,7 @@ class SplashProvider extends ChangeNotifier {
   }
 
   Future<void> doAccordingToToken(Function toLogin, Function toDashboard, UserProfileModel? profile) async {
-    if (idToken == '' || isTokenExpired(idToken.orEmpty())  || profile.isNull() || (profile!.objectives.orEmpty().isEmpty && profile.physicalCharacteristics.isNull())) {
+    if (/*idToken == '' || isTokenExpired(idToken.orEmpty())  || */profile.isNull() || (profile!.objectives.orEmpty().isEmpty && profile.physicalCharacteristics.isNull())) {
       toLogin.call();
     } else {
       toDashboard.call();
