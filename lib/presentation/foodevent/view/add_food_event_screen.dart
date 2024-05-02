@@ -20,9 +20,9 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 
 import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
+import '../../../infrastructure/helpers/remove_diac.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
-import 'package:remove_diacritic/remove_diacritic.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
+// import 'package:remove_diacritic/remove_diacritic.dart';
 
 // TODO: tengo que poner lo de las bebidas en algún sitio.
 class AddFoodEventScreen extends StatefulWidget {
@@ -37,21 +37,9 @@ class AddFoodEventScreen extends StatefulWidget {
 class _AddFoodEventState extends State<AddFoodEventScreen> {
   late AddFoodEventBloc bloc;
   TextEditingController _foodInputController = TextEditingController();
-  TextEditingController _testController = TextEditingController();
   late FocusNode _focusInputController;
   int filteredListLength = 0;
 
-  static const List<String> _fruitOptions = <String>[
-    'apple',
-    'banana',
-    'orange',
-    'mango',
-    'grapes',
-    'watermelon',
-    'kiwi',
-    'strawberry',
-    'sugarcane',
-  ];
 
   // TODO: si esto permanece se puede convertir en un widget en un momento.
   void _showConfirmationDialog(BuildContext context) {
@@ -231,8 +219,8 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                   ),
                                 ),
                                 controller: textEditingController,
-                                focusNode: focusNode,
                                 buildCounter: (context, {required currentLength, required isFocused, maxLength}) => _foodInputController.text.isNotEmptyOrNull() && _foodInputController.text.length > 2 ? Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal), child: Text('$filteredListLength: ' '${filteredListLength > 1 ? AppLocalizations.of(context)!.items_found : AppLocalizations.of(context)!.item_found}',)) : Container(),
+                                focusNode: focusNode,
                                 onChanged: (value) => setState(() {
                                   textEditingController;
                                 }),
@@ -242,14 +230,11 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               if (textEditingValue.text == '' || textEditingValue.text.length < 3) return const Iterable<String>.empty();
                               final filteredList =  state.foodNames!.foodsAndDrinksNames!.foodNames!
                                   .map((item) => item.translate(context))
-                                  .where((String option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                                  // .where((String option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                              // remove spanish accent to simple english
+                                  .where((String option) => removeDiacritics(option).toLowerCase().contains(removeDiacritics(textEditingValue.text.toLowerCase())));
                               filteredListLength = filteredList.length;
                               return filteredList;
-                              // remove spanish accent to simple english
-                              //     .where((String option) => removeDiacritics(option).toLowerCase().contains(textEditingValue.text.toLowerCase()));
-
-                              // return state.foodNames!.foodsAndDrinksNames!.foodNames!.where((element) => removeDiacritics(element.translate(context).toLowerCase()).contains(removeDiacritics(textEditingValue.text).toLowerCase())).map((e) => e.translate(context)).toList();
-
                             },
                             onSelected: (option) {
                               // TODO: manage possible errors
@@ -269,6 +254,33 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               //   ),
                               //   option,
                               // );
+                            },
+                            optionsViewBuilder: (context, onSelected, options) {
+                              return Align(
+                                alignment: Alignment.topLeft,
+                                child: Material(
+                                  elevation: 4.0,
+                                  child: Container(
+                                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - Dimens.margin_60, maxHeight: Dimens.heightXXLarge), // Adjust the width as needed
+                                    child: Scrollbar(
+                                      thumbVisibility: true,
+                                      child: ListView(
+                                        children: ListTile.divideTiles(
+                                          context: context,
+                                          tiles: options.map((String option) {
+                                            return ListTile(
+                                              title: Text(option),
+                                              onTap: () {
+                                                onSelected(option);
+                                              },
+                                            );
+                                          }),
+                                        ).toList(),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
                             },
                           ),
                           Column(
