@@ -178,7 +178,7 @@ class AppLocalizationsHelper {
       'high_dehydration' : 'Deshidratación alta',
       'height_cm' : 'Altura (cm)',
       'weight_kg':'Peso (kg)',
-      'height_feet' : 'Altura (feet)',
+      'height_feet' : 'Altura (Pulgadas)',
       'weight_lb':'Peso (lb)',
     },
   };

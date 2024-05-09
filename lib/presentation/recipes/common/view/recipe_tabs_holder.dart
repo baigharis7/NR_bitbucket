@@ -77,16 +77,16 @@ class _RecipesTabsHolderState extends State<RecipesTabsHolder>
               ),
             ),
             centerTitle: true,
-            bottom: TabBar(
-              controller: _tabController,
-              // onTap: (index) => _manageTabChange(context),
-              labelColor: Colors.black,
-              indicatorColor: Colors.black,
-              tabs: [
-                Tab(text: AppLocalizations.of(context)!.discover.toUpperCase()),
-                Tab(text: AppLocalizations.of(context)!.my_recipes.toUpperCase()),
-              ],
-            ),
+            // bottom: TabBar(
+            //   controller: _tabController,
+            //   // onTap: (index) => _manageTabChange(context),
+            //   labelColor: Colors.black,
+            //   indicatorColor: Colors.black,
+            //   tabs: [
+            //     Tab(text: AppLocalizations.of(context)!.discover.toUpperCase()),
+            //     Tab(text: AppLocalizations.of(context)!.my_recipes.toUpperCase()),
+            //   ],
+            // ),
           ),
           body: BlocConsumer<RecipeTabBloc, RecipeTabState>(
             listener: (ctx, state) {
@@ -100,13 +100,14 @@ class _RecipesTabsHolderState extends State<RecipesTabsHolder>
               }
               if (!state.onError.isNull()) showErrorSnackBar(ctx, resolveError(context, state.onError!));
             },
-            builder: (context, state) => TabBarView(
+            builder: (context, state) => Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0,), color: Colors.black,), child: Center(child: Text(AppLocalizations.of(context)!.coming_soon, style: const TextStyle(color: Colors.white),),)),
+            /*TabBarView(
               controller: _tabController,
               children: const [
                 DiscoverTab(),
                 RecipesTab(),
               ],
-            ),
+            ),*/
           ),
           bottomNavigationBar: const CustomBottomNaviBarWidget(
               activePosition: Constants.RECIPES,),

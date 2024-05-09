@@ -163,15 +163,15 @@ class _DashboardScreen extends State<DashboardScreen>
                           energyModel: state.energyModel,
                           screenToMove: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: state.energyModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                         ),
-                        ExpandableWidget(
-                            titleClick: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
-                            title: AppLocalizations.of(context)!.micronutrients, nutrientsList: state.micronutrients.orEmpty()),
-                        // NutrientsDashboardWidget(
-                        //   title: AppLocalizations.of(context)!.micronutrients,
-                        //   nutrients: state.micronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList(),
-                        //   isEmpty: false,
-                        //   screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
-                        // ),
+                        // ExpandableWidget(
+                        //     titleClick: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
+                        //     title: AppLocalizations.of(context)!.micronutrients, nutrientsList: state.micronutrients.orEmpty()),
+                        NutrientsDashboardWidget(
+                          title: AppLocalizations.of(context)!.micronutrients,
+                          nutrients: state.micronutrients.orEmpty().toList(),
+                          isEmpty: false,
+                          screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
+                        ),
                         WeeklyRDANutrientsDashboardWidget(
                           title: AppLocalizations.of(context)!.weekly_nutrients,
                           nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,

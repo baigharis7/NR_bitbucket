@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -19,10 +17,7 @@ import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile
 import 'package:nutrenaissance_flutter/presentation/widgets/centered_icon_box.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_button_1.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/simple_text_field_dialog.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/text_value_icon_box.dart';
 
-import '../../../infrastructure/helpers/toast_helper.dart';
 import '../../widgets/text_field_general_quest.dart';
 
 class GeneralQuestionsScreen extends StatefulWidget {
@@ -149,7 +144,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                   // );
                                 }, decoration: InputDecoration(
                                         errorMaxLines: 2,
-                                        hintText: state.profile!.birthDate == null ? AppLocalizations.of(ctx)!.birthday_question : DateFormat('yyyy/MM/dd').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.birthDate!)),),
+                                        hintText: state.profile!.birthDate == null ? AppLocalizations.of(ctx)!.birthday_question : DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.birthDate!)),),
                                 validator: (value) => state.profile?.birthDate?.isNull() ?? true ? AppLocalizations.of(context)!.must_complete_field : null,),
                               ),
                             ),
@@ -249,6 +244,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                 horizontal: Dimens.marginNormal,
                                 vertical: Dimens.marginNormal,
                               ),child: Text(AppLocalizations.of(context)!.must_complete_field+':', style: const TextStyle(color: Colors.red,),textAlign: TextAlign.start)),
+                              const SizedBox(height: Dimens.heightXXSmall),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -297,6 +293,61 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                               periodRegularity:
                                                   MenstruationRegularity
                                                       .irregular.index));
+                                        },
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: Dimens.heightXSmall),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      margin: const EdgeInsets.only(
+                                          left: Dimens.marginNormal,
+                                          right: Dimens.marginSmall),
+                                      child: CustomButton1(
+                                        message:
+                                            AppLocalizations.of(context)!.menopause,
+                                        isSelected: state
+                                                .profile!
+                                                .femaleCharacteristics!
+                                                .menstruation!
+                                                .regularity ==
+                                            MenstruationRegularity.menopause.index,
+                                        action: () {
+                                          bloc.add(SetPeriodRegularityAction(
+                                              periodRegularity:
+                                                  MenstruationRegularity
+                                                      .menopause.index));
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      margin: const EdgeInsets.only(
+                                          right: Dimens.marginNormal,
+                                          left: Dimens.marginSmall),
+                                      child: CustomButton1(
+                                        message: AppLocalizations.of(context)!
+                                            .without_period,
+                                        isSelected: state
+                                                .profile!
+                                                .femaleCharacteristics!
+                                                .menstruation!
+                                                .regularity ==
+                                            MenstruationRegularity
+                                                .withoutPeriod.index,
+                                        action: () {
+                                          bloc.add(SetPeriodRegularityAction(
+                                              periodRegularity:
+                                                  MenstruationRegularity
+                                                      .withoutPeriod.index));
                                         },
                                       ),
                                     ),

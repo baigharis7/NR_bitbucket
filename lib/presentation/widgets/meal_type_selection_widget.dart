@@ -24,18 +24,19 @@ class _MealTypeSelectionWidgetState extends State<MealTypeSelectionWidget> {
         ...MealTime.getAllMealTimes().map(
           (mealTime) => BoxTypeRadioTextWidget(
             onPressed: () {
-              mealType = mealTime.id ?? -1;
-              setState(() {});
+              // mealType = mealTime.id ?? -1;
+              widget.onSaveMealType.call(mealTime.id ?? -1);
+              // setState(() {});
             },
             isSelected: mealType == mealTime.id,
             title: mealTime.name ?? '',
           ),
         ),
-        RoundedCustomButton(
-          onPressed: () {
-            if (mealType != -1) widget.onSaveMealType.call(mealType);
-          },
-        ),
+        // RoundedCustomButton(
+        //   onPressed: () {
+        //     if (mealType != -1) widget.onSaveMealType.call(mealType);
+        //   },
+        // ),
       ],
     );
   }

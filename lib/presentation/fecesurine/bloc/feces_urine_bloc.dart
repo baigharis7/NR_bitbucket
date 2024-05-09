@@ -80,6 +80,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
     );
 
     on<UploadFecesEventAction>((event, emit) async {
+      if (state.fecesId.isNull()) return;
       emit(state.copyWith(isLoading: true));
       UploadFeces uploadFeces = UploadFeces(
           userId: getUserIdInteractor.execute(),
@@ -102,6 +103,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
     },);
 
     on<UploadUrineEventAction>((event, emit) async {
+      if (state.urineId.isNull()) return;
       emit(state.copyWith(isLoading: true));
       UploadFeces uploadUrine = UploadFeces(
         userId: getUserIdInteractor.execute(),

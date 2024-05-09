@@ -4,7 +4,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 class ExplainingCard extends StatelessWidget {
   final String upperText;
-  final Function onHideCard;
+  final Function? onHideCard;
   final String? lowerText;
   final String? buttonText;
   final Function? onPressedButton;
@@ -12,7 +12,7 @@ class ExplainingCard extends StatelessWidget {
   const ExplainingCard({
     Key? key,
     required this.upperText,
-    required this.onHideCard,
+    this.onHideCard,
     this.lowerText,
     this.buttonText,
     this.onPressedButton,
@@ -97,12 +97,12 @@ class ExplainingCard extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
+          if (!onHideCard.isNull()) Expanded(
             flex: 2,
             child: Container(
               margin: const EdgeInsets.only(right: Dimens.marginNormal, bottom: Dimens.marginNormal),
               child: IconButton(
-                onPressed: () =>onHideCard.call(),
+                onPressed: () => onHideCard?.call(),
                 icon: Icon(
                   Icons.clear,
                   size: 28,

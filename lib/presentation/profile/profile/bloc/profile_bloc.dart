@@ -351,8 +351,8 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         femaleCharacteristics = FemaleCharacteristics(
           menstruation: Menstruation(
             regularity: state.profile?.femaleCharacteristics?.menstruation?.regularity ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
-            daysOfCycle: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile?.femaleCharacteristics?.menstruation?.daysOfCycle ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
-            lastStartDate: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.lastStartDate,
+            daysOfCycle: state.profile!.femaleCharacteristics!.menstruation!.regularity != MenstruationRegularity.regular.index ? null : state.profile?.femaleCharacteristics?.menstruation?.daysOfCycle ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
+            lastStartDate: state.profile!.femaleCharacteristics!.menstruation!.regularity != MenstruationRegularity.regular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.lastStartDate,
           ),
         );
       } else {

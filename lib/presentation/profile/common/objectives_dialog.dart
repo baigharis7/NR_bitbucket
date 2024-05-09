@@ -69,24 +69,6 @@ class _ObjectivesDialogState extends State<ObjectivesDialog> {
                         ),
                       ),
                       Column(crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
-                            child: const Text('', style: TextStyle(
-                              fontSize: Dimens.fontSizeNormal,
-                              fontWeight: FontWeight.bold,
-                            ),)),
-                        ...state.objectivesInfoMaster!.objectives.map((objective) =>
-                            TextCheckboxBox(
-                              title: objective.translate(context),
-                              checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
-                              onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
-                              overflow: TextOverflow.clip,
-                            ),
-                        ).toList(),
-                      ],
-                    ),
-                      Column(crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
                               margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
@@ -117,6 +99,24 @@ class _ObjectivesDialogState extends State<ObjectivesDialog> {
                                 title: objective.translate(context),
                                 isSelected: state.profile!.objectives.orEmpty().contains(objective.id),
                                 onPressed: () => bloc.add(AddRadioObjectiveToListAction(id: objective.id)),
+                              ),
+                          ).toList(),
+                        ],
+                      ),
+                      Column(crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
+                              child: Text(AppLocalizations.of(context)!.other_objectives, style: const TextStyle(
+                                fontSize: Dimens.fontSizeNormal,
+                                fontWeight: FontWeight.bold,
+                              ),)),
+                          ...state.objectivesInfoMaster!.objectives.map((objective) =>
+                              TextCheckboxBox(
+                                title: objective.translate(context),
+                                checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
+                                onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
+                                overflow: TextOverflow.clip,
                               ),
                           ).toList(),
                         ],

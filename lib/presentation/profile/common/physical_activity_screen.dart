@@ -69,7 +69,7 @@ class _PhysicalActivityScreen extends State<PhysicalActivityScreen> {
                               ),
                             ),
                           ),
-                          Image.asset('assets/icon/sport_icon.png')
+                          // Image.asset('assets/icon/sport_icon.png')
                         ],
                       ),
                     ),

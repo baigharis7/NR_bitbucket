@@ -114,7 +114,7 @@ class _MicroNutrientsDetailScreenState
               Container(
                 width: double.infinity,
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginXSmall, horizontal: Dimens.marginLarge),
-                child: Text((AppLocalizations.of(context)!.micronutrients), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium),),
+                child: Text((AppLocalizations.of(context)!.micronutrients_achieve_object), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium),),
               ),
               Expanded(
                 child: SingleChildScrollView(

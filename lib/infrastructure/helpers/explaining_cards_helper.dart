@@ -8,7 +8,7 @@ class ExplainingCardsHelper {
   ExplainingCard getExplainingCardWithId({
     required BuildContext context,
     required int explainingCardId,
-    required Function onHideCard,
+    Function? onHideCard,
     Function? onPressedButton,
   }) {
     final _textResolver = AppLocalizations.of(context)!;
@@ -83,7 +83,7 @@ class ExplainingCardsHelper {
       lowerText: lowerText,
       buttonText: buttonText,
       onPressedButton: () => onPressedButton?.call(),
-      onHideCard: () => onHideCard.call(),
+      onHideCard: onHideCard != null ? () => onHideCard.call() : null,
     );
   }
 

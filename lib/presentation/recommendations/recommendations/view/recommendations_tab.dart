@@ -60,7 +60,7 @@ class _RecommendationsTabState extends State<RecommendationsTab> {
                 if (state.showRecommendationCard != null && state.showRecommendationCard!) ExplainingCardsHelper().getExplainingCardWithId(
                   context: context,
                   explainingCardId: ExplainingCardRefs.recommendations.index,
-                  onHideCard: () => bloc.add(HideRecommendationsExplainingCardAction()),
+                  // onHideCard: () => bloc.add(HideRecommendationsExplainingCardAction()),
                 ),
                 Container(
                   margin: const EdgeInsets.only(top: Dimens.marginNormal),
