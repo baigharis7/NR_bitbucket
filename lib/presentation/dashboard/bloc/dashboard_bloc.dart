@@ -139,6 +139,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo,);
       state.profile = await getProfileInteractor.execute();
+      if (state.profile?.physicalCharacteristics?.unit == 'feet - lb') {
+        state.profile?.physicalCharacteristics?.weight = (state.profile?.physicalCharacteristics?.weight ?? 0) / 2.20462;
+      }
       state.userKcal = getUserKcalSelectiveObjectives(state.profile?.kcal ?? 0);
       state.isMenstruation = state.profile?.objectives?.contains(Constants.DURING_MENSTRUATION);
       state.isCold = state.profile?.objectives?.contains(Constants.IMPROVE_THE_IMMUNE_SYSTEM);
@@ -202,7 +205,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           nutrientInfoMaster: getNutrientInfo(nutrientRda.name),
           fractionToFill: getWeeklyFractionFill(nutrientRda),
           unit: getUnitForMicronutrient(nutrientRda.name),
-          rda: double.parse((nutrientRda.rda * 7).toStringAsFixed(2)),),).toList();
+          rda: double.parse((getNutrientRda(nutrientRda.name) * 7).toStringAsFixed(2)),),).toList();
       // state.supplements = [SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement()), SupplementInfo('Collagen', 'Colágeno', todayCollagen, 10),];
       state.todayCreatineSupplement = SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement());
       state.todayCollagenSupplement = SupplementInfo('Collagen peptides', 'Péptidos de colágeno', todayCollagen, 10);
@@ -436,6 +439,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
           rda = (state.profile?.sex == SexType.male) ? 220: 190;
         }
+        if (userRda.name == Constants.TRYPTOPHAN) {
+          rda = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
+        }
         break loop;
       }
     }
@@ -644,7 +650,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   }
 
   getWeeklyFractionFill(UserRda nutrientRda) {
-    final perRdaForUser = state.userRdas!.firstWhere((rda) => rda.name == nutrientRda.name).rda;
+    final perRdaForUser = getNutrientRda(nutrientRda.name);
     double weeklyNutrientQuantitySoFar = 0.0;
     for (var foodEvent in state.weeklyFoodEvents!) {
       for (var food in foodEvent.foodInfo!) {
@@ -688,11 +694,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   num userRdaforSupplement() {
     num creatine = 0.0;
-    double userWeight = state.profile?.physicalCharacteristics?.weight ?? 0;
-    if (state.profile?.physicalCharacteristics?.unit == 'feet - lb') {
-      userWeight = userWeight / 2.20462;
-    }
-    creatine = 0.08 * userWeight;
+    creatine = 0.08 * (state.profile?.physicalCharacteristics?.weight ?? 0);
     return double.parse(creatine.toStringAsFixed(2));
   }
 

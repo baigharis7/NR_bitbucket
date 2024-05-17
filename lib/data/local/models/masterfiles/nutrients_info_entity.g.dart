@@ -85,9 +85,9 @@ class NutrientInfoEntityAdapter extends TypeAdapter<NutrientInfoEntity> {
       ..writeByte(5)
       ..write(obj.description_en)
       ..writeByte(6)
-      ..write(obj.description_es)
+      ..write(obj.foods_es)
       ..writeByte(7)
-      ..write(obj.description_en);
+      ..write(obj.foods_en);
   }
 
   @override

@@ -91,7 +91,7 @@ class EventsHelper {
         for (var foodEvent in foodEvents) {
           for (var eventInfo in foodEvent.foodInfo.orEmpty()) {
             if (eventInfo.id == Constants.TAP_WATER_ID) {
-              amount = amount + (((eventInfo.eventInfo?.qty ?? 0) * Constants.DEFAULT_ADD_WATER_QUANTITY));
+              amount = amount + (((eventInfo.eventInfo?.qty ?? 0)/1000));
             }
           }
         }

@@ -36,11 +36,14 @@ class Constants {
   static const IMPROVE_HUMAN_SYSTEM = 'Improve the immune system';
   static const FREE_SUGAR = '1';
   static const VITAMIN_C = 'vitC';
+  static const TRYPTOPHAN = 'tryptophan';
+  static const BACK = 'Back';
   static const DURING_MENSTRUATION = 28;
   static const IMPROVE_THE_IMMUNE_SYSTEM = 18;
   static const IMPROVE_SPORT_PERFORMANCE = 47;
   static const REDUCE_RISK_OF_INJURY = 48;
   static const RECOVERY_AFTER_SPORT_INJURY = 49;
+  static const TRYPTOPHAN_MG_PER_KG = 3.5;
 
   //Navigation id's
   static const DASHBOARD = 0;

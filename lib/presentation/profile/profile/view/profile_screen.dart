@@ -162,7 +162,9 @@ class _ProfileScreen extends State<ProfileScreen> {
                         fractionToFill: bloc.getPhysicalCharacteristicsFillPercentage(),
                         height: 9,
                       ),
-                      onAdd: () => Navigator.pushNamed(context, GeneralQuestionsScreen.routeName).then((_) => bloc.add(SaveChangesAction())),
+                      onAdd: () => Navigator.pushNamed(context, GeneralQuestionsScreen.routeName).then((value) {
+                        if (value.toString() != Constants.BACK) bloc.add(SaveChangesAction());
+                      }),
                     ),
                     ProfileOptionWithGraphicAndAdd(
                       title: AppLocalizations.of(context)!.medical_history,
@@ -186,7 +188,9 @@ class _ProfileScreen extends State<ProfileScreen> {
                         fractionToFill: bloc.getPhysicalCharacteristicsFillPercentage(),
                         height: 9,
                       ),
-                      onAdd: () => Navigator.pushNamed(context, PhysicalActivityScreen.routeName).then((value) => bloc.add(SaveChangesAction())),
+                      onAdd: () => Navigator.pushNamed(context, PhysicalActivityScreen.routeName).then((value) {
+                        if (value.toString() != Constants.BACK) bloc.add(SaveChangesAction());
+                      }),
                     ),
                     if ((state.profile?.sex?.index ?? -1) == SexType.female.index) SwitchDashboardWidget(
                         title: AppLocalizations.of(context)!.menstruation,
