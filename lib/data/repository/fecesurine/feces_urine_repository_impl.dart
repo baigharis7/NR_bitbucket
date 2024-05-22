@@ -32,6 +32,26 @@ class FecesUrineRepositoryImpl extends FecesUrineRepository {
   }
 
   @override
+  Future<List<UploadFeces>> getFecesEventsByDate({DateTime? dateTime}) async {
+    try {
+      final result = await localStorageRepository.getFecesEventsByDate(dateTime: dateTime);
+      return result.map((e) => mapToUploadFeces(e as UploadFecesEventEntity)).toList();
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<UploadFeces>> getUrineEventsByDate({DateTime? dateTime}) async {
+    try {
+      final result = await localStorageRepository.getUrineEventsByDate(dateTime: dateTime);
+      return result.map((e) => mapToUploadFeces(e as UploadFecesEventEntity)).toList();
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> saveFecesEvent(UploadFeces uploadFeces) async {
     try {
       await localStorageRepository.saveFecesEvent(mapToUploadFecesEventEntity(uploadFeces));

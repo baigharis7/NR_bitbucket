@@ -24,10 +24,13 @@ class UrineTab extends StatefulWidget {
 
 class _UrineTabState extends State<UrineTab> {
   late FecesUrineBloc fecesUrineBloc;
+  DateTime? selectedDateTime;
 
   @override
   void initState() {
     fecesUrineBloc = BlocProvider.of<FecesUrineBloc>(context);
+    selectedDateTime = fecesUrineBloc.state.urineDate;
+    fecesUrineBloc.add(InitializationUrineEventAction(dateTime: selectedDateTime));
     super.initState();
   }
 
@@ -74,7 +77,10 @@ class _UrineTabState extends State<UrineTab> {
                       insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding9Large -5),
                       contentPadding: EdgeInsets.zero,
                       children: [
-                        DashboardCalendarWidget(callGetAllEvents: (day) => fecesUrineBloc.getEventsForDay(state.urineEvents.orEmpty(), day), selectedDateForEventsLoading: (date) => fecesUrineBloc.add(SelectedUrineDayEvents(dateTime: date, onFinish: () => Navigator.pop(context)))),
+                        DashboardCalendarWidget(focused: selectedDateTime, callGetAllEvents: (day) => fecesUrineBloc.getEventsForDay(state.urineEvents.orEmpty(), day), selectedDateForEventsLoading: (date) {
+                          selectedDateTime = date;
+                          fecesUrineBloc.add(InitializationUrineEventAction(dateTime: date, onFinish: () => Navigator.pop(context)));
+                        }),
                       ],
                     ),
                     );

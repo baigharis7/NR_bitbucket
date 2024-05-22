@@ -28,7 +28,7 @@ class _UrineScreenState extends State<UrineScreen> {
   @override
   void initState() {
     fecesUrineBloc = BlocProvider.of<FecesUrineBloc>(context);
-    fecesUrineBloc.add(InitializationEventAction());
+    fecesUrineBloc.add(InitializationUrineEventAction());
     super.initState();
   }
 

@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/data/api/fecesurine/models/upload_feces.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_feces_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_urine_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_faeces_by_date_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_feces_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_urine_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_feces_event_interactor.dart';
@@ -15,6 +16,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id
 import 'package:nutrenaissance_flutter/domain/models/profile/urine.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
+import '../../../domain/interactor/fecesurine/get_urine_by_date_interactor.dart';
 import '../../../domain/models/profile/feces.dart';
 import '../../../infrastructure/errors/error_types.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
@@ -35,6 +37,8 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
   final RemoveFecesEventInteractor removeFecesEventInteractor;
   final DeleteUrineEventInteractor deleteUrineEventInteractor;
   final RemoveUrineEventInteractor removeUrineEventInteractor;
+  final GetFaecesByDateInteractor getFaecesByDateInteractor;
+  final GetUrineByDateInteractor getUrineByDateInteractor;
 
   FecesUrineBloc({
     required this.getUserIdInteractor,
@@ -48,18 +52,30 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
     required this.removeFecesEventInteractor,
     required this.deleteUrineEventInteractor,
     required this.removeUrineEventInteractor,
+    required this.getFaecesByDateInteractor,
+    required this.getUrineByDateInteractor,
   }) : super(FecesUrineState(isLoading: false)) {
-    on<InitializationEventAction>((event, emit) async {
+    on<InitializationFecesEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.fecesList = Feces.listOfAllFeces();
       state.urinesList = Urines.listOfAllUrines();
       state.fecesEvents = await getFecesEventsInteractor.execute();
-      state.urineEvents = await getUrineEventsInteractor.execute();
-      state.facesDayEvents = state.fecesEvents;
-      state.urineDayEvents = state.urineEvents;
+      state.facesDayEvents = await getFaecesByDateInteractor.execute(dateTime: event.dateTime);
 
+      if (event.dateTime != null) state.fecesDate = event.dateTime;
+      if (event.onFinish != null) event.onFinish?.call();
       emit(state.copyWith(isLoading: false));
     });
+
+    on<InitializationUrineEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      state.urineEvents = await getUrineEventsInteractor.execute();
+      state.urineDayEvents = await getUrineByDateInteractor.execute(dateTime: event.dateTime);
+
+      if (event.dateTime != null) state.urineDate = event.dateTime;
+      if (event.onFinish != null) event.onFinish?.call();
+      emit(state.copyWith(isLoading: false));
+    },);
 
     on<UpdateFecesEventAction>(
       (event, emit) {
@@ -84,7 +100,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
       emit(state.copyWith(isLoading: true));
       UploadFeces uploadFeces = UploadFeces(
           userId: getUserIdInteractor.execute(),
-          eventId: DateTime.now().millisecondsSinceEpoch,
+          eventId: state.fecesDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch,
           fecesId: state.fecesId ?? -1,
       );
       try {
@@ -107,7 +123,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
       emit(state.copyWith(isLoading: true));
       UploadFeces uploadUrine = UploadFeces(
         userId: getUserIdInteractor.execute(),
-        eventId: DateTime.now().millisecondsSinceEpoch,
+        eventId: state.urineDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch,
         fecesId: state.urineId ?? -1,
       );
       try {

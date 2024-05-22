@@ -3,7 +3,19 @@ part of 'feces_urine_bloc.dart';
 @immutable
 abstract class FecesUrineEvent {}
 
-class InitializationEventAction extends FecesUrineEvent {}
+class InitializationFecesEventAction extends FecesUrineEvent {
+  final DateTime? dateTime;
+  final Function? onFinish;
+
+  InitializationFecesEventAction({this.dateTime, this.onFinish});
+}
+
+class InitializationUrineEventAction extends FecesUrineEvent {
+  final DateTime? dateTime;
+  final Function? onFinish;
+
+  InitializationUrineEventAction({this.dateTime, this.onFinish});
+}
 
 class UpdateUrineEventAction extends FecesUrineEvent {
   final int? urineId;

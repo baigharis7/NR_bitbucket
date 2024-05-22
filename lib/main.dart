@@ -105,6 +105,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_feces
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_feces_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_urine_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_urine_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_faeces_by_date_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_faeces_by_date_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_feces_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_feces_events_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_urine_events_interactor.dart';
@@ -337,6 +339,8 @@ import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/view/w
 import 'package:nutrenaissance_flutter/presentation/welcome/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/local/models/steps/steps_entity.dart';
+import 'domain/interactor/fecesurine/get_urine_by_date_interactor.dart';
+import 'domain/interactor/fecesurine/get_urine_by_date_interactor_impl.dart';
 import 'domain/interactor/foodevents/delete_food_event_interactor.dart';
 import 'domain/interactor/foodevents/delete_food_event_interactor_impl.dart';
 import 'domain/interactor/foodevents/remove_food_event_interactor_impl.dart';
@@ -485,6 +489,8 @@ void main() async {
   final UploadFecesInteractor uploadFecesInteractor = UploadFecesInteractorImpl(fecesUrineRepository: fecesUrineRepository);
   final SaveFecesEventInteractor saveFecesEventInteractor = SaveFecesEventInteractorImpl(fecesUrineRepository: fecesUrineRepository);
   final GetFecesEventsInteractor getFecesEventsInteractor = GetFecesEventsInteractorImpl(fecesUrineRepository: fecesUrineRepository);
+  final GetFaecesByDateInteractor getFaecesByDateInteractor = GetFaecesByDateInteractorImpl(fecesUrineRepository: fecesUrineRepository);
+  final GetUrineByDateInteractor getUrineByDateInteractor = GetUrineByDateInteractorImpl(fecesUrineRepository: fecesUrineRepository);
   final UploadUrineInteractor uploadUrineInteractor = UploadUrineInteractorImpl(fecesUrineRepository: fecesUrineRepository);
   final SaveUrineInteractor saveUrineInteractor = SaveUrineInteractorImpl(fecesUrineRepository: fecesUrineRepository);
   final GetUrineEventsInteractor getUrineEventsInteractor = GetUrineEventsInteractorImpl(fecesUrineRepository: fecesUrineRepository);
@@ -766,6 +772,8 @@ void main() async {
     removeFecesEventInteractor: removeFecesEventInteractor,
     deleteUrineEventInteractor: deleteUrineEventInteractor,
     removeUrineEventInteractor: removeUrineEventInteractor,
+    getFaecesByDateInteractor: getFaecesByDateInteractor,
+    getUrineByDateInteractor: getUrineByDateInteractor,
   );
 
   final profileBloc = ProfileBloc(

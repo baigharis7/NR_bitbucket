@@ -14,6 +14,8 @@ class FecesUrineState {
   List<UploadFeces>? facesDayEvents;
   int? fecesId;
   int? urineId;
+  DateTime? fecesDate;
+  DateTime? urineDate;
 
   FecesUrineState({
     required this.isLoading,
@@ -26,6 +28,8 @@ class FecesUrineState {
     this.urineDayEvents,
     this.fecesId,
     this.urineId,
+    this.fecesDate,
+    this.urineDate,
   });
 
   FecesUrineState copyWith({
@@ -39,6 +43,8 @@ class FecesUrineState {
     List<UploadFeces>? facesDayEvents,
     int? fecesId,
     int? urineId,
+    DateTime? fecesDate,
+    DateTime? urineDate,
   }) {
     return FecesUrineState(
       isLoading: isLoading,
@@ -51,6 +57,8 @@ class FecesUrineState {
       urineDayEvents: urineDayEvents ?? this.urineDayEvents,
       fecesId: fecesId ?? this.fecesId,
       urineId: urineId ?? this.urineId,
+      fecesDate: fecesDate ?? this.fecesDate,
+      urineDate: urineDate ?? this.urineDate,
     );
   }
 }

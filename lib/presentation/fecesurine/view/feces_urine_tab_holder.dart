@@ -42,7 +42,7 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
   @override
   void initState() {
     fecesUrineBloc = BlocProvider.of<FecesUrineBloc>(context);
-    fecesUrineBloc.add(InitializationEventAction());
+    // fecesUrineBloc.add(InitializationFecesEventAction());
 
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
