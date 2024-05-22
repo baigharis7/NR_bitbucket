@@ -63,7 +63,7 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
     foodAndDrinksNames: [],
     // foodIds: [],
     recommendationGroups: RecommendationGroupsMaster(recommendationGroups: []),
-    recommendation: Recommendation(foodList: [], userNutrients: []),
+    recommendation: Recommendation(foodList: [], userNutrients: [], nutrientsInDeficit: []),
     needToSearchRecipes: true,
   ),) {
     on<InitialStateAction>((event, emit) async {
@@ -86,7 +86,8 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
               .map((groupRecommendation) =>
               RecommendationsFoodItem(
                 recommendationGroup: findRecommendationGroup(groupRecommendation.recGroup,),
-                recommendedFoods: getRecommendationFoodInfo(groupRecommendation.foods,),
+                objFoods: getRecommendationFoodInfo(groupRecommendation.objFoods,),
+                deficitFoods: getRecommendationFoodInfo(groupRecommendation.deficitFoods,),
                 // frequentFoods: getRecommendationFoodInfo([]),
                 usualHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualHealthyFoods.orEmpty()),
                 usualUnHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualUnhealthyFoods.orEmpty()),

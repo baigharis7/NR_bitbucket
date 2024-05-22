@@ -3,13 +3,15 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/recommendation_
 
 class RecommendationsFoodItem {
   RecommendationGroup recommendationGroup;
-  List<RecommendationFoodInfo> recommendedFoods;
+  List<RecommendationFoodInfo> objFoods;
+  List<RecommendationFoodInfo> deficitFoods;
   List<UsualFoodsItem>? usualHealthyFoods;
   List<UsualFoodsItem>? usualUnHealthyFoods;
 
   RecommendationsFoodItem({
     required this.recommendationGroup,
-    required this.recommendedFoods,
+    required this.objFoods,
+    required this.deficitFoods,
     this.usualHealthyFoods,
     this.usualUnHealthyFoods,
   });

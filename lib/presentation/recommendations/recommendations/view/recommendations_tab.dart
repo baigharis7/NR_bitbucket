@@ -55,40 +55,37 @@ class _RecommendationsTabState extends State<RecommendationsTab> {
         builder: (ctx, state) {
           return Scaffold(
             backgroundColor: Colors.grey[200],
-            body: Column(
-              children: [
-                if (state.showRecommendationCard != null && state.showRecommendationCard!) ExplainingCardsHelper().getExplainingCardWithId(
-                  context: context,
-                  explainingCardId: ExplainingCardRefs.recommendations.index,
-                  // onHideCard: () => bloc.add(HideRecommendationsExplainingCardAction()),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: Dimens.marginNormal),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(children: [
-                      ...state.recommendationFoodsItems!.map((recommendationItem) {
-                        return RecommendationsFoodGroupCard(
-                          recommendationsFoodItem: recommendationItem,
-                          onAdd: (FoodItemMaster foodItemMaster) {
-                            final name = foodItemMaster.translate(ctx);
-                            bloc.add(ManageFoodToListAction(
-                              foodItem: SimpleItem(
-                                id: foodItemMaster.id!,
-                                name: name,
-                              ),
-                            ),);
-                          },
-                          isChecked: (int id) => state.foodItems.orEmpty().map((simpleItem) => simpleItem.id).toList().contains(id),
-                        );
-                      }),
-                    ],),
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  if (state.showRecommendationCard != null && state.showRecommendationCard!) ExplainingCardsHelper().getExplainingCardWithId(
+                    context: context,
+                    explainingCardId: ExplainingCardRefs.recommendations.index,
+                    // onHideCard: () => bloc.add(HideRecommendationsExplainingCardAction()),
                   ),
-                ),
-                Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall), child: RoundedCustomButton(onPressed: () => bloc.add(UpdateProfileAction()))),
-              ],
+                  // Container(
+                  //   margin: const EdgeInsets.only(top: Dimens.marginNormal),
+                  // ),
+                  ...state.recommendationFoodsItems!.map((recommendationItem) {
+                    return RecommendationsFoodGroupCard(
+                      recommendationsFoodItem: recommendationItem,
+                      onAdd: (FoodItemMaster foodItemMaster) {
+                        final name = foodItemMaster.translate(ctx);
+                        bloc.add(ManageFoodToListAction(
+                          foodItem: SimpleItem(
+                            id: foodItemMaster.id!,
+                            name: name,
+                          ),
+                        ),);
+                      },
+                      isChecked: (int id) => state.foodItems.orEmpty().map((simpleItem) => simpleItem.id).toList().contains(id),
+                    );
+                  }),
+                  // Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall), child: RoundedCustomButton(onPressed: () => bloc.add(UpdateProfileAction()))),
+                ],
+              ),
             ),
+            bottomNavigationBar: RoundedCustomButton(horizontalMargin: Dimens.marginXSmall, verticalMargin: Dimens.marginSmall, onPressed: () => bloc.add(UpdateProfileAction())),
             // bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: 2,)
             // CustomBottomAppBar(initStateCallback: () => initState()),
             // resizeToAvoidBottomInset: true,

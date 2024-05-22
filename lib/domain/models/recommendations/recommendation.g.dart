@@ -14,18 +14,21 @@ Recommendation _$RecommendationFromJson(Map<String, dynamic> json) =>
       userNutrients: (json['userNutrients'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
+      nutrientsInDeficit: (json['nutrientsInDeficit'] as List<dynamic>).map((e) => e as String).toList(),
     );
 
 Map<String, dynamic> _$RecommendationToJson(Recommendation instance) =>
     <String, dynamic>{
       'foodList': instance.foodList.map((e) => e.toJson()).toList(),
       'userNutrients': instance.userNutrients,
+      'nutrientsInDeficit': instance.nutrientsInDeficit,
     };
 
 GroupRecommendation _$GroupRecommendationFromJson(Map<String, dynamic> json) =>
     GroupRecommendation(
       json['recGroup'] as int,
-      (json['foods'] as List<dynamic>).map((e) => e as int).toList(),
+      (json['objFoods'] as List<dynamic>).map((e) => e as int).toList(),
+      (json['deficitFoods'] as List<dynamic>).map((e) => e as int).toList(),
       UsualFoods.fromJson(json['usualFoods'] as Map<String, dynamic>),
     );
 
@@ -33,7 +36,8 @@ Map<String, dynamic> _$GroupRecommendationToJson(
         GroupRecommendation instance) =>
     <String, dynamic>{
       'recGroup': instance.recGroup,
-      'foods': instance.foods,
+      'objFoods': instance.objFoods,
+      'deficitFoods': instance.deficitFoods,
       'usualFoods': instance.usualFoods.toJson(),
     };
 

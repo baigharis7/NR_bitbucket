@@ -66,10 +66,28 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
               ],
             ),
           ),
-          ...recommendationsFoodItem.recommendedFoods.take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
+          ...recommendationsFoodItem.objFoods.take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodItemMaster.id);
             return Container(
               color: Colors.white,
+              child: RecommendationsItem(
+                foodItemMaster: food.foodItemMaster,
+                alternativeUsualHealthyFoods: const [],
+                isAlternativeChecked: (id) {
+                  return null;
+                },
+                onAlternativeAdd: (recommendationFoodInfo) {
+                  // ToastHelper().showToast(text: recommendationFoodInfo?.foodItemMaster.id.toString() ?? '');
+                },
+                onAdd: () => onAdd.call(food.foodItemMaster),
+                isChecked: isCheckBoxChecked,
+              ),
+            );
+          }),
+          ...recommendationsFoodItem.deficitFoods.take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
+            final bool isCheckBoxChecked = isChecked.call(food.foodItemMaster.id);
+            return Container(
+              color: Colors.black45,
               child: RecommendationsItem(
                 foodItemMaster: food.foodItemMaster,
                 alternativeUsualHealthyFoods: const [],

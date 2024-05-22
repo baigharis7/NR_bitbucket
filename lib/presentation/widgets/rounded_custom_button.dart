@@ -8,18 +8,22 @@ class RoundedCustomButton extends StatelessWidget {
   final Function onPressed;
   final String? buttonText;
   final bool enableButton;
+  final double? verticalMargin;
+  final double? horizontalMargin;
 
   const RoundedCustomButton({
     Key? key,
     required this.onPressed,
     this.buttonText,
     this.enableButton = true,
+    this.verticalMargin,
+    this.horizontalMargin,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(/*left: Dimens.marginNormal, right: Dimens.marginNormal, */vertical: Dimens.marginXXLarge),
+      margin: EdgeInsets.symmetric(horizontal: horizontalMargin ?? 0.0, vertical: verticalMargin ?? Dimens.marginXXLarge),
       child: CustomButton1(
         enable: enableButton,
         style: ElevatedButton.styleFrom(

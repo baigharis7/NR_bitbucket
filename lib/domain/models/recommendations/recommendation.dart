@@ -6,10 +6,12 @@ part 'recommendation.g.dart';
 class Recommendation {
   List<GroupRecommendation> foodList;
   List<String> userNutrients;
+  List<String> nutrientsInDeficit;
 
   Recommendation({
     required this.foodList,
     required this.userNutrients,
+    required this.nutrientsInDeficit,
   });
 
   factory Recommendation.fromJson(Map<String, dynamic> json) => _$RecommendationFromJson(json);
@@ -19,10 +21,11 @@ class Recommendation {
 @JsonSerializable(explicitToJson: true)
 class GroupRecommendation {
   int recGroup;
-  List<int> foods;
+  List<int> objFoods;
+  List<int> deficitFoods;
   UsualFoods usualFoods;
 
-  GroupRecommendation(this.recGroup, this.foods, this.usualFoods);
+  GroupRecommendation(this.recGroup, this.objFoods, this.deficitFoods, this.usualFoods);
 
   factory GroupRecommendation.fromJson(Map<String, dynamic> json) => _$GroupRecommendationFromJson(json);
   Map<String, dynamic> toJson() => _$GroupRecommendationToJson(this);
