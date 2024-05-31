@@ -717,9 +717,9 @@ class LocalStorageImpl extends LocalStorageRepository {
     await _clearBox(_getUrineEventsBox);
     await _clearBox(_getCreatineEventsBox);
     await _clearBox(_getCollagenEventsBox);
-    MasterFilesType.values.map((masterFilesType) async {
+    for (var masterFilesType in MasterFilesType.values) {
       await _clearBox(_getMasterFilesBox(masterFilesType));
-    });
+    }
     return true;
   }
 

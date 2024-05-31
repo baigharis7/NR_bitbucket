@@ -11,3 +11,17 @@ class RoutineDeleteEventAction extends RoutinesEvent {
 
   RoutineDeleteEventAction({required this.sportRoutineCompleted, required this.onFinish});
 }
+
+class RoutineFavoriteEventAction extends RoutinesEvent {
+  final SportRoutineCompleted sportRoutineCompleted;
+  final Function onFinish;
+
+  RoutineFavoriteEventAction({required this.sportRoutineCompleted, required this.onFinish});
+}
+
+class RemoveRoutineFavoriteEventAction extends RoutinesEvent {
+  final SportRoutineCompleted sportRoutineCompleted;
+  final Function onFinish;
+
+  RemoveRoutineFavoriteEventAction({required this.sportRoutineCompleted, required this.onFinish});
+}

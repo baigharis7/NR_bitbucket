@@ -44,6 +44,7 @@ class Constants {
   static const REDUCE_RISK_OF_INJURY = 48;
   static const RECOVERY_AFTER_SPORT_INJURY = 49;
   static const TRYPTOPHAN_MG_PER_KG = 3.5;
+  static const LOCALE_ES = 'es_ES';
 
   //Navigation id's
   static const DASHBOARD = 0;

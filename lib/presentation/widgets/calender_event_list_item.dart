@@ -5,12 +5,16 @@ class CalenderEventListItem extends StatelessWidget {
   final String title;
   final Function onEdit;
   final Function onDelete;
+  final Function? onHeartClick;
+  final bool isFavourite;
 
   const CalenderEventListItem({
     Key? key,
     required this.title,
     required this.onEdit,
     required this.onDelete,
+    this.onHeartClick,
+    this.isFavourite = false,
   }) : super(key: key);
 
   @override
@@ -29,6 +33,13 @@ class CalenderEventListItem extends StatelessWidget {
                 title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (onHeartClick != null) Expanded(
+              flex: 1,
+              child: IconButton(
+                onPressed: () => onHeartClick?.call(),
+                icon: Icon(isFavourite ? Icons.favorite : Icons.favorite_border, color: Colors.red,),
               ),
             ),
             Expanded(

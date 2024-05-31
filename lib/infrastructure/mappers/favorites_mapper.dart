@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorit
 import 'package:nutrenaissance_flutter/domain/models/favorites/liquid/liquid_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_completed.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
@@ -73,6 +74,17 @@ SportFavorite mapToSportFavorite(SportEventComplete sportEventComplete) {
     eventDate: sportEventComplete.eventDate,
     name_es: sportEventComplete.info?[0].name_es,
     name_en: sportEventComplete.info?[0].name_en,
+  );
+}
+
+AddSportFavorite mapToSportFavoriteFromRoutine(SportRoutineCompleted sportRoutineCompleted) {
+  return AddSportFavorite(
+    userId: sportRoutineCompleted.userId,
+    eventDate: sportRoutineCompleted.eventId,
+    title: sportRoutineCompleted.sportName,
+    info: sportRoutineCompleted.info?.map((e) => AddSportFavInfo(id: e.id?.toInt(), name_en: e.nameEn, name_es: e.nameEs, minutes: e.minutes?.toInt(), timeStart: e.timeStart?.toInt(), intensity: e.intensity?.toInt())).toList(),
+    routineTime: sportRoutineCompleted.routineTime,
+    comment: sportRoutineCompleted.comment,
   );
 }
 

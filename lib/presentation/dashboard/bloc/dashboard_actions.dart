@@ -72,3 +72,9 @@ class UploadCollagenEventAction extends DashboardActions {
 
   UploadCollagenEventAction({required this.supplementInfo, required this.value});
 }
+
+class LogoutFromAppEventAction extends DashboardActions {
+  final Function onFinish;
+
+  LogoutFromAppEventAction({required this.onFinish});
+}

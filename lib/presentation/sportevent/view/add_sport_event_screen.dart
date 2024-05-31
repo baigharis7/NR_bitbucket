@@ -373,7 +373,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                             routineHour: DateTimeHelper.formatTimeOfDay(state.routineHour, context),
                                             changeHour: (timeOfDay) => bloc.add(UpdateRoutineHourEventAction(timeOfDay: timeOfDay)),
                                             changeDate: (dateTime) => bloc.add(UpdateRoutineDateEventAction(dateTime: dateTime)),
-                                            routineDay: DateTimeHelper.formatDateTimeToDay(state.routineDate),
+                                            routineDay: DateTimeHelper.formatDateTimeToDay(state.routineDate, currentLanguage: currentLanguage),
                                             title: AppLocalizations.of(context)!
                                                 .create_routine),
                                       ],

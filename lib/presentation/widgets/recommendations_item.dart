@@ -12,6 +12,7 @@ class RecommendationsItem extends StatefulWidget {
   final Function(RecommendationFoodInfo? recommendationFoodInfo) onAlternativeAdd;
   final Function onAdd;
   final bool isChecked;
+  final Color? checkBoxColor;
   final bool? isFrequent;
   final List<RecommendationFoodInfo>? alternativeUsualHealthyFoods;
   final bool? Function(int id) isAlternativeChecked;
@@ -22,6 +23,7 @@ class RecommendationsItem extends StatefulWidget {
     required this.onAlternativeAdd,
     required this.onAdd,
     required this.isChecked,
+    this.checkBoxColor,
     this.isFrequent = false,
     this.alternativeUsualHealthyFoods,
     required this.isAlternativeChecked,
@@ -69,7 +71,7 @@ class _RecommendationsItemState extends State<RecommendationsItem> {
                     final itemSelected = widget.isAlternativeChecked.call(value.foodItemMaster.id ?? -1) ?? false;
                     return DropdownMenuItem<RecommendationFoodInfo>(
                       value: value,
-                      child: Container(padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal, vertical: Dimens.paddingNormal), width: double.infinity, color: itemSelected ? AppColors.mountainMeadow : Colors.transparent, child: Text(value.foodItemMaster.translate(context), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: itemSelected ? Colors.white : Colors.black),)),
+                      child: Container(padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal, vertical: Dimens.paddingNormal), width: double.infinity, color: itemSelected ? widget.checkBoxColor ?? AppColors.mountainMeadow : Colors.transparent, child: Text(value.foodItemMaster.translate(context), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: itemSelected ? Colors.white : Colors.black),)),
                     );
                   }).toList(),
                 ),),
@@ -79,7 +81,7 @@ class _RecommendationsItemState extends State<RecommendationsItem> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SquareCheckbox(
-                  color: AppColors.mountainMeadow,
+                  color: widget.checkBoxColor ?? AppColors.mountainMeadow,
                   isChecked: widget.isChecked,
                   onChanged: () => widget.onAdd.call(),
                 ),

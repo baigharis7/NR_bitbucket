@@ -308,7 +308,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
           // underPharmaceuticalTreatment: isUnderTreatment,
         ),
         foodAversions: state.profile!.foodAversions,
-        dietType: state.profile!.dietType == null || state.profile!.dietType! < 0 ? 0 : state.profile!.dietType,
+        dietType: state.profile!.dietType == null || state.profile!.dietType! <= 0 ? -1 : state.profile!.dietType,
         exclusions: Exclusions(exclusions: state.profile!.exclusions!.exclusions),
         intolerances: state.profile!.intolerances,
         // symptoms: , // Añadir cuando esté implementado

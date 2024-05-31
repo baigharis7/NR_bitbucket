@@ -79,8 +79,8 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
 
       // if (state.recommendationFoodsItems!.isEmpty) {
         try {
-          final recommendation = await getRecommendationInteractor.execute(getUserIdInteractor.execute(),);
-          state.recommendation = recommendation;
+          state.recommendation = await getRecommendationInteractor.execute(getUserIdInteractor.execute(),);
+          // state.recommendation = recommendation;
           // state.recommendationFoodsItems = [];
           state.recommendationFoodsItems = state.recommendation!.foodList
               .map((groupRecommendation) =>

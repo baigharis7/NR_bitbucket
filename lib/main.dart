@@ -147,6 +147,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/upload_liq
 import 'package:nutrenaissance_flutter/domain/interactor/login/erase_database_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/manage_master_files_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
@@ -345,6 +347,8 @@ import 'domain/interactor/foodevents/delete_food_event_interactor.dart';
 import 'domain/interactor/foodevents/delete_food_event_interactor_impl.dart';
 import 'domain/interactor/foodevents/remove_food_event_interactor_impl.dart';
 import 'domain/interactor/login/erase_database_interactor_impl.dart';
+import 'domain/interactor/masterfiles/get_master_file_version_interactor_impl.dart';
+import 'domain/interactor/masterfiles/manage_master_files_interactor_impl.dart';
 import 'domain/interactor/profile/get_user_objectives_interactor.dart';
 import 'domain/interactor/profile/get_user_objectives_interactor_impl.dart';
 import 'presentation/profile/common/aversions_screen.dart';
@@ -504,6 +508,8 @@ void main() async {
   final GetTodayCollagenEventInteractor getTodayCollagenEventInteractor = GetTodayCollagenEventInteractorImpl(supplementsRepository: supplementsRepository);
   final UploadCollagenEventInteractor uploadCollagenEventInteractor = UploadCollagenEventInteractorImpl(supplementsRepository: supplementsRepository);
   final SaveCollagenEventInteractor saveCollagenEventInteractor = SaveCollagenEventInteractorImpl(supplementsRepository: supplementsRepository);
+  final GetMasterFileVersionInteractor getMasterFilesVersionInteractor = GetMasterFileVersionInteractorImpl(masterFilesRepository: masterFilesRepository);
+  final ManageMasterFilesInteractor manageMasterFilesInteractor = ManageMasterFilesInteractorImpl(masterFilesRepository: masterFilesRepository);
 
   final dashboardBloc = DashboardBloc(
     getAdviceInteractor: getAdviceInteractor,
@@ -538,6 +544,11 @@ void main() async {
     uploadCollagenEventInteractor: uploadCollagenEventInteractor,
     saveCollagenEventInteractor: saveCollagenEventInteractor,
     getAllDashboardEventsSortedByDateInteractor: getAllDashboardEventsSortedByDateInteractor,
+    manageMasterFilesInteractor:manageMasterFilesInteractor,
+    getMasterFilesVersionInteractor: getMasterFilesVersionInteractor,
+    signOutInteractor: signOutInteractor,
+    eraseDatabaseInteractor: eraseDatabaseInteractor,
+    sharedPreferences: sharedPreferences,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(
@@ -672,6 +683,11 @@ void main() async {
     getUserIdInteractor: getUserIdInteractor,
     deleteSportRoutineInteractor: deleteSportRoutineInteractor,
     removeSportRoutineInteractor: removeSportRoutineInteractor,
+    uploadSportFavoriteInteractor: uploadSportFavoriteInteractor,
+    saveSportFavoriteInteractor: saveSportFavoriteInteractor,
+    deleteSportFavoriteInteractor: deleteSportFavoriteInteractor,
+    removeSportFavoriteInteractor: removeSportFavoriteInteractor,
+    getSportFavoritesInteractor: getSportFavoritesInteractor,
   );
 
   final journalLiquidBloc = JournalLiquidBloc(

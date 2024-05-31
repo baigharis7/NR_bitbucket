@@ -69,7 +69,7 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
           ...recommendationsFoodItem.objFoods.take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodItemMaster.id);
             return Container(
-              color: Colors.white,
+              color: AppColors.mountainMeadow.withOpacity(0.5),
               child: RecommendationsItem(
                 foodItemMaster: food.foodItemMaster,
                 alternativeUsualHealthyFoods: const [],
@@ -87,7 +87,7 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
           ...recommendationsFoodItem.deficitFoods.take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodItemMaster.id);
             return Container(
-              color: Colors.black45,
+              color: AppColors.true_blue.withOpacity(0.5),
               child: RecommendationsItem(
                 foodItemMaster: food.foodItemMaster,
                 alternativeUsualHealthyFoods: const [],
@@ -99,37 +99,39 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
                 },
                 onAdd: () => onAdd.call(food.foodItemMaster),
                 isChecked: isCheckBoxChecked,
+                checkBoxColor: AppColors.true_blue,
               ),
             );
           }),
           ...recommendationsFoodItem.usualUnHealthyFoods.orEmpty().take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodInfo.foodItemMaster.id);
             return Container(
-              color: AppColors.errorRed,
+              color: Colors.orange.shade400,
               child: RecommendationsItem(
                 foodItemMaster: food.foodInfo.foodItemMaster,
                 onAlternativeAdd: (recommendationFoodInfo) => onAdd.call(recommendationFoodInfo?.foodItemMaster),
                 onAdd: () => onAdd.call(food.foodInfo.foodItemMaster),
                 isChecked: isCheckBoxChecked,
+                checkBoxColor: Colors.orange.shade700,
                 alternativeUsualHealthyFoods: food.alternativeUsualHealthyFoods,
                 isAlternativeChecked: (id) => isChecked.call(id),
               ),
             );
           }),
-          ...recommendationsFoodItem.usualHealthyFoods.orEmpty().take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
-            final bool isCheckBoxChecked = isChecked.call(food.foodInfo.foodItemMaster.id);
-            return Container(
-              color: AppColors.cardGreen_200,
-              child: RecommendationsItem(
-                foodItemMaster: food.foodInfo.foodItemMaster,
-                alternativeUsualHealthyFoods: food.alternativeUsualHealthyFoods,
-                onAlternativeAdd: (recommendationFoodInfo) => onAdd.call(recommendationFoodInfo?.foodItemMaster),
-                isAlternativeChecked: (id) => isChecked.call(id),
-                onAdd: () => onAdd.call(food.foodInfo.foodItemMaster),
-                isChecked: isCheckBoxChecked,
-              ),
-            );
-          }),
+          // ...recommendationsFoodItem.usualHealthyFoods.orEmpty().take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
+          //   final bool isCheckBoxChecked = isChecked.call(food.foodInfo.foodItemMaster.id);
+          //   return Container(
+          //     color: Colors.cyanAccent,
+          //     child: RecommendationsItem(
+          //       foodItemMaster: food.foodInfo.foodItemMaster,
+          //       alternativeUsualHealthyFoods: food.alternativeUsualHealthyFoods,
+          //       onAlternativeAdd: (recommendationFoodInfo) => onAdd.call(recommendationFoodInfo?.foodItemMaster),
+          //       isAlternativeChecked: (id) => isChecked.call(id),
+          //       onAdd: () => onAdd.call(food.foodInfo.foodItemMaster),
+          //       isChecked: isCheckBoxChecked,
+          //     ),
+          //   );
+          // }),
         ],
       ),
     );

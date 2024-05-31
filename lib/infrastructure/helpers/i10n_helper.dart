@@ -130,7 +130,7 @@ class AppLocalizationsHelper {
       'gluten': 'Gluten',
       'eggs': 'Huevos',
       'fish': 'Pescado',
-      'peanuts': 'Maní',
+      'peanuts': 'Cacahuete',
       'soy': 'Soja',
       'milk': 'Leche',
       'nuts': 'Frutos secos',

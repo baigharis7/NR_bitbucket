@@ -9,7 +9,6 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -27,7 +26,6 @@ import 'package:nutrenaissance_flutter/presentation/widgets/card_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/dashboard_calendar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/energy_balance_widget.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/expandable_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/liquids_summary_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_widget.dart';
@@ -36,7 +34,10 @@ import 'package:nutrenaissance_flutter/presentation/widgets/weekly_rda_nutrients
 
 import '../../../infrastructure/utils/constants.dart';
 import '../../fiber_detail/view/fiber_detail_Screen.dart';
+import '../../login/view/login_screen.dart';
 import '../../widgets/NutrientDetailWidget.dart';
+import '../../widgets/data_bottom_sheet_widget.dart';
+import '../../widgets/rounded_custom_button.dart';
 
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -76,11 +77,23 @@ class _DashboardScreen extends State<DashboardScreen>
     super.initState();
   }
 
+  Future<void> _updateDataDialog({required Function onUpdateClick}) async {
+    await showModalBottomSheet(showDragHandle: true, isDismissible: false, enableDrag: false, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(Dimens.borderXLarge), topRight: Radius.circular(Dimens.borderXLarge))),context: context,
+      builder: (context) => DataBottomSheetWidget(
+          icon: const Icon(Icons.info_outlined, color: AppColors.mountainMeadow, size: 45),
+          title: AppLocalizations.of(context)!.update_your_data,
+          description: AppLocalizations.of(context)!.update_desc,
+          successButtonText: AppLocalizations.of(context)!.update_data,
+        successButtonClick: () => onUpdateClick.call(),
+        cancelButtonText: AppLocalizations.of(context)!.cancel,
+        cancelButtonClick: () => onUpdateClick.call(),
+      ),);
+  }
+
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<DashboardBloc>(context);
     final mediaQuerySize = MediaQuery.of(context).size;
-
     return BlocProvider.value(
       value: bloc,
       child: SafeArea(
@@ -95,6 +108,7 @@ class _DashboardScreen extends State<DashboardScreen>
               LoadingScreen.instance().hide();
             }
             if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
+            if (state.isUpdatedDataNeeded ?? false) _updateDataDialog(onUpdateClick: () => bloc.add(LogoutFromAppEventAction(onFinish: () => Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false,))));
           },
           builder: (ctx, state) {
             return Scaffold(

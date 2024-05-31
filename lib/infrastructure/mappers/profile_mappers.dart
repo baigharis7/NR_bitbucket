@@ -68,6 +68,7 @@ upload.UploadUserProfile mapToUploadUserProfileModel(domain.UserProfileModel use
 
 String _setExclusions({List<int> allergens = const [], int? dietType}) {
   List<int> allergensList = [];
+  allergensList.addAll(allergens);
   if (dietType != null) { allergensList.add(dietType); }
 
   return allergensList.convertToBinary(Constants.EXCLUSIONS_SIZE);

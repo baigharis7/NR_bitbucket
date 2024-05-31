@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 
 class DateTimeHelper {
   DateTime provideCurrentDate() {
@@ -98,9 +99,9 @@ class DateTimeHelper {
     }
   }
 
-  static String? formatDateTimeToDay (DateTime? dateTime) {
+  static String? formatDateTimeToDay (DateTime? dateTime, {String? currentLanguage}) {
     if (dateTime != null) {
-      var date = DateFormat('EEE').format(dateTime);
+      var date = currentLanguage == 'es' ? DateFormat('EEE', Constants.LOCALE_ES).format(dateTime) : DateFormat('EEE').format(dateTime);
       return date;
     } else {
       return null;

@@ -38,11 +38,16 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/api/profile/model/user_profile_response.dart';
 import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import '../../../domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
 import '../../../domain/interactor/liquidevents/get_week_liquid_events_interactor.dart';
+import '../../../domain/interactor/login/erase_database_interactor.dart';
+import '../../../domain/interactor/masterfiles/get_master_file_version_interactor.dart';
+import '../../../domain/interactor/masterfiles/manage_master_files_interactor.dart';
+import '../../../domain/interactor/profile/sign_out_interactor.dart';
 import '../../../domain/interactor/sportevents/get_week_sports_interactor.dart';
 import '../../../domain/interactor/supplements/get_today_creatine_event_interactor.dart';
 import '../../../domain/interactor/supplements/save_creatine_event_interactor.dart';
@@ -86,6 +91,11 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final UploadCollagenEventInteractor uploadCollagenEventInteractor;
   final SaveCollagenEventInteractor saveCollagenEventInteractor;
   final GetAllDashboardEventsSortedByDateInteractor getAllDashboardEventsSortedByDateInteractor;
+  final GetMasterFileVersionInteractor getMasterFilesVersionInteractor;
+  final ManageMasterFilesInteractor manageMasterFilesInteractor;
+  final SignOutInteractor signOutInteractor;
+  final EraseDatabaseInteractor eraseDatabaseInteractor;
+  final SharedPreferences sharedPreferences;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -120,6 +130,11 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.uploadCollagenEventInteractor,
     required this.saveCollagenEventInteractor,
     required this.getAllDashboardEventsSortedByDateInteractor,
+    required this.getMasterFilesVersionInteractor,
+    required this.manageMasterFilesInteractor,
+    required this.sharedPreferences,
+    required this.eraseDatabaseInteractor,
+    required this.signOutInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -211,7 +226,12 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.todayCollagenSupplement = SupplementInfo('Collagen peptides', 'Péptidos de colágeno', todayCollagen, 10);
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
 
-      event.onFinish?.call();
+      final getMasterFileVersionCookingMethods = await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethods);
+      final getMasterFileVersionNutrientsInfo = await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo);
+      final getMasterFile = await manageMasterFilesInteractor.execute(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+      state.isUpdatedDataNeeded = getMasterFileVersionCookingMethods != getMasterFile.cookingMethodsResponse?.v || getMasterFileVersionNutrientsInfo != getMasterFile.nutrientsInfoResponse?.v;
+
+      if (event.onFinish != null) event.onFinish?.call();
       emit(state.copyWith(
         isLoading: false,
         onError: null,
@@ -399,6 +419,20 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         }
       } catch (_) {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadCollagenError));
+      }
+    },);
+
+    on<LogoutFromAppEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true,));
+      try {
+        signOutInteractor.execute();
+        eraseDatabaseInteractor.execute();
+        sharedPreferences.clear();
+        state.isUpdatedDataNeeded = false;
+        event.onFinish.call();
+        emit(state.copyWith(isLoading: false, onError: null,));
+      } catch (errorSignOut) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.signOutError));
       }
     },);
   }

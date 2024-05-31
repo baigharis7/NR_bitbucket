@@ -47,6 +47,7 @@ class DashboardState {
   SupplementInfo? todayCreatineSupplement;
   SupplementInfo? todayCollagenSupplement;
   DashboardAllCalendarEvents? allCalendarEvents;
+  bool? isUpdatedDataNeeded;
 
   DashboardState({
     required this.isLoading,
@@ -78,6 +79,7 @@ class DashboardState {
     this.todayCreatineSupplement,
     this.todayCollagenSupplement,
     this.allCalendarEvents,
+    this.isUpdatedDataNeeded,
   });
 
   DashboardState copyWith({
@@ -111,6 +113,7 @@ class DashboardState {
     SupplementInfo? todayCreatineSupplement,
     SupplementInfo? todayCollagenSupplement,
     DashboardAllCalendarEvents? allCalendarEvents,
+    bool? isUpdatedDataNeeded,
   }) {
     return DashboardState(
       isLoading: isLoading,
@@ -142,6 +145,7 @@ class DashboardState {
       todayCreatineSupplement: todayCreatineSupplement ?? this.todayCreatineSupplement,
       todayCollagenSupplement: todayCollagenSupplement ?? this.todayCollagenSupplement,
       allCalendarEvents: allCalendarEvents ?? this.allCalendarEvents,
+      isUpdatedDataNeeded: isUpdatedDataNeeded ?? this.isUpdatedDataNeeded,
     );
   }
 
