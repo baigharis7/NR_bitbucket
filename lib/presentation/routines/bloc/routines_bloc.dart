@@ -116,7 +116,7 @@ class RoutinesBloc extends Bloc<RoutinesEvent, RoutinesState> {
       if (favObject.info?.length == sportFavoriteFromEvent.info?.length) {
         childLoop: for (AddSportFavInfo matchingObject in sportFavoriteFromEvent.info.orEmpty()) {
           isFound = favObject.info.orEmpty().any((sportItem) => sportItem.id == matchingObject.id && sportItem.intensity == matchingObject.intensity && sportItem.minutes == matchingObject.minutes);
-          if (!isFound) break childLoop;
+          if (isFound == true) break parentLoop;
         }
       }
     }

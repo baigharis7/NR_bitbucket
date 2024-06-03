@@ -210,7 +210,7 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
       if (favFood.ingredients.length == (foodEvent.foodInfo?.length ?? 0)) {
         childLoop:for (FoodInfo foodInfoItem in foodEvent.foodInfo!) {
           isFavourite = favFood.ingredients.any((ingredientItem) => ingredientItem.id == foodInfoItem.id && ingredientItem.cookingMethod == foodInfoItem.eventInfo!.cookingMethod && ingredientItem.qty == foodInfoItem.eventInfo!.qty);
-          if (!isFavourite) break childLoop;
+          if (isFavourite == true) break parentLoop;
         }
       }
     }
@@ -226,7 +226,7 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
       if (favObject.ingredients.length == foodFavoriteFromEvent.ingredients.length) {
         childLoop: for (FoodInFavorite matchingObject in foodFavoriteFromEvent.ingredients) {
           isFound = favObject.ingredients.any((ingredientItem) => ingredientItem.id == matchingObject.id && ingredientItem.cookingMethod == matchingObject.cookingMethod && ingredientItem.qty == matchingObject.qty);
-          if (!isFound) break childLoop;
+          if (isFound == true) break parentLoop;
         }
       }
     }

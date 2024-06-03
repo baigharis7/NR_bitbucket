@@ -67,7 +67,7 @@
     "without_period": "Without period",
     "menstruation": "Menstruation",
     "cold": "Cold",
-    "period_duration_question": "What's the approximate duration of your cycle?",
+    "period_duration_question": "How many days does your menstrual cycle consist of?",
     "menstruation_regularity_error": "You have to choose your period's regularity",
     "period_duration_error": "You have to select a period's duration",
     "last_period_duration_error": "You have to choose your last period's start date",

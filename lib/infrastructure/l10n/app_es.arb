@@ -67,7 +67,7 @@
     "without_period": "Sin periodo",
     "menstruation": "Menstruación",
     "cold": "Catarro",
-    "period_duration_question": "¿Cuántos días dura tu período?",
+    "period_duration_question": "¿De cuántos días consta tu ciclo menstrual?",
     "menstruation_regularity_error": "Debes elegir la regularidad de tu período",
     "period_duration_error": "Debes seleccionar la duración de tu período",
     "last_period_duration_error": "Debes elegir la fecha de inicio de tu último período",

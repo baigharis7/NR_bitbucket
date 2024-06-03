@@ -175,7 +175,7 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
       if (favSport.info?.length == (sportEvent.info?.length ?? 0)) {
         childLoop:for (SportEventInfo sportInfoItem in sportEvent.info!) {
           isFavourite = favSport.info.orEmpty().any((itemInfo) => itemInfo.id == sportInfoItem.id && itemInfo.minutes == sportInfoItem.minutes && itemInfo.intensity == sportInfoItem.intensity);
-          if (!isFavourite) break childLoop;
+          if (isFavourite == true) break parentLoop;
         }
       }
     }
@@ -191,7 +191,7 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
       if (favObject.info?.length == sportFavoriteFromEvent.info?.length) {
         childLoop: for (AddSportFavInfo matchingObject in sportFavoriteFromEvent.info.orEmpty()) {
           isFound = favObject.info.orEmpty().any((sportItem) => sportItem.id == matchingObject.id && sportItem.intensity == matchingObject.intensity && sportItem.minutes == matchingObject.minutes);
-          if (!isFound) break childLoop;
+          if (isFound == true) break parentLoop;
         }
       }
     }
