@@ -4,9 +4,10 @@ class HeightWeightUnits {
   String? height;
   String? weight;
   int? id;
-  String? unit;
+  String? unitEs;
+  String? unitEn;
 
-  HeightWeightUnits({this.height, this.weight, this.id, this.unit});
+  HeightWeightUnits({this.height, this.weight, this.id, this.unitEs, this.unitEn});
 
   static List<HeightWeightUnits> getAllUnits() {
     return [
@@ -22,7 +23,8 @@ class CmKg extends HeightWeightUnits {
           height: AppLocalizationsHelper.instance.translate('height_cm'),
           weight: AppLocalizationsHelper.instance.translate('weight_kg'),
           id: 1,
-          unit: 'cm - kg',
+          unitEs: 'cm - kg',
+          unitEn: 'cm - kg',
         );
 }
 
@@ -32,6 +34,7 @@ class FeetLb extends HeightWeightUnits {
           height: AppLocalizationsHelper.instance.translate('height_feet'),
           weight: AppLocalizationsHelper.instance.translate('weight_lb'),
           id: 2,
-          unit: 'feet - lb',
+          unitEn: 'feet - lb',
+          unitEs: 'pulgadas - lb',
         );
 }

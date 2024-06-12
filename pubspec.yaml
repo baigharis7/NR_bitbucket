@@ -53,6 +53,7 @@ dependencies:
   table_calendar: ^3.0.8
   chuck_interceptor: ^1.1.2
   carousel_slider: ^4.2.1
+  sprintf: ^7.0.0
 
 dev_dependencies:
   flutter_test:

@@ -104,7 +104,7 @@ PhysicalCharacteristics _$PhysicalCharacteristicsFromJson(
     PhysicalCharacteristics(
       height: (json['height'] as num?)?.toDouble(),
       weight: (json['weight'] as num?)?.toDouble(),
-      unit: json['unit'] as String?,
+      unit: json['unit'] as int?,
       bodyFat: json['bodyFat'] as int?,
       waistMeasurement: json['waistMeasurement'] as int?,
     );

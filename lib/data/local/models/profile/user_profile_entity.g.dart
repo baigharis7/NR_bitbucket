@@ -148,7 +148,7 @@ class PhysicalCharacteristicsAdapter
     return PhysicalCharacteristics(
       height: fields[0] as double,
       weight: fields[1] as double,
-      unit: fields[2] as String?,
+      unit: fields[2] as int?,
       bodyFat: fields[3] as int?,
       waistMeasurement: fields[4] as int?,
     );

@@ -101,13 +101,13 @@ class _JournalScreenState extends State<JournalScreen> {
                                 ],
                               ),
                             ),
-                            // TextIconBox(
-                            //   title: AppLocalizations.of(context)!.calendar,
-                            //   color: Colors.grey,
-                            //   onAdd: () => bloc.add(CalendarClickAction(action: () => Navigator.pushNamed(context, CalendarScreen.routeName))),
-                            //   icon: Icons.calendar_today_outlined,
-                            //   showAddButton: true,
-                            // ),
+                            TextIconBox(
+                              title: AppLocalizations.of(context)!.calendar,
+                              color: Colors.grey,
+                              onAdd: () => bloc.add(CalendarClickAction(action: () => Navigator.pushNamed(context, CalendarScreen.routeName))),
+                              icon: Icons.calendar_today_outlined,
+                              showAddButton: true,
+                            ),
                             Stack(
                               children: [
                                 Row(
@@ -126,22 +126,22 @@ class _JournalScreenState extends State<JournalScreen> {
                                         ),
                                       ),
                                     ),
-                                    // Expanded(
-                                    //   flex: 1,
-                                    //   child: ModifiableCenterBoxWithWatchAndAdd(
-                                    //     title: AppLocalizations.of(context)!.liquids,
-                                    //     onAddPressed: () => bloc.add(LiquidsClickAction(action: () => Navigator.of(context).pushNamed(AddLiquidEventScreen.routeName))),
-                                    //     onWatchPressed: () => bloc.add(LiquidsClickAction(action: () => Navigator.of(context).pushNamed(JournalLiquidScreen.routeName))),
-                                    //     centerWidget: SizedBox(
-                                    //       height: 90,
-                                    //       width: 15,
-                                    //       child: FillVerticalBar(
-                                    //         fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.todayFoodEvents.orEmpty(), ((state.userProfile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
-                                    //         barColor: Colors.blue,
-                                    //       ),
-                                    //     ),
-                                    //   ),
-                                    // )
+                                    Expanded(
+                                      flex: 1,
+                                      child: ModifiableCenterBoxWithWatchAndAdd(
+                                        title: AppLocalizations.of(context)!.liquids,
+                                        onAddPressed: () => bloc.add(LiquidsClickAction(action: () => Navigator.of(context).pushNamed(AddLiquidEventScreen.routeName))),
+                                        onWatchPressed: () => bloc.add(LiquidsClickAction(action: () => Navigator.of(context).pushNamed(JournalLiquidScreen.routeName))),
+                                        centerWidget: SizedBox(
+                                          height: 90,
+                                          width: 15,
+                                          child: FillVerticalBar(
+                                            fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.todayFoodEvents.orEmpty(), ((state.userProfile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
+                                            barColor: Colors.blue,
+                                          ),
+                                        ),
+                                      ),
+                                    )
                                   ],
                                 ),
                                 if (state.calendarCard != null && state.calendarCard!.showCard!) SizedBox(
@@ -207,18 +207,18 @@ class _JournalScreenState extends State<JournalScreen> {
                               onWatch: () => Navigator.pushNamed(context, FavoriteSportsScreen.routeName),
                               showAddButton: true,
                             ),
-                            // TextIconBox(
-                            //   title: AppLocalizations.of(context)!.faeces_urine,
-                            //   color: Colors.grey,
-                            //   onAdd: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName),
-                            //   image: 'assets/images/intestine.png',
-                            //   showAddButton: true,
-                            // ),
                             TextIconBox(
                               title: AppLocalizations.of(context)!.routines,
                               color: Colors.grey,
                               onAdd: () => Navigator.pushNamed(context, RoutinesScreen.routeName),
                               icon: Icons.remove_red_eye_outlined,
+                              showAddButton: true,
+                            ),
+                            TextIconBox(
+                              title: AppLocalizations.of(context)!.faeces_urine,
+                              color: Colors.grey,
+                              onAdd: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName),
+                              image: 'assets/images/intestine.png',
                               showAddButton: true,
                             ),
                           ],

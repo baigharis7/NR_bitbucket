@@ -38,7 +38,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
 
   @override
   void initState() {
-    _dropdownList = _heightWeightTypeList.map((e) => e.unit.toString()).toList();
+    _dropdownList = _heightWeightTypeList.map((e) => e.translate(context)).toList();
     super.initState();
   }
 
@@ -53,6 +53,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<ProfileBloc>(context);
     if (_commonNameController.text == '') _commonNameController.text = bloc.state.profile!.commonName ?? '';
+    String language = Localizations.localeOf(context).languageCode;
 
     return SafeArea(
       child: BlocProvider.value(
@@ -503,25 +504,26 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                     height: Dimens.heightSmall - 20,
                                     padding: const EdgeInsets.symmetric(vertical: Dimens.paddingSmall -4, horizontal: Dimens.paddingSmall -2),
                                     margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginNormal),
-                                    child: DropdownButton<String>(
+                                    child: DropdownButton<int>(
                                       isExpanded: true,
-                                      value: state.unitWeightHeight?.unit ?? _dropdownList.first,
+                                      value: state.unitWeightHeight?.id ?? 1,
                                       // icon: const Icon(Icons.arrow_downward),
                                       // elevation: 16,
                                       // style: const TextStyle(color: Colors.deepPurple),
                                       underline: Container(),
-                                      onChanged: (String? value) {
+                                      onChanged: (int? value) {
                                         // This is called when the user selects an item.
                                         // setState(() {
                                         //   dropdownValue = value.orEmpty();
                                         // });
 
-                                        bloc.add(SetUnitWeightHeight(unitWeightHeight: _heightWeightTypeList.firstWhere((element) => element.unit == value,)));
+                                        bloc.add(SetUnitWeightHeight(unitWeightHeight: _heightWeightTypeList.firstWhere((element) => element.id == value,)));
                                       },
-                                      items: _dropdownList.map<DropdownMenuItem<String>>((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
+                                      items: _heightWeightTypeList.map<DropdownMenuItem<int>>((HeightWeightUnits value) {
+                                        final val = language == 'es' ? value.unitEs.orEmpty() : value.unitEn.orEmpty();
+                                        return DropdownMenuItem<int>(
+                                          value: value.id,
+                                          child: Text(val,),
                                         );
                                       }).toList(),
                                     ),

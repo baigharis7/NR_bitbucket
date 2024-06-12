@@ -64,7 +64,7 @@ class MedicalSituation{
 class PhysicalCharacteristics{
   late double height;
   late double weight;
-  String? unit;
+  int? unit;
   int? bodyFat;
   int? waistMeasurement;
 

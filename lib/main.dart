@@ -549,6 +549,7 @@ void main() async {
     signOutInteractor: signOutInteractor,
     eraseDatabaseInteractor: eraseDatabaseInteractor,
     sharedPreferences: sharedPreferences,
+    getRoutinesInteractor: getRoutinesInteractor,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(

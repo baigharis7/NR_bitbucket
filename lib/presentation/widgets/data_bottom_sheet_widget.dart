@@ -37,7 +37,7 @@ class _DataBottomSheetWidgetState extends State<DataBottomSheetWidget> {
      child: Column(children: [
        if (widget.icon != null) widget.icon!,
        const SizedBox(height: Dimens.heightXSmall,),
-       Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeXLarge)),
+       Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXXXLarge + 5), child: Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeXLarge,), textAlign: TextAlign.center,)),
        const SizedBox(height: Dimens.heightXSmall,),
        if (widget.description.isNotEmptyOrNull()) Text(widget.description!, style: TextStyle(color: Colors.grey.shade700,), textAlign: TextAlign.center),
        if (widget.successButtonClick != null) RoundedCustomButton(buttonText: widget.successButtonText, onPressed: () => widget.successButtonClick?.call()),

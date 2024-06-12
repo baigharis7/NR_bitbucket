@@ -37,7 +37,7 @@ import '../../fiber_detail/view/fiber_detail_Screen.dart';
 import '../../login/view/login_screen.dart';
 import '../../widgets/NutrientDetailWidget.dart';
 import '../../widgets/data_bottom_sheet_widget.dart';
-import '../../widgets/rounded_custom_button.dart';
+import 'package:sprintf/sprintf.dart';
 
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -89,6 +89,36 @@ class _DashboardScreen extends State<DashboardScreen>
         cancelButtonClick: () => onUpdateClick.call(),
       ),);
   }
+  
+  Future<void> _workOutDialog({required int tim}) async {
+    await showModalBottomSheet(showDragHandle: true, isDismissible: false, enableDrag: false, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(Dimens.borderXLarge), topRight: Radius.circular(Dimens.borderXLarge))),
+      context: context, builder: (context) => DataBottomSheetWidget(
+        icon: const Icon(Icons.info_outlined, color: AppColors.mountainMeadow, size: 45),
+        title: sprintf(AppLocalizations.of(context)!.workout_dialog_title, [tim]),
+      description: AppLocalizations.of(context)!.workout_dialog_desc,
+    ),
+    );
+  }
+
+  Future<void> _afterWorkoutDialog() async {
+    await showModalBottomSheet(showDragHandle: true, isDismissible: false, enableDrag: false, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(Dimens.borderXLarge), topRight: Radius.circular(Dimens.borderXLarge))),
+      context: context, builder: (context) => DataBottomSheetWidget(
+        icon: const Icon(Icons.info_outlined, color: AppColors.mountainMeadow, size: 45),
+        title: AppLocalizations.of(context)!.after_workout_dialog_title,
+        description: AppLocalizations.of(context)!.after_workout_dialog_desc,
+      ),
+    );
+  }
+
+  Future<void> _improveRecoveryDialog() async {
+    await showModalBottomSheet(showDragHandle: true, isDismissible: false, enableDrag: false, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(Dimens.borderXLarge), topRight: Radius.circular(Dimens.borderXLarge))),
+      context: context, builder: (context) => DataBottomSheetWidget(
+        icon: const Icon(Icons.info_outlined, color: AppColors.mountainMeadow, size: 45),
+        title: AppLocalizations.of(context)!.improve_recovery_title,
+        description: AppLocalizations.of(context)!.improve_recovery_desc,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +139,9 @@ class _DashboardScreen extends State<DashboardScreen>
             }
             if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
             if (state.isUpdatedDataNeeded ?? false) _updateDataDialog(onUpdateClick: () => bloc.add(LogoutFromAppEventAction(onFinish: () => Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false,))));
+            if (state.foundedRoutineRemainingHours.orZero() > 0 && state.foundedRoutineRemainingHours.orZero() <= 3 && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) _workOutDialog(tim: state.foundedRoutineRemainingHours!);
+            if (state.foundedRoutineRemainingHours == 0 && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) _afterWorkoutDialog();
+            if (state.profile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) == true) _improveRecoveryDialog();
           },
           builder: (ctx, state) {
             return Scaffold(
@@ -127,7 +160,7 @@ class _DashboardScreen extends State<DashboardScreen>
                 backgroundColor: Colors.white,
                 actions: [
                   IconButton(
-                    onPressed: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName).then((value) => bloc.add(InitializeState())),
+                    onPressed: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName),
                     iconSize: 35.0,
                     icon: Image.asset(
                       'assets/icon/profile_icon.png',

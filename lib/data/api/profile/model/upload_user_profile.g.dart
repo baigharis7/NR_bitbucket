@@ -88,7 +88,7 @@ PhysicalCharacteristics _$PhysicalCharacteristicsFromJson(
     PhysicalCharacteristics(
       height: double.parse((json['height']).toString()),
       weight: double.parse((json['weight']).toString()),
-      unit: json['unit'] as String?,
+      unit: json['unit'] as int?,
       bodyFat: json['bodyFat'] as int?,
       waistMeasurement: json['waistMeasurement'] as int?,
     );

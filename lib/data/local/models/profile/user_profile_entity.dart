@@ -64,7 +64,7 @@ class MedicalSituation{
 class PhysicalCharacteristics{
   @HiveField(0) late double height;
   @HiveField(1) late double weight;
-  @HiveField(2) late String? unit;
+  @HiveField(2) late int? unit;
   @HiveField(3) int? bodyFat;
   @HiveField(4) int? waistMeasurement;
 

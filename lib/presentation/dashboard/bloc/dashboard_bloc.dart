@@ -14,6 +14,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_object
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/get_routines_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_day_calories_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/get_steps_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/get_today_step_interactor.dart';
@@ -30,6 +31,7 @@ import 'package:nutrenaissance_flutter/domain/models/dashboard/sugar_&_fiber_mod
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_completed.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
@@ -96,6 +98,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final SignOutInteractor signOutInteractor;
   final EraseDatabaseInteractor eraseDatabaseInteractor;
   final SharedPreferences sharedPreferences;
+  final GetRoutinesInteractor getRoutinesInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -135,6 +138,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.sharedPreferences,
     required this.eraseDatabaseInteractor,
     required this.signOutInteractor,
+    required this.getRoutinesInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -147,14 +151,15 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     isMenstruation: false,
   ),) {
     on<InitializeState>((event, emit) async {
-      emit(DashboardState(isLoading: true));
+      // _clearData();
+      emit(DashboardState(isLoading: true, foundedRoutineRemainingHours: null));
       state.userMicronutrients = await getUserMicronutrientsInteractor.execute() ?? [];
       state.userRdas = await getUserRdasInteractor.execute();
       state.userObjectives = await getUserObjectivesInteractor.execute();
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo,);
       state.profile = await getProfileInteractor.execute();
-      if (state.profile?.physicalCharacteristics?.unit == 'feet - lb') {
+      if (state.profile?.physicalCharacteristics?.unit == 2) {
         state.profile?.physicalCharacteristics?.weight = (state.profile?.physicalCharacteristics?.weight ?? 0) / 2.20462;
       }
       state.userKcal = getUserKcalSelectiveObjectives(state.profile?.kcal ?? 0);
@@ -230,6 +235,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       final getMasterFileVersionNutrientsInfo = await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo);
       final getMasterFile = await manageMasterFilesInteractor.execute(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
       state.isUpdatedDataNeeded = getMasterFileVersionCookingMethods != getMasterFile.cookingMethodsResponse?.v || getMasterFileVersionNutrientsInfo != getMasterFile.nutrientsInfoResponse?.v;
+      final routines = await getRoutinesInteractor.execute();
+      state.foundedRoutineRemainingHours = getFoundedRoutineTime(routines);
 
       if (event.onFinish != null) event.onFinish?.call();
       emit(state.copyWith(
@@ -736,13 +743,26 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     return _eventsHelper.foundEventsFromGivenDate(state.allCalendarEvents!, dateTime);
   }
 
-  double calculateTodayCreatineFill(UploadSupplementEvent todayCreatine) {
-    var fill = 0.0;
-    // if (toda) {
-    //
-    // }
+  int getFoundedRoutineTime(List<SportRoutineCompleted> routines) {
+    int remainingHours = -1;
+    routineLoop: for (SportRoutineCompleted routine in routines) {
+      if (routine.routineTime.orEmpty().isNotEmpty) {
+        final a = DateTimeHelper.dateTimeFromMilliseconds(int.parse(routine.routineTime ?? '0'));
+        final currentDateTime = DateTime.now();
+        if (a?.day == currentDateTime.day && a?.month == currentDateTime.month && a?.year == currentDateTime.year) {
+          if (a?.hour != null) {
+            remainingHours = a!.hour - currentDateTime.hour;
+            if (remainingHours > -1) break routineLoop;
+          }
+        }
+      }
+    }
+    return remainingHours;
+  }
 
-    return fill;
+  void _clearData() {
+    state.isUpdatedDataNeeded = null;
+    state.foundedRoutineRemainingHours = null;
   }
 
 }

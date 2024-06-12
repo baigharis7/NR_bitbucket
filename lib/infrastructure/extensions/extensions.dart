@@ -16,6 +16,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 
 import '../../domain/models/favorites/sport/add_sport_favorite.dart';
+import '../../domain/models/profile/height_weight_units.dart';
 import '../lists/SupplementInfo.dart';
 
 extension NullableStringExtensions on String? {
@@ -283,7 +284,14 @@ extension LanguageSelector<T> on T {
         } else {
           return (this as SupplementInfo).name_en.orEmpty();
         }
-      } else {
+      } else if (this is HeightWeightUnits) {
+        if (language == 'es') {
+          return (this as HeightWeightUnits).unitEs.orEmpty();
+        } else {
+          return (this as HeightWeightUnits).unitEn.orEmpty();
+        }
+      }
+      else {
         return '';
       }
     } else {

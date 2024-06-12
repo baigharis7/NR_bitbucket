@@ -77,7 +77,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
       state.filteredObjectives = getObjectives(combineList);
       state.isMenstruation = state.profile?.objectives?.contains(Constants.DURING_MENSTRUATION);
       state.isCold = state.profile?.objectives?.contains(Constants.IMPROVE_THE_IMMUNE_SYSTEM);
-      state.unitWeightHeight = HeightWeightUnits.getAllUnits().firstWhere((element) => element.unit == state.profile?.physicalCharacteristics?.unit, orElse: () => HeightWeightUnits());
+      state.unitWeightHeight = HeightWeightUnits.getAllUnits().firstWhere((element) => element.id == state.profile?.physicalCharacteristics?.unit, orElse: () => HeightWeightUnits());
       emit(state.copyWith(
         isLoading: false,
         onError: null,
@@ -449,7 +449,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
 
     on<SetUnitWeightHeight>((event, emit) {
       state.unitWeightHeight = event.unitWeightHeight;
-      state.profile?.physicalCharacteristics?.unit = event.unitWeightHeight?.unit;
+      state.profile?.physicalCharacteristics?.unit = event.unitWeightHeight?.id;
 
       emit(state.copyWith(isLoading: false, onError: null));
     },);
