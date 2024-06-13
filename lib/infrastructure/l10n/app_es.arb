@@ -415,7 +415,7 @@
     "carbohydrates" : "Su función es energética. De manera natural están presentes en cereales, tubérculos, legumbres, frutas, verduras, hortalizas, lácteos y en azúcares como la miel o el azúcar blanco.",
     "gross_kcal" : "Kcal Brutas (ingeridas)",
     "gross_average_kcal" : "Promedio Kcal ingeridas:",
-    "gross_description" : "Las obtenemos por los alimentos ingeridos a lo largo del día. El cuerpo humano tiene alguna reserva, pero la mayor parte de ellas se obtienen a través de los alimentos.",
+    "gross_description" : "Las obtenemos por los alimentos ingeridos a lo largo del día. El cuerpo humano tiene alguna reserva, pero la mayor parte de ellas se obtienen através de los alimentos.",
     "spent_Kcal_description" : "El organismo gasta energía para sus diferentes funciones basales y también para responder a las aumentadas por el ejercicio físico. Cuanta más actividad más gasto energético.",
     "basal_metabolic" : "Metabolismo Basal",
     "basal_metabolic_description" : "Es la energía que utilizamos en condiciones de reposo para mantener las funciones normales del organismo y la homeostasis (estado de equilibrio entre todos los sistemas corporales). Es el mayor consumo de la energía diaria, alrededor del 60-75%.",

@@ -298,7 +298,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         physicalCharacteristics: PhysicalCharacteristics(
           height: state.profile!.physicalCharacteristics!.height,
           weight: state.profile!.physicalCharacteristics!.weight,
-          unit: state.profile!.physicalCharacteristics?.unit,
+          unit: state.profile!.physicalCharacteristics?.unit ?? 1,
           bodyFat: state.profile!.physicalCharacteristics!.bodyFat,
           waistMeasurement: state.profile!.physicalCharacteristics!.waistMeasurement,),
         femaleCharacteristics: femaleCharacteristics,
@@ -368,7 +368,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         physicalCharacteristics: PhysicalCharacteristics(
           height: state.profile!.physicalCharacteristics!.height,
           weight: state.profile!.physicalCharacteristics!.weight,
-          unit: state.profile?.physicalCharacteristics?.unit,
+          unit: state.profile?.physicalCharacteristics?.unit ?? 1,
           bodyFat: state.profile!.physicalCharacteristics!.bodyFat,
           waistMeasurement: state.profile!.physicalCharacteristics!.waistMeasurement,),
         femaleCharacteristics: femaleCharacteristics,
