@@ -73,6 +73,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_dashbo
 import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_dashboard_events_sorted_by_date_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_events_sorted_by_date_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_events_sorted_by_date_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/eventssync/synchronize_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/eventssync/synchronize_events_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
@@ -144,6 +146,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/save_liqui
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/save_liquid_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/upload_liquid_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/upload_liquid_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/localstorage/erase_db_local_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/localstorage/erase_db_local_events_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/erase_database_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor_impl.dart';
@@ -340,7 +344,10 @@ import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/bloc/w
 import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/view/weekly_dashboard_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/welcome/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:upgrader/upgrader.dart';
+import 'data/api/eventssync/events_sync_api.dart';
 import 'data/local/models/steps/steps_entity.dart';
+import 'data/repository/eventssync/events_synchronization_repository_impl.dart';
 import 'domain/interactor/fecesurine/get_urine_by_date_interactor.dart';
 import 'domain/interactor/fecesurine/get_urine_by_date_interactor_impl.dart';
 import 'domain/interactor/foodevents/delete_food_event_interactor.dart';
@@ -371,6 +378,7 @@ void main() async {
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
   // await AndroidAlarmManager.initialize();
+  await Upgrader.clearSavedSettings();
 
   initLocalStorage();
 
@@ -430,15 +438,6 @@ void main() async {
   final GetWaterEventsTodayInteractor getWaterEventsTodayInteractor = GetWaterEventsTodayInteractorImpl(waterEventsRepository: waterEventsRepository);
   final SupplementApi supplementApi = SupplementApi(prefsRepository, authenticationService, chuck);
   final SupplementsRepository supplementsRepository = SupplementsRepositoryImpl(supplementApi: supplementApi, localStorageRepository: localStorageRepository);
-  final CalendarRepository calendarRepository = CalendarRepositoryImpl(
-    foodEventsRepository: foodEventsRepository,
-    sportEventsRepository: sportEventsRepository,
-    liquidEventsRepository: liquidEventsRepository,
-    waterEventsRepository: waterEventsRepository,
-    supplementsRepository: supplementsRepository,
-  );
-  final GetAllDashboardEventsSortedByDateInteractor getAllDashboardEventsSortedByDateInteractor = GetAllDashboardEventsSortedByDateInteractorImpl(calendarRepository: calendarRepository);
-  final GetAllEventsSortedByDateInteractor getAllEventsSortedByDateInteractor = GetAllEventsSortedByDateInteractorImpl(calendarRepository: calendarRepository);
   final FavoritesApi favoritesApi = FavoritesApi(prefsRepository, authenticationService, chuck);
   final FavoritesRepository favoritesRepository = FavoritesRepositoryImpl(localStorageRepository: localStorageRepository, favoritesApi: favoritesApi);
   final GetFoodFavoritesInteractor getFoodFavoritesInteractor = GetFoodFavoritesInteractorImpl(favoritesRepository: favoritesRepository);
@@ -510,6 +509,20 @@ void main() async {
   final SaveCollagenEventInteractor saveCollagenEventInteractor = SaveCollagenEventInteractorImpl(supplementsRepository: supplementsRepository);
   final GetMasterFileVersionInteractor getMasterFilesVersionInteractor = GetMasterFileVersionInteractorImpl(masterFilesRepository: masterFilesRepository);
   final ManageMasterFilesInteractor manageMasterFilesInteractor = ManageMasterFilesInteractorImpl(masterFilesRepository: masterFilesRepository);
+  final CalendarRepository calendarRepository = CalendarRepositoryImpl(
+      foodEventsRepository: foodEventsRepository,
+      sportEventsRepository: sportEventsRepository,
+      liquidEventsRepository: liquidEventsRepository,
+      waterEventsRepository: waterEventsRepository,
+      supplementsRepository: supplementsRepository,
+      fecesUrineRepository: fecesUrineRepository,
+  );
+  final GetAllDashboardEventsSortedByDateInteractor getAllDashboardEventsSortedByDateInteractor = GetAllDashboardEventsSortedByDateInteractorImpl(calendarRepository: calendarRepository);
+  final GetAllEventsSortedByDateInteractor getAllEventsSortedByDateInteractor = GetAllEventsSortedByDateInteractorImpl(calendarRepository: calendarRepository);
+  final EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor = EraseDBLocalEventsInteractorImpl(localStorageRepository: localStorageRepository);
+  final eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService, chuck);
+  final eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
+  final SynchronizeEventsInteractor synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
 
   final dashboardBloc = DashboardBloc(
     getAdviceInteractor: getAdviceInteractor,
@@ -550,6 +563,8 @@ void main() async {
     eraseDatabaseInteractor: eraseDatabaseInteractor,
     sharedPreferences: sharedPreferences,
     getRoutinesInteractor: getRoutinesInteractor,
+    eraseDBLocalEventsInteractor: eraseDBLocalEventsInteractor,
+    synchronizeEventsInteractor: synchronizeEventsInteractor,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(
@@ -677,6 +692,8 @@ void main() async {
     removeSportFavoriteInteractor: removeSportFavoriteInteractor,
     deleteSportEventInteractor: deleteSportEventInteractor,
     removeSportEventInteractor: removeSportEventInteractor,
+    eraseDBLocalEventsInteractor: eraseDBLocalEventsInteractor,
+    synchronizeEventsInteractor: synchronizeEventsInteractor,
   );
 
   final routineBloc = RoutinesBloc(

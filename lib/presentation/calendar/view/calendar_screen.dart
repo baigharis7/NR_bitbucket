@@ -64,6 +64,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<CalendarBloc>(context);
+    String currentLanguage = Localizations.localeOf(context).languageCode;
 
     return BlocProvider.value(
       value: bloc,
@@ -126,8 +127,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         elevation: 5,
                         margin: const EdgeInsets.all(Dimens.marginNormal),
                         child: TableCalendar(
+                          startingDayOfWeek: StartingDayOfWeek.monday,
+                          locale: currentLanguage,
                           daysOfWeekStyle: DaysOfWeekStyle(decoration: const BoxDecoration(color: AppColors.mountainMeadow,), weekendStyle: const TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),
-                              dowTextFormatter: (date, locale) => DateFormat('EEEE').format(date), weekdayStyle: const TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),),
+                              dowTextFormatter: (date, locale) => DateFormat('EEEE', currentLanguage).format(date), weekdayStyle: const TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),),
                           daysOfWeekHeight: Dimens.heightSmall-20,
                           firstDay: bloc.provideFirstDay(),
                           focusedDay: _focusedDay,
@@ -148,7 +151,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             return bloc.getEventsForDay(date);
                           },
                           calendarBuilders: CalendarBuilders(
-                            headerTitleBuilder: (context, day) => Container(alignment: Alignment.center, child: Text(DateFormat('MMMM yyyy').format(day))),
+                            headerTitleBuilder: (context, day) => Container(alignment: Alignment.center, child: Text(DateFormat('MMMM yyyy', currentLanguage).format(day))),
                             markerBuilder: (context, date, events) {
                               isFocusedDayDate = events.isNotEmpty;
                                 return _focusedDay != date ? Container(

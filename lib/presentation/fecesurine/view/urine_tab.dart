@@ -46,6 +46,7 @@ class _UrineTabState extends State<UrineTab> {
 
   @override
   Widget build(BuildContext context) {
+    String currentLanguage = Localizations.localeOf(context).languageCode;
     return BlocProvider.value(
       value: fecesUrineBloc,
       child: SafeArea(
@@ -77,7 +78,7 @@ class _UrineTabState extends State<UrineTab> {
                       insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding9Large -5),
                       contentPadding: EdgeInsets.zero,
                       children: [
-                        DashboardCalendarWidget(focused: selectedDateTime, callGetAllEvents: (day) => fecesUrineBloc.getEventsForDay(state.urineEvents.orEmpty(), day), selectedDateForEventsLoading: (date) {
+                        DashboardCalendarWidget(currentLanguage: currentLanguage, focused: selectedDateTime, callGetAllEvents: (day) => fecesUrineBloc.getEventsForDay(state.urineEvents.orEmpty(), day), selectedDateForEventsLoading: (date) {
                           selectedDateTime = date;
                           fecesUrineBloc.add(InitializationUrineEventAction(dateTime: date, onFinish: () => Navigator.pop(context)));
                         }),

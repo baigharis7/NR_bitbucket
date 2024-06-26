@@ -88,4 +88,5 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<UploadSupplementEventEntity?> getCollagenTodayEvent({DateTime? dateTime});
   Future<List> getAllCreatineEvents();
   Future<List> getAllCollagenEvents();
+  Future<bool> eraseDBEventsData();
 }

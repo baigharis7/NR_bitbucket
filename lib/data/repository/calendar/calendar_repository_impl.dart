@@ -1,6 +1,7 @@
 import 'package:nutrenaissance_flutter/domain/models/calendar/calendar_events.dart';
 import 'package:nutrenaissance_flutter/domain/models/calendar/dashboard_all_calendar_events.dart';
 import 'package:nutrenaissance_flutter/domain/repository/calendar/calendar_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/fecesurine/feces_urine_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/foodevents/food_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/liquidevents/liquid_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_events_repository.dart';
@@ -15,6 +16,7 @@ class CalendarRepositoryImpl extends CalendarRepository {
   final LiquidEventsRepository liquidEventsRepository;
   final WaterEventsRepository waterEventsRepository;
   final SupplementsRepository supplementsRepository;
+  final FecesUrineRepository fecesUrineRepository;
 
   CalendarRepositoryImpl({
     required this.foodEventsRepository,
@@ -22,6 +24,7 @@ class CalendarRepositoryImpl extends CalendarRepository {
     required this.liquidEventsRepository,
     required this.waterEventsRepository,
     required this.supplementsRepository,
+    required this.fecesUrineRepository,
   });
 
   @override
@@ -47,6 +50,8 @@ class CalendarRepositoryImpl extends CalendarRepository {
     final waterEvents = await waterEventsRepository.getAllWaterEvents()..sort((a, b) => (a.eventDate!).compareTo(b.eventDate!));
     final creatineEvents = await supplementsRepository.getAllCreatineEvents()..sort((a, b) => (a.eventId!).compareTo(b.eventId!),);
     final collagenEvents = await supplementsRepository.getAllCollagenEvents()..sort((a, b) => (a.eventId!).compareTo(b.eventId!),);
+    final faecesEvents = await fecesUrineRepository.getFecesEvents()..sort((a, b) => (a.eventId).compareTo(b.eventId),);
+    final urineEvents = await fecesUrineRepository.getUrineEvents()..sort((a, b) => (a.eventId).compareTo(b.eventId),);
 
     return DashboardAllCalendarEvents(
       foodEvents: foodEvents,
@@ -55,6 +60,8 @@ class CalendarRepositoryImpl extends CalendarRepository {
       waterEvents: waterEvents,
       creatineEvent: creatineEvents,
       collagenEvent: collagenEvents,
+      faecesEvents: faecesEvents,
+      urineEvents: urineEvents,
     );
   }
 

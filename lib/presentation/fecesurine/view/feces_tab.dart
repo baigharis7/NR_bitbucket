@@ -46,6 +46,7 @@ class _FecesTabState extends State<FecesTab> {
 
   @override
   Widget build(BuildContext context) {
+    String currentLanguage = Localizations.localeOf(context).languageCode;
     return BlocProvider.value(
       value: fecesUrineBloc,
       child: SafeArea(
@@ -91,7 +92,7 @@ class _FecesTabState extends State<FecesTab> {
                                       state.fecesEvents.orEmpty(), day), focused: selectedDateTime, selectedDateForEventsLoading: (date) {
                                 selectedDateTime = date;
                                 fecesUrineBloc.add(InitializationFecesEventAction(dateTime: date, onFinish: () => Navigator.pop(context)));
-                          }),
+                          }, currentLanguage: currentLanguage,),
                         ],
                       ),
                     );

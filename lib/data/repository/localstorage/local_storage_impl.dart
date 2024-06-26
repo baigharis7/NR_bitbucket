@@ -1190,4 +1190,24 @@ class LocalStorageImpl extends LocalStorageRepository {
     return allCollagenEvents;
   }
 
+  @override
+  Future<bool> eraseDBEventsData() async {
+    await _clearBox(_getFoodEventsBox);
+    await _clearBox(_getLiquidEventsBox);
+    await _clearBox(_getWaterEventsBox);
+    await _clearBox(_getSportEventsBox);
+    await _clearBox(_getSportRoutinesBox);
+    await _clearBox(_getFoodFavoritesBox);
+    await _clearBox(_getSportFavoritesBox);
+    await _clearBox(_getLiquidFavoritesBox);
+    await _clearBox(_getSubjectiveAnalysisResultsBox);
+    await _clearBox(_getRecipeFavoritesBox);
+    await _clearBox(_getFecesEventsBox);
+    await _clearBox(_getUrineEventsBox);
+    await _clearBox(_getCreatineEventsBox);
+    await _clearBox(_getCollagenEventsBox);
+
+    return true;
+  }
+
 }

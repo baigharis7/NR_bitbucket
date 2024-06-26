@@ -32,6 +32,8 @@ class LiquidSummaryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String currentLanguage = Localizations.localeOf(context).languageCode;
+
     return Card(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge, vertical: Dimens.marginNormal),
@@ -66,7 +68,7 @@ class LiquidSummaryWidget extends StatelessWidget {
             const Text('${Constants.DEFAULT_ADD_WATER_QUANTITY} L'),
             InkWell(
               onTap: () => screenToMove.call(),
-                child: Image.asset('assets/images/water.png', height: 70,),),
+                child: Image.asset(currentLanguage == Constants.LANGUAGE_ES ? 'assets/images/water.png' : 'assets/images/glass.png', height: 70,),),
             Container(
               margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal,),
               alignment: Alignment.centerRight,

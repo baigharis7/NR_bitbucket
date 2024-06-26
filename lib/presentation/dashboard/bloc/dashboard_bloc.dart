@@ -43,9 +43,11 @@ import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_sta
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/api/profile/model/user_profile_response.dart';
+import '../../../domain/interactor/eventssync/synchronize_events_interactor.dart';
 import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import '../../../domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
 import '../../../domain/interactor/liquidevents/get_week_liquid_events_interactor.dart';
+import '../../../domain/interactor/localstorage/erase_db_local_events_interactor.dart';
 import '../../../domain/interactor/login/erase_database_interactor.dart';
 import '../../../domain/interactor/masterfiles/get_master_file_version_interactor.dart';
 import '../../../domain/interactor/masterfiles/manage_master_files_interactor.dart';
@@ -99,6 +101,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final EraseDatabaseInteractor eraseDatabaseInteractor;
   final SharedPreferences sharedPreferences;
   final GetRoutinesInteractor getRoutinesInteractor;
+  final EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor;
+  final SynchronizeEventsInteractor synchronizeEventsInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -139,6 +143,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.eraseDatabaseInteractor,
     required this.signOutInteractor,
     required this.getRoutinesInteractor,
+    required this.eraseDBLocalEventsInteractor,
+    required this.synchronizeEventsInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -153,6 +159,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     on<InitializeState>((event, emit) async {
       // _clearData();
       emit(DashboardState(isLoading: true, foundedRoutineRemainingHours: null));
+      try { await eraseDBLocalEventsInteractor.execute(); await synchronizeEventsInteractor.execute(getUserIdInteractor.execute()); } catch (_) {}
       state.userMicronutrients = await getUserMicronutrientsInteractor.execute() ?? [];
       state.userRdas = await getUserRdasInteractor.execute();
       state.userObjectives = await getUserObjectivesInteractor.execute();
@@ -265,7 +272,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
     on<ReloadWaterInfoAction>((event, emit) async {
       state.waterEvents = await getWaterEventsTodayInteractor.execute();
-      emit(state.copyWith(isLoading: false, onError: null));
+      // emit(state.copyWith(isLoading: false, onError: null));
     });
 
     on<UpdateMenstruationStateAction>((event, emit) {
@@ -276,7 +283,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         state.isMenstruation = event.isMenstruation;
       }
 
-      emit(state.copyWith(isLoading: false));
+      // emit(state.copyWith(isLoading: false));
     },);
 
     on<UpdateColdStateAction>((event, emit) {
@@ -287,7 +294,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         state.isCold = event.isCold;
       }
 
-      emit(state.copyWith(isLoading: false));
+      // emit(state.copyWith(isLoading: false));
     },);
 
     on<UpdateProfileEventAction>((event, emit) async {
@@ -345,7 +352,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           try {
             await saveProfileInteractor.execute(profile);
             add(InitializeState());
-            emit(state.copyWith(isLoading: false, onError: null));
+            // emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {
             emit(state.copyWith(isLoading: false, onError: ErrorTypes.savingProfileError));
           }
@@ -372,8 +379,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         if (uploadSuccess) {
           try {
             saveWaterEventInteractor.execute(waterEventMaster);
+            state.waterEvents = await getWaterEventsTodayInteractor.execute();
             event.onFinish.call();
-            emit(state.copyWith(isLoading: false, onError: null));
+            // emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {
             emit(state.copyWith(isLoading: false, onError: ErrorTypes.locallySavingWaterEventError));
           }
@@ -396,7 +404,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         await uploadCreatineEventInteractor.execute(uploadSupplementCreatineEvent);
         try {
           await saveCreatineEventInteractor.execute(uploadSupplementCreatineEvent, !(event.supplementInfo?.uploadSupplementEvent?.eventId.isNull() ?? true));
-          emit(state.copyWith(isLoading: false));
+          // emit(state.copyWith(isLoading: false));
           add(InitializeState());
         } catch (_) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveCreatineError));
@@ -419,7 +427,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         await uploadCollagenEventInteractor.execute(uploadSupplementCreatineEvent);
         try {
           await saveCollagenEventInteractor.execute(uploadSupplementCreatineEvent, !(event.supplementInfo?.uploadSupplementEvent?.eventId.isNull() ?? true));
-          emit(state.copyWith(isLoading: false));
+          // emit(state.copyWith(isLoading: false));
           add(InitializeState());
         } catch (_) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveCollagenError));

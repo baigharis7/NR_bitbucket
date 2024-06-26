@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/eventssync/synchronize_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/get_sport_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/localstorage/erase_db_local_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_kcal_interactor.dart';
@@ -40,6 +42,8 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
   final RemoveSportFavoriteInteractor removeSportFavoriteInteractor;
   final DeleteSportEventInteractor deleteSportEventInteractor;
   final RemoveSportEventInteractor removeSportEventInteractor;
+  final EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor;
+  final SynchronizeEventsInteractor synchronizeEventsInteractor;
 
   JournalSportBloc({
     required this.getMasterFileInteractor,
@@ -56,6 +60,8 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
     required this.removeSportFavoriteInteractor,
     required this.deleteSportEventInteractor,
     required this.removeSportEventInteractor,
+    required this.eraseDBLocalEventsInteractor,
+    required this.synchronizeEventsInteractor,
   }) : super(
     JournalSportState(
       isLoading: false,
@@ -66,6 +72,7 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
   ) {
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
+      try { await eraseDBLocalEventsInteractor.execute(); await synchronizeEventsInteractor.execute(getUserIdInteractor.execute()); } catch (_) {}
       state.sportsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
       state.userKcal = await getUserKcalInteractor.execute();
       state.todaySportEvents = await getTodaySportsInteractor.execute();

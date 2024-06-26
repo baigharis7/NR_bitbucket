@@ -161,6 +161,8 @@ class EventsHelper {
       waterEvents: [],
       creatineEvent: [],
       collagenEvent: [],
+      faecesEvents: [],
+      urineEvents: [],
     );
 
     for (var event in calendarEvents.foodEvents!) {
@@ -193,6 +195,16 @@ class EventsHelper {
         calendarEvent.collagenEvent!.add(event);
       }
     }
+    for (var event in calendarEvents.faecesEvents!) {
+      if (_dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, event.eventId)) {
+        calendarEvent.faecesEvents!.add(event);
+      }
+    }
+    for (var event in calendarEvents.urineEvents!) {
+      if (_dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, event.eventId)) {
+        calendarEvent.urineEvents!.add(event);
+      }
+    }
 
     return joinAllCalendarEvents(calendarEvent);
   }
@@ -205,6 +217,8 @@ class EventsHelper {
     list.addAll(calendarEvents.waterEvents!);
     list.addAll(calendarEvents.creatineEvent!);
     list.addAll(calendarEvents.collagenEvent!);
+    list.addAll(calendarEvents.faecesEvents!);
+    list.addAll(calendarEvents.urineEvents!);
     return list;
   }
 

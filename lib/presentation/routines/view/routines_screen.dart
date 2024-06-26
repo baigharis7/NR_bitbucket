@@ -114,7 +114,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
           body: Column(children: [
             ...state.routines.orEmpty().map((sportRoutine) => CalenderEventListItem(
                 title: sportRoutine.sportName.toString(),
-                onEdit: () { Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: sportRoutine); },
+                onEdit: () { Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: sportRoutine).then((value) => Navigator.pop(context)); },
                 onDelete: () => bloc.add(RoutineDeleteEventAction(sportRoutineCompleted: sportRoutine, onFinish: () => Navigator.pop(context))),
               isFavourite: bloc.isFoundObjectFromFavoriteList(mapToSportFavoriteFromRoutine(sportRoutine)) == null ? false : true,
               onHeartClick: () {

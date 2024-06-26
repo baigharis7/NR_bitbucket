@@ -11,11 +11,13 @@ class DashboardCalendarWidget extends StatefulWidget {
   final Function callGetAllEvents;
   final Function(DateTime) selectedDateForEventsLoading;
   final DateTime? focused;
+  final String currentLanguage;
   const DashboardCalendarWidget({
     super.key,
     required this.callGetAllEvents,
     required this.selectedDateForEventsLoading,
     this.focused,
+    required this.currentLanguage,
   });
 
   @override
@@ -38,11 +40,13 @@ class _DashboardCalendarWidgetState extends State<DashboardCalendarWidget> {
   Widget build(BuildContext context) {
     return SizedBox(width: 400,child:
     TableCalendar(
+      startingDayOfWeek: StartingDayOfWeek.monday,
+      locale: widget.currentLanguage,
       headerStyle: const HeaderStyle(
         formatButtonVisible: false,
       ),
-      daysOfWeekStyle: DaysOfWeekStyle(decoration: const BoxDecoration(color: AppColors.mountainMeadow,), weekendStyle: const TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),
-        dowTextFormatter: (date, locale) => DateFormat('EEEE').format(date), weekdayStyle: const TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),),
+      daysOfWeekStyle: DaysOfWeekStyle(decoration: BoxDecoration(color: AppColors.mountainMeadow,), weekendStyle: TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),
+        dowTextFormatter: (date, locale) => DateFormat('EEEE', widget.currentLanguage).format(date), weekdayStyle: TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),),
       daysOfWeekHeight: Dimens.heightSmall-20,
       calendarStyle: const CalendarStyle(
         outsideDaysVisible: false,
@@ -63,7 +67,7 @@ class _DashboardCalendarWidgetState extends State<DashboardCalendarWidget> {
       },
       onPageChanged: (focusedDay) => _focusedDay = focusedDay,
       calendarBuilders: CalendarBuilders(
-        headerTitleBuilder: (context, day) => Container(alignment: Alignment.center, child: Text(DateFormat('MMMM yyyy').format(day))),
+        headerTitleBuilder: (context, day) => Container(alignment: Alignment.center, child: Text(DateFormat('MMMM yyyy', widget.currentLanguage).format(day))),
         markerBuilder: (context, date, events) {
           isFocusedDayDate = events.isNotEmpty;
           return _focusedDay != date ? Container(

@@ -45,6 +45,7 @@ class Constants {
   static const RECOVERY_AFTER_SPORT_INJURY = 49;
   static const TRYPTOPHAN_MG_PER_KG = 3.5;
   static const LOCALE_ES = 'es_ES';
+  static const LANGUAGE_ES = 'es';
 
   //Navigation id's
   static const DASHBOARD = 0;
