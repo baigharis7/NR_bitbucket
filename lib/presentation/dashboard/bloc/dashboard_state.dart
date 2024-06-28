@@ -49,6 +49,7 @@ class DashboardState {
   DashboardAllCalendarEvents? allCalendarEvents;
   bool? isUpdatedDataNeeded;
   int? foundedRoutineRemainingHours;
+  bool? isShowDialog;
 
   DashboardState({
     required this.isLoading,
@@ -82,6 +83,7 @@ class DashboardState {
     this.allCalendarEvents,
     this.isUpdatedDataNeeded,
     this.foundedRoutineRemainingHours,
+    this.isShowDialog,
   });
 
   DashboardState copyWith({
@@ -117,6 +119,7 @@ class DashboardState {
     DashboardAllCalendarEvents? allCalendarEvents,
     bool? isUpdatedDataNeeded,
     int? foundedRoutineRemainingHours,
+    bool? isShowDialog,
   }) {
     return DashboardState(
       isLoading: isLoading,
@@ -150,6 +153,7 @@ class DashboardState {
       allCalendarEvents: allCalendarEvents ?? this.allCalendarEvents,
       isUpdatedDataNeeded: isUpdatedDataNeeded ?? this.isUpdatedDataNeeded,
       foundedRoutineRemainingHours: foundedRoutineRemainingHours ?? this.foundedRoutineRemainingHours,
+      isShowDialog: isShowDialog ?? this.isShowDialog,
     );
   }
 

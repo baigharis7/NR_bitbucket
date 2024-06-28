@@ -18,6 +18,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 import '../../../domain/models/routines/sport_routine_completed.dart';
 import '../../../domain/models/sportevents/sport_event_complete.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
+import '../../../infrastructure/helpers/remove_diac.dart';
 import '../../widgets/add_item_name_dialog.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
 
@@ -36,6 +37,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
   TextEditingController _sportInputController = TextEditingController();
   late FocusNode _sporFocustInputController;
   late SportEventsBloc bloc;
+  int filteredListLength = 0;
 
   void _showConfirmationDialog(
       {required BuildContext context, required Function onResetState}) {
@@ -228,6 +230,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                               ),
                             ),
                             controller: textEditingController,
+                            buildCounter: (context, {required currentLength, required isFocused, maxLength}) => _sportInputController.text.isNotEmptyOrNull() && _sportInputController.text.length > 2 ? Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal), child: Text('$filteredListLength: ' '${filteredListLength > 1 ? AppLocalizations.of(context)!.items_found : AppLocalizations.of(context)!.item_found}',)) : Container(),
                             focusNode: focusNode,
                             onChanged: (value) {
                               setState(() {
@@ -240,12 +243,38 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                           if (textEditingValue.text == '') {
                             return const Iterable<String>.empty();
                           }
-                          return state.sportsInfo!.sportsInfoMaster
+                          final filteredList =  state.sportsInfo!.sportsInfoMaster
                               .map((sport) => sport.translate(context))
-                              .where((String name) => name
-                                  .toLowerCase()
-                                  .contains(
-                                      textEditingValue.text.toLowerCase()));
+                              .where((String option) => removeDiacritics(option).toLowerCase().contains(removeDiacritics(textEditingValue.text.toLowerCase())));
+                          filteredListLength = filteredList.length;
+                          return filteredList;
+                        },
+                        optionsViewBuilder: (context, onSelected, options) {
+                          return Align(
+                            alignment: Alignment.topLeft,
+                            child: Material(
+                              elevation: 4.0,
+                              child: Container(
+                                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - Dimens.margin_60, maxHeight: Dimens.heightXXLarge), // Adjust the width as needed
+                                child: Scrollbar(
+                                  thumbVisibility: true,
+                                  child: ListView(
+                                    children: ListTile.divideTiles(
+                                      context: context,
+                                      tiles: options.map((String option) {
+                                        return ListTile(
+                                          title: Text(option),
+                                          onTap: () {
+                                            onSelected(option);
+                                          },
+                                        );
+                                      }),
+                                    ).toList(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
                         },
                         onSelected: (sportName) {
                           final sportIntensities =

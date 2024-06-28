@@ -17,6 +17,8 @@ import 'package:nutrenaissance_flutter/presentation/liquidevent/view/add_liquid_
 import 'package:nutrenaissance_flutter/presentation/liquidevent/view/liquid_card.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
+import '../../../infrastructure/helpers/remove_diac.dart';
+
 class AddLiquidEventScreen extends StatefulWidget {
   const AddLiquidEventScreen({Key? key}) : super(key: key);
 
@@ -28,6 +30,7 @@ class AddLiquidEventScreen extends StatefulWidget {
 
 class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
   TextEditingController _foodInputController = TextEditingController();
+  int filteredListLength = 0;
 
   void _showConfirmationDialog(BuildContext context) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
@@ -233,6 +236,7 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
                                     ),
                                   ),
                                   controller: textEditingController,
+                                  buildCounter: (context, {required currentLength, required isFocused, maxLength}) => _foodInputController.text.isNotEmptyOrNull() && _foodInputController.text.length > 2 ? Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal), child: Text('$filteredListLength: ' '${filteredListLength > 1 ? AppLocalizations.of(context)!.items_found : AppLocalizations.of(context)!.item_found}',)) : Container(),
                                   focusNode: focusNode,
                                   onChanged: (value) => setState(() {
                                     textEditingController;
@@ -241,16 +245,39 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
                               },
                               optionsBuilder:
                                   (TextEditingValue textEditingValue) {
-                                if (textEditingValue.text == '' ||
-                                    textEditingValue.text.length < 2)
-                                  return const Iterable<String>.empty();
-                                return state.liquidNames!.foodsAndDrinksNames!
-                                    .drinkNames!
+                                if (textEditingValue.text == '' || textEditingValue.text.length < 2) return const Iterable<String>.empty();
+                                final filteredList =  state.liquidNames!.foodsAndDrinksNames!.drinkNames!
                                     .map((item) => item.translate(context))
-                                    .where((String option) => option
-                                        .toLowerCase()
-                                        .contains(textEditingValue.text
-                                            .toLowerCase()));
+                                    .where((String option) => removeDiacritics(option).toLowerCase().contains(removeDiacritics(textEditingValue.text.toLowerCase())));
+                                filteredListLength = filteredList.length;
+                                return filteredList;
+                              },
+                              optionsViewBuilder: (context, onSelected, options) {
+                                return Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Material(
+                                    elevation: 4.0,
+                                    child: Container(
+                                      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - Dimens.margin_60, maxHeight: Dimens.heightXXLarge), // Adjust the width as needed
+                                      child: Scrollbar(
+                                        thumbVisibility: true,
+                                        child: ListView(
+                                          children: ListTile.divideTiles(
+                                            context: context,
+                                            tiles: options.map((String option) {
+                                              return ListTile(
+                                                title: Text(option),
+                                                onTap: () {
+                                                  onSelected(option);
+                                                },
+                                              );
+                                            }),
+                                          ).toList(),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
                               },
                               onSelected: (option) {
                                 // TODO: manage possible errors

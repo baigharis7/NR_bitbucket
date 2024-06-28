@@ -20,6 +20,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.d
 
 import '../../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../../infrastructure/helpers/date_time_helper.dart';
+import '../../../../infrastructure/helpers/remove_diac.dart';
 import '../../../sportevent/view/sport_event_item.dart';
 import '../../../widgets/box_type_radio_text_widget.dart';
 
@@ -36,6 +37,7 @@ class CreateNewSportFavoriteScreen extends StatefulWidget {
 class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScreen> {
   TextEditingController _sportInputController = TextEditingController();
   late FocusNode _focusInputController;
+  int filteredListLength = 0;
 
   void _showConfirmationDialog(BuildContext context) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
@@ -194,6 +196,7 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                           ),
                           controller: textEditingController,
                           focusNode: focusNode,
+                          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => _sportInputController.text.isNotEmptyOrNull() && _sportInputController.text.length > 2 ? Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal), child: Text('$filteredListLength: ' '${filteredListLength > 1 ? AppLocalizations.of(context)!.items_found : AppLocalizations.of(context)!.item_found}',)) : Container(),
                           onChanged: (value) {
                             setState(() {
                               textEditingController;
@@ -203,7 +206,36 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                       },
                       optionsBuilder: (TextEditingValue textEditingValue) {
                         if (textEditingValue.text == '' || textEditingValue.text.length < 3) return const Iterable<String>.empty();
-                        return state.sportsInfo!.sportsInfoMaster.map((sport) => sport.translate(context)).where((String name) => name.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                        final filteredList =  state.sportsInfo!.sportsInfoMaster.map((sport) => sport.translate(context)).where((String option) => removeDiacritics(option).toLowerCase().contains(removeDiacritics(textEditingValue.text.toLowerCase())));
+                        filteredListLength = filteredList.length;
+                        return filteredList;
+                      },
+                      optionsViewBuilder: (context, onSelected, options) {
+                        return Align(
+                          alignment: Alignment.topLeft,
+                          child: Material(
+                            elevation: 4.0,
+                            child: Container(
+                              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - Dimens.margin_60, maxHeight: Dimens.heightXXLarge), // Adjust the width as needed
+                              child: Scrollbar(
+                                thumbVisibility: true,
+                                child: ListView(
+                                  children: ListTile.divideTiles(
+                                    context: context,
+                                    tiles: options.map((String option) {
+                                      return ListTile(
+                                        title: Text(option),
+                                        onTap: () {
+                                          onSelected(option);
+                                        },
+                                      );
+                                    }),
+                                  ).toList(),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
                       },
                       onSelected: (sportName) {
                         final sportIntensities = eventsHelper.getChosenSportIntensities(sportName, state.sportsInfo!, currentLanguage);

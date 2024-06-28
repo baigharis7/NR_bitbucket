@@ -158,7 +158,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   ),) {
     on<InitializeState>((event, emit) async {
       // _clearData();
-      emit(DashboardState(isLoading: true, foundedRoutineRemainingHours: null));
+      emit(state.copyWith(isLoading: true, foundedRoutineRemainingHours: null));
       try { await eraseDBLocalEventsInteractor.execute(); await synchronizeEventsInteractor.execute(getUserIdInteractor.execute()); } catch (_) {}
       state.userMicronutrients = await getUserMicronutrientsInteractor.execute() ?? [];
       state.userRdas = await getUserRdasInteractor.execute();
@@ -449,6 +449,12 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       } catch (errorSignOut) {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.signOutError));
       }
+    },);
+
+    on<ShowDialogEventAction>((event, emit) {
+      emit(state.copyWith(isLoading: true,));
+      state.isShowDialog = true;
+      emit(state.copyWith(isLoading: false));
     },);
   }
 

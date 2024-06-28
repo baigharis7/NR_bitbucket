@@ -78,3 +78,5 @@ class LogoutFromAppEventAction extends DashboardActions {
 
   LogoutFromAppEventAction({required this.onFinish});
 }
+
+class ShowDialogEventAction extends DashboardActions {}

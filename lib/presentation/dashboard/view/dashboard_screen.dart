@@ -56,10 +56,12 @@ class _DashboardScreen extends State<DashboardScreen>
 
   // StepCount? _stepCountValue;
   DateTime? selectedDateTime;
+  late DashboardBloc bloc;
 
   @override
   void initState() {
-    final bloc = BlocProvider.of<DashboardBloc>(context);
+    bloc = BlocProvider.of<DashboardBloc>(context);
+    bloc.state.isShowDialog = false;
     bloc.add(InitializeState());
 
     // RequestPermissionManager(PermissionType.activityRecognition)
@@ -93,39 +95,38 @@ class _DashboardScreen extends State<DashboardScreen>
       ),);
   }
   
-  Future<void> _workOutDialog({required int tim}) async {
+  Future<void> _workOutDialog({required int tim, Function? onFinish}) async {
     await showModalBottomSheet(showDragHandle: true, isDismissible: false, enableDrag: false, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(Dimens.borderXLarge), topRight: Radius.circular(Dimens.borderXLarge))),
       context: context, builder: (context) => DataBottomSheetWidget(
         icon: const Icon(Icons.info_outlined, color: AppColors.mountainMeadow, size: 45),
         title: sprintf(AppLocalizations.of(context)!.workout_dialog_title, [tim]),
       description: AppLocalizations.of(context)!.workout_dialog_desc,
     ),
-    );
+    ).then((value) => onFinish?.call());
   }
 
-  Future<void> _afterWorkoutDialog() async {
+  Future<void> _afterWorkoutDialog({Function? onFinish}) async {
     await showModalBottomSheet(showDragHandle: true, isDismissible: false, enableDrag: false, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(Dimens.borderXLarge), topRight: Radius.circular(Dimens.borderXLarge))),
       context: context, builder: (context) => DataBottomSheetWidget(
         icon: const Icon(Icons.info_outlined, color: AppColors.mountainMeadow, size: 45),
         title: AppLocalizations.of(context)!.after_workout_dialog_title,
         description: AppLocalizations.of(context)!.after_workout_dialog_desc,
       ),
-    );
+    ).then((value) => onFinish?.call());
   }
 
-  Future<void> _improveRecoveryDialog() async {
+  Future<void> _improveRecoveryDialog({Function? onFinish}) async {
     await showModalBottomSheet(showDragHandle: true, isDismissible: false, enableDrag: false, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(Dimens.borderXLarge), topRight: Radius.circular(Dimens.borderXLarge))),
       context: context, builder: (context) => DataBottomSheetWidget(
         icon: const Icon(Icons.info_outlined, color: AppColors.mountainMeadow, size: 45),
         title: AppLocalizations.of(context)!.improve_recovery_title,
         description: AppLocalizations.of(context)!.improve_recovery_desc,
       ),
-    );
+    ).then((value) => onFinish?.call());
   }
 
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<DashboardBloc>(context);
     final mediaQuerySize = MediaQuery.of(context).size;
     String currentLanguage = Localizations.localeOf(context).languageCode;
 
@@ -144,9 +145,9 @@ class _DashboardScreen extends State<DashboardScreen>
             }
             if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
             if ((state.isUpdatedDataNeeded ?? false) && state.isLoading == false) _updateDataDialog(onUpdateClick: () => bloc.add(LogoutFromAppEventAction(onFinish: () => Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false,))));
-            if (state.foundedRoutineRemainingHours.orZero() > 0 && state.foundedRoutineRemainingHours.orZero() <= 3 && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true && state.isLoading == false) _workOutDialog(tim: state.foundedRoutineRemainingHours!);
-            if (state.foundedRoutineRemainingHours == 0 && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true && state.isLoading == false) _afterWorkoutDialog();
-            if (state.profile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) == true && state.isLoading == false) _improveRecoveryDialog();
+            if (state.foundedRoutineRemainingHours.orZero() > 0 && state.foundedRoutineRemainingHours.orZero() <= 3 && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true && state.isLoading == false && (state.isShowDialog ?? false) == false) _workOutDialog(tim: state.foundedRoutineRemainingHours!, onFinish: () => bloc.add(ShowDialogEventAction()));
+            if (state.foundedRoutineRemainingHours == 0 && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true && state.isLoading == false && (state.isShowDialog ?? false) == false) _afterWorkoutDialog(onFinish: () => bloc.add(ShowDialogEventAction()));
+            if (state.profile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) == true && state.isLoading == false && (state.isShowDialog ?? false) == false) _improveRecoveryDialog(onFinish: () => bloc.add(ShowDialogEventAction()));
           },
           builder: (ctx, state) {
             return UpgradeAlert(

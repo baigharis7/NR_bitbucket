@@ -17,6 +17,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 import '../../../../domain/models/favorites/food/food_favorite.dart';
 import '../../../../domain/models/favorites/food/meal_time.dart';
 import '../../../../domain/models/favorites/sport/add_sport_favorite.dart';
+import '../../../../infrastructure/helpers/remove_diac.dart';
 import '../../../widgets/add_item_name_dialog.dart';
 import '../../../widgets/box_type_radio_text_widget.dart';
 import '../../../widgets/food_event_foods_cluster.dart';
@@ -38,6 +39,7 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
   late CreateNewFoodFavoriteBloc bloc;
   late Object? arguments;
   late FocusNode _focusInputController;
+  int filteredListLength = 0;
 
   void _showConfirmationDialog(BuildContext context, Function onFinish) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
@@ -227,6 +229,7 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
                             ),
                           ),
                           controller: textEditingController,
+                          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => _foodInputController.text.isNotEmptyOrNull() && _foodInputController.text.length > 2 ? Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal), child: Text('$filteredListLength: ' '${filteredListLength > 1 ? AppLocalizations.of(context)!.items_found : AppLocalizations.of(context)!.item_found}',)) : Container(),
                           focusNode: focusNode,
                           onChanged: (value) {
                             setState(() {
@@ -237,9 +240,38 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
                       },
                       optionsBuilder: (TextEditingValue textEditingValue) {
                         if (textEditingValue.text == '' || textEditingValue.text.length < 3) return const Iterable<String>.empty();
-                        return state.foodNames!.foodsAndDrinksNames!.foodNames!
+                        final filteredList =  state.foodNames!.foodsAndDrinksNames!.foodNames!
                             .map((item) => item.translate(context))
-                            .where((String option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                            .where((String option) => removeDiacritics(option).toLowerCase().contains(removeDiacritics(textEditingValue.text.toLowerCase())));
+                        filteredListLength = filteredList.length;
+                        return filteredList;
+                      },
+                      optionsViewBuilder: (context, onSelected, options) {
+                        return Align(
+                          alignment: Alignment.topLeft,
+                          child: Material(
+                            elevation: 4.0,
+                            child: Container(
+                              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - Dimens.margin_60, maxHeight: Dimens.heightXXLarge), // Adjust the width as needed
+                              child: Scrollbar(
+                                thumbVisibility: true,
+                                child: ListView(
+                                  children: ListTile.divideTiles(
+                                    context: context,
+                                    tiles: options.map((String option) {
+                                      return ListTile(
+                                        title: Text(option),
+                                        onTap: () {
+                                          onSelected(option);
+                                        },
+                                      );
+                                    }),
+                                  ).toList(),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
                       },
                       onSelected: (option) {
                         // TODO: manage possible errors
