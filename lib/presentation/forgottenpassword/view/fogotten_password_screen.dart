@@ -58,6 +58,14 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
           },
           builder: (context, state) {
             return Scaffold(
+                appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                titleSpacing: Dimens.marginNormal,
+                elevation: 0,
+                leading: IconButton(
+                onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 25,),
+            ),),
               backgroundColor: Colors.white,
               body: Form(
                 key: _formKey,

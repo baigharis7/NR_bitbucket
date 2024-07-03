@@ -15,7 +15,7 @@ class DateTimeHelper {
 
   DateTime provideMondayAtMidnightDate() {
     DateTime currentDate = provideCurrentDate();
-    DateTime monday = currentDate.subtract(Duration(days: currentDate.weekday));
+    DateTime monday = currentDate.subtract(Duration(days: currentDate.weekday - 1));
     return DateTime(monday.year, monday.month, monday.day, 0, 0, 0, 0, 0);
   }
 

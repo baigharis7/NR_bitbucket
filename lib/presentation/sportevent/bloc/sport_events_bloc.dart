@@ -281,13 +281,14 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
 
     on<FinishCreateRoutineEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
+      final routineTime = calculateMillisecondsStart(state.routineHour!, state.routineDate!).toString();
       final sportRoutine = SportRoutineCompleted(
         userId: getUserIdInteractor.execute(),
         eventId: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
-        info: state.info.orEmpty().map((e) => Info(id: e.id, nameEn: e.name_en, nameEs: e.name_es, intensity: e.intensity, minutes: e.minutes, timeStart: e.timeStart)).toList(),
+        info: state.info.orEmpty().map((e) => Info(id: e.id, nameEn: e.name_en, nameEs: e.name_es, intensity: e.intensity, minutes: e.minutes, timeStart: int.tryParse(routineTime))).toList(),
         comment: state.comment,
         sportName: state.eventSportName,
-        routineTime: calculateMillisecondsStart(state.routineHour!, state.routineDate!).toString(),
+        routineTime: routineTime,
       );
 
       try {
@@ -312,6 +313,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       for (SportInfo sportInfo in state.info.orEmpty()) {
         emit(state.copyWith(isLoading: true));
         final sportNam = findSportById(sportInfo.id!).translate(event.context).toString();
+        sportInfo.timeStart = DateTime.now().millisecondsSinceEpoch;
 
         final sportEventSimple = SportEventSimple(
           userId: getUserIdInteractor.execute(),

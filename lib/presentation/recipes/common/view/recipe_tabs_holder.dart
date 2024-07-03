@@ -40,7 +40,7 @@ class _RecipesTabsHolderState extends State<RecipesTabsHolder>
       });
     });
     blocRecipe = BlocProvider.of<RecipeTabBloc>(context);
-    blocRecipe.add(InitializationRecipeAction());
+    // blocRecipe.add(InitializationRecipeAction());
     super.initState();
   }
 

@@ -24,7 +24,7 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.anti_flash_white,
+      color: Colors.grey.shade400,
       child: Column(
         children: [
           Container(
@@ -40,7 +40,7 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
                     ),
                     child: Text(
                       recommendationsFoodItem.recommendationGroup.translate(context),
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.mountainMeadow),
+                      style: const TextStyle(fontWeight: FontWeight.bold,),
                       overflow: TextOverflow.clip,
                     ),
                   ),
@@ -69,7 +69,7 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
           ...recommendationsFoodItem.objFoods.take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodItemMaster.id);
             return Container(
-              color: AppColors.mountainMeadow.withOpacity(0.5),
+              color: Colors.white,
               child: RecommendationsItem(
                 foodItemMaster: food.foodItemMaster,
                 alternativeUsualHealthyFoods: const [],
@@ -81,13 +81,14 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
                 },
                 onAdd: () => onAdd.call(food.foodItemMaster),
                 isChecked: isCheckBoxChecked,
+                checkBoxColor: AppColors.mountainMeadow,
               ),
             );
           }),
           ...recommendationsFoodItem.deficitFoods.take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodItemMaster.id);
             return Container(
-              color: AppColors.true_blue.withOpacity(0.5),
+              color: Colors.white,
               child: RecommendationsItem(
                 foodItemMaster: food.foodItemMaster,
                 alternativeUsualHealthyFoods: const [],
@@ -106,7 +107,7 @@ class RecommendationsFoodGroupCard extends StatelessWidget {
           ...recommendationsFoodItem.usualUnHealthyFoods.orEmpty().take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
             final bool isCheckBoxChecked = isChecked.call(food.foodInfo.foodItemMaster.id);
             return Container(
-              color: Colors.orange.shade400,
+              color: Colors.white,
               child: RecommendationsItem(
                 foodItemMaster: food.foodInfo.foodItemMaster,
                 onAlternativeAdd: (recommendationFoodInfo) => onAdd.call(recommendationFoodInfo?.foodItemMaster),

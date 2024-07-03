@@ -160,13 +160,16 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
     },);
 
     on<FinishCreateRoutineAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      final routineTime = DateTimeHelper.calculateMillisecondsFromTimeOfDayDateTime(state.routineHour, state.routineDate).toString();
       final sportFavorite = AddSportFavorite(
         userId: getUserIdInteractor.execute(),
         eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
         title: state.favoriteSportName,
         comment: state.comment,
-        info: state.info,
-        routineTime: DateTimeHelper.calculateMillisecondsFromTimeOfDayDateTime(state.routineHour, state.routineDate).toString(),
+        // info: state.info,
+        info: state.info?.map((favSport) => AddSportFavInfo(id: favSport.id, minutes: favSport.minutes, intensity: favSport.intensity, timeStart: int.tryParse(routineTime), name_en: favSport.name_en, name_es: favSport.name_es)).toList(),
+        routineTime: routineTime,
       );
 
       try {
@@ -189,13 +192,14 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
       for (AddSportFavInfo sport in state.info.orEmpty()) {
         emit(state.copyWith(isLoading: true));
         final favSportName = sport.translate(event.context);
+        sport.timeStart = DateTime.now().millisecondsSinceEpoch;
 
         final sportFavorite = AddSportFavorite(
           userId: getUserIdInteractor.execute(),
           eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
           title: favSportName,
           comment: state.comment,
-          info: state.info,
+          info: [sport],
         );
 
         try {

@@ -46,6 +46,7 @@ class _RecommendationsItemState extends State<RecommendationsItem> {
             child: Text(
               widget.foodItemMaster.translate(context),
               overflow: TextOverflow.clip,
+              style: TextStyle(color: widget.checkBoxColor),
             ),
           ),
           /*if (widget.alternativeUsualHealthyFoods.orEmpty().isNotEmpty) */Expanded(

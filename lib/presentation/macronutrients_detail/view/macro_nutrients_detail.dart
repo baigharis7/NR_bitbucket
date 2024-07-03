@@ -118,6 +118,12 @@ class _MacroNutrientsDetailScreenState extends State<MacroNutrientsDetailScreen>
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+                          child: WeeklyNutrientGraphic(
+                            title: AppLocalizations.of(context)!.this_week,
+                            data: state.macronutrientsWeekly ?? [],),
+                        ),
                         ...state.macronutrients.orEmpty().map((item) {
                           var description = '';
                           if (item.nutrientInfoMaster.officialName == 'proteinSci') {
@@ -136,12 +142,6 @@ class _MacroNutrientsDetailScreenState extends State<MacroNutrientsDetailScreen>
                           //   return Container();
                           // }
                         }),
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                          child: WeeklyNutrientGraphic(
-                            title: AppLocalizations.of(context)!.this_week,
-                            data: state.macronutrientsWeekly ?? [],),
-                        ),
                       ],
                     ),
                   ),

@@ -88,6 +88,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           },
           builder: (context, state) {
             return Scaffold(
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                titleSpacing: Dimens.marginNormal,
+                elevation: 0,
+                leading: IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 25,),
+                ),),
               body: SingleChildScrollView(
                 padding: const EdgeInsets.only(top: Dimens.padding5Large),
                 child: Form(
