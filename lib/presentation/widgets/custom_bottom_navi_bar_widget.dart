@@ -53,28 +53,32 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget> {
         switch(value) {
           case 0: {
             if (ModalRoute.of(context)!.settings.name != DashboardScreen.routeName) {
-              Navigator.popAndPushNamed(context, DashboardScreen.routeName).then((value) {});
+              // Navigator.popAndPushNamed(context, DashboardScreen.routeName).then((value) {});
+              Navigator.pushNamedAndRemoveUntil(context, DashboardScreen.routeName, (route) => false,).then((value) => {});
             }
           }
           break;
 
           case 1: {
             if (ModalRoute.of(context)!.settings.name != JournalScreen.routeName) {
-              Navigator.popAndPushNamed(context, JournalScreen.routeName).then((value) {});
+              // Navigator.popAndPushNamed(context, JournalScreen.routeName).then((value) {});
+              Navigator.pushNamedAndRemoveUntil(context, JournalScreen.routeName, (route) => false,).then((value) => {});
             }
           }
           break;
 
           case 2: {
             if (ModalRoute.of(context)!.settings.name != RecommendationsTabHolder.routeName) {
-              Navigator.popAndPushNamed(context, RecommendationsTabHolder.routeName).then((value) {});
+              // Navigator.popAndPushNamed(context, RecommendationsTabHolder.routeName).then((value) {});
+              Navigator.pushNamedAndRemoveUntil(context, RecommendationsTabHolder.routeName, (route) => false,).then((value) => {});
             }
           }
           break;
 
           case 3: {
             if (ModalRoute.of(context)!.settings.name != RecipesTabsHolder.routeName) {
-              Navigator.popAndPushNamed(context, RecipesTabsHolder.routeName).then((value) {});
+              // Navigator.popAndPushNamed(context, RecipesTabsHolder.routeName).then((value) {});
+              Navigator.pushNamedAndRemoveUntil(context, RecipesTabsHolder.routeName, (route) => false,).then((value) => {});
             }
           }
           break;

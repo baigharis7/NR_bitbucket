@@ -16,24 +16,24 @@ abstract class ApiHelper {
 
   Future<Map<String, dynamic>> post(Uri call, dynamic body) async {
     String idToken = await _getToken();
-    // final httpRequestBuild = http.post(
-    //   call,
-    //   body: json.encode(body),
-    //   headers: {
-    //     'Authorization': idToken
-    //   },
-    // );
-    // if (kDebugMode) {
-    //   httpRequestBuild.interceptWithChuck(_chuck);
-    // }
-    // final http.Response response = await httpRequestBuild;
-    final http.Response response = await http.post(
-        call,
-        body: json.encode(body),
-        headers: {
-          'Authorization': idToken
-        },
-    ).interceptWithChuck(_chuck);
+    final httpRequestBuild = http.post(
+      call,
+      body: json.encode(body),
+      headers: {
+        'Authorization': idToken
+      },
+    );
+    if (kDebugMode) {
+      httpRequestBuild.interceptWithChuck(_chuck);
+    }
+    final http.Response response = await httpRequestBuild;
+    // final http.Response response = await http.post(
+    //     call,
+    //     body: json.encode(body),
+    //     headers: {
+    //       'Authorization': idToken
+    //     },
+    // ).interceptWithChuck(_chuck);
 
     if (response.statusCode == 200) {
       try {
@@ -49,12 +49,22 @@ abstract class ApiHelper {
 
   Future<Map<String, dynamic>> get(Uri call) async {
     String idToken = await _getToken();
-    final http.Response response = await http.get(
-        call,
-        headers: {
-          'Authorization': idToken
-        },
-    ).interceptWithChuck(_chuck);
+    final httpRequestBuild = http.get(
+      call,
+      headers: {
+        'Authorization': idToken
+      },
+    );
+    if (kDebugMode) {
+      httpRequestBuild.interceptWithChuck(_chuck);
+    }
+    final http.Response response = await httpRequestBuild;
+    // final http.Response response = await http.get(
+    //     call,
+    //     headers: {
+    //       'Authorization': idToken
+    //     },
+    // ).interceptWithChuck(_chuck);
 
     if (response.statusCode == 200) {
       try {
@@ -70,13 +80,24 @@ abstract class ApiHelper {
 
   Future<Map<String, dynamic>> delete(Uri call, dynamic body) async {
     String idToken = await _getToken();
-    final http.Response response = await http.delete(
+    final httpRequestBuild = http.delete(
       call,
       body: json.encode(body),
       headers: {
         'Authorization': idToken
       },
-    ).interceptWithChuck(_chuck);
+    );
+    if (kDebugMode) {
+      httpRequestBuild.interceptWithChuck(_chuck);
+    }
+    final http.Response response = await httpRequestBuild;
+    // final http.Response response = await http.delete(
+    //   call,
+    //   body: json.encode(body),
+    //   headers: {
+    //     'Authorization': idToken
+    //   },
+    // ).interceptWithChuck(_chuck);
 
     if (response.statusCode == 200) {
       try {
