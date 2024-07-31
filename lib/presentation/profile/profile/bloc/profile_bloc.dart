@@ -87,6 +87,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     on<InitializeStateFromRegistryAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
       state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo,);
+      state.objectivesInfoMaster?.objectives.removeWhere((element) => element.id == Constants.DURING_MENSTRUATION);
       state.foodsAndDrinksNamesMaster = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames,);
       state.recommendationGroupsMaster = await getMasterFileInteractor.execute(MasterFilesType.recommendationGroups);
       state.aversionsUI = populateAversions(event.context);
