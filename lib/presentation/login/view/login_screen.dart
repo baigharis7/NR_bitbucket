@@ -154,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen>
                         onPressed: () {
                           if (_mfaController.text.isNotEmpty) sendVerificationCode.call(_mfaController.text);
                           _mfaController.text = '';
-                          // Navigator.pop(context);
+                          Navigator.pop(context);
                         },
                       ),
                     ),
