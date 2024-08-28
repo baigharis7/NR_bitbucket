@@ -134,6 +134,10 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.error_saving_collagen;
     case ErrorTypes.limitError:
       return stringResolver.limit_error;
+    case ErrorTypes.uploadLiquidEventError:
+      return stringResolver.upload_liquid_event_error;
+    case ErrorTypes.saveLiquidEventError:
+      return stringResolver.save_liquid_event_error;
   }
 }
 

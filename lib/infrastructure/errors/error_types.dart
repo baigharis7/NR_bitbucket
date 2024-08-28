@@ -62,6 +62,8 @@ enum ErrorTypes {
   saveCreatineError,
   uploadCollagenError,
   saveCollagenError,
+  uploadLiquidEventError,
+  saveLiquidEventError,
 }
 
 enum FormErrorTypes {

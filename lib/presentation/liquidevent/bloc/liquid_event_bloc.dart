@@ -98,15 +98,15 @@ class LiquidEventBloc extends BaseBloc<LiquidEventActions, LiquidEventState> {
             event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
           } catch (error) {
-            state.onError = ErrorTypes.locallySavingFoodEventError;
+            state.onError = ErrorTypes.saveLiquidEventError;
             emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
           }
         } else {
-          state.onError = ErrorTypes.uploadingFoodEventError;
+          state.onError = ErrorTypes.uploadLiquidEventError;
           emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
         }
       } catch (error) {
-        state.onError = ErrorTypes.uploadingFoodEventError;
+        state.onError = ErrorTypes.uploadLiquidEventError;
         emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
       }
     });
@@ -153,15 +153,15 @@ class LiquidEventBloc extends BaseBloc<LiquidEventActions, LiquidEventState> {
             event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
           } catch (error) {
-            state.onError = ErrorTypes.locallySavingFoodEventError;
+            state.onError = ErrorTypes.saveLiquidEventError;
             emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
           }
         } else {
-          state.onError = ErrorTypes.uploadingFoodEventError;
+          state.onError = ErrorTypes.uploadLiquidEventError;
           emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
         }
       } catch (error) {
-        state.onError = ErrorTypes.uploadingFoodEventError;
+        state.onError = ErrorTypes.uploadLiquidEventError;
         emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
       }
     },);

@@ -42,7 +42,7 @@ class SimpleItemHelper {
     ).units;
     List<SimpleItem> unitsList = [];
 
-    units = units.isEmpty ? '-1,1' : units + '|-1,1';
+    units = units.isEmpty ? '-1,1|-2,2' : units.replaceRange(0, 0, '-1,1|-2,2|');
     if (units.isNotEmptyOrNull()) {
       unitsList.addAll(units.split('|').map((unit) {
         final unitId = int.parse(unit.split(',')[0]);
