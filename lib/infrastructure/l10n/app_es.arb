@@ -190,6 +190,7 @@
     "username_empty_or_null_error" : "Este campo no tiene el formato correcto",
     "retry_sign_up" : "Vuelva a intentar la operación e ingrese otro nombre de usuario o correo electrónico.",
     "invalid_code" : "Se proporcionó un código de verificación no válido. Inténtelo de nuevo.",
+    "operation_not_completed" : "No hemos podido.",
     "email_format_error" : "El email introducido contiene errores",
     "empty_repeat_password" : "Este campo no puede estar vacío",
     "must_complete_field" : "Debes completar este campo",

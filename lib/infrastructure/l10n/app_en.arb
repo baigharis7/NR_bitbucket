@@ -190,6 +190,7 @@
     "username_empty_or_null_error" : "This field doesn't have the right format",
     "retry_sign_up" : "Retry operation and enter another username or email.",
     "invalid_code" : "Invalid verification code provided, please try again.",
+    "operation_not_completed" : "Operation couldn't be completed",
     "email_format_error" : "The email doesn't have the right format",
     "empty_repeat_password" : "This field can't be empty",
     "must_complete_field" : "You must complete this field",

@@ -177,6 +177,8 @@ String userError(BuildContext context, Object error) {
       return stringResolver.retry_sign_up;
     case ErrorTypStrings.INVALID_CODE:
       return stringResolver.invalid_code;
+    case ErrorTypStrings.OPERATION_NOT_COMPLETED_ES:
+      return stringResolver.operation_not_completed;
     default:
       return result;
   }
