@@ -273,6 +273,7 @@ class LiquidParamsAdapter extends TypeAdapter<LiquidParams> {
       fields[113] as double?,
       fields[114] as double?,
       fields[115] as double?,
+      fields[116] as double?,
     )..sulfur = fields[68] as double?;
   }
 
@@ -511,7 +512,9 @@ class LiquidParamsAdapter extends TypeAdapter<LiquidParams> {
       ..writeByte(114)
       ..write(obj.bromine)
       ..writeByte(115)
-      ..write(obj.arsenInorganic);
+      ..write(obj.arsenInorganic)
+      ..writeByte(116)
+      ..write(obj.omega3);
   }
 
   @override
@@ -706,6 +709,7 @@ LiquidParams _$LiquidParamsFromJson(Map<String, dynamic> json) => LiquidParams(
       (json['boron'] as num?)?.toDouble(),
       (json['bromine'] as num?)?.toDouble(),
       (json['arsenInorganic'] as num?)?.toDouble(),
+      (json['omega3'] as num?)?.toDouble(),
     )..sulfur = (json['sulfur'] as num?)?.toDouble();
 
 Map<String, dynamic> _$LiquidParamsToJson(LiquidParams instance) =>
@@ -826,4 +830,5 @@ Map<String, dynamic> _$LiquidParamsToJson(LiquidParams instance) =>
       'boron': instance.boron,
       'bromine': instance.bromine,
       'arsenInorganic': instance.arsenInorganic,
+      'omega3': instance.omega3,
     };

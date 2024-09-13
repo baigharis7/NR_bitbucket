@@ -209,6 +209,7 @@ class Params {
   @HiveField(113) double? boron;
   @HiveField(114) double? bromine;
   @HiveField(115) double? arsenInorganic;
+  @HiveField(116) double? omega3;
 
   Params(
         this.alanine,
@@ -326,6 +327,7 @@ class Params {
         this.boron,
         this.bromine,
         this.arsenInorganic,
+        this.omega3,
       );
 
   factory Params.fromJson(Map<String, dynamic> json) => _$ParamsFromJson(json);

@@ -193,6 +193,7 @@ class LiquidParams {
   @HiveField(113) double? boron;
   @HiveField(114) double? bromine;
   @HiveField(115) double? arsenInorganic;
+  @HiveField(116) double? omega3;
 
   LiquidParams(
       this.alanine,
@@ -310,6 +311,7 @@ class LiquidParams {
       this.boron,
       this.bromine,
       this.arsenInorganic,
+      this.omega3,
       );
 
   factory LiquidParams.fromJson(Map<String, dynamic> json) => _$LiquidParamsFromJson(json);

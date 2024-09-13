@@ -183,6 +183,7 @@ Params _$ParamsFromJson(Map<String, dynamic> json) => Params(
       (json['boron'] as num?)?.toDouble(),
       (json['bromine'] as num?)?.toDouble(),
       (json['arsenInorganic'] as num?)?.toDouble(),
+      (json['omega3'] as num?)?.toDouble(),
     )..sulfur = (json['sulfur'] as num?)?.toDouble();
 
 Map<String, dynamic> _$ParamsToJson(Params instance) => <String, dynamic>{
@@ -302,4 +303,5 @@ Map<String, dynamic> _$ParamsToJson(Params instance) => <String, dynamic>{
       'boron': instance.boron,
       'bromine': instance.bromine,
       'arsenInorganic': instance.arsenInorganic,
+      'omega3': instance.omega3,
     };

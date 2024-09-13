@@ -288,13 +288,14 @@ class ParamsAdapter extends TypeAdapter<Params> {
       fields[113] as double?,
       fields[114] as double?,
       fields[115] as double?,
+      fields[116] as double?,
     )..sulfur = fields[68] as double?;
   }
 
   @override
   void write(BinaryWriter writer, Params obj) {
     writer
-      ..writeByte(116)
+      ..writeByte(117)
       ..writeByte(0)
       ..write(obj.alanine)
       ..writeByte(1)
@@ -526,7 +527,9 @@ class ParamsAdapter extends TypeAdapter<Params> {
       ..writeByte(114)
       ..write(obj.bromine)
       ..writeByte(115)
-      ..write(obj.arsenInorganic);
+      ..write(obj.arsenInorganic)
+      ..writeByte(116)
+      ..write(obj.omega3);
   }
 
   @override
@@ -728,6 +731,7 @@ Params _$ParamsFromJson(Map<String, dynamic> json) => Params(
       (json['boron'] as num?)?.toDouble(),
       (json['bromine'] as num?)?.toDouble(),
       (json['arsenInorganic'] as num?)?.toDouble(),
+      (json['omega3'] as num?)?.toDouble(),
     )..sulfur = (json['sulfur'] as num?)?.toDouble();
 
 Map<String, dynamic> _$ParamsToJson(Params instance) => <String, dynamic>{
@@ -847,4 +851,5 @@ Map<String, dynamic> _$ParamsToJson(Params instance) => <String, dynamic>{
       'boron': instance.boron,
       'bromine': instance.bromine,
       'arsenInorganic': instance.arsenInorganic,
+      'omega3': instance.omega3,
     };

@@ -125,6 +125,7 @@ entity.FoodEventEntity mapToFoodEventEntity(UploadFoodEvent uploadFoodEvent) {
         foodInfoFromComplete.params!.boron,
         foodInfoFromComplete.params!.bromine,
         foodInfoFromComplete.params!.arsenInorganic,
+        foodInfoFromComplete.params!.omega3,
     );
     entity.EventInfo eventInfo = entity.EventInfo(
       foodInfoFromComplete.eventInfo!.cookingMethod,
@@ -282,6 +283,7 @@ domain.FoodEventComplete mapToFoodEventComplete(entity.FoodEventEntity foodEvent
         foodInfoFromEntity.params!.boron,
         foodInfoFromEntity.params!.bromine,
         foodInfoFromEntity.params!.arsenInorganic,
+        foodInfoFromEntity.params!.omega3,
     );
     final eventInfo = domain.EventInfo(
       foodInfoFromEntity.eventInfo!.cookingMethod,

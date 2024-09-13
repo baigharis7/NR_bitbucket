@@ -198,7 +198,8 @@ class Params {
   double? boron;
   double? bromine;
   double? arsenInorganic;
-  
+  double? omega3;
+
   Params(
       this.alanine,
       this.arginine,
@@ -314,7 +315,7 @@ class Params {
       this.aluminum,
       this.boron,
       this.bromine,
-      this.arsenInorganic,
+      this.arsenInorganic, this.omega3,
   );
 
   factory Params.fromJson(Map<String, dynamic> json) => _$ParamsFromJson(json);

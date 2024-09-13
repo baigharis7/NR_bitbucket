@@ -258,7 +258,6 @@ class _FoodFavItemState extends State<FoodFavItem> {
                                         child: SizedBox(
                                           child: Text(
                                             item.name,
-                                            overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(
                                               fontSize: Dimens.fontSizeNormal,
                                             ),

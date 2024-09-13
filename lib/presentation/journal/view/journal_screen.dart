@@ -133,7 +133,7 @@ class _JournalScreenState extends State<JournalScreen> {
                                         onAddPressed: () => bloc.add(LiquidsClickAction(action: () => Navigator.of(context).pushNamed(AddLiquidEventScreen.routeName))),
                                         onWatchPressed: () => bloc.add(LiquidsClickAction(action: () => Navigator.of(context).pushNamed(JournalLiquidScreen.routeName))),
                                         centerWidget: SizedBox(
-                                          height: 90,
+                                          height: 80,
                                           width: 15,
                                           child: FillVerticalBar(
                                             fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.todayFoodEvents.orEmpty(), ((state.userProfile?.physicalCharacteristics?.weight ?? 0) * 0.035)),

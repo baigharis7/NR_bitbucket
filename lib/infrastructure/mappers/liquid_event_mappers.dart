@@ -124,6 +124,7 @@ entity.LiquidEventEntity mapToLiquidEventEntity(upload.UploadLiquidEvent uploadL
         liquidInfoFromComplete.params!.boron,
         liquidInfoFromComplete.params!.bromine,
         liquidInfoFromComplete.params!.arsenInorganic,
+        liquidInfoFromComplete.params!.omega3,
     );
     entity.LiquidEventInfo eventInfo = entity.LiquidEventInfo(
       liquidInfoFromComplete.eventInfo!.cookingMethod,
@@ -274,6 +275,7 @@ domain.LiquidEventComplete mapToLiquidEventComplete(entity.LiquidEventEntity liq
         liquidInfoFromEntity.params!.boron,
         liquidInfoFromEntity.params!.bromine,
         liquidInfoFromEntity.params!.arsenInorganic,
+        liquidInfoFromEntity.params!.omega3,
     );
     final eventInfo = EventInfo(
       liquidInfoFromEntity.eventInfo!.cookingMethod,
@@ -424,6 +426,7 @@ entity.LiquidEventEntity mapToLiquidEventEntityFromComplete(domain.LiquidEventCo
             liquidInfoFromComplete.params!.boron,
             liquidInfoFromComplete.params!.bromine,
             liquidInfoFromComplete.params!.arsenInorganic,
+            liquidInfoFromComplete.params!.omega3,
         );
         entity.LiquidEventInfo eventInfo = entity.LiquidEventInfo(
             liquidInfoFromComplete.eventInfo!.cookingMethod,
