@@ -68,7 +68,7 @@ class LiquidSummaryWidget extends StatelessWidget {
             const Text('${Constants.DEFAULT_ADD_WATER_QUANTITY} L'),
             InkWell(
               onTap: () => screenToMove.call(),
-                child: Image.asset(currentLanguage == Constants.LANGUAGE_ES ? 'assets/images/water.png' : 'assets/images/glass.png', height: 70,),),
+                child: Image.asset(currentLanguage == Constants.LANGUAGE_ES ? 'assets/images/water.png' : 'assets/images/glass.png', height: 65,),),
             Container(
               margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal,),
               alignment: Alignment.centerRight,

@@ -280,7 +280,7 @@ class LiquidParamsAdapter extends TypeAdapter<LiquidParams> {
   @override
   void write(BinaryWriter writer, LiquidParams obj) {
     writer
-      ..writeByte(116)
+      ..writeByte(117)
       ..writeByte(0)
       ..write(obj.alanine)
       ..writeByte(1)
@@ -535,11 +535,11 @@ class LiquidParamsAdapter extends TypeAdapter<LiquidParams> {
 LiquidEventEntity _$LiquidEventEntityFromJson(Map<String, dynamic> json) =>
     LiquidEventEntity(
       json['userId'] as String?,
-      json['eventDate'] as int?,
+      (json['eventDate'] as num?)?.toInt(),
       (json['liquidInfo'] as List<dynamic>?)
           ?.map((e) => LiquidInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['eventKcals'] as int?,
+      (json['eventKcals'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$LiquidEventEntityToJson(LiquidEventEntity instance) =>
@@ -552,10 +552,10 @@ Map<String, dynamic> _$LiquidEventEntityToJson(LiquidEventEntity instance) =>
 
 LiquidInfo _$LiquidInfoFromJson(Map<String, dynamic> json) => LiquidInfo(
       json['group'] as String?,
-      json['id'] as int?,
+      (json['id'] as num?)?.toInt(),
       json['name_en'] as String?,
       json['name_es'] as String?,
-      json['recommendable'] as int?,
+      (json['recommendable'] as num?)?.toInt(),
       json['eventInfo'] == null
           ? null
           : LiquidEventInfo.fromJson(json['eventInfo'] as Map<String, dynamic>),
@@ -579,9 +579,9 @@ Map<String, dynamic> _$LiquidInfoToJson(LiquidInfo instance) =>
 
 LiquidEventInfo _$LiquidEventInfoFromJson(Map<String, dynamic> json) =>
     LiquidEventInfo(
-      json['cookingMethod'] as int?,
+      (json['cookingMethod'] as num?)?.toInt(),
       (json['qty'] as num?)?.toDouble(),
-      json['unit'] as int?,
+      (json['unit'] as num?)?.toInt(),
       (json['waste'] as num?)?.toDouble(),
     );
 
