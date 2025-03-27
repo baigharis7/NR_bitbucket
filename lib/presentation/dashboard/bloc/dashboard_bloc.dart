@@ -165,6 +165,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     userKcal: 0,
     showCard: false,
     isMenstruation: false,
+    energyModel: EnergyModel(fractionToFill: 0.0, totalKcal: 0, rawKcalTaken: 0, spentKcal: 0),
   ),) {
     on<InitializeState>((event, emit) async {
       // _clearData();
@@ -289,19 +290,22 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       buffer.write('Step-11 master-files for version and routine checking\n\n');
       Fluttertoast.showToast(msg: 'Step-11 master-files for version and routine checking');
       print('Step-11 master-files for version and routine checking');
+      emit(state.copyWith(
+        isLoading: false,
+        onError: null,
+      ),);
       }
       catch(error) {
-        emit(state.copyWith(isLoading: false));
         Fluttertoast.showToast(msg: '$error');
         chuck.onHttpResponse(Response('{error: $error}', 500));
         buffer.write('step-Error\n\n$error');
         print('step-Error:\n$error');
       }
       if (event.onFinish != null) event.onFinish?.call();
-      emit(state.copyWith(
-        isLoading: false,
-        onError: null,
-      ),);
+      // emit(state.copyWith(
+      //   isLoading: false,
+      //   onError: null,
+      // ),);
       await saveFile('logs', buffer.toString());
       Fluttertoast.showToast(msg: 'Logs Saved');
       print('Logs Saved');
