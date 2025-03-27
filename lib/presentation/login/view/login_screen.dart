@@ -275,7 +275,7 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, -1.5),
+      begin: const Offset(-1.5, 0),
       end: const Offset(0, 0),
     ).animate(
       CurvedAnimation(
@@ -390,7 +390,7 @@ class _LoginScreenState extends State<LoginScreen>
                                 ),
                                 onPressed: () => model.changePasswordVisibility(),
                               ),
-                              errorMaxLines: 3,
+                              errorMaxLines: 4,
                             ),
                             controller: _passwordController,
                             obscureText: !model.isPasswordVisible,

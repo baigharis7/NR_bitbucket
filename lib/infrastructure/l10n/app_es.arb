@@ -186,7 +186,7 @@
     "remove_liquid_event_error" : "Se produjo un error al eliminar el evento líquido. Vuelve a intentarlo más tarde.",
     "upload_liquid_event_error" : "There was an error in uploading liquid event. Try again later.",
     "save_liquid_event_error" : "There was an error in saving liquid event. Try again later.",
-    "invalid_password_error" : "La contraseña debe tener al menos 8 caracteres y contener al menos una letra minúscula, una letra mayúscula, un carácter especial y un número.",
+    "invalid_password_error" : "La contraseña debe tener al menos 8 caracteres y contener al menos una letra minúscula, una letra mayúscula, un carácter especial (!@#$%^&*()_+) y un número.",
     "username_empty_or_null_error" : "Este campo no tiene el formato correcto",
     "retry_sign_up" : "Vuelva a intentar la operación e ingrese otro nombre de usuario o correo electrónico.",
     "invalid_code" : "Se proporcionó un código de verificación no válido. Inténtelo de nuevo.",

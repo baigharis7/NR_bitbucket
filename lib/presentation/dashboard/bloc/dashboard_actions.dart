@@ -80,3 +80,5 @@ class LogoutFromAppEventAction extends DashboardActions {
 }
 
 class ShowDialogEventAction extends DashboardActions {}
+
+class ShowLogs extends DashboardActions {}

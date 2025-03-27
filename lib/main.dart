@@ -372,6 +372,7 @@ import 'package:chuck_interceptor/chuck.dart';
 // print("[$now] Hello, world! isolate=$isolateId function='$printHello'");
 // ToastHelper().showToast(text: "[$now] Hello, world! isolate=$isolateId function='$printHello'");
 // }
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
@@ -387,9 +388,8 @@ void main() async {
 
   Chuck chuck = Chuck(
     showNotification: true,
-    showInspectorOnShake: true,
-    darkTheme: false,
-    maxCallsCount: 1000,
+    darkTheme: true,
+    navigatorKey: navigatorKey,
   );
   final Preferences prefs = PreferencesImpl(sharedPreferences);
   final PreferencesRepository prefsRepository = PreferencesRepositoryImpl(prefs: prefs);
@@ -565,6 +565,7 @@ void main() async {
     getRoutinesInteractor: getRoutinesInteractor,
     eraseDBLocalEventsInteractor: eraseDBLocalEventsInteractor,
     synchronizeEventsInteractor: synchronizeEventsInteractor,
+    chuck: chuck,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(
@@ -920,7 +921,7 @@ void main() async {
         // ),
       ],
       child: MaterialApp(
-        navigatorKey: chuck.getNavigatorKey(),
+        navigatorKey: navigatorKey,
         title: 'NutreNaissance',
         theme: ThemeData(
           fontFamily: 'Montserrat',
@@ -999,6 +1000,9 @@ void main() async {
       ),
     ),
   );
+
+  // Ensure Chuck is initialized in the app lifecycle
+  chuck.showInspector();
 }
 
 void initLocalStorage() async {

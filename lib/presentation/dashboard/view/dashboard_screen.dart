@@ -168,11 +168,14 @@ class _DashboardScreen extends State<DashboardScreen>
                   title: Container(
                     alignment: Alignment.centerLeft,
                     padding: const EdgeInsets.symmetric(vertical: Dimens.marginNormal,),
-                    child: Text(
-                      AppLocalizations.of(context)!.welcome,
-                      style: const TextStyle(
-                        fontSize: Dimens.fontSizeLarge,
-                        color: Colors.black,
+                    child: InkWell(
+                      onTap: () => bloc.add(ShowLogs()),
+                      child: Text(
+                        AppLocalizations.of(context)!.welcome+ ' Show Logs',
+                        style: const TextStyle(
+                          fontSize: Dimens.fontSizeLarge,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),

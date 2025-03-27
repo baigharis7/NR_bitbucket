@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart';
@@ -35,6 +39,7 @@ import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_comp
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/lists/SupplementInfo.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
@@ -60,6 +65,9 @@ import '../../../domain/interactor/waterevents/upload_water_event_interactor.dar
 import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../../domain/models/watervents/water_event_master.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
+import 'package:chuck_interceptor/chuck.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final EventsHelper _eventsHelper = EventsHelper();
@@ -103,6 +111,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final GetRoutinesInteractor getRoutinesInteractor;
   final EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor;
   final SynchronizeEventsInteractor synchronizeEventsInteractor;
+  final Chuck chuck;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -145,6 +154,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.getRoutinesInteractor,
     required this.eraseDBLocalEventsInteractor,
     required this.synchronizeEventsInteractor,
+    required this.chuck,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -158,8 +168,13 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   ),) {
     on<InitializeState>((event, emit) async {
       // _clearData();
+      StringBuffer buffer = StringBuffer();
       emit(state.copyWith(isLoading: true, foundedRoutineRemainingHours: null));
       try { await eraseDBLocalEventsInteractor.execute(); await synchronizeEventsInteractor.execute(getUserIdInteractor.execute()); } catch (_) {}
+      buffer.write('Step-1 Clean & Events sync\n\n');
+      Fluttertoast.showToast(msg: 'Step-1 Clean & Events sync');
+      print('Step-1 Clean & Events sync');
+      try {
       state.userMicronutrients = await getUserMicronutrientsInteractor.execute() ?? [];
       state.userRdas = await getUserRdasInteractor.execute();
       state.userObjectives = await getUserObjectivesInteractor.execute();
@@ -172,11 +187,17 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.userKcal = getUserKcalSelectiveObjectives(state.profile?.kcal ?? 0);
       state.isMenstruation = state.profile?.objectives?.contains(Constants.DURING_MENSTRUATION);
       state.isCold = state.profile?.objectives?.contains(Constants.IMPROVE_THE_IMMUNE_SYSTEM);
+      buffer.write('Step-2 local profile db data fetched\n\n');
+      Fluttertoast.showToast(msg: 'Step-2 local profile db data fetched');
+      print('Step-2 local profile db data fetched');
 
       final caloriesConsumed = await getDayCaloriesInteractor.execute(dateTime: event.dateTime);
       final todayCreatine = await getTodayCreatineEventInteractor.execute(dateTime: event.dateTime);
       final todayCollagen = await getTodayCollagenEventInteractor.execute(dateTime: event.dateTime);
       var totalSugarRequired = (state.userKcal.orZero()~/100*5)~/4;
+      buffer.write('Step-3 locally calories, creatine, collagen and required sugar calculated\n\n');
+      Fluttertoast.showToast(msg: 'Step-3 locally calories, creatine, collagen and required sugar calculated');
+      print('Step-3 locally calories, creatine, collagen and required sugar calculated');
 
       state.foodEvents = await getFoodEventsOfTodayInteractor.execute(dateTime: event.dateTime);
       state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute(dateTime: event.dateTime);
@@ -187,6 +208,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       // state.allCalendarEvents = await getAllEventsSortedByDateInteractor.execute();
       state.waterEvents = await getWaterEventsTodayInteractor.execute(dateTime: event.dateTime);
       state.allCalendarEvents = await getAllDashboardEventsSortedByDateInteractor.execute();
+      buffer.write('Step-4 locally foods, liquids, sports, water and calendar events fetched\n\n');
+      Fluttertoast.showToast(msg: 'Step-4 locally foods, liquids, sports, water and calendar events fetched');
+      print('Step-4 locally foods, liquids, sports, water and calendar events fetched');
 
       state.micronutrients = state.userMicronutrients!
           .map(
@@ -199,6 +223,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               rda: getNutrientRda(micronutrient),
             ),
       ).toList();
+      buffer.write('Step-5 micro-nutrients calculated\n\n');
+      Fluttertoast.showToast(msg: 'Step-5 micro-nutrients calculated');
+      print('Step-5 micro-nutrients calculated');
       state.micronutrients?.sort((a, b) => b.fractionToFill.compareTo(a.fractionToFill),);
       state.macronutrients = ['proteinSci', 'carbsAvailable', 'fatTotal']
           .map(
@@ -211,12 +238,18 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               rda: getMacroNutrientRda(macronutrient),
             ),
       ).toList();
+      buffer.write('Step-6 macro-nutrients calculated\n\n');
+      Fluttertoast.showToast(msg: 'Step-6 macro-nutrients calculated');
+      print('Step-6 macro-nutrients calculated');
       state.energyModel = EnergyModel(
         fractionToFill: getFractionToFillKcal(caloriesConsumed.orZero()),
         totalKcal: state.userKcal.orZero(),
         rawKcalTaken: getTotalKcalTakenToday(),
         spentKcal: caloriesConsumed.orZero(),
       );
+      buffer.write('Step-7 energy balance section calculated\n\n');
+      Fluttertoast.showToast(msg: 'Step-7 energy balance section calculated');
+      print('Step-7 energy balance section calculated');
       state.sugarAndFiberModel = SugarAndFiberModel(
           fractionToFillSugar: calculateTodaySugar(totalSugarRequired),
           totalSugarConsumed: calculateTodayConsumedSugar(totalSugarRequired),
@@ -225,6 +258,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           totalFiberConsumed: calculateTodayConsumedFiber(),
         requiredFiber: Constants.FIBER_TOTAL_REQUIRED,
       );
+      buffer.write('Step-8 Sugar and fiber calculated\n\n');
+      Fluttertoast.showToast(msg: 'Step-8 Sugar and fiber calculated');
+      print('Step-8 Sugar and fiber calculated');
       state.weeklyMicronutrients = state.userRdas
           .orEmpty()
           .map((nutrientRda) => NutrientsModel(
@@ -233,10 +269,16 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           fractionToFill: getWeeklyFractionFill(nutrientRda),
           unit: getUnitForMicronutrient(nutrientRda.name),
           rda: double.parse((getNutrientRda(nutrientRda.name) * 7).toStringAsFixed(2)),),).toList();
+      buffer.write('Step-9 weekly micro-nutrients data\n\n');
+      Fluttertoast.showToast(msg: 'Step-9 weekly micro-nutrients data');
+      print('Step-9 weekly micro-nutrients data');
       // state.supplements = [SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement()), SupplementInfo('Collagen', 'Colágeno', todayCollagen, 10),];
       state.todayCreatineSupplement = SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement());
       state.todayCollagenSupplement = SupplementInfo('Collagen peptides', 'Péptidos de colágeno', todayCollagen, 10);
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
+      buffer.write('Step-10 Supplement and show card info\n\n');
+      Fluttertoast.showToast(msg: 'Step-10 Supplement and show card info');
+      print('Step-10 Supplement and show card info');
 
       final getMasterFileVersionCookingMethods = await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethods);
       final getMasterFileVersionNutrientsInfo = await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo);
@@ -244,12 +286,25 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.isUpdatedDataNeeded = getMasterFileVersionCookingMethods != getMasterFile.cookingMethodsResponse?.v || getMasterFileVersionNutrientsInfo != getMasterFile.nutrientsInfoResponse?.v;
       final routines = await getRoutinesInteractor.execute();
       state.foundedRoutineRemainingHours = getFoundedRoutineTime(routines);
-
+      buffer.write('Step-11 master-files for version and routine checking\n\n');
+      Fluttertoast.showToast(msg: 'Step-11 master-files for version and routine checking');
+      print('Step-11 master-files for version and routine checking');
+      }
+      catch(error) {
+        emit(state.copyWith(isLoading: false));
+        Fluttertoast.showToast(msg: '$error');
+        chuck.onHttpResponse(Response('{error: $error}', 500));
+        buffer.write('step-Error\n\n$error');
+        print('step-Error:\n$error');
+      }
       if (event.onFinish != null) event.onFinish?.call();
       emit(state.copyWith(
         isLoading: false,
         onError: null,
       ),);
+      await saveFile('logs', buffer.toString());
+      Fluttertoast.showToast(msg: 'Logs Saved');
+      print('Logs Saved');
     },);
 
     on<GetFoodEventsAction>((event, emit) async {
@@ -455,6 +510,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       emit(state.copyWith(isLoading: true,));
       state.isShowDialog = true;
       emit(state.copyWith(isLoading: false));
+    },);
+
+    on<ShowLogs>((event, emit) {
+      chuck.showInspector();
     },);
   }
 
@@ -777,6 +836,45 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   void _clearData() {
     state.isUpdatedDataNeeded = null;
     state.foundedRoutineRemainingHours = null;
+  }
+
+  /*Future<String> getFile(String fileName) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final filePath = '${directory.path}/$fileName.txt';
+    return filePath;
+  }
+
+  Future<void> saveFile(String fileName, String fileContent) async {
+    String filePath = await getFile(fileName);
+    File myFile = File(filePath);
+    myFile.writeAsString(fileContent);
+  }*/
+  Future<String> getFile(String fileName) async {
+    Directory downloadsDir = Directory('/storage/emulated/0/Download');
+    return '${downloadsDir.path}/${fileName}_${DateTime.now().millisecondsSinceEpoch}.txt';
+  }
+
+  Future<void> saveFile(String fileName, String fileContent) async {
+    if (await _requestStoragePermission()) {
+      String filePath = await getFile(fileName);
+      File myFile = File(filePath);
+      await myFile.writeAsString(fileContent);
+      print('File saved at: $filePath');
+    } else {
+      print('Storage permission denied.');
+    }
+  }
+
+// Function to request storage permissions properly
+  Future<bool> _requestStoragePermission() async {
+    if (Platform.isAndroid) {
+      if (await Permission.storage.request().isGranted) {
+        return true;
+      } else if (await Permission.manageExternalStorage.request().isGranted) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }
