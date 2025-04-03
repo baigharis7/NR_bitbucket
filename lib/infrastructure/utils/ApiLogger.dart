@@ -57,6 +57,8 @@ class ApiLogger {
       } else if (await Permission.manageExternalStorage.request().isGranted) {
         return true;
       }
+    } else if (Platform.isIOS) {
+      return true;
     }
     return false;
   }
