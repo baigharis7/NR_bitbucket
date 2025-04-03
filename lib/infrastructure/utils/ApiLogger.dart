@@ -10,7 +10,7 @@ class ApiLogger {
     if (Platform.isAndroid) {
       directory = Directory('/storage/emulated/0/Download'); // Public Downloads Folder
     } else if (Platform.isIOS) {
-      directory = await getApplicationSupportDirectory(); // Safe iOS Directory
+      directory = await getApplicationDocumentsDirectory(); // Public folder on iOS
     }
 
     if (!await directory!.exists()) {
@@ -57,9 +57,7 @@ class ApiLogger {
       } else if (await Permission.manageExternalStorage.request().isGranted) {
         return true;
       }
-    } else if (Platform.isIOS) {
-      return true;
     }
-    return false;
+    return true;
   }
 }
