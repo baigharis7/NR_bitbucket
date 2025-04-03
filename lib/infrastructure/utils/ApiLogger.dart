@@ -10,7 +10,7 @@ class ApiLogger {
     if (Platform.isAndroid) {
       directory = Directory('/storage/emulated/0/Download'); // Public Downloads Folder
     } else if (Platform.isIOS) {
-      directory = await getDownloadsDirectory(); // Save logs in Downloads
+      directory = await getApplicationDocumentsDirectory(); // Public folder on iOS
     }
 
     if (!await directory!.exists()) {
