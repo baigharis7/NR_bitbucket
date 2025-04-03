@@ -271,21 +271,21 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       final routines = await getRoutinesInteractor.execute();
       state.foundedRoutineRemainingHours = getFoundedRoutineTime(routines);
       ApiLogger.logResponse('InitializationState Function-call on Dashboard', 632, 'Step-11 master-files for version and routine checking');
-      emit(state.copyWith(
-        isLoading: false,
-        onError: null,
-      ),);
-      }
-      catch(error) {
-        Fluttertoast.showToast(msg: '$error', toastLength: Toast.LENGTH_LONG, backgroundColor: AppColors.errorRed, textColor: Colors.white);
-        chuck.onHttpResponse(Response('{error: $error}', 500));
-        ApiLogger.logResponse('InitializationState Function-call on Dashboard', 632, '$error');
-      }
-      if (event.onFinish != null) event.onFinish?.call();
       // emit(state.copyWith(
       //   isLoading: false,
       //   onError: null,
       // ),);
+      }
+      catch(error) {
+        Fluttertoast.showToast(msg: '$error', toastLength: Toast.LENGTH_LONG, backgroundColor: AppColors.errorRed, textColor: Colors.white);
+        chuck.onHttpResponse(Response('{error: $error}', 500));
+        ApiLogger.logResponse('InitializationState Function-call on Dashboard Exception', 632, '$error');
+      }
+      if (event.onFinish != null) event.onFinish?.call();
+      emit(state.copyWith(
+        isLoading: false,
+        onError: null,
+      ),);
     },);
 
     on<GetFoodEventsAction>((event, emit) async {
