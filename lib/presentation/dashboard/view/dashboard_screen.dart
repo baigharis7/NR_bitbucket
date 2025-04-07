@@ -169,9 +169,9 @@ class _DashboardScreen extends State<DashboardScreen>
                     alignment: Alignment.centerLeft,
                     padding: const EdgeInsets.symmetric(vertical: Dimens.marginNormal,),
                     child: InkWell(
-                      onTap: () => bloc.add(ShowLogs()),
+                      onTap: () {},
                       child: Text(
-                        AppLocalizations.of(context)!.welcome+ ' Show Logs',
+                        AppLocalizations.of(context)!.welcome,
                         style: const TextStyle(
                           fontSize: Dimens.fontSizeLarge,
                           color: Colors.black,
