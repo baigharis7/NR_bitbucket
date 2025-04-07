@@ -17,7 +17,24 @@ class ApiLogger {
       await directory.create(recursive: true);
     }
 
-    return File('${directory.path}/NN_Logs.txt');
+    final file = File('${directory.path}/NN_Logs.txt');
+
+    // If file exists and is older than 2 days, delete it
+    if (await file.exists()) {
+      final stat = await file.stat();
+      final now = DateTime.now();
+      final diff = now.difference(stat.modified);
+      print('Stats $stat');
+
+      if (diff.inDays > 2) {
+        await file.delete();
+        await file.create();
+      }
+    } else {
+      await file.create();
+    }
+
+    return file;
   }
 
   static Future<void> logRequest(String url, String method, {String? body}) async {
