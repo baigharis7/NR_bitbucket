@@ -133,5 +133,5 @@ enum SexType {
 }
 
 enum MenstruationRegularity {
-  regular, irregular, nothing // TODO -> Add in definitive version.
+  regular, irregular, menopause, withoutPeriod, nothing // TODO -> Add in definitive version.
 }

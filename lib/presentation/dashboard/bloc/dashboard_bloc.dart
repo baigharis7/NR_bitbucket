@@ -174,8 +174,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       // _clearData();
       emit(state.copyWith(isLoading: true, foundedRoutineRemainingHours: null));
       try {
-      await synchronizeEventsInteractor.execute(getUserIdInteractor.execute());
       await eraseDBLocalEventsInteractor.execute();
+      await synchronizeEventsInteractor.execute(getUserIdInteractor.execute());
       ApiLogger.logResponse('InitializationState Function-call on Dashboard', 632, 'Step-1 Clean & Events sync');
       state.userMicronutrients = await getUserMicronutrientsInteractor.execute() ?? [];
       state.userRdas = await getUserRdasInteractor.execute();
@@ -278,7 +278,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
       catch(error) {
         Fluttertoast.showToast(msg: '$error', toastLength: Toast.LENGTH_LONG, backgroundColor: AppColors.errorRed, textColor: Colors.white);
-        chuck.onHttpResponse(Response('{error: $error}', 500));
+        // chuck.onHttpResponse(Response('{error: $error}', 500));
         ApiLogger.logResponse('InitializationState Function-call on Dashboard Exception', 632, '$error');
       }
       if (event.onFinish != null) event.onFinish?.call();

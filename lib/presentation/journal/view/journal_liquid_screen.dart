@@ -148,7 +148,16 @@ class _JournalLiquidScreen extends State<JournalLiquidScreen> {
                             return EventItemWithEditAndLike(
                               name: liquidEvent.foodInfo!.map((food) => food.translate(context)).join(', '),
                               isFavorite: /** TODO: aquí poner la lógica de los favoritos */ false,
-                              onEdit: () => Navigator.pushNamed(
+                              onEdit: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  AddLiquidEventScreen.routeName,
+                                  arguments: mapToLiquidEventSimple(liquidEvent),
+                                ).then((value) {
+                                  bloc.add(InitializeStateAction());
+                                });
+                              },
+                              onDetail: () => Navigator.pushNamed(
                                   context,
                                   AddLiquidEventScreen.routeName,
                                   arguments: mapToLiquidEventSimple(liquidEvent),

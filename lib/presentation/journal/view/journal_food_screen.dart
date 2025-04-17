@@ -178,7 +178,13 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                                 // name: foodEvent.foodInfo!.map((food) => food.translate(context)).join(', '),
                                 name: foodEvent.foodName ?? '',
                                 isFavorite: bloc.isFoodFavourite(foodEvent),
-                                onEdit: () => Navigator.pushNamed(
+                                onEdit: () {
+                                  Navigator.pushNamed(
+                                      context, AddFoodEventScreen.routeName,
+                                      arguments: foodEvent,)
+                                      .then((value) => bloc.add(InitializeStateAction()));
+                                },
+                                onDetail: () => Navigator.pushNamed(
                                   context,
                                   AddFoodFavoriteScreen.routeName,
                                   arguments: foodEvent,

@@ -45,8 +45,8 @@ class _DashboardCalendarWidgetState extends State<DashboardCalendarWidget> {
       headerStyle: const HeaderStyle(
         formatButtonVisible: false,
       ),
-      daysOfWeekStyle: DaysOfWeekStyle(decoration: BoxDecoration(color: AppColors.mountainMeadow,), weekendStyle: TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),
-        dowTextFormatter: (date, locale) => DateFormat('EEEE', widget.currentLanguage).format(date), weekdayStyle: TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),),
+      daysOfWeekStyle: DaysOfWeekStyle(decoration: const BoxDecoration(color: AppColors.mountainMeadow,), weekendStyle: const TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),
+        dowTextFormatter: (date, locale) => DateFormat('EEEE', widget.currentLanguage).format(date), weekdayStyle: const TextStyle(color: Colors.black, fontSize: Dimens.fontSizeXSmall, overflow: TextOverflow.ellipsis),),
       daysOfWeekHeight: Dimens.heightSmall-20,
       calendarStyle: const CalendarStyle(
         outsideDaysVisible: false,
@@ -79,7 +79,7 @@ class _DashboardCalendarWidgetState extends State<DashboardCalendarWidget> {
             ),
           ) : Container();
         },
-        todayBuilder: (context, day, focusedDay) => Card(color: isFocusedDayDate ? AppColors.cardGreen_200 : AppColors.errorRed,
+        todayBuilder: (context, day, focusedDay) => Card(color: isFocusedDayDate ? AppColors.cardGreen_200.withOpacity(0.5) : AppColors.errorRed.withOpacity(0.5),
           shape: const CircleBorder(),
           child: Container(padding: const EdgeInsets.all(Dimens.paddingSmall), child: Text(day.day.toString(), style: const TextStyle(fontSize: Dimens.fontSizeMedium, color: Colors.white),)),),
         selectedBuilder: (context, day, focusedDay) => Card(color: isFocusedDayDate ? AppColors.mountainMeadow : AppColors.errorRed,

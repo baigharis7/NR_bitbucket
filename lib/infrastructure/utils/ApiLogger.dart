@@ -24,7 +24,6 @@ class ApiLogger {
       final stat = await file.stat();
       final now = DateTime.now();
       final diff = now.difference(stat.modified);
-      print('Stats $stat');
 
       if (diff.inDays > 2) {
         await file.delete();
@@ -79,4 +78,17 @@ class ApiLogger {
     }
     return false;
   }
+
+  // static Future<void> shareLogFile() async {
+  //   try {
+  //     final file = await _getLogFile();
+  //     if (await file.exists()) {
+  //       await Share.shareXFiles([XFile(file.path)], text: 'Check out this API log file');
+  //     } else {
+  //       Fluttertoast.showToast(msg: 'Log file not found.');
+  //     }
+  //   } catch (e) {
+  //     Fluttertoast.showToast(msg: 'Error sharing file: $e');
+  //   }
+  // }
 }

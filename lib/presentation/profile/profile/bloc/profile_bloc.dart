@@ -555,7 +555,11 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
   }
 
   double getIntolerancesFillPercentage() {
-    return 0.0;
+    if (_areIntolerancesFilled()) {
+      return 1;
+    } else {
+      return 0.0;
+    }
   }
 
   double getAversionsFillPercentage() {
@@ -589,6 +593,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     return isAnyAllergySelected;
   }
   bool _areAllergiesFilled() => state.profile!.exclusions != null && state.profile!.exclusions!.exclusions != null && _isAnyAllergySelected();
+  bool _areIntolerancesFilled() => state.profile!.intolerances != null && state.profile!.intolerances!.isNotEmpty;
 
   bool areMandatoryFieldsComplete() {
     if (state.profile!.objectives!.isNotEmpty &&

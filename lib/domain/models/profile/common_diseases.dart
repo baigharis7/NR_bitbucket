@@ -12,6 +12,7 @@ class CommonDiseases {
 
   static List<CommonDiseases> listAllDiseases() {
     return [
+      NoneDisease(),
       HighBloodPressure(),
       Arteriosclerosis(),
       Type1Diabetes(),
@@ -23,6 +24,18 @@ class CommonDiseases {
       // OtherDiseases()
     ];
   }
+}
+
+class NoneDisease extends CommonDiseases {
+  @override
+  String? name = AppLocalizationsHelper.instance.translate('none');
+  @override
+  int? id = -1;
+  @override
+  String? otherDiseases;
+
+  NoneDisease({this.otherDiseases}):
+        super(otherDiseases: otherDiseases);
 }
 
 class HighBloodPressure extends CommonDiseases {

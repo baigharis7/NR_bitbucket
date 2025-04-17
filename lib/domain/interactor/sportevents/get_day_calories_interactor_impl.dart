@@ -9,6 +9,6 @@ class GetDayCaloriesInteractorImpl extends GetDayCaloriesInteractor {
   });
 
   @override
-  Future<int?> execute({DateTime? dateTime}) async => await sportEventsRepository.getDayCalories();
+  Future<int?> execute({DateTime? dateTime}) async => await sportEventsRepository.getDayCalories(dateTime: dateTime);
 
 }

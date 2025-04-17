@@ -130,8 +130,8 @@ class _JournalScreenState extends State<JournalScreen> {
                                       flex: 1,
                                       child: ModifiableCenterBoxWithWatchAndAdd(
                                         title: AppLocalizations.of(context)!.liquids,
-                                        onAddPressed: () => bloc.add(LiquidsClickAction(action: () => Navigator.of(context).pushNamed(AddLiquidEventScreen.routeName))),
-                                        onWatchPressed: () => bloc.add(LiquidsClickAction(action: () => Navigator.of(context).pushNamed(JournalLiquidScreen.routeName))),
+                                        onAddPressed: () => bloc.add(LiquidsClickAction(action: () => Navigator.of(context).pushNamed(AddLiquidEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())))),
+                                        onWatchPressed: () => bloc.add(LiquidsClickAction(action: () => Navigator.of(context).pushNamed(JournalLiquidScreen.routeName).then((value) => bloc.add(InitializeStateAction())))),
                                         centerWidget: SizedBox(
                                           height: 80,
                                           width: 15,

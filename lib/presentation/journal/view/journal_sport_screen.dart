@@ -169,6 +169,9 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                               name: sportEvent.sportName.toString(),
                               isFavorite: bloc.isSportFavorite(sportEvent),
                               onEdit: () {
+                                Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: sportEvent).then((value) => bloc.add(InitializeStateAction()));
+                              },
+                              onDetail: () {
                                 Navigator.pushNamed(
                                   context,
                                   AddSportFavoriteScreen.routeName,

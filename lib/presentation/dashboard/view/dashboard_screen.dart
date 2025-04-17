@@ -218,7 +218,7 @@ class _DashboardScreen extends State<DashboardScreen>
                     children: [
                       Column(
                         children: [
-                          if ((state.profile?.sex?.index ?? -1) == SexType.female.index) SwitchDashboardWidget(
+                          if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
                               title: AppLocalizations.of(context)!.menstruation,
                               currentState: state.isMenstruation ?? false,
                               onStateChange: (value) => bloc.add(UpdateMenstruationStateAction(isMenstruation: value)),

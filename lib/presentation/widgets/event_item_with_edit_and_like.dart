@@ -6,6 +6,7 @@ class EventItemWithEditAndLike extends StatelessWidget {
   final bool isFavorite;
   final Function onFavorite;
   final Function onEdit;
+  final Function onDetail;
   final Function onDelete;
   final bool? isCentered;
 
@@ -15,6 +16,7 @@ class EventItemWithEditAndLike extends StatelessWidget {
     required this.isFavorite,
     required this.onFavorite,
     required this.onEdit,
+    required this.onDetail,
     required this.onDelete,
     this.isCentered,
   }) : super(key: key);
@@ -22,7 +24,7 @@ class EventItemWithEditAndLike extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () { onEdit.call(); },
+      onTap: () { onDetail.call(); },
       child: Card(
         elevation: 2,
         child: Column(
@@ -36,6 +38,13 @@ class EventItemWithEditAndLike extends StatelessWidget {
                     alignment: Alignment.topLeft,
                     margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall, horizontal: Dimens.marginNormal),
                     child: Text(name, overflow: TextOverflow.clip,),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.bottomRight,
+                  child: IconButton(
+                    onPressed: () => onEdit.call(),
+                    icon: const Icon(Icons.edit),
                   ),
                 ),
                 Container(
