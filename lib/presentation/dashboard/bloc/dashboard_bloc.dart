@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/domain/models/calendar/dashboard_all_calendar_events.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/ApiLogger.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -794,6 +795,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   }
 
   List<dynamic> getEventsForDay(DateTime dateTime) {
+    if (state.allCalendarEvents.isNull()) return [];
     return _eventsHelper.foundEventsFromGivenDate(state.allCalendarEvents!, dateTime);
   }
 

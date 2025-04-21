@@ -1,5 +1,6 @@
 {
     "nutrenaissance": "NutreNaissance",
+    "hi": "Hola",
     "login_hint": "Introduce nombre de usuario o email",
     "password_hint": "Introduce la contraseña",
     "have_an_account": "¿Tienes una cuenta?",

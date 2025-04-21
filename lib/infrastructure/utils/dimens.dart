@@ -45,13 +45,18 @@ class Dimens {
   static const borderNormal = 3.0;
   static const borderLarge = 6.0;
   static const borderXLarge = 10.0;
+  static const border20 = 20.0;
 
   // Heights
   static const heightXXSmall = 10.0;
+  static const height12 = 12.0;
   static const heightXSmall = 20.0;
   static const height30 = 30.0;
+  static const height32 = 32.0;
   static const heightSmall = 50.0;
   static const height60 = 60.0;
+  static const height80 = 80.0;
+  static const height90 = 90.0;
   static const heightNormal = 100.0;
   static const heightMedium = 150.0;
   static const heightLarge = 200.0;
@@ -59,8 +64,12 @@ class Dimens {
   static const heightXXLarge = 300.0;
 
   // Widths
+  static const width1 = 1.0;
   static const widthXXXXSmall = 10.0;
+  static const width12 = 12.0;
+  static const width32 = 32.0;
   static const widthSmall = 50.0;
+  static const width80 = 80.0;
   static const widthNormal = 100.0;
   static const widthMedium = 150.0;
   static const widthLarge = 200.0;

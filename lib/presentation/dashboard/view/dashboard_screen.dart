@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
@@ -32,6 +33,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.
 import 'package:nutrenaissance_flutter/presentation/widgets/liquids_summary_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/swith_with_function_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/week_calendar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_rda_nutrients_dashboard_widget.dart';
 
 import '../../../infrastructure/utils/constants.dart';
@@ -164,281 +166,291 @@ class _DashboardScreen extends State<DashboardScreen>
                 debugLogging: true,
               ),
               child: Scaffold(
+                  backgroundColor: Colors.transparent,
+                extendBodyBehindAppBar: true,
                 appBar: AppBar(
-                  title: Container(
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.symmetric(vertical: Dimens.marginNormal,),
-                    child: InkWell(
-                      onTap: () {},
-                      child: Text(
-                        AppLocalizations.of(context)!.welcome,
+                  title: Row(
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.hi + ' ',
                         style: const TextStyle(
-                          fontSize: Dimens.fontSizeLarge,
-                          color: Colors.black,
+                          fontSize: Dimens.fontSizeXXLarge,
+                          color: Colors.white,
                         ),
                       ),
-                    ),
+                      Text(
+                        (state.profile?.commonName ?? '') + ',',
+                        style: const TextStyle(
+                          fontSize: Dimens.fontSizeXXLarge,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  backgroundColor: Colors.white,
+                  backgroundColor: Colors.transparent,
                   actions: [
+                    IconButton(onPressed: () => showDialog(context: context, builder: (context) => SimpleDialog(alignment: Alignment.topCenter,
+                insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding5Large +5),
+                contentPadding: EdgeInsets.zero,
+                children: [
+                  DashboardCalendarWidget(currentLanguage: currentLanguage, focused: selectedDateTime, callGetAllEvents: (day) => bloc.getEventsForDay(day), selectedDateForEventsLoading: (date) {
+                    selectedDateTime = date;
+                    bloc.add(InitializeState(dateTime: date, onFinish: () => Navigator.pop(context)));
+                  },),
+                ],
+              ),), icon: SvgPicture.asset('assets/svg/calendar.svg',),),
                     IconButton(
                       onPressed: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName),
-                      iconSize: 35.0,
                       icon: Image.asset(
                         'assets/icon/profile_icon.png',
-                        color: Colors.black,
-                        height: 29,
-                        width: 29,
+                        color: Colors.white,
+                        height: Dimens.height32,
+                        width: Dimens.width32,
                       ),
                     ),
                   ],
                   bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(Dimens.heightSmall),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        // IconButton(onPressed: () => Navigator.pushNamed(context, WeeklyDashboardDetailScreen.routeName).then((value) => bloc.add(InitializeState())), icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
-                        IconButton(onPressed: () => showDialog(context: context, builder: (context) => SimpleDialog(alignment: Alignment.topCenter,
-                          insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding5Large +5),
-                          contentPadding: EdgeInsets.zero,
-                          children: [
-                            DashboardCalendarWidget(currentLanguage: currentLanguage, focused: selectedDateTime, callGetAllEvents: (day) => bloc.getEventsForDay(day), selectedDateForEventsLoading: (date) {
-                              selectedDateTime = date;
-                              bloc.add(InitializeState(dateTime: date, onFinish: () => Navigator.pop(context)));
-                            }),
-                          ],
-                        ),), icon: const Icon(Icons.arrow_drop_down_circle_outlined)),
-                        Text(bloc.getTodayMessage(AppLocalizations.of(context)!.today, Localizations.localeOf(context).languageCode),),
-                      ],
-                    ),
+                    preferredSize: const Size.fromHeight(Dimens.height90),
+                    child: Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall, horizontal: Dimens.marginSmall), child: WeekCalendarWidget(callGetAllEvents: (day) => bloc.getEventsForDay(day))),
                   ),
                 ),
-                body: SingleChildScrollView(
-                  child: Stack(
-                    children: [
-                      Column(
+                body: Container(
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/background.png'), // Your image
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: SafeArea(
+                    child: SingleChildScrollView(
+                      child: Stack(
                         children: [
-                          if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
-                              title: AppLocalizations.of(context)!.menstruation,
-                              currentState: state.isMenstruation ?? false,
-                              onStateChange: (value) => bloc.add(UpdateMenstruationStateAction(isMenstruation: value)),
-                          ),
-                          SwitchDashboardWidget(
-                            title: AppLocalizations.of(context)!.cold,
-                            currentState: state.isCold ?? false,
-                            onStateChange: (value) => bloc.add(UpdateColdStateAction(isCold: value)),
-                          ),
-                          EnergyBalanceWidget(
-                            energyModel: state.energyModel,
-                            screenToMove: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: state.energyModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
-                          ),
-                          // ExpandableWidget(
-                          //     titleClick: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
-                          //     title: AppLocalizations.of(context)!.micronutrients, nutrientsList: state.micronutrients.orEmpty()),
-                          NutrientsDashboardWidget(
-                            title: AppLocalizations.of(context)!.micronutrients,
-                            nutrients: state.micronutrients.orEmpty().toList(),
-                            isEmpty: false,
-                            screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
-                          ),
-                          WeeklyRDANutrientsDashboardWidget(
-                            title: AppLocalizations.of(context)!.weekly_nutrients,
-                            nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,
-                            isEmpty: false,
-                            screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
-                          ),
-                          NutrientsDashboardWidget(
-                            title: AppLocalizations.of(context)!.macronutrients,
-                            nutrients: state.macronutrients.orEmpty(),
-                            // isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
-                            isEmpty: false,
-                            screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
-                          ),
-                          SizedBox(
-                            height: 200,
-                            child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: LiquidSummaryWidget(
-                                      quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty()),
-                                      fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty(), ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
-                                      totalWater: ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035).toStringAsFixed(2),
-                                      onReloadData: () { /*bloc.add(ReloadWaterInfoAction());*/ },
-                                      screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
-                                      addWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState(dateTime: selectedDateTime)))),
-                                      removeWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState(dateTime: selectedDateTime)))),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Stack(
+                          Column(
+                            children: [
+                              if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
+                                  title: AppLocalizations.of(context)!.menstruation,
+                                  currentState: state.isMenstruation ?? false,
+                                  onStateChange: (value) => bloc.add(UpdateMenstruationStateAction(isMenstruation: value)),
+                              ),
+                              SwitchDashboardWidget(
+                                title: AppLocalizations.of(context)!.cold,
+                                currentState: state.isCold ?? false,
+                                onStateChange: (value) => bloc.add(UpdateColdStateAction(isCold: value)),
+                              ),
+                              EnergyBalanceWidget(
+                                energyModel: state.energyModel,
+                                screenToMove: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: state.energyModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                              ),
+                              // ExpandableWidget(
+                              //     titleClick: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
+                              //     title: AppLocalizations.of(context)!.micronutrients, nutrientsList: state.micronutrients.orEmpty()),
+                              NutrientsDashboardWidget(
+                                title: AppLocalizations.of(context)!.micronutrients,
+                                nutrients: state.micronutrients.orEmpty().toList(),
+                                isEmpty: false,
+                                screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
+                              ),
+                              WeeklyRDANutrientsDashboardWidget(
+                                title: AppLocalizations.of(context)!.weekly_nutrients,
+                                nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,
+                                isEmpty: false,
+                                screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                              ),
+                              NutrientsDashboardWidget(
+                                title: AppLocalizations.of(context)!.macronutrients,
+                                nutrients: state.macronutrients.orEmpty(),
+                                // isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
+                                isEmpty: false,
+                                screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                              ),
+                              SizedBox(
+                                height: 200,
+                                child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 1,
+                                        child: LiquidSummaryWidget(
+                                          quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty()),
+                                          fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty(), ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
+                                          totalWater: ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035).toStringAsFixed(2),
+                                          onReloadData: () { /*bloc.add(ReloadWaterInfoAction());*/ },
+                                          screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                                          addWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState(dateTime: selectedDateTime)))),
+                                          removeWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState(dateTime: selectedDateTime)))),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Stack(
+                                          children: [
+                                            Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0,), color: Colors.black,), child: Center(child: Text(AppLocalizations.of(context)!.coming_soon, style: const TextStyle(color: Colors.white),),)),
+                                            Opacity(
+                                              opacity: 0.4,
+                                              child: Card(
+                                                child: Column(
+                                                  children: [
+                                                    Container(
+                                                      margin: const EdgeInsets.only(left: Dimens.marginNormal),
+                                                      alignment: Alignment.centerLeft,
+                                                      child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Text(
+                                                            AppLocalizations.of(context)!.steps,
+                                                            style: const TextStyle(
+                                                              fontSize: Dimens.fontSizeNormal,
+                                                              color: Colors.black,
+                                                              fontWeight: FontWeight.bold,
+                                                            ),
+                                                          ),
+                                                          Container(
+                                                            alignment: Alignment.centerRight,
+                                                            child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      height: 80,
+                                                      decoration: const BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color: Colors.grey,
+                                                      ),
+                                                      child: const Center(child: Text('0'),),
+                                                    ),
+                                                    Container(
+                                                      margin: const EdgeInsets.only(top: Dimens.marginNormal),
+                                                      child: const Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                        children: [
+                                                          Text(' Km'),
+                                                          Text('98 min'),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    // Text('${_stepCountValue}'),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                ),
+                              ),
+                              Card(
+                                child: Column(
+                                  children: [
+                                    Row(
                                       children: [
-                                        Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0,), color: Colors.black,), child: Center(child: Text(AppLocalizations.of(context)!.coming_soon, style: const TextStyle(color: Colors.white),),)),
-                                        Opacity(
-                                          opacity: 0.4,
-                                          child: Card(
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                  margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                                                  alignment: Alignment.centerLeft,
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Text(
-                                                        AppLocalizations.of(context)!.steps,
-                                                        style: const TextStyle(
-                                                          fontSize: Dimens.fontSizeNormal,
-                                                          color: Colors.black,
-                                                          fontWeight: FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        alignment: Alignment.centerRight,
-                                                        child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Container(
-                                                  height: 80,
-                                                  decoration: const BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Colors.grey,
-                                                  ),
-                                                  child: const Center(child: Text('0'),),
-                                                ),
-                                                Container(
-                                                  margin: const EdgeInsets.only(top: Dimens.marginNormal),
-                                                  child: const Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                    children: [
-                                                      Text(' Km'),
-                                                      Text('98 min'),
-                                                    ],
-                                                  ),
-                                                ),
-                                                // Text('${_stepCountValue}'),
-                                              ],
+                                        Expanded(
+                                          child: Container(
+                                            alignment: Alignment.centerLeft,
+                                            margin: const EdgeInsets.all(Dimens.marginNormal),
+                                            child: Text(
+                                              AppLocalizations.of(context)!.sugar,
+                                              style: const TextStyle(fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                         ),
+                                        IconButton(onPressed: () => Navigator.pushNamed(context, SugarDetailScreen.routeName, arguments: state.sugarAndFiberModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
                                       ],
                                     ),
-                                  ),
-                                ],
-                            ),
-                          ),
-                          Card(
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        alignment: Alignment.centerLeft,
-                                        margin: const EdgeInsets.all(Dimens.marginNormal),
-                                        child: Text(
-                                          AppLocalizations.of(context)!.sugar,
-                                          style: const TextStyle(fontWeight: FontWeight.bold),
+                                    Container(
+                                      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                                      child: Stack(
+                                        alignment: Alignment.bottomCenter,
+                                        children: [
+                                        FillHorizontalBar(fillColor: (state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0) >= 1.0 ? AppColors.errorRed : AppColors.mountainMeadow, fractionToFill: state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
+                                        Container(
+                                          alignment: Alignment.center,
+                                          margin: const EdgeInsets.only(top: Dimens.marginXSmall),
+                                          child: Text(
+                                              '${state.sugarAndFiberModel?.totalSugarConsumed ?? 0.0}',
+                                            style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
+                                          ),
                                         ),
-                                      ),
+                                      ],),
                                     ),
-                                    IconButton(onPressed: () => Navigator.pushNamed(context, SugarDetailScreen.routeName, arguments: state.sugarAndFiberModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                                    Container(
+                                      margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        (state.sugarAndFiberModel?.requiredSugar.toString() ?? '0').appendGram(),
+                                        style: const TextStyle(fontSize: Dimens.fontSizeSmall),
+                                      ),
+                                    )
                                   ],
                                 ),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                                  child: Stack(
-                                    alignment: Alignment.bottomCenter,
-                                    children: [
-                                    FillHorizontalBar(fillColor: (state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0) >= 1.0 ? AppColors.errorRed : AppColors.mountainMeadow, fractionToFill: state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
-                                    Container(
-                                      alignment: Alignment.center,
-                                      margin: const EdgeInsets.only(top: Dimens.marginXSmall),
-                                      child: Text(
-                                          '${state.sugarAndFiberModel?.totalSugarConsumed ?? 0.0}',
-                                        style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
-                                      ),
-                                    ),
-                                  ],),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    (state.sugarAndFiberModel?.requiredSugar.toString() ?? '0').appendGram(),
-                                    style: const TextStyle(fontSize: Dimens.fontSizeSmall),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Card(
-                            child: Column(
-                              children: [
-                                Row(
+                              ),
+                              Card(
+                                child: Column(
                                   children: [
-                                    Expanded(
-                                      child: Container(
-                                        alignment: Alignment.centerLeft,
-                                        margin: const EdgeInsets.all(Dimens.marginNormal),
-                                        child: Text(
-                                          AppLocalizations.of(context)!.fiber,
-                                          style: const TextStyle(fontWeight: FontWeight.bold),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            alignment: Alignment.centerLeft,
+                                            margin: const EdgeInsets.all(Dimens.marginNormal),
+                                            child: Text(
+                                              AppLocalizations.of(context)!.fiber,
+                                              style: const TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
                                         ),
+                                        IconButton(onPressed: () => Navigator.pushNamed(context, FiberDetailScreen.routeName, arguments: state.sugarAndFiberModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                                      ],
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                                      child: Stack(
+                                        alignment: Alignment.bottomCenter,
+                                        children: [
+                                        FillHorizontalBar(fillColor: (state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0) >= 1.0 ? AppColors.errorRed : AppColors.mountainMeadow, fractionToFill: state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
+                                        Container(
+                                          alignment: Alignment.center,
+                                          margin: const EdgeInsets.only(top: Dimens.marginXSmall),
+                                          child: Text(
+                                            '${state.sugarAndFiberModel?.totalFiberConsumed ?? 0.0}',
+                                            style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
+                                          ),
+                                        ),
+                                      ],),
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        (state.sugarAndFiberModel?.requiredFiber.toString() ?? '0').appendGram(),
+                                        style: const TextStyle(fontSize: Dimens.fontSizeSmall),
                                       ),
                                     ),
-                                    IconButton(onPressed: () => Navigator.pushNamed(context, FiberDetailScreen.routeName, arguments: state.sugarAndFiberModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
                                   ],
                                 ),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                                  child: Stack(
-                                    alignment: Alignment.bottomCenter,
-                                    children: [
-                                    FillHorizontalBar(fillColor: (state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0) >= 1.0 ? AppColors.errorRed : AppColors.mountainMeadow, fractionToFill: state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
-                                    Container(
-                                      alignment: Alignment.center,
-                                      margin: const EdgeInsets.only(top: Dimens.marginXSmall),
-                                      child: Text(
-                                        '${state.sugarAndFiberModel?.totalFiberConsumed ?? 0.0}',
-                                        style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
-                                      ),
-                                    ),
-                                  ],),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    (state.sugarAndFiberModel?.requiredFiber.toString() ?? '0').appendGram(),
-                                    style: const TextStyle(fontSize: Dimens.fontSizeSmall),
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                              if  (state.profile?.objectives?.any((element) => element ==  Constants.IMPROVE_SPORT_PERFORMANCE || element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) CardWidget(title: AppLocalizations.of(context)!.supplements,
+                                  // children: state.supplements.orEmpty().map((creatine) => NutrientDetailWidget(todayCreatine: creatine, onMinusClick: (supplement) {}, onPlusClick: (supplement) {}),).toList()),
+                                  children: [
+                                    if  (state.profile?.objectives?.any((element) => element ==  Constants.IMPROVE_SPORT_PERFORMANCE || element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) NutrientDetailWidget(todayCreatine: state.todayCreatineSupplement, onMinusClick: (supplement) => bloc.add(UploadCreatineEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCreatineEventAction(value: 2, supplementInfo: supplement,))),
+                                    if  (state.profile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) NutrientDetailWidget(todayCreatine: state.todayCollagenSupplement, onMinusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: 2, supplementInfo: supplement,))),
+                                  ],
+                              ),
+                            ],
                           ),
-                          if  (state.profile?.objectives?.any((element) => element ==  Constants.IMPROVE_SPORT_PERFORMANCE || element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) CardWidget(title: AppLocalizations.of(context)!.supplements,
-                              // children: state.supplements.orEmpty().map((creatine) => NutrientDetailWidget(todayCreatine: creatine, onMinusClick: (supplement) {}, onPlusClick: (supplement) {}),).toList()),
-                              children: [
-                                if  (state.profile?.objectives?.any((element) => element ==  Constants.IMPROVE_SPORT_PERFORMANCE || element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) NutrientDetailWidget(todayCreatine: state.todayCreatineSupplement, onMinusClick: (supplement) => bloc.add(UploadCreatineEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCreatineEventAction(value: 2, supplementInfo: supplement,))),
-                                if  (state.profile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) NutrientDetailWidget(todayCreatine: state.todayCollagenSupplement, onMinusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: 2, supplementInfo: supplement,))),
-                              ],
+                          if (state.showCard != null && state.showCard!) Positioned(
+                            top: 100,
+                            width: mediaQuerySize.width,
+                            child: ExplainingCardsHelper().getExplainingCardWithId(
+                              context: context,
+                              explainingCardId: ExplainingCardRefs.dashboard.index,
+                              onHideCard: () => bloc.add(HideCardAction()),
+                            ),
                           ),
                         ],
                       ),
-                      if (state.showCard != null && state.showCard!) Positioned(
-                        top: 100,
-                        width: mediaQuerySize.width,
-                        child: ExplainingCardsHelper().getExplainingCardWithId(
-                          context: context,
-                          explainingCardId: ExplainingCardRefs.dashboard.index,
-                          onHideCard: () => bloc.add(HideCardAction()),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
                 bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD,)

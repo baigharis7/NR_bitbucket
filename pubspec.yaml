@@ -96,6 +96,7 @@ flutter:
     - assets/images/recipe_image4.png
     - assets/images/recipe_image5.png
     - assets/images/
+    - assets/svg/
     - assets/icon/food_icon.png
     - assets/icon/fork_knife.png
     - assets/icon/journal_icon.png
