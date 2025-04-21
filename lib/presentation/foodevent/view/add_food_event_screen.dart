@@ -256,15 +256,18 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               // );
                             },
                             optionsViewBuilder: (context, onSelected, options) {
+                              final screenSpace = MediaQuery.of(context).size.height/3.1;
+                              final screenSpaceRequired = filteredListLength * Dimens.height60;
                               return Align(
                                 alignment: Alignment.topLeft,
                                 child: Material(
-                                  elevation: 4.0,
+                                  elevation: 30.0,
                                   child: Container(
-                                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - Dimens.margin_60, maxHeight: Dimens.heightXXLarge), // Adjust the width as needed
+                                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - Dimens.margin_60, maxHeight: screenSpace < screenSpaceRequired ? screenSpace : screenSpaceRequired), // Adjust the width as needed
                                     child: Scrollbar(
                                       thumbVisibility: true,
                                       child: ListView(
+                                        padding: EdgeInsets.zero,
                                         children: ListTile.divideTiles(
                                           context: context,
                                           tiles: options.map((String option) {

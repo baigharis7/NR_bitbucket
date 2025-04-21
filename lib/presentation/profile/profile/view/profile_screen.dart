@@ -192,7 +192,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                         if (value.toString() != Constants.BACK) bloc.add(SaveChangesAction());
                       }),
                     ),
-                    if ((state.profile?.sex?.index ?? -1) == SexType.female.index) SwitchDashboardWidget(
+                    if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
                         title: AppLocalizations.of(context)!.menstruation,
                         currentState: state.isMenstruation ?? false,
                         onStateChange: (value) {

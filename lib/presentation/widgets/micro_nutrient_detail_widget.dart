@@ -11,7 +11,7 @@ import 'fill_horizontal_bar.dart';
 
 class MicroNutrientDetailWidget extends StatefulWidget {
   final NutrientsModel nutrientsModel;
-  MicroNutrientDetailWidget({required this.nutrientsModel});
+  const MicroNutrientDetailWidget({super.key, required this.nutrientsModel});
 
   @override
   State<MicroNutrientDetailWidget> createState() =>
