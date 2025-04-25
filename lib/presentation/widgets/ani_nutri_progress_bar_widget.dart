@@ -1,0 +1,59 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+
+import '../../infrastructure/utils/app_color.dart';
+
+class AnimatedNutrientProgressBarWidget extends StatelessWidget {
+  final double? height;
+  final double? width;
+  final String? title;
+  final double percent;
+  const AnimatedNutrientProgressBarWidget({super.key, this.height, this.width, this.title, required this.percent});
+
+  @override
+  Widget build(BuildContext context) {
+    final progressWidth = width ?? MediaQuery.of(context).size.width;
+    double progressFromPercent = progressWidth * (percent / 100);
+    if (progressWidth < progressFromPercent) progressFromPercent = progressWidth;
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: Dimens.marginXSmall),
+      child: Column(children: [
+        Stack(
+          clipBehavior: Clip.hardEdge,
+          alignment: Alignment.centerLeft,
+          children: [
+            Container(
+              width: progressWidth,
+              height: height ?? Dimens.height15,
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge)),
+                color: AppColors.ceramic,
+              ),
+            ),
+            TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0, end: progressFromPercent),
+                duration: const Duration(seconds: 2),
+                builder: (context, value, child) => Container(
+                  width: value,
+                  height: height ?? Dimens.height15,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge)),
+                    color: AppColors.mountainMeadow,
+                  ),),
+            ),
+          ],
+        ),
+        if (title.isNotNull()) Container(
+          margin: const EdgeInsets.symmetric(vertical: Dimens.marginXSmall),
+          child: Text(
+            title ?? '',
+            style: const TextStyle(fontSize: Dimens.fontSizeSmall, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+        ),
+      ],),
+    );
+  }
+
+}

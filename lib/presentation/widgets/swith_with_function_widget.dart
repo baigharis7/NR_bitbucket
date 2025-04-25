@@ -23,15 +23,19 @@ class _SwitchDashboardWidgetState extends State<SwitchDashboardWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: AppColors.darkJungleGreen,
       margin: const EdgeInsets.symmetric(
-          horizontal: Dimens.marginSmall, vertical: Dimens.marginNormal),
+          horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(widget.title),
+            Text(widget.title, style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeLarge)),
             Switch.adaptive(
+              inactiveTrackColor: AppColors.mountainMeadow,
+              activeTrackColor: Colors.white,
               applyCupertinoTheme: true,
               value: widget.currentState,
               activeColor: AppColors.mountainMeadow,

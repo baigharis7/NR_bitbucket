@@ -158,4 +158,12 @@ class DateTimeHelper {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
+  static bool isPastDate(DateTime inputDate) {
+    final today = DateTime.now();
+    final todayDateOnly = DateTime(today.year, today.month, today.day);
+    final inputDateOnly = DateTime(inputDate.year, inputDate.month, inputDate.day);
+
+    return inputDateOnly.isBefore(todayDateOnly);
+  }
+
 }

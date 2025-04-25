@@ -55,6 +55,7 @@ dependencies:
   carousel_slider: ^4.2.1
   sprintf: ^7.0.0
   upgrader: ^9.0.0
+  percent_indicator: ^4.2.2
 
 dev_dependencies:
   flutter_test:

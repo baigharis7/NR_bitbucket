@@ -188,6 +188,15 @@ extension DoubleExtensions on double? {
       return this!;
     }
   }
+
+  String toTwoDecimal() {
+    if (this == null) {
+      return '0.0';
+    } else {
+      final value = this!.toStringAsFixed(2);
+      return value;
+    }
+  }
 }
 
 extension LanguageSelector<T> on T {

@@ -51,7 +51,7 @@ class WeekWidget extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  dayAbbr,
+                  dayAbbr.toUpperCase(),
                   style: TextStyle(
                     fontSize: Dimens.fontSizeNormal,
                     color: isToday ? Colors.black : Colors.white,
@@ -61,7 +61,7 @@ class WeekWidget extends StatelessWidget {
               ],
             ),
           ),
-          if (dateTime.isBefore(todayDate) && events.isEmpty) Positioned(
+          if (DateTimeHelper.isPastDate(dateTime) && events.isEmpty) Positioned(
             top: 2,
             right: 4,
             child: Container(

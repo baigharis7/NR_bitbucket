@@ -15,5 +15,10 @@ class AppColors {
   static const light_carmin_pink = Color(0xFFE7726B);
   static const anti_flash_white = Color(0xFFE9F8F3);
   static const errorRedLight = Color(0xFFFAB7B7);
-  static const darkJungleGreen = Color(0x98133A30);
+  static const darkJungleGreen = Color(0x960F2021);
+  static const ceramic = Color(0x3DFFFFFF);
+  static const peacockBlue = Color(0xFF016797);
+  static const floralWhite = Color(0xDAFAFAF0);
+  static const battleshipGrey = Color(0xFF828282);
+  static const slate = Color(0xB3496767);
 }
