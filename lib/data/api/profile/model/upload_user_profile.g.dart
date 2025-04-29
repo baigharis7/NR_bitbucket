@@ -10,8 +10,8 @@ UploadUserProfile _$UploadUserProfileFromJson(Map<String, dynamic> json) =>
     UploadUserProfile(
       userId: json['userId'] as String?,
       commonName: json['commonName'] as String,
-      birthDate: json['birthDate'] as int,
-      sex: json['sex'] as int,
+      birthDate: (json['birthDate'] as num).toInt(),
+      sex: (json['sex'] as num).toInt(),
       occupationActivityFactor:
           (json['occupationActivityFactor'] as num).toDouble(),
       physicalCharacteristics: json['physicalCharacteristics'] == null
@@ -27,21 +27,24 @@ UploadUserProfile _$UploadUserProfileFromJson(Map<String, dynamic> json) =>
           : MedicalSituation.fromJson(
               json['medicalSituation'] as Map<String, dynamic>),
       foodAversions: (json['foodAversions'] as List<dynamic>?)
-          ?.map((e) => e as int)
+          ?.map((e) => (e as num).toInt())
           .toList(),
       exclusions: json['exclusions'] as String?,
       intolerances: json['intolerances'] as String?,
-      guts: json['guts'] as int?,
-      objectives:
-          (json['objectives'] as List<dynamic>).map((e) => e as int).toList(),
+      guts: (json['guts'] as num?)?.toInt(),
+      objectives: (json['objectives'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
       micronutrients: (json['micronutrients'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
       userRdas: (json['userRdas'] as List<dynamic>?)
           ?.map((e) => UserRda.fromJson(e as Map<String, dynamic>))
           .toList(),
-      recommededIds: (json['recommededIds'] as List<dynamic>?)?.map((e) => e as int).toList(),
-      kcal: json['kcal'] as int?,
+      recommededIds: (json['recommededIds'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
+      kcal: (json['kcal'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$UploadUserProfileToJson(UploadUserProfile instance) =>
@@ -86,11 +89,11 @@ Map<String, dynamic> _$MedicalSituationToJson(MedicalSituation instance) =>
 PhysicalCharacteristics _$PhysicalCharacteristicsFromJson(
         Map<String, dynamic> json) =>
     PhysicalCharacteristics(
-      height: double.parse((json['height']).toString()),
-      weight: double.parse((json['weight']).toString()),
-      unit: json['unit'] as int?,
-      bodyFat: json['bodyFat'] as int?,
-      waistMeasurement: json['waistMeasurement'] as int?,
+      height: (json['height'] as num).toDouble(),
+      weight: (json['weight'] as num).toDouble(),
+      unit: (json['unit'] as num?)?.toInt(),
+      bodyFat: (json['bodyFat'] as num?)?.toInt(),
+      waistMeasurement: (json['waistMeasurement'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$PhysicalCharacteristicsToJson(
@@ -118,9 +121,9 @@ Map<String, dynamic> _$FemaleCharacteristicsToJson(
     };
 
 Menstruation _$MenstruationFromJson(Map<String, dynamic> json) => Menstruation(
-      regularity: json['regularity'] as int,
-      daysOfCycle: json['daysOfCycle'] as int?,
-      lastStartDate: json['lastStartDate'] as int?,
+      regularity: (json['regularity'] as num).toInt(),
+      daysOfCycle: (json['daysOfCycle'] as num?)?.toInt(),
+      lastStartDate: (json['lastStartDate'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$MenstruationToJson(Menstruation instance) =>
@@ -144,10 +147,12 @@ UserRda _$UserRdaFromJson(Map<String, dynamic> json) => UserRda(
       n: json['n'] as String,
       rda: json['rda'] as num,
       ul: json['ul'] as num,
+      upperLimit: json['upperLimit'] as num,
     );
 
 Map<String, dynamic> _$UserRdaToJson(UserRda instance) => <String, dynamic>{
       'n': instance.n,
       'rda': instance.rda,
       'ul': instance.ul,
+      'upperLimit': instance.upperLimit,
     };

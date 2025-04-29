@@ -80,9 +80,9 @@ class EventsHelper {
       if (liquidTodayEvents.isNotEmpty) {
         for (var liquidEvent in liquidTodayEvents) {
           for (var eventInfo in liquidEvent.foodInfo.orEmpty()) {
-            if (eventInfo.id == Constants.TAP_WATER_ID) {
+            // if (eventInfo.id == Constants.TAP_WATER_ID) {
               amount = amount + ((eventInfo.eventInfo?.qty ?? 0)/1000);
-            }
+            // }
           }
         }
       }

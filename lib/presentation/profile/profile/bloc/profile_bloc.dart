@@ -64,7 +64,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
       emit(state.copyWith(isLoading: true, onError: null,));
       state.profile = await getProfileInteractor.execute();
       state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo,);
-      state.objectivesInfoMaster?.objectives.removeWhere((element) => element.id == Constants.DURING_MENSTRUATION);
+      state.objectivesFilteredList = state.objectivesInfoMaster?.objectives.where((element) => element.id != Constants.DURING_MENSTRUATION).toList();
       state.foodsAndDrinksNamesMaster = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames,);
       state.recommendationGroupsMaster = await getMasterFileInteractor.execute(MasterFilesType.recommendationGroups);
       if (event.context != null) state.aversionsUI = populateAversions(event.context!);
@@ -87,7 +87,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     on<InitializeStateFromRegistryAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
       state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo,);
-      state.objectivesInfoMaster?.objectives.removeWhere((element) => element.id == Constants.DURING_MENSTRUATION);
+      state.objectivesFilteredList = state.objectivesInfoMaster?.objectives.where((element) => element.id != Constants.DURING_MENSTRUATION).toList();
       state.foodsAndDrinksNamesMaster = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames,);
       state.recommendationGroupsMaster = await getMasterFileInteractor.execute(MasterFilesType.recommendationGroups);
       state.aversionsUI = populateAversions(event.context);
@@ -327,7 +327,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         if (userProfileResponse.uploadSuccess) {
           profile.micronutrients = userProfileResponse.micronutrients;
           profile.userRdas = UserRdas(
-            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul)).toList(),
+            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul, upperLimit: userRda.upperLimit)).toList(),
           );
           profile.kcal = userProfileResponse.kcal;
           try {
@@ -394,7 +394,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         if (userProfileResponse.uploadSuccess) {
           profile.micronutrients = userProfileResponse.micronutrients;
           profile.userRdas = UserRdas(
-            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul)).toList(),
+            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul, upperLimit: userRda.upperLimit)).toList(),
           );
           profile.kcal = userProfileResponse.kcal;
           try {
@@ -427,6 +427,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     });
 
     on<SetMenstruationStateAction>((event, emit) {
+      final mens = event.isMenstruation;
       final menstruationId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.MENSTRUATION).id ?? -1;
       if (menstruationId != -1) {
         manageObjectives(menstruationId);
@@ -535,7 +536,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     if (getAllergiesFillPercentage() != 0) variablesSum +=1;
     if (getIntolerancesFillPercentage() != 0) variablesSum +=1;
     if (getAversionsFillPercentage() != 0) variablesSum +=1;
-    return _calculatePercentage(variablesSum, 4);
+    return _calculatePercentage(variablesSum, 1);
   }
 
   double getDietTypeFillPercentage() {

@@ -121,8 +121,9 @@ class UserRda {
   String n;
   num rda;
   num ul;
+  num upperLimit;
 
-  UserRda({required this.n, required this.rda, required this.ul});
+  UserRda({required this.n, required this.rda, required this.ul, required this.upperLimit});
 
   factory UserRda.fromJson(Map<String, dynamic> json) => _$UserRdaFromJson(json);
   Map<String, dynamic> toJson() => _$UserRdaToJson(this);
