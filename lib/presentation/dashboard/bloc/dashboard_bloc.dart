@@ -539,7 +539,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     num upperLimit = 0.0;
     loop:for (UserRda userRda in state.userRdas ?? []) {
       if (userRda.name == micronutrient) {
-        upperLimit = userRda.upperLimit;
+        upperLimit = userRda.upperLimit ?? 0.0;
         if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
           upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
         }

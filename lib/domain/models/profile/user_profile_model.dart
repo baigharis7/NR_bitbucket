@@ -154,7 +154,7 @@ class UserRda {
   String name;
   num rda;
   num ul;
-  num upperLimit;
+  num? upperLimit;
 
   UserRda({required this.name, required this.rda, required this.ul, required this.upperLimit});
 

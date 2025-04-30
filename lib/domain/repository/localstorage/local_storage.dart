@@ -89,4 +89,6 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<List> getAllCreatineEvents();
   Future<List> getAllCollagenEvents();
   Future<bool> eraseDBEventsData();
+  Future<bool> showModelAppearance(int modelAppearanceId);
+  Future<void> saveModelAppearance(int modelAppearanceId);
 }

@@ -19,6 +19,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_analysis_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/modelsappearence/models_appearance_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/recipes/recipe_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
@@ -77,6 +78,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _urineEventsBox;
   Box? _creatineEventsBox;
   Box? _collagenEventsBox;
+  Box? _modelAppearanceBox;
 
   Future<Box> _openProfileBox() async => openBox(_profileBox, UserProfileEntity.boxName);
   Future<Box> _openFoodEventsBox() async => openBox(_foodEventsBox, FoodEventEntity.boxName);
@@ -119,6 +121,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> _openUrineEventsBox() async => openBox(_urineEventsBox, 'urine_events');
   Future<Box> _openCreatineEventsBox() async => openBox(_creatineEventsBox, UploadSupplementEventEntity.boxNameCreatine);
   Future<Box> _openCollagenEventsBox() async => openBox(_collagenEventsBox, UploadSupplementEventEntity.boxNameCollagen);
+  Future<Box> _openModelAppearanceBox() async => openBox(_modelAppearanceBox, ModelsAppearanceEntity.boxName);
 
   Future<Box> get _getProfileBox async => await _openProfileBox();
   Future<Box> get _getFoodEventsBox async => await _openFoodEventsBox();
@@ -138,6 +141,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> get _getUrineEventsBox async => await _openUrineEventsBox();
   Future<Box> get _getCreatineEventsBox async => await _openCreatineEventsBox();
   Future<Box> get _getCollagenEventsBox async => await _openCollagenEventsBox();
+  Future<Box> get _getModelAppearanceBox async => await _openModelAppearanceBox();
 
   @override
   Future<void> saveProfile(UserProfileEntity profileEntity) async {
@@ -1208,6 +1212,38 @@ class LocalStorageImpl extends LocalStorageRepository {
     await _clearBox(_getCollagenEventsBox);
 
     return true;
+  }
+
+  @override
+  Future<bool> showModelAppearance(int modelAppearanceId) async {
+    try {
+      return _getModelAppearanceBox.then((box) {
+        final entity = box.get(modelAppearanceId) as ModelsAppearanceEntity?;
+        if (entity != null) {
+          return entity.timeClicked < 1;
+        } else {
+          return true;
+        }
+      });
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> saveModelAppearance(int modelAppearanceId) async {
+    try {
+      _getModelAppearanceBox.then((box) {
+        final entity = box.get(modelAppearanceId) as ModelsAppearanceEntity?;
+        if (entity != null) {
+          box.put(modelAppearanceId, ModelsAppearanceEntity(id: modelAppearanceId, timeClicked: entity.timeClicked +1, time: DateTime.now().millisecondsSinceEpoch));
+        } else {
+          box.put(modelAppearanceId, ModelsAppearanceEntity(id: modelAppearanceId, timeClicked: 1, time: DateTime.now().millisecondsSinceEpoch));
+        }
+      });
+    } catch (error) {
+      rethrow;
+    }
   }
 
 }

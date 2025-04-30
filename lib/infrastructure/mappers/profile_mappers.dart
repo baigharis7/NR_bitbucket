@@ -40,7 +40,7 @@ upload.UploadUserProfile mapToUploadUserProfileModel(domain.UserProfileModel use
   );
 
   final upload.UserRdas uploadUserRdas = upload.UserRdas(
-    userRdas: userProfileModel.userRdas.isNull() ? [] : userProfileModel.userRdas!.userRdas.map((userRdas) => upload.UserRda(n: userRdas.name, rda: userRdas.rda, ul: userRdas.ul, upperLimit: userRdas.upperLimit)).toList(),
+    userRdas: userProfileModel.userRdas.isNull() ? [] : userProfileModel.userRdas!.userRdas.map((userRdas) => upload.UserRda(n: userRdas.name, rda: userRdas.rda, ul: userRdas.ul, upperLimit: userRdas.upperLimit ?? 0.0)).toList(),
   );
 
   final profile = upload.UploadUserProfile(
@@ -110,7 +110,7 @@ entity.UserProfileEntity mapToProfileEntity(domain.UserProfileModel profileModel
     objectives: profileModel.objectives.orEmpty(),
     guts: profileModel.guts,
     micronutrients: profileModel.micronutrients,
-    userRdas: entity.UserRdasEntity(userRdasEntity: profileModel.userRdas!.userRdas.map((userRdas) => entity.UserRdaEntity(n: userRdas.name, rda: userRdas.rda.toDouble(), ul: userRdas.ul.toDouble(), upperLimit: userRdas.upperLimit.toDouble())).toList()),
+    userRdas: entity.UserRdasEntity(userRdasEntity: profileModel.userRdas!.userRdas.map((userRdas) => entity.UserRdaEntity(n: userRdas.name, rda: userRdas.rda.toDouble(), ul: userRdas.ul.toDouble(), upperLimit: userRdas.upperLimit?.toDouble() ?? 0.0)).toList()),
     recommededIds: profileModel.recommededIds,
     kcal: profileModel.kcal,
   );
