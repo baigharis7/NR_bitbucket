@@ -147,7 +147,7 @@ class _DashboardScreen extends State<DashboardScreen>
             if ((state.isUpdatedDataNeeded ?? false) && state.isLoading == false) _updateDataDialog(onUpdateClick: () => bloc.add(LogoutFromAppEventAction(onFinish: () => Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false,))));
             if (state.foundedRoutineRemainingHours.orZero() > 0 && state.foundedRoutineRemainingHours.orZero() <= 3 && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true && state.isLoading == false && (state.isShowDialog ?? false) == false) _workOutDialog(tim: state.foundedRoutineRemainingHours!, onFinish: () => bloc.add(ShowDialogEventAction()));
             if (state.foundedRoutineRemainingHours == 0 && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true && state.isLoading == false && (state.isShowDialog ?? false) == false) _afterWorkoutDialog(onFinish: () => bloc.add(ShowDialogEventAction()));
-            if (state.profile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) == true && state.isLoading == false && (state.isShowDialog ?? false) == false) _improveRecoveryDialog(onFinish: () => bloc.add(ShowDialogEventAction()));
+            if (state.profile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) == true && state.isLoading == false && (state.isShowDialog ?? false) == false && bloc.isNeedToShowModel(state.sportInjuryModal)) _improveRecoveryDialog(onFinish: () { bloc.add(ShowDialogEventAction()); bloc.add(SaveHideModelInfo()); });
           },
           builder: (ctx, state) {
             return UpgradeAlert(

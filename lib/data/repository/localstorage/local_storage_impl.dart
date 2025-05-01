@@ -721,6 +721,7 @@ class LocalStorageImpl extends LocalStorageRepository {
     await _clearBox(_getUrineEventsBox);
     await _clearBox(_getCreatineEventsBox);
     await _clearBox(_getCollagenEventsBox);
+    await _clearBox(_getModelAppearanceBox);
     for (var masterFilesType in MasterFilesType.values) {
       await _clearBox(_getMasterFilesBox(masterFilesType));
     }
@@ -1215,15 +1216,11 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<bool> showModelAppearance(int modelAppearanceId) async {
+  Future<ModelsAppearanceEntity?> showModelAppearance(int modelAppearanceId) async {
     try {
       return _getModelAppearanceBox.then((box) {
         final entity = box.get(modelAppearanceId) as ModelsAppearanceEntity?;
-        if (entity != null) {
-          return entity.timeClicked < 1;
-        } else {
-          return true;
-        }
+        return entity;
       });
     } catch (error) {
       rethrow;

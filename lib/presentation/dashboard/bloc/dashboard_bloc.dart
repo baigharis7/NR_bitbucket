@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_model_appearance_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_model_appearance_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/modelsappearance/models_appearance_refs.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/ApiLogger.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -51,6 +54,7 @@ import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_sta
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/api/profile/model/user_profile_response.dart';
+import '../../../data/local/models/modelsappearence/models_appearance_entity.dart';
 import '../../../domain/interactor/eventssync/synchronize_events_interactor.dart';
 import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import '../../../domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
@@ -115,6 +119,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor;
   final SynchronizeEventsInteractor synchronizeEventsInteractor;
   final Chuck chuck;
+  final ShowModelAppearanceInteractor showModelAppearanceInteractor;
+  final SaveModelAppearanceInteractor saveModelAppearanceInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -158,6 +164,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.eraseDBLocalEventsInteractor,
     required this.synchronizeEventsInteractor,
     required this.chuck,
+    required this.showModelAppearanceInteractor,
+    required this.saveModelAppearanceInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -174,14 +182,15 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       // _clearData();
       emit(state.copyWith(isLoading: true, foundedRoutineRemainingHours: null));
       try {
-      await eraseDBLocalEventsInteractor.execute();
-      await synchronizeEventsInteractor.execute(getUserIdInteractor.execute());
+      // await eraseDBLocalEventsInteractor.execute();
+      // await synchronizeEventsInteractor.execute(getUserIdInteractor.execute());
       state.userMicronutrients = await getUserMicronutrientsInteractor.execute() ?? [];
       state.userRdas = await getUserRdasInteractor.execute();
       state.userObjectives = await getUserObjectivesInteractor.execute();
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo,);
       state.profile = await getProfileInteractor.execute();
+      state.sportInjuryModal = await showModelAppearanceInteractor.execute(ModelsAppearanceRefs.recoveryAfterSportInjury.index);
       if (state.profile?.physicalCharacteristics?.unit == 2) {
         state.profile?.physicalCharacteristics?.weight = (state.profile?.physicalCharacteristics?.weight ?? 0) / 2.20462;
       }
@@ -252,7 +261,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           unit: getUnitForMicronutrient(nutrientRda.name),
           rda: double.parse((getNutrientRda(nutrientRda.name) * 7).toStringAsFixed(2)), upperLimit: double.parse((getNutrientUpperLimit(nutrientRda.name) * 7).toStringAsFixed(2)),
       ),).toList();
-      // state.supplements = [SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement()), SupplementInfo('Collagen', 'Colágeno', todayCollagen, 10),];
       state.todayCreatineSupplement = SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement());
       state.todayCollagenSupplement = SupplementInfo('Collagen peptides', 'Péptidos de colágeno', todayCollagen, 10);
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
@@ -263,10 +271,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.isUpdatedDataNeeded = getMasterFileVersionCookingMethods != getMasterFile.cookingMethodsResponse?.v || getMasterFileVersionNutrientsInfo != getMasterFile.nutrientsInfoResponse?.v;
       final routines = await getRoutinesInteractor.execute();
       state.foundedRoutineRemainingHours = getFoundedRoutineTime(routines);
-      // emit(state.copyWith(
-      //   isLoading: false,
-      //   onError: null,
-      // ),);
       }
       catch(error) {
         Fluttertoast.showToast(msg: '$error', toastLength: Toast.LENGTH_LONG, backgroundColor: AppColors.errorRed, textColor: Colors.white);
@@ -486,6 +490,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     on<ShowLogs>((event, emit) {
       chuck.showInspector();
     },);
+
+    on<SaveHideModelInfo>((event, emit) async {
+      final a = await saveModelAppearanceInteractor.execute(ModelsAppearanceRefs.recoveryAfterSportInjury.index);
+    });
   }
 
   NutrientInfoMaster getNutrientInfo(String nutrientName) {
@@ -865,6 +873,18 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
     return false;
+  }
+
+  bool isNeedToShowModel(ModelsAppearanceEntity? sportInjuryModal) {
+    if (sportInjuryModal == null) {
+      return true;
+    } else {
+      if (DateTimeHelper.calculateDifferenceHours(sportInjuryModal.time, DateTime.now().millisecondsSinceEpoch) > 3) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 
 }

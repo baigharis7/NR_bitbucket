@@ -10,6 +10,7 @@ import 'package:nutrenaissance_flutter/infrastructure/lists/SupplementInfo.dart'
 
 import '../../../data/api/steps/models/step_event_response.dart';
 import '../../../data/api/supplements/model/upload_supplement_event.dart';
+import '../../../data/local/models/modelsappearence/models_appearance_entity.dart';
 import '../../../domain/models/calendar/calendar_events.dart';
 import '../../../domain/models/calendar/dashboard_all_calendar_events.dart';
 import '../../../domain/models/dashboard/nutrients_weekly_model.dart';
@@ -50,6 +51,7 @@ class DashboardState {
   bool? isUpdatedDataNeeded;
   int? foundedRoutineRemainingHours;
   bool? isShowDialog;
+  ModelsAppearanceEntity? sportInjuryModal;
 
   DashboardState({
     required this.isLoading,
@@ -84,6 +86,7 @@ class DashboardState {
     this.isUpdatedDataNeeded,
     this.foundedRoutineRemainingHours,
     this.isShowDialog,
+    this.sportInjuryModal,
   });
 
   DashboardState copyWith({
@@ -120,6 +123,7 @@ class DashboardState {
     bool? isUpdatedDataNeeded,
     int? foundedRoutineRemainingHours,
     bool? isShowDialog,
+    ModelsAppearanceEntity? sportInjuryModal,
   }) {
     return DashboardState(
       isLoading: isLoading,
@@ -154,6 +158,7 @@ class DashboardState {
       isUpdatedDataNeeded: isUpdatedDataNeeded ?? this.isUpdatedDataNeeded,
       foundedRoutineRemainingHours: foundedRoutineRemainingHours ?? this.foundedRoutineRemainingHours,
       isShowDialog: isShowDialog ?? this.isShowDialog,
+      sportInjuryModal: sportInjuryModal ?? this.sportInjuryModal,
     );
   }
 

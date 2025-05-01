@@ -41,6 +41,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_analysis_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/modelsappearence/models_appearance_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/recipes/recipe_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
@@ -57,6 +58,7 @@ import 'package:nutrenaissance_flutter/data/repository/liquidevents/liquid_event
 import 'package:nutrenaissance_flutter/data/repository/localstorage/local_storage_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/login/login_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/masterfiles/master_files_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/modelsappearance/models_appearance_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/profile/profile_repository_impl.dart';
@@ -153,6 +155,10 @@ import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/manage_master_files_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_model_appearance_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_model_appearance_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_model_appearance_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_model_appearance_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
@@ -246,6 +252,7 @@ import 'package:nutrenaissance_flutter/domain/repository/liquidevents/liquid_eve
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/masterfiles/master_files_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/modelsappearance/models_appearance_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/profile/profile_repository.dart';
@@ -523,6 +530,9 @@ void main() async {
   final eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService, chuck);
   final eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
   final SynchronizeEventsInteractor synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
+  final ModelsAppearanceRepository modelsAppearanceRepository = ModelsAppearanceRepositoryImpl(localStorageRepository: localStorageRepository);
+  final ShowModelAppearanceInteractor showModelAppearanceInteractor = ShowModelAppearanceInteractorImpl(modelsAppearanceRepository: modelsAppearanceRepository);
+  final SaveModelAppearanceInteractor saveModelAppearanceInteractor = SaveModelAppearanceInteractorImpl(modelsAppearanceRepository: modelsAppearanceRepository);
 
   final dashboardBloc = DashboardBloc(
     getAdviceInteractor: getAdviceInteractor,
@@ -566,6 +576,8 @@ void main() async {
     eraseDBLocalEventsInteractor: eraseDBLocalEventsInteractor,
     synchronizeEventsInteractor: synchronizeEventsInteractor,
     chuck: chuck,
+    showModelAppearanceInteractor: showModelAppearanceInteractor,
+    saveModelAppearanceInteractor: saveModelAppearanceInteractor,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(
@@ -1071,4 +1083,5 @@ void initLocalStorage() async {
   Hive.registerAdapter(RecipeStepEntityAdapter());
   Hive.registerAdapter(UploadFecesEventEntityAdapter());
   Hive.registerAdapter(UploadSupplementEventEntityAdapter());
+  Hive.registerAdapter(ModelsAppearanceEntityAdapter());
 }
