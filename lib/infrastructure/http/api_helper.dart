@@ -24,8 +24,6 @@ abstract class ApiHelper {
         'Authorization': idToken
       },
     );
-    // Log request
-    await ApiLogger.logRequest('$call', 'POST');
     if (kDebugMode) {
       httpRequestBuild.interceptWithChuck(_chuck);
     }
@@ -38,15 +36,11 @@ abstract class ApiHelper {
     //     },
     // ).interceptWithChuck(_chuck);
 
-    // Log response
-    await ApiLogger.logResponse('$call', response.statusCode, response.body);
-
     if (response.statusCode == 200) {
       try {
         final Map<String, dynamic> jsonResponse = json.decode(utf8.decode(response.bodyBytes));
         return jsonResponse;
       } catch (error) {
-        await ApiLogger.logResponse('$call', 500, 'Error: $error');
         rethrow;
       }
     } else {
@@ -62,8 +56,6 @@ abstract class ApiHelper {
         'Authorization': idToken
       },
     );
-    // Log request
-    await ApiLogger.logRequest('$call', 'GET');
     if (kDebugMode) {
       httpRequestBuild.interceptWithChuck(_chuck);
     }
@@ -75,15 +67,12 @@ abstract class ApiHelper {
     //     },
     // ).interceptWithChuck(_chuck);
 
-    // Log response
-    await ApiLogger.logResponse('$call', response.statusCode, response.body);
 
     if (response.statusCode == 200) {
       try {
         final Map<String, dynamic> jsonResponse = json.decode(utf8.decode(response.bodyBytes));
         return jsonResponse;
       } catch (error) {
-        await ApiLogger.logResponse('$call', 500, 'Error: $error');
         rethrow;
       }
     } else {
@@ -100,8 +89,6 @@ abstract class ApiHelper {
         'Authorization': idToken
       },
     );
-    // Log request
-    await ApiLogger.logRequest('$call', 'DELETE');
     if (kDebugMode) {
       httpRequestBuild.interceptWithChuck(_chuck);
     }
@@ -114,15 +101,11 @@ abstract class ApiHelper {
     //   },
     // ).interceptWithChuck(_chuck);
 
-    // Log response
-    await ApiLogger.logResponse('$call', response.statusCode, response.body);
-
     if (response.statusCode == 200) {
       try {
         final Map<String, dynamic> jsonResponse = json.decode(utf8.decode(response.bodyBytes));
         return jsonResponse;
       } catch (error) {
-        await ApiLogger.logResponse('$call', 500, 'Error: $error');
         rethrow;
       }
     } else {

@@ -165,5 +165,12 @@ class DateTimeHelper {
 
     return inputDateOnly.isBefore(todayDateOnly);
   }
+  static double calculateDifferenceHours(start, end) {
+    final startTime = dateTimeFromMilliseconds(start);
+    final endTime = dateTimeFromMilliseconds(end);
+    Duration diff = endTime!.difference(startTime!);
+    double hours = diff.inMinutes / 60.0;
+    return hours;
+  }
 
 }

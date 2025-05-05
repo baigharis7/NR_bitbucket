@@ -125,7 +125,7 @@ class _MicroNutrientsDetailScreenState
                           title: AppLocalizations.of(context)!.this_week,
                           data: state.micronutrientsWeekly ?? [],),
                     ),
-                    ...state.microNutrients.orEmpty().map((item) =>
+                    ...state.microNutrients.orEmpty().where((element) => element.upperLimit > 0).map((item) =>
                     // item.fractionToFill > 0 ?
                     MicroNutrientDetailWidget(nutrientsModel: item,),
                       // : Container(),

@@ -337,19 +337,22 @@ class UserRdaEntityAdapter extends TypeAdapter<UserRdaEntity> {
       n: fields[0] as String,
       rda: fields[1] as double,
       ul: fields[2] as double,
+      upperLimit: fields[3] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserRdaEntity obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.n)
       ..writeByte(1)
       ..write(obj.rda)
       ..writeByte(2)
-      ..write(obj.ul);
+      ..write(obj.ul)
+      ..writeByte(3)
+      ..write(obj.upperLimit);
   }
 
   @override

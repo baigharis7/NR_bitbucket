@@ -21,6 +21,7 @@ import 'package:nutrenaissance_flutter/domain/models/recipes/upload_recipe_favor
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 
+import '../../../data/local/models/modelsappearence/models_appearance_entity.dart';
 import '../../../data/local/models/recipes/recipe_favorite_entity.dart';
 
 abstract class LocalStorageRepository extends LocalStorageHelper {
@@ -89,4 +90,6 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<List> getAllCreatineEvents();
   Future<List> getAllCollagenEvents();
   Future<bool> eraseDBEventsData();
+  Future<ModelsAppearanceEntity?> showModelAppearance(int modelAppearanceId);
+  Future<void> saveModelAppearance(int modelAppearanceId);
 }

@@ -111,7 +111,7 @@ class _ObjectivesDialogState extends State<ObjectivesDialog> {
                                 fontSize: Dimens.fontSizeNormal,
                                 fontWeight: FontWeight.bold,
                               ),)),
-                          ...state.objectivesInfoMaster!.objectives.map((objective) =>
+                          ...state.objectivesFilteredList.orEmpty().map((objective) =>
                               TextCheckboxBox(
                                 title: objective.translate(context),
                                 checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),

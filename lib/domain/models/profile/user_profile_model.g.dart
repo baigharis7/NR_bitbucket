@@ -10,7 +10,7 @@ UserProfileModel _$UserProfileModelFromJson(Map<String, dynamic> json) =>
     UserProfileModel(
       userId: json['userId'] as String?,
       commonName: json['commonName'] as String?,
-      birthDate: json['birthDate'] as int?,
+      birthDate: (json['birthDate'] as num?)?.toInt(),
       sex: $enumDecodeNullable(_$SexTypeEnumMap, json['sex']),
       occupationActivityFactor:
           (json['occupationActivityFactor'] as num?)?.toDouble(),
@@ -27,19 +27,20 @@ UserProfileModel _$UserProfileModelFromJson(Map<String, dynamic> json) =>
           : MedicalSituation.fromJson(
               json['medicalSituation'] as Map<String, dynamic>),
       foodAversions: (json['foodAversions'] as List<dynamic>?)
-          ?.map((e) => e as int)
+          ?.map((e) => (e as num).toInt())
           .toList(),
-      dietType: json['dietType'] as int?,
+      dietType: (json['dietType'] as num?)?.toInt(),
       exclusions: json['exclusions'] == null
           ? null
           : Exclusions.fromJson(json['exclusions'] as Map<String, dynamic>),
       intolerances: (json['intolerances'] as List<dynamic>?)
-          ?.map((e) => e as int)
+          ?.map((e) => (e as num).toInt())
           .toList(),
       symptoms: json['symptoms'] as String?,
-      guts: json['guts'] as int?,
-      objectives:
-          (json['objectives'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      guts: (json['guts'] as num?)?.toInt(),
+      objectives: (json['objectives'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
       micronutrients: (json['micronutrients'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
@@ -47,9 +48,9 @@ UserProfileModel _$UserProfileModelFromJson(Map<String, dynamic> json) =>
           ? null
           : UserRdas.fromJson(json['userRdas'] as Map<String, dynamic>),
       recommededIds: (json['recommededIds'] as List<dynamic>?)
-          ?.map((e) => e as int)
+          ?.map((e) => (e as num).toInt())
           .toList(),
-      kcal: json['kcal'] as int?,
+      kcal: (json['kcal'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$UserProfileModelToJson(UserProfileModel instance) =>
@@ -83,7 +84,7 @@ const _$SexTypeEnumMap = {
 MedicalSituation _$MedicalSituationFromJson(Map<String, dynamic> json) =>
     MedicalSituation(
       commonDiseases: (json['commonDiseases'] as List<dynamic>?)
-          ?.map((e) => e as int)
+          ?.map((e) => (e as num).toInt())
           .toList(),
       otherDiseases: (json['otherDiseases'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -104,9 +105,9 @@ PhysicalCharacteristics _$PhysicalCharacteristicsFromJson(
     PhysicalCharacteristics(
       height: (json['height'] as num?)?.toDouble(),
       weight: (json['weight'] as num?)?.toDouble(),
-      unit: json['unit'] as int?,
-      bodyFat: json['bodyFat'] as int?,
-      waistMeasurement: json['waistMeasurement'] as int?,
+      unit: (json['unit'] as num?)?.toInt(),
+      bodyFat: (json['bodyFat'] as num?)?.toInt(),
+      waistMeasurement: (json['waistMeasurement'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$PhysicalCharacteristicsToJson(
@@ -134,9 +135,9 @@ Map<String, dynamic> _$FemaleCharacteristicsToJson(
     };
 
 Menstruation _$MenstruationFromJson(Map<String, dynamic> json) => Menstruation(
-      regularity: json['regularity'] as int?,
-      daysOfCycle: json['daysOfCycle'] as int?,
-      lastStartDate: json['lastStartDate'] as int?,
+      regularity: (json['regularity'] as num?)?.toInt(),
+      daysOfCycle: (json['daysOfCycle'] as num?)?.toInt(),
+      lastStartDate: (json['lastStartDate'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$MenstruationToJson(Menstruation instance) =>
@@ -147,8 +148,9 @@ Map<String, dynamic> _$MenstruationToJson(Menstruation instance) =>
     };
 
 Exclusions _$ExclusionsFromJson(Map<String, dynamic> json) => Exclusions(
-      exclusions:
-          (json['exclusions'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      exclusions: (json['exclusions'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
     );
 
 Map<String, dynamic> _$ExclusionsToJson(Exclusions instance) =>
@@ -170,10 +172,12 @@ UserRda _$UserRdaFromJson(Map<String, dynamic> json) => UserRda(
       name: json['name'] as String,
       rda: json['rda'] as num,
       ul: json['ul'] as num,
+      upperLimit: json['upperLimit'] as num,
     );
 
 Map<String, dynamic> _$UserRdaToJson(UserRda instance) => <String, dynamic>{
       'name': instance.name,
       'rda': instance.rda,
       'ul': instance.ul,
+      'upperLimit': instance.upperLimit,
     };

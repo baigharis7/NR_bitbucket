@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:nutrenaissance_flutter/domain/models/calendar/dashboard_all_calendar_events.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_model_appearance_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_model_appearance_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/modelsappearance/models_appearance_refs.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/ApiLogger.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -52,6 +54,7 @@ import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_sta
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/api/profile/model/user_profile_response.dart';
+import '../../../data/local/models/modelsappearence/models_appearance_entity.dart';
 import '../../../domain/interactor/eventssync/synchronize_events_interactor.dart';
 import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import '../../../domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
@@ -76,9 +79,7 @@ import 'package:path_provider/path_provider.dart';
 class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final EventsHelper _eventsHelper = EventsHelper();
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
-  final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
-  final GetUserRdasInteractor getUserRdasInteractor;
   final GetAdviceInteractor getAdviceInteractor;
   final GetUserIdInteractor getUserIdInteractor;
   final GetProfileInteractor getProfileInteractor;
@@ -87,7 +88,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final SaveExplainingCardInteractionInteractor saveExplainingCardInteractionInteractor;
   final GetDayCaloriesInteractor getDayCaloriesInteractor;
   final GetTodayLiquidEventsInteractor getLiquidEventsOfTodayInteractor;
-  final GetUserObjectivesInteractor getUserObjectivesInteractor;
   final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor;
   final GetWeekLiquidEventsInteractor getWeekLiquidEventsInteractor;
   final GetWeekSportsInteractor getWeekSportsInteractor;
@@ -116,12 +116,12 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor;
   final SynchronizeEventsInteractor synchronizeEventsInteractor;
   final Chuck chuck;
+  final ShowModelAppearanceInteractor showModelAppearanceInteractor;
+  final SaveModelAppearanceInteractor saveModelAppearanceInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
-    required this.getUserMicronutrientsInteractor,
     required this.getMasterFileInteractor,
-    required this.getUserRdasInteractor,
     required this.getAdviceInteractor,
     required this.getUserIdInteractor,
     required this.getProfileInteractor,
@@ -130,7 +130,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.saveExplainingCardInteractionInteractor,
     required this.getDayCaloriesInteractor,
     required this.getLiquidEventsOfTodayInteractor,
-    required this.getUserObjectivesInteractor,
     required this.getWeekFoodEventsInteractor,
     required this.getWeekLiquidEventsInteractor,
     required this.getWeekSportsInteractor,
@@ -159,6 +158,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.eraseDBLocalEventsInteractor,
     required this.synchronizeEventsInteractor,
     required this.chuck,
+    required this.showModelAppearanceInteractor,
+    required this.saveModelAppearanceInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -175,28 +176,23 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       // _clearData();
       emit(state.copyWith(isLoading: true, foundedRoutineRemainingHours: null));
       try {
-      await eraseDBLocalEventsInteractor.execute();
-      await synchronizeEventsInteractor.execute(getUserIdInteractor.execute());
-      ApiLogger.logResponse('InitializationState Function-call on Dashboard', 632, 'Step-1 Clean & Events sync');
-      state.userMicronutrients = await getUserMicronutrientsInteractor.execute() ?? [];
-      state.userRdas = await getUserRdasInteractor.execute();
-      state.userObjectives = await getUserObjectivesInteractor.execute();
+      // await eraseDBLocalEventsInteractor.execute();
+      // await synchronizeEventsInteractor.execute(getUserIdInteractor.execute());
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo,);
       state.profile = await getProfileInteractor.execute();
+      state.sportInjuryModal = await showModelAppearanceInteractor.execute(ModelsAppearanceRefs.recoveryAfterSportInjury.index);
       if (state.profile?.physicalCharacteristics?.unit == 2) {
         state.profile?.physicalCharacteristics?.weight = (state.profile?.physicalCharacteristics?.weight ?? 0) / 2.20462;
       }
       state.userKcal = getUserKcalSelectiveObjectives(state.profile?.kcal ?? 0);
       state.isMenstruation = state.profile?.objectives?.contains(Constants.DURING_MENSTRUATION);
       state.isCold = state.profile?.objectives?.contains(Constants.IMPROVE_THE_IMMUNE_SYSTEM);
-      ApiLogger.logResponse('InitializationState Function-call on Dashboard', 632, 'Step-2 local profile db data fetched');
 
       final caloriesConsumed = await getDayCaloriesInteractor.execute(dateTime: event.dateTime);
       final todayCreatine = await getTodayCreatineEventInteractor.execute(dateTime: event.dateTime);
       final todayCollagen = await getTodayCollagenEventInteractor.execute(dateTime: event.dateTime);
       var totalSugarRequired = (state.userKcal.orZero()~/100*5)~/4;
-      ApiLogger.logResponse('InitializationState Function-call on Dashboard', 632, 'Step-3 locally calories, creatine, collagen and required sugar calculated');
 
       state.foodEvents = await getFoodEventsOfTodayInteractor.execute(dateTime: event.dateTime);
       state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute(dateTime: event.dateTime);
@@ -207,9 +203,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       // state.allCalendarEvents = await getAllEventsSortedByDateInteractor.execute();
       state.waterEvents = await getWaterEventsTodayInteractor.execute(dateTime: event.dateTime);
       state.allCalendarEvents = await getAllDashboardEventsSortedByDateInteractor.execute();
-      ApiLogger.logResponse('InitializationState Function-call on Dashboard', 632, 'Step-4 locally foods, liquids, sports, water and calendar events fetched');
 
-      state.micronutrients = state.userMicronutrients!
+      state.micronutrients = state.profile?.micronutrients.orEmpty()
           .map(
             (micronutrient) =>
             NutrientsModel(
@@ -218,9 +213,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               fractionToFill: getFractionToFillMicros(micronutrient),
               unit: getUnitForMicronutrient(micronutrient),
               rda: getNutrientRda(micronutrient),
+              upperLimit: getNutrientUpperLimit(micronutrient),
             ),
       ).toList();
-      ApiLogger.logResponse('InitializationState Function-call on Dashboard', 632, 'Step-5 micro-nutrients calculated');
       state.micronutrients?.sort((a, b) => b.fractionToFill.compareTo(a.fractionToFill),);
       state.macronutrients = ['proteinSci', 'carbsAvailable', 'fatTotal']
           .map(
@@ -231,16 +226,15 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               fractionToFill: getFractionToFillMacros(macronutrient),
               unit: getUnitForMicronutrient(macronutrient),
               rda: getMacroNutrientRda(macronutrient),
+              upperLimit: getMacroNutrientRda(macronutrient),
             ),
       ).toList();
-      ApiLogger.logResponse('InitializationState Function-call on Dashboard', 632, 'Step-6 macro-nutrients calculated');
       state.energyModel = EnergyModel(
         fractionToFill: getFractionToFillKcal(caloriesConsumed.orZero()),
         totalKcal: state.userKcal.orZero(),
         rawKcalTaken: getTotalKcalTakenToday(),
         spentKcal: caloriesConsumed.orZero(),
       );
-      ApiLogger.logResponse('InitializationState Function-call on Dashboard', 632, 'Step-7 energy balance section calculated');
       state.sugarAndFiberModel = SugarAndFiberModel(
           fractionToFillSugar: calculateTodaySugar(totalSugarRequired),
           totalSugarConsumed: calculateTodayConsumedSugar(totalSugarRequired),
@@ -249,21 +243,18 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           totalFiberConsumed: calculateTodayConsumedFiber(),
         requiredFiber: Constants.FIBER_TOTAL_REQUIRED,
       );
-      ApiLogger.logResponse('InitializationState Function-call on Dashboard', 632, 'Step-8 Sugar and fiber calculated');
-      state.weeklyMicronutrients = state.userRdas
+      state.weeklyMicronutrients = state.profile?.userRdas?.userRdas
           .orEmpty()
           .map((nutrientRda) => NutrientsModel(
           quantityConsumed: getWeeklyConsumedNutrient(nutrientRda),
           nutrientInfoMaster: getNutrientInfo(nutrientRda.name),
           fractionToFill: getWeeklyFractionFill(nutrientRda),
           unit: getUnitForMicronutrient(nutrientRda.name),
-          rda: double.parse((getNutrientRda(nutrientRda.name) * 7).toStringAsFixed(2)),),).toList();
-      ApiLogger.logResponse('InitializationState Function-call on Dashboard', 632, 'Step-9 weekly micro-nutrients data');
-      // state.supplements = [SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement()), SupplementInfo('Collagen', 'Colágeno', todayCollagen, 10),];
+          rda: double.parse((getNutrientRda(nutrientRda.name) * 7).toStringAsFixed(2)), upperLimit: double.parse((getNutrientUpperLimit(nutrientRda.name) * 7).toStringAsFixed(2)),
+      ),).toList();
       state.todayCreatineSupplement = SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement());
       state.todayCollagenSupplement = SupplementInfo('Collagen peptides', 'Péptidos de colágeno', todayCollagen, 10);
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
-      ApiLogger.logResponse('InitializationState Function-call on Dashboard', 632, 'Step-10 Supplement and show card info');
 
       final getMasterFileVersionCookingMethods = await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethods);
       final getMasterFileVersionNutrientsInfo = await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo);
@@ -271,16 +262,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.isUpdatedDataNeeded = getMasterFileVersionCookingMethods != getMasterFile.cookingMethodsResponse?.v || getMasterFileVersionNutrientsInfo != getMasterFile.nutrientsInfoResponse?.v;
       final routines = await getRoutinesInteractor.execute();
       state.foundedRoutineRemainingHours = getFoundedRoutineTime(routines);
-      ApiLogger.logResponse('InitializationState Function-call on Dashboard', 632, 'Step-11 master-files for version and routine checking');
-      // emit(state.copyWith(
-      //   isLoading: false,
-      //   onError: null,
-      // ),);
       }
       catch(error) {
         Fluttertoast.showToast(msg: '$error', toastLength: Toast.LENGTH_LONG, backgroundColor: AppColors.errorRed, textColor: Colors.white);
-        // chuck.onHttpResponse(Response('{error: $error}', 500));
-        ApiLogger.logResponse('InitializationState Function-call on Dashboard Exception', 632, '$error');
       }
       if (event.onFinish != null) event.onFinish?.call();
       emit(state.copyWith(
@@ -383,7 +367,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         if (userProfileResponse.uploadSuccess) {
           profile.micronutrients = userProfileResponse.micronutrients;
           profile.userRdas = UserRdas(
-            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul)).toList(),
+            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul, upperLimit: userRda.upperLimit)).toList(),
           );
           profile.kcal = userProfileResponse.kcal;
           try {
@@ -497,6 +481,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     on<ShowLogs>((event, emit) {
       chuck.showInspector();
     },);
+
+    on<SaveHideModelInfo>((event, emit) async {
+      final a = await saveModelAppearanceInteractor.execute(ModelsAppearanceRefs.recoveryAfterSportInjury.index);
+    });
   }
 
   NutrientInfoMaster getNutrientInfo(String nutrientName) {
@@ -513,7 +501,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   // TODO: review this, dont know if ot's ok, just put it here to fit.
   double getFractionToFillMicros(String micronutrient) {
-    final rdaForUser = getNutrientRda(micronutrient);
+    final rdaForUser = getNutrientUpperLimit(micronutrient);
     double nutrientQuantitySoFar = 0.0;
     for (var foodEvent in state.foodEvents!) {
       for (var food in foodEvent.foodInfo!) {
@@ -529,7 +517,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   num getNutrientRda(String micronutrient) {
     num rda = 0.0;
-    loop:for (UserRda userRda in state.userRdas ?? []) {
+    loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
       if (userRda.name == micronutrient) {
         rda = userRda.rda;
         if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
@@ -544,6 +532,25 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
     // final num = state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
     return rda;
+  }
+
+  num getNutrientUpperLimit(String micronutrient) {
+    num upperLimit = 0.0;
+    loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
+      if (userRda.name == micronutrient) {
+        upperLimit = userRda.upperLimit ?? 0.0;
+        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
+          upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
+        }
+        if (userRda.name == Constants.TRYPTOPHAN) {
+          upperLimit = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
+        }
+        break loop;
+      }
+    }
+
+    // final num = state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
+    return upperLimit;
   }
 
   double getFractionToFillMacros(String macronutrient) {
@@ -713,10 +720,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   int getPercentageByMacro(String macro) {
     var macroo = 0;
-    if ((state.userObjectives?.contains(50) ?? false) || (state.userObjectives?.contains(51) ?? false)) {
+    if ((state.profile?.objectives?.contains(50) ?? false) || (state.profile?.objectives?.contains(51) ?? false)) {
       macroo = macro == 'carbsAvailable' ? 40 : 30;
     }
-    else if (state.userObjectives?.contains(52) ?? false) {
+    else if (state.profile?.objectives?.contains(52) ?? false) {
       macroo = macro == 'carbsAvailable' ? 50 : macro == 'proteinSci' ? 20 : 30;
     }
     else {
@@ -746,7 +753,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   }
 
   getWeeklyFractionFill(UserRda nutrientRda) {
-    final perRdaForUser = getNutrientRda(nutrientRda.name);
+    final perRdaForUser = getNutrientUpperLimit(nutrientRda.name);
     double weeklyNutrientQuantitySoFar = 0.0;
     for (var foodEvent in state.weeklyFoodEvents!) {
       for (var food in foodEvent.foodInfo!) {
@@ -777,10 +784,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   int getUserKcalSelectiveObjectives(int userKcal) {
     int changedKcal = userKcal;
 
-    if (state.userObjectives?.contains(50) ?? false) {
+    if (state.profile?.objectives?.contains(50) ?? false) {
       changedKcal = changedKcal + changedKcal~/100*15;
     }
-    if (state.userObjectives?.contains(51) ?? false) {
+    if (state.profile?.objectives?.contains(51) ?? false) {
       changedKcal = changedKcal - changedKcal~/100*20;
     }
 
@@ -858,6 +865,18 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
     return false;
+  }
+
+  bool isNeedToShowModel(ModelsAppearanceEntity? sportInjuryModal) {
+    if (sportInjuryModal == null) {
+      return true;
+    } else {
+      if (DateTimeHelper.calculateDifferenceHours(sportInjuryModal.time, DateTime.now().millisecondsSinceEpoch) > 3) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 
 }

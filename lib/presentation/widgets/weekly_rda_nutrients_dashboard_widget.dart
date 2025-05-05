@@ -114,7 +114,7 @@ class _WeeklyRDANutrientsDashboardWidgetState extends State<WeeklyRDANutrientsDa
                              alignment: Alignment.centerRight,
                              margin: const EdgeInsets.only(right: Dimens.marginNormal),
                              child: Text(
-                               '${nutrient.rda} ${nutrient.unit}',
+                               '${nutrient.upperLimit} ${nutrient.unit}',
                                style: const TextStyle(
                                  fontSize: Dimens.fontSizeSmall,
                                ),

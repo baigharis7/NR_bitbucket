@@ -116,7 +116,7 @@ class _NutrientsDashboardWidgetState extends State<NutrientsDashboardWidget> {
                              alignment: Alignment.centerRight,
                              margin: const EdgeInsets.only(right: Dimens.marginNormal),
                              child: Text(
-                               '${nutrient.rda} ${nutrient.unit}',
+                               '${nutrient.upperLimit} ${nutrient.unit}',
                                style: const TextStyle(
                                  fontSize: Dimens.fontSizeSmall,
                                ),

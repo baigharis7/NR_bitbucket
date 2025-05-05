@@ -4,17 +4,26 @@ import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_i
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_repository_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/num_constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/token_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../data/api/eventssync/events_sync_api.dart';
 import '../../../data/api/profile/profile_api.dart';
+import '../../../data/repository/eventssync/events_synchronization_repository_impl.dart';
 import '../../../data/repository/localstorage/local_storage_impl.dart';
 import '../../../data/repository/profile/profile_repository_impl.dart';
+import '../../../domain/interactor/eventssync/synchronize_events_interactor.dart';
+import '../../../domain/interactor/eventssync/synchronize_events_interactor_impl.dart';
+import '../../../domain/interactor/localstorage/erase_db_local_events_interactor.dart';
+import '../../../domain/interactor/localstorage/erase_db_local_events_interactor_impl.dart';
+import '../../../domain/interactor/preferences/get_user_id_interactor.dart';
 import '../../../domain/interactor/profile/get_profile_interactor.dart';
 import '../../../domain/interactor/profile/get_profile_interactor_impl.dart';
+import '../../../domain/repository/eventssync/events_synchronization_repository.dart';
 import '../../../domain/repository/localstorage/local_storage.dart';
 import '../../../domain/repository/preferences/preferences.dart';
 import '../../../domain/repository/preferences/preferences_repository.dart';
@@ -28,6 +37,11 @@ class SplashProvider extends ChangeNotifier {
   late LocalStorageRepository localStorageRepository;
   late ProfileApi profileApi;
   String? idToken;
+  late EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor;
+  late EventsSyncApi eventsSyncApi;
+  late EventsSynchronizationRequestRepository eventsSynchronizationRequestRepository;
+  late SynchronizeEventsInteractor synchronizeEventsInteractor;
+  late GetUserIdInteractor getUserIdInteractor;
 
   SplashProvider();
 
@@ -48,6 +62,11 @@ class SplashProvider extends ChangeNotifier {
     localStorageRepository = LocalStorageImpl();
     profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository);
     getProfileInteractor = GetProfileInteractorImpl(profileRepository: profileRepository);
+    eraseDBLocalEventsInteractor = EraseDBLocalEventsInteractorImpl(localStorageRepository: localStorageRepository);
+    eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService, chuck);
+    eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
+    synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
+    getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
 
     final profile = await getProfileInteractor.execute();
     getIdTokenInteractor = GetIdTokenInteractorImpl(
@@ -62,11 +81,19 @@ class SplashProvider extends ChangeNotifier {
   }
 
   void nextScreen(Function toLogin, Function toDashboard, UserProfileModel? profile) async {
-
-    Future.delayed(
+    final userId = getUserIdInteractor.execute();
+    if (userId.isNotEmpty) {
+      try {
+        await eraseDBLocalEventsInteractor.execute();
+        await synchronizeEventsInteractor.execute(getUserIdInteractor.execute());
+      } catch(_) {}
+      await doAccordingToToken(toLogin, toDashboard, profile);
+    } else {
+      Future.delayed(
         const Duration(seconds: NumConstants.splashDelay),
             () async => await doAccordingToToken(toLogin, toDashboard, profile),
-    );
+      );
+    }
   }
 
   Future<void> doAccordingToToken(Function toLogin, Function toDashboard, UserProfileModel? profile) async {

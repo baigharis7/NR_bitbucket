@@ -10,6 +10,7 @@ import 'package:nutrenaissance_flutter/infrastructure/lists/SupplementInfo.dart'
 
 import '../../../data/api/steps/models/step_event_response.dart';
 import '../../../data/api/supplements/model/upload_supplement_event.dart';
+import '../../../data/local/models/modelsappearence/models_appearance_entity.dart';
 import '../../../domain/models/calendar/calendar_events.dart';
 import '../../../domain/models/calendar/dashboard_all_calendar_events.dart';
 import '../../../domain/models/dashboard/nutrients_weekly_model.dart';
@@ -22,12 +23,9 @@ class DashboardState {
   ErrorTypes? onError;
   List<FoodEventComplete>? foodEvents;
   List<LiquidEventComplete>? todayLiquidEvents;
-  List<String>? userMicronutrients;
-  List<int>? userObjectives;
   NutrientsInfoMaster? nutrientsInfoMaster;
   ObjectivesInfoMaster? objectivesInfoMaster;
   UserProfileModel? profile;
-  List<UserRda>? userRdas;
   String? advice;
   List<NutrientsModel>? micronutrients;
   List<NutrientsModel>? macronutrients;
@@ -50,18 +48,16 @@ class DashboardState {
   bool? isUpdatedDataNeeded;
   int? foundedRoutineRemainingHours;
   bool? isShowDialog;
+  ModelsAppearanceEntity? sportInjuryModal;
 
   DashboardState({
     required this.isLoading,
     this.onError,
     this.foodEvents,
     this.todayLiquidEvents,
-    this.userMicronutrients,
-    this.userObjectives,
     this.nutrientsInfoMaster,
     this.objectivesInfoMaster,
     this.profile,
-    this.userRdas,
     this.advice,
     this.micronutrients,
     this.macronutrients,
@@ -84,6 +80,7 @@ class DashboardState {
     this.isUpdatedDataNeeded,
     this.foundedRoutineRemainingHours,
     this.isShowDialog,
+    this.sportInjuryModal,
   });
 
   DashboardState copyWith({
@@ -92,12 +89,9 @@ class DashboardState {
     List<FoodEventComplete>? foodEvents,
     List<LiquidEventComplete>? todayLiquidEvents,
     bool? infoLoaded,
-    List<String>? userMicronutrients,
-    List<int>? userObjectives,
     NutrientsInfoMaster? nutrientsInfoMaster,
     ObjectivesInfoMaster? objectivesInfoMaster,
     UserProfileModel? profile,
-    List<UserRda>? userRdas,
     String? advice,
     List<NutrientsModel>? micronutrients,
     List<NutrientsModel>? macronutrients,
@@ -120,18 +114,16 @@ class DashboardState {
     bool? isUpdatedDataNeeded,
     int? foundedRoutineRemainingHours,
     bool? isShowDialog,
+    ModelsAppearanceEntity? sportInjuryModal,
   }) {
     return DashboardState(
       isLoading: isLoading,
       onError: onError ?? this.onError,
       foodEvents: foodEvents ?? this.foodEvents,
       todayLiquidEvents: todayLiquidEvents ?? this.todayLiquidEvents,
-      userMicronutrients: userMicronutrients ?? this.userMicronutrients,
-      userObjectives: userObjectives ?? this.userObjectives,
       nutrientsInfoMaster: nutrientsInfoMaster ?? this.nutrientsInfoMaster,
       objectivesInfoMaster: objectivesInfoMaster ?? this.objectivesInfoMaster,
       profile: profile ?? this.profile,
-      userRdas: userRdas ?? this.userRdas,
       advice: advice ?? this.advice,
       micronutrients: micronutrients ?? this.micronutrients,
       macronutrients: macronutrients ?? this.macronutrients,
@@ -154,6 +146,7 @@ class DashboardState {
       isUpdatedDataNeeded: isUpdatedDataNeeded ?? this.isUpdatedDataNeeded,
       foundedRoutineRemainingHours: foundedRoutineRemainingHours ?? this.foundedRoutineRemainingHours,
       isShowDialog: isShowDialog ?? this.isShowDialog,
+      sportInjuryModal: sportInjuryModal ?? this.sportInjuryModal,
     );
   }
 

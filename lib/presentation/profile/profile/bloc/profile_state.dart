@@ -33,6 +33,7 @@ class ProfileState {
   bool? isMenstruation;
   bool? isCold;
   HeightWeightUnits? unitWeightHeight;
+  List<ObjectiveInfoMaster>? objectivesFilteredList;
 
   ProfileState({
     required this.isLoading,
@@ -55,6 +56,7 @@ class ProfileState {
     this.isMenstruation,
     this.isCold,
     this.unitWeightHeight,
+    this.objectivesFilteredList,
   });
 
   ProfileState copyWith({
@@ -78,6 +80,7 @@ class ProfileState {
     bool? isMenstruation,
     bool? isCold,
     HeightWeightUnits? unitWeightHeight,
+    List<ObjectiveInfoMaster>? objectivesFilteredList,
   }) {
     return ProfileState(
       isLoading: isLoading,
@@ -100,6 +103,7 @@ class ProfileState {
       isMenstruation: isMenstruation ?? this.isMenstruation,
       isCold: isCold ?? this.isCold,
       unitWeightHeight: unitWeightHeight ?? this.unitWeightHeight,
+      objectivesFilteredList: objectivesFilteredList ?? this.objectivesFilteredList,
     );
   }
 }

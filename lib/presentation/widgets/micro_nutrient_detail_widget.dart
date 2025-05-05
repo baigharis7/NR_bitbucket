@@ -78,7 +78,7 @@ class _MicroNutrientDetailWidgetState extends State<MicroNutrientDetailWidget> {
               alignment: Alignment.centerRight,
               margin: const EdgeInsets.only(right: Dimens.marginNormal),
               child: Text(
-                '${widget.nutrientsModel.rda} ${widget.nutrientsModel.unit}',
+                '${widget.nutrientsModel.upperLimit} ${widget.nutrientsModel.unit}',
                 style: const TextStyle(
                   fontSize: Dimens.fontSizeSmall,
                 ),

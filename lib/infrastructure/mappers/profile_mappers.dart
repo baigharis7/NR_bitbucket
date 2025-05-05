@@ -40,7 +40,7 @@ upload.UploadUserProfile mapToUploadUserProfileModel(domain.UserProfileModel use
   );
 
   final upload.UserRdas uploadUserRdas = upload.UserRdas(
-    userRdas: userProfileModel.userRdas.isNull() ? [] : userProfileModel.userRdas!.userRdas.map((userRdas) => upload.UserRda(n: userRdas.name, rda: userRdas.rda, ul: userRdas.ul)).toList(),
+    userRdas: userProfileModel.userRdas.isNull() ? [] : userProfileModel.userRdas!.userRdas.map((userRdas) => upload.UserRda(n: userRdas.name, rda: userRdas.rda, ul: userRdas.ul, upperLimit: userRdas.upperLimit ?? 0.0)).toList(),
   );
 
   final profile = upload.UploadUserProfile(
@@ -110,7 +110,7 @@ entity.UserProfileEntity mapToProfileEntity(domain.UserProfileModel profileModel
     objectives: profileModel.objectives.orEmpty(),
     guts: profileModel.guts,
     micronutrients: profileModel.micronutrients,
-    userRdas: entity.UserRdasEntity(userRdasEntity: profileModel.userRdas!.userRdas.map((userRdas) => entity.UserRdaEntity(n: userRdas.name, rda: userRdas.rda.toDouble(), ul: userRdas.ul.toDouble())).toList()),
+    userRdas: entity.UserRdasEntity(userRdasEntity: profileModel.userRdas!.userRdas.map((userRdas) => entity.UserRdaEntity(n: userRdas.name, rda: userRdas.rda.toDouble(), ul: userRdas.ul.toDouble(), upperLimit: userRdas.upperLimit?.toDouble() ?? 0.0)).toList()),
     recommededIds: profileModel.recommededIds,
     kcal: profileModel.kcal,
   );
@@ -153,7 +153,7 @@ domain.UserProfileModel mapToUserProfileModelFromProfileEntity(entity.UserProfil
 
   final intolerances = profileEntity.intolerances;
 
-  final userRdas = domain.UserRdas(userRdas: profileEntity.userRdas!.userRdasEntity.map((userRdas) => domain.UserRda(name: userRdas.n, rda: userRdas.rda, ul: userRdas.ul)).toList());
+  final userRdas = domain.UserRdas(userRdas: profileEntity.userRdas!.userRdasEntity.map((userRdas) => domain.UserRda(name: userRdas.n, rda: userRdas.rda, ul: userRdas.ul, upperLimit: userRdas.upperLimit)).toList());
 
   return domain.UserProfileModel(
     userId: profileEntity.userId,
@@ -215,7 +215,7 @@ domain.UserProfileModel mapToUserProfileModelFromUploadUser(upload.UploadUserPro
 
   final intolerances = convertToList(uploadUserProfile.intolerances);
 
-  final userRdas = domain.UserRdas(userRdas: uploadUserProfile.userRdas!.map((userRdas) => domain.UserRda(name: userRdas.n, rda: userRdas.rda, ul: userRdas.ul)).toList());
+  final userRdas = domain.UserRdas(userRdas: uploadUserProfile.userRdas!.map((userRdas) => domain.UserRda(name: userRdas.n, rda: userRdas.rda, ul: userRdas.ul, upperLimit: userRdas.upperLimit)).toList());
 
   return domain.UserProfileModel(
     userId: uploadUserProfile.userId,

@@ -157,7 +157,7 @@ class _DashboardScreen extends State<DashboardScreen>
             if ((state.isUpdatedDataNeeded ?? false) && state.isLoading == false) _updateDataDialog(onUpdateClick: () => bloc.add(LogoutFromAppEventAction(onFinish: () => Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false,))));
             if (state.foundedRoutineRemainingHours.orZero() > 0 && state.foundedRoutineRemainingHours.orZero() <= 3 && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true && state.isLoading == false && (state.isShowDialog ?? false) == false) _workOutDialog(tim: state.foundedRoutineRemainingHours!, onFinish: () => bloc.add(ShowDialogEventAction()));
             if (state.foundedRoutineRemainingHours == 0 && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true && state.isLoading == false && (state.isShowDialog ?? false) == false) _afterWorkoutDialog(onFinish: () => bloc.add(ShowDialogEventAction()));
-            if (state.profile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) == true && state.isLoading == false && (state.isShowDialog ?? false) == false) _improveRecoveryDialog(onFinish: () => bloc.add(ShowDialogEventAction()));
+            if (state.profile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) == true && state.isLoading == false && (state.isShowDialog ?? false) == false && bloc.isNeedToShowModel(state.sportInjuryModal)) _improveRecoveryDialog(onFinish: () { bloc.add(ShowDialogEventAction()); bloc.add(SaveHideModelInfo()); });
           },
           builder: (ctx, state) {
             return UpgradeAlert(
@@ -248,6 +248,45 @@ class _DashboardScreen extends State<DashboardScreen>
                               ),
                               SizedBox(height: Dimens.heightXXLarge, child: NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(),)),
                               Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge, vertical: Dimens.marginLarge), child: Row(
+                          if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
+                              title: AppLocalizations.of(context)!.menstruation,
+                              currentState: state.isMenstruation ?? false,
+                              onStateChange: (value) => bloc.add(UpdateMenstruationStateAction(isMenstruation: value)),
+                          ),
+                          SwitchDashboardWidget(
+                            title: AppLocalizations.of(context)!.cold,
+                            currentState: state.isCold ?? false,
+                            onStateChange: (value) => bloc.add(UpdateColdStateAction(isCold: value)),
+                          ),
+                          EnergyBalanceWidget(
+                            energyModel: state.energyModel,
+                            screenToMove: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: state.energyModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                          ),
+                          // ExpandableWidget(
+                          //     titleClick: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
+                          //     title: AppLocalizations.of(context)!.micronutrients, nutrientsList: state.micronutrients.orEmpty()),
+                          NutrientsDashboardWidget(
+                            title: AppLocalizations.of(context)!.micronutrients,
+                            nutrients: state.micronutrients.orEmpty().where((element) => element.upperLimit > 0).toList(),
+                            isEmpty: false,
+                            screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
+                          ),
+                          WeeklyRDANutrientsDashboardWidget(
+                            title: AppLocalizations.of(context)!.weekly_nutrients,
+                            nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,
+                            isEmpty: false,
+                            screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                          ),
+                          NutrientsDashboardWidget(
+                            title: AppLocalizations.of(context)!.macronutrients,
+                            nutrients: state.macronutrients.orEmpty(),
+                            // isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
+                            isEmpty: false,
+                            screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                          ),
+                          SizedBox(
+                            height: 200,
+                            child: Row(
                                 children: [
                                   Text(AppLocalizations.of(context)!.micronutrientss, style: const TextStyle(fontSize: Dimens.fontSizeXXLarge, color: Colors.white,),),
                                   IconButton(onPressed: () {}, icon: const Icon(Icons.info_rounded), color: Colors.white, iconSize: 25,),
