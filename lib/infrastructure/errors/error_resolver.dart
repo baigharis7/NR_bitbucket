@@ -166,8 +166,9 @@ String? resolveFormError(BuildContext context, FormErrorTypes? formErrorTypes) {
 String userError(BuildContext context, Object error) {
   final stringResolver = AppLocalizations.of(context)!;
   final catchError = error as dynamic;
-  final catchErrorToString = catchError.underlyingException.toString();
-  final result = catchErrorToString.subString(' ', ' (');
+  // final catchErrorToString = catchError.underlyingException.toString();
+  // final result = catchErrorToString.subString(' ', ' (');
+  final result = catchError.message;
 
   // return result;
   switch (result) {
