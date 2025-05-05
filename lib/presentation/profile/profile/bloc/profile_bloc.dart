@@ -327,7 +327,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         if (userProfileResponse.uploadSuccess) {
           profile.micronutrients = userProfileResponse.micronutrients;
           profile.userRdas = UserRdas(
-            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul, upperLimit: userRda.upperLimit)).toList(),
+            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul)).toList(),
           );
           profile.kcal = userProfileResponse.kcal;
           try {
@@ -394,7 +394,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         if (userProfileResponse.uploadSuccess) {
           profile.micronutrients = userProfileResponse.micronutrients;
           profile.userRdas = UserRdas(
-            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul, upperLimit: userRda.upperLimit)).toList(),
+            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul)).toList(),
           );
           profile.kcal = userProfileResponse.kcal;
           try {

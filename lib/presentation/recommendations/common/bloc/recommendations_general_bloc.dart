@@ -235,7 +235,7 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
         if (userProfileResponse.uploadSuccess) {
           state.profile?.micronutrients = userProfileResponse.micronutrients;
           state.profile?.userRdas = UserRdas(
-            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul, upperLimit: userRda.upperLimit)).toList(),
+            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul)).toList(),
           );
           state.profile?.kcal = userProfileResponse.kcal;
           try {

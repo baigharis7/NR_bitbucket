@@ -127,7 +127,6 @@ class UserRdaEntity {
   @HiveField(0) String n;
   @HiveField(1) double rda;
   @HiveField(2) double ul;
-  @HiveField(3) double upperLimit;
 
-  UserRdaEntity({required this.n, required this.rda, required this.ul, required this.upperLimit});
+  UserRdaEntity({required this.n, required this.rda, required this.ul});
 }

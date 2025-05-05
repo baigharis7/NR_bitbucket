@@ -79,9 +79,7 @@ import 'package:path_provider/path_provider.dart';
 class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final EventsHelper _eventsHelper = EventsHelper();
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
-  final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
-  final GetUserRdasInteractor getUserRdasInteractor;
   final GetAdviceInteractor getAdviceInteractor;
   final GetUserIdInteractor getUserIdInteractor;
   final GetProfileInteractor getProfileInteractor;
@@ -90,7 +88,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final SaveExplainingCardInteractionInteractor saveExplainingCardInteractionInteractor;
   final GetDayCaloriesInteractor getDayCaloriesInteractor;
   final GetTodayLiquidEventsInteractor getLiquidEventsOfTodayInteractor;
-  final GetUserObjectivesInteractor getUserObjectivesInteractor;
   final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor;
   final GetWeekLiquidEventsInteractor getWeekLiquidEventsInteractor;
   final GetWeekSportsInteractor getWeekSportsInteractor;
@@ -124,9 +121,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
-    required this.getUserMicronutrientsInteractor,
     required this.getMasterFileInteractor,
-    required this.getUserRdasInteractor,
     required this.getAdviceInteractor,
     required this.getUserIdInteractor,
     required this.getProfileInteractor,
@@ -135,7 +130,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.saveExplainingCardInteractionInteractor,
     required this.getDayCaloriesInteractor,
     required this.getLiquidEventsOfTodayInteractor,
-    required this.getUserObjectivesInteractor,
     required this.getWeekFoodEventsInteractor,
     required this.getWeekLiquidEventsInteractor,
     required this.getWeekSportsInteractor,
@@ -184,9 +178,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       try {
       // await eraseDBLocalEventsInteractor.execute();
       // await synchronizeEventsInteractor.execute(getUserIdInteractor.execute());
-      state.userMicronutrients = await getUserMicronutrientsInteractor.execute() ?? [];
-      state.userRdas = await getUserRdasInteractor.execute();
-      state.userObjectives = await getUserObjectivesInteractor.execute();
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo,);
       state.profile = await getProfileInteractor.execute();
@@ -213,7 +204,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.waterEvents = await getWaterEventsTodayInteractor.execute(dateTime: event.dateTime);
       state.allCalendarEvents = await getAllDashboardEventsSortedByDateInteractor.execute();
 
-      state.micronutrients = state.userMicronutrients!
+      state.micronutrients = state.profile?.micronutrients.orEmpty()
           .map(
             (micronutrient) =>
             NutrientsModel(
@@ -222,7 +213,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               fractionToFill: getFractionToFillMicros(micronutrient),
               unit: getUnitForMicronutrient(micronutrient),
               rda: getNutrientRda(micronutrient),
-              upperLimit: getNutrientUpperLimit(micronutrient),
             ),
       ).toList();
       state.micronutrients?.sort((a, b) => b.fractionToFill.compareTo(a.fractionToFill),);
@@ -235,7 +225,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               fractionToFill: getFractionToFillMacros(macronutrient),
               unit: getUnitForMicronutrient(macronutrient),
               rda: getMacroNutrientRda(macronutrient),
-              upperLimit: getMacroNutrientRda(macronutrient),
             ),
       ).toList();
       state.energyModel = EnergyModel(
@@ -252,14 +241,14 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           totalFiberConsumed: calculateTodayConsumedFiber(),
         requiredFiber: Constants.FIBER_TOTAL_REQUIRED,
       );
-      state.weeklyMicronutrients = state.userRdas
+      state.weeklyMicronutrients = state.profile?.userRdas?.userRdas
           .orEmpty()
           .map((nutrientRda) => NutrientsModel(
           quantityConsumed: getWeeklyConsumedNutrient(nutrientRda),
           nutrientInfoMaster: getNutrientInfo(nutrientRda.name),
           fractionToFill: getWeeklyFractionFill(nutrientRda),
           unit: getUnitForMicronutrient(nutrientRda.name),
-          rda: double.parse((getNutrientRda(nutrientRda.name) * 7).toStringAsFixed(2)), upperLimit: double.parse((getNutrientUpperLimit(nutrientRda.name) * 7).toStringAsFixed(2)),
+          rda: double.parse((getNutrientRda(nutrientRda.name) * 7).toStringAsFixed(2)),
       ),).toList();
       state.todayCreatineSupplement = SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement());
       state.todayCollagenSupplement = SupplementInfo('Collagen peptides', 'Péptidos de colágeno', todayCollagen, 10);
@@ -376,7 +365,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         if (userProfileResponse.uploadSuccess) {
           profile.micronutrients = userProfileResponse.micronutrients;
           profile.userRdas = UserRdas(
-            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul, upperLimit: userRda.upperLimit)).toList(),
+            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul)).toList(),
           );
           profile.kcal = userProfileResponse.kcal;
           try {
@@ -510,7 +499,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   // TODO: review this, dont know if ot's ok, just put it here to fit.
   double getFractionToFillMicros(String micronutrient) {
-    final rdaForUser = getNutrientUpperLimit(micronutrient);
+    final rdaForUser = getNutrientRda(micronutrient);
     double nutrientQuantitySoFar = 0.0;
     for (var foodEvent in state.foodEvents!) {
       for (var food in foodEvent.foodInfo!) {
@@ -526,7 +515,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   num getNutrientRda(String micronutrient) {
     num rda = 0.0;
-    loop:for (UserRda userRda in state.userRdas ?? []) {
+    loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
       if (userRda.name == micronutrient) {
         rda = userRda.rda;
         if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
@@ -543,24 +532,24 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     return rda;
   }
 
-  num getNutrientUpperLimit(String micronutrient) {
-    num upperLimit = 0.0;
-    loop:for (UserRda userRda in state.userRdas ?? []) {
-      if (userRda.name == micronutrient) {
-        upperLimit = userRda.upperLimit ?? 0.0;
-        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
-          upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
-        }
-        if (userRda.name == Constants.TRYPTOPHAN) {
-          upperLimit = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
-        }
-        break loop;
-      }
-    }
-
-    // final num = state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
-    return upperLimit;
-  }
+  // num getNutrientUpperLimit(String micronutrient) {
+  //   num upperLimit = 0.0;
+  //   loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
+  //     if (userRda.name == micronutrient) {
+  //       upperLimit = userRda.upperLimit ?? 0.0;
+  //       if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
+  //         upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
+  //       }
+  //       if (userRda.name == Constants.TRYPTOPHAN) {
+  //         upperLimit = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
+  //       }
+  //       break loop;
+  //     }
+  //   }
+  //
+  //   // final num = state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
+  //   return upperLimit;
+  // }
 
   double getFractionToFillMacros(String macronutrient) {
     double nutrientQuantitySoFar = 0.0;
@@ -729,10 +718,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   int getPercentageByMacro(String macro) {
     var macroo = 0;
-    if ((state.userObjectives?.contains(50) ?? false) || (state.userObjectives?.contains(51) ?? false)) {
+    if ((state.profile?.objectives?.contains(50) ?? false) || (state.profile?.objectives?.contains(51) ?? false)) {
       macroo = macro == 'carbsAvailable' ? 40 : 30;
     }
-    else if (state.userObjectives?.contains(52) ?? false) {
+    else if (state.profile?.objectives?.contains(52) ?? false) {
       macroo = macro == 'carbsAvailable' ? 50 : macro == 'proteinSci' ? 20 : 30;
     }
     else {
@@ -762,7 +751,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   }
 
   getWeeklyFractionFill(UserRda nutrientRda) {
-    final perRdaForUser = getNutrientUpperLimit(nutrientRda.name);
+    final perRdaForUser = getNutrientRda(nutrientRda.name);
     double weeklyNutrientQuantitySoFar = 0.0;
     for (var foodEvent in state.weeklyFoodEvents!) {
       for (var food in foodEvent.foodInfo!) {
@@ -793,10 +782,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   int getUserKcalSelectiveObjectives(int userKcal) {
     int changedKcal = userKcal;
 
-    if (state.userObjectives?.contains(50) ?? false) {
+    if (state.profile?.objectives?.contains(50) ?? false) {
       changedKcal = changedKcal + changedKcal~/100*15;
     }
-    if (state.userObjectives?.contains(51) ?? false) {
+    if (state.profile?.objectives?.contains(51) ?? false) {
       changedKcal = changedKcal - changedKcal~/100*20;
     }
 

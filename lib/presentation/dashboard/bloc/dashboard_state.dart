@@ -23,12 +23,9 @@ class DashboardState {
   ErrorTypes? onError;
   List<FoodEventComplete>? foodEvents;
   List<LiquidEventComplete>? todayLiquidEvents;
-  List<String>? userMicronutrients;
-  List<int>? userObjectives;
   NutrientsInfoMaster? nutrientsInfoMaster;
   ObjectivesInfoMaster? objectivesInfoMaster;
   UserProfileModel? profile;
-  List<UserRda>? userRdas;
   String? advice;
   List<NutrientsModel>? micronutrients;
   List<NutrientsModel>? macronutrients;
@@ -58,12 +55,9 @@ class DashboardState {
     this.onError,
     this.foodEvents,
     this.todayLiquidEvents,
-    this.userMicronutrients,
-    this.userObjectives,
     this.nutrientsInfoMaster,
     this.objectivesInfoMaster,
     this.profile,
-    this.userRdas,
     this.advice,
     this.micronutrients,
     this.macronutrients,
@@ -95,12 +89,9 @@ class DashboardState {
     List<FoodEventComplete>? foodEvents,
     List<LiquidEventComplete>? todayLiquidEvents,
     bool? infoLoaded,
-    List<String>? userMicronutrients,
-    List<int>? userObjectives,
     NutrientsInfoMaster? nutrientsInfoMaster,
     ObjectivesInfoMaster? objectivesInfoMaster,
     UserProfileModel? profile,
-    List<UserRda>? userRdas,
     String? advice,
     List<NutrientsModel>? micronutrients,
     List<NutrientsModel>? macronutrients,
@@ -130,12 +121,9 @@ class DashboardState {
       onError: onError ?? this.onError,
       foodEvents: foodEvents ?? this.foodEvents,
       todayLiquidEvents: todayLiquidEvents ?? this.todayLiquidEvents,
-      userMicronutrients: userMicronutrients ?? this.userMicronutrients,
-      userObjectives: userObjectives ?? this.userObjectives,
       nutrientsInfoMaster: nutrientsInfoMaster ?? this.nutrientsInfoMaster,
       objectivesInfoMaster: objectivesInfoMaster ?? this.objectivesInfoMaster,
       profile: profile ?? this.profile,
-      userRdas: userRdas ?? this.userRdas,
       advice: advice ?? this.advice,
       micronutrients: micronutrients ?? this.micronutrients,
       macronutrients: macronutrients ?? this.macronutrients,
