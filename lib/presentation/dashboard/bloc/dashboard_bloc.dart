@@ -213,6 +213,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               fractionToFill: getFractionToFillMicros(micronutrient),
               unit: getUnitForMicronutrient(micronutrient),
               rda: getNutrientRda(micronutrient),
+              upperLimit: getNutrientUpperLimit(micronutrient),
             ),
       ).toList();
       state.micronutrients?.sort((a, b) => b.fractionToFill.compareTo(a.fractionToFill),);
@@ -225,6 +226,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               fractionToFill: getFractionToFillMacros(macronutrient),
               unit: getUnitForMicronutrient(macronutrient),
               rda: getMacroNutrientRda(macronutrient),
+              upperLimit: getMacroNutrientRda(macronutrient),
             ),
       ).toList();
       state.energyModel = EnergyModel(
@@ -248,7 +250,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           nutrientInfoMaster: getNutrientInfo(nutrientRda.name),
           fractionToFill: getWeeklyFractionFill(nutrientRda),
           unit: getUnitForMicronutrient(nutrientRda.name),
-          rda: double.parse((getNutrientRda(nutrientRda.name) * 7).toStringAsFixed(2)),
+          rda: double.parse((getNutrientRda(nutrientRda.name) * 7).toStringAsFixed(2)), upperLimit: double.parse((getNutrientUpperLimit(nutrientRda.name) * 7).toStringAsFixed(2)),
       ),).toList();
       state.todayCreatineSupplement = SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement());
       state.todayCollagenSupplement = SupplementInfo('Collagen peptides', 'Péptidos de colágeno', todayCollagen, 10);
@@ -365,7 +367,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         if (userProfileResponse.uploadSuccess) {
           profile.micronutrients = userProfileResponse.micronutrients;
           profile.userRdas = UserRdas(
-            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul)).toList(),
+            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul, upperLimit: userRda.upperLimit)).toList(),
           );
           profile.kcal = userProfileResponse.kcal;
           try {
@@ -499,7 +501,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   // TODO: review this, dont know if ot's ok, just put it here to fit.
   double getFractionToFillMicros(String micronutrient) {
-    final rdaForUser = getNutrientRda(micronutrient);
+    final rdaForUser = getNutrientUpperLimit(micronutrient);
     double nutrientQuantitySoFar = 0.0;
     for (var foodEvent in state.foodEvents!) {
       for (var food in foodEvent.foodInfo!) {
@@ -532,24 +534,24 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     return rda;
   }
 
-  // num getNutrientUpperLimit(String micronutrient) {
-  //   num upperLimit = 0.0;
-  //   loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
-  //     if (userRda.name == micronutrient) {
-  //       upperLimit = userRda.upperLimit ?? 0.0;
-  //       if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
-  //         upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
-  //       }
-  //       if (userRda.name == Constants.TRYPTOPHAN) {
-  //         upperLimit = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
-  //       }
-  //       break loop;
-  //     }
-  //   }
-  //
-  //   // final num = state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
-  //   return upperLimit;
-  // }
+  num getNutrientUpperLimit(String micronutrient) {
+    num upperLimit = 0.0;
+    loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
+      if (userRda.name == micronutrient) {
+        upperLimit = userRda.upperLimit ?? 0.0;
+        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
+          upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
+        }
+        if (userRda.name == Constants.TRYPTOPHAN) {
+          upperLimit = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
+        }
+        break loop;
+      }
+    }
+
+    // final num = state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
+    return upperLimit;
+  }
 
   double getFractionToFillMacros(String macronutrient) {
     double nutrientQuantitySoFar = 0.0;
@@ -751,7 +753,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   }
 
   getWeeklyFractionFill(UserRda nutrientRda) {
-    final perRdaForUser = getNutrientRda(nutrientRda.name);
+    final perRdaForUser = getNutrientUpperLimit(nutrientRda.name);
     double weeklyNutrientQuantitySoFar = 0.0;
     for (var foodEvent in state.weeklyFoodEvents!) {
       for (var food in foodEvent.foodInfo!) {

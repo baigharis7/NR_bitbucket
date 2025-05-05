@@ -6,6 +6,7 @@ class NutrientsModel {
   final double fractionToFill;
   final String? unit;
   final num rda;
+  final num upperLimit;
 
   NutrientsModel({
     required this.quantityConsumed,
@@ -13,5 +14,6 @@ class NutrientsModel {
     required this.fractionToFill,
     required this.unit,
     required this.rda,
+    required this.upperLimit,
   });
 }
