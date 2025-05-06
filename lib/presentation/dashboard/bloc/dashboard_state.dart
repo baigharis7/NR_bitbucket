@@ -37,7 +37,6 @@ class DashboardState {
   List<FoodEventComplete>? weeklyFoodEvents;
   List<FoodEventComplete>? weeklyLiquidEvents;
   List<SportEventComplete>? weeklySportEvents;
-  List<NutrientsModel>? weeklyMicronutrients;
   bool? isMenstruation;
   bool? isCold;
   StepEventResponse? todayStep;
@@ -69,7 +68,6 @@ class DashboardState {
     this.weeklyFoodEvents,
     this.weeklyLiquidEvents,
     this.weeklySportEvents,
-    this.weeklyMicronutrients,
     this.isMenstruation,
     this.isCold,
     this.todayStep,
@@ -135,7 +133,6 @@ class DashboardState {
       weeklyFoodEvents: weeklyFoodEvents ?? this.weeklyFoodEvents,
       weeklyLiquidEvents: weeklyLiquidEvents ?? this.weeklyLiquidEvents,
       weeklySportEvents: weeklySportEvents ?? this.weeklySportEvents,
-      weeklyMicronutrients: weeklyMicronutrients ?? this.weeklyMicronutrients,
       isMenstruation: isMenstruation ?? this.isMenstruation,
       isCold: isCold ?? this.isCold,
       todayStep: todayStep ?? this.todayStep,

@@ -245,7 +245,7 @@ class _DashboardScreen extends State<DashboardScreen>
                             title: AppLocalizations.of(context)!.weekly_nutrients,
                             nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,
                             isEmpty: false,
-                            screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                            screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName,).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                           ),
                           NutrientsDashboardWidget(
                             title: AppLocalizations.of(context)!.macronutrients,
@@ -261,8 +261,8 @@ class _DashboardScreen extends State<DashboardScreen>
                                   Expanded(
                                     flex: 1,
                                     child: LiquidSummaryWidget(
-                                      quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty()),
-                                      fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty(), ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
+                                      quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents, [], []),
+                                      fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, [], [], ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
                                       totalWater: ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035).toStringAsFixed(2),
                                       onReloadData: () { /*bloc.add(ReloadWaterInfoAction());*/ },
                                       screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),

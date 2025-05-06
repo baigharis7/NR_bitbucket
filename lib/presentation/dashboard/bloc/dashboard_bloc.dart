@@ -243,15 +243,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           totalFiberConsumed: calculateTodayConsumedFiber(),
         requiredFiber: Constants.FIBER_TOTAL_REQUIRED,
       );
-      state.weeklyMicronutrients = state.profile?.userRdas?.userRdas
-          .orEmpty()
-          .map((nutrientRda) => NutrientsModel(
-          quantityConsumed: getWeeklyConsumedNutrient(nutrientRda),
-          nutrientInfoMaster: getNutrientInfo(nutrientRda.name),
-          fractionToFill: getWeeklyFractionFill(nutrientRda),
-          unit: getUnitForMicronutrient(nutrientRda.name),
-          rda: double.parse((getNutrientRda(nutrientRda.name) * 7).toStringAsFixed(2)), upperLimit: double.parse((getNutrientUpperLimit(nutrientRda.name) * 7).toStringAsFixed(2)),
-      ),).toList();
       state.todayCreatineSupplement = SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement());
       state.todayCollagenSupplement = SupplementInfo('Collagen peptides', 'Péptidos de colágeno', todayCollagen, 10);
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
@@ -740,40 +731,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   String getTodayMessage(String todayString, String locale) => DateTimeHelper().formatDashboardTodayMessage(todayString, locale);
 
-  double getWeeklyConsumedNutrient(UserRda nutrientRda) {
-    double nutrientQuantitySoFar = 0.0;
-    for (var foodEvent in state.weeklyFoodEvents!) {
-      for (var food in foodEvent.foodInfo!) {
-        nutrientQuantitySoFar = nutrientQuantitySoFar +
-            (food.params!.toJson()[nutrientRda.name] ?? 0.0);
-      }
-    }
-
-    return double.parse((nutrientQuantitySoFar).toStringAsFixed(2));
-  }
-
-  getWeeklyFractionFill(UserRda nutrientRda) {
-    final perRdaForUser = getNutrientUpperLimit(nutrientRda.name);
-    double weeklyNutrientQuantitySoFar = 0.0;
-    for (var foodEvent in state.weeklyFoodEvents!) {
-      for (var food in foodEvent.foodInfo!) {
-        weeklyNutrientQuantitySoFar = weeklyNutrientQuantitySoFar + (food.params!.toJson()[nutrientRda.name] ?? 0.0);
-      }
-    }
-
-    weeklyNutrientQuantitySoFar = weeklyNutrientQuantitySoFar/7;
-    if (weeklyNutrientQuantitySoFar < perRdaForUser) {
-      weeklyNutrientQuantitySoFar = weeklyNutrientQuantitySoFar / perRdaForUser;
-    }
-    if (weeklyNutrientQuantitySoFar > perRdaForUser) {
-      weeklyNutrientQuantitySoFar = 1.0;
-    }
-    if (weeklyNutrientQuantitySoFar < 0 ) {
-      weeklyNutrientQuantitySoFar = 0.0;
-    }
-    return weeklyNutrientQuantitySoFar;
-  }
-
   void manageObjectives(int objective) {
     state.profile!.objectives ??= [];
     state.profile!.objectives!.contains(objective)
@@ -825,45 +782,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   void _clearData() {
     state.isUpdatedDataNeeded = null;
     state.foundedRoutineRemainingHours = null;
-  }
-
-  /*Future<String> getFile(String fileName) async {
-    final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/$fileName.txt';
-    return filePath;
-  }
-
-  Future<void> saveFile(String fileName, String fileContent) async {
-    String filePath = await getFile(fileName);
-    File myFile = File(filePath);
-    myFile.writeAsString(fileContent);
-  }*/
-  Future<String> getFile(String fileName) async {
-    Directory downloadsDir = Directory('/storage/emulated/0/Download');
-    return '${downloadsDir.path}/${fileName}_${DateTime.now().millisecondsSinceEpoch}.txt';
-  }
-
-  Future<void> saveFile(String fileName, String fileContent) async {
-    if (await _requestStoragePermission()) {
-      String filePath = await getFile(fileName);
-      File myFile = File(filePath);
-      await myFile.writeAsString(fileContent);
-      print('File saved at: $filePath');
-    } else {
-      print('Storage permission denied.');
-    }
-  }
-
-// Function to request storage permissions properly
-  Future<bool> _requestStoragePermission() async {
-    if (Platform.isAndroid) {
-      if (await Permission.storage.request().isGranted) {
-        return true;
-      } else if (await Permission.manageExternalStorage.request().isGranted) {
-        return true;
-      }
-    }
-    return false;
   }
 
   bool isNeedToShowModel(ModelsAppearanceEntity? sportInjuryModal) {

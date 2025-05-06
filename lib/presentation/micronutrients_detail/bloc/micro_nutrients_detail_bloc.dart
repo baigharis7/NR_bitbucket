@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
 import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
@@ -20,16 +21,12 @@ part 'micro_nutrients_detail_state.dart';
 
 class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutrientsDetailState> {
   final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor;
-  final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
-  final GetUserRdasInteractor getUserRdasInteractor;
   final GetProfileInteractor getProfileInteractor;
 
   MicroNutrientsDetailBloc({
     required this.getWeekFoodEventsInteractor,
-    required this.getUserMicronutrientsInteractor,
     required this.getMasterFileInteractor,
-    required this.getUserRdasInteractor,
     required this.getProfileInteractor,
   }) : super(MicroNutrientsDetailState(
     isLoading: false,
@@ -40,18 +37,12 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
       emit(state.copyWith(isLoading: true));
       final a = await getWeekFoodEventsInteractor.execute();
       state.weeklyFoodEvents = a;
-      state.userMicronutrients = await getUserMicronutrientsInteractor.execute() ?? [];
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
-      state.userRdas = await getUserRdasInteractor.execute();
       state.profile = await getProfileInteractor.execute();
 
-      state.micronutrientsWeekly = state.userMicronutrients!
+      state.micronutrientsWeekly = state.profile?.micronutrients.orEmpty()
           .map(
-              (micronutrient) => NutrientsWeeklyModel(
-              nutrientInfoMaster: getNutrientInfo(micronutrient),
-              weeklyData: getWeeklyMicroNutrientsDataFormatted(state.weeklyFoodEvents ?? [], micronutrient),
-              rda: getNutrientRda(micronutrient),
-              ),
+              (micronutrient) => getDataByWeekly(micronutrient),
       ).toList();
 
       emit(state.copyWith(isLoading: false));
@@ -67,8 +58,6 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
   String getTodayMessage(String todayString, String locale) => DateTimeHelper().formatDashboardTodayMessage(todayString, locale);
 
   NutrientInfoMaster getNutrientInfo(String nutrientName) {
-    // final nutrientInfo = state.nutrientsInfoMaster!.nutrientsInfo.firstWhere((info) => info.officialName == nutrientName);
-    // return nutrientInfo;
     NutrientInfoMaster nutrientInfo = NutrientInfoMaster(officialName: nutrientName, unit: '', en: '', es: '');
     for (var info in state.nutrientsInfoMaster!.nutrientsInfo) {
       if (info.officialName == nutrientName) {
@@ -78,13 +67,41 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
     return nutrientInfo;
   }
 
-  List<Map<String, dynamic>> getWeeklyMicroNutrientsDataFormatted(
-      List<FoodEventComplete> completeWeekData, String micronutrient) {
-    final rdaForUser =
-        state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
+  num getNutrientRda(String micronutrient) {
+    num rda = 0.0;
+    loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
+      if (userRda.name == micronutrient) {
+        rda = userRda.rda;
+        break loop;
+      }
+    }
+    return rda;
+  }
+
+  getNutrientUpperLimit(String micronutrient) {
+    num upperLimit = 0.0;
+    loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
+      if (userRda.name == micronutrient) {
+        upperLimit = userRda.upperLimit ?? 0.0;
+        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
+          upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
+        }
+        if (userRda.name == Constants.TRYPTOPHAN) {
+          upperLimit = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
+        }
+        break loop;
+      }
+    }
+    return upperLimit;
+  }
+
+  NutrientsWeeklyModel getDataByWeekly(String micronutrient) {
+    final upperLimit = getNutrientUpperLimit(micronutrient);
+
+    //WeeklyData
     List<Map<String, dynamic>> weeklyData = [];
     int latestDate = 1;
-    for (var event in completeWeekData) {
+    for (var event in state.weeklyFoodEvents ?? []) {
       int weekDay =
           DateTimeHelper().setDateFromMilliseconds(event.eventDate!).weekday;
       if (weekDay > latestDate) latestDate = weekDay;
@@ -92,7 +109,7 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
 
     for (var eventWeekDay = 1; eventWeekDay <= 7; eventWeekDay++) {
       final eventsOfWeekDay = <FoodEventComplete>[];
-      for (var event in completeWeekData) {
+      for (var event in state.weeklyFoodEvents ?? []) {
         final eventDate =
             DateTimeHelper().setDateFromMilliseconds(event.eventDate!).weekday;
         if (eventDate == eventWeekDay) {
@@ -106,34 +123,17 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
               nutrientConsumed + (info.params?.toJson()[micronutrient] ?? 0.0);
         }
       }
-      // weeklyData.add({'day': eventWeekDay, 'kcal': EventsHelper().getFractionToFillKcal(nutrientConsumed, state.userProfile?.kcal ?? 0)});
-      nutrientConsumed = nutrientConsumed / rdaForUser;
-      if (nutrientConsumed > 1) nutrientConsumed = 1;
-      if (nutrientConsumed < 0) nutrientConsumed = 0.0;
+      nutrientConsumed = (nutrientConsumed / upperLimit).clamp(0.0, 1.0);
       weeklyData
           .add({'day': eventWeekDay, 'nutrientConsumed': nutrientConsumed});
     }
-
     weeklyData.sort((a, b) => (a['day']!).compareTo(b['day']!));
-    return weeklyData;
-  }
 
-  num getNutrientRda(String micronutrient) {
-    num rda = 0.0;
-    loop:for (UserRda userRda in state.userRdas ?? []) {
-      if (userRda.name == micronutrient) {
-        rda = userRda.rda;
-        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
-          rda = (state.profile?.sex == SexType.male) ? 220: 190;
-        }
-        if (userRda.name == Constants.TRYPTOPHAN) {
-          rda = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
-        }
-        break loop;
-      }
-    }
-
-    // final num = state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
-    return rda;
+    return NutrientsWeeklyModel(
+      nutrientInfoMaster: getNutrientInfo(micronutrient),
+      weeklyData: weeklyData,
+      rda: getNutrientRda(micronutrient),
+      upperLimit: upperLimit,
+    );
   }
 }
