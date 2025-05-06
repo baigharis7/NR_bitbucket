@@ -42,6 +42,7 @@ class MacroNutrientsDetailBloc extends Bloc<MacroNutrientsDetailEvent, MacroNutr
             nutrientInfoMaster: getNutrientInfo(macronutrient),
             weeklyData: getWeeklyMacroNutrientsDataFormatted(state.weeklyFoodEvents ?? [], macronutrient),
               rda: getMacroNutrientRda(macronutrient),
+              upperLimit: getMacroNutrientRda(macronutrient),
             ),
       )
           .toList();

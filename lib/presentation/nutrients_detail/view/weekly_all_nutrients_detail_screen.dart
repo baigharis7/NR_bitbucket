@@ -30,16 +30,17 @@ class _WeeklyAllNutrientsDetailScreenState
   @override
   void initState() {
     weeklyAllNutrientsBloc = BlocProvider.of<WeeklyAllNutrientsBloc>(context);
+    weeklyAllNutrientsBloc.add(InitializationEventAction());
     final widgetBinding = WidgetsFlutterBinding.ensureInitialized();
-    widgetBinding.addPostFrameCallback((timeStamp) {
-      final infoReceived = ModalRoute.of(context)!.settings.arguments;
-      if (infoReceived != null) {
-        if (infoReceived is List<NutrientsModel>) {
-          weeklyAllNutrientsBloc.add(
-              UpdateWeeklyListOfNutrients(weeklyMicronutrients: infoReceived));
-        }
-      }
-    });
+    // widgetBinding.addPostFrameCallback((timeStamp) {
+    //   final infoReceived = ModalRoute.of(context)!.settings.arguments;
+    //   if (infoReceived != null) {
+    //     if (infoReceived is List<NutrientsModel>) {
+    //       weeklyAllNutrientsBloc.add(
+    //           UpdateWeeklyListOfNutrients(weeklyMicronutrients: infoReceived));
+    //     }
+    //   }
+    // });
 
     super.initState();
   }

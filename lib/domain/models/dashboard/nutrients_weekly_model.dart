@@ -4,10 +4,12 @@ class NutrientsWeeklyModel {
   final NutrientInfoMaster nutrientInfoMaster;
   final List<Map<String, dynamic>> weeklyData;
   final num? rda;
+  final num? upperLimit;
 
   NutrientsWeeklyModel({
     required this.nutrientInfoMaster,
     required this.weeklyData,
     this.rda,
+    this.upperLimit,
   });
 }

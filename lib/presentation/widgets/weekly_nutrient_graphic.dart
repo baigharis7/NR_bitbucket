@@ -38,7 +38,7 @@ class WeeklyNutrientGraphic extends StatelessWidget {
                 ),
               ),
             ),
-            ...data.map(
+            ...data.where((element) => (element.upperLimit ?? 0.0) > 0).map(
               (nutrientItem) {
                 return Column(
                   children: [
@@ -74,7 +74,7 @@ class WeeklyNutrientGraphic extends StatelessWidget {
                                         height: 1,
                                       ),
                                     ),
-                                    Text('${nutrientItem.rda.toString()} ${nutrientItem.nutrientInfoMaster.unit}'),
+                                    Text('${nutrientItem.upperLimit.toString()} ${nutrientItem.nutrientInfoMaster.unit}'),
                                   ],
                                 ),
                               ),

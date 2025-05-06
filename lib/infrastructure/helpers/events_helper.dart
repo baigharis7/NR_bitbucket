@@ -99,10 +99,6 @@ class EventsHelper {
     if (amount < 0) amount = 0;
     return double.parse(amount.toStringAsFixed(2));
     }
-    // else {
-    //   return 0.0;
-    // }
-  // }
 
   double getWaterFractionToFillFromEvents(List<WaterEventMaster>? waterEvents, List<LiquidEventComplete> liquidTodayEvents, List<FoodEventComplete> foodEvents, double? totalRequired) {
     // if (waterEvents != null && waterEvents.isNotEmpty) {

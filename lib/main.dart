@@ -384,7 +384,7 @@ import 'package:chuck_interceptor/chuck.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
-  const String environmentName = String.fromEnvironment(Environment.DEV, defaultValue: Environment.DEV);
+  const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
   // await AndroidAlarmManager.initialize();
@@ -581,8 +581,6 @@ void main() async {
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(
     getMasterFileInteractor: getMasterFileInteractor,
-    getUserMicronutrientsInteractor: getUserMicronutrientsInteractor,
-    getUserRdasInteractor: getUserRdasInteractor,
     getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
     getProfileInteractor: getProfileInteractor,
   );
@@ -604,7 +602,11 @@ void main() async {
 
   final fiberDetailBloc = FiberDetailBloc();
 
-  final weeklyAllNutrientsBloc = WeeklyAllNutrientsBloc();
+  final weeklyAllNutrientsBloc = WeeklyAllNutrientsBloc(
+    getProfileInteractor: getProfileInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
+    getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
+  );
 
   final liquidSummaryDetailBloc = LiquidSummaryDetailBloc(
     getLiquidEventsOfTodayInteractor: getTodayLiquidEventsInteractor,

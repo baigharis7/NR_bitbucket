@@ -283,12 +283,100 @@ class _DashboardScreen extends State<DashboardScreen>
                           //   isEmpty: false,
                           //   screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                           // ),
+                          NutrientsDashboardWidget(
+                            title: AppLocalizations.of(context)!.micronutrients,
+                            nutrients: state.micronutrients.orEmpty().where((element) => element.upperLimit > 0).toList(),
+                            isEmpty: false,
+                            screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
+                          ),
+                          WeeklyRDANutrientsDashboardWidget(
+                            title: AppLocalizations.of(context)!.weekly_nutrients,
+                            nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,
+                            isEmpty: false,
+                            screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName,).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                          ),
+                          NutrientsDashboardWidget(
+                            title: AppLocalizations.of(context)!.macronutrients,
+                            nutrients: state.macronutrients.orEmpty(),
+                            // isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
+                            isEmpty: false,
+                            screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                          ),
                           SizedBox(
                             height: 100,
                             child: Row(
                                 children: [
                                   Text(AppLocalizations.of(context)!.micronutrientss, style: const TextStyle(fontSize: Dimens.fontSizeXXLarge, color: Colors.white,),),
                                   IconButton(onPressed: () {}, icon: const Icon(Icons.info_rounded), color: Colors.white, iconSize: 25,),
+                                  Expanded(
+                                    flex: 1,
+                                    child: LiquidSummaryWidget(
+                                      quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents, [], []),
+                                      fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, [], [], ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
+                                      totalWater: ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035).toStringAsFixed(2),
+                                      onReloadData: () { /*bloc.add(ReloadWaterInfoAction());*/ },
+                                      screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                                      addWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState(dateTime: selectedDateTime)))),
+                                      removeWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState(dateTime: selectedDateTime)))),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Stack(
+                                      children: [
+                                        Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0,), color: Colors.black,), child: Center(child: Text(AppLocalizations.of(context)!.coming_soon, style: const TextStyle(color: Colors.white),),)),
+                                        Opacity(
+                                          opacity: 0.4,
+                                          child: Card(
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  margin: const EdgeInsets.only(left: Dimens.marginNormal),
+                                                  alignment: Alignment.centerLeft,
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        AppLocalizations.of(context)!.steps,
+                                                        style: const TextStyle(
+                                                          fontSize: Dimens.fontSizeNormal,
+                                                          color: Colors.black,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        alignment: Alignment.centerRight,
+                                                        child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Container(
+                                                  height: 80,
+                                                  decoration: const BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.grey,
+                                                  ),
+                                                  child: const Center(child: Text('0'),),
+                                                ),
+                                                Container(
+                                                  margin: const EdgeInsets.only(top: Dimens.marginNormal),
+                                                  child: const Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                    children: [
+                                                      Text(' Km'),
+                                                      Text('98 min'),
+                                                    ],
+                                                  ),
+                                                ),
+                                                // Text('${_stepCountValue}'),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),),
                               SingleChildScrollView(
