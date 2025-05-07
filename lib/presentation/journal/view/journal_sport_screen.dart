@@ -161,7 +161,7 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                         context: context,
                         explainingCardId: ExplainingCardRefs.addNewSportEvent.index,
                         onHideCard: () => bloc.add(HideExplainingCardAction()),
-                        onPressedButton: () => Navigator.pushNamed(context, AddSportEventScreen.routeName),
+                        onPressedButton: () => Navigator.pushNamed(context, AddSportEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
                       ),
                       state.todaySportEvents!.isNotEmpty
                           ? Column(

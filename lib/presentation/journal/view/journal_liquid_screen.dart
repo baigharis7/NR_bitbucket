@@ -134,7 +134,7 @@ class _JournalLiquidScreen extends State<JournalLiquidScreen> {
                         context: context,
                         explainingCardId: ExplainingCardRefs.addNewLiquidEvent.index,
                         onHideCard: () => bloc.add(HideExplainingCardAction()),
-                        onPressedButton: () => Navigator.pushNamed(context, AddLiquidEventScreen.routeName),
+                        onPressedButton: () => Navigator.pushNamed(context, AddLiquidEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
                       ),
                       // HorizontalWaterBar(
                       //   waterTaken: eventsHelper.getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty()),

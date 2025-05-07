@@ -108,7 +108,7 @@ class _FavoriteSportsScreenState extends State<FavoriteSportsScreen> {
                         context: context,
                         explainingCardId: ExplainingCardRefs.addNewSportEvent.index,
                         onHideCard: () => bloc.add(HideExplainingCardAction()),
-                        onPressedButton: () => Navigator.pushNamed(context, CreateNewSportFavoriteScreen.routeName),
+                        onPressedButton: () => Navigator.pushNamed(context, CreateNewSportFavoriteScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
                       ),
                       ...state.sportFavorites!.map((sportFavorite) => EventListItem(
                         title: sportFavorite.title.orEmpty(),

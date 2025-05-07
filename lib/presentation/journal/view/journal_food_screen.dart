@@ -169,7 +169,7 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                           context: context,
                           explainingCardId: ExplainingCardRefs.addNewFoodEvent.index,
                           onHideCard: () => bloc.add(HideExplainingCardAction()),
-                          onPressedButton: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName),
+                          onPressedButton: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
                         ),
                         state.todayFoodEvents!.isNotEmpty
                         ? Column(
