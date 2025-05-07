@@ -86,12 +86,12 @@ class WeeklyAllNutrientsBloc extends Bloc<WeeklyAllNutrientsEventActions, Weekly
     loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
       if (userRda.name == micronutrient) {
         upperLimit = userRda.upperLimit ?? 0.0;
-        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
-          upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
-        }
-        if (userRda.name == Constants.TRYPTOPHAN) {
-          upperLimit = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
-        }
+        // if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
+        //   upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
+        // }
+        // if (userRda.name == Constants.TRYPTOPHAN) {
+        //   upperLimit = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
+        // }
         break loop;
       }
     }

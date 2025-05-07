@@ -500,7 +500,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
 
-    double returnQuantity = nutrientQuantitySoFar / rdaForUser;
+    double returnQuantity = (nutrientQuantitySoFar / rdaForUser).clamp(0.0, 1.0);
     if (returnQuantity > 1) returnQuantity = 1;
     if (returnQuantity < 0) returnQuantity = 0;
     return returnQuantity;
@@ -530,17 +530,15 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
       if (userRda.name == micronutrient) {
         upperLimit = userRda.upperLimit ?? 0.0;
-        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
-          upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
-        }
-        if (userRda.name == Constants.TRYPTOPHAN) {
-          upperLimit = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
-        }
+        // if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
+        //   upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
+        // }
+        // if (userRda.name == Constants.TRYPTOPHAN) {
+        //   upperLimit = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
+        // }
         break loop;
       }
     }
-
-    // final num = state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
     return upperLimit;
   }
 

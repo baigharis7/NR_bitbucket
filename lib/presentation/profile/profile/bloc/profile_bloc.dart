@@ -536,7 +536,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     if (getAllergiesFillPercentage() != 0) variablesSum +=1;
     if (getIntolerancesFillPercentage() != 0) variablesSum +=1;
     if (getAversionsFillPercentage() != 0) variablesSum +=1;
-    return _calculatePercentage(variablesSum, 1);
+    return _calculatePercentage(variablesSum, 1).clamp(0.0, 1.0);
   }
 
   double getDietTypeFillPercentage() {

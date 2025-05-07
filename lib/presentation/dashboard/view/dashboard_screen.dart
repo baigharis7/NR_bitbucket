@@ -237,7 +237,7 @@ class _DashboardScreen extends State<DashboardScreen>
                           //     title: AppLocalizations.of(context)!.micronutrients, nutrientsList: state.micronutrients.orEmpty()),
                           NutrientsDashboardWidget(
                             title: AppLocalizations.of(context)!.micronutrients,
-                            nutrients: state.micronutrients.orEmpty().where((element) => element.upperLimit > 0).toList(),
+                            nutrients: state.micronutrients.orEmpty().toList(),
                             isEmpty: false,
                             screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
                           ),

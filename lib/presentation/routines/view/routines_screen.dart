@@ -47,7 +47,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
           onUndoFavorite: () => onUndoFavorite.call(),
         );
       },
-    ).then((_) => Navigator.pop(context));
+    ).then((_) => bloc.add(RoutinesInitialStateAction()));
   }
 
   @override

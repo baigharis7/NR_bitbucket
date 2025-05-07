@@ -105,7 +105,7 @@ class _WeeklyAllNutrientsDetailScreenState
               child: Column(
                 children: [
                   ...state.weeklyMicronutrients
-                      .orEmpty().where((element) => element.upperLimit > 0)
+                      .orEmpty()
                       .map((item) => MicroNutrientDetailWidget(nutrientsModel: item,)),
                 ],
               ),

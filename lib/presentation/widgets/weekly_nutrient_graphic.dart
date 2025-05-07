@@ -38,7 +38,7 @@ class WeeklyNutrientGraphic extends StatelessWidget {
                 ),
               ),
             ),
-            ...data.where((element) => (element.upperLimit ?? 0.0) > 0).map(
+            ...data.map(
               (nutrientItem) {
                 return Column(
                   children: [
