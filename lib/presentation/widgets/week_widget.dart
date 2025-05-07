@@ -33,9 +33,9 @@ class WeekWidget extends StatelessWidget {
           Container(
             width: Dimens.widthSmall,
             height: Dimens.width80,
-            margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
+            margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6),
             decoration: BoxDecoration( // Replace with your background
-              borderRadius: BorderRadius.circular(Dimens.border20),
+              borderRadius: BorderRadius.circular(Dimens.border18),
               border: Border.all(color: Colors.white, width: Dimens.width1),
               color: isToday ? Colors.white : events.orEmpty().isNotEmpty ? AppColors.darkJungleGreen : Colors.transparent,
             ),
@@ -45,7 +45,7 @@ class WeekWidget extends StatelessWidget {
                 Text(
                   dayNum,
                   style: TextStyle(
-                    fontSize: Dimens.fontSizeXLarge,
+                    fontSize: Dimens.fontSizeLarge,
                     color: isToday ? Colors.black : Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
@@ -53,7 +53,7 @@ class WeekWidget extends StatelessWidget {
                 Text(
                   dayAbbr.toUpperCase(),
                   style: TextStyle(
-                    fontSize: Dimens.fontSizeNormal,
+                    fontSize: Dimens.fontSizeSmall,
                     color: isToday ? Colors.black : Colors.white,
                     letterSpacing: 1,
                   ),

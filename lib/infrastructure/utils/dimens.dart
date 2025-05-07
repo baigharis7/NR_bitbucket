@@ -20,6 +20,7 @@ class Dimens {
   
   // Margin
   static const marginXSmall = 4.0;
+  static const margin6 = 6.0;
   static const marginSmall = 8.0;
   static const marginNormal = 12.0;
   static const marginLarge = 16.0;
@@ -46,6 +47,7 @@ class Dimens {
   static const borderLarge = 6.0;
   static const borderXLarge = 10.0;
   static const border15 = 15.0;
+  static const border18 = 18.0;
   static const border20 = 20.0;
   static const border80 = 80.0;
   static const border90 = 90.0;
@@ -59,6 +61,7 @@ class Dimens {
   static const height32 = 32.0;
   static const heightSmall = 50.0;
   static const height60 = 60.0;
+  static const height70 = 70.0;
   static const height80 = 80.0;
   static const height90 = 90.0;
   static const heightNormal = 100.0;
@@ -74,6 +77,7 @@ class Dimens {
   static const width18 = 18.0;
   static const width32 = 32.0;
   static const widthSmall = 50.0;
+  static const width55 = 55.0;
   static const width80 = 80.0;
   static const widthNormal = 100.0;
   static const widthMedium = 150.0;
