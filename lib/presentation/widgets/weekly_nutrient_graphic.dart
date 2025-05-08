@@ -74,7 +74,7 @@ class WeeklyNutrientGraphic extends StatelessWidget {
                                         height: 1,
                                       ),
                                     ),
-                                    Text('${nutrientItem.upperLimit.toString()} ${nutrientItem.nutrientInfoMaster.unit}'),
+                                    Text('${nutrientItem.rda} ${nutrientItem.nutrientInfoMaster.unit}'),
                                   ],
                                 ),
                               ),

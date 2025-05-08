@@ -38,8 +38,8 @@ class Constants {
   static const VITAMIN_C = 'vitC';
   static const TRYPTOPHAN = 'tryptophan';
   static const BACK = 'Back';
-  static const DURING_MENSTRUATION = 28;
-  static const IMPROVE_THE_IMMUNE_SYSTEM = 18;
+  static const DURING_MENSTRUATION = 56;
+  static const IMPROVE_THE_IMMUNE_SYSTEM = 55;
   static const IMPROVE_SPORT_PERFORMANCE = 47;
   static const REDUCE_RISK_OF_INJURY = 48;
   static const RECOVERY_AFTER_SPORT_INJURY = 49;
