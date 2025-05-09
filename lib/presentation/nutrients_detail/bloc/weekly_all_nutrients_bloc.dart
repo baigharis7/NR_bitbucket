@@ -44,7 +44,7 @@ class WeeklyAllNutrientsBloc extends Bloc<WeeklyAllNutrientsEventActions, Weekly
   }
 
   NutrientsModel getNutrientByWeek(UserRda nutrient) {
-    final upperLimit = getNutrientUpperLimit(nutrient.name);
+    final rda = double.parse((getNutrientRda(nutrient.name) * 7).toStringAsFixed(2));
 
     var nutrientInfo = NutrientInfoMaster(officialName: nutrient.name, unit: '', en: '', es: '');
     for (var info in state.nutrientsInfoMaster!.nutrientsInfo) {
@@ -62,7 +62,7 @@ class WeeklyAllNutrientsBloc extends Bloc<WeeklyAllNutrientsEventActions, Weekly
     }
     nutrientQuantitySoFar = double.parse((nutrientQuantitySoFar).toStringAsFixed(2));
 
-    var weeklyNutrientQuantitySoFar = (nutrientQuantitySoFar/ (upperLimit * 7)).clamp(0.0, 1.0);
+    var weeklyNutrientQuantitySoFar = (nutrientQuantitySoFar/ rda).clamp(0.0, 1.0);
 
     var unit = '';
     for (var info in state.nutrientsInfoMaster!.nutrientsInfo) {
@@ -76,8 +76,8 @@ class WeeklyAllNutrientsBloc extends Bloc<WeeklyAllNutrientsEventActions, Weekly
       quantityConsumed: nutrientQuantitySoFar,
       unit: unit,
       fractionToFill: weeklyNutrientQuantitySoFar,
-      upperLimit: upperLimit * 7,
-      rda: double.parse((getNutrientRda(nutrient.name) * 7).toStringAsFixed(2)),
+      upperLimit: getNutrientUpperLimit(nutrient.name) * 7,
+      rda: rda,
     );
   }
 

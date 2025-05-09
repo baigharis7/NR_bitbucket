@@ -289,6 +289,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
     on<UpdateMenstruationStateAction>((event, emit) {
       final menstruationId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.MENSTRUATION).id ?? -1;
+      Fluttertoast.showToast(msg: '$menstruationId', toastLength: Toast.LENGTH_LONG, backgroundColor: AppColors.errorRed, textColor: Colors.white);
+      ApiLogger.logResponse('On Menstruation Click', menstruationId, menstruationId.toString());
       if (menstruationId != -1) {
         manageObjectives(menstruationId);
         add(UpdateProfileEventAction(value: event.isMenstruation));
@@ -300,6 +302,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
     on<UpdateColdStateAction>((event, emit) {
       final improveSystemId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.IMPROVE_HUMAN_SYSTEM).id ?? -1;
+      Fluttertoast.showToast(msg: '$improveSystemId', toastLength: Toast.LENGTH_LONG, backgroundColor: AppColors.errorRed, textColor: Colors.white);
+      ApiLogger.logResponse('On Cold Click', improveSystemId, improveSystemId.toString());
       if (improveSystemId != -1) {
         manageObjectives(improveSystemId);
         add(UpdateProfileEventAction(value: event.isCold));
@@ -366,12 +370,15 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
             add(InitializeState());
             // emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {
+            ApiLogger.logResponse('Profile Initialization Local', 300, error.toString());
             emit(state.copyWith(isLoading: false, onError: ErrorTypes.savingProfileError));
           }
         } else {
+          ApiLogger.logResponse('Api not success', 201, userProfileResponse.toJson().toString());
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingProfileError));
         }
       } catch (error) {
+        ApiLogger.logResponse('Api Response', 500, error.toString());
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingProfileError));
       }
     });
@@ -492,7 +499,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   // TODO: review this, dont know if ot's ok, just put it here to fit.
   double getFractionToFillMicros(String micronutrient) {
-    final rdaForUser = getNutrientUpperLimit(micronutrient);
+    final rdaForUser = getNutrientRda(micronutrient);
     double nutrientQuantitySoFar = 0.0;
     for (var foodEvent in state.foodEvents!) {
       for (var food in foodEvent.foodInfo!) {
