@@ -21,10 +21,14 @@ class FoodEventItem extends StatefulWidget {
   final UnitsInfoMaster unitsInfoMaster;
   final UnitsFoodsMaster unitsFoodsMaster;
   final String options;
+  final String conversionFactor;
+  final String? oilUsed;
   final Function onRemove;
   final Function(FoodInEvent) onQtyChange;
   final Function(FoodInEvent) onUnitChange;
   final Function(FoodInEvent) onCookingMethodChange;
+  final Function(String) onConversionFactorChange;
+  final Function(String) onOilUsedChange;
 
   const FoodEventItem({
     Key? key,
@@ -35,10 +39,14 @@ class FoodEventItem extends StatefulWidget {
     required this.unitsInfoMaster,
     required this.unitsFoodsMaster,
     required this.options,
+    required this.conversionFactor,
+    required this.oilUsed,
     required this.onRemove,
     required this.onQtyChange,
     required this.onUnitChange,
     required this.onCookingMethodChange,
+    required this.onConversionFactorChange,
+    required this.onOilUsedChange,
   }) : super(key: key);
 
   @override
@@ -283,6 +291,45 @@ class _FoodEventItemState extends State<FoodEventItem> {
                 child: Row(
                   children: [
                     Expanded(
+                      child: Text(
+                        'Conversion factor',
+                      ),
+                    ),
+                    const SizedBox(width: Dimens.widthXXXXSmall),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () => widget.onConversionFactorChange.call('raw'),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Radio(value: 'raw', groupValue: widget.conversionFactor, onChanged: (value) => widget.onConversionFactorChange.call('raw'),),
+                            Expanded(child: Text('Raw')),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: Dimens.widthXXXXSmall),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () => widget.onConversionFactorChange.call('cooked'),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Radio(value: 'cooked', groupValue: widget.conversionFactor, onChanged: (value) => widget.onConversionFactorChange.call('cooked')),
+                            Expanded(child: Text('Cooked')),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
+                height: Dimens.heightSmall - 15,
+                child: Row(
+                  children: [
+                    Expanded(
                       child: Text(AppLocalizations.of(context)!.cooking_method),
                     ),
                     const SizedBox(width: Dimens.widthXXXXSmall),
@@ -304,6 +351,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                               child: DropdownButton<String>(
                                 icon: const Icon(Icons.arrow_drop_down),
                                 isExpanded: true,
+                                underline: Container(),
                                 value: _cookingMethodName,
                                 onChanged: (String? cookingMethodNamed) {
                                   // setState(() {
@@ -321,6 +369,57 @@ class _FoodEventItemState extends State<FoodEventItem> {
                                         child: SizedBox(
                                           child: Text(
                                             item.name,
+                                            overflow: TextOverflow.clip,
+                                            maxLines: 2,
+                                            style: const TextStyle(
+                                              fontSize: Dimens.fontSizeNormal,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
+                height: Dimens.heightSmall - 15,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text('Oil used'),
+                    ),
+                    const SizedBox(width: Dimens.widthXXXXSmall),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: Dimens.paddingSmall),
+                              decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5)),
+                                  border: Border.fromBorderSide(
+                                      BorderSide(color: Colors.black54, width: 1))),
+                              child: DropdownButton<String>(
+                                icon: const Icon(Icons.arrow_drop_down),
+                                isExpanded: true,
+                                underline: Container(),
+                                value: widget.oilUsed,
+                                onChanged: (String? oilName) {
+                                  widget.onOilUsedChange.call(oilName!);
+                                },
+                                items: ['Extra virgin olive oil', 'Olive oil', 'Sunflower oil', 'Butter']
+                                    .map<DropdownMenuItem<String>>(
+                                      (item) => DropdownMenuItem(
+                                        value: item,
+                                        child: SizedBox(
+                                          child: Text(
+                                            item,
                                             overflow: TextOverflow.clip,
                                             maxLines: 2,
                                             style: const TextStyle(

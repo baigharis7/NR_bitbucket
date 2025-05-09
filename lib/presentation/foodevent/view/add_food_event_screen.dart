@@ -331,12 +331,16 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                       unitsInfoMaster: state.unitsInfoMaster!,
                                       foodInEvent: foodInEvent,
                                       foodGroup: foodGroup.orEmpty(),
+                                      conversionFactor: state.conversionFactor.orEmpty(),
+                                      oilUsed: state.oilUsed,
                                       cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
                                       cookingMethodsMaster: state.cookingMethodsMaster!,
                                       onRemove: () => context.read<AddFoodEventBloc>().add(RemoveFoodFromEventAction(foodInEvent: foodInEvent)),
                                       onQtyChange: (changedFood) { bloc.add(UpdateFoodQuantityEventAction(foodInEvent: changedFood));},
                                       onUnitChange: (changedFood) => bloc.add(UpdateFoodUnitEventAction(foodInEvent: changedFood)),
                                       onCookingMethodChange: (changedFood) => bloc.add(UpdateFoodCookingMethodEventAction(foodInEvent: changedFood)),
+                                      onConversionFactorChange: (conversionFactor) => bloc.add(UpdateFoodConversionFactor(conversionFactor: conversionFactor)),
+                                      onOilUsedChange: (oilName) => bloc.add(UpdateOilUsedEventAction(oilName: oilName)),
                                     );
                                   }
                                     // FoodCard(

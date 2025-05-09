@@ -327,6 +327,20 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
 
       if (state.foodsInEvent.orEmpty().isNotEmpty) event.onFinish.call();
     },);
+
+    on<UpdateFoodConversionFactor>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      state.conversionFactor = event.conversionFactor;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateOilUsedEventAction>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      state.oilUsed = event.oilName;
+
+      emit(state.copyWith(isLoading: false));
+    });
   }
 
   void _clearFields() {
