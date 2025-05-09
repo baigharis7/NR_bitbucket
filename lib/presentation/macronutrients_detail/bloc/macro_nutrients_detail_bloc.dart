@@ -100,11 +100,8 @@ class MacroNutrientsDetailBloc extends Bloc<MacroNutrientsDetailEvent, MacroNutr
       }
       int kcalPerNutrient = tEE ~/ 100 * getPercentageByMacro(macronutrient);
       int gramsPerNutrient = kcalPerNutrient ~/ getKcalPerGram(macronutrient);
-      double returnQuantity = nutrientConsumed / gramsPerNutrient;
-      if (returnQuantity > 1) returnQuantity = 1;
-      if (returnQuantity < 0) returnQuantity = 0.0;
-      if (returnQuantity.isNaN) returnQuantity = 0.0;
-      weeklyData.add({'day': eventWeekDay, 'nutrientConsumed': returnQuantity});
+      double nutrientConsumedFraction = (nutrientConsumed / gramsPerNutrient).clamp(0.0, 1.0);
+      weeklyData.add({'day': eventWeekDay, 'nutrientConsumed': nutrientConsumed, 'nutrientConsumedFraction': nutrientConsumedFraction});
     }
 
     weeklyData.sort((a, b) => (a['day']!).compareTo(b['day']!));
