@@ -289,6 +289,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
     on<UpdateMenstruationStateAction>((event, emit) {
       final menstruationId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.MENSTRUATION).id ?? -1;
+      Fluttertoast.showToast(msg: '$menstruationId', toastLength: Toast.LENGTH_LONG, backgroundColor: AppColors.errorRed, textColor: Colors.white);
       ApiLogger.logResponse('On Menstruation Click', menstruationId, menstruationId.toString());
       if (menstruationId != -1) {
         manageObjectives(menstruationId);
@@ -301,6 +302,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
     on<UpdateColdStateAction>((event, emit) {
       final improveSystemId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.IMPROVE_HUMAN_SYSTEM).id ?? -1;
+      Fluttertoast.showToast(msg: '$improveSystemId', toastLength: Toast.LENGTH_LONG, backgroundColor: AppColors.errorRed, textColor: Colors.white);
       ApiLogger.logResponse('On Cold Click', improveSystemId, improveSystemId.toString());
       if (improveSystemId != -1) {
         manageObjectives(improveSystemId);
