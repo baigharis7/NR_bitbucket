@@ -1,6 +1,9 @@
 enum MasterFilesType {
   cookingMethods,
   cookingMethodsInfo,
+  oilTypes,
+  conversionFactors,
+  conversionFactorsInfo,
   foodsAndDrinksNames,
   nutrientsInfo,
   objectivesInfo,
@@ -24,6 +27,9 @@ const subjectiveAnalysisBoxName = 'subjectiveAnalysisBoxName';
 
 const cookingMethods = 'cookingMethods';
 const cookingMethodsInfo = 'cookingMethodsInfo';
+const oilTypes = 'oilTypes';
+const conversionFactors = 'conversionFactors';
+const conversionFactorsInfo = 'conversionFactorsInfo';
 const foodsAndDrinksNames = 'foodsAndDrinksNames';
 const nutrientsInfo = 'nutrientsInfo';
 const objectivesInfo = 'objectivesInfo';

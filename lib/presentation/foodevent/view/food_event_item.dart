@@ -302,7 +302,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Radio(value: 'raw', groupValue: widget.conversionFactor, onChanged: (value) => widget.onConversionFactorChange.call('raw'),),
+                            Radio(materialTapTargetSize: MaterialTapTargetSize.shrinkWrap, visualDensity: VisualDensity.compact, value: 'raw', groupValue: widget.conversionFactor, onChanged: (value) => widget.onConversionFactorChange.call('raw'),),
                             Expanded(child: Text('Raw')),
                           ],
                         ),
@@ -315,7 +315,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Radio(value: 'cooked', groupValue: widget.conversionFactor, onChanged: (value) => widget.onConversionFactorChange.call('cooked')),
+                            Radio(materialTapTargetSize: MaterialTapTargetSize.shrinkWrap, visualDensity: VisualDensity.compact, value: 'cooked', groupValue: widget.conversionFactor, onChanged: (value) => widget.onConversionFactorChange.call('cooked')),
                             Expanded(child: Text('Cooked')),
                           ],
                         ),

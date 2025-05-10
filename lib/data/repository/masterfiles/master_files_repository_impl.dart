@@ -35,6 +35,9 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
   Future<MasterFilesResponse> manageMasterFiles(
       int cookingMethodsVersion,
       int cookingMethodsInfoVersion,
+      int conversionFactorsVersion,
+      int conversionFactorsInfoVersion,
+      int oilTypesVersion,
       int foodsAndDrinksNamesVersion,
       int nutrientsInfoVersion,
       int objectivesInfoVersion,
@@ -47,6 +50,9 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
     final response = await masterFilesApi.manageMasterFiles(
       cookingMethodsVersion,
       cookingMethodsInfoVersion,
+      conversionFactorsVersion,
+      conversionFactorsInfoVersion,
+      oilTypesVersion,
       foodsAndDrinksNamesVersion,
       nutrientsInfoVersion,
       objectivesInfoVersion,
@@ -77,6 +83,12 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
         return mapToCookingMethodsMaster(masterFileEntity as CookingMethodsEntity);
       case MasterFilesType.cookingMethodsInfo:
         return mapToCookingMethodsInfoMaster(masterFileEntity as CookingMethodsInfoEntity);
+      case MasterFilesType.oilTypes:
+        return mapToCookingMethodsInfoMaster(masterFileEntity as CookingMethodsInfoEntity);
+      case MasterFilesType.conversionFactors:
+        // TODO: Handle this case.
+      case MasterFilesType.conversionFactorsInfo:
+        // TODO: Handle this case.
       case MasterFilesType.foodsAndDrinksNames:
         return mapToFoodsAndDrinksNamesMaster(masterFileEntity as FoodsAndDrinksNamesEntity);
       case MasterFilesType.nutrientsInfo:

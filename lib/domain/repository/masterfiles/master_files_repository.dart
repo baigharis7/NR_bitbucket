@@ -8,6 +8,9 @@ abstract class MasterFilesRepository {
   Future<MasterFilesResponse> manageMasterFiles(
       int cookingMethodsVersion,
       int cookingMethodsInfoVersion,
+      int conversionFactorsVersion,
+      int conversionFactorsInfoVersion,
+      int oilTypesVersion,
       int foodsAndDrinksNamesVersion,
       int nutrientsInfoVersion,
       int objectivesInfoVersion,

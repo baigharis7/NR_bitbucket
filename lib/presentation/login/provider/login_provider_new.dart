@@ -501,6 +501,15 @@ class LoginProviderNew extends BaseProvider {
         MasterFilesType.cookingMethodsInfo,
       );
     });
+    masterFilesResponse.oilTypesResponse.doIfAintNull(() {
+
+    });
+    masterFilesResponse.conversionFactorsResponse.doIfAintNull(() {
+
+    });
+    masterFilesResponse.conversionFactorsInfoResponse.doIfAintNull(() {
+
+    });
     masterFilesResponse.foodsAndDrinksNamesResponse.doIfAintNull(() {
       saveMasterFileInteractor?.execute(
         masterFilesResponse.foodsAndDrinksNamesResponse,
