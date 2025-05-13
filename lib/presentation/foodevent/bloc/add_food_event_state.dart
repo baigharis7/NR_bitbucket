@@ -1,3 +1,5 @@
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/conversion_factors_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/oil_types_response.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
@@ -13,6 +15,8 @@ class AddFoodEventState {
   bool isLoading;
   ErrorTypes? onError;
   FoodsAndDrinksNamesMaster? foodNames;
+  OilTypesResponse? oilTypes;
+  ConversionFactorsResponse? conversionFactors;
   List<FoodInEvent>? foodsInEvent;
   List<FoodInEvent>? foodsFromFavorite;
   CookingMethodsMaster? cookingMethodsMaster;
@@ -28,13 +32,13 @@ class AddFoodEventState {
   List<FoodFavorite>? foodFavorites;
   List<FoodEventComplete>? weeklyFoodEvents;
   bool? isCreateDish;
-  String? conversionFactor;
-  String? oilUsed;
 
   AddFoodEventState({
     required this.isLoading,
     this.onError,
     this.foodNames,
+    this.oilTypes,
+    this.conversionFactors,
     this.foodsInEvent,
     this.foodsFromFavorite,
     this.cookingMethodsMaster,
@@ -50,14 +54,14 @@ class AddFoodEventState {
     this.foodFavorites,
     this.weeklyFoodEvents,
     this.isCreateDish,
-    this.conversionFactor,
-    this.oilUsed,
   });
 
   AddFoodEventState copyWith({
     required bool isLoading,
     ErrorTypes? onError,
     FoodsAndDrinksNamesMaster? foodNames,
+    OilTypesResponse? oilTypes,
+    ConversionFactorsResponse? conversionFactors,
     List<FoodInEvent>? foodsInEvent,
     List<FoodInEvent>? foodsFromFavorite,
     CookingMethodsMaster? cookingMethodsMaster,
@@ -73,13 +77,13 @@ class AddFoodEventState {
     List<FoodFavorite>? foodFavorites,
     List<FoodEventComplete>? weeklyFoodEvents,
     bool? isCreateDish,
-    String? conversionFactor,
-    String? oilUsed,
   }) {
     return AddFoodEventState(
       isLoading: isLoading,
       onError: onError ?? this.onError,
       foodNames: foodNames ?? this.foodNames,
+      oilTypes: oilTypes ?? this.oilTypes,
+      conversionFactors: conversionFactors ?? this.conversionFactors,
       foodsInEvent: foodsInEvent ?? this.foodsInEvent,
       cookingMethodsMaster: cookingMethodsMaster ?? this.cookingMethodsMaster,
       cookingMethodsInfoMaster: cookingMethodsInfoMaster ?? this.cookingMethodsInfoMaster,
@@ -95,8 +99,6 @@ class AddFoodEventState {
       foodsFromFavorite: foodsFromFavorite ?? this.foodsFromFavorite,
       weeklyFoodEvents: weeklyFoodEvents ?? this.weeklyFoodEvents,
       isCreateDish: isCreateDish ?? this.isCreateDish,
-      conversionFactor: conversionFactor ?? this.conversionFactor,
-      oilUsed: oilUsed ?? this.oilUsed,
     );
   }
 }

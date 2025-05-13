@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/conversion_factors_response.dart';
 import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
@@ -10,37 +11,41 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/simple_item_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/box_type_radio_text_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/radio_button_with_text.dart';
+
+import '../../../data/api/masterfiles/model/oil_types_response.dart';
 
 class FoodEventItem extends StatefulWidget {
   final FoodInEvent foodInEvent;
   final String foodGroup;
   final CookingMethodsMaster cookingMethodsMaster;
+  final OilTypesResponse? oilTypes;
+  final ConversionFactorsResponse? conversionFactors;
   final CookingMethodsInfoMaster cookingMethodsInfoMaster;
   final UnitsInfoMaster unitsInfoMaster;
   final UnitsFoodsMaster unitsFoodsMaster;
   final String options;
-  final String conversionFactor;
-  final String? oilUsed;
   final Function onRemove;
   final Function(FoodInEvent) onQtyChange;
   final Function(FoodInEvent) onUnitChange;
   final Function(FoodInEvent) onCookingMethodChange;
-  final Function(String) onConversionFactorChange;
-  final Function(String) onOilUsedChange;
+  final Function(FoodInEvent) onConversionFactorChange;
+  final Function(FoodInEvent) onOilUsedChange;
 
   const FoodEventItem({
     Key? key,
     required this.foodInEvent,
     required this.foodGroup,
     required this.cookingMethodsMaster,
+    required this.oilTypes,
+    required this.conversionFactors,
     required this.cookingMethodsInfoMaster,
     required this.unitsInfoMaster,
     required this.unitsFoodsMaster,
     required this.options,
-    required this.conversionFactor,
-    required this.oilUsed,
     required this.onRemove,
     required this.onQtyChange,
     required this.onUnitChange,
@@ -59,37 +64,37 @@ class _FoodEventItemState extends State<FoodEventItem> {
   String? _unitName;
   bool _error = false;
 
-  List<SimpleItem> findCookingMethodsForFood(
-      String foodGroup, BuildContext context) {
-    // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
-    List<int> groupCookingMethods =
-        widget.cookingMethodsMaster.cookingMethods
-            .firstWhere(
-              (cookingMethod) => cookingMethod.group == foodGroup,
-              orElse: () => CookingMethod.empty(),
-            )
-            .methods;
-    final cookingMethodsInfo = groupCookingMethods.map((cookingMethodId) {
-      String name = widget.cookingMethodsInfoMaster.cookingMethodsInfo!
-          .firstWhere((methodInfo) => methodInfo.id == cookingMethodId)
-          .translate(context);
-      return SimpleItem(name: name, id: cookingMethodId);
-    });
-
-    return cookingMethodsInfo.toList();
-  }
-
-  String findCookingMethodName(BuildContext context, int cookingMethod) {
-    final cookingMethodInfo =
-        widget.cookingMethodsInfoMaster.cookingMethodsInfo!.firstWhere(
-            (cookingMethodInfo) => cookingMethodInfo.id == cookingMethod,
-            orElse: () => CookingMethodInfo());
-    if (cookingMethodInfo.id == null) {
-      return '';
-    } else {
-      return cookingMethodInfo.translate(context);
-    }
-  }
+  // List<SimpleItem> findCookingMethodsForFood(
+  //     String foodGroup, BuildContext context) {
+  //   // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
+  //   List<int> groupCookingMethods =
+  //       widget.cookingMethodsMaster.cookingMethods
+  //           .firstWhere(
+  //             (cookingMethod) => cookingMethod.group == foodGroup,
+  //             orElse: () => CookingMethod.empty(),
+  //           )
+  //           .methods;
+  //   final cookingMethodsInfo = groupCookingMethods.map((cookingMethodId) {
+  //     String name = widget.cookingMethodsInfoMaster.cookingMethodsInfo!
+  //         .firstWhere((methodInfo) => methodInfo.id == cookingMethodId)
+  //         .translate(context);
+  //     return SimpleItem(name: name, id: cookingMethodId);
+  //   });
+  //
+  //   return cookingMethodsInfo.toList();
+  // }
+  //
+  // String findCookingMethodName(BuildContext context, int cookingMethod) {
+  //   final cookingMethodInfo =
+  //       widget.cookingMethodsInfoMaster.cookingMethodsInfo!.firstWhere(
+  //           (cookingMethodInfo) => cookingMethodInfo.id == cookingMethod,
+  //           orElse: () => CookingMethodInfo());
+  //   if (cookingMethodInfo.id == null) {
+  //     return '';
+  //   } else {
+  //     return cookingMethodInfo.translate(context);
+  //   }
+  // }
 
   List<SimpleItem> findUnitsForFood(int foodId, BuildContext context) {
     // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
@@ -140,14 +145,15 @@ class _FoodEventItemState extends State<FoodEventItem> {
   @override
   Widget build(BuildContext context) {
     FoodInEvent ingredient = FoodInEvent(
-        id: widget.foodInEvent.id, qty: 0, unit: -1, cookingMethod: -1);
+        id: widget.foodInEvent.id, qty: 0, unit: -1, conversionFactor: widget.foodInEvent.conversionFactor, cookingMethod: widget.foodInEvent.cookingMethod, usedOil: widget.foodInEvent.usedOil,);
     final mediaQuerySize = MediaQuery.of(context).size;
 
     // if (ingredient.qty != 0) _quantityController.text = ingredient.qty.toString();
-    List<SimpleItem> cookingMethods =
-        findCookingMethodsForFood(widget.foodGroup, context);
-    _cookingMethodName = cookingMethods.isNotEmpty ? null : '';
+    // List<SimpleItem> cookingMethods =
+    //     findCookingMethodsForFood(widget.foodGroup, context);
+    // _cookingMethodName = cookingMethods.isNotEmpty ? null : '';
     List<SimpleItem> units = findUnitsForFood(widget.foodInEvent.id, context);
+
     String unitsEquivalences = widget.unitsFoodsMaster.unitsFoodsMaster
         .firstWhere(
           (unitFood) => unitFood.id == widget.foodInEvent.id,
@@ -161,12 +167,12 @@ class _FoodEventItemState extends State<FoodEventItem> {
     }
 
     // if (widget.foodInEvent.cookingMethod != -1) {
-      _cookingMethodName = _cookingMethodName ??
-          cookingMethods
-              .firstWhere((cookingMethod) =>
-                  cookingMethod.id == widget.foodInEvent.cookingMethod)
-              .name;
-      ingredient.cookingMethod = widget.foodInEvent.cookingMethod;
+    //   _cookingMethodName = _cookingMethodName ??
+    //       cookingMethods
+    //           .firstWhere((cookingMethod) =>
+    //               cookingMethod.id == widget.foodInEvent.cookingMethod)
+    //           .name;
+    //   ingredient.cookingMethod = widget.foodInEvent.cookingMethod;
     // }
 
     // if (widget.foodInEvent.unit != -1) {
@@ -175,9 +181,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
       ingredient.unit = widget.foodInEvent.unit;
     // }
 
-    _error = widget.foodInEvent.qty == 0 || _cookingMethodName.isNull() || widget.foodInEvent.unit == -1;
-    // _error = widget.foodInEvent.qty == 0 || widget.foodInEvent.unit == 0;
-    // _error = widget.foodInEvent.qty == 0 || widget.foodInEvent.unit == -1 || widget.foodInEvent.cookingMethod == -1;
+    _error = widget.foodInEvent.qty <= 0 || widget.foodInEvent.unit == -1 || ingredient.conversionFactor.orZero() < 0  || (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && ingredient.cookingMethod == -1);
 
     return Column(
       children: [
@@ -292,34 +296,20 @@ class _FoodEventItemState extends State<FoodEventItem> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Conversion factor',
+                        AppLocalizations.of(context)!.conversion_factor,
                       ),
                     ),
                     const SizedBox(width: Dimens.widthXXXXSmall),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => widget.onConversionFactorChange.call('raw'),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Radio(materialTapTargetSize: MaterialTapTargetSize.shrinkWrap, visualDensity: VisualDensity.compact, value: 'raw', groupValue: widget.conversionFactor, onChanged: (value) => widget.onConversionFactorChange.call('raw'),),
-                            Expanded(child: Text('Raw')),
-                          ],
+                    ...?widget.conversionFactors?.data.map((factor) =>
+                        RadioButtonWithText(
+                          value: factor.id,
+                          text: factor.translate(context),
+                          groupValue: ingredient.conversionFactor ?? -1,
+                          onConversionFactorChange: (factorValue) {
+                            ingredient.conversionFactor = factorValue;
+                            widget.onConversionFactorChange.call(ingredient);
+                          },
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: Dimens.widthXXXXSmall),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => widget.onConversionFactorChange.call('cooked'),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Radio(materialTapTargetSize: MaterialTapTargetSize.shrinkWrap, visualDensity: VisualDensity.compact, value: 'cooked', groupValue: widget.conversionFactor, onChanged: (value) => widget.onConversionFactorChange.call('cooked')),
-                            Expanded(child: Text('Cooked')),
-                          ],
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -335,7 +325,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                     const SizedBox(width: Dimens.widthXXXXSmall),
                     Expanded(
                       flex: 2,
-                      child: (cookingMethods.isEmpty)
+                      child: (widget.cookingMethodsInfoMaster.cookingMethodsInfo.orEmpty().isEmpty)
                           ? Center(
                               child: Text(AppLocalizations.of(context)!.none),
                             )
@@ -348,27 +338,22 @@ class _FoodEventItemState extends State<FoodEventItem> {
                                       BorderRadius.all(Radius.circular(5)),
                                   border: Border.fromBorderSide(
                                       BorderSide(color: Colors.black54, width: 1))),
-                              child: DropdownButton<String>(
+                              child: DropdownButton<int>(
                                 icon: const Icon(Icons.arrow_drop_down),
                                 isExpanded: true,
                                 underline: Container(),
-                                value: _cookingMethodName,
-                                onChanged: (String? cookingMethodNamed) {
-                                  // setState(() {
-                                  _cookingMethodName = cookingMethodNamed ?? '';
-                                  ingredient.cookingMethod = SimpleItemHelper()
-                                      .findSimpleItemId(
-                                          cookingMethods, cookingMethodNamed ?? '');
+                                value: ingredient.cookingMethod,
+                                onChanged: (int? cookingMethodId) {
+                                  ingredient.cookingMethod = cookingMethodId!;
                                   widget.onCookingMethodChange.call(ingredient);
-                                  // });
                                 },
-                                items: cookingMethods
-                                    .map<DropdownMenuItem<String>>(
+                                items: widget.cookingMethodsInfoMaster.cookingMethodsInfo.orEmpty()
+                                    .map<DropdownMenuItem<int>>(
                                       (item) => DropdownMenuItem(
-                                        value: item.name,
+                                        value: item.id,
                                         child: SizedBox(
                                           child: Text(
-                                            item.name,
+                                            item.translate(context),
                                             overflow: TextOverflow.clip,
                                             maxLines: 2,
                                             style: const TextStyle(
@@ -385,13 +370,13 @@ class _FoodEventItemState extends State<FoodEventItem> {
                   ],
                 ),
               ),
-              Container(
+              if (ingredient.cookingMethod == Constants.COOKING_METHOD_BREADED || ingredient.cookingMethod == Constants.COOKING_METHOD_FRIED) Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                 height: Dimens.heightSmall - 15,
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text('Oil used'),
+                      child: Text(AppLocalizations.of(context)!.oil_used),
                     ),
                     const SizedBox(width: Dimens.widthXXXXSmall),
                     Expanded(
@@ -405,21 +390,22 @@ class _FoodEventItemState extends State<FoodEventItem> {
                                       BorderRadius.all(Radius.circular(5)),
                                   border: Border.fromBorderSide(
                                       BorderSide(color: Colors.black54, width: 1))),
-                              child: DropdownButton<String>(
+                              child: DropdownButton<int>(
                                 icon: const Icon(Icons.arrow_drop_down),
                                 isExpanded: true,
                                 underline: Container(),
-                                value: widget.oilUsed,
-                                onChanged: (String? oilName) {
-                                  widget.onOilUsedChange.call(oilName!);
+                                value: ingredient.usedOil,
+                                onChanged: (int? oilId) {
+                                  ingredient.usedOil = oilId;
+                                  widget.onOilUsedChange.call(ingredient);
                                 },
-                                items: ['Extra virgin olive oil', 'Olive oil', 'Sunflower oil', 'Butter']
-                                    .map<DropdownMenuItem<String>>(
+                                items: widget.oilTypes?.data
+                                    .map<DropdownMenuItem<int>>(
                                       (item) => DropdownMenuItem(
-                                        value: item,
+                                        value: item.id,
                                         child: SizedBox(
                                           child: Text(
-                                            item,
+                                            item.translate(context),
                                             overflow: TextOverflow.clip,
                                             maxLines: 2,
                                             style: const TextStyle(

@@ -66,6 +66,8 @@ EventInfo _$EventInfoFromJson(Map<String, dynamic> json) => EventInfo(
       json['cookingMethod'] as int?,
       (json['qty'] as num?)?.toDouble(),
       json['unit'] as int?,
+      json['conversionFactor'] as int?,
+      json['usedOil'] as int?,
       (json['waste'] as num?)?.toDouble(),
     );
 
@@ -73,6 +75,8 @@ Map<String, dynamic> _$EventInfoToJson(EventInfo instance) => <String, dynamic>{
       'cookingMethod': instance.cookingMethod,
       'qty': instance.qty,
       'unit': instance.unit,
+      'conversionFactor': instance.conversionFactor,
+      'usedOil': instance.usedOil,
       'waste': instance.waste,
     };
 

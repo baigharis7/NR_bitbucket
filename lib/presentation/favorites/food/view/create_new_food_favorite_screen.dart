@@ -61,8 +61,6 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
       Widget widget,
       String foodName,
       ) async {
-    // final bloc = BlocProvider.of<CreateNewFoodFavoriteBloc>(context);
-
     await showDialog(
       barrierDismissible: false,
       context: context,
@@ -325,10 +323,14 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
                                       unitsInfoMaster: state.unitsInfoMaster!,
                                       unitsFoodsMaster: state.unitsFoodsMaster!,
                                       options: option,
+                                      conversionFactors: state.conversionFactors,
+                                      oilTypes: state.oilTypes,
                                       onRemove: () => bloc.add(RemoveFoodFromFavoriteAction(foodInFavorite: foodInFavorite)),
                                       onQtyChange: (foodFav) => bloc.add(UpdateQuantityAction(foodInFavorite: foodFav)),
                                       onUnitChange: (foodFav) => bloc.add(UpdateUnitAction(foodInFavorite: foodFav)),
                                       onCookingMethodChange: (foodFav) => bloc.add(UpdateCookingMethodAction(foodInFavorite: foodFav)),
+                                    onConversionFactorChange: (foodFav) => bloc.add(UpdateConversionFactorEventAction(foodInFavorite: foodFav)),
+                                    onOilUsedChange: (foodFav) => bloc.add(UpdateUsedOilEventAction(foodInFavorite: foodFav)),
                                   );
                                 }
                                     // FoodCard(

@@ -17,9 +17,9 @@ class ConversionFactorsInfoResponse {
 class ConversionFactorInfoResponse {
   int id;
   String value;
-  List<ConversionFactorResponse> data;
+  List<ConversionFactorResponse> list;
 
-  ConversionFactorInfoResponse({required this.id, required this.value, required this.data});
+  ConversionFactorInfoResponse({required this.id, required this.value, required this.list});
 
   factory ConversionFactorInfoResponse.fromJson(Map<String, dynamic> json) => _$ConversionFactorInfoResponseFromJson(json);
   Map<String, dynamic> toJson() => _$ConversionFactorInfoResponseToJson(this);
@@ -28,7 +28,7 @@ class ConversionFactorInfoResponse {
 @JsonSerializable(explicitToJson: true)
 class ConversionFactorResponse {
   String g;
-  int v;
+  num v;
 
   ConversionFactorResponse({required this.g, required this.v});
 

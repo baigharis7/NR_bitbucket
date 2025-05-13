@@ -473,6 +473,9 @@ class LoginProviderNew extends BaseProvider {
       manageMasterFilesInteractor?.execute(
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.cookingMethods),
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.cookingMethodsInfo),
+        await getMasterFilesVersionInteractor!.execute(MasterFilesType.oilTypes),
+        await getMasterFilesVersionInteractor!.execute(MasterFilesType.conversionFactors),
+        await getMasterFilesVersionInteractor!.execute(MasterFilesType.conversionFactorsInfo),
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.foodsAndDrinksNames),
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.nutrientsInfo),
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.objectivesInfo),
@@ -502,13 +505,22 @@ class LoginProviderNew extends BaseProvider {
       );
     });
     masterFilesResponse.oilTypesResponse.doIfAintNull(() {
-
+      saveMasterFileInteractor?.execute(
+        masterFilesResponse.oilTypesResponse,
+        MasterFilesType.oilTypes,
+      );
     });
     masterFilesResponse.conversionFactorsResponse.doIfAintNull(() {
-
+      saveMasterFileInteractor?.execute(
+        masterFilesResponse.conversionFactorsResponse,
+        MasterFilesType.conversionFactors,
+      );
     });
     masterFilesResponse.conversionFactorsInfoResponse.doIfAintNull(() {
-
+      saveMasterFileInteractor?.execute(
+        masterFilesResponse.conversionFactorsInfoResponse,
+        MasterFilesType.conversionFactorsInfo,
+      );
     });
     masterFilesResponse.foodsAndDrinksNamesResponse.doIfAintNull(() {
       saveMasterFileInteractor?.execute(

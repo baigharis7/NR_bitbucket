@@ -40,7 +40,9 @@ FoodInEvent _$FoodInEventFromJson(Map<String, dynamic> json) => FoodInEvent(
       id: json['id'] as int,
       qty: json['qty'] as int,
       unit: json['unit'] as int,
+      conversionFactor: json['conversionFactor'] as int?,
       cookingMethod: json['cookingMethod'] as int,
+      usedOil: json['usedOil'] as int?,
       unitsEquivalences: json['unitsEquivalences'] as String?,
     );
 
@@ -49,6 +51,8 @@ Map<String, dynamic> _$FoodInEventToJson(FoodInEvent instance) =>
       'id': instance.id,
       'qty': instance.qty,
       'unit': instance.unit,
+      'conversionFactor': instance.conversionFactor,
       'cookingMethod': instance.cookingMethod,
+      'usedOil': instance.usedOil,
       'unitsEquivalences': instance.unitsEquivalences,
     };

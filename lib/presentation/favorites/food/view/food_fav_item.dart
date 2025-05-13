@@ -12,13 +12,19 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart'
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
+import '../../../../data/api/masterfiles/model/conversion_factors_response.dart';
+import '../../../../data/api/masterfiles/model/oil_types_response.dart';
 import '../../../../domain/models/favorites/food/food_favorite.dart';
+import '../../../../infrastructure/utils/constants.dart';
+import '../../../widgets/radio_button_with_text.dart';
 
 class FoodFavItem extends StatefulWidget {
   final FoodInFavorite foodInFavorite;
   final String foodGroup;
   final CookingMethodsMaster cookingMethodsMaster;
   final CookingMethodsInfoMaster cookingMethodsInfoMaster;
+  final OilTypesResponse? oilTypes;
+  final ConversionFactorsResponse? conversionFactors;
   final UnitsInfoMaster unitsInfoMaster;
   final UnitsFoodsMaster unitsFoodsMaster;
   final String options;
@@ -26,6 +32,8 @@ class FoodFavItem extends StatefulWidget {
   final Function(FoodInFavorite) onQtyChange;
   final Function(FoodInFavorite) onUnitChange;
   final Function(FoodInFavorite) onCookingMethodChange;
+  final Function(FoodInFavorite) onConversionFactorChange;
+  final Function(FoodInFavorite) onOilUsedChange;
 
   const FoodFavItem({
     Key? key,
@@ -33,6 +41,8 @@ class FoodFavItem extends StatefulWidget {
     required this.foodGroup,
     required this.cookingMethodsMaster,
     required this.cookingMethodsInfoMaster,
+    this.conversionFactors,
+    this.oilTypes,
     required this.unitsInfoMaster,
     required this.unitsFoodsMaster,
     required this.options,
@@ -40,6 +50,8 @@ class FoodFavItem extends StatefulWidget {
     required this.onQtyChange,
     required this.onUnitChange,
     required this.onCookingMethodChange,
+    required this.onConversionFactorChange,
+    required this.onOilUsedChange,
   }) : super(key: key);
 
   @override
@@ -52,37 +64,37 @@ class _FoodFavItemState extends State<FoodFavItem> {
   String? _unitName;
   bool _error = false;
 
-  List<SimpleItem> findCookingMethodsForFood(
-      String foodGroup, BuildContext context) {
-    // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
-    final List<int> groupCookingMethods =
-        widget.cookingMethodsMaster.cookingMethods
-            .firstWhere(
-              (cookingMethod) => cookingMethod.group == foodGroup,
-              orElse: () => CookingMethod.empty(),
-            )
-            .methods;
-    final cookingMethodsInfo = groupCookingMethods.map((cookingMethodId) {
-      String name = widget.cookingMethodsInfoMaster.cookingMethodsInfo!
-          .firstWhere((methodInfo) => methodInfo.id == cookingMethodId)
-          .translate(context);
-      return SimpleItem(name: name, id: cookingMethodId);
-    });
-
-    return cookingMethodsInfo.toList();
-  }
-
-  String findCookingMethodName(BuildContext context, int cookingMethod) {
-    final cookingMethodInfo =
-        widget.cookingMethodsInfoMaster.cookingMethodsInfo!.firstWhere(
-            (cookingMethodInfo) => cookingMethodInfo.id == cookingMethod,
-            orElse: () => CookingMethodInfo());
-    if (cookingMethodInfo.id == null) {
-      return '';
-    } else {
-      return cookingMethodInfo.translate(context);
-    }
-  }
+  // List<SimpleItem> findCookingMethodsForFood(
+  //     String foodGroup, BuildContext context) {
+  //   // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
+  //   final List<int> groupCookingMethods =
+  //       widget.cookingMethodsMaster.cookingMethods
+  //           .firstWhere(
+  //             (cookingMethod) => cookingMethod.group == foodGroup,
+  //             orElse: () => CookingMethod.empty(),
+  //           )
+  //           .methods;
+  //   final cookingMethodsInfo = groupCookingMethods.map((cookingMethodId) {
+  //     String name = widget.cookingMethodsInfoMaster.cookingMethodsInfo!
+  //         .firstWhere((methodInfo) => methodInfo.id == cookingMethodId)
+  //         .translate(context);
+  //     return SimpleItem(name: name, id: cookingMethodId);
+  //   });
+  //
+  //   return cookingMethodsInfo.toList();
+  // }
+  //
+  // String findCookingMethodName(BuildContext context, int cookingMethod) {
+  //   final cookingMethodInfo =
+  //       widget.cookingMethodsInfoMaster.cookingMethodsInfo!.firstWhere(
+  //           (cookingMethodInfo) => cookingMethodInfo.id == cookingMethod,
+  //           orElse: () => CookingMethodInfo());
+  //   if (cookingMethodInfo.id == null) {
+  //     return '';
+  //   } else {
+  //     return cookingMethodInfo.translate(context);
+  //   }
+  // }
 
   List<SimpleItem> findUnitsForFood(int foodId, BuildContext context) {
     // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
@@ -132,13 +144,13 @@ class _FoodFavItemState extends State<FoodFavItem> {
 
   @override
   Widget build(BuildContext context) {
-    FoodInFavorite ingredient = FoodInFavorite(id: widget.foodInFavorite.id, name_en: widget.foodInFavorite.name_en.orEmpty(), name_es: widget.foodInFavorite.name_es.orEmpty(), qty: 0, unit: -1, cookingMethod: -1);
+    FoodInFavorite ingredient = FoodInFavorite(id: widget.foodInFavorite.id, name_en: widget.foodInFavorite.name_en.orEmpty(), name_es: widget.foodInFavorite.name_es.orEmpty(), qty: widget.foodInFavorite.qty, unit: -1, conversionFactor: widget.foodInFavorite.conversionFactor, cookingMethod: widget.foodInFavorite.cookingMethod, usedOil: widget.foodInFavorite.usedOil);
     final mediaQuerySize = MediaQuery.of(context).size;
 
     // if (ingredient.qty != 0) _quantityController.text = ingredient.qty.toString();
-    List<SimpleItem> cookingMethods =
-        findCookingMethodsForFood(widget.foodGroup, context);
-    _cookingMethodName = cookingMethods.isNotEmpty ? null : '';
+    // List<SimpleItem> cookingMethods =
+    //     findCookingMethodsForFood(widget.foodGroup, context);
+    // _cookingMethodName = cookingMethods.isNotEmpty ? null : '';
     List<SimpleItem> units = findUnitsForFood(widget.foodInFavorite.id, context);
     String unitsEquivalences = widget.unitsFoodsMaster.unitsFoodsMaster
         .firstWhere(
@@ -147,18 +159,19 @@ class _FoodFavItemState extends State<FoodFavItem> {
         .units;
     ingredient.unitsEquivalences = unitsEquivalences;
 
-    if (widget.foodInFavorite.qty != 0 && _quantityController.text == '') {
-      _quantityController.text = widget.foodInFavorite.qty.toString();
-      ingredient.qty = widget.foodInFavorite.qty;
-    }
+    // if (widget.foodInFavorite.qty != 0 && _quantityController.text == '') {
+    //   _quantityController.text = widget.foodInFavorite.qty.toString();
+      _quantityController.text = ingredient.qty.toString();
+    //   ingredient.qty = widget.foodInFavorite.qty;
+    // }
 
     // if (widget.foodInFavorite.cookingMethod != -1) {
-      _cookingMethodName = _cookingMethodName ??
-          cookingMethods
-              .firstWhere((cookingMethod) =>
-                  cookingMethod.id == widget.foodInFavorite.cookingMethod)
-              .name;
-      ingredient.cookingMethod = widget.foodInFavorite.cookingMethod;
+    //   _cookingMethodName = _cookingMethodName ??
+    //       cookingMethods
+    //           .firstWhere((cookingMethod) =>
+    //               cookingMethod.id == widget.foodInFavorite.cookingMethod)
+    //           .name;
+    //   ingredient.cookingMethod = widget.foodInFavorite.cookingMethod;
     // }
 
     // if (widget.foodInEvent.unit != -1) {
@@ -167,9 +180,7 @@ class _FoodFavItemState extends State<FoodFavItem> {
       ingredient.unit = widget.foodInFavorite.unit;
     // }
 
-    _error = widget.foodInFavorite.qty == 0 || _cookingMethodName.isNull();
-    // _error = widget.foodInEvent.qty == 0 || widget.foodInEvent.unit == 0;
-    // _error = widget.foodInEvent.qty == 0 || widget.foodInEvent.unit == -1 || widget.foodInEvent.cookingMethod == -1;
+    _error = ingredient.qty <= 0 || ingredient.unit == -1 || ingredient.conversionFactor.orZero() < 0  || (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && ingredient.cookingMethod == -1);
 
     return Column(
       children: [
@@ -241,6 +252,7 @@ class _FoodFavItemState extends State<FoodFavItem> {
                                       BorderSide(color: Colors.black54, width: 1))),
                               child: DropdownButton<String>(
                                 isExpanded: true,
+                                underline: Container(),
                                 icon: const Icon(Icons.arrow_drop_down),
                                 value: _unitName,
                                 onChanged: (String? unit) {
@@ -280,12 +292,37 @@ class _FoodFavItemState extends State<FoodFavItem> {
                 child: Row(
                   children: [
                     Expanded(
+                      child: Text(
+                        AppLocalizations.of(context)!.conversion_factor,
+                      ),
+                    ),
+                    const SizedBox(width: Dimens.widthXXXXSmall),
+                    ...?widget.conversionFactors?.data.map((factor) =>
+                        RadioButtonWithText(
+                          value: factor.id,
+                          text: factor.translate(context),
+                          groupValue: ingredient.conversionFactor ?? -1,
+                          onConversionFactorChange: (factorValue) {
+                            ingredient.conversionFactor = factorValue;
+                            widget.onConversionFactorChange.call(ingredient);
+                          },
+                        ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
+                height: Dimens.heightSmall - 15,
+                child: Row(
+                  children: [
+                    Expanded(
                       child: Text(AppLocalizations.of(context)!.cooking_method),
                     ),
                     const SizedBox(width: Dimens.widthXXXXSmall),
                     Expanded(
                       flex: 2,
-                      child: (cookingMethods.isEmpty)
+                      child: (widget.cookingMethodsInfoMaster.cookingMethodsInfo.orEmpty().isEmpty)
                           ? Center(
                               child: Text(AppLocalizations.of(context)!.none),
                             )
@@ -298,26 +335,22 @@ class _FoodFavItemState extends State<FoodFavItem> {
                                       BorderRadius.all(Radius.circular(5)),
                                   border: Border.fromBorderSide(
                                       BorderSide(color: Colors.black54, width: 1))),
-                              child: DropdownButton<String>(
+                              child: DropdownButton<int>(
                                 icon: const Icon(Icons.arrow_drop_down),
                                 isExpanded: true,
-                                value: _cookingMethodName,
-                                onChanged: (String? cookingMethodNamed) {
-                                  // setState(() {
-                                  _cookingMethodName = cookingMethodNamed ?? '';
-                                  ingredient.cookingMethod = SimpleItemHelper()
-                                      .findSimpleItemId(
-                                          cookingMethods, cookingMethodNamed ?? '');
+                                underline: Container(),
+                                value: ingredient.cookingMethod,
+                                onChanged: (int? cookingMethodId) {
+                                  ingredient.cookingMethod = cookingMethodId!;
                                   widget.onCookingMethodChange.call(ingredient);
-                                  // });
                                 },
-                                items: cookingMethods
-                                    .map<DropdownMenuItem<String>>(
+                                items: widget.cookingMethodsInfoMaster.cookingMethodsInfo.orEmpty()
+                                    .map<DropdownMenuItem<int>>(
                                       (item) => DropdownMenuItem(
-                                        value: item.name,
+                                        value: item.id,
                                         child: SizedBox(
                                           child: Text(
-                                            item.name,
+                                            item.translate(context).orEmpty(),
                                             overflow: TextOverflow.clip,
                                             maxLines: 2,
                                             style: const TextStyle(
@@ -330,6 +363,58 @@ class _FoodFavItemState extends State<FoodFavItem> {
                                     .toList(),
                               ),
                             ),
+                    ),
+                  ],
+                ),
+              ),
+              if (ingredient.cookingMethod == Constants.COOKING_METHOD_BREADED || ingredient.cookingMethod == Constants.COOKING_METHOD_FRIED) Container(
+                margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
+                height: Dimens.heightSmall - 15,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(AppLocalizations.of(context)!.oil_used),
+                    ),
+                    const SizedBox(width: Dimens.widthXXXXSmall),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: Dimens.paddingSmall),
+                        decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(5)),
+                            border: Border.fromBorderSide(
+                                BorderSide(color: Colors.black54, width: 1))),
+                        child: DropdownButton<int>(
+                          icon: const Icon(Icons.arrow_drop_down),
+                          isExpanded: true,
+                          underline: Container(),
+                          value: ingredient.usedOil,
+                          onChanged: (int? oilId) {
+                            ingredient.usedOil = oilId;
+                            widget.onOilUsedChange.call(ingredient);
+                          },
+                          items: widget.oilTypes?.data
+                              .map<DropdownMenuItem<int>>(
+                                (item) => DropdownMenuItem(
+                              value: item.id,
+                              child: SizedBox(
+                                child: Text(
+                                  item.translate(context),
+                                  overflow: TextOverflow.clip,
+                                  maxLines: 2,
+                                  style: const TextStyle(
+                                    fontSize: Dimens.fontSizeNormal,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                              .toList(),
+                        ),
+                      ),
                     ),
                   ],
                 ),

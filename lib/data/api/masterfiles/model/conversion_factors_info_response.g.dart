@@ -28,7 +28,7 @@ ConversionFactorInfoResponse _$ConversionFactorInfoResponseFromJson(
     ConversionFactorInfoResponse(
       id: json['id'] as int,
       value: json['value'] as String,
-      data: (json['data'] as List<dynamic>)
+      list: (json['list'] as List<dynamic>)
           .map((e) =>
           ConversionFactorResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -39,14 +39,14 @@ Map<String, dynamic> _$ConversionFactorInfoResponseToJson(
     <String, dynamic>{
       'id': instance.id,
       'value': instance.value,
-      'data': instance.data.map((e) => e.toJson()).toList(),
+      'list': instance.list.map((e) => e.toJson()).toList(),
     };
 
 ConversionFactorResponse _$ConversionFactorResponseFromJson(
     Map<String, dynamic> json) =>
     ConversionFactorResponse(
       g: json['g'] as String,
-      v: json['v'] as int,
+      v: json['v'] as num,
     );
 
 Map<String, dynamic> _$ConversionFactorResponseToJson(

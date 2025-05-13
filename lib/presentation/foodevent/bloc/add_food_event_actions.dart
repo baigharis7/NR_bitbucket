@@ -102,13 +102,13 @@ class FinishFoodWithoutCreateDishEventAction extends AddFoodEventActions {
 }
 
 class UpdateFoodConversionFactor extends AddFoodEventActions {
-  final String conversionFactor;
+  final FoodInEvent foodInEvent;
 
-  UpdateFoodConversionFactor({required this.conversionFactor});
+  UpdateFoodConversionFactor({required this.foodInEvent});
 }
 
 class UpdateOilUsedEventAction extends AddFoodEventActions {
-  final String oilName;
+  final FoodInEvent foodInEvent;
 
-  UpdateOilUsedEventAction({required this.oilName});
+  UpdateOilUsedEventAction({required this.foodInEvent});
 }

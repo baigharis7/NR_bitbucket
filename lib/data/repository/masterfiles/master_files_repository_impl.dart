@@ -1,11 +1,14 @@
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_response.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/foods_and_drinks_names_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/oil_types_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_analysis_entity.dart';
@@ -84,11 +87,11 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
       case MasterFilesType.cookingMethodsInfo:
         return mapToCookingMethodsInfoMaster(masterFileEntity as CookingMethodsInfoEntity);
       case MasterFilesType.oilTypes:
-        return mapToCookingMethodsInfoMaster(masterFileEntity as CookingMethodsInfoEntity);
+        return mapToOilTypesResponse(masterFileEntity as OilTypesEntity);
       case MasterFilesType.conversionFactors:
-        // TODO: Handle this case.
+        return mapToConversionFactorsResponse(masterFileEntity as ConversionFactorsEntity);
       case MasterFilesType.conversionFactorsInfo:
-        // TODO: Handle this case.
+        return mapToConversionFactorsInfoResponse(masterFileEntity as ConversionFactorsInfoEntity);
       case MasterFilesType.foodsAndDrinksNames:
         return mapToFoodsAndDrinksNamesMaster(masterFileEntity as FoodsAndDrinksNamesEntity);
       case MasterFilesType.nutrientsInfo:

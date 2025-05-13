@@ -42,6 +42,8 @@ UploadFoodInFavorite _$UploadFoodInFavoriteFromJson(
       name_es: json['name_es'] as String?,
       qty: json['qty'] as int,
       unit: json['unit'] as int,
+      conversionFactor: json['conversionFactor'] as int?,
+      usedOil: json['usedOil'] as int?,
       cookingMethod: json['cookingMethod'] as int,
       unitsEquivalences: json['unitsEquivalences'] as String?,
     );
@@ -55,5 +57,7 @@ Map<String, dynamic> _$UploadFoodInFavoriteToJson(
       'qty': instance.qty,
       'unit': instance.unit,
       'cookingMethod': instance.cookingMethod,
+      'conversionFactor': instance.conversionFactor,
+      'usedOil': instance.usedOil,
       'unitsEquivalences': instance.unitsEquivalences,
     };

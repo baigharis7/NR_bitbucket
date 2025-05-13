@@ -76,13 +76,15 @@ class FoodInFavoriteEntityAdapter extends TypeAdapter<FoodInFavoriteEntity> {
       unitsEquivalences: fields[4] as String?,
       name_en: fields[5] as String?,
       name_es: fields[6] as String?,
+      conversionFactor: fields[7] as int?,
+      usedOil: fields[8] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, FoodInFavoriteEntity obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -96,7 +98,11 @@ class FoodInFavoriteEntityAdapter extends TypeAdapter<FoodInFavoriteEntity> {
       ..writeByte(5)
       ..write(obj.name_en)
       ..writeByte(6)
-      ..write(obj.name_es);
+      ..write(obj.name_es)
+      ..writeByte(7)
+      ..write(obj.conversionFactor)
+      ..writeByte(8)
+      ..write(obj.usedOil);
   }
 
   @override
@@ -150,6 +156,8 @@ FoodInFavoriteEntity _$FoodInFavoriteEntityFromJson(
       unitsEquivalences: json['unitsEquivalences'] as String?,
       name_en: json['name_en'] as String?,
       name_es: json['name_es'] as String?,
+      conversionFactor: json['conversionFactor'] as int?,
+      usedOil: json['usedOil'] as int?,
     );
 
 Map<String, dynamic> _$FoodInFavoriteEntityToJson(
@@ -162,4 +170,6 @@ Map<String, dynamic> _$FoodInFavoriteEntityToJson(
       'unitsEquivalences': instance.unitsEquivalences,
       'name_en': instance.name_en,
       'name_es': instance.name_es,
+      'conversionFactor': instance.conversionFactor,
+      'usedOil': instance.usedOil,
     };

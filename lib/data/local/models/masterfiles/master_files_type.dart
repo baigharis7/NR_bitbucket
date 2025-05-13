@@ -16,6 +16,9 @@ enum MasterFilesType {
 
 const cookingMethodsBoxName = 'cookingMethodsBoxName';
 const cookingMethodsInfoBoxName = 'cookingMethodsInfoBoxName';
+const oilTypesBoxName = 'oilTypesBoxName';
+const conversionFactorsBoxName = 'conversionFactorsBoxName';
+const conversionFactorsInfoBoxName = 'conversionFactorsInfoBoxName';
 const foodsAndDrinksNamesBoxName = 'foodsAndDrinksNamesBoxName';
 const nutrientsInfoBoxName = 'nutrientsInfoBoxName';
 const objectivesInfoBoxName = 'objectivesInfoBoxName';

@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/translatable.dart';
 
 part 'oil_types_response.g.dart';
 
@@ -14,7 +15,7 @@ class OilTypesResponse {
 }
 
 @JsonSerializable(explicitToJson: true)
-class OilTypeResponse {
+class OilTypeResponse extends Translatable {
   int id;
   String en;
   String es;

@@ -35,6 +35,8 @@ class UploadFoodInFavorite {
   String? name_es;
   int qty;
   int unit;
+  int? conversionFactor;
+  int? usedOil;
   int cookingMethod;
   String? unitsEquivalences;
 
@@ -45,6 +47,8 @@ class UploadFoodInFavorite {
     required this.qty,
     required this.unit,
     required this.cookingMethod,
+    this.conversionFactor,
+    this.usedOil,
     this.unitsEquivalences,
   });
 

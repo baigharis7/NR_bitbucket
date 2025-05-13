@@ -75,6 +75,18 @@ class SetFavFoodFromFavoriteDetailNavigation extends CreateNewFoodFavoriteAction
   SetFavFoodFromFavoriteDetailNavigation({required this.foodFavorite});
 }
 
+class UpdateConversionFactorEventAction extends CreateNewFoodFavoriteActions {
+  final FoodInFavorite foodInFavorite;
+
+  UpdateConversionFactorEventAction({required this.foodInFavorite});
+}
+
+class UpdateUsedOilEventAction extends CreateNewFoodFavoriteActions {
+  final FoodInFavorite foodInFavorite;
+
+  UpdateUsedOilEventAction({required this.foodInFavorite});
+}
+
 class UpdateCreateDishAction extends CreateNewFoodFavoriteActions {}
 
 class FinishFavoriteFoodWithoutCreateDishAction extends CreateNewFoodFavoriteActions {

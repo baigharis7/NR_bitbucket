@@ -35,14 +35,14 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
       _clearData();
       emit(state.copyWith(isLoading: true));
       state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
+      final conFactors  = await getMasterFileInteractor.execute(MasterFilesType.conversionFactors);
+      state.conversionFactors = conFactors;
+      state.oilTypes  = await getMasterFileInteractor.execute(MasterFilesType.oilTypes);
       final a  = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
       state.cookingMethodsInfoMaster = a;
       state.cookingMethodsMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethods);
       state.unitsFoodsMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsFoods);
       state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
-      // state.foodsInFavorite = [];
-      // var weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
-      // addFrequentFromWeek(weeklyFoodEvents.orEmpty(), state.frequentFoodEvents.orEmpty());
       state.frequentFoodEvents = addFrequentFromWeek(await getWeekFoodEventsInteractor.execute());
 
       emit(state.copyWith(isLoading: false, onError: null));
@@ -230,6 +230,24 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
       }
       if (state.foodsInFavorite.orEmpty().isNotEmpty) event.onFinish.call();
     },);
+
+    on<UpdateConversionFactorEventAction>((event, emit) {
+      if (state.foodsInFavorite!.map((food) => food.id).contains((event.foodInFavorite).id)) {
+        final itemIndex = state.foodsInFavorite!.indexOf(state.foodsInFavorite!.firstWhere((food) => food.id == event.foodInFavorite.id));
+        state.foodsInFavorite![itemIndex].conversionFactor = event.foodInFavorite.conversionFactor;
+      }
+
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
+
+    on<UpdateUsedOilEventAction>((event, emit) {
+      if (state.foodsInFavorite!.map((food) => food.id).contains((event.foodInFavorite).id)) {
+        final itemIndex = state.foodsInFavorite!.indexOf(state.foodsInFavorite!.firstWhere((food) => food.id == event.foodInFavorite.id));
+        state.foodsInFavorite![itemIndex].usedOil = event.foodInFavorite.usedOil;
+      }
+
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
   }
 
   _clearData() {

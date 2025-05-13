@@ -15,6 +15,8 @@ import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_sim
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 
+import '../../data/api/masterfiles/model/conversion_factors_response.dart';
+import '../../data/api/masterfiles/model/oil_types_response.dart';
 import '../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../domain/models/profile/height_weight_units.dart';
 import '../lists/SupplementInfo.dart';
@@ -289,6 +291,18 @@ extension LanguageSelector<T> on T {
           return (this as HeightWeightUnits).unitEs.orEmpty();
         } else {
           return (this as HeightWeightUnits).unitEn.orEmpty();
+        }
+      } else if (this is ConversionFactor) {
+        if (language == 'es') {
+          return (this as ConversionFactor).es.orEmpty();
+        } else {
+          return (this as ConversionFactor).en.orEmpty();
+        }
+      } else if (this is OilTypeResponse) {
+        if (language == 'es') {
+          return (this as OilTypeResponse).es.orEmpty();
+        } else {
+          return (this as OilTypeResponse).en.orEmpty();
         }
       }
       else {

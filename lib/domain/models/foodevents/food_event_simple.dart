@@ -25,11 +25,12 @@ class FoodInEvent {
   int id;
   int qty;
   int unit;
-  bool errorFood;
+  int? conversionFactor;
   int cookingMethod;
+  int? usedOil;
   String? unitsEquivalences;
 
-  FoodInEvent({required this.id, required this.qty, required this.unit, this.errorFood = false, required this.cookingMethod, this.unitsEquivalences});
+  FoodInEvent({required this.id, required this.qty, required this.unit, this.conversionFactor, required this.cookingMethod, this.usedOil, this.unitsEquivalences});
 
   factory FoodInEvent.fromJson(Map<String, dynamic> json) => _$FoodInEventFromJson(json);
   Map<String, dynamic> toJson() => _$FoodInEventToJson(this);
