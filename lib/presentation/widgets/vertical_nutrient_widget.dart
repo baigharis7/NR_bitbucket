@@ -13,53 +13,66 @@ class VerticalNutrientWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
+      height: Dimens.heightMedium,
+      width: Dimens.width60,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text('${nutrient.rda} ${nutrient.unit}', style: const TextStyle(color: AppColors.peacockBlue)),
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall, horizontal: Dimens.marginXLarge),
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  Container(
-                    width: 70,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(10)),
-                      color: AppColors.peacockBlue.withOpacity(0.2),
+          Text('${nutrient.rda} ${nutrient.unit}', maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.peacockBlue, fontSize: Dimens.fontSizeXSmall, fontWeight: FontWeight.w600)),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: Dimens.margin6),
+            height: 84,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Container(
+                      width: 31,
+                      height: 84,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        color: AppColors.black,
+                      ),
                     ),
-                  ),
-                  TweenAnimationBuilder<double>(
-                    tween: Tween<double>(begin: 0, end: nutrient.quantityConsumed),
-                    duration: const Duration(seconds: 5),
-                    builder: (context, value, child) {
-                      return Container(
-                        width: 72,
-                        height: (nutrient.quantityConsumed / nutrient.rda) * 200,
-                        alignment: Alignment.center,
-                        decoration: const BoxDecoration(
-                          color: AppColors.peacockBlue,
-                          borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
-                        ),
-                        child: value > 0.1
-                            ? Text(
-                          '${(nutrient.quantityConsumed)} ${nutrient.unit}',
-                          style: const TextStyle(color: Colors.white),
-                        )
-                            : const SizedBox.shrink(),
-                      );
-                    },
-                  ),
-                ],
-              ),
+                    TweenAnimationBuilder<double>(
+                      tween: Tween<double>(begin: 0, end: nutrient.quantityConsumed),
+                      duration: const Duration(seconds: 5),
+                      builder: (context, value, child) {
+                        return Container(
+                          width: 31,
+                          height: (nutrient.quantityConsumed / nutrient.rda) * 150,
+                          // alignment: Alignment.bottomCenter,
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(colors: [AppColors.algaeGreen, AppColors.mediumGreen], begin: Alignment.bottomCenter, end: Alignment.topCenter,),
+                            // gradient: LinearGradient(colors: [AppColors.rose, AppColors.persianRed], begin: Alignment.bottomCenter, end: Alignment.topCenter,),
+                            // color: AppColors.peacockBlue,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${(nutrient.quantityConsumed)}',
+                      style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeXSmall, fontWeight: FontWeight.w600),
+                    ),
+                    // Text(
+                    //   '${nutrient.unit}',
+                    //   style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSize5, fontWeight: FontWeight.w600),
+                    // ),
+                  ],
+                ),
+              ],
             ),
           ),
-          Text(getNutrientName(nutrient.nutrientInfoMaster.translate(context)), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.peacockBlue, decoration: TextDecoration.underline, decorationStyle: TextDecorationStyle.solid, decorationThickness: 2,)),
+          Text(getNutrientName(nutrient.nutrientInfoMaster.translate(context)).toUpperCase(), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.peacockBlue, decoration: TextDecoration.underline, decorationStyle: TextDecorationStyle.solid, decorationThickness: 2,)),
         ],
       ),
     );

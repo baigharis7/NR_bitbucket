@@ -20,6 +20,7 @@ import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_act
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
 import 'package:nutrenaissance_flutter/presentation/energy_balance_detail/view/energy_balance_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/view/liquid_summary_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
@@ -33,21 +34,27 @@ import 'package:nutrenaissance_flutter/presentation/widgets/dashboard_calendar_w
 import 'package:nutrenaissance_flutter/presentation/widgets/energy_balance_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/liquids_summary_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/meal_time_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/meal_time_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/micro_nutrients_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/row_sugar_fiber.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/sugar_intake_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/swith_with_function_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/vertical_nutrient_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/water_intake_wigdet.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/water_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/week_calendar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_rda_nutrients_dashboard_widget.dart';
 
 import '../../../infrastructure/utils/constants.dart';
 import '../../../infrastructure/utils/string_utils.dart';
+import '../../fecesurine/view/feces_urine_tab_holder.dart';
 import '../../fiber_detail/view/fiber_detail_Screen.dart';
 import '../../login/view/login_screen.dart';
 import '../../widgets/NutrientDetailWidget.dart';
 import '../../widgets/ani_nutri_progress_bar_widget.dart';
+import '../../widgets/dash_title_widget.dart';
 import '../../widgets/data_bottom_sheet_widget.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:upgrader/upgrader.dart';
@@ -177,6 +184,7 @@ class _DashboardScreen extends State<DashboardScreen>
                   backgroundColor: Colors.transparent,
                 extendBodyBehindAppBar: true,
                 appBar: AppBar(
+                  elevation: 0.0,
                   title: Row(
                     children: [
                       Text(
@@ -218,10 +226,6 @@ class _DashboardScreen extends State<DashboardScreen>
                       ),
                     ),
                   ],
-                  bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(Dimens.heightNormal),
-                    child: WeekCalendarWidget(callGetAllEvents: (day) => bloc.getEventsForDay(day)),
-                  ),
                 ),
                 body: Container(
                   decoration: const BoxDecoration(
@@ -235,7 +239,9 @@ class _DashboardScreen extends State<DashboardScreen>
                       child: Stack(
                         children: [
                           Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              WeekCalendarWidget(callGetAllEvents: (day) => bloc.getEventsForDay(day)),
                               if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
                                   title: AppLocalizations.of(context)!.menstruation,
                                   currentState: state.isMenstruation ?? false,
@@ -283,43 +289,34 @@ class _DashboardScreen extends State<DashboardScreen>
                           //   isEmpty: false,
                           //   screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                           // ),
-                          SizedBox(
-                            height: 100,
-                            child: Row(
-                                children: [
-                                  Text(AppLocalizations.of(context)!.micronutrientss, style: const TextStyle(fontSize: Dimens.fontSizeXXLarge, color: Colors.white,),),
-                                  IconButton(onPressed: () {}, icon: const Icon(Icons.info_rounded), color: Colors.white, iconSize: 25,),
-                                ],
-                              ),),
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: Dimens.paddingXLarge),
-                                  color: AppColors.floralWhite,
-                                  child: Row(children: [
-                                    ...state.micronutrients.orEmpty().map((nutrient) => VerticalNutrientWidget(nutrient: nutrient)),
-                                  ],),
-                                ),
-                              ),
+                              MicroNutrientsSection(micronutrients: state.micronutrients.orEmpty()),
                               Container(
-                                margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
+                                margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                                 child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    Expanded(child: RowSugarFiberWidget(title: AppLocalizations.of(context)!.sugar, totalValue: state.sugarAndFiberModel?.requiredSugar ?? 0.0, consumedValue: state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0, totalConsumedValue: state.sugarAndFiberModel?.totalSugarConsumed ?? 0.0,)),
-                                    Expanded(child: RowSugarFiberWidget(title: AppLocalizations.of(context)!.fiber, totalValue: state.sugarAndFiberModel?.requiredFiber ?? 0.0, consumedValue: state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0, totalConsumedValue: state.sugarAndFiberModel?.totalFiberConsumed ?? 0.0,)),
+                                    SugarIntakeWidget(title: AppLocalizations.of(context)!.sugar, backgroundImage: 'assets/images/sugar_background.png', consumed: state.sugarAndFiberModel?.totalSugarConsumed, total: state.sugarAndFiberModel?.requiredSugar),
+                                    SugarIntakeWidget(title: AppLocalizations.of(context)!.fiber, backgroundImage: 'assets/images/fiber_background.png', consumed: state.sugarAndFiberModel?.totalFiberConsumed, total: state.sugarAndFiberModel?.requiredFiber),
                                   ],
                                 ),
                               ),
-                              ...MealTime.getAllMealTimes().map((meal) => MealTimeWidget(name: meal.name.orEmpty(), svg: 'assets/svg/meal_time_${meal.id.orZero()}.svg', desc: '0 de 525 kcal',)),
+                              WaterIntakeWidget(
+                                  totalLitersGoal: (state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035,
+                                  consumedGlasses: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty()) ~/ 0.25,
+                                  onInfoClick: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents),
+                                onAddWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState(dateTime: selectedDateTime)))),
+                              ),
+                              const MealTimeSection(),
                               // WeeklyRDANutrientsDashboardWidget(
                               //   title: AppLocalizations.of(context)!.weekly_nutrients,
                               //   nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,
                               //   isEmpty: false,
                               //   screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                               // ),
-                              MealTimeWidget(name: AppLocalizations.of(context)!.faeces_urine, svg: 'assets/svg/feces_urine.svg', desc: 'No information', iconColor: Colors.white, backgroundColor: AppColors.slate),
-                              MealTimeWidget(name: AppLocalizations.of(context)!.supplements, svg: 'assets/svg/supplement.svg', desc: 'No information', iconColor: Colors.white, backgroundColor: AppColors.slate),
-                              WaterWidget(),
+                              MealTimeWidget(name: AppLocalizations.of(context)!.supplements, svg: 'assets/images/supplement.png', onClick: () {},),
+                              DashTitleWidget(title: AppLocalizations.of(context)!.depositions),
+                              MealTimeWidget(name: AppLocalizations.of(context)!.faeces_urine, svg: 'assets/images/feces_urine.png', onClick: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName), iconColor: Colors.black, backgroundColor: Colors.transparent, backgroundImage: 'assets/images/feces_urine_background.png'),
+                              // WaterWidget(),
                               // SizedBox(
                               //   height: 200,
                               //   child: Row(

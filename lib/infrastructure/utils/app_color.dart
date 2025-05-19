@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 class AppColors {
-  static const mountainMeadow = Color(0xFF26B68B);
+  static const mountainMeadow = Color(0xFF2CA133);
   static const mountainMeadowLight = Color(0xFFDEFCEF);
   static const snow = Color(0xFFFAF9F9);
   static const errorRed = Color(0xFFEF5350);
@@ -21,4 +21,11 @@ class AppColors {
   static const floralWhite = Color(0xDAFAFAF0);
   static const battleshipGrey = Color(0xFF828282);
   static const slate = Color(0xB3496767);
+  static const black = Color(0x1F000000);
+  static const tropicalBlue = Color(0xFFDDE2EF);
+  static const lightBlue = Color(0xFFC8D8EF);
+  static const algaeGreen = Color(0xFF8EE78E);
+  static const mediumGreen = Color(0xFF25B225);
+  static const rose = Color(0xFFE6B1AC);
+  static const persianRed = Color(0xFFCC3E30);
 }

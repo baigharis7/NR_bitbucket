@@ -116,6 +116,8 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
           }
           else if (infoReceived is FoodEventComplete) {
             bloc.add(AddFoodEventFromDetailNavigation(infoReceived));
+          } else if (infoReceived is int) {
+            bloc.add(AddFoodMealTypeEventAction(mealType: infoReceived));
           }
         }
       }

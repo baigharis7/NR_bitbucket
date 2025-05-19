@@ -33,11 +33,13 @@ class Dimens {
   static const margin6XLarge = 300.0;
 
   // Font sizes
+  static const fontSize5 = 5.0;
   static const fontSizeXSmall = 10.0;
   static const fontSizeSmall = 12.0;
   static const fontSizeNormal = 14.0;
   static const fontSizeMedium = 16.0;
   static const fontSizeLarge = 18.0;
+  static const fontSize20 = 20.0;
   static const fontSizeXLarge = 22.0;
   static const fontSizeXXLarge = 24.0;
 
@@ -78,6 +80,7 @@ class Dimens {
   static const width32 = 32.0;
   static const widthSmall = 50.0;
   static const width55 = 55.0;
+  static const width60 = 60.0;
   static const width80 = 80.0;
   static const widthNormal = 100.0;
   static const widthMedium = 150.0;
