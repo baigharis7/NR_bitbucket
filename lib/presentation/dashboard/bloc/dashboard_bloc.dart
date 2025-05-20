@@ -216,7 +216,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               upperLimit: getNutrientUpperLimit(micronutrient),
             ),
       ).toList();
-      state.micronutrients?.sort((a, b) => b.fractionToFill.compareTo(a.fractionToFill),);
+      // state.micronutrients?.sort((a, b) => b.fractionToFill.compareTo(a.fractionToFill),);
       state.macronutrients = ['proteinSci', 'carbsAvailable', 'fatTotal']
           .map(
             (macronutrient) =>
@@ -289,6 +289,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
     on<UpdateMenstruationStateAction>((event, emit) {
       final menstruationId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.MENSTRUATION).id ?? -1;
+      Fluttertoast.showToast(msg: '$menstruationId', toastLength: Toast.LENGTH_LONG, backgroundColor: AppColors.errorRed, textColor: Colors.white);
+      ApiLogger.logResponse('On Menstruation Click', menstruationId, menstruationId.toString());
       if (menstruationId != -1) {
         manageObjectives(menstruationId);
         add(UpdateProfileEventAction(value: event.isMenstruation));
@@ -300,6 +302,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
     on<UpdateColdStateAction>((event, emit) {
       final improveSystemId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.IMPROVE_HUMAN_SYSTEM).id ?? -1;
+      Fluttertoast.showToast(msg: '$improveSystemId', toastLength: Toast.LENGTH_LONG, backgroundColor: AppColors.errorRed, textColor: Colors.white);
+      ApiLogger.logResponse('On Cold Click', improveSystemId, improveSystemId.toString());
       if (improveSystemId != -1) {
         manageObjectives(improveSystemId);
         add(UpdateProfileEventAction(value: event.isCold));
@@ -366,12 +370,15 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
             add(InitializeState());
             // emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {
+            ApiLogger.logResponse('Profile Initialization Local', 300, error.toString());
             emit(state.copyWith(isLoading: false, onError: ErrorTypes.savingProfileError));
           }
         } else {
+          ApiLogger.logResponse('Api not success', 201, userProfileResponse.toJson().toString());
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingProfileError));
         }
       } catch (error) {
+        ApiLogger.logResponse('Api Response', 500, error.toString());
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingProfileError));
       }
     });
@@ -492,7 +499,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   // TODO: review this, dont know if ot's ok, just put it here to fit.
   double getFractionToFillMicros(String micronutrient) {
-    final rdaForUser = getNutrientUpperLimit(micronutrient);
+    final rdaForUser = getNutrientRda(micronutrient);
     double nutrientQuantitySoFar = 0.0;
     for (var foodEvent in state.foodEvents!) {
       for (var food in foodEvent.foodInfo!) {
@@ -500,7 +507,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
     }
 
-    double returnQuantity = nutrientQuantitySoFar / rdaForUser;
+    double returnQuantity = (nutrientQuantitySoFar / rdaForUser).clamp(0.0, 1.0);
     if (returnQuantity > 1) returnQuantity = 1;
     if (returnQuantity < 0) returnQuantity = 0;
     return returnQuantity;
@@ -511,12 +518,12 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
       if (userRda.name == micronutrient) {
         rda = userRda.rda;
-        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
-          rda = (state.profile?.sex == SexType.male) ? 220: 190;
-        }
-        if (userRda.name == Constants.TRYPTOPHAN) {
-          rda = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
-        }
+        // if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
+        //   rda = (state.profile?.sex == SexType.male) ? 220: 190;
+        // }
+        // if (userRda.name == Constants.TRYPTOPHAN) {
+        //   rda = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
+        // }
         break loop;
       }
     }
@@ -530,17 +537,15 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
       if (userRda.name == micronutrient) {
         upperLimit = userRda.upperLimit ?? 0.0;
-        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
-          upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
-        }
-        if (userRda.name == Constants.TRYPTOPHAN) {
-          upperLimit = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
-        }
+        // if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
+        //   upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
+        // }
+        // if (userRda.name == Constants.TRYPTOPHAN) {
+        //   upperLimit = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
+        // }
         break loop;
       }
     }
-
-    // final num = state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
     return upperLimit;
   }
 

@@ -57,7 +57,7 @@ class _MicroNutrientDetailWidgetState extends State<MicroNutrientDetailWidget> {
                       alignment: Alignment.bottomCenter,
                       children: [
                         FillHorizontalBar(
-                            fillColor: widget.nutrientsModel.fractionToFill >= 1 ? AppColors.errorRed : AppColors.mountainMeadow,
+                            fillColor: widget.nutrientsModel.quantityConsumed > widget.nutrientsModel.upperLimit && widget.nutrientsModel.upperLimit > 0 ? AppColors.errorRed : AppColors.mountainMeadow,
                             fractionToFill: widget.nutrientsModel.fractionToFill,
                         backgroundBarColor: AppColors.cardGreen_200),
                         Container(
@@ -78,7 +78,7 @@ class _MicroNutrientDetailWidgetState extends State<MicroNutrientDetailWidget> {
               alignment: Alignment.centerRight,
               margin: const EdgeInsets.only(right: Dimens.marginNormal),
               child: Text(
-                '${widget.nutrientsModel.upperLimit} ${widget.nutrientsModel.unit}',
+                '${widget.nutrientsModel.rda} ${widget.nutrientsModel.unit}',
                 style: const TextStyle(
                   fontSize: Dimens.fontSizeSmall,
                 ),

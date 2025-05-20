@@ -136,7 +136,7 @@ class _JournalScreenState extends State<JournalScreen> {
                                           height: 80,
                                           width: 15,
                                           child: FillVerticalBar(
-                                            fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.todayFoodEvents.orEmpty(), ((state.userProfile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
+                                            fractionToFill: EventsHelper().getWaterFractionToFillFromEvents([], state.todayLiquidEvents.orEmpty(), [], ((state.userProfile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
                                             barColor: Colors.blue,
                                           ),
                                         ),

@@ -98,13 +98,13 @@ class _NutrientsDashboardWidgetState extends State<NutrientsDashboardWidget> {
                                   child: Stack(
                                     alignment: Alignment.bottomCenter,
                                     children: [
-                                    FillHorizontalBar(fillColor: nutrient.fractionToFill >= 1 ? AppColors.errorRed : AppColors.mountainMeadow, backgroundBarColor: AppColors.cardGreen_200, fractionToFill: nutrient.fractionToFill,),
+                                    FillHorizontalBar(fillColor: nutrient.quantityConsumed > nutrient.upperLimit && nutrient.upperLimit > 0 ? AppColors.errorRed : AppColors.mountainMeadow, backgroundBarColor: AppColors.cardGreen_200, fractionToFill: nutrient.fractionToFill,),
                                     Container(
                                       alignment: Alignment.center,
                                       margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
                                       child: Text(textAlign: TextAlign.center,
                                         '${(nutrient.quantityConsumed)} ${nutrient.unit}',
-                                        style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
+                                        style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall)
                                       ),
                                     ),
                                   ],),
@@ -116,7 +116,7 @@ class _NutrientsDashboardWidgetState extends State<NutrientsDashboardWidget> {
                              alignment: Alignment.centerRight,
                              margin: const EdgeInsets.only(right: Dimens.marginNormal),
                              child: Text(
-                               '${nutrient.upperLimit} ${nutrient.unit}',
+                               '${nutrient.rda} ${nutrient.unit}',
                                style: const TextStyle(
                                  fontSize: Dimens.fontSizeSmall,
                                ),

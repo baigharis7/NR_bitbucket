@@ -37,6 +37,7 @@ class JournalFoodScreen extends StatefulWidget {
 }
 
 class _JournalFoodScreenState extends State<JournalFoodScreen> {
+  late JournalFoodBloc bloc;
 
   Function deepEq = const DeepCollectionEquality().equals;
 
@@ -50,7 +51,7 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
       color: const Color.fromARGB(148, 104, 96, 96),
       child: ConfirmationDialog(message: AppLocalizations.of(context)!.favorite_saved),
     ),).then((value) =>
-        Navigator.pop(context),
+        bloc.add(InitializeStateAction()),
     );
   }
 
@@ -90,7 +91,7 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
 
   @override
   void initState() {
-    final bloc = BlocProvider.of<JournalFoodBloc>(context);
+    bloc = BlocProvider.of<JournalFoodBloc>(context);
     bloc.add(InitializeStateAction());
     super.initState();
   }
@@ -168,7 +169,7 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                           context: context,
                           explainingCardId: ExplainingCardRefs.addNewFoodEvent.index,
                           onHideCard: () => bloc.add(HideExplainingCardAction()),
-                          onPressedButton: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName),
+                          onPressedButton: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
                         ),
                         state.todayFoodEvents!.isNotEmpty
                         ? Column(

@@ -83,12 +83,12 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
     loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
       if (userRda.name == micronutrient) {
         upperLimit = userRda.upperLimit ?? 0.0;
-        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
-          upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
-        }
-        if (userRda.name == Constants.TRYPTOPHAN) {
-          upperLimit = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
-        }
+        // if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
+        //   upperLimit = (state.profile?.sex == SexType.male) ? 220: 190;
+        // }
+        // if (userRda.name == Constants.TRYPTOPHAN) {
+        //   upperLimit = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
+        // }
         break loop;
       }
     }
@@ -96,7 +96,7 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
   }
 
   NutrientsWeeklyModel getDataByWeekly(String micronutrient) {
-    final upperLimit = getNutrientUpperLimit(micronutrient);
+    final rda = getNutrientRda(micronutrient);
 
     //WeeklyData
     List<Map<String, dynamic>> weeklyData = [];
@@ -123,17 +123,17 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
               nutrientConsumed + (info.params?.toJson()[micronutrient] ?? 0.0);
         }
       }
-      nutrientConsumed = (nutrientConsumed / upperLimit).clamp(0.0, 1.0);
+      final nutrientConsumedFraction = (nutrientConsumed / rda).clamp(0.0, 1.0);
       weeklyData
-          .add({'day': eventWeekDay, 'nutrientConsumed': nutrientConsumed});
+          .add({'day': eventWeekDay, 'nutrientConsumed': nutrientConsumed, 'nutrientConsumedFraction': nutrientConsumedFraction});
     }
     weeklyData.sort((a, b) => (a['day']!).compareTo(b['day']!));
 
     return NutrientsWeeklyModel(
       nutrientInfoMaster: getNutrientInfo(micronutrient),
       weeklyData: weeklyData,
-      rda: getNutrientRda(micronutrient),
-      upperLimit: upperLimit,
+      rda: rda,
+      upperLimit: getNutrientUpperLimit(micronutrient),
     );
   }
 }

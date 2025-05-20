@@ -38,7 +38,7 @@ class WeeklyNutrientGraphic extends StatelessWidget {
                 ),
               ),
             ),
-            ...data.where((element) => (element.upperLimit ?? 0.0) > 0).map(
+            ...data.map(
               (nutrientItem) {
                 return Column(
                   children: [
@@ -74,7 +74,7 @@ class WeeklyNutrientGraphic extends StatelessWidget {
                                         height: 1,
                                       ),
                                     ),
-                                    Text('${nutrientItem.upperLimit.toString()} ${nutrientItem.nutrientInfoMaster.unit}'),
+                                    Text('${nutrientItem.rda} ${nutrientItem.nutrientInfoMaster.unit}'),
                                   ],
                                 ),
                               ),
@@ -86,14 +86,15 @@ class WeeklyNutrientGraphic extends StatelessWidget {
                                   children: [
                                     ...nutrientItem.weeklyData.map(
                                       (dayDataMap) {
-                                        final fractionFill =
+                                        final nutrientConsumed =
                                             dayDataMap['nutrientConsumed']
                                                 as double;
-                                        color = (fractionFill > 0 &&
-                                                fractionFill < 0.3)
+                                        final upperLimit = (nutrientItem.upperLimit ?? 0);
+                                        color = (nutrientConsumed > upperLimit &&
+                                            nutrientConsumed < upperLimit * 0.03 && upperLimit > 0)
                                             ? AppColors.errorRed
-                                            : (fractionFill > 0.3 &&
-                                                    fractionFill < 0.6)
+                                            : (nutrientConsumed > upperLimit * 0.03 &&
+                                            nutrientConsumed < upperLimit * 0.06 && upperLimit > 0)
                                                 ? AppColors.daffodil
                                                 : AppColors.mountainMeadow;
                                         return Container(
@@ -103,7 +104,7 @@ class WeeklyNutrientGraphic extends StatelessWidget {
                                             height: 70,
                                             child: FillVerticalBar(
                                                 fractionToFill: dayDataMap[
-                                                        'nutrientConsumed']
+                                                        'nutrientConsumedFraction']
                                                     as double,
                                                 barColor: color),
                                           ),

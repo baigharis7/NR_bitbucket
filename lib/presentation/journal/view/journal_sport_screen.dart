@@ -35,6 +35,8 @@ class JournalSportScreen extends StatefulWidget {
 }
 
 class _JournalSportScreenState extends State<JournalSportScreen> {
+  late JournalSportBloc bloc;
+
   Future<void> showAddFavoriteDialog({
     required BuildContext context,
     required Function onFinish,
@@ -61,7 +63,7 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
       color: const Color.fromARGB(148, 104, 96, 96),
       child: ConfirmationDialog(message: AppLocalizations.of(context)!.sport_event_successfully_saved,),
     ),
-    ).then((value) => Navigator.pop(context));
+    ).then((value) => bloc.add(InitializeStateAction()));
   }
 
   Future<void> showUndoFavoriteDialog({
@@ -83,7 +85,7 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
 
   @override
   void initState() {
-    final bloc = BlocProvider.of<JournalSportBloc>(context);
+    bloc = BlocProvider.of<JournalSportBloc>(context);
     bloc.add(InitializeStateAction());
     super.initState();
   }
@@ -159,7 +161,7 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                         context: context,
                         explainingCardId: ExplainingCardRefs.addNewSportEvent.index,
                         onHideCard: () => bloc.add(HideExplainingCardAction()),
-                        onPressedButton: () => Navigator.pushNamed(context, AddSportEventScreen.routeName),
+                        onPressedButton: () => Navigator.pushNamed(context, AddSportEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
                       ),
                       state.todaySportEvents!.isNotEmpty
                           ? Column(
