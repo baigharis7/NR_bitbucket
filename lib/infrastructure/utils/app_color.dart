@@ -28,4 +28,14 @@ class AppColors {
   static const mediumGreen = Color(0xFF25B225);
   static const rose = Color(0xFFE6B1AC);
   static const persianRed = Color(0xFFCC3E30);
+
+
+  // Color Guide
+  static const green = Color(0xFF2CA133);
+  static const lightGreen = Color(0xFF8EE78E);
+  static const mustardYellow = Color(0xFFD1C413);
+  static const red = Color(0xFFF76C5E);
+  static const whit = Color(0xBEFFFFFF);
+  static const greenCyan = Color(0xFF084326);
+  static const bluishGreen = Color(0xFF15A95F);
 }

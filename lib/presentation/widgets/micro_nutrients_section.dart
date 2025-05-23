@@ -24,9 +24,10 @@ class MicroNutrientsSection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: Dimens.paddingXLarge),
           decoration: const BoxDecoration(
             // color: AppColors.lightBlue,
-              gradient: LinearGradient(colors: [AppColors.lightBlue, AppColors.tropicalBlue], begin: Alignment.bottomCenter, end: Alignment.topCenter, stops: [0.0, 0.7],)
+              gradient: LinearGradient(colors: [AppColors.lightBlue, AppColors.tropicalBlue], begin: Alignment.bottomCenter, end: Alignment.topCenter, stops: [0.0, 0.7],),
           ),
           child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
             scrollDirection: Axis.horizontal,
             child: Row(children: [
               ...micronutrients.map((nutrient) => VerticalNutrientWidget(nutrient: nutrient)),

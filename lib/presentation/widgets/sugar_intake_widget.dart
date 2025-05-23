@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
@@ -9,10 +11,12 @@ class SugarIntakeWidget extends StatelessWidget {
   final String? backgroundImage;
   final double? consumed;
   final double? total;
+  final Color? color;
+  final LinearGradient? linearGradient;
   // final int consumed = 25;
   // final int total = 38;
 
-  const SugarIntakeWidget({super.key, required this.title, this.backgroundImage, required this.consumed, required this.total});
+  const SugarIntakeWidget({super.key, required this.title, this.backgroundImage, required this.consumed, required this.total, this.color, this.linearGradient});
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +79,8 @@ class SugarIntakeWidget extends StatelessWidget {
             ),
             circularStrokeCap: CircularStrokeCap.round,
             backgroundColor: Colors.grey.shade500,
-            progressColor: AppColors.mountainMeadow,
+            progressColor: color,
+            linearGradient: linearGradient,
           ),
         ],
       ),

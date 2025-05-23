@@ -3,6 +3,7 @@ import 'package:nutrenaissance_flutter/domain/models/dashboard/energy_model.dart
 import 'package:nutrenaissance_flutter/domain/models/dashboard/nutrients_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/ingested_spent_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -23,7 +24,11 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final double remaining = double.parse((widget.energyModel!.totalKcal - widget.energyModel!.rawKcalTaken + widget.energyModel!.spentKcal).toString());
+    final double totalConsumed = double.parse((widget.energyModel!.rawKcalTaken - widget.energyModel!.spentKcal).toString());
+    final double remaining = double.parse((widget.energyModel!.totalKcal - totalConsumed).toString());
+    final double percent = (totalConsumed / widget.energyModel!.totalKcal.orZero());
+    final double percentage = percent * 100;
+    final colors = (percentage >= Constants.PERCENTAGE_110 && percentage <= Constants.PERCENTAGE_115) ? AppColors.mustardYellow : percentage > Constants.PERCENTAGE_115 ? AppColors.red : AppColors.mountainMeadow;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Card(
@@ -47,11 +52,11 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                           animation: true,
                           animationDuration: 5000,
                           lineWidth: Dimens.width18,
-                          percent: remaining / widget.energyModel!.totalKcal.orZero(),
+                          percent: percent.clamp(0.0, 1.0),
                           center: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text('${remaining.toInt()}',
+                              Text('${remaining.clamp(0, widget.energyModel!.totalKcal * 1).toInt()}',
                                   style: const TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold)),
                               Text(AppLocalizations.of(context)!.kcal_remaining,
                                   style: const TextStyle(fontSize: 12, color: Colors.white70)),
@@ -60,7 +65,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                             ],
                           ),
                           circularStrokeCap: CircularStrokeCap.round,
-                          progressColor: AppColors.mountainMeadow,
+                          progressColor: colors,
                           backgroundColor: Colors.white10,
                           curve: Curves.linear,
                         ),
@@ -72,11 +77,21 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
               ),
               Row(
                 children: [
-                  ...widget.nutrientsList.map((nutrient) =>
-                      Expanded(
-                          child: NutrientElementWidget(label: nutrient.nutrientInfoMaster.translate(context), current: nutrient.quantityConsumed, goal: nutrient.rda.toDouble(), unit: nutrient.unit.orEmpty())
-                        ,)
-                    ,),
+                  ...widget.nutrientsList.map((nutrient) {
+                    final double percent = (nutrient.quantityConsumed / nutrient.rda);
+                    final double percentage = percent * 100;
+                    final color = (percentage >= Constants.PERCENTAGE_110 && percentage <= Constants.PERCENTAGE_115) ? AppColors.mustardYellow : percentage > Constants.PERCENTAGE_115 ? AppColors.red : AppColors.mountainMeadow;
+                    return Expanded(
+                      child: NutrientElementWidget(
+                        label: nutrient.nutrientInfoMaster.translate(context),
+                        current: nutrient.quantityConsumed,
+                        goal: nutrient.rda.toDouble(),
+                        unit: nutrient.unit.orEmpty(),
+                        progressColor: color,
+                      )
+                      ,);
+                  },
+                  ),
                 ],
               ),
             ],

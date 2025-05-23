@@ -10,7 +10,8 @@ class AnimatedNutrientProgressBarWidget extends StatelessWidget {
   final double? width;
   final String? title;
   final double percent;
-  const AnimatedNutrientProgressBarWidget({super.key, this.height, this.width, this.title, required this.percent});
+  final Color? color;
+  const AnimatedNutrientProgressBarWidget({super.key, this.height, this.width, this.title, required this.percent, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +35,13 @@ class AnimatedNutrientProgressBarWidget extends StatelessWidget {
             ),
             TweenAnimationBuilder<double>(
                 tween: Tween(begin: 0, end: progressFromPercent),
-                duration: const Duration(seconds: 2),
+                duration: const Duration(seconds: 4),
                 builder: (context, value, child) => Container(
                   width: value,
                   height: height ?? Dimens.height15,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge)),
-                    color: AppColors.mountainMeadow,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(Dimens.borderXLarge)),
+                    color: color ?? AppColors.mountainMeadow,
                   ),),
             ),
           ],

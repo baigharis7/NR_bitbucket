@@ -1,6 +1,8 @@
 class Dimens {
   static const zero = 0.0;
   // Padding
+  static const padding4 = 4.0;
+  static const padding6 = 6.0;
   static const paddingSmall = 8.0;
   static const paddingNormal = 12.0;
   static const paddingLarge = 16.0;
@@ -27,8 +29,10 @@ class Dimens {
   static const marginXLarge = 24.0;
   static const marginXXLarge = 30.0;
   static const marginXXXLarge = 50.0;
+  static const margin56 = 56.0;
   static const margin_60 = 60.0;
   static const marginXXXXLarge = 100.0;
+  static const margin156 = 156.0;
   static const margin5XLarge = 200.0;
   static const margin6XLarge = 300.0;
 

@@ -12,9 +12,11 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/methods_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/presentation/common/view/floating_menu_controller.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_bloc.dart';
@@ -74,12 +76,19 @@ class _DashboardScreen extends State<DashboardScreen>
   // StepCount? _stepCountValue;
   DateTime? selectedDateTime;
   late DashboardBloc bloc;
+  bool isOpen = false;
+  late AnimationController _controller;
+  late Animation<double> _animation;
 
   @override
   void initState() {
     bloc = BlocProvider.of<DashboardBloc>(context);
     bloc.state.isShowDialog = false;
     bloc.add(InitializeState());
+
+
+    _controller = AnimationController(duration: Duration(milliseconds: 250), vsync: this);
+    _animation = Tween<double>(begin: 0.0, end: 0.5).animate(_controller);
 
     // RequestPermissionManager(PermissionType.activityRecognition)
     //     .onPermissionDenied(() {
@@ -97,6 +106,28 @@ class _DashboardScreen extends State<DashboardScreen>
     // }).execute();
 
     super.initState();
+  }
+
+  void toggleMenu() {
+    setState(() {
+      isOpen = !isOpen;
+      if (isOpen) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    });
+  }
+
+  List<Map<String, dynamic>> getMenuItems(BuildContext context) {
+    final List<Map<String, dynamic>> menuItems = [
+      ...MealTime.getAllMealTimes().map((e) => {'label': e.name, 'id': e.id, 'icon': 'assets/images/meal_time_${e.id.orZero()}.png', 'onTap': () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: e.id)}),
+      // {'label': 'Actividad física', 'icon': Icons.fitness_center},
+      {'label': AppLocalizations.of(context)!.faeces_urine, 'icon': 'assets/images/feces_urine.png', 'onTap': () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName)},
+      {'label': AppLocalizations.of(context)!.supplements, 'icon': 'assets/images/supplement.png', 'onTap': () {}},
+    ];
+
+    return menuItems;
   }
 
   Future<void> _updateDataDialog({required Function onUpdateClick}) async {
@@ -236,262 +267,263 @@ class _DashboardScreen extends State<DashboardScreen>
                   ),
                   child: SafeArea(
                     child: SingleChildScrollView(
-                      child: Stack(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              WeekCalendarWidget(callGetAllEvents: (day) => bloc.getEventsForDay(day)),
-                              if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
-                                  title: AppLocalizations.of(context)!.menstruation,
-                                  currentState: state.isMenstruation ?? false,
-                                  onStateChange: (value) => bloc.add(UpdateMenstruationStateAction(isMenstruation: value)),
-                              ),
-                              SwitchDashboardWidget(
-                                title: AppLocalizations.of(context)!.cold,
-                                currentState: state.isCold ?? false,
-                                onStateChange: (value) => bloc.add(UpdateColdStateAction(isCold: value)),
-                              ),
-                              SizedBox(height: Dimens.heightXXLarge, child: NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(),)),
-                          // if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
-                          //     title: AppLocalizations.of(context)!.menstruation,
-                          //     currentState: state.isMenstruation ?? false,
-                          //     onStateChange: (value) => bloc.add(UpdateMenstruationStateAction(isMenstruation: value)),
-                          // ),
-                          // SwitchDashboardWidget(
-                          //   title: AppLocalizations.of(context)!.cold,
-                          //   currentState: state.isCold ?? false,
-                          //   onStateChange: (value) => bloc.add(UpdateColdStateAction(isCold: value)),
-                          // ),
-                          // EnergyBalanceWidget(
-                          //   energyModel: state.energyModel,
-                          //   screenToMove: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: state.energyModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
-                          // ),
-                          // ExpandableWidget(
-                          //     titleClick: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
-                          //     title: AppLocalizations.of(context)!.micronutrients, nutrientsList: state.micronutrients.orEmpty()),
-                          // NutrientsDashboardWidget(
-                          //   title: AppLocalizations.of(context)!.micronutrients,
-                          //   nutrients: state.micronutrients.orEmpty().where((element) => element.upperLimit > 0).toList(),
-                          //   isEmpty: false,
-                          //   screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
-                          // ),
+                          WeekCalendarWidget(callGetAllEvents: (day) => bloc.getEventsForDay(day)),
+                          if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
+                              title: AppLocalizations.of(context)!.menstruation,
+                              currentState: state.isMenstruation ?? false,
+                              onStateChange: (value) => bloc.add(UpdateMenstruationStateAction(isMenstruation: value)),
+                          ),
+                          SwitchDashboardWidget(
+                            title: AppLocalizations.of(context)!.cold,
+                            currentState: state.isCold ?? false,
+                            onStateChange: (value) => bloc.add(UpdateColdStateAction(isCold: value)),
+                          ),
+                          SizedBox(height: Dimens.heightXXLarge, child: NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(),)),
+                      // if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
+                      //     title: AppLocalizations.of(context)!.menstruation,
+                      //     currentState: state.isMenstruation ?? false,
+                      //     onStateChange: (value) => bloc.add(UpdateMenstruationStateAction(isMenstruation: value)),
+                      // ),
+                      // SwitchDashboardWidget(
+                      //   title: AppLocalizations.of(context)!.cold,
+                      //   currentState: state.isCold ?? false,
+                      //   onStateChange: (value) => bloc.add(UpdateColdStateAction(isCold: value)),
+                      // ),
+                      // EnergyBalanceWidget(
+                      //   energyModel: state.energyModel,
+                      //   screenToMove: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: state.energyModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                      // ),
+                      // ExpandableWidget(
+                      //     titleClick: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
+                      //     title: AppLocalizations.of(context)!.micronutrients, nutrientsList: state.micronutrients.orEmpty()),
+                      // NutrientsDashboardWidget(
+                      //   title: AppLocalizations.of(context)!.micronutrients,
+                      //   nutrients: state.micronutrients.orEmpty().where((element) => element.upperLimit > 0).toList(),
+                      //   isEmpty: false,
+                      //   screenToMove: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: state.micronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime,))),
+                      // ),
+                      // WeeklyRDANutrientsDashboardWidget(
+                      //   title: AppLocalizations.of(context)!.weekly_nutrients,
+                      //   nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,
+                      //   isEmpty: false,
+                      //   screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                      // ),
+                      // NutrientsDashboardWidget(
+                      //   title: AppLocalizations.of(context)!.macronutrients,
+                      //   nutrients: state.macronutrients.orEmpty(),
+                      //   // isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
+                      //   isEmpty: false,
+                      //   screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                      // ),
+                          MicroNutrientsSection(micronutrients: state.micronutrients.orEmpty()),
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                SugarIntakeWidget(
+                                    title: AppLocalizations.of(context)!.sugar,
+                                    backgroundImage: 'assets/images/sugar_background.png',
+                                    consumed: state.sugarAndFiberModel?.totalSugarConsumed,
+                                    total: state.sugarAndFiberModel?.requiredSugar,
+                                    linearGradient: MethodsHelper.getSugarLinearGradient(consumed: state.sugarAndFiberModel?.totalSugarConsumed, total: state.sugarAndFiberModel?.requiredSugar)),
+                                SugarIntakeWidget(title: AppLocalizations.of(context)!.fiber, backgroundImage: 'assets/images/fiber_background.png', consumed: state.sugarAndFiberModel?.totalFiberConsumed, total: state.sugarAndFiberModel?.requiredFiber, color: MethodsHelper.getAverageInPercentage(consumed: state.sugarAndFiberModel?.totalFiberConsumed, total: state.sugarAndFiberModel?.requiredFiber) < 70 ? AppColors.mountainMeadow : AppColors.red),
+                              ],
+                            ),
+                          ),
+                          WaterIntakeWidget(
+                              totalLitersGoal: (state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035,
+                              consumedGlasses: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty()) ~/ 0.25,
+                              onInfoClick: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                            onAddWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () {})),
+                          ),
+                          MealTimeSection(foodEvents: state.foodEvents.orEmpty(), totalKcal: state.userKcal.orZero()),
                           // WeeklyRDANutrientsDashboardWidget(
                           //   title: AppLocalizations.of(context)!.weekly_nutrients,
                           //   nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,
                           //   isEmpty: false,
                           //   screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                           // ),
-                          // NutrientsDashboardWidget(
-                          //   title: AppLocalizations.of(context)!.macronutrients,
-                          //   nutrients: state.macronutrients.orEmpty(),
-                          //   // isEmpty: state.foodEvents.isNull() ? true : state.foodEvents!.isEmpty,
-                          //   isEmpty: false,
-                          //   screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                          MealTimeWidget(name: AppLocalizations.of(context)!.supplements, svg: 'assets/images/supplement.png', onClick: () {},),
+                          DashTitleWidget(title: AppLocalizations.of(context)!.depositions),
+                          MealTimeWidget(name: AppLocalizations.of(context)!.faeces_urine, svg: 'assets/images/feces_urine.png', onClick: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName), iconColor: Colors.black, backgroundColor: Colors.transparent, backgroundImage: 'assets/images/feces_urine_background.png'),
+                          // WaterWidget(),
+                          // SizedBox(
+                          //   height: 200,
+                          //   child: Row(
+                          //       children: [
+                          //         Expanded(
+                          //           flex: 1,
+                          //           child: LiquidSummaryWidget(
+                          //             quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty()),
+                          //             fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty(), ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
+                          //             totalWater: ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035).toStringAsFixed(2),
+                          //             onReloadData: () { /*bloc.add(ReloadWaterInfoAction());*/ },
+                          //             screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                          //             addWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState(dateTime: selectedDateTime)))),
+                          //             removeWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState(dateTime: selectedDateTime)))),
+                          //           ),
+                          //         ),
+                          //         Expanded(
+                          //           flex: 1,
+                          //           child: Stack(
+                          //             children: [
+                          //               Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0,), color: Colors.black,), child: Center(child: Text(AppLocalizations.of(context)!.coming_soon, style: const TextStyle(color: Colors.white),),)),
+                          //               Opacity(
+                          //                 opacity: 0.4,
+                          //                 child: Card(
+                          //                   child: Column(
+                          //                     children: [
+                          //                       Container(
+                          //                         margin: const EdgeInsets.only(left: Dimens.marginNormal),
+                          //                         alignment: Alignment.centerLeft,
+                          //                         child: Row(
+                          //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //                           children: [
+                          //                             Text(
+                          //                               AppLocalizations.of(context)!.steps,
+                          //                               style: const TextStyle(
+                          //                                 fontSize: Dimens.fontSizeNormal,
+                          //                                 color: Colors.black,
+                          //                                 fontWeight: FontWeight.bold,
+                          //                               ),
+                          //                             ),
+                          //                             Container(
+                          //                               alignment: Alignment.centerRight,
+                          //                               child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                          //                             ),
+                          //                           ],
+                          //                         ),
+                          //                       ),
+                          //                       Container(
+                          //                         height: 80,
+                          //                         decoration: const BoxDecoration(
+                          //                           shape: BoxShape.circle,
+                          //                           color: Colors.grey,
+                          //                         ),
+                          //                         child: const Center(child: Text('0'),),
+                          //                       ),
+                          //                       Container(
+                          //                         margin: const EdgeInsets.only(top: Dimens.marginNormal),
+                          //                         child: const Row(
+                          //                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          //                           children: [
+                          //                             Text(' Km'),
+                          //                             Text('98 min'),
+                          //                           ],
+                          //                         ),
+                          //                       ),
+                          //                       // Text('${_stepCountValue}'),
+                          //                     ],
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //             ],
+                          //           ),
+                          //         ),
+                          //       ],
+                          //   ),
                           // ),
-                              MicroNutrientsSection(micronutrients: state.micronutrients.orEmpty()),
-                              Container(
-                                margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    SugarIntakeWidget(title: AppLocalizations.of(context)!.sugar, backgroundImage: 'assets/images/sugar_background.png', consumed: state.sugarAndFiberModel?.totalSugarConsumed, total: state.sugarAndFiberModel?.requiredSugar),
-                                    SugarIntakeWidget(title: AppLocalizations.of(context)!.fiber, backgroundImage: 'assets/images/fiber_background.png', consumed: state.sugarAndFiberModel?.totalFiberConsumed, total: state.sugarAndFiberModel?.requiredFiber),
-                                  ],
-                                ),
-                              ),
-                              WaterIntakeWidget(
-                                  totalLitersGoal: (state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035,
-                                  consumedGlasses: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty()) ~/ 0.25,
-                                  onInfoClick: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents),
-                                onAddWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState(dateTime: selectedDateTime)))),
-                              ),
-                              const MealTimeSection(),
-                              // WeeklyRDANutrientsDashboardWidget(
-                              //   title: AppLocalizations.of(context)!.weekly_nutrients,
-                              //   nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,
-                              //   isEmpty: false,
-                              //   screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
-                              // ),
-                              MealTimeWidget(name: AppLocalizations.of(context)!.supplements, svg: 'assets/images/supplement.png', onClick: () {},),
-                              DashTitleWidget(title: AppLocalizations.of(context)!.depositions),
-                              MealTimeWidget(name: AppLocalizations.of(context)!.faeces_urine, svg: 'assets/images/feces_urine.png', onClick: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName), iconColor: Colors.black, backgroundColor: Colors.transparent, backgroundImage: 'assets/images/feces_urine_background.png'),
-                              // WaterWidget(),
-                              // SizedBox(
-                              //   height: 200,
-                              //   child: Row(
-                              //       children: [
-                              //         Expanded(
-                              //           flex: 1,
-                              //           child: LiquidSummaryWidget(
-                              //             quantityTaken: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty()),
-                              //             fractionToFill: EventsHelper().getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty(), ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
-                              //             totalWater: ((state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035).toStringAsFixed(2),
-                              //             onReloadData: () { /*bloc.add(ReloadWaterInfoAction());*/ },
-                              //             screenToMove: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
-                              //             addWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState(dateTime: selectedDateTime)))),
-                              //             removeWaterCall: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () => bloc.add(InitializeState(dateTime: selectedDateTime)))),
-                              //           ),
-                              //         ),
-                              //         Expanded(
-                              //           flex: 1,
-                              //           child: Stack(
-                              //             children: [
-                              //               Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0,), color: Colors.black,), child: Center(child: Text(AppLocalizations.of(context)!.coming_soon, style: const TextStyle(color: Colors.white),),)),
-                              //               Opacity(
-                              //                 opacity: 0.4,
-                              //                 child: Card(
-                              //                   child: Column(
-                              //                     children: [
-                              //                       Container(
-                              //                         margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                              //                         alignment: Alignment.centerLeft,
-                              //                         child: Row(
-                              //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              //                           children: [
-                              //                             Text(
-                              //                               AppLocalizations.of(context)!.steps,
-                              //                               style: const TextStyle(
-                              //                                 fontSize: Dimens.fontSizeNormal,
-                              //                                 color: Colors.black,
-                              //                                 fontWeight: FontWeight.bold,
-                              //                               ),
-                              //                             ),
-                              //                             Container(
-                              //                               alignment: Alignment.centerRight,
-                              //                               child: IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
-                              //                             ),
-                              //                           ],
-                              //                         ),
-                              //                       ),
-                              //                       Container(
-                              //                         height: 80,
-                              //                         decoration: const BoxDecoration(
-                              //                           shape: BoxShape.circle,
-                              //                           color: Colors.grey,
-                              //                         ),
-                              //                         child: const Center(child: Text('0'),),
-                              //                       ),
-                              //                       Container(
-                              //                         margin: const EdgeInsets.only(top: Dimens.marginNormal),
-                              //                         child: const Row(
-                              //                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              //                           children: [
-                              //                             Text(' Km'),
-                              //                             Text('98 min'),
-                              //                           ],
-                              //                         ),
-                              //                       ),
-                              //                       // Text('${_stepCountValue}'),
-                              //                     ],
-                              //                   ),
-                              //                 ),
-                              //               ),
-                              //             ],
-                              //           ),
-                              //         ),
-                              //       ],
-                              //   ),
-                              // ),
-                              // Card(
-                              //   child: Column(
-                              //     children: [
-                              //       Row(
-                              //         children: [
-                              //           Expanded(
-                              //             child: Container(
-                              //               alignment: Alignment.centerLeft,
-                              //               margin: const EdgeInsets.all(Dimens.marginNormal),
-                              //               child: Text(
-                              //                 AppLocalizations.of(context)!.sugar,
-                              //                 style: const TextStyle(fontWeight: FontWeight.bold),
-                              //               ),
-                              //             ),
-                              //           ),
-                              //           IconButton(onPressed: () => Navigator.pushNamed(context, SugarDetailScreen.routeName, arguments: state.sugarAndFiberModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
-                              //         ],
-                              //       ),
-                              //       Container(
-                              //         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                              //         child: Stack(
-                              //           alignment: Alignment.bottomCenter,
-                              //           children: [
-                              //           FillHorizontalBar(fillColor: (state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0) >= 1.0 ? AppColors.errorRed : AppColors.mountainMeadow, fractionToFill: state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
-                              //           Container(
-                              //             alignment: Alignment.center,
-                              //             margin: const EdgeInsets.only(top: Dimens.marginXSmall),
-                              //             child: Text(
-                              //                 '${state.sugarAndFiberModel?.totalSugarConsumed ?? 0.0}',
-                              //               style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
-                              //             ),
-                              //           ),
-                              //         ],),
-                              //       ),
-                              //       Container(
-                              //         margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
-                              //         alignment: Alignment.centerRight,
-                              //         child: Text(
-                              //           (state.sugarAndFiberModel?.requiredSugar.toString() ?? '0').appendGram(),
-                              //           style: const TextStyle(fontSize: Dimens.fontSizeSmall),
-                              //         ),
-                              //       )
-                              //     ],
-                              //   ),
-                              // ),
-                              // Card(
-                              //   child: Column(
-                              //     children: [
-                              //       Row(
-                              //         children: [
-                              //           Expanded(
-                              //             child: Container(
-                              //               alignment: Alignment.centerLeft,
-                              //               margin: const EdgeInsets.all(Dimens.marginNormal),
-                              //               child: Text(
-                              //                 AppLocalizations.of(context)!.fiber,
-                              //                 style: const TextStyle(fontWeight: FontWeight.bold),
-                              //               ),
-                              //             ),
-                              //           ),
-                              //           IconButton(onPressed: () => Navigator.pushNamed(context, FiberDetailScreen.routeName, arguments: state.sugarAndFiberModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
-                              //         ],
-                              //       ),
-                              //       Container(
-                              //         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                              //         child: Stack(
-                              //           alignment: Alignment.bottomCenter,
-                              //           children: [
-                              //           FillHorizontalBar(fillColor: (state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0) >= 1.0 ? AppColors.errorRed : AppColors.mountainMeadow, fractionToFill: state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
-                              //           Container(
-                              //             alignment: Alignment.center,
-                              //             margin: const EdgeInsets.only(top: Dimens.marginXSmall),
-                              //             child: Text(
-                              //               '${state.sugarAndFiberModel?.totalFiberConsumed ?? 0.0}',
-                              //               style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
-                              //             ),
-                              //           ),
-                              //         ],),
-                              //       ),
-                              //       Container(
-                              //         margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
-                              //         alignment: Alignment.centerRight,
-                              //         child: Text(
-                              //           (state.sugarAndFiberModel?.requiredFiber.toString() ?? '0').appendGram(),
-                              //           style: const TextStyle(fontSize: Dimens.fontSizeSmall),
-                              //         ),
-                              //       ),
-                              //     ],
-                              //   ),
-                              // ),
-                              // if  (state.profile?.objectives?.any((element) => element ==  Constants.IMPROVE_SPORT_PERFORMANCE || element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) CardWidget(title: AppLocalizations.of(context)!.supplements,
-                              //     // children: state.supplements.orEmpty().map((creatine) => NutrientDetailWidget(todayCreatine: creatine, onMinusClick: (supplement) {}, onPlusClick: (supplement) {}),).toList()),
-                              //     children: [
-                              //       if  (state.profile?.objectives?.any((element) => element ==  Constants.IMPROVE_SPORT_PERFORMANCE || element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) NutrientDetailWidget(todayCreatine: state.todayCreatineSupplement, onMinusClick: (supplement) => bloc.add(UploadCreatineEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCreatineEventAction(value: 2, supplementInfo: supplement,))),
-                              //       if  (state.profile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) NutrientDetailWidget(todayCreatine: state.todayCollagenSupplement, onMinusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: 2, supplementInfo: supplement,))),
-                              //     ],
-                              // ),
-                            ],
-                          ),
+                          // Card(
+                          //   child: Column(
+                          //     children: [
+                          //       Row(
+                          //         children: [
+                          //           Expanded(
+                          //             child: Container(
+                          //               alignment: Alignment.centerLeft,
+                          //               margin: const EdgeInsets.all(Dimens.marginNormal),
+                          //               child: Text(
+                          //                 AppLocalizations.of(context)!.sugar,
+                          //                 style: const TextStyle(fontWeight: FontWeight.bold),
+                          //               ),
+                          //             ),
+                          //           ),
+                          //           IconButton(onPressed: () => Navigator.pushNamed(context, SugarDetailScreen.routeName, arguments: state.sugarAndFiberModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                          //         ],
+                          //       ),
+                          //       Container(
+                          //         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                          //         child: Stack(
+                          //           alignment: Alignment.bottomCenter,
+                          //           children: [
+                          //           FillHorizontalBar(fillColor: (state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0) >= 1.0 ? AppColors.errorRed : AppColors.mountainMeadow, fractionToFill: state.sugarAndFiberModel?.fractionToFillSugar ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
+                          //           Container(
+                          //             alignment: Alignment.center,
+                          //             margin: const EdgeInsets.only(top: Dimens.marginXSmall),
+                          //             child: Text(
+                          //                 '${state.sugarAndFiberModel?.totalSugarConsumed ?? 0.0}',
+                          //               style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
+                          //             ),
+                          //           ),
+                          //         ],),
+                          //       ),
+                          //       Container(
+                          //         margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
+                          //         alignment: Alignment.centerRight,
+                          //         child: Text(
+                          //           (state.sugarAndFiberModel?.requiredSugar.toString() ?? '0').appendGram(),
+                          //           style: const TextStyle(fontSize: Dimens.fontSizeSmall),
+                          //         ),
+                          //       )
+                          //     ],
+                          //   ),
+                          // ),
+                          // Card(
+                          //   child: Column(
+                          //     children: [
+                          //       Row(
+                          //         children: [
+                          //           Expanded(
+                          //             child: Container(
+                          //               alignment: Alignment.centerLeft,
+                          //               margin: const EdgeInsets.all(Dimens.marginNormal),
+                          //               child: Text(
+                          //                 AppLocalizations.of(context)!.fiber,
+                          //                 style: const TextStyle(fontWeight: FontWeight.bold),
+                          //               ),
+                          //             ),
+                          //           ),
+                          //           IconButton(onPressed: () => Navigator.pushNamed(context, FiberDetailScreen.routeName, arguments: state.sugarAndFiberModel).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), icon: const Icon(Icons.arrow_forward_ios, size: 18,)),
+                          //         ],
+                          //       ),
+                          //       Container(
+                          //         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                          //         child: Stack(
+                          //           alignment: Alignment.bottomCenter,
+                          //           children: [
+                          //           FillHorizontalBar(fillColor: (state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0) >= 1.0 ? AppColors.errorRed : AppColors.mountainMeadow, fractionToFill: state.sugarAndFiberModel?.fractionToFillFiber ?? 0.0, backgroundBarColor: AppColors.cardGreen_200),
+                          //           Container(
+                          //             alignment: Alignment.center,
+                          //             margin: const EdgeInsets.only(top: Dimens.marginXSmall),
+                          //             child: Text(
+                          //               '${state.sugarAndFiberModel?.totalFiberConsumed ?? 0.0}',
+                          //               style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
+                          //             ),
+                          //           ),
+                          //         ],),
+                          //       ),
+                          //       Container(
+                          //         margin: const EdgeInsets.only(top: Dimens.marginSmall, bottom: Dimens.marginNormal),
+                          //         alignment: Alignment.centerRight,
+                          //         child: Text(
+                          //           (state.sugarAndFiberModel?.requiredFiber.toString() ?? '0').appendGram(),
+                          //           style: const TextStyle(fontSize: Dimens.fontSizeSmall),
+                          //         ),
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
+                          // if  (state.profile?.objectives?.any((element) => element ==  Constants.IMPROVE_SPORT_PERFORMANCE || element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) CardWidget(title: AppLocalizations.of(context)!.supplements,
+                          //     // children: state.supplements.orEmpty().map((creatine) => NutrientDetailWidget(todayCreatine: creatine, onMinusClick: (supplement) {}, onPlusClick: (supplement) {}),).toList()),
+                          //     children: [
+                          //       if  (state.profile?.objectives?.any((element) => element ==  Constants.IMPROVE_SPORT_PERFORMANCE || element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) NutrientDetailWidget(todayCreatine: state.todayCreatineSupplement, onMinusClick: (supplement) => bloc.add(UploadCreatineEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCreatineEventAction(value: 2, supplementInfo: supplement,))),
+                          //       if  (state.profile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) NutrientDetailWidget(todayCreatine: state.todayCollagenSupplement, onMinusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: 2, supplementInfo: supplement,))),
+                          //     ],
+                          // ),
                           if (state.showCard != null && state.showCard!) Positioned(
                             top: 100,
                             width: mediaQuerySize.width,
@@ -506,7 +538,21 @@ class _DashboardScreen extends State<DashboardScreen>
                     ),
                   ),
                 ),
-                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD,)
+                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD,),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () => FloatingMenuController().show(context, getMenuItems(context)),
+                  backgroundColor: Colors.transparent,
+                  clipBehavior: Clip.hardEdge,
+                  child: Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    decoration: const BoxDecoration(gradient: LinearGradient(colors: [AppColors.greenCyan, AppColors.bluishGreen], begin: Alignment.bottomCenter, end: Alignment.topCenter, stops: [0.0, 0.7])),
+                    child: RotationTransition(
+                      turns: _animation,
+                      child: const Icon(Icons.add),
+                    ),
+                  ),
+                ),
                 // CustomBottomAppBar(initStateCallback: () => bloc.add(InitializeState())),
                 // resizeToAvoidBottomInset: true,
                 // floatingActionButton: FloatingActionButton(

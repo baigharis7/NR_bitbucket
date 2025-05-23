@@ -46,6 +46,11 @@ class Constants {
   static const TRYPTOPHAN_MG_PER_KG = 3.5;
   static const LOCALE_ES = 'es_ES';
   static const LANGUAGE_ES = 'es';
+  static const PERCENTAGE_0 = 0;
+  static const PERCENTAGE_50 = 50;
+  static const PERCENTAGE_100 = 100;
+  static const PERCENTAGE_110 = 110;
+  static const PERCENTAGE_115 = 115;
 
   //Navigation id's
   static const DASHBOARD = 0;
