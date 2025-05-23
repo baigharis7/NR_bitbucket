@@ -63,6 +63,8 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
       state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
       state.cookingMethodsMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethods);
       state.cookingMethodsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
+      state.oilTypes = await getMasterFileInteractor.execute(MasterFilesType.oilTypes);
+      state.conversionFactors = await getMasterFileInteractor.execute(MasterFilesType.conversionFactors);
       state.unitsFoodsMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsFoods);
       state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
       state.favoriteFoods = await getFoodFavoritesInteractor.execute();

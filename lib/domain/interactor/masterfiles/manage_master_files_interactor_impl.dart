@@ -11,6 +11,9 @@ class ManageMasterFilesInteractorImpl extends ManageMasterFilesInteractor {
   Future<MasterFilesResponse> execute(
       int cookingMethodsInfoVersion,
       int cookingMethodsVersion,
+      int oilTypesVersion,
+      int conversionFactorsVersion,
+      int conversionFactorsInfoVersion,
       int foodsAndDrinksNamesVersion,
       int nutrientsInfoVersion,
       int objectivesInfoVersion,
@@ -23,6 +26,9 @@ class ManageMasterFilesInteractorImpl extends ManageMasterFilesInteractor {
     return masterFilesRepository.manageMasterFiles(
       cookingMethodsVersion,
       cookingMethodsInfoVersion,
+      oilTypesVersion,
+      conversionFactorsVersion,
+      conversionFactorsVersion,
       foodsAndDrinksNamesVersion,
       nutrientsInfoVersion,
       objectivesInfoVersion,

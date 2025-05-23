@@ -507,6 +507,9 @@ class LoginBloc extends BaseBloc<LoginActions, LoginState> {
         block: () async => await manageMasterFilesInteractor.execute(
           await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethods),
           await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethodsInfo),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.oilTypes),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.conversionFactors),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.conversionFactorsInfo),
           await getMasterFilesVersionInteractor.execute(MasterFilesType.foodsAndDrinksNames),
           await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo),
           await getMasterFilesVersionInteractor.execute(MasterFilesType.objectivesInfo),

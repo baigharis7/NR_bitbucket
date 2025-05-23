@@ -33,6 +33,8 @@ class FoodInFavorite extends Translatable {
   String name_es;
   int qty;
   int unit;
+  int? conversionFactor;
+  int? usedOil;
   int cookingMethod;
   String? unitsEquivalences;
 
@@ -42,6 +44,8 @@ class FoodInFavorite extends Translatable {
     required this.name_es,
     required this.qty,
     required this.unit,
+    this.conversionFactor,
+    this.usedOil,
     required this.cookingMethod,
     this.unitsEquivalences,
   });

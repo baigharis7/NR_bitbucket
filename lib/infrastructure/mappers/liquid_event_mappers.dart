@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:nutrenaissance_flutter/data/api/liquidevents/model/upload_liquid_event.dart' as upload;
 import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_event_entity.dart' as entity;
 import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_complete.dart' as domain;
@@ -281,6 +283,7 @@ domain.LiquidEventComplete mapToLiquidEventComplete(entity.LiquidEventEntity liq
       liquidInfoFromEntity.eventInfo!.cookingMethod,
       liquidInfoFromEntity.eventInfo!.qty,
       liquidInfoFromEntity.eventInfo!.unit,
+      null, null,
       liquidInfoFromEntity.eventInfo!.waste,
     );
     final foodInfo = FoodInfo(

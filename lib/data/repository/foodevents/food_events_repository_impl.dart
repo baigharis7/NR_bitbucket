@@ -31,7 +31,9 @@ class FoodEventsRepositoryImpl extends FoodEventsRepository {
                 ingredient.unitsEquivalences.orEmpty(),
             ),
             unit: ingredient.unit,
+            conversionFactor: ingredient.conversionFactor,
             cookingMethod: ingredient.cookingMethod,
+          usedOil: ingredient.usedOil,
         ),
     );
 

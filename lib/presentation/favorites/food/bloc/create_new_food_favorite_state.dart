@@ -1,3 +1,5 @@
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/conversion_factors_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/oil_types_response.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_master.dart';
@@ -15,8 +17,10 @@ class CreateNewFoodFavoriteState {
   bool? isEdit;
   FoodsAndDrinksNamesMaster? foodNames;
   List<FoodInFavorite>? foodsInFavorite;
+  ConversionFactorsResponse? conversionFactors;
   CookingMethodsMaster? cookingMethodsMaster;
   CookingMethodsInfoMaster? cookingMethodsInfoMaster;
+  OilTypesResponse? oilTypes;
   UnitsFoodsMaster? unitsFoodsMaster;
   UnitsInfoMaster? unitsInfoMaster;
   String? favoriteName;
@@ -33,8 +37,10 @@ class CreateNewFoodFavoriteState {
     this.isEdit,
     this.foodNames,
     this.foodsInFavorite,
+    this.conversionFactors,
     this.cookingMethodsMaster,
     this.cookingMethodsInfoMaster,
+    this.oilTypes,
     this.unitsFoodsMaster,
     this.unitsInfoMaster,
     this.favoriteName,
@@ -52,8 +58,10 @@ class CreateNewFoodFavoriteState {
     bool? isEdit,
     FoodsAndDrinksNamesMaster? foodNames,
     List<FoodInFavorite>? foodsInFavorite,
+    ConversionFactorsResponse? conversionFactors,
     CookingMethodsMaster? cookingMethodsMaster,
     CookingMethodsInfoMaster? cookingMethodsInfoMaster,
+    OilTypesResponse? oilTypes,
     UnitsFoodsMaster? unitsFoodsMaster,
     UnitsInfoMaster? unitsInfoMaster,
     String? favoriteName,
@@ -72,6 +80,8 @@ class CreateNewFoodFavoriteState {
       foodsInFavorite: foodsInFavorite ?? this.foodsInFavorite,
       cookingMethodsMaster: cookingMethodsMaster ?? this.cookingMethodsMaster,
       cookingMethodsInfoMaster: cookingMethodsInfoMaster ?? this.cookingMethodsInfoMaster,
+      conversionFactors: conversionFactors ?? this.conversionFactors,
+      oilTypes: oilTypes ?? this.oilTypes,
       unitsFoodsMaster: unitsFoodsMaster ?? this.unitsFoodsMaster,
       unitsInfoMaster: unitsInfoMaster ?? this.unitsInfoMaster,
       favoriteName: favoriteName ?? this.favoriteName,

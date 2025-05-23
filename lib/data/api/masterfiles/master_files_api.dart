@@ -12,6 +12,9 @@ class MasterFilesApi extends ApiHelper {
   Future<Map<String, dynamic>> manageMasterFiles(
       int cookingMethodsVersion,
       int cookingMethodsInfoVersion,
+      int conversionFactorsVersion,
+      int conversionFactorsInfoVersion,
+      int oilTypesVersion,
       int foodsAndDrinksNamesVersion,
       int nutrientsInfoVersion,
       int objectivesInfoVersion,
@@ -28,6 +31,9 @@ class MasterFilesApi extends ApiHelper {
         {
           cookingMethods: cookingMethodsVersion.toString(),
           cookingMethodsInfo: cookingMethodsInfoVersion.toString(),
+          conversionFactors: conversionFactorsVersion.toString(),
+          conversionFactorsInfo: conversionFactorsInfoVersion.toString(),
+          oilTypes: oilTypesVersion.toString(),
           foodsAndDrinksNames: foodsAndDrinksNamesVersion.toString(),
           nutrientsInfo: nutrientsInfoVersion.toString(),
           objectivesInfo: objectivesInfoVersion.toString(),

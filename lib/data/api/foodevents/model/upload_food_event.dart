@@ -71,11 +71,15 @@ class EventInfo {
   int? cookingMethod;
   double? qty;
   int? unit;
+  int? conversionFactor;
+  int? usedOil;
   double? waste;
 
   EventInfo(this.cookingMethod,
     this.qty,
     this.unit,
+    this.conversionFactor,
+    this.usedOil,
     this.waste,
   );
 

@@ -44,6 +44,10 @@ class Constants {
   static const REDUCE_RISK_OF_INJURY = 48;
   static const RECOVERY_AFTER_SPORT_INJURY = 49;
   static const TRYPTOPHAN_MG_PER_KG = 3.5;
+  static const COOKING_METHOD_BREADED = -4;
+  static const COOKING_METHOD_FRIED = 5;
+  static const CONVERSION_FACTOR_COOKED = 1;
+  static const EXTRA_VERGIN_COOKING_OIL = 0;
   static const LOCALE_ES = 'es_ES';
   static const LANGUAGE_ES = 'es';
   static const PERCENTAGE_0 = 0;

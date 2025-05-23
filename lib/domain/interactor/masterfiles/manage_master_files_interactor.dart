@@ -4,6 +4,9 @@ abstract class ManageMasterFilesInteractor {
   Future<MasterFilesResponse> execute(
       int cookingMethodsInfoVersion,
       int cookingMethodsVersion,
+      int oilTypesVersion,
+      int conversionFactorsVersion,
+      int conversionFactorsInfoVersion,
       int foodsAndDrinksNamesVersion,
       int nutrientsInfoVersion,
       int objectivesInfoVersion,

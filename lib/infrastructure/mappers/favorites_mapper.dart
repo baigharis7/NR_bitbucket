@@ -20,7 +20,7 @@ FoodFavorite mapToFoodFavoriteFromEntity(FoodFavoriteEntity foodFavoriteEntity) 
   return FoodFavorite(
     title: foodFavoriteEntity.title,
     eventDate: foodFavoriteEntity.eventDate,
-    ingredients: foodFavoriteEntity.ingredients.map((ingredient) => FoodInFavorite(id: ingredient.id, name_en: ingredient.name_en.orEmpty(), name_es: ingredient.name_es.orEmpty(), qty: ingredient.qty, unit: ingredient.unit, cookingMethod: ingredient.cookingMethod, unitsEquivalences: ingredient.unitsEquivalences)).toList(),
+    ingredients: foodFavoriteEntity.ingredients.map((ingredient) => FoodInFavorite(id: ingredient.id, name_en: ingredient.name_en.orEmpty(), name_es: ingredient.name_es.orEmpty(), qty: ingredient.qty, unit: ingredient.unit, conversionFactor: ingredient.conversionFactor, cookingMethod: ingredient.cookingMethod, usedOil: ingredient.usedOil, unitsEquivalences: ingredient.unitsEquivalences)).toList(),
     drinks: foodFavoriteEntity.drinks.map((drink) => FoodInFavorite(id: drink.id, name_en: drink.name_en.orEmpty(), name_es: drink.name_es.orEmpty(), qty: drink.qty, unit: drink.unit, cookingMethod: drink.cookingMethod, unitsEquivalences: drink.unitsEquivalences)).toList(),
     mealTime: foodFavoriteEntity.mealTime,
     comment: foodFavoriteEntity.comment,
@@ -35,6 +35,8 @@ List<FoodInFavorite> mapToFoodFavoriteList(List<FoodInfo> foodInfoList) {
       name_es: foodInfo.name_es.orEmpty(),
       qty: foodInfo.eventInfo!.qty!.toInt(),
       unit: foodInfo.eventInfo!.unit!,
+      conversionFactor: foodInfo.eventInfo?.conversionFactor,
+      usedOil:  foodInfo.eventInfo?.usedOil,
       cookingMethod: foodInfo.eventInfo!.cookingMethod!,
   ),).toList();
 }
@@ -43,7 +45,7 @@ FoodFavoriteEntity mapToFoodFavoriteEntity(FoodFavorite foodFavorite) {
   return FoodFavoriteEntity(
     title: foodFavorite.title,
     eventDate: foodFavorite.eventDate,
-    ingredients: foodFavorite.ingredients.map((ingredient) => FoodInFavoriteEntity(id: ingredient.id, name_en: ingredient.name_en.orEmpty(), name_es: ingredient.name_es.orEmpty(), qty: ingredient.qty, unit: ingredient.unit, cookingMethod: ingredient.cookingMethod, unitsEquivalences: ingredient.unitsEquivalences)).toList(),
+    ingredients: foodFavorite.ingredients.map((ingredient) => FoodInFavoriteEntity(id: ingredient.id, name_en: ingredient.name_en.orEmpty(), name_es: ingredient.name_es.orEmpty(), qty: ingredient.qty, unit: ingredient.unit, conversionFactor: ingredient.conversionFactor, cookingMethod: ingredient.cookingMethod, usedOil: ingredient.usedOil, unitsEquivalences: ingredient.unitsEquivalences)).toList(),
     drinks: foodFavorite.drinks.map((drink) => FoodInFavoriteEntity(id: drink.id, name_en: drink.name_en.orEmpty(), name_es: drink.name_es.orEmpty(), qty: drink.qty, unit: drink.unit, cookingMethod: drink.cookingMethod, unitsEquivalences: drink.unitsEquivalences)).toList(),
     mealTime: foodFavorite.mealTime,
     comment: foodFavorite.comment,
@@ -56,7 +58,7 @@ UploadFoodFavorite mapToUploadFoodFavorite(FoodFavorite foodFavorite, String use
     userId: userId,
     eventDate:foodFavorite.eventDate,
     title: foodFavorite.title,
-    ingredients: foodFavorite.ingredients.map((ingredient) => UploadFoodInFavorite(id: ingredient.id, name_en: ingredient.name_en.orEmpty(), name_es: ingredient.name_es.orEmpty(), qty: ingredient.qty, unit: ingredient.unit, cookingMethod: ingredient.cookingMethod, unitsEquivalences: ingredient.unitsEquivalences)).toList(),
+    ingredients: foodFavorite.ingredients.map((ingredient) => UploadFoodInFavorite(id: ingredient.id, name_en: ingredient.name_en.orEmpty(), name_es: ingredient.name_es.orEmpty(), qty: ingredient.qty, unit: ingredient.unit, conversionFactor: ingredient.conversionFactor, cookingMethod: ingredient.cookingMethod, usedOil: ingredient.usedOil, unitsEquivalences: ingredient.unitsEquivalences)).toList(),
     drinks: foodFavorite.drinks.map((drink) => UploadFoodInFavorite(id: drink.id, name_en: drink.name_en.orEmpty(), name_es: drink.name_es.orEmpty(), qty: drink.qty, unit: drink.unit, cookingMethod: drink.cookingMethod, unitsEquivalences: drink.unitsEquivalences)).toList(),
     mealTime: foodFavorite.mealTime,
     comment: foodFavorite.comment,

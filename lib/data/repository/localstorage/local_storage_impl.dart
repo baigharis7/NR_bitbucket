@@ -57,6 +57,9 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _waterEventsBox;
   Box? _cookingMethodsBox;
   Box? _cookingMethodsInfoBox;
+  Box? _oilTypesBox;
+  Box? _conversionFactorsBox;
+  Box? _conversionFactorsInfoBox;
   Box? _foodsAndDrinksNamesBox;
   Box? _nutrientsInfoBox;
   Box? _objectivesInfoBox;
@@ -90,6 +93,12 @@ class LocalStorageImpl extends LocalStorageRepository {
         return openBox(_cookingMethodsBox, cookingMethodsBoxName);
       case MasterFilesType.cookingMethodsInfo:
         return openBox(_cookingMethodsInfoBox, cookingMethodsInfoBoxName);
+      case MasterFilesType.oilTypes:
+        return openBox(_oilTypesBox, oilTypesBoxName);
+      case MasterFilesType.conversionFactors:
+        return openBox(_conversionFactorsBox, conversionFactorsBoxName);
+      case MasterFilesType.conversionFactorsInfo:
+        return openBox(_conversionFactorsInfoBox, conversionFactorsInfoBoxName);
       case MasterFilesType.foodsAndDrinksNames:
         return openBox(_foodsAndDrinksNamesBox, foodsAndDrinksNamesBoxName);
       case MasterFilesType.nutrientsInfo:

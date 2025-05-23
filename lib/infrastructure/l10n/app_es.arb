@@ -255,6 +255,8 @@
     "ingredients" : "Ingredientes",
     "grames" : "Gramos",
     "cooking_method" : "Método de cocinado",
+    "conversion_factor" : "Factor de conversión",
+    "oil_used" : "Aceite usado",
     "no_cooking_methods" : "Esta comida no tiene métodos de cocinado",
     "missing_fieds_food_event" : "Tienes que rellenar todos los campos",
     "save" : "Guardar",

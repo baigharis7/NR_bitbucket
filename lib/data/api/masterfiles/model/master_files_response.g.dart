@@ -16,6 +16,15 @@ MasterFilesResponse _$MasterFilesResponseFromJson(Map<String, dynamic> json) =>
           ? null
           : CookingMethodsInfoResponse.fromJson(
               json['cookingMethodsInfoResponse'] as Map<String, dynamic>),
+      oilTypesResponse: json['oilTypesResponse'] == null
+          ? null
+          : OilTypesResponse.fromJson(json['oilTypesResponse'] as Map<String, dynamic>),
+      conversionFactorsResponse: json['conversionFactorsResponse'] == null
+          ? null
+          : ConversionFactorsResponse.fromJson(json['conversionFactorsResponse'] as Map<String, dynamic>),
+      conversionFactorsInfoResponse: json['conversionFactorsInfoResponse'] == null
+          ? null
+          : ConversionFactorsInfoResponse.fromJson(json['conversionFactorsInfoResponse'] as Map<String, dynamic>),
       nutrientsInfoResponse: json['nutrientsInfoResponse'] == null
           ? null
           : NutrientsInfoResponse.fromJson(
@@ -56,6 +65,12 @@ Map<String, dynamic> _$MasterFilesResponseToJson(
       'cookingMethodsResponse': instance.cookingMethodsResponse?.toJson(),
       'cookingMethodsInfoResponse':
           instance.cookingMethodsInfoResponse?.toJson(),
+      'oilTypesResponse':
+      instance.oilTypesResponse?.toJson(),
+      'conversionFactorsResponse':
+      instance.conversionFactorsResponse?.toJson(),
+      'conversionFactorsInfoResponse':
+      instance.conversionFactorsInfoResponse?.toJson(),
       'nutrientsInfoResponse': instance.nutrientsInfoResponse?.toJson(),
       'foodsAndDrinksNamesResponse':
           instance.foodsAndDrinksNamesResponse?.toJson(),

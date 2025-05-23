@@ -187,9 +187,7 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                                           ),
                                         ),
                                       );
-                                    } else if (arguments is FoodEventComplete
-                                        /*? !bloc.isFoodFavourite(arguments)
-                                        : false*/) {
+                                    } else if (arguments is FoodEventComplete) {
                                       if (bloc.isFoodFavourite(arguments)) {
                                         showUndoFavoriteDialog(
                                           context: context,
@@ -214,16 +212,7 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                                           );
                                       }
                                     }
-                                  }
-                                  // (arguments is FoodFavorite || (arguments is FoodEventComplete ? !bloc.isFoodFavourite(arguments) : true)) ? () {
-                                  //   showAddFavoriteDialog(
-                                  //     context: ctx,
-                                  //     onNameChange: (String foodName) => bloc.add(AddFoodNameAction(name: foodName)),
-                                  //     onMealTimeChange: (int mealTime) => bloc.add(AddMealTimeAction(mealTime: mealTime)),
-                                  //     onFinish: () => bloc.add(FinishAddingFavoriteAction(onFinish: () => _showConfirmationDialog(context))),
-                                  //   );
-                                  // } : () {}
-                                  ,
+                                  },
                                   child: (arguments is FoodFavorite ||
                                           (arguments is FoodEventComplete
                                               ? bloc.isFoodFavourite(arguments)
@@ -264,6 +253,8 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                                             .cookingMethodsInfo!,
                                       ),
                                       quantity: foodInFavorite.qty.toString(),
+                                      conversionFactor: state.conversionFactors.isNull() || foodInFavorite.conversionFactor.isNull() ? null : state.conversionFactors!.data.firstWhere((factor) => factor.id == foodInFavorite.conversionFactor,),
+                                      usedOil: state.oilTypes.isNull() || foodInFavorite.usedOil.isNull() ? null : state.oilTypes!.data.firstWhere((oil) => oil.id == foodInFavorite.usedOil,),
                                       unit: eventHelper
                                           .findUnitName(
                                               foodInFavorite.unit,

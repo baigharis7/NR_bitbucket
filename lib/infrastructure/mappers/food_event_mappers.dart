@@ -131,6 +131,8 @@ entity.FoodEventEntity mapToFoodEventEntity(UploadFoodEvent uploadFoodEvent) {
       foodInfoFromComplete.eventInfo!.cookingMethod,
       foodInfoFromComplete.eventInfo!.qty,
       foodInfoFromComplete.eventInfo!.unit,
+      foodInfoFromComplete.eventInfo!.conversionFactor,
+      foodInfoFromComplete.eventInfo!.usedOil,
       foodInfoFromComplete.eventInfo!.waste,
 
     );
@@ -289,6 +291,8 @@ domain.FoodEventComplete mapToFoodEventComplete(entity.FoodEventEntity foodEvent
       foodInfoFromEntity.eventInfo!.cookingMethod,
       foodInfoFromEntity.eventInfo!.qty,
       foodInfoFromEntity.eventInfo!.unit,
+      foodInfoFromEntity.eventInfo!.conversionFactor,
+      foodInfoFromEntity.eventInfo!.usedOil,
       foodInfoFromEntity.eventInfo!.waste,
 
     );

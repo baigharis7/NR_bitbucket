@@ -100,3 +100,15 @@ class FinishFoodWithoutCreateDishEventAction extends AddFoodEventActions {
 
   FinishFoodWithoutCreateDishEventAction({required this.context, required this.onFinish});
 }
+
+class UpdateFoodConversionFactor extends AddFoodEventActions {
+  final FoodInEvent foodInEvent;
+
+  UpdateFoodConversionFactor({required this.foodInEvent});
+}
+
+class UpdateOilUsedEventAction extends AddFoodEventActions {
+  final FoodInEvent foodInEvent;
+
+  UpdateOilUsedEventAction({required this.foodInEvent});
+}

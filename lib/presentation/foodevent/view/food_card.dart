@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/conversion_factors_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/oil_types_response.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
@@ -8,6 +10,8 @@ class FoodCard extends StatelessWidget {
   final String cookingMethod;
   final String quantity;
   final String unit;
+  final ConversionFactor? conversionFactor;
+  final OilTypeResponse? usedOil;
   final Function? removeFood;
   final Function? editFood;
 
@@ -17,6 +21,8 @@ class FoodCard extends StatelessWidget {
     required this.cookingMethod,
     required this.quantity,
     required this.unit,
+    this.conversionFactor,
+    this.usedOil,
     this.removeFood,
     this.editFood,
   }) : super(key: key);
@@ -81,6 +87,22 @@ class FoodCard extends StatelessWidget {
                         ],
                       ),
                     ),
+                    if (!conversionFactor.isNull()) Container(
+                      margin: const EdgeInsets.only(left: Dimens.marginNormal, bottom: Dimens.marginNormal),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Text(AppLocalizations.of(context)!.conversion_factor),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Text(conversionFactor!.translate(context)),
+                          ),
+                        ],
+                      ),
+                    ),
                     Container(
                       margin: const EdgeInsets.only(left: Dimens.marginNormal, bottom: Dimens.marginNormal),
                       child: Row(
@@ -94,6 +116,23 @@ class FoodCard extends StatelessWidget {
                               flex: 1,
                               // TODO: buscar en la tabla de cooking methods.
                               child: Text(cookingMethod.isEmpty ? 'None' : cookingMethod),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (!usedOil.isNull()) Container(
+                      margin: const EdgeInsets.only(left: Dimens.marginNormal, bottom: Dimens.marginNormal),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Text(AppLocalizations.of(context)!.oil_used),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            // TODO: buscar en la tabla de cooking methods.
+                            child: Text(usedOil!.translate(context)),
                           ),
                         ],
                       ),

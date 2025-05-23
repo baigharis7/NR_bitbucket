@@ -32,11 +32,14 @@ import 'package:nutrenaissance_flutter/data/local/models/favorites/sport/sport_f
 import 'package:nutrenaissance_flutter/data/local/models/fecesurine/upload_feces_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/foods_and_drinks_names_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/oil_types_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_analysis_entity.dart';
@@ -1085,4 +1088,11 @@ void initLocalStorage() async {
   Hive.registerAdapter(UploadFecesEventEntityAdapter());
   Hive.registerAdapter(UploadSupplementEventEntityAdapter());
   Hive.registerAdapter(ModelsAppearanceEntityAdapter());
+  Hive.registerAdapter(OilTypesEntityAdapter());
+  Hive.registerAdapter(OilTypeEntityAdapter());
+  Hive.registerAdapter(ConversionFactorsEntityAdapter());
+  Hive.registerAdapter(ConversionFactorEntityAdapter());
+  Hive.registerAdapter(ConversionFactorsInfoEntityAdapter());
+  Hive.registerAdapter(ConversionFactorInfoEntityAdapter());
+  Hive.registerAdapter(ConversionInfoEntityAdapter());
 }

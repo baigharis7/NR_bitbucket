@@ -77,12 +77,16 @@ class EventInfo { // TODO nombre
   @HiveField(0) int? cookingMethod;
   @HiveField(1) double? qty;
   @HiveField(2) int? unit;
-  @HiveField(3) double? waste;
+  @HiveField(3) int? conversionFactor;
+  @HiveField(4) int? usedOil;
+  @HiveField(5) double? waste;
 
   EventInfo(
       this.cookingMethod,
       this.qty,
       this.unit,
+      this.conversionFactor,
+      this.usedOil,
       this.waste,
   );
 

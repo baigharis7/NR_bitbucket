@@ -42,6 +42,8 @@ class FoodInFavoriteEntity {
   @HiveField(4) String? unitsEquivalences;
   @HiveField(5) String? name_en;
   @HiveField(6) String? name_es;
+  @HiveField(7) int? conversionFactor;
+  @HiveField(8) int? usedOil;
 
   FoodInFavoriteEntity({
     required this.id,
@@ -51,6 +53,8 @@ class FoodInFavoriteEntity {
     this.unitsEquivalences,
     required this.name_en,
     required this.name_es,
+    this.conversionFactor,
+    this.usedOil,
   });
 
   factory FoodInFavoriteEntity.fromJson(Map<String, dynamic> json) => _$FoodInFavoriteEntityFromJson(json);

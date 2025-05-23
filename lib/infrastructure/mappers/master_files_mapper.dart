@@ -1,19 +1,25 @@
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/conversion_factors_info_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/conversion_factors_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/cooking_methods_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/cooking_methods_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/foods_and_drinks_names_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/nutrients_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/objectives_info_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/oil_types_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/recommendation_groups_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/sports_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/subjective_analysis_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/units_foods_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/units_info_response.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/foods_and_drinks_names_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/oil_types_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_analysis_entity.dart';
@@ -39,6 +45,15 @@ dynamic mapToMasterFileEntity(dynamic masterFileResponse, MasterFilesType master
 
     case MasterFilesType.cookingMethodsInfo:
       return mapToCookingMethodsInfoEntity(masterFileResponse as CookingMethodsInfoResponse);
+
+    case MasterFilesType.oilTypes:
+      return mapToOilTypesEntity(masterFileResponse as OilTypesResponse);
+
+    case MasterFilesType.conversionFactors:
+      return mapToConversionFactorsEntity(masterFileResponse as ConversionFactorsResponse);
+
+    case MasterFilesType.conversionFactorsInfo:
+      return mapToConversionFactorsInfoEntity(masterFileResponse as ConversionFactorsInfoResponse);
 
     case MasterFilesType.foodsAndDrinksNames:
       return mapToFoodsAndDrinksNamesEntity(masterFileResponse as FoodsAndDrinksNamesResponse);
@@ -82,9 +97,39 @@ CookingMethodsInfoEntity mapToCookingMethodsInfoEntity(CookingMethodsInfoRespons
   return CookingMethodsInfoEntity(id: MasterFilesType.cookingMethodsInfo.index, v: cookingMethodsInfoResponse.v, data: data);
 }
 
+OilTypesEntity mapToOilTypesEntity(OilTypesResponse oilTypesResponse) {
+  List<OilTypeEntity> data = oilTypesResponse.data.map((item) => OilTypeEntity(id: item.id, en: item.en, es: item.es)).toList();
+  return OilTypesEntity(id: MasterFilesType.oilTypes.index, v: oilTypesResponse.v, data: data);
+}
+
+ConversionFactorsEntity mapToConversionFactorsEntity(ConversionFactorsResponse conversionFactorsResponse) {
+  List<ConversionFactorEntity> data = conversionFactorsResponse.data.map((item) => ConversionFactorEntity(id: item.id, en: item.en, es: item.es)).toList();
+  return ConversionFactorsEntity(id: MasterFilesType.conversionFactors.index, v: conversionFactorsResponse.v, data: data);
+}
+
+ConversionFactorsInfoEntity mapToConversionFactorsInfoEntity(ConversionFactorsInfoResponse conversionFactorsInfoResponse) {
+  List<ConversionFactorInfoEntity> data = conversionFactorsInfoResponse.data.map((item) => ConversionFactorInfoEntity(id: item.id, value: item.value, list: item.list.map((e) => ConversionInfoEntity(g: e.g, v: e.v)).toList())).toList();
+  return ConversionFactorsInfoEntity(id: MasterFilesType.conversionFactors.index, v: conversionFactorsInfoResponse.v, data: data);
+}
+
 CookingMethodsInfoMaster mapToCookingMethodsInfoMaster(CookingMethodsInfoEntity cookingMethodsInfoEntity) {
   List<CookingMethodInfo> cookingMethodsInfo = cookingMethodsInfoEntity.data.map((item) => CookingMethodInfo(id: item.id, en: item.en, es: item.es)).toList();
   return CookingMethodsInfoMaster(cookingMethodsInfo: cookingMethodsInfo);
+}
+
+OilTypesResponse mapToOilTypesResponse(OilTypesEntity oilTypesEntity) {
+  List<OilTypeResponse> oilTypeResponse = oilTypesEntity.data.map((item) => OilTypeResponse(id: item.id, en: item.en, es: item.es)).toList();
+  return OilTypesResponse(v: oilTypesEntity.v, data: oilTypeResponse);
+}
+
+ConversionFactorsResponse mapToConversionFactorsResponse(ConversionFactorsEntity conversionFactorsEntity) {
+  List<ConversionFactor> conversionFactors = conversionFactorsEntity.data.map((item) => ConversionFactor(id: item.id, en: item.en, es: item.es)).toList();
+  return ConversionFactorsResponse(v: conversionFactorsEntity.v, data: conversionFactors);
+}
+
+ConversionFactorsInfoResponse mapToConversionFactorsInfoResponse(ConversionFactorsInfoEntity conversionFactorsInfoEntity) {
+  List<ConversionFactorInfoResponse> conversionFactorsInfo = conversionFactorsInfoEntity.data.map((item) => ConversionFactorInfoResponse(id: item.id, value: item.value, list: item.list.map((e) => ConversionFactorResponse(g: e.g, v: e.v)).toList())).toList();
+  return ConversionFactorsInfoResponse(v: conversionFactorsInfoEntity.v, data: conversionFactorsInfo);
 }
 
 FoodsAndDrinksNamesEntity mapToFoodsAndDrinksNamesEntity(FoodsAndDrinksNamesResponse foodsAndDrinksNamesResponse) {

@@ -67,5 +67,12 @@ class HiveTypeIds {
   static const uploadFecesEventsEntity = 64;
   static const uploadSupplementEventEntity = 65;
   static const modelsAppearanceEntity = 66;
+  static const oilTypesEntity = 67;
+  static const oilTypeEntity = 68;
+  static const conversionFactorsEntity = 69;
+  static const conversionFactorEntity = 70;
+  static const conversionFactorsInfoEntity = 71;
+  static const conversionFactorInfoEntity = 72;
+  static const conversionInfoEntity = 73;
 
 }

@@ -133,14 +133,16 @@ class EventInfoAdapter extends TypeAdapter<EventInfo> {
       fields[0] as int?,
       fields[1] as double?,
       fields[2] as int?,
-      fields[3] as double?,
+      fields[3] as int?,
+      fields[4] as int?,
+      fields[5] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, EventInfo obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.cookingMethod)
       ..writeByte(1)
@@ -148,6 +150,10 @@ class EventInfoAdapter extends TypeAdapter<EventInfo> {
       ..writeByte(2)
       ..write(obj.unit)
       ..writeByte(3)
+      ..write(obj.conversionFactor)
+      ..writeByte(4)
+      ..write(obj.usedOil)
+      ..writeByte(5)
       ..write(obj.waste);
   }
 
@@ -605,6 +611,8 @@ EventInfo _$EventInfoFromJson(Map<String, dynamic> json) => EventInfo(
       json['cookingMethod'] as int?,
       (json['qty'] as num?)?.toDouble(),
       json['unit'] as int?,
+      json['conversionFactor'] as int?,
+      json['usedOil'] as int?,
       (json['waste'] as num?)?.toDouble(),
     );
 
@@ -612,6 +620,8 @@ Map<String, dynamic> _$EventInfoToJson(EventInfo instance) => <String, dynamic>{
       'cookingMethod': instance.cookingMethod,
       'qty': instance.qty,
       'unit': instance.unit,
+      'conversionFactor': instance.conversionFactor,
+      'usedOil': instance.usedOil,
       'waste': instance.waste,
     };
 

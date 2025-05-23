@@ -1,11 +1,14 @@
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_response.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/foods_and_drinks_names_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/oil_types_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_analysis_entity.dart';
@@ -35,6 +38,9 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
   Future<MasterFilesResponse> manageMasterFiles(
       int cookingMethodsVersion,
       int cookingMethodsInfoVersion,
+      int conversionFactorsVersion,
+      int conversionFactorsInfoVersion,
+      int oilTypesVersion,
       int foodsAndDrinksNamesVersion,
       int nutrientsInfoVersion,
       int objectivesInfoVersion,
@@ -47,6 +53,9 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
     final response = await masterFilesApi.manageMasterFiles(
       cookingMethodsVersion,
       cookingMethodsInfoVersion,
+      conversionFactorsVersion,
+      conversionFactorsInfoVersion,
+      oilTypesVersion,
       foodsAndDrinksNamesVersion,
       nutrientsInfoVersion,
       objectivesInfoVersion,
@@ -77,6 +86,12 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
         return mapToCookingMethodsMaster(masterFileEntity as CookingMethodsEntity);
       case MasterFilesType.cookingMethodsInfo:
         return mapToCookingMethodsInfoMaster(masterFileEntity as CookingMethodsInfoEntity);
+      case MasterFilesType.oilTypes:
+        return mapToOilTypesResponse(masterFileEntity as OilTypesEntity);
+      case MasterFilesType.conversionFactors:
+        return mapToConversionFactorsResponse(masterFileEntity as ConversionFactorsEntity);
+      case MasterFilesType.conversionFactorsInfo:
+        return mapToConversionFactorsInfoResponse(masterFileEntity as ConversionFactorsInfoEntity);
       case MasterFilesType.foodsAndDrinksNames:
         return mapToFoodsAndDrinksNamesMaster(masterFileEntity as FoodsAndDrinksNamesEntity);
       case MasterFilesType.nutrientsInfo:

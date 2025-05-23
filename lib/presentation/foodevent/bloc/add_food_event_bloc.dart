@@ -65,11 +65,12 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
         state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames.orEmpty() ?? []);
       }
+      state.oilTypes = await getMasterFileInteractor.execute(MasterFilesType.oilTypes);
+      state.conversionFactors = await getMasterFileInteractor.execute(MasterFilesType.conversionFactors);
       if (state.cookingMethodsInfoMaster!.cookingMethodsInfo!.isEmpty) {
         final a = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
         state.cookingMethodsInfoMaster = a;
-        // state.cookingMethodsInfoMaster?.cookingMethodsInfo?.add(CookingMethodInfo(id: -1, en: 'None / Raw', es: 'Ninguna / cruda'));
-      }
+        }
       if (state.cookingMethodsMaster!.cookingMethods.isEmpty) {
         state.cookingMethodsMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethods);
       }
@@ -275,7 +276,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       state.mealType = event.foodEventComplete.mealType;
       state.isCreateDish = event.foodEventComplete.dish;
       state.isEdit = true;
-      state.foodsInEvent = event.foodEventComplete.foodInfo?.map((food) => FoodInEvent(id: food.id!, qty: food.eventInfo!.qty!.toInt(), unit: food.eventInfo!.unit!, cookingMethod: food.eventInfo!.cookingMethod!)).toList();
+      state.foodsInEvent = event.foodEventComplete.foodInfo?.map((food) => FoodInEvent(id: food.id!, qty: food.eventInfo!.qty!.toInt(), unit: food.eventInfo!.unit!, conversionFactor: food.eventInfo!.conversionFactor, cookingMethod: food.eventInfo!.cookingMethod!, usedOil: food.eventInfo!.usedOil)).toList();
       emit(state.copyWith(isLoading: false,));
     },);
 
@@ -327,6 +328,26 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
 
       if (state.foodsInEvent.orEmpty().isNotEmpty) event.onFinish.call();
     },);
+
+    on<UpdateFoodConversionFactor>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      if (state.foodsInEvent!.map((food) => food.id).contains((event.foodInEvent).id)) {
+        final itemIndex = state.foodsInEvent!.indexOf(state.foodsInEvent!.firstWhere((food) => food.id == event.foodInEvent.id));
+        state.foodsInEvent![itemIndex].conversionFactor = event.foodInEvent.conversionFactor;
+      }
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateOilUsedEventAction>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      if (state.foodsInEvent!.map((food) => food.id).contains((event.foodInEvent).id)) {
+        final itemIndex = state.foodsInEvent!.indexOf(state.foodsInEvent!.firstWhere((food) => food.id == event.foodInEvent.id));
+        state.foodsInEvent![itemIndex].usedOil = event.foodInEvent.usedOil;
+      }
+
+      emit(state.copyWith(isLoading: false));
+    });
   }
 
   void _clearFields() {

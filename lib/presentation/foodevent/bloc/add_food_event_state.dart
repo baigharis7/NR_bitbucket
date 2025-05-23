@@ -1,3 +1,5 @@
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/conversion_factors_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/oil_types_response.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
@@ -13,6 +15,8 @@ class AddFoodEventState {
   bool isLoading;
   ErrorTypes? onError;
   FoodsAndDrinksNamesMaster? foodNames;
+  OilTypesResponse? oilTypes;
+  ConversionFactorsResponse? conversionFactors;
   List<FoodInEvent>? foodsInEvent;
   List<FoodInEvent>? foodsFromFavorite;
   CookingMethodsMaster? cookingMethodsMaster;
@@ -33,6 +37,8 @@ class AddFoodEventState {
     required this.isLoading,
     this.onError,
     this.foodNames,
+    this.oilTypes,
+    this.conversionFactors,
     this.foodsInEvent,
     this.foodsFromFavorite,
     this.cookingMethodsMaster,
@@ -54,6 +60,8 @@ class AddFoodEventState {
     required bool isLoading,
     ErrorTypes? onError,
     FoodsAndDrinksNamesMaster? foodNames,
+    OilTypesResponse? oilTypes,
+    ConversionFactorsResponse? conversionFactors,
     List<FoodInEvent>? foodsInEvent,
     List<FoodInEvent>? foodsFromFavorite,
     CookingMethodsMaster? cookingMethodsMaster,
@@ -74,6 +82,8 @@ class AddFoodEventState {
       isLoading: isLoading,
       onError: onError ?? this.onError,
       foodNames: foodNames ?? this.foodNames,
+      oilTypes: oilTypes ?? this.oilTypes,
+      conversionFactors: conversionFactors ?? this.conversionFactors,
       foodsInEvent: foodsInEvent ?? this.foodsInEvent,
       cookingMethodsMaster: cookingMethodsMaster ?? this.cookingMethodsMaster,
       cookingMethodsInfoMaster: cookingMethodsInfoMaster ?? this.cookingMethodsInfoMaster,
