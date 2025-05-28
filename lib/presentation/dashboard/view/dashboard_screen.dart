@@ -247,15 +247,15 @@ class _DashboardScreen extends State<DashboardScreen>
                   },),
                 ],
               ),), icon: SvgPicture.asset('assets/svg/calendar.svg',),),
-                    IconButton(
-                      onPressed: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName),
-                      icon: Image.asset(
-                        'assets/icon/profile_icon.png',
-                        color: Colors.white,
-                        height: Dimens.height32,
-                        width: Dimens.width32,
-                      ),
-                    ),
+                    // IconButton(
+                    //   onPressed: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName),
+                    //   icon: Image.asset(
+                    //     'assets/icon/profile_icon.png',
+                    //     color: Colors.white,
+                    //     height: Dimens.height32,
+                    //     width: Dimens.width32,
+                    //   ),
+                    // ),
                   ],
                 ),
                 body: Container(

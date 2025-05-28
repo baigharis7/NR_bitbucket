@@ -16,7 +16,7 @@ class FillVerticalBar extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20.00,),
-                color: Colors.white12,
+                color: Colors.transparent,
                 shape: BoxShape.rectangle,
               ),
               width: width ?? 15,
@@ -26,7 +26,7 @@ class FillVerticalBar extends StatelessWidget {
                   Container(
                     alignment: Alignment.bottomCenter,
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: Colors.transparent,
                       borderRadius: BorderRadius.circular(20.00,),
                       shape: BoxShape.rectangle,
                     ),

@@ -34,8 +34,8 @@ class _SwitchDashboardWidgetState extends State<SwitchDashboardWidget> {
           children: [
             Text(widget.title, style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeLarge)),
             Switch.adaptive(
-              inactiveTrackColor: AppColors.mountainMeadow,
-              activeTrackColor: Colors.white,
+              inactiveTrackColor: Colors.white,
+              activeTrackColor: AppColors.mountainMeadow,
               applyCupertinoTheme: true,
               value: widget.currentState,
               activeColor: AppColors.mountainMeadow,

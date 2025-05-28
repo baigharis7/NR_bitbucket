@@ -209,7 +209,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
             (micronutrient) =>
             NutrientsModel(
               quantityConsumed: getQuantityConsumedSoFar(micronutrient),
-              nutrientInfoMaster: NutrientInfoMaster(officialName: micronutrient, en: micronutrient, es: micronutrient, unit: getUnitForMicronutrient(micronutrient)),
+              nutrientInfoMaster: getNutrientInfo(micronutrient),
               fractionToFill: getFractionToFillMicros(micronutrient),
               unit: getUnitForMicronutrient(micronutrient),
               rda: getNutrientRda(micronutrient),

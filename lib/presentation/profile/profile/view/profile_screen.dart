@@ -211,7 +211,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                   ],
                 ),
               ),
-              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD)
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE)
               // const CustomBottomAppBar(initStateCallback : null),
               // resizeToAvoidBottomInset: true,
               // floatingActionButton: FloatingActionButton(

@@ -326,6 +326,8 @@ import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/bloc/m
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/bloc/micro_nutrients_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/micronutrientsweekly/bloc/micro_nutrients_weekly_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/micronutrientsweekly/view/micro_nutrients_weekly_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/nutrients_detail/bloc/weekly_all_nutrients_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/nutrients_detail/view/weekly_all_nutrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/privacypolicy/privacy_policy.dart';
@@ -879,6 +881,9 @@ void main() async {
     getMasterFileInteractor: getMasterFileInteractor,
   );
 
+  final microNutrientsWeeklyBloc = MicroNutrientsWeeklyBloc(
+  );
+
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
 
   runApp(
@@ -924,6 +929,7 @@ void main() async {
         BlocProvider<WeeklyAllNutrientsBloc>(create: (context) => weeklyAllNutrientsBloc,),
         BlocProvider<RecipeTabBloc>(create: (context) => recipeTabBloc,),
         BlocProvider<RecipeDetailBloc>(create: (context) => recipeDetailBloc,),
+        BlocProvider<MicroNutrientsWeeklyBloc>(create: (context) => microNutrientsWeeklyBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -1012,6 +1018,7 @@ void main() async {
           RecipeDetailScreen.routeName:(_) => const RecipeDetailScreen(),
           FecesScreen.routeName:(_) => const FecesScreen(),
           UrineScreen.routeName:(_) => const UrineScreen(),
+          MicroNutrientsWeeklyScreen.routeName:(_) => const MicroNutrientsWeeklyScreen(),
         },
       ),
     ),

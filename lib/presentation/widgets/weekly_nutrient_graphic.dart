@@ -19,146 +19,131 @@ class WeeklyNutrientGraphic extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color color = AppColors.errorRed;
-    return Card(
-      color: AppColors.gray,
-      elevation: 10,
-      child: Container(
-        margin: const EdgeInsets.symmetric(
-            horizontal: Dimens.marginXLarge, vertical: Dimens.marginSmall),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: Dimens.fontSizeMedium,
+    return Column(
+      children: [
+        ...data.map(
+          (nutrientItem) {
+            return Column(
+              children: [
+                SizedBox(
+                    width: double.infinity,
+                    child: Text(nutrientItem.nutrientInfoMaster
+                        .translate(context),
+                      style: const TextStyle(
+                          color: AppColors.peacockBlue, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline
+                      ),),
                 ),
-              ),
-            ),
-            ...data.map(
-              (nutrientItem) {
-                return Column(
-                  children: [
-                    SizedBox(
-                        width: double.infinity,
-                        child: Text(nutrientItem.nutrientInfoMaster
-                            .translate(context))),
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: Dimens.marginLarge,
-                          vertical: Dimens.marginLarge),
-                      child: Row(
+                Container(
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: Dimens.marginLarge,
+                      vertical: Dimens.marginLarge),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        height: 120,
+                        child: Container(
+                          margin: const EdgeInsets.only(
+                              bottom: Dimens.marginXLarge,),
+                          color: Colors.black,
+                          width: 1,
+                        ),
+                      ),
+                      Column(
                         children: [
                           SizedBox(
-                            height: 120,
-                            child: Container(
-                              margin: const EdgeInsets.only(
-                                  bottom: Dimens.marginXLarge,),
-                              color: Colors.black,
-                              width: 1,
+                            width: 250,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: Dimens.marginNormal),
+                                    color: Colors.grey.shade400,
+                                    height: 1,
+                                  ),
+                                ),
+                                // Text('${nutrientItem.rda} ${nutrientItem.nutrientInfoMaster.unit}'),
+                              ],
                             ),
                           ),
-                          Column(
-                            children: [
-                              SizedBox(
-                                width: 250,
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        margin: const EdgeInsets.only(right: Dimens.marginNormal),
-                                        color: Colors.grey.shade400,
-                                        height: 1,
+                          SizedBox(
+                            width: 250,
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ...nutrientItem.weeklyData.map(
+                                  (dayDataMap) {
+                                    final nutrientConsumed =
+                                        dayDataMap['nutrientConsumed']
+                                            as double;
+                                    final upperLimit = (nutrientItem.upperLimit ?? 0);
+                                    color = (nutrientConsumed > upperLimit &&
+                                        nutrientConsumed < upperLimit * 0.03 && upperLimit > 0)
+                                        ? AppColors.red
+                                        : (nutrientConsumed > upperLimit * 0.03 &&
+                                        nutrientConsumed < upperLimit * 0.06 && upperLimit > 0)
+                                            ? AppColors.mustardYellow
+                                            : AppColors.mountainMeadow;
+                                    return Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: Dimens.marginSmall),
+                                      child: SizedBox(
+                                        height: 70,
+                                        child: FillVerticalBar(
+                                            fractionToFill: dayDataMap[
+                                                    'nutrientConsumedFraction']
+                                                as double,
+                                            barColor: color,),
                                       ),
-                                    ),
-                                    Text('${nutrientItem.rda} ${nutrientItem.nutrientInfoMaster.unit}'),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                width: 250,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    ...nutrientItem.weeklyData.map(
-                                      (dayDataMap) {
-                                        final nutrientConsumed =
-                                            dayDataMap['nutrientConsumed']
-                                                as double;
-                                        final upperLimit = (nutrientItem.upperLimit ?? 0);
-                                        color = (nutrientConsumed > upperLimit &&
-                                            nutrientConsumed < upperLimit * 0.03 && upperLimit > 0)
-                                            ? AppColors.errorRed
-                                            : (nutrientConsumed > upperLimit * 0.03 &&
-                                            nutrientConsumed < upperLimit * 0.06 && upperLimit > 0)
-                                                ? AppColors.daffodil
-                                                : AppColors.mountainMeadow;
-                                        return Container(
-                                          margin: const EdgeInsets.symmetric(
-                                              horizontal: Dimens.marginSmall),
-                                          child: SizedBox(
-                                            height: 70,
-                                            child: FillVerticalBar(
-                                                fractionToFill: dayDataMap[
-                                                        'nutrientConsumedFraction']
-                                                    as double,
-                                                barColor: color),
-                                          ),
-                                        );
-                                      },
+                                    );
+                                  },
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                            color: Colors.black,
+                            height: 1,
+                            width: 250,
+                          ),
+                          SizedBox(
+                            width: 250,
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ...DateTimeHelper()
+                                    .getWeekDaysInitialList(context)
+                                    .map(
+                                      (item) => Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: Dimens.marginSmall),
+                                        child: Text(item),
+                                      ),
                                     )
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                color: Colors.black,
-                                height: 1,
-                                width: 250,
-                              ),
-                              SizedBox(
-                                width: 250,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    ...DateTimeHelper()
-                                        .getWeekDaysInitialList(context)
-                                        .map(
-                                          (item) => Container(
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: Dimens.marginSmall),
-                                            child: Text(item),
-                                          ),
-                                        )
-                                        .toList()
-                                  ],
-                                ),
-                              )
-                            ],
+                                    .toList()
+                              ],
+                            ),
                           )
                         ],
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ).toList(),
-            data.isEmpty
-                ? Container(
-                    alignment: Alignment.centerLeft,
-                    margin: const EdgeInsets.symmetric(
-                        vertical: Dimens.marginXSmall,
-                        horizontal: Dimens.marginLarge),
-                    child: Text(AppLocalizations.of(context)!.no_food_events),
-                  )
-                : Container(),
-          ],
-        ),
-      ),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ).toList(),
+        data.isEmpty
+            ? Container(
+                alignment: Alignment.centerLeft,
+                margin: const EdgeInsets.symmetric(
+                    vertical: Dimens.marginXSmall,
+                    horizontal: Dimens.marginLarge),
+                child: Text(AppLocalizations.of(context)!.no_food_events),
+              )
+            : Container(),
+      ],
     );
   }
 }

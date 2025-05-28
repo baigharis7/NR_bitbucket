@@ -27,7 +27,7 @@ class FillHorizontalBar extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20.00,),
-                  color: backgroundBarColor == null ? Colors.grey[200] : Colors.teal[100],
+                  color: backgroundBarColor ?? Colors.grey[200],
                   shape: BoxShape.rectangle,
                   boxShadow: applyBoxShadow
                       ? [

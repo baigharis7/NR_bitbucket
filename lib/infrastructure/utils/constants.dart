@@ -61,4 +61,5 @@ class Constants {
   static const JOURNAL = 1;
   static const TIPS = 2;
   static const RECIPES = 3;
+  static const PROFILE = 4;
 }

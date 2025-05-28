@@ -266,7 +266,7 @@ class EventsHelper {
     } else {
       foodItem = foodNames.firstWhere((food) => food.en == foodName);
     }
-      return FoodInFavorite(id: foodItem.id!, name_en: foodItem.en.orEmpty(), name_es: foodItem.es.orEmpty(), qty: 0, unit: -1, conversionFactor: -1, cookingMethod: -1, usedOil: 0);
+      return FoodInFavorite(id: foodItem.id!, name_en: foodItem.en.orEmpty(), name_es: foodItem.es.orEmpty(), qty: 0, unit: -1, conversionFactor: 0, cookingMethod: -1, usedOil: 0);
   }
 
   String findCookingMethodName(BuildContext context, int cookingMethod, List<CookingMethodInfo> cookingMethodsInfo) {

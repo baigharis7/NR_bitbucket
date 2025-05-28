@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.dart';
 
 import '../../infrastructure/helpers/toast_helper.dart';
 import '../../infrastructure/utils/dimens.dart';
@@ -74,8 +75,8 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
             ),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-              child: RoundedCustomButton(
-                buttonText: AppLocalizations.of(context)!.save,
+              child: SaveButton(
+                text: AppLocalizations.of(context)!.save,
                 onPressed: () {
                   if (_itemNameController.text == '') {
                     ToastHelper().showToast(text: AppLocalizations.of(context)!.favorite_name_required);

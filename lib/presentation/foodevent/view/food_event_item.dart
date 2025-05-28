@@ -60,41 +60,8 @@ class FoodEventItem extends StatefulWidget {
 
 class _FoodEventItemState extends State<FoodEventItem> {
   final _quantityController = TextEditingController();
-  String? _cookingMethodName;
   String? _unitName;
   bool _error = false;
-
-  // List<SimpleItem> findCookingMethodsForFood(
-  //     String foodGroup, BuildContext context) {
-  //   // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
-  //   List<int> groupCookingMethods =
-  //       widget.cookingMethodsMaster.cookingMethods
-  //           .firstWhere(
-  //             (cookingMethod) => cookingMethod.group == foodGroup,
-  //             orElse: () => CookingMethod.empty(),
-  //           )
-  //           .methods;
-  //   final cookingMethodsInfo = groupCookingMethods.map((cookingMethodId) {
-  //     String name = widget.cookingMethodsInfoMaster.cookingMethodsInfo!
-  //         .firstWhere((methodInfo) => methodInfo.id == cookingMethodId)
-  //         .translate(context);
-  //     return SimpleItem(name: name, id: cookingMethodId);
-  //   });
-  //
-  //   return cookingMethodsInfo.toList();
-  // }
-  //
-  // String findCookingMethodName(BuildContext context, int cookingMethod) {
-  //   final cookingMethodInfo =
-  //       widget.cookingMethodsInfoMaster.cookingMethodsInfo!.firstWhere(
-  //           (cookingMethodInfo) => cookingMethodInfo.id == cookingMethod,
-  //           orElse: () => CookingMethodInfo());
-  //   if (cookingMethodInfo.id == null) {
-  //     return '';
-  //   } else {
-  //     return cookingMethodInfo.translate(context);
-  //   }
-  // }
 
   List<SimpleItem> findUnitsForFood(int foodId, BuildContext context) {
     // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
@@ -145,13 +112,14 @@ class _FoodEventItemState extends State<FoodEventItem> {
   @override
   Widget build(BuildContext context) {
     FoodInEvent ingredient = FoodInEvent(
-        id: widget.foodInEvent.id, qty: 0, unit: -1, conversionFactor: widget.foodInEvent.conversionFactor, cookingMethod: widget.foodInEvent.cookingMethod, usedOil: widget.foodInEvent.usedOil,);
-    final mediaQuerySize = MediaQuery.of(context).size;
+      id: widget.foodInEvent.id,
+      qty: 0,
+      unit: -1,
+      conversionFactor: widget.foodInEvent.conversionFactor,
+      cookingMethod: widget.foodInEvent.cookingMethod,
+      usedOil: widget.foodInEvent.usedOil,
+    );
 
-    // if (ingredient.qty != 0) _quantityController.text = ingredient.qty.toString();
-    // List<SimpleItem> cookingMethods =
-    //     findCookingMethodsForFood(widget.foodGroup, context);
-    // _cookingMethodName = cookingMethods.isNotEmpty ? null : '';
     List<SimpleItem> units = findUnitsForFood(widget.foodInEvent.id, context);
 
     String unitsEquivalences = widget.unitsFoodsMaster.unitsFoodsMaster
@@ -166,33 +134,23 @@ class _FoodEventItemState extends State<FoodEventItem> {
       ingredient.qty = widget.foodInEvent.qty;
     }
 
-    // if (widget.foodInEvent.cookingMethod != -1) {
-    //   _cookingMethodName = _cookingMethodName ??
-    //       cookingMethods
-    //           .firstWhere((cookingMethod) =>
-    //               cookingMethod.id == widget.foodInEvent.cookingMethod)
-    //           .name;
-    //   ingredient.cookingMethod = widget.foodInEvent.cookingMethod;
-    // }
-
-    // if (widget.foodInEvent.unit != -1) {
-      _unitName = _unitName ??
+    _unitName = _unitName ??
           units.firstWhere((unit) => unit.id == widget.foodInEvent.unit).name;
       ingredient.unit = widget.foodInEvent.unit;
-    // }
 
-    _error = widget.foodInEvent.qty <= 0 || widget.foodInEvent.unit == -1 || ingredient.conversionFactor.orZero() < 0  || (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && ingredient.cookingMethod == -1);
+    _error = widget.foodInEvent.qty <= 0 || widget.foodInEvent.unit == -1 || (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && ingredient.cookingMethod == -1);
 
     return Column(
       children: [
         Container(
           decoration: BoxDecoration(
-            border: Border.fromBorderSide(BorderSide(color: _error ? AppColors.errorRed : AppColors.cardGreen_200, width: 2)),
-              borderRadius: BorderRadius.circular(5),
-              color: _error ? AppColors.dirty_white : AppColors.cardGreen_200,),
+            border: _error ? const Border.fromBorderSide(BorderSide(color: AppColors.red45Percent,  width: 4)) : null,
+              borderRadius: BorderRadius.circular(15),
+              color: _error ? AppColors.white65Percent : AppColors.white85Percent,),
           margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge,),
-          padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal),
+          padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingNormal),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge),
@@ -201,28 +159,22 @@ class _FoodEventItemState extends State<FoodEventItem> {
                     Expanded(
                       child: Text(
                         widget.options,
-                        style: const TextStyle(fontSize: Dimens.fontSizeMedium),
+                        style: const TextStyle(color: AppColors.yellowishGreen,fontSize: Dimens.fontSizeLarge, fontWeight: FontWeight.w400),
                       ),
                     ),
                     InkWell(
                       onTap: () => widget.onRemove.call(),
-                      child: const Icon(Icons.cancel_outlined),
+                      child: const Icon(Icons.cancel_outlined, size: Dimens.heightXSmall),
                     ),
                   ],
                 ),
               ),
+              Text(AppLocalizations.of(context)!.amount, style: const TextStyle(color: AppColors.yellowishGreen, fontSize: Dimens.fontSizeNormal, fontWeight: FontWeight.w700)),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                 height: Dimens.heightSmall - 15,
                 child: Row(
                   children: [
-                    Expanded(
-                      flex: 1,
-                      child: Text(
-                        AppLocalizations.of(context)!.quantity,
-                      ),
-                    ),
-                    const SizedBox(width: Dimens.widthXXXXSmall),
                     Expanded(
                       flex: 1,
                       child: TextField(
@@ -232,7 +184,10 @@ class _FoodEventItemState extends State<FoodEventItem> {
                         decoration: const InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
-                          border: OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(11)),
+                            borderSide: BorderSide(color: AppColors.silver, width: 1),
+                          ),
                         ),
                         onChanged: (qty) {
                           ingredient.qty = qty.isEmpty ? 0 : int.parse(qty);
@@ -242,6 +197,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                     ),
                     const SizedBox(width: Dimens.widthXXXXSmall),
                     Expanded(
+                      flex: 2,
                       child: units.isNotEmpty
                           ? Container(
                               padding: const EdgeInsets.symmetric(
@@ -249,13 +205,13 @@ class _FoodEventItemState extends State<FoodEventItem> {
                               decoration: const BoxDecoration(
                                   color: Colors.white,
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(5)),
+                                      BorderRadius.all(Radius.circular(11)),
                                   border: Border.fromBorderSide(
-                                      BorderSide(color: Colors.black54, width: 1))),
+                                      BorderSide(color: AppColors.silver, width: 1))),
                               child: DropdownButton<String>(
                                 isExpanded: true,
                                 underline: Container(),
-                                icon: const Icon(Icons.arrow_drop_down),
+                                icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
                                 value: _unitName,
                                 onChanged: (String? unit) {
                                   // setState(() {
@@ -289,143 +245,136 @@ class _FoodEventItemState extends State<FoodEventItem> {
                   ],
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
-                height: Dimens.heightSmall - 15,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        AppLocalizations.of(context)!.conversion_factor,
-                      ),
-                    ),
-                    const SizedBox(width: Dimens.widthXXXXSmall),
-                    ...?widget.conversionFactors?.data.map((factor) =>
-                        RadioButtonWithText(
-                          value: factor.id,
-                          text: factor.translate(context),
-                          groupValue: ingredient.conversionFactor ?? -1,
-                          onConversionFactorChange: (factorValue) {
-                            ingredient.conversionFactor = factorValue;
-                            widget.onConversionFactorChange.call(ingredient);
-                          },
-                        ),
-                    ),
-                  ],
-                ),
+              // Container(
+              //   margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
+              //   height: Dimens.heightSmall - 15,
+              //   child: Row(
+              //     children: [
+              //       Expanded(
+              //         child: Text(
+              //           AppLocalizations.of(context)!.conversion_factor,
+              //         ),
+              //       ),
+              //       const SizedBox(width: Dimens.widthXXXXSmall),
+              //       ...?widget.conversionFactors?.data.map((factor) =>
+              //           RadioButtonWithText(
+              //             value: factor.id,
+              //             text: factor.translate(context),
+              //             groupValue: ingredient.conversionFactor ?? -1,
+              //             onConversionFactorChange: (factorValue) {
+              //               ingredient.conversionFactor = factorValue;
+              //               widget.onConversionFactorChange.call(ingredient);
+              //             },
+              //           ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              const SizedBox(width: Dimens.widthXXXXSmall),
+              Text(AppLocalizations.of(context)!.conversion_factor, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeMedium)),
+              Row(
+                children: [
+                  Switch.adaptive(value: ingredient.conversionFactor == 1, onChanged: (isChecked) {
+                    ingredient.conversionFactor = isChecked ? 1 : 0;
+                    widget.onConversionFactorChange.call(ingredient);
+                  },),
+                  Text(AppLocalizations.of(context)!.cooked, style: const TextStyle(fontSize: Dimens.fontSizeLarge, fontWeight: FontWeight.w400)),
+                ],
               ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                 height: Dimens.heightSmall - 15,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(AppLocalizations.of(context)!.cooking_method),
-                    ),
-                    const SizedBox(width: Dimens.widthXXXXSmall),
-                    Expanded(
-                      flex: 2,
-                      child: (widget.cookingMethodsInfoMaster.cookingMethodsInfo.orEmpty().isEmpty)
-                          ? Center(
-                              child: Text(AppLocalizations.of(context)!.none),
-                            )
-                          : Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: Dimens.paddingSmall),
-                              decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5)),
-                                  border: Border.fromBorderSide(
-                                      BorderSide(color: Colors.black54, width: 1))),
-                              child: DropdownButton<int>(
-                                icon: const Icon(Icons.arrow_drop_down),
-                                isExpanded: true,
-                                underline: Container(),
-                                value: ingredient.cookingMethod,
-                                onChanged: (int? cookingMethodId) {
-                                  ingredient.cookingMethod = cookingMethodId!;
-                                  widget.onCookingMethodChange.call(ingredient);
-                                },
-                                items: widget.cookingMethodsInfoMaster.cookingMethodsInfo.orEmpty()
-                                    .map<DropdownMenuItem<int>>(
-                                      (item) => DropdownMenuItem(
-                                        value: item.id,
-                                        child: SizedBox(
-                                          child: Text(
-                                            item.translate(context),
-                                            overflow: TextOverflow.clip,
-                                            maxLines: 2,
-                                            style: const TextStyle(
-                                              fontSize: Dimens.fontSizeNormal,
-                                            ),
-                                          ),
-                                        ),
+                child: (widget.cookingMethodsInfoMaster.cookingMethodsInfo.orEmpty().isEmpty)
+                    ? Center(
+                        child: Text(AppLocalizations.of(context)!.none),
+                      )
+                    : Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: Dimens.paddingSmall),
+                        decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(11)),
+                            border: Border.fromBorderSide(
+                                BorderSide(color: AppColors.silver, width: 1))),
+                        child: DropdownButton<int>(
+                          icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
+                          isExpanded: true,
+                          underline: Container(),
+                          value: ingredient.cookingMethod,
+                          onChanged: (int? cookingMethodId) {
+                            ingredient.cookingMethod = cookingMethodId!;
+                            widget.onCookingMethodChange.call(ingredient);
+                          },
+                          items: widget.cookingMethodsInfoMaster.cookingMethodsInfo.orEmpty()
+                              .map<DropdownMenuItem<int>>(
+                                (item) => DropdownMenuItem(
+                                  alignment: Alignment.center,
+                                  value: item.id,
+                                  child: SizedBox(
+                                    child: Text(
+                                      item.translate(context),
+                                      overflow: TextOverflow.clip,
+                                      maxLines: 2,
+                                      style: const TextStyle(
+                                        fontSize: Dimens.fontSizeLarge,
+                                        fontWeight: FontWeight.bold
                                       ),
-                                    )
-                                    .toList(),
-                              ),
-                            ),
-                    ),
-                  ],
-                ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
               ),
               if (ingredient.cookingMethod == Constants.COOKING_METHOD_BREADED || ingredient.cookingMethod == Constants.COOKING_METHOD_FRIED) Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                 height: Dimens.heightSmall - 15,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(AppLocalizations.of(context)!.oil_used),
-                    ),
-                    const SizedBox(width: Dimens.widthXXXXSmall),
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: Dimens.paddingSmall),
-                              decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5)),
-                                  border: Border.fromBorderSide(
-                                      BorderSide(color: Colors.black54, width: 1))),
-                              child: DropdownButton<int>(
-                                icon: const Icon(Icons.arrow_drop_down),
-                                isExpanded: true,
-                                underline: Container(),
-                                value: ingredient.usedOil,
-                                onChanged: (int? oilId) {
-                                  ingredient.usedOil = oilId;
-                                  widget.onOilUsedChange.call(ingredient);
-                                },
-                                items: widget.oilTypes?.data
-                                    .map<DropdownMenuItem<int>>(
-                                      (item) => DropdownMenuItem(
-                                        value: item.id,
-                                        child: SizedBox(
-                                          child: Text(
-                                            item.translate(context),
-                                            overflow: TextOverflow.clip,
-                                            maxLines: 2,
-                                            style: const TextStyle(
-                                              fontSize: Dimens.fontSizeNormal,
-                                            ),
-                                          ),
-                                        ),
+                child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: Dimens.paddingSmall),
+                        decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(11)),
+                            border: Border.fromBorderSide(
+                                BorderSide(color: AppColors.silver, width: 1))),
+                        child: DropdownButton<int>(
+                          icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
+                          isExpanded: true,
+                          underline: Container(),
+                          value: ingredient.usedOil,
+                          onChanged: (int? oilId) {
+                            ingredient.usedOil = oilId;
+                            widget.onOilUsedChange.call(ingredient);
+                          },
+                          items: widget.oilTypes?.data
+                              .map<DropdownMenuItem<int>>(
+                                (item) => DropdownMenuItem(
+                                  value: item.id,
+                                  alignment: Alignment.center,
+                                  child: SizedBox(
+                                    child: Text(
+                                      item.translate(context),
+                                      overflow: TextOverflow.clip,
+                                      maxLines: 2,
+                                      style: const TextStyle(
+                                          fontSize: Dimens.fontSizeLarge,
+                                          fontWeight: FontWeight.bold
                                       ),
-                                    )
-                                    .toList(),
-                              ),
-                            ),
-                    ),
-                  ],
-                ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
               ),
             ],
           ),
         ),
-        if (_error) Container(child: Text(AppLocalizations.of(context)!.must_complete_field, style: const TextStyle(color: Colors.red,)),alignment: Alignment.centerLeft,),
+        // if (_error) Container(child: Text(AppLocalizations.of(context)!.must_complete_field, style: const TextStyle(color: Colors.red,)),alignment: Alignment.centerLeft,),
       ],
     );
   }
