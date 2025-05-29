@@ -76,7 +76,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
       final combineList = (state.objectivesInfoMaster?.objectives ?? []) + (state.objectivesInfoMaster?.metabolicObjectives ?? []) + (state.objectivesInfoMaster?.bodyCompositionObjectives ?? []);
       state.filteredObjectives = getObjectives(combineList);
       state.isMenstruation = state.profile?.objectives?.contains(Constants.DURING_MENSTRUATION);
-      state.isCold = state.profile?.objectives?.contains(Constants.IMPROVE_THE_IMMUNE_SYSTEM);
+      state.isCold = state.profile?.objectives?.contains(Constants.COLD);
       state.unitWeightHeight = HeightWeightUnits.getAllUnits().firstWhere((element) => element.id == state.profile?.physicalCharacteristics?.unit, orElse: () => HeightWeightUnits());
       emit(state.copyWith(
         isLoading: false,
@@ -439,7 +439,8 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     },);
 
     on<SetColdStateAction>((event, emit) {
-      final improveSystemId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.IMPROVE_HUMAN_SYSTEM).id ?? -1;
+      // final improveSystemId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.IMPROVE_HUMAN_SYSTEM).id ?? -1;
+      const improveSystemId = Constants.COLD;
       if (improveSystemId != -1) {
         manageObjectives(improveSystemId);
         add(FinishProfileAction(nextScreen: event.onFinish));
