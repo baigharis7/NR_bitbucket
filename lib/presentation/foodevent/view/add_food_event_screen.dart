@@ -148,7 +148,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
       value: bloc,
       child: SafeArea(
         child: Scaffold(
-          resizeToAvoidBottomInset: false,
+          // resizeToAvoidBottomInset: false,
           // extendBody: true,
           // extendBodyBehindAppBar: true,
           // appBar: AppBar(automaticallyImplyLeading: false, backgroundColor: Colors.transparent, elevation: 0),

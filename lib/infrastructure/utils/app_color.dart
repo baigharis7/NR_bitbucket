@@ -38,6 +38,8 @@ class AppColors {
   static const whit = Color(0xBEFFFFFF);
   static const white85Percent = Color(0xD9FFFFFF);
   static const white65Percent = Color(0xA6FFFFFF);
+  static const white70Percent = Color(0xB3FFFFFF);
+  static const white25Percent = Color(0x40FFFFFF);
   static const greenCyan = Color(0xFF084326);
   static const bluishGreen = Color(0xFF15A95F);
   static const silver = Color(0xFFC8C7C7);
@@ -46,5 +48,6 @@ class AppColors {
   static const red45Percent = Color(0x73C50707);
   static const black15Percent = Color(0x26000000);
   static const black25Percent = Color(0x40000000);
+  static const black59Percent = Color(0x96000000);
   static const cloudyGrey = Color(0xFF696969);
 }

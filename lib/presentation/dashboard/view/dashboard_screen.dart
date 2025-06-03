@@ -271,16 +271,7 @@ class _DashboardScreen extends State<DashboardScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           WeekCalendarWidget(callGetAllEvents: (day) => bloc.getEventsForDay(day)),
-                          if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
-                              title: AppLocalizations.of(context)!.menstruation,
-                              currentState: state.isMenstruation ?? false,
-                              onStateChange: (value) => bloc.add(UpdateMenstruationStateAction(isMenstruation: value)),
-                          ),
-                          SwitchDashboardWidget(
-                            title: AppLocalizations.of(context)!.cold,
-                            currentState: state.isCold ?? false,
-                            onStateChange: (value) => bloc.add(UpdateColdStateAction(isCold: value)),
-                          ),
+                          const SizedBox(height: Dimens.heightXSmall),
                           SizedBox(height: Dimens.heightXXLarge, child: NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(),)),
                       // if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
                       //     title: AppLocalizations.of(context)!.menstruation,

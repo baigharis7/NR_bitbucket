@@ -4,6 +4,7 @@ class Dimens {
   static const padding4 = 4.0;
   static const padding6 = 6.0;
   static const paddingSmall = 8.0;
+  static const padding10 = 10.0;
   static const paddingNormal = 12.0;
   static const paddingLarge = 16.0;
   static const paddingXLarge = 24.0;
@@ -46,6 +47,7 @@ class Dimens {
   static const fontSize20 = 20.0;
   static const fontSizeXLarge = 22.0;
   static const fontSizeXXLarge = 24.0;
+  static const fontSize34 = 34.0;
 
   // Borders
   static const borderSmall = 1.0;

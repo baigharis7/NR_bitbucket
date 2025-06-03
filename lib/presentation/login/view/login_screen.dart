@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
@@ -16,7 +18,9 @@ import 'package:nutrenaissance_flutter/presentation/privacypolicy/privacy_policy
 import 'package:nutrenaissance_flutter/presentation/profile/registry/view/registry_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/welcome/welcome_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_button_1.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/generic_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -313,33 +317,70 @@ class _LoginScreenState extends State<LoginScreen>
     return ChangeNotifierProvider<LoginProviderNew>(
       create: (context) => provider,
       child: Consumer<LoginProviderNew>(
-        builder: (context, model, _) => SafeArea(
-          child: Stack(
-            children: [
-              Scaffold(
-                backgroundColor: Colors.white,
-                body: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(vertical: model.isLogin ? Dimens.heightNormal : Dimens.marginSmall),
+        builder: (context, model, _) => Stack(
+          children: [
+            // Background image or gradient
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/background.png'), // Your image
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+
+            // Blur effect
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
+              child: Container(
+                color: AppColors.black59Percent, // Needed to activate the blur
+              ),
+            ),
+            Scaffold(
+              backgroundColor: Colors.transparent,
+              body: SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(Dimens.paddingXLarge),
                   child: Form(
                     key: _formKey,
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          margin: const EdgeInsets.all(Dimens.marginXLarge),
+                          margin: const EdgeInsets.all(Dimens.marginXXLarge),
                           child: Image.asset(
-                            height: 140,
-                            width: 305,
-                            'assets/images/logo_name_black.png',
+                            'assets/images/logo_name_white.png',
                             fit: BoxFit.cover,
                           ),
                         ),
+                        if (model.isLogin) Container(
+                          margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
+                          child: Text(AppLocalizations.of(context)!.joy_of_science,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w300,
+                            fontSize: Dimens.fontSize34,
+                            color: Colors.white,
+                            height: 1.4,
+                          ), textAlign: TextAlign.center,),
+                        ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 20,right: 20,bottom: 20,top: 50),
+                          padding: const EdgeInsets.only(bottom: 20,top: 50),
                           child: TextFormField(
+                            cursorColor: Colors.white,
+                            style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
-                              border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge))),
-                              hintText: model.isLogin ? AppLocalizations.of(context)!.email : AppLocalizations.of(context)!.name ,
+                              focusColor: Colors.white,
+                              enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
+                              focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+                              prefixIcon: Container(
+                                padding: const EdgeInsets.only(bottom: Dimens.padding10),
+                                height: Dimens.height32,
+                                child: Image.asset(
+                                  'assets/icon/icon_user.png',
+                                ),
+                              ),
+                              hintStyle: const TextStyle(color: Colors.white),
+                              hintText: /*model.isLogin ? AppLocalizations.of(context)!.email : */AppLocalizations.of(context)!.name,
                               errorMaxLines: 3,
                             ),
                             controller: _usernameController,
@@ -361,10 +402,24 @@ class _LoginScreenState extends State<LoginScreen>
                             child: SlideTransition(
                               position: _slideAnimation!,
                               child: Padding(
-                                padding: const EdgeInsets.only(left: 20,right: 20,bottom: 20),
+                                padding: const EdgeInsets.only(bottom: 20),
                                 child: TextFormField(
+                                  cursorColor: Colors.white,
+                                  style: const TextStyle(color: Colors.white),
                                   decoration: InputDecoration(
-                                    border:  const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge))),
+                                    focusColor: Colors.white,
+                                    enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
+                                    focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+                                    prefixIcon: Container(
+                                      padding: const EdgeInsets.only(left: 12, bottom: 8, right: 12),// to show container bounds
+                                      height: Dimens.heightXXSmall,
+                                      width: Dimens.widthXXXXSmall,
+                                      child: Image.asset(
+                                        'assets/icon/icon_email.png',
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                    hintStyle: const TextStyle(color: Colors.white),
                                     hintText:
                                     AppLocalizations.of(context)!.email,
                                     errorMaxLines: 3,
@@ -378,26 +433,36 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge))),
-                              hintText: AppLocalizations.of(context)!.password_hint,
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  model.isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                ),
-                                onPressed: () => model.changePasswordVisibility(),
+                        TextFormField(
+                          cursorColor: Colors.white,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            focusColor: Colors.white,
+                            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
+                            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+                            prefixIcon: Container(
+                              padding: const EdgeInsets.only(bottom: Dimens.padding10),
+                              height: Dimens.height32,
+                              child: Image.asset(
+                                'assets/icon/icon_password.png',
                               ),
-                              errorMaxLines: 4,
                             ),
-                            controller: _passwordController,
-                            obscureText: !model.isPasswordVisible,
-                            validator: (value) => resolveFormError(context, model.validatePassword(value)),
-                            // onChanged: (value) => _formKey.currentState!.validate(),
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            hintStyle: const TextStyle(color: Colors.white),
+                            hintText: AppLocalizations.of(context)!.password_hint,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                model.isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                color: Colors.white,
+                              ),
+                              onPressed: () => model.changePasswordVisibility(),
+                            ),
+                            errorMaxLines: 4,
                           ),
+                          controller: _passwordController,
+                          obscureText: !model.isPasswordVisible,
+                          validator: (value) => resolveFormError(context, model.validatePassword(value)),
+                          // onChanged: (value) => _formKey.currentState!.validate(),
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                         ),
                         if (!model.isLogin)
                           AnimatedContainer(
@@ -412,14 +477,27 @@ class _LoginScreenState extends State<LoginScreen>
                               child: SlideTransition(
                                 position: _slideAnimation!,
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                                  padding: const EdgeInsets.symmetric(vertical: 20),
                                   child: TextFormField(
+                                    cursorColor: Colors.white,
+                                    style: const TextStyle(color: Colors.white),
                                     decoration: InputDecoration(
-                                      border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge))),
+                                      focusColor: Colors.white,
+                                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
+                                      focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+                                      prefixIcon: Container(
+                                        padding: const EdgeInsets.only(bottom: Dimens.padding10),
+                                        height: Dimens.height32,
+                                        child: Image.asset(
+                                          'assets/icon/icon_password.png',
+                                        ),
+                                      ),
+                                      hintStyle: const TextStyle(color: Colors.white),
                                       hintText: AppLocalizations.of(context)!.repeat_password,
                                       suffixIcon: IconButton(
                                         icon: Icon(
                                           model.isRepeatPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                          color: Colors.white,
                                         ),
                                         onPressed: () => model.changeRepeatPasswordVisibility(),
                                       ),
@@ -435,43 +513,25 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                             ),
                           ),
-                        if (model.isLogin) Padding(
-                          padding: const EdgeInsets.only(top: Dimens.heightXXSmall,left: Dimens.heightXSmall,right: Dimens.heightXSmall,bottom: Dimens.heightSmall),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: InkWell(
-                              child: Text(
-                                AppLocalizations.of(context)!
-                                    .forgotten_password,
-                                textAlign: TextAlign.right,
-                                style: const TextStyle(
-                                  decoration: TextDecoration.underline,
-                                  color: AppColors.mountainMeadow,),
-                              ),
-                              onTap: () => Navigator.pushNamed(context, ForgottenPasswordScreen.routeName),
-                            ),),
-                        ),
-                        if (!model.isLogin) Padding(padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal),
-                          child: SizedBox(width: double.infinity, child: Row(mainAxisSize: MainAxisSize.min,mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Checkbox(value: model.isPrivacyPolicyChecked, onChanged: (value) {
-                                model.setPrivacyPolicyChecked(value!);
-                              },),
-                              Expanded(
-                                child: InkWell(onTap: () async {
-                                  Navigator.pushNamed(context, PrivacyPolicy.routeName).then((value) => model.setPrivacyPolicyChecked(value as bool));
-                                }, child: Text(AppLocalizations.of(context)!.privacy_policy, textAlign: TextAlign.start, style: const TextStyle(fontSize: Dimens.fontSizeNormal),)),
-                              ),
-                            ],
-                          )),),
+                        if (!model.isLogin) SizedBox(width: double.infinity, child: Row(mainAxisSize: MainAxisSize.min,mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Checkbox(value: model.isPrivacyPolicyChecked, side: const BorderSide(color: Colors.white, width: 2), activeColor: Colors.transparent, onChanged: (value) {
+                              model.setPrivacyPolicyChecked(value!);
+                            },),
+                            Expanded(
+                              child: InkWell(onTap: () async {
+                                Navigator.pushNamed(context, PrivacyPolicy.routeName).then((value) => model.setPrivacyPolicyChecked(value as bool));
+                              }, child: Text(AppLocalizations.of(context)!.privacy_policy, textAlign: TextAlign.start, style: const TextStyle(fontSize: Dimens.fontSizeNormal, color: Colors.white),)),
+                            ),
+                          ],
+                        )),
                         Container(
-                          padding: const EdgeInsets.only(top: 20),
-                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                          child: RoundedCustomButton(
+                          margin: const EdgeInsets.symmetric(vertical: Dimens.marginXXLarge),
+                          child: GenericButton(
+                              title: model.isLogin
+                                  ? AppLocalizations.of(context)!.login
+                                  : AppLocalizations.of(context)!.register,
                             enableButton: model.isLogin ? true : model.isPrivacyPolicyChecked,
-                            buttonText: model.isLogin
-                                ? AppLocalizations.of(context)!.login
-                                : AppLocalizations.of(context)!.register,
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 model.submitData(
@@ -496,96 +556,87 @@ class _LoginScreenState extends State<LoginScreen>
                             },
                           ),
                         ),
-                        // Padding(
-                        //   padding: EdgeInsets.zero,
-                        //   child: Container(
-                        //     margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal, horizontal: Dimens.marginNormal),
-                        //     child: Row(
-                        //       mainAxisAlignment: MainAxisAlignment.center,
-                        //       children: [
-                        //         Expanded(
-                        //           flex: 2,
-                        //           child: Text(
-                        //             model.isLogin ? AppLocalizations.of(context)!.dont_have_account : AppLocalizations.of(context)!.already_have_account,textAlign: TextAlign.right,
+                        // RoundedCustomButton(
+                        //   enableButton: model.isLogin ? true : model.isPrivacyPolicyChecked,
+                        //   buttonText: model.isLogin
+                        //       ? AppLocalizations.of(context)!.login
+                        //       : AppLocalizations.of(context)!.register,
+                        //   onPressed: () {
+                        //     if (_formKey.currentState!.validate()) {
+                        //       model.submitData(
+                        //         username: _usernameController.text.trim().orEmpty(),
+                        //         email: _emailController.text.orEmpty(),
+                        //         password: _passwordController.text.orEmpty(),
+                        //         repeatPassword: _repeatPasswordController.text.orEmpty(),
+                        //         action: model.isLogin
+                        //             ? () => Navigator.of(context).popAndPushNamed(DashboardScreen.routeName)
+                        //             : () => _showMFADialog(
+                        //           context: context,
+                        //           sendVerificationCode: (confirmationCode) => model.sendVerificationCode(
+                        //             confirmationCode: confirmationCode,
+                        //             action: () => Navigator.of(context).popAndPushNamed(WelcomeScreen.routeName, result: true,),
+                        //             alreadyExistsAlias: () => Navigator.pop(context),
                         //           ),
+                        //           resendVerificationCode: () => model.resendVerificationCode(),
                         //         ),
-                        //         const SizedBox(width: Dimens.marginXSmall,),
-                        //         Expanded(
-                        //           flex: 1,
-                        //           child: InkWell(
-                        //             onTap: () {
-                        //               _usernameController.clear();
-                        //               _emailController.clear();
-                        //               _passwordController.clear();
-                        //               _repeatPasswordController.clear();
-                        //               model.changeLoginMode(() {
-                        //               _controller!.forward();
-                        //             });},
-                        //             child: Text(
-                        //               model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login,
-                        //               style: const TextStyle(color: AppColors.mountainMeadow, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge),textAlign: TextAlign.left,
-                        //             ),
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ),
+                        //         goToRegistry: () => Navigator.of(context).popAndPushNamed(WelcomeScreen.routeName),
+                        //       );
+                        //     }
+                        //   },
                         // ),
-                        InkWell(
-                          onTap: () {
-                            _usernameController.clear();
-                            _emailController.clear();
-                            _passwordController.clear();
-                            _repeatPasswordController.clear();
-                            model.changeLoginMode(() { _controller!.forward(); });
-                          },
-                          child: RichText(text: TextSpan(
-                            text: model.isLogin ? AppLocalizations.of(context)!.dont_have_account : AppLocalizations.of(context)!.already_have_account,
-                            style: const TextStyle(color: Colors.black, fontSize: Dimens.fontSizeMedium),
-                            children: <TextSpan>[
-                              TextSpan(text: model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login, style: const TextStyle(color: AppColors.mountainMeadow, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge)),
-                            ],
-                          ),),
+                        if (model.isLogin) InkWell(
+                          child: Text(
+                            AppLocalizations.of(context)!
+                                .forgotten_password,
+                            textAlign: TextAlign.start,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: Dimens.fontSizeMedium,
+                              decoration: TextDecoration.underline,
+                              color: Colors.white,),
+                          ),
+                          onTap: () => Navigator.pushNamed(context, ForgottenPasswordScreen.routeName),
                         ),
-                        // Padding(
-                        //   padding: const EdgeInsets.symmetric(vertical: 20),
-                        //   child: Center(
-                        //     child: TextButton(
-                        //       style: TextButton.styleFrom(
-                        //         foregroundColor: Colors.amber,
-                        //         textStyle: const TextStyle(),
-                        //       ),
-                        //       onPressed: () {},
-                        //       child: Text(
-                        //         AppLocalizations.of(context)!.forgotten_password,
-                        //         style: const TextStyle(
-                        //           color: Colors.black,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
+                          child: InkWell(
+                            onTap: () {
+                              _usernameController.clear();
+                              _emailController.clear();
+                              _passwordController.clear();
+                              _repeatPasswordController.clear();
+                              model.changeLoginMode(() { _controller!.forward(); });
+                            },
+                            child: RichText(text: TextSpan(
+                              text: model.isLogin ? AppLocalizations.of(context)!.dont_have_account : AppLocalizations.of(context)!.already_have_account,
+                              style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeMedium,),
+                              children: <TextSpan>[
+                                TextSpan(text: model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),),
+                              ],
+                            ),),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
               ),
-              if (model.isLoading) showLoadingDialog(context),
-              if (model.getNotConfirmedUserTryingToLogin) _notConfirmedUserTryingToLogin(
+            ),
+            if (model.isLoading) showLoadingDialog(context),
+            if (model.getNotConfirmedUserTryingToLogin) _notConfirmedUserTryingToLogin(
+              context: context,
+              notConfirmedUserCancelsReceiveConfirmationCode: () => model.notConfirmedUserCancelsReceiveConfirmationCode(),
+              notConfirmedUserAsksForNewVerificationCode: () => model.notConfirmedUserAsksForNewVerificationCode(() => _showMFADialog(
                 context: context,
-                notConfirmedUserCancelsReceiveConfirmationCode: () => model.notConfirmedUserCancelsReceiveConfirmationCode(),
-                notConfirmedUserAsksForNewVerificationCode: () => model.notConfirmedUserAsksForNewVerificationCode(() => _showMFADialog(
-                  context: context,
-                  sendVerificationCode: (confirmationCode) => model.sendVerificationCode(
-                    confirmationCode: confirmationCode,
-                    action: () => Navigator.of(context).popAndPushNamed(RegistryScreen.routeName, result: true,),
-                    alreadyExistsAlias: () => Navigator.pop(context),
-                  ),
-                  resendVerificationCode: () => model.resendVerificationCode(),
-                ),),
-              ),
-            ],
-          ),
+                sendVerificationCode: (confirmationCode) => model.sendVerificationCode(
+                  confirmationCode: confirmationCode,
+                  action: () => Navigator.of(context).popAndPushNamed(RegistryScreen.routeName, result: true,),
+                  alreadyExistsAlias: () => Navigator.pop(context),
+                ),
+                resendVerificationCode: () => model.resendVerificationCode(),
+              ),),
+            ),
+          ],
         ),
       ),
     );

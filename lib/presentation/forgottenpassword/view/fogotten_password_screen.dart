@@ -1,13 +1,17 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/forgottenpassword/bloc/forgotten_password_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/resetpassword/view/reset_password_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/generic_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/errors/error_types.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
+import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../../infrastructure/utils/validator_utils.dart';
 import '../../common/view/loading_screen.dart';
@@ -43,113 +47,155 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: bloc,
-      child: SafeArea(
-        child: BlocConsumer<ForgottenPasswordBloc, ForgottenPasswordState>(
-          listener: (ctx, state) {
-            if (state.isLoading) {
-              LoadingScreen.instance().show(
-                context: ctx,
-                text: AppLocalizations.of(ctx)!.loading,
-              );
-            } else {
-              LoadingScreen.instance().hide();
-            }
-            if (state.onError != null) showErrorSnackBar(context, userError(ctx, state.onError!));
-          },
-          builder: (context, state) {
-            return Scaffold(
-                appBar: AppBar(
-                backgroundColor: Colors.transparent,
-                titleSpacing: Dimens.marginNormal,
-                elevation: 0,
-                leading: IconButton(
-                onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 25,),
-            ),),
-              backgroundColor: Colors.white,
-              body: Form(
-                key: _formKey,
-                child: Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: Dimens.marginXXLarge,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: Dimens.marginXXLarge,
-                        ),
-                        child: Text(
-                          AppLocalizations.of(context)!.forgotten_password,
-                          style: const TextStyle(
-                            fontSize: Dimens.fontSizeLarge,
-                          ),
-                          textAlign: TextAlign.start,
-                        ),
-                      ),
-                      Text(
-                        AppLocalizations.of(context)!.enter_email_for_link,
-                        style: const TextStyle(
-                          fontSize: Dimens.fontSizeMedium,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: Dimens.marginSmall,
-                        ),
-                        width: double.infinity,
-                        child: Text(
-                          AppLocalizations.of(context)!.email,
-                          style: const TextStyle(
-                            color: Colors.black45,
-                          ),
-                        ),
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(Dimens.borderXLarge),
-                            ),
-                          ),
-                          hintText: AppLocalizations.of(context)!
-                              .email,
-                          errorMaxLines: 3,
-                        ),
-                        controller: _emailController,
-                        validator: (value) => resolveFormError(
-                            context,
-                            isEmail(value)
-                                ? null
-                                : FormErrorTypes.emailFormatError),
-                        onChanged: (value) => _formKey.currentState!.validate(),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: Dimens.marginSmall,
-                        ),
-                        child: RoundedCustomButton(
-                          buttonText:
-                              AppLocalizations.of(context)!.reset_password,
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              bloc.add(ResetPasswordRequestEventAction(
-                                  userName: _emailController.text.toString(),
-                                  next: () => Navigator.pushNamed(
-                                      context, ResetPasswordScreen.routeName)));
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+      child: Stack(
+        children: [
+          // Background image or gradient
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/background.png'), // Your image
+                fit: BoxFit.cover,
               ),
-            );
-          },
-        ),
+            ),
+          ),
+
+          // Blur effect
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
+            child: Container(
+              color: AppColors.black59Percent, // Needed to activate the blur
+            ),
+          ),
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            extendBodyBehindAppBar: true,
+            extendBody: true,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              titleSpacing: Dimens.marginNormal,
+              elevation: 0,
+              leading: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 25,),
+              ),),
+            body: BlocConsumer<ForgottenPasswordBloc, ForgottenPasswordState>(
+              listener: (ctx, state) {
+                if (state.isLoading) {
+                  LoadingScreen.instance().show(
+                    context: ctx,
+                    text: AppLocalizations.of(ctx)!.loading,
+                  );
+                } else {
+                  LoadingScreen.instance().hide();
+                }
+                if (state.onError != null) showErrorSnackBar(context, userError(ctx, state.onError!));
+              },
+              builder: (context, state) {
+                return SafeArea(
+                  child: SingleChildScrollView(
+                    child: Form(
+                      key: _formKey,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: Dimens.marginXXLarge,
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.all(Dimens.marginXXLarge),
+                              child: Image.asset(
+                                'assets/images/logo_name_white.png',
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                vertical: Dimens.marginXXLarge,
+                              ),
+                              child: Text(
+                                AppLocalizations.of(context)!.forgotten_password,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: Dimens.fontSizeXXLarge,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Text(
+                              AppLocalizations.of(context)!.enter_email_for_link,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: Dimens.fontSizeMedium,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            Container(
+                              margin: const EdgeInsets.symmetric(vertical: Dimens.marginXXLarge),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  focusColor: Colors.white,
+                                  enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
+                                  focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+                                  prefixIcon: Container(
+                                    padding: const EdgeInsets.only(left: 12, bottom: 8, right: 12),// to show container bounds
+                                    height: Dimens.heightXXSmall,
+                                    width: Dimens.widthXXXXSmall,
+                                    child: Image.asset(
+                                      'assets/icon/icon_email.png',
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                  hintStyle: const TextStyle(color: Colors.white),
+                                  hintText:
+                                  AppLocalizations.of(context)!.email,
+                                  errorMaxLines: 3,
+                                ),
+                                controller: _emailController,
+                                validator: (value) => resolveFormError(
+                                    context,
+                                    isEmail(value)
+                                        ? null
+                                        : FormErrorTypes.emailFormatError),
+                                onChanged: (value) => _formKey.currentState!.validate(),
+                              ),
+                            ),
+                            GenericButton(
+                              title: AppLocalizations.of(context)!.reset_password,
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  bloc.add(ResetPasswordRequestEventAction(
+                                      userName: _emailController.text.toString(),
+                                      next: () => Navigator.pushNamed(
+                                          context, ResetPasswordScreen.routeName)));
+                                }
+                              },
+                            ),
+                            Container(
+                              margin: const EdgeInsets.symmetric(vertical: Dimens.marginXXXXLarge),
+                              alignment: Alignment.centerLeft,
+                              child: InkWell(
+                                onTap: () => Navigator.pop(context),
+                                child: RichText(text: TextSpan(
+                                  text: AppLocalizations.of(context)!.already_have_account,
+                                  style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeMedium,),
+                                  children: <TextSpan>[
+                                    TextSpan(text: AppLocalizations.of(context)!.login, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),),
+                                  ],
+                                ),),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ] ,
       ),
     );
   }
