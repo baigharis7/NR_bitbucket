@@ -40,6 +40,7 @@ class Constants {
   static const BACK = 'Back';
   static const DURING_MENSTRUATION = 56;
   static const IMPROVE_THE_IMMUNE_SYSTEM = 55;
+  static const COLD = 57;
   static const IMPROVE_SPORT_PERFORMANCE = 47;
   static const REDUCE_RISK_OF_INJURY = 48;
   static const RECOVERY_AFTER_SPORT_INJURY = 49;

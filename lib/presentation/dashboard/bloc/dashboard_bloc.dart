@@ -187,7 +187,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       }
       state.userKcal = getUserKcalSelectiveObjectives(state.profile?.kcal ?? 0);
       state.isMenstruation = state.profile?.objectives?.contains(Constants.DURING_MENSTRUATION);
-      state.isCold = state.profile?.objectives?.contains(Constants.IMPROVE_THE_IMMUNE_SYSTEM);
+      state.isCold = state.profile?.objectives?.contains(Constants.COLD);
 
       final caloriesConsumed = await getDayCaloriesInteractor.execute(dateTime: event.dateTime);
       final todayCreatine = await getTodayCreatineEventInteractor.execute(dateTime: event.dateTime);
@@ -299,7 +299,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     },);
 
     on<UpdateColdStateAction>((event, emit) {
-      final improveSystemId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.IMPROVE_HUMAN_SYSTEM).id ?? -1;
+      // final improveSystemId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.IMPROVE_HUMAN_SYSTEM).id ?? -1;
+      const improveSystemId = Constants.COLD;
       if (improveSystemId != -1) {
         manageObjectives(improveSystemId);
         add(UpdateProfileEventAction(value: event.isCold));
