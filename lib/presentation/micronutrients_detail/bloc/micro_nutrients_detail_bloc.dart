@@ -3,6 +3,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micron
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
+import '../../../domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
 import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import '../../../domain/interactor/masterfiles/get_master_file_interactor.dart';
 import '../../../domain/interactor/profile/get_profile_interactor.dart';
@@ -23,11 +24,13 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
   final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetProfileInteractor getProfileInteractor;
+  final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
 
   MicroNutrientsDetailBloc({
     required this.getWeekFoodEventsInteractor,
     required this.getMasterFileInteractor,
     required this.getProfileInteractor,
+    required this.getFoodEventsOfTodayInteractor,
   }) : super(MicroNutrientsDetailState(
     isLoading: false,
   ),
@@ -40,9 +43,29 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       state.profile = await getProfileInteractor.execute();
 
+      state.foodEvents = await getFoodEventsOfTodayInteractor.execute();
+
+      state.temporaryMicronutrients = state.profile?.temporaryMicronutrients.orEmpty()
+          .map(
+            (micronutrient) =>
+            NutrientsModel(
+              quantityConsumed: getQuantityConsumedSoFar(micronutrient),
+              nutrientInfoMaster: getNutrientInfo(micronutrient),
+              fractionToFill: 0.0,
+              unit: getUnitForMicronutrient(micronutrient),
+              rda: getNutrientRda(micronutrient),
+              upperLimit: getNutrientUpperLimit(micronutrient),
+            ),
+      ).toList();
+
       state.micronutrientsWeekly = state.profile?.micronutrients.orEmpty()
           .map(
               (micronutrient) => getDataByWeekly(micronutrient),
+      ).toList();
+
+      state.temporaryMicronutrientsWeekly = state.profile?.temporaryMicronutrients.orEmpty()
+          .map(
+            (micronutrient) => getDataByWeekly(micronutrient),
       ).toList();
 
       emit(state.copyWith(isLoading: false));
@@ -56,6 +79,30 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
   }
 
   String getTodayMessage(String todayString, String locale) => DateTimeHelper().formatDashboardTodayMessage(todayString, locale);
+
+  double getQuantityConsumedSoFar(String micronutrient) {
+    double nutrientQuantitySoFar = 0.0;
+    for (var foodEvent in state.foodEvents!) {
+      for (var food in foodEvent.foodInfo!) {
+        nutrientQuantitySoFar = nutrientQuantitySoFar +
+            (food.params!.toJson()[micronutrient] ?? 0.0);
+      }
+    }
+
+    return double.parse((nutrientQuantitySoFar).toStringAsFixed(2));
+  }
+
+  String getUnitForMicronutrient(String micronutrient) {
+    // final nutrientInfo = state.nutrientsInfoMaster!.nutrientsInfo.firstWhere((info,) => info.officialName == micronutrient);
+    // return nutrientInfo.unit;
+    var unit = '';
+    for (var info in state.nutrientsInfoMaster!.nutrientsInfo) {
+      if (info.officialName == micronutrient) {
+        unit = info.unit;
+      }
+    }
+    return unit;
+  }
 
   NutrientInfoMaster getNutrientInfo(String nutrientName) {
     NutrientInfoMaster nutrientInfo = NutrientInfoMaster(officialName: nutrientName, unit: '', en: '', es: '');

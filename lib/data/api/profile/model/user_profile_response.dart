@@ -9,10 +9,11 @@ part 'user_profile_response.g.dart';
 class UserProfileResponse {
   bool uploadSuccess;
   List<String> micronutrients;
+  List<String> temporaryMicronutrients;
   List<UserRda> userRdas;
   int kcal;
 
-  UserProfileResponse({required this.uploadSuccess, required this.micronutrients, required this.userRdas, required this.kcal});
+  UserProfileResponse({required this.uploadSuccess, required this.micronutrients, required this.temporaryMicronutrients, required this.userRdas, required this.kcal});
 
   factory UserProfileResponse.fromJson(Map<String, dynamic> json) => _$UserProfileResponseFromJson(json);
   Map<String, dynamic> toJson() => _$UserProfileResponseToJson(this);

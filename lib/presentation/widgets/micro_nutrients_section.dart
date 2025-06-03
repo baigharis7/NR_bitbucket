@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/vertical_nutrient_widget.dart';
 
 import '../../domain/models/dashboard/nutrients_model.dart';
@@ -10,7 +12,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MicroNutrientsSection extends StatelessWidget {
   final List<NutrientsModel> micronutrients;
-  const MicroNutrientsSection({super.key, required this.micronutrients});
+  final List<NutrientsModel> temporaryMicronutrients;
+  const MicroNutrientsSection({super.key, required this.micronutrients, required this.temporaryMicronutrients});
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +23,7 @@ class MicroNutrientsSection extends StatelessWidget {
           margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
             child: DashTitleWidget(title: AppLocalizations.of(context)!.micronutrientss, onInfoClick: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: micronutrients))),
         Container(
+          width: double.infinity,
           margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
           padding: const EdgeInsets.symmetric(vertical: Dimens.paddingXLarge),
           decoration: const BoxDecoration(
@@ -30,7 +34,9 @@ class MicroNutrientsSection extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
             scrollDirection: Axis.horizontal,
             child: Row(children: [
-              ...micronutrients.map((nutrient) => VerticalNutrientWidget(nutrient: nutrient)),
+              if (micronutrients.isNotEmpty) NutrientsSection(nutrients: micronutrients.take(Constants.DASHBOARD_LIST_SIZE).toList(), title: AppLocalizations.of(context)!.objectives, image: 'assets/images/goal_objectives.png'),
+              const SizedBox(width: Dimens.width18),
+              if (temporaryMicronutrients.isNotEmpty) NutrientsSection(nutrients: temporaryMicronutrients, titleColor: AppColors.redOxide, title: AppLocalizations.of(context)!.temporary_objectives, image: 'assets/images/hour_glass.png'),
             ],),
           ),
         ),

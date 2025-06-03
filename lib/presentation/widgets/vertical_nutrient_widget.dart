@@ -9,7 +9,8 @@ import '../../infrastructure/utils/string_utils.dart';
 
 class VerticalNutrientWidget extends StatefulWidget {
   final NutrientsModel nutrient;
-  const VerticalNutrientWidget({super.key, required this.nutrient});
+  final Color? titleColor;
+  const VerticalNutrientWidget({super.key, required this.nutrient, this.titleColor});
 
   @override
   State<VerticalNutrientWidget> createState() => _VerticalNutrientWidgetState();
@@ -29,7 +30,7 @@ class _VerticalNutrientWidgetState extends State<VerticalNutrientWidget> {
       width: Dimens.width60,
       child: Column(
         children: [
-          Text('${widget.nutrient.rda} ${widget.nutrient.unit}', maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.peacockBlue, fontSize: Dimens.fontSizeXSmall, fontWeight: FontWeight.w600)),
+          Text('${widget.nutrient.rda} ${widget.nutrient.unit}', maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: TextStyle(color: widget.titleColor ?? AppColors.peacockBlue, fontSize: Dimens.fontSizeXSmall, fontWeight: FontWeight.w600)),
           GestureDetector(
             onLongPressStart: (details) {
               setState(() {
@@ -113,7 +114,7 @@ class _VerticalNutrientWidgetState extends State<VerticalNutrientWidget> {
               ),
             ),
           ),
-          Text(widget.nutrient.nutrientInfoMaster.officialName.toUpperCase(), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.peacockBlue, decoration: TextDecoration.underline, decorationStyle: TextDecorationStyle.solid, decorationThickness: 2,)),
+          Text(widget.nutrient.nutrientInfoMaster.officialName.toUpperCase(), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: widget.titleColor ?? AppColors.peacockBlue, decoration: TextDecoration.underline, decorationStyle: TextDecorationStyle.solid, decorationThickness: 2,)),
         ],
       ),
     );

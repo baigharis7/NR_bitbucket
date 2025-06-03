@@ -326,6 +326,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         userProfileResponse = await uploadProfileInteractor.execute(profile);
         if (userProfileResponse.uploadSuccess) {
           profile.micronutrients = userProfileResponse.micronutrients;
+          profile.temporaryMicronutrients = userProfileResponse.temporaryMicronutrients;
           profile.userRdas = UserRdas(
             userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul, upperLimit: userRda.upperLimit)).toList(),
           );
@@ -393,6 +394,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         userProfileResponse = await uploadProfileInteractor.execute(profile);
         if (userProfileResponse.uploadSuccess) {
           profile.micronutrients = userProfileResponse.micronutrients;
+          profile.temporaryMicronutrients = userProfileResponse.temporaryMicronutrients;
           profile.userRdas = UserRdas(
             userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul, upperLimit: userRda.upperLimit)).toList(),
           );
@@ -427,8 +429,8 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     });
 
     on<SetMenstruationStateAction>((event, emit) {
-      final mens = event.isMenstruation;
-      final menstruationId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.MENSTRUATION).id ?? -1;
+      // final menstruationId = state.objectivesInfoMaster?.objectives.firstWhere((objective) => objective.en == Constants.MENSTRUATION).id ?? -1;
+      const menstruationId = Constants.DURING_MENSTRUATION;
       if (menstruationId != -1) {
         manageObjectives(menstruationId);
         add(FinishProfileAction(nextScreen: event.onFinish));

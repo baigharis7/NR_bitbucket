@@ -81,6 +81,7 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
   @override
   Future getMasterFile(MasterFilesType masterFilesType) async {
     final masterFileEntity = await localStorageRepository.getMasterFile(masterFilesType);
+    if (masterFileEntity == null) return null;
     switch (masterFilesType) {
       case MasterFilesType.cookingMethods:
         return mapToCookingMethodsMaster(masterFileEntity as CookingMethodsEntity);

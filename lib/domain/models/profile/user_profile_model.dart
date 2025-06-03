@@ -20,6 +20,7 @@ class UserProfileModel {
   int? guts;
   List<int>? objectives;
   List<String>? micronutrients;
+  List<String>? temporaryMicronutrients;
   UserRdas? userRdas;
   List<int>? recommededIds;
   int? kcal;
@@ -41,6 +42,7 @@ class UserProfileModel {
     this.guts,
     this.objectives,
     this.micronutrients,
+    this.temporaryMicronutrients,
     this.userRdas,
     this.recommededIds,
     this.kcal,
@@ -63,6 +65,7 @@ class UserProfileModel {
     guts = null;
     objectives = [];
     micronutrients = [];
+    temporaryMicronutrients = [];
     userRdas = UserRdas(userRdas: []);
     kcal = null;
   }

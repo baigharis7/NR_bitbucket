@@ -28,6 +28,7 @@ class DashboardState {
   UserProfileModel? profile;
   String? advice;
   List<NutrientsModel>? micronutrients;
+  List<NutrientsModel>? temporaryMicronutrients;
   List<NutrientsModel>? macronutrients;
   int? userKcal;
   EnergyModel? energyModel;
@@ -59,6 +60,7 @@ class DashboardState {
     this.profile,
     this.advice,
     this.micronutrients,
+    this.temporaryMicronutrients,
     this.macronutrients,
     this.userKcal,
     this.energyModel,
@@ -92,6 +94,7 @@ class DashboardState {
     UserProfileModel? profile,
     String? advice,
     List<NutrientsModel>? micronutrients,
+    List<NutrientsModel>? temporaryMicronutrients,
     List<NutrientsModel>? macronutrients,
     int? userKcal,
     EnergyModel? energyModel,
@@ -124,6 +127,7 @@ class DashboardState {
       profile: profile ?? this.profile,
       advice: advice ?? this.advice,
       micronutrients: micronutrients ?? this.micronutrients,
+      temporaryMicronutrients: temporaryMicronutrients ?? this.temporaryMicronutrients,
       macronutrients: macronutrients ?? this.macronutrients,
       userKcal: userKcal ?? this.userKcal,
       energyModel: energyModel ?? this.energyModel,

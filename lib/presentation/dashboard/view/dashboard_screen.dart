@@ -309,7 +309,7 @@ class _DashboardScreen extends State<DashboardScreen>
                       //   isEmpty: false,
                       //   screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                       // ),
-                          MicroNutrientsSection(micronutrients: state.micronutrients.orEmpty()),
+                          MicroNutrientsSection(micronutrients: state.micronutrients.orEmpty(), temporaryMicronutrients: state.temporaryMicronutrients.orEmpty()),
                           Container(
                             margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                             child: Row(

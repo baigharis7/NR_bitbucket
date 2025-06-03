@@ -328,7 +328,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                         ),
                       ),
               ),
-              if (ingredient.cookingMethod == Constants.COOKING_METHOD_BREADED || ingredient.cookingMethod == Constants.COOKING_METHOD_FRIED) Container(
+              if ((ingredient.cookingMethod == Constants.COOKING_METHOD_BREADED || ingredient.cookingMethod == Constants.COOKING_METHOD_FRIED) && widget.oilTypes?.data != null) Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                 height: Dimens.heightSmall - 15,
                 child: Container(

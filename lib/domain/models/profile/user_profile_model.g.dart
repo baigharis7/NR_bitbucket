@@ -44,6 +44,9 @@ UserProfileModel _$UserProfileModelFromJson(Map<String, dynamic> json) =>
       micronutrients: (json['micronutrients'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      temporaryMicronutrients: (json['temporaryMicronutrients'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       userRdas: json['userRdas'] == null
           ? null
           : UserRdas.fromJson(json['userRdas'] as Map<String, dynamic>),
@@ -71,6 +74,7 @@ Map<String, dynamic> _$UserProfileModelToJson(UserProfileModel instance) =>
       'guts': instance.guts,
       'objectives': instance.objectives,
       'micronutrients': instance.micronutrients,
+      'temporaryMicronutrients': instance.temporaryMicronutrients,
       'userRdas': instance.userRdas?.toJson(),
       'recommededIds': instance.recommededIds,
       'kcal': instance.kcal,

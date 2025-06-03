@@ -22,6 +22,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/generic_button.dart'
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 
 class LoginScreen extends StatefulWidget {
   static const routeName = '/login_screen';
@@ -45,6 +46,7 @@ class _LoginScreenState extends State<LoginScreen>
   Animation<double>? _opacityAnimation;
   final _formKey = GlobalKey<FormState>();
   bool isChecked = false;
+  late VideoPlayerController _videoController;
 
   void _showExitConfirmationDialog(BuildContext context) {
     showDialog(
@@ -293,6 +295,14 @@ class _LoginScreenState extends State<LoginScreen>
         curve: Curves.easeIn,
       ),
     );
+
+    _videoController = VideoPlayerController.asset('assets/videos/login_bg.mp4')
+      ..initialize().then((_) {
+        _videoController.setLooping(true);
+        _videoController.setVolume(0);
+        _videoController.play();
+        setState(() {});
+      });
   }
 
   @override
@@ -304,6 +314,7 @@ class _LoginScreenState extends State<LoginScreen>
     _passwordController.dispose();
     _repeatPasswordController.dispose();
     _usernameController.dispose();
+    _videoController.dispose();
   }
 
   @override
@@ -320,52 +331,134 @@ class _LoginScreenState extends State<LoginScreen>
         builder: (context, model, _) => Stack(
           children: [
             // Background image or gradient
-            Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/background.png'), // Your image
+            // Container(
+            //   decoration: const BoxDecoration(
+            //     image: DecorationImage(
+            //       image: AssetImage('assets/images/background.png'), // Your image
+            //       fit: BoxFit.cover,
+            //     ),
+            //   ),
+            // ),
+
+            if (_videoController.value.isInitialized)
+              SizedBox.expand(
+                child: FittedBox(
                   fit: BoxFit.cover,
+                  child: SizedBox(
+                    width: _videoController.value.size.width,
+                    height: _videoController.value.size.height,
+                    child: VideoPlayer(_videoController),
+                  ),
                 ),
               ),
-            ),
 
             // Blur effect
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
-              child: Container(
-                color: AppColors.black59Percent, // Needed to activate the blur
-              ),
-            ),
-            Scaffold(
-              backgroundColor: Colors.transparent,
-              body: SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(Dimens.paddingXLarge),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.all(Dimens.marginXXLarge),
-                          child: Image.asset(
-                            'assets/images/logo_name_white.png',
-                            fit: BoxFit.cover,
+            // BackdropFilter(
+            //   filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
+            //   child: Container(
+            //     color: AppColors.black59Percent, // Needed to activate the blur
+            //   ),
+            // ),
+            GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(), // Hides the keyboard
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                body: SafeArea(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(Dimens.paddingXLarge),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.all(Dimens.marginXXLarge),
+                            child: Image.asset(
+                              'assets/images/logo_name_white.png',
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-                        if (model.isLogin) Container(
-                          margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
-                          child: Text(AppLocalizations.of(context)!.joy_of_science,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w300,
-                            fontSize: Dimens.fontSize34,
-                            color: Colors.white,
-                            height: 1.4,
-                          ), textAlign: TextAlign.center,),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 20,top: 50),
-                          child: TextFormField(
+                          if (model.isLogin) Container(
+                            margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
+                            child: Text(AppLocalizations.of(context)!.joy_of_science,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w300,
+                              fontSize: Dimens.fontSize34,
+                              color: Colors.white,
+                              height: 1.4,
+                            ), textAlign: TextAlign.center,),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 20,top: 50),
+                            child: TextFormField(
+                              cursorColor: Colors.white,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
+                                focusColor: Colors.white,
+                                enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
+                                focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+                                prefixIcon: Container(
+                                  padding: const EdgeInsets.only(bottom: Dimens.padding10),
+                                  height: Dimens.height32,
+                                  child: Image.asset(
+                                    'assets/icon/icon_user.png',
+                                  ),
+                                ),
+                                hintStyle: const TextStyle(color: Colors.white),
+                                hintText: /*model.isLogin ? AppLocalizations.of(context)!.email : */AppLocalizations.of(context)!.name,
+                                errorMaxLines: 3,
+                              ),
+                              controller: _usernameController,
+                              validator: (value) => resolveFormError(context, model.validateUsername(value)),
+                            // onChanged: (value) => _formKey.currentState!.validate(),
+                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                            ),
+                          ),
+                          if (!model.isLogin) AnimatedContainer(
+                            constraints: BoxConstraints(
+                              minHeight: !model.isLogin ? 60 : 0,
+                              maxHeight: !model.isLogin ? 120 : 0,
+                            ),
+                            duration:
+                            const Duration(milliseconds: NumConstants.animDelay),
+                            curve: Curves.easeInOut,
+                            child: FadeTransition(
+                              opacity: _opacityAnimation!,
+                              child: SlideTransition(
+                                position: _slideAnimation!,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 20),
+                                  child: TextFormField(
+                                    cursorColor: Colors.white,
+                                    style: const TextStyle(color: Colors.white),
+                                    decoration: InputDecoration(
+                                      focusColor: Colors.white,
+                                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
+                                      focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+                                      prefixIcon: Container(
+                                        padding: const EdgeInsets.only(left: 12, bottom: 8, right: 12),// to show container bounds
+                                        height: Dimens.heightXXSmall,
+                                        width: Dimens.widthXXXXSmall,
+                                        child: Image.asset(
+                                          'assets/icon/icon_email.png',
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      hintStyle: const TextStyle(color: Colors.white),
+                                      hintText:
+                                      AppLocalizations.of(context)!.email,
+                                      errorMaxLines: 3,
+                                    ),
+                                    controller: _emailController,
+                                    validator: (value) => resolveFormError(context, model.validateEmail(value)),
+                                    // onChanged: (value) => _formKey.currentState!.validate(),
+                                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          TextFormField(
                             cursorColor: Colors.white,
                             style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
@@ -376,247 +469,180 @@ class _LoginScreenState extends State<LoginScreen>
                                 padding: const EdgeInsets.only(bottom: Dimens.padding10),
                                 height: Dimens.height32,
                                 child: Image.asset(
-                                  'assets/icon/icon_user.png',
+                                  'assets/icon/icon_password.png',
                                 ),
                               ),
                               hintStyle: const TextStyle(color: Colors.white),
-                              hintText: /*model.isLogin ? AppLocalizations.of(context)!.email : */AppLocalizations.of(context)!.name,
-                              errorMaxLines: 3,
+                              hintText: AppLocalizations.of(context)!.password_hint,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  model.isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () => model.changePasswordVisibility(),
+                              ),
+                              errorMaxLines: 4,
                             ),
-                            controller: _usernameController,
-                            validator: (value) => resolveFormError(context, model.validateUsername(value)),
-                          // onChanged: (value) => _formKey.currentState!.validate(),
+                            controller: _passwordController,
+                            obscureText: !model.isPasswordVisible,
+                            validator: (value) => resolveFormError(context, model.validatePassword(value)),
+                            // onChanged: (value) => _formKey.currentState!.validate(),
                             autovalidateMode: AutovalidateMode.onUserInteraction,
                           ),
-                        ),
-                        if (!model.isLogin) AnimatedContainer(
-                          constraints: BoxConstraints(
-                            minHeight: !model.isLogin ? 60 : 0,
-                            maxHeight: !model.isLogin ? 120 : 0,
-                          ),
-                          duration:
-                          const Duration(milliseconds: NumConstants.animDelay),
-                          curve: Curves.easeInOut,
-                          child: FadeTransition(
-                            opacity: _opacityAnimation!,
-                            child: SlideTransition(
-                              position: _slideAnimation!,
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                child: TextFormField(
-                                  cursorColor: Colors.white,
-                                  style: const TextStyle(color: Colors.white),
-                                  decoration: InputDecoration(
-                                    focusColor: Colors.white,
-                                    enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
-                                    focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
-                                    prefixIcon: Container(
-                                      padding: const EdgeInsets.only(left: 12, bottom: 8, right: 12),// to show container bounds
-                                      height: Dimens.heightXXSmall,
-                                      width: Dimens.widthXXXXSmall,
-                                      child: Image.asset(
-                                        'assets/icon/icon_email.png',
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
-                                    hintStyle: const TextStyle(color: Colors.white),
-                                    hintText:
-                                    AppLocalizations.of(context)!.email,
-                                    errorMaxLines: 3,
-                                  ),
-                                  controller: _emailController,
-                                  validator: (value) => resolveFormError(context, model.validateEmail(value)),
-                                  // onChanged: (value) => _formKey.currentState!.validate(),
-                                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                                ),
+                          if (!model.isLogin)
+                            AnimatedContainer(
+                              constraints: BoxConstraints(
+                                minHeight: !model.isLogin ? 60 : 0,
+                                maxHeight: !model.isLogin ? 120 : 0,
                               ),
-                            ),
-                          ),
-                        ),
-                        TextFormField(
-                          cursorColor: Colors.white,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            focusColor: Colors.white,
-                            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
-                            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
-                            prefixIcon: Container(
-                              padding: const EdgeInsets.only(bottom: Dimens.padding10),
-                              height: Dimens.height32,
-                              child: Image.asset(
-                                'assets/icon/icon_password.png',
-                              ),
-                            ),
-                            hintStyle: const TextStyle(color: Colors.white),
-                            hintText: AppLocalizations.of(context)!.password_hint,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                model.isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                color: Colors.white,
-                              ),
-                              onPressed: () => model.changePasswordVisibility(),
-                            ),
-                            errorMaxLines: 4,
-                          ),
-                          controller: _passwordController,
-                          obscureText: !model.isPasswordVisible,
-                          validator: (value) => resolveFormError(context, model.validatePassword(value)),
-                          // onChanged: (value) => _formKey.currentState!.validate(),
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                        ),
-                        if (!model.isLogin)
-                          AnimatedContainer(
-                            constraints: BoxConstraints(
-                              minHeight: !model.isLogin ? 60 : 0,
-                              maxHeight: !model.isLogin ? 120 : 0,
-                            ),
-                            duration: const Duration(milliseconds: NumConstants.animDelay),
-                            curve: Curves.easeInOut,
-                            child: FadeTransition(
-                              opacity: _opacityAnimation!,
-                              child: SlideTransition(
-                                position: _slideAnimation!,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 20),
-                                  child: TextFormField(
-                                    cursorColor: Colors.white,
-                                    style: const TextStyle(color: Colors.white),
-                                    decoration: InputDecoration(
-                                      focusColor: Colors.white,
-                                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
-                                      focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
-                                      prefixIcon: Container(
-                                        padding: const EdgeInsets.only(bottom: Dimens.padding10),
-                                        height: Dimens.height32,
-                                        child: Image.asset(
-                                          'assets/icon/icon_password.png',
+                              duration: const Duration(milliseconds: NumConstants.animDelay),
+                              curve: Curves.easeInOut,
+                              child: FadeTransition(
+                                opacity: _opacityAnimation!,
+                                child: SlideTransition(
+                                  position: _slideAnimation!,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 20),
+                                    child: TextFormField(
+                                      cursorColor: Colors.white,
+                                      style: const TextStyle(color: Colors.white),
+                                      decoration: InputDecoration(
+                                        focusColor: Colors.white,
+                                        enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
+                                        focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+                                        prefixIcon: Container(
+                                          padding: const EdgeInsets.only(bottom: Dimens.padding10),
+                                          height: Dimens.height32,
+                                          child: Image.asset(
+                                            'assets/icon/icon_password.png',
+                                          ),
                                         ),
-                                      ),
-                                      hintStyle: const TextStyle(color: Colors.white),
-                                      hintText: AppLocalizations.of(context)!.repeat_password,
-                                      suffixIcon: IconButton(
-                                        icon: Icon(
-                                          model.isRepeatPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                          color: Colors.white,
+                                        hintStyle: const TextStyle(color: Colors.white),
+                                        hintText: AppLocalizations.of(context)!.repeat_password,
+                                        suffixIcon: IconButton(
+                                          icon: Icon(
+                                            model.isRepeatPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                            color: Colors.white,
+                                          ),
+                                          onPressed: () => model.changeRepeatPasswordVisibility(),
                                         ),
-                                        onPressed: () => model.changeRepeatPasswordVisibility(),
+                                        errorMaxLines: 3,
                                       ),
-                                      errorMaxLines: 3,
+                                      controller: _repeatPasswordController,
+                                      obscureText: !model.isRepeatPasswordVisible,
+                                      validator: (value) => resolveFormError(context, model.validateRepeatPassword(value, _passwordController.text)),
+                                      // onChanged: (value) => _formKey.currentState!.validate(),
+                                      autovalidateMode: AutovalidateMode.onUserInteraction,
                                     ),
-                                    controller: _repeatPasswordController,
-                                    obscureText: !model.isRepeatPasswordVisible,
-                                    validator: (value) => resolveFormError(context, model.validateRepeatPassword(value, _passwordController.text)),
-                                    // onChanged: (value) => _formKey.currentState!.validate(),
-                                    autovalidateMode: AutovalidateMode.onUserInteraction,
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        if (!model.isLogin) SizedBox(width: double.infinity, child: Row(mainAxisSize: MainAxisSize.min,mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Checkbox(value: model.isPrivacyPolicyChecked, side: const BorderSide(color: Colors.white, width: 2), activeColor: Colors.transparent, onChanged: (value) {
-                              model.setPrivacyPolicyChecked(value!);
-                            },),
-                            Expanded(
-                              child: InkWell(onTap: () async {
-                                Navigator.pushNamed(context, PrivacyPolicy.routeName).then((value) => model.setPrivacyPolicyChecked(value as bool));
-                              }, child: Text(AppLocalizations.of(context)!.privacy_policy, textAlign: TextAlign.start, style: const TextStyle(fontSize: Dimens.fontSizeNormal, color: Colors.white),)),
-                            ),
-                          ],
-                        )),
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: Dimens.marginXXLarge),
-                          child: GenericButton(
-                              title: model.isLogin
-                                  ? AppLocalizations.of(context)!.login
-                                  : AppLocalizations.of(context)!.register,
-                            enableButton: model.isLogin ? true : model.isPrivacyPolicyChecked,
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                model.submitData(
-                                  username: _usernameController.text.trim().orEmpty(),
-                                  email: _emailController.text.orEmpty(),
-                                  password: _passwordController.text.orEmpty(),
-                                  repeatPassword: _repeatPasswordController.text.orEmpty(),
-                                  action: model.isLogin
-                                      ? () => Navigator.of(context).popAndPushNamed(DashboardScreen.routeName)
-                                      : () => _showMFADialog(
-                                    context: context,
-                                    sendVerificationCode: (confirmationCode) => model.sendVerificationCode(
-                                      confirmationCode: confirmationCode,
-                                      action: () => Navigator.of(context).popAndPushNamed(WelcomeScreen.routeName, result: true,),
-                                      alreadyExistsAlias: () => Navigator.pop(context),
+                          if (!model.isLogin) SizedBox(width: double.infinity, child: Row(mainAxisSize: MainAxisSize.min,mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Checkbox(value: model.isPrivacyPolicyChecked, side: const BorderSide(color: Colors.white, width: 2), activeColor: Colors.transparent, onChanged: (value) {
+                                model.setPrivacyPolicyChecked(value!);
+                              },),
+                              Expanded(
+                                child: InkWell(onTap: () async {
+                                  Navigator.pushNamed(context, PrivacyPolicy.routeName).then((value) => model.setPrivacyPolicyChecked(value as bool));
+                                }, child: Text(AppLocalizations.of(context)!.privacy_policy, textAlign: TextAlign.start, style: const TextStyle(fontSize: Dimens.fontSizeNormal, color: Colors.white),)),
+                              ),
+                            ],
+                          )),
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: Dimens.marginXXLarge),
+                            child: GenericButton(
+                                title: model.isLogin
+                                    ? AppLocalizations.of(context)!.login
+                                    : AppLocalizations.of(context)!.register,
+                              enableButton: model.isLogin ? true : model.isPrivacyPolicyChecked,
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  model.submitData(
+                                    username: _usernameController.text.trim().orEmpty(),
+                                    email: _emailController.text.orEmpty(),
+                                    password: _passwordController.text.orEmpty(),
+                                    repeatPassword: _repeatPasswordController.text.orEmpty(),
+                                    action: model.isLogin
+                                        ? () => Navigator.of(context).popAndPushNamed(DashboardScreen.routeName)
+                                        : () => _showMFADialog(
+                                      context: context,
+                                      sendVerificationCode: (confirmationCode) => model.sendVerificationCode(
+                                        confirmationCode: confirmationCode,
+                                        action: () => Navigator.of(context).popAndPushNamed(WelcomeScreen.routeName, result: true,),
+                                        alreadyExistsAlias: () => Navigator.pop(context),
+                                      ),
+                                      resendVerificationCode: () => model.resendVerificationCode(),
                                     ),
-                                    resendVerificationCode: () => model.resendVerificationCode(),
-                                  ),
-                                  goToRegistry: () => Navigator.of(context).popAndPushNamed(WelcomeScreen.routeName),
-                                );
-                              }
-                            },
+                                    goToRegistry: () => Navigator.of(context).popAndPushNamed(WelcomeScreen.routeName),
+                                  );
+                                }
+                              },
+                            ),
                           ),
-                        ),
-                        // RoundedCustomButton(
-                        //   enableButton: model.isLogin ? true : model.isPrivacyPolicyChecked,
-                        //   buttonText: model.isLogin
-                        //       ? AppLocalizations.of(context)!.login
-                        //       : AppLocalizations.of(context)!.register,
-                        //   onPressed: () {
-                        //     if (_formKey.currentState!.validate()) {
-                        //       model.submitData(
-                        //         username: _usernameController.text.trim().orEmpty(),
-                        //         email: _emailController.text.orEmpty(),
-                        //         password: _passwordController.text.orEmpty(),
-                        //         repeatPassword: _repeatPasswordController.text.orEmpty(),
-                        //         action: model.isLogin
-                        //             ? () => Navigator.of(context).popAndPushNamed(DashboardScreen.routeName)
-                        //             : () => _showMFADialog(
-                        //           context: context,
-                        //           sendVerificationCode: (confirmationCode) => model.sendVerificationCode(
-                        //             confirmationCode: confirmationCode,
-                        //             action: () => Navigator.of(context).popAndPushNamed(WelcomeScreen.routeName, result: true,),
-                        //             alreadyExistsAlias: () => Navigator.pop(context),
-                        //           ),
-                        //           resendVerificationCode: () => model.resendVerificationCode(),
-                        //         ),
-                        //         goToRegistry: () => Navigator.of(context).popAndPushNamed(WelcomeScreen.routeName),
-                        //       );
-                        //     }
-                        //   },
-                        // ),
-                        if (model.isLogin) InkWell(
-                          child: Text(
-                            AppLocalizations.of(context)!
-                                .forgotten_password,
-                            textAlign: TextAlign.start,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: Dimens.fontSizeMedium,
-                              decoration: TextDecoration.underline,
-                              color: Colors.white,),
+                          // RoundedCustomButton(
+                          //   enableButton: model.isLogin ? true : model.isPrivacyPolicyChecked,
+                          //   buttonText: model.isLogin
+                          //       ? AppLocalizations.of(context)!.login
+                          //       : AppLocalizations.of(context)!.register,
+                          //   onPressed: () {
+                          //     if (_formKey.currentState!.validate()) {
+                          //       model.submitData(
+                          //         username: _usernameController.text.trim().orEmpty(),
+                          //         email: _emailController.text.orEmpty(),
+                          //         password: _passwordController.text.orEmpty(),
+                          //         repeatPassword: _repeatPasswordController.text.orEmpty(),
+                          //         action: model.isLogin
+                          //             ? () => Navigator.of(context).popAndPushNamed(DashboardScreen.routeName)
+                          //             : () => _showMFADialog(
+                          //           context: context,
+                          //           sendVerificationCode: (confirmationCode) => model.sendVerificationCode(
+                          //             confirmationCode: confirmationCode,
+                          //             action: () => Navigator.of(context).popAndPushNamed(WelcomeScreen.routeName, result: true,),
+                          //             alreadyExistsAlias: () => Navigator.pop(context),
+                          //           ),
+                          //           resendVerificationCode: () => model.resendVerificationCode(),
+                          //         ),
+                          //         goToRegistry: () => Navigator.of(context).popAndPushNamed(WelcomeScreen.routeName),
+                          //       );
+                          //     }
+                          //   },
+                          // ),
+                          if (model.isLogin) InkWell(
+                            child: Text(
+                              AppLocalizations.of(context)!
+                                  .forgotten_password,
+                              textAlign: TextAlign.start,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: Dimens.fontSizeMedium,
+                                decoration: TextDecoration.underline,
+                                color: Colors.white,),
+                            ),
+                            onTap: () => Navigator.pushNamed(context, ForgottenPasswordScreen.routeName),
                           ),
-                          onTap: () => Navigator.pushNamed(context, ForgottenPasswordScreen.routeName),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
-                          child: InkWell(
-                            onTap: () {
-                              _usernameController.clear();
-                              _emailController.clear();
-                              _passwordController.clear();
-                              _repeatPasswordController.clear();
-                              model.changeLoginMode(() { _controller!.forward(); });
-                            },
-                            child: RichText(text: TextSpan(
-                              text: model.isLogin ? AppLocalizations.of(context)!.dont_have_account : AppLocalizations.of(context)!.already_have_account,
-                              style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeMedium,),
-                              children: <TextSpan>[
-                                TextSpan(text: model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),),
-                              ],
-                            ),),
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
+                            child: InkWell(
+                              onTap: () {
+                                _usernameController.clear();
+                                _emailController.clear();
+                                _passwordController.clear();
+                                _repeatPasswordController.clear();
+                                model.changeLoginMode(() { _controller!.forward(); });
+                              },
+                              child: RichText(text: TextSpan(
+                                text: model.isLogin ? AppLocalizations.of(context)!.dont_have_account : AppLocalizations.of(context)!.already_have_account,
+                                style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeMedium,),
+                                children: <TextSpan>[
+                                  TextSpan(text: model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),),
+                                ],
+                              ),),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

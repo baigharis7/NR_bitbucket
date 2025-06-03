@@ -216,6 +216,20 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               upperLimit: getNutrientUpperLimit(micronutrient),
             ),
       ).toList();
+
+      state.temporaryMicronutrients = state.profile?.temporaryMicronutrients.orEmpty()
+          .map(
+            (micronutrient) =>
+            NutrientsModel(
+              quantityConsumed: getQuantityConsumedSoFar(micronutrient),
+              nutrientInfoMaster: getNutrientInfo(micronutrient),
+              fractionToFill: getFractionToFillMicros(micronutrient),
+              unit: getUnitForMicronutrient(micronutrient),
+              rda: getNutrientRda(micronutrient),
+              upperLimit: getNutrientUpperLimit(micronutrient),
+            ),
+      ).toList();
+
       // state.micronutrients?.sort((a, b) => b.fractionToFill.compareTo(a.fractionToFill),);
       state.macronutrients = ['proteinSci', 'carbsAvailable', 'fatTotal']
           .map(

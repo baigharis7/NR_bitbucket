@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/presentation/forgottenpassword/bloc/forgo
 import 'package:nutrenaissance_flutter/presentation/resetpassword/view/reset_password_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/generic_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/errors/error_types.dart';
@@ -30,10 +31,12 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late ForgottenPasswordBloc bloc;
+  late VideoPlayerController _videoController;
 
   @override
   void dispose() {
     _emailController.dispose();
+    _videoController.dispose();
     super.dispose();
   }
 
@@ -41,6 +44,14 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
   void initState() {
     bloc = BlocProvider.of<ForgottenPasswordBloc>(context);
     super.initState();
+
+    _videoController = VideoPlayerController.asset('assets/videos/login_bg.mp4')
+      ..initialize().then((_) {
+        _videoController.setLooping(true);
+        _videoController.setVolume(0);
+        _videoController.play();
+        setState(() {});
+      });
   }
 
   @override
@@ -50,22 +61,35 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
       child: Stack(
         children: [
           // Background image or gradient
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/background.png'), // Your image
+          // Container(
+          //   decoration: const BoxDecoration(
+          //     image: DecorationImage(
+          //       image: AssetImage('assets/images/background.png'), // Your image
+          //       fit: BoxFit.cover,
+          //     ),
+          //   ),
+          // ),
+          //
+          // // Blur effect
+          // BackdropFilter(
+          //   filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
+          //   child: Container(
+          //     color: AppColors.black59Percent, // Needed to activate the blur
+          //   ),
+          // ),
+
+          if (_videoController.value.isInitialized)
+            SizedBox.expand(
+              child: FittedBox(
                 fit: BoxFit.cover,
+                child: SizedBox(
+                  width: _videoController.value.size.width,
+                  height: _videoController.value.size.height,
+                  child: VideoPlayer(_videoController),
+                ),
               ),
             ),
-          ),
 
-          // Blur effect
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
-            child: Container(
-              color: AppColors.black59Percent, // Needed to activate the blur
-            ),
-          ),
           Scaffold(
             backgroundColor: Colors.transparent,
             extendBodyBehindAppBar: true,
@@ -91,102 +115,106 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
                 if (state.onError != null) showErrorSnackBar(context, userError(ctx, state.onError!));
               },
               builder: (context, state) {
-                return SafeArea(
-                  child: SingleChildScrollView(
-                    child: Form(
-                      key: _formKey,
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: Dimens.marginXXLarge,
-                        ),
-                        child: Column(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.all(Dimens.marginXXLarge),
-                              child: Image.asset(
-                                'assets/images/logo_name_white.png',
-                                fit: BoxFit.cover,
+                return GestureDetector(
+                  onTap: () => FocusScope.of(context).unfocus(), // Hides the keyboard
+                  child: SafeArea(
+                    child: SingleChildScrollView(
+                      child: Form(
+                        key: _formKey,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: Dimens.marginXXLarge,
+                          ),
+                          child: Column(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.all(Dimens.marginXXLarge),
+                                child: Image.asset(
+                                  'assets/images/logo_name_white.png',
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.symmetric(
-                                vertical: Dimens.marginXXLarge,
+                              Container(
+                                margin: const EdgeInsets.symmetric(
+                                  vertical: Dimens.marginXXLarge,
+                                ),
+                                child: Text(
+                                  AppLocalizations.of(context)!.forgotten_password,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: Dimens.fontSizeXXLarge,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                              child: Text(
-                                AppLocalizations.of(context)!.forgotten_password,
+                              Text(
+                                AppLocalizations.of(context)!.enter_email_for_link,
                                 style: const TextStyle(
                                   color: Colors.white,
+                                  fontSize: Dimens.fontSizeMedium,
                                   fontWeight: FontWeight.w400,
-                                  fontSize: Dimens.fontSizeXXLarge,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
-                            ),
-                            Text(
-                              AppLocalizations.of(context)!.enter_email_for_link,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: Dimens.fontSizeMedium,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            Container(
-                              margin: const EdgeInsets.symmetric(vertical: Dimens.marginXXLarge),
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  focusColor: Colors.white,
-                                  enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
-                                  focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
-                                  prefixIcon: Container(
-                                    padding: const EdgeInsets.only(left: 12, bottom: 8, right: 12),// to show container bounds
-                                    height: Dimens.heightXXSmall,
-                                    width: Dimens.widthXXXXSmall,
-                                    child: Image.asset(
-                                      'assets/icon/icon_email.png',
-                                      fit: BoxFit.contain,
+                              Container(
+                                margin: const EdgeInsets.symmetric(vertical: Dimens.marginXXLarge),
+                                child: TextFormField(
+                                  cursorColor: Colors.white,
+                                  decoration: InputDecoration(
+                                    focusColor: Colors.white,
+                                    enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
+                                    focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+                                    prefixIcon: Container(
+                                      padding: const EdgeInsets.only(left: 12, bottom: 8, right: 12),// to show container bounds
+                                      height: Dimens.heightXXSmall,
+                                      width: Dimens.widthXXXXSmall,
+                                      child: Image.asset(
+                                        'assets/icon/icon_email.png',
+                                        fit: BoxFit.contain,
+                                      ),
                                     ),
+                                    hintStyle: const TextStyle(color: Colors.white),
+                                    hintText:
+                                    AppLocalizations.of(context)!.email,
+                                    errorMaxLines: 3,
                                   ),
-                                  hintStyle: const TextStyle(color: Colors.white),
-                                  hintText:
-                                  AppLocalizations.of(context)!.email,
-                                  errorMaxLines: 3,
+                                  controller: _emailController,
+                                  validator: (value) => resolveFormError(
+                                      context,
+                                      isEmail(value)
+                                          ? null
+                                          : FormErrorTypes.emailFormatError),
+                                  onChanged: (value) => _formKey.currentState!.validate(),
                                 ),
-                                controller: _emailController,
-                                validator: (value) => resolveFormError(
-                                    context,
-                                    isEmail(value)
-                                        ? null
-                                        : FormErrorTypes.emailFormatError),
-                                onChanged: (value) => _formKey.currentState!.validate(),
                               ),
-                            ),
-                            GenericButton(
-                              title: AppLocalizations.of(context)!.reset_password,
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  bloc.add(ResetPasswordRequestEventAction(
-                                      userName: _emailController.text.toString(),
-                                      next: () => Navigator.pushNamed(
-                                          context, ResetPasswordScreen.routeName)));
-                                }
-                              },
-                            ),
-                            Container(
-                              margin: const EdgeInsets.symmetric(vertical: Dimens.marginXXXXLarge),
-                              alignment: Alignment.centerLeft,
-                              child: InkWell(
-                                onTap: () => Navigator.pop(context),
-                                child: RichText(text: TextSpan(
-                                  text: AppLocalizations.of(context)!.already_have_account,
-                                  style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeMedium,),
-                                  children: <TextSpan>[
-                                    TextSpan(text: AppLocalizations.of(context)!.login, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),),
-                                  ],
-                                ),),
+                              GenericButton(
+                                title: AppLocalizations.of(context)!.reset_password,
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    bloc.add(ResetPasswordRequestEventAction(
+                                        userName: _emailController.text.toString(),
+                                        next: () => Navigator.pushNamed(
+                                            context, ResetPasswordScreen.routeName)));
+                                  }
+                                },
                               ),
-                            ),
-                          ],
+                              Container(
+                                margin: const EdgeInsets.symmetric(vertical: Dimens.marginXXXXLarge),
+                                alignment: Alignment.centerLeft,
+                                child: InkWell(
+                                  onTap: () => Navigator.pop(context),
+                                  child: RichText(text: TextSpan(
+                                    text: AppLocalizations.of(context)!.already_have_account,
+                                    style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeMedium,),
+                                    children: <TextSpan>[
+                                      TextSpan(text: AppLocalizations.of(context)!.login, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),),
+                                    ],
+                                  ),),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
