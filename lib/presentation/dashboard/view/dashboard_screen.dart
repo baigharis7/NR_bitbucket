@@ -331,7 +331,7 @@ class _DashboardScreen extends State<DashboardScreen>
                               onInfoClick: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                             onAddWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () {})),
                           ),
-                          MealTimeSection(foodEvents: state.foodEvents.orEmpty(), totalKcal: state.userKcal.orZero()),
+                          MealTimeSection(foodEvents: state.foodEvents.orEmpty(), totalKcal: state.userKcal.orZero(), then: () => bloc.add(InitializeState())),
                           // WeeklyRDANutrientsDashboardWidget(
                           //   title: AppLocalizations.of(context)!.weekly_nutrients,
                           //   nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,
@@ -515,15 +515,15 @@ class _DashboardScreen extends State<DashboardScreen>
                           //       if  (state.profile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) NutrientDetailWidget(todayCreatine: state.todayCollagenSupplement, onMinusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: -2, supplementInfo: supplement,)), onPlusClick: (supplement) => bloc.add(UploadCollagenEventAction(value: 2, supplementInfo: supplement,))),
                           //     ],
                           // ),
-                          if (state.showCard != null && state.showCard!) Positioned(
-                            top: 100,
-                            width: mediaQuerySize.width,
-                            child: ExplainingCardsHelper().getExplainingCardWithId(
-                              context: context,
-                              explainingCardId: ExplainingCardRefs.dashboard.index,
-                              onHideCard: () => bloc.add(HideCardAction()),
-                            ),
-                          ),
+                          // if (state.showCard != null && state.showCard!) Positioned(
+                          //   top: 100,
+                          //   width: mediaQuerySize.width,
+                          //   child: ExplainingCardsHelper().getExplainingCardWithId(
+                          //     context: context,
+                          //     explainingCardId: ExplainingCardRefs.dashboard.index,
+                          //     onHideCard: () => bloc.add(HideCardAction()),
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),

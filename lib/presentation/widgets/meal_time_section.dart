@@ -10,13 +10,14 @@ import 'meal_time_widget.dart';
 class MealTimeSection extends StatelessWidget {
   final List<FoodEventComplete> foodEvents;
   final int totalKcal;
-  const MealTimeSection({super.key, required this.foodEvents, required this.totalKcal});
+  final Function? then;
+  const MealTimeSection({super.key, required this.foodEvents, required this.totalKcal, this.then});
 
   @override
   Widget build(BuildContext context) {
     return Column(children: [
       DashTitleWidget(title: AppLocalizations.of(context)!.feeding),
-      ...MealTime.getAllMealTimes().map((meal) => MealTimeWidget(name: meal.name.orEmpty(), svg: 'assets/images/meal_time_${meal.id.orZero()}.png', onClick: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: meal.id), desc: getFoodNames(foodEvents, meal.id) + ' / $totalKcal kcal.',)),
+      ...MealTime.getAllMealTimes().map((meal) => MealTimeWidget(name: meal.name.orEmpty(), svg: 'assets/images/meal_time_${meal.id.orZero()}.png', onClick: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: meal.id).then((value) => then?.call()), desc: getFoodNames(foodEvents, meal.id) + ' / $totalKcal kcal.',)),
     ],);
   }
 
