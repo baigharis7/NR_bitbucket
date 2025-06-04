@@ -22,7 +22,6 @@ import 'package:nutrenaissance_flutter/presentation/widgets/generic_button.dart'
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
 
 class LoginScreen extends StatefulWidget {
   static const routeName = '/login_screen';
@@ -46,7 +45,6 @@ class _LoginScreenState extends State<LoginScreen>
   Animation<double>? _opacityAnimation;
   final _formKey = GlobalKey<FormState>();
   bool isChecked = false;
-  late VideoPlayerController _videoController;
 
   void _showExitConfirmationDialog(BuildContext context) {
     showDialog(
@@ -295,14 +293,6 @@ class _LoginScreenState extends State<LoginScreen>
         curve: Curves.easeIn,
       ),
     );
-
-    _videoController = VideoPlayerController.asset('assets/videos/login_bg.mp4')
-      ..initialize().then((_) {
-        _videoController.setLooping(true);
-        _videoController.setVolume(0);
-        _videoController.play();
-        setState(() {});
-      });
   }
 
   @override
@@ -314,7 +304,6 @@ class _LoginScreenState extends State<LoginScreen>
     _passwordController.dispose();
     _repeatPasswordController.dispose();
     _usernameController.dispose();
-    _videoController.dispose();
   }
 
   @override
@@ -331,26 +320,26 @@ class _LoginScreenState extends State<LoginScreen>
         builder: (context, model, _) => Stack(
           children: [
             // Background image or gradient
-            // Container(
-            //   decoration: const BoxDecoration(
-            //     image: DecorationImage(
-            //       image: AssetImage('assets/images/background.png'), // Your image
-            //       fit: BoxFit.cover,
-            //     ),
-            //   ),
-            // ),
-
-            if (_videoController.value.isInitialized)
-              SizedBox.expand(
-                child: FittedBox(
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/login_bg.png'), // Your image
                   fit: BoxFit.cover,
-                  child: SizedBox(
-                    width: _videoController.value.size.width,
-                    height: _videoController.value.size.height,
-                    child: VideoPlayer(_videoController),
-                  ),
                 ),
               ),
+            ),
+
+            // if (_videoController.value.isInitialized)
+            //   SizedBox.expand(
+            //     child: FittedBox(
+            //       fit: BoxFit.cover,
+            //       child: SizedBox(
+            //         width: _videoController.value.size.width,
+            //         height: _videoController.value.size.height,
+            //         child: VideoPlayer(_videoController),
+            //       ),
+            //     ),
+            //   ),
 
             // Blur effect
             // BackdropFilter(

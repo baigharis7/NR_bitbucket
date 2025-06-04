@@ -7,7 +7,6 @@ import 'package:nutrenaissance_flutter/presentation/forgottenpassword/bloc/forgo
 import 'package:nutrenaissance_flutter/presentation/resetpassword/view/reset_password_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/generic_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
-import 'package:video_player/video_player.dart';
 
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/errors/error_types.dart';
@@ -31,12 +30,10 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late ForgottenPasswordBloc bloc;
-  late VideoPlayerController _videoController;
 
   @override
   void dispose() {
     _emailController.dispose();
-    _videoController.dispose();
     super.dispose();
   }
 
@@ -44,14 +41,6 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
   void initState() {
     bloc = BlocProvider.of<ForgottenPasswordBloc>(context);
     super.initState();
-
-    _videoController = VideoPlayerController.asset('assets/videos/login_bg.mp4')
-      ..initialize().then((_) {
-        _videoController.setLooping(true);
-        _videoController.setVolume(0);
-        _videoController.play();
-        setState(() {});
-      });
   }
 
   @override
@@ -61,14 +50,14 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
       child: Stack(
         children: [
           // Background image or gradient
-          // Container(
-          //   decoration: const BoxDecoration(
-          //     image: DecorationImage(
-          //       image: AssetImage('assets/images/background.png'), // Your image
-          //       fit: BoxFit.cover,
-          //     ),
-          //   ),
-          // ),
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/login_bg.png'), // Your image
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
           //
           // // Blur effect
           // BackdropFilter(
@@ -78,17 +67,17 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
           //   ),
           // ),
 
-          if (_videoController.value.isInitialized)
-            SizedBox.expand(
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: SizedBox(
-                  width: _videoController.value.size.width,
-                  height: _videoController.value.size.height,
-                  child: VideoPlayer(_videoController),
-                ),
-              ),
-            ),
+          // if (_videoController.value.isInitialized)
+          //   SizedBox.expand(
+          //     child: FittedBox(
+          //       fit: BoxFit.cover,
+          //       child: SizedBox(
+          //         width: _videoController.value.size.width,
+          //         height: _videoController.value.size.height,
+          //         child: VideoPlayer(_videoController),
+          //       ),
+          //     ),
+          //   ),
 
           Scaffold(
             backgroundColor: Colors.transparent,

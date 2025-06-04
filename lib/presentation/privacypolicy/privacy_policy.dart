@@ -30,7 +30,7 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
         Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/images/background.png'), // Your image
+              image: AssetImage('assets/images/login_bg.png'), // Your image
               fit: BoxFit.cover,
             ),
           ),
