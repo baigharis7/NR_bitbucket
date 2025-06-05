@@ -79,223 +79,136 @@ class _SportEventItem extends State<SportEventItem> {
     // _error = widget.sport.minutes == null || widget.sport.intensity == null || widget.sport.timeStart == null;
     _error = widget.sport.minutes == null || widget.sport.intensity == null;
 
-    return Column(
-      children: [
-        Card(
-          margin: const EdgeInsets.only(top: Dimens.marginLarge, bottom: Dimens.marginNormal),
-          shape: RoundedRectangleBorder(borderRadius: const BorderRadius.all(Radius.circular(5)), side: BorderSide(color: _error ? AppColors.errorRed : AppColors.cardGreen_200, width: 2,style: BorderStyle.solid)),
-          color: _error ? AppColors.dirty_white : AppColors.cardGreen_200,
-          child: Container(
-            margin: const EdgeInsets.only(
-              left: Dimens.marginSmall,
-              top: Dimens.marginSmall,
-              right: Dimens.marginSmall,
-              bottom: Dimens.marginNormal,
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.only(
-                            left: Dimens.marginNormal,
-                        ),
-                        child: Text(
-                          _sportName.orEmpty(),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+    return Container(
+      decoration: BoxDecoration(
+        border: _error ? const Border.fromBorderSide(BorderSide(color: AppColors.red45Percent,  width: 4)) : null,
+        borderRadius: BorderRadius.circular(15),
+        color: _error ? AppColors.white65Percent : AppColors.white85Percent,),
+      margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge,),
+      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingNormal),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  margin: const EdgeInsets.only(
+                      left: Dimens.marginNormal,
+                  ),
+                  child: Text(
+                    _sportName.orEmpty(),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: Dimens.fontSizeLarge,
                     ),
-                    IconButton(
-                      onPressed: () => widget.removeSport.call(),
-                      icon: const Icon(Icons.clear),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: Dimens.heightSmall - 15,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: Dimens.marginNormal,
-                          ),
-                          child:
-                              Text(AppLocalizations.of(context)!.duration),
-                        ),
-                      ),
-                      Expanded(
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          controller: _durationTextController,
-                          decoration: const InputDecoration(
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(),
-                          ),
-                          onChanged: (minutes) {
-                            // setState(() {
-                            //   _duration = int.parse(minutes);
-                            // });
-                            widget.editMinutes.call(SportInfo(id: widget.sport.id, name_es: widget.sport.name_es, name_en: widget.sport.name_en, intensity: widget.sport.intensity, minutes: minutes.isEmpty ? null : int.parse(minutes), timeStart: widget.sport.timeStart));
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.only(
-                              left: Dimens.marginNormal,
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
-                          decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius:
-                              BorderRadius.all(Radius.circular(5)),
-                              border: Border.fromBorderSide(
-                                  BorderSide(color: Colors.black54, width: 1))),
-                          child: Text(
-                            AppLocalizations.of(context)!.minutes.toLowerCase(),
-                          ),
-                        ),
-                      )
-                    ],
                   ),
                 ),
-                _sportIntensities != null && _sportIntensities! > 1
-                    ? Container(
-                  margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
-                    height: Dimens.heightSmall - 15,
-                      child: Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                alignment: Alignment.centerLeft,
-                                margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                                child: Text(AppLocalizations.of(context)!.intensity),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: Dimens.paddingSmall),
-                                decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius:
-                                    BorderRadius.all(Radius.circular(5)),
-                                    border: Border.fromBorderSide(
-                                        BorderSide(color: Colors.black54, width: 1))),
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: _intensity.isNull() ? null : getIntensityList(_sportIntensities!, context)[_intensity!],
-                                  onChanged: (String? intensity) {
-                                    // setState(() {
-                                    final intensityIndex = getIntensityList(_sportIntensities!, context,).indexOf(intensity ?? '');
-                                    widget.editIntensity.call(SportInfo(id: widget.sport.id, name_es: widget.sport.name_es, name_en: widget.sport.name_en, intensity: intensityIndex, minutes: widget.sport.minutes, timeStart: widget.sport.timeStart));
-                                    // });
-                                  },
-                                  items: getIntensityList(_sportIntensities!, context,)
-                                      .map<DropdownMenuItem<String>>(
-                                        (item) => DropdownMenuItem(
-                                      value: item,
-                                      child: SizedBox(
-                                        child: Text(
-                                          item,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            fontSize: Dimens.fontSizeNormal,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                      .toList(),
-                                ),
-                              ),
-                              // Row(
-                              //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              //   children: [
-                              //     ...getIntensityList(_sportIntensities!, context,).map((intensityName) {
-                              //       return Container(
-                              //         margin: const EdgeInsets.only(
-                              //           left: Dimens.marginNormal,
-                              //           right: Dimens.marginNormal,
-                              //           top: Dimens.marginNormal,
-                              //         ),
-                              //         padding: const EdgeInsets.all(5),
-                              //         decoration: BoxDecoration(
-                              //           shape: BoxShape.rectangle,
-                              //           borderRadius: const BorderRadius.all(Radius.circular(20)),
-                              //           border: Border.all(
-                              //             color: _intensity == getIntensityList(_sportIntensities!, context,).indexOf(intensityName) ? Colors.white : Colors.transparent ,
-                              //             width: 3,
-                              //           ),
-                              //         ),
-                              //         child: InkWell(
-                              //           child: Text(
-                              //             intensityName,
-                              //             style: const TextStyle(
-                              //               color: Colors.blue,
-                              //               decoration: TextDecoration.underline,
-                              //             ),
-                              //           ),
-                              //           onTap: () {
-                              //             final intensityIndex = getIntensityList(_sportIntensities!, context,).indexOf(intensityName);
-                              //             // setState(() {
-                              //             //   _intensity = intensityIndex;
-                              //             // });
-                              //             widget.editIntensity.call(SportInfo(id: widget.sport.id, name_es: widget.sport.name_es, name_en: widget.sport.name_en, intensity: intensityIndex, minutes: widget.sport.minutes, timeStart: widget.sport.timeStart));
-                              //           },
-                              //         ),
-                              //       );
-                              //     })
-                              //   ],
-                              // ),
-                            )
-                          ],
-                        ),
-                    )
-                    : Container(),
-                // Row(
-                //   children: [
-                //     Container(
-                //       margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                //       child: Text('${AppLocalizations.of(context)!.sport_time_start} '),
-                //     ),
-                //     Container(
-                //       margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                //       child: Text(_timeOfDay != null ? _timeOfDay.toString() : ''),
-                //     ),
-                //     Container(
-                //       margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                //       child: IconButton(
-                //         icon: const Icon(Icons.calendar_month),
-                //         onPressed: () async {
-                //           final selectedDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(DateTime.now().year-1), lastDate: DateTime(DateTime.now().year+1));
-                //           if (selectedDate != null) {
-                //             final selectedTime = await showTimePicker(context: context, initialTime: TimeOfDay.now());
-                //             if (selectedTime != null) {
-                //               DateTime dateTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute);
-                //               widget.editDateTime.call(SportInfo(id: widget.sport.id, name_es: widget.sport.name_es, name_en: widget.sport.name_en, intensity: widget.sport.intensity, minutes: widget.sport.minutes, timeStart: dateTime.millisecondsSinceEpoch));
-                //             }
-                //           }
-                //         },
-                //       ),
-                //     ),
-                //   ],
-                // ),
+              ),
+              IconButton(
+                onPressed: () => widget.removeSport.call(),
+                icon: const Icon(Icons.cancel_outlined, size: Dimens.heightXSmall),
+              ),
+            ],
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(
+              horizontal: Dimens.marginNormal,
+            ),
+            child:
+            Text(AppLocalizations.of(context)!.duration, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal)),
+          ),
+          const SizedBox(height: Dimens.height12),
+          SizedBox(
+            height: Dimens.heightSmall - 15,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: TextField(
+                    keyboardType: TextInputType.number,
+                    controller: _durationTextController,
+                    decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(11)),
+                        borderSide: BorderSide(color: AppColors.silver, width: 1),
+                      ),
+                    ),
+                    onChanged: (minutes) {
+                      widget.editMinutes.call(SportInfo(id: widget.sport.id, name_es: widget.sport.name_es, name_en: widget.sport.name_en, intensity: widget.sport.intensity, minutes: minutes.isEmpty ? null : int.parse(minutes), timeStart: widget.sport.timeStart));
+                    },
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.only(
+                        left: Dimens.marginNormal,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
+                    decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                        BorderRadius.all(Radius.circular(11)),
+                        border: Border.fromBorderSide(
+                            BorderSide(color: AppColors.silver, width: 2))),
+                    child: Text(
+                      AppLocalizations.of(context)!.minutes.toLowerCase(),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-        ),
-        if (_error) Container(margin: const EdgeInsets.only(bottom: Dimens.marginNormal), child: Text(AppLocalizations.of(context)!.must_complete_field, style: const TextStyle(color: Colors.red,)), alignment: Alignment.centerLeft,),
-      ],
+          Container(
+            alignment: Alignment.centerLeft,
+            margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
+            child: Text(AppLocalizations.of(context)!.intensity, style: const TextStyle(color: AppColors.yellowishGreen, fontSize: Dimens.fontSizeNormal, fontWeight: FontWeight.w700)),
+          ),
+          _sportIntensities != null && _sportIntensities! > 1
+              ? Container(
+                margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
+                height: Dimens.heightSmall - 15,
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius:
+                    BorderRadius.all(Radius.circular(11)),
+                    border: Border.fromBorderSide(
+                        BorderSide(color: AppColors.silver, width: 1))),
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  underline: Container(),
+                  alignment: Alignment.center,
+                  icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
+                  value: _intensity.isNull() ? null : getIntensityList(_sportIntensities!, context)[_intensity!],
+                  onChanged: (String? intensity) {
+                    final intensityIndex = getIntensityList(_sportIntensities!, context,).indexOf(intensity ?? '');
+                    widget.editIntensity.call(SportInfo(id: widget.sport.id, name_es: widget.sport.name_es, name_en: widget.sport.name_en, intensity: intensityIndex, minutes: widget.sport.minutes, timeStart: widget.sport.timeStart));
+                  },
+                  items: getIntensityList(_sportIntensities!, context,)
+                      .map<DropdownMenuItem<String>>(
+                        (item) => DropdownMenuItem(
+                      value: item,
+                          alignment: Alignment.center,
+                      child: Text(
+                        item,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: Dimens.fontSizeNormal,
+                        ),
+                      ),
+                    ),
+                  )
+                      .toList(),
+                ),
+              )
+              : Container(),
+        ],
+      ),
     );
   }
 }

@@ -315,6 +315,7 @@
     "feeding" : "Alimentación",
     "depositions" : "Deposiciones",
     "this_week" : "Esta semana",
+    "days_of_week" : "Días de la semana",
     "no_liquid_events" : "Tienes que introducir eventos de líquido",
     "water" : "Agua",
     "hydration" : "Hidratación",

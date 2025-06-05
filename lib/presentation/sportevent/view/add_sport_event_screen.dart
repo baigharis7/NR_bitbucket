@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -14,13 +16,18 @@ import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_state.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/sport_event_item.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.dart';
 
 import '../../../domain/models/routines/sport_routine_completed.dart';
 import '../../../domain/models/sportevents/sport_event_complete.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
 import '../../../infrastructure/helpers/remove_diac.dart';
+import '../../../infrastructure/utils/app_color.dart';
 import '../../widgets/add_item_name_dialog.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
+import '../../widgets/food_actions_widget.dart';
+import '../../widgets/header_add_item_card_section.dart';
+import '../../widgets/item_routine_widget.dart';
 
 class AddSportEventScreen extends StatefulWidget {
   const AddSportEventScreen({
@@ -76,6 +83,18 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
         onCancel: () => Navigator.pop(context),
       ),
     ).then((_) => Navigator.pop(context));
+  }
+
+  Future<void> showRoutineTimeDialog({
+    required Function onTimeChanged,
+}) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) => ItemRoutineWidget(onTimeChange: (pickedTime) {
+        onTimeChanged.call(pickedTime);
+      } ,),
+    ).then((_) {});
   }
 
   @override
@@ -147,310 +166,265 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
             }
           },
           builder: (ctx, state) {
-            return Scaffold(
-              appBar: AppBar(
-                leading: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors.black,
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-                title: Row(
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.journal,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: Dimens.fontSizeXXLarge,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: Dimens.marginNormal),
-                        child: Image.asset('assets/icon/journal_icon.png',
-                            height: 28)),
-                  ],
-                ),
-                bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(Dimens.heightSmall),
-                  child: Container(
-                    alignment: Alignment.center,
-                    margin: const EdgeInsets.symmetric(
-                      vertical: Dimens.marginLarge,
-                    ),
-                    child: Text(
-                      AppLocalizations.of(context)!.add_sport_event,
-                      style: const TextStyle(
-                        fontSize: Dimens.fontSizeXXLarge,
-                      ),
-                    ),
+            return Stack(children: [
+              // Background image or gradient
+              Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/background.png'), // Your image
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
-              body: WillPopScope(
-                onWillPop: () async {
-                  bloc.add(ResetSportInfoAction());
-                  return true;
-                },
+
+              // Blur effect
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Container(
-                  margin: const EdgeInsets.symmetric(
-                      vertical: Dimens.paddingLarge,
-                      horizontal: Dimens.paddingXLarge),
+                  color: Colors.black.withOpacity(0), // Needed to activate the blur
+                ),
+              ),
+
+              Scaffold(
+                backgroundColor: Colors.transparent,
+                body: WillPopScope(
+                  onWillPop: () async {
+                    bloc.add(ResetSportInfoAction());
+                    return true;
+                  },
                   child: Column(
                     children: [
-                      Autocomplete<String>(
-                        fieldViewBuilder: (
-                          BuildContext context,
-                          TextEditingController textEditingController,
-                          FocusNode focusNode,
-                          VoidCallback onFieldSubmitted,
-                        ) {
-                          _sportInputController = textEditingController;
-                          _sporFocustInputController = focusNode;
-                          return TextField(
-                            decoration: InputDecoration(
-                              fillColor: Colors.black,
-                              labelText: AppLocalizations.of(context)!.enter,
-                              suffixIcon: IconButton(
-                                icon: textEditingController.text != ''
-                                    ? const Icon(
-                                        Icons.highlight_remove,
-                                        color: Colors.black,
-                                      )
-                                    : Container(),
-                                onPressed: () {
-                                  setState(() {
-                                    textEditingController.text = '';
-                                  });
-                                },
-                              ),
-                            ),
-                            controller: textEditingController,
-                            buildCounter: (context, {required currentLength, required isFocused, maxLength}) => _sportInputController.text.isNotEmptyOrNull() && _sportInputController.text.length > 2 ? Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal), child: Text('$filteredListLength: ' '${filteredListLength > 1 ? AppLocalizations.of(context)!.items_found : AppLocalizations.of(context)!.item_found}',)) : Container(),
-                            focusNode: focusNode,
-                            onChanged: (value) {
-                              setState(() {
-                                textEditingController;
-                              });
-                            },
-                          );
-                        },
-                        optionsBuilder: (TextEditingValue textEditingValue) {
-                          if (textEditingValue.text == '') {
-                            return const Iterable<String>.empty();
-                          }
-                          final filteredList =  state.sportsInfo!.sportsInfoMaster
-                              .map((sport) => sport.translate(context))
-                              .where((String option) => removeDiacritics(option).toLowerCase().contains(removeDiacritics(textEditingValue.text.toLowerCase())));
-                          filteredListLength = filteredList.length;
-                          return filteredList;
-                        },
-                        optionsViewBuilder: (context, onSelected, options) {
-                          return Align(
-                            alignment: Alignment.topLeft,
-                            child: Material(
-                              elevation: 4.0,
-                              child: Container(
-                                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - Dimens.margin_60, maxHeight: Dimens.heightXXLarge), // Adjust the width as needed
-                                child: Scrollbar(
-                                  thumbVisibility: true,
-                                  child: ListView(
-                                    children: ListTile.divideTiles(
-                                      context: context,
-                                      tiles: options.map((String option) {
-                                        return ListTile(
-                                          title: Text(option),
-                                          onTap: () {
-                                            onSelected(option);
-                                          },
-                                        );
-                                      }),
-                                    ).toList(),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                        onSelected: (sportName) {
-                          final sportIntensities =
-                              eventsHelper.getChosenSportIntensities(sportName,
-                                  state.sportsInfo!, currentLanguage);
-                          final sportId = eventsHelper.getSportIdByName(
-                              sportName, state.sportsInfo!, currentLanguage);
-                          final sportInfo = bloc.findSportById(sportId);
-                          final info = SportInfo(
-                              id: sportId,
-                              name_en: sportInfo.en,
-                              name_es: sportInfo.es,
-                              intensity: sportIntensities == 1 ? 0 : null,
-                              timeStart: DateTime.now().millisecondsSinceEpoch);
-                          bloc.add(AddSportEventAction(info));
-                          _sportInputController.text = '';
-                        },
-                      ),
                       Expanded(
                         child: SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: Dimens.paddingLarge,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingLarge),
                           child: Column(
                             children: [
+                              HeaderAddItemCardSection(
+                                title: AppLocalizations.of(context)!.add_sport_event,
+                                onBackTap: () => Navigator.pop(context),
+                                items: state.sportsInfo!.sportsInfoMaster.map((sport) => sport.translate(context)).toList(),
+                                onItemSelect: (sportName, focus) {
+                                  _sporFocustInputController = focus;
+                                  final sportIntensities =
+                                  eventsHelper.getChosenSportIntensities(sportName,
+                                      state.sportsInfo!, currentLanguage);
+                                  final sportId = eventsHelper.getSportIdByName(
+                                      sportName, state.sportsInfo!, currentLanguage);
+                                  final sportInfo = bloc.findSportById(sportId);
+                                  final info = SportInfo(
+                                      id: sportId,
+                                      name_en: sportInfo.en,
+                                      name_es: sportInfo.es,
+                                      intensity: sportIntensities == 1 ? 0 : null,
+                                      timeStart: DateTime.now().millisecondsSinceEpoch);
+                                  bloc.add(AddSportEventAction(info));
+                                },
+                              ),
                               _sportInputController.text == '' &&
-                                      state.info.orEmpty().isEmpty
+                                  state.info.orEmpty().isEmpty
                                   ? GridView(
-                                      gridDelegate:
-                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2,
-                                        mainAxisSpacing: 0,
-                                        crossAxisSpacing: Dimens.marginNormal,
-                                        mainAxisExtent: 55.0,
-                                        childAspectRatio: 3 / 1,
-                                      ),
-                                      shrinkWrap: true,
-                                      children: [
-                                        ...state.sportsFavorite.orEmpty().map(
-                                              (sport) => Card(
-                                                elevation: 3.00,
-                                                shadowColor: Colors.black,
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        state.eventSportName ==
-                                                                sport.title
-                                                            ? Colors.amber
-                                                            : Colors.white,
-                                                    borderRadius:
-                                                        const BorderRadius.all(
-                                                            Radius.circular(5)),
-                                                  ),
-                                                  child: InkWell(
-                                                    borderRadius:
-                                                        const BorderRadius.all(
-                                                            Radius.circular(
-                                                                10)),
-                                                    onTap: () {
-                                                      bloc.add(
-                                                          AddSportFromFavoriteAction(
-                                                              sportInfo:
-                                                                  sport));
-                                                    },
-                                                    child: Center(
-                                                      child: Text(
-                                                        sport.title.toString(),
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: const TextStyle(
-                                                          fontSize: Dimens
-                                                              .fontSizeSmall,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
+                                gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 0,
+                                  crossAxisSpacing: Dimens.marginNormal,
+                                  mainAxisExtent: 55.0,
+                                  childAspectRatio: 3 / 1,
+                                ),
+                                shrinkWrap: true,
+                                children: [
+                                  ...state.sportsFavorite.orEmpty().map(
+                                        (sport) => Card(
+                                      elevation: 3.00,
+                                      shadowColor: Colors.black,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color:
+                                          state.eventSportName ==
+                                              sport.title
+                                              ? Colors.amber
+                                              : Colors.white,
+                                          borderRadius:
+                                          const BorderRadius.all(
+                                              Radius.circular(5)),
+                                        ),
+                                        child: InkWell(
+                                          borderRadius:
+                                          const BorderRadius.all(
+                                              Radius.circular(
+                                                  10)),
+                                          onTap: () {
+                                            bloc.add(
+                                                AddSportFromFavoriteAction(
+                                                    sportInfo:
+                                                    sport));
+                                          },
+                                          child: Center(
+                                            child: Text(
+                                              sport.title.toString(),
+                                              overflow: TextOverflow
+                                                  .ellipsis,
+                                              style: const TextStyle(
+                                                fontSize: Dimens
+                                                    .fontSizeSmall,
                                               ),
                                             ),
-                                      ],
-                                    )
-                                  : Column(
-                                      children: [
-                                        if (state.info?.isNotEmpty ?? false)
-                                          ...state.info.orEmpty().map(
-                                                (sport) => SportEventItem(
-                                                  sportIntensities: eventsHelper
-                                                      .getChosenSportIntensities(
-                                                          sport.translate(
-                                                              context),
-                                                          state.sportsInfo!,
-                                                          currentLanguage),
-                                                  sport: sport,
-                                                  removeSport: () {
-                                                    bloc.add(
-                                                        RemoveSportEventAction(
-                                                            sportInfo: sport));
-                                                  },
-                                                  editMinutes: (updatedSport) =>
-                                                      bloc.add(SetMinutesAction(
-                                                          sportInfo:
-                                                              updatedSport)),
-                                                  editIntensity:
-                                                      (updatedSport) => bloc.add(
-                                                          SetIntensityAction(
-                                                              sportInfo:
-                                                                  updatedSport)),
-                                                  editDateTime: (updatedSport) =>
-                                                      bloc.add(
-                                                          SetTimeStartAction(
-                                                              sportInfo:
-                                                                  updatedSport)),
-                                                ),
-                                              ),
-                                        IconButton(
-                                          onPressed: () { _sporFocustInputController.requestFocus(); },
-                                          icon: const Icon(Icons.add_circle, color: Colors.teal, size: 28),
+                                          ),
                                         ),
-                                        BoxTypeRadioTextWidget(
-                                            onPressed: () =>
-                                                bloc.add(UpdateCreateRoutine()),
-                                            isSelected:
-                                                state.isCreateRoutine ?? false,
-                                            showHourDays: true,
-                                            routineHour: DateTimeHelper.formatTimeOfDay(state.routineHour, context),
-                                            changeHour: (timeOfDay) => bloc.add(UpdateRoutineHourEventAction(timeOfDay: timeOfDay)),
-                                            changeDate: (dateTime) => bloc.add(UpdateRoutineDateEventAction(dateTime: dateTime)),
-                                            routineDay: DateTimeHelper.formatDateTimeToDay(state.routineDate, currentLanguage: currentLanguage),
-                                            title: AppLocalizations.of(context)!
-                                                .create_routine),
-                                      ],
+                                      ),
                                     ),
+                                  ),
+                                ],
+                              )
+                                  : Column(
+                                children: [
+                                  if (state.info?.isNotEmpty ?? false)
+                                    ...state.info.orEmpty().map(
+                                          (sport) => SportEventItem(
+                                        sportIntensities: eventsHelper
+                                            .getChosenSportIntensities(
+                                            sport.translate(
+                                                context),
+                                            state.sportsInfo!,
+                                            currentLanguage),
+                                        sport: sport,
+                                        removeSport: () {
+                                          bloc.add(
+                                              RemoveSportEventAction(
+                                                  sportInfo: sport));
+                                        },
+                                        editMinutes: (updatedSport) =>
+                                            bloc.add(SetMinutesAction(
+                                                sportInfo:
+                                                updatedSport)),
+                                        editIntensity:
+                                            (updatedSport) => bloc.add(
+                                            SetIntensityAction(
+                                                sportInfo:
+                                                updatedSport)),
+                                        editDateTime: (updatedSport) =>
+                                            bloc.add(
+                                                SetTimeStartAction(
+                                                    sportInfo:
+                                                    updatedSport)),
+                                      ),
+                                    ),
+                                  Row(children: [
+                                    Expanded(child: FoodActionsWidget(
+                                      title: AppLocalizations.of(context)!.add_more,
+                                      rightSideWidget: const Icon(Icons.add_circle),
+                                      onTap: () => _sporFocustInputController.requestFocus(),
+                                    )),
+                                    Expanded(child: FoodActionsWidget(
+                                      title: AppLocalizations.of(context)!.create_routine,
+                                      rightSideWidget: Container(
+                                        height: 21,
+                                        width: 21,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white,
+                                          border: Border.all(
+                                            color: Colors.black,
+                                            width: Dimens.borderSmall,
+                                          ),
+                                        ),
+                                        child: Container(
+                                          margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: state.isCreateRoutine ?? false ? Colors.black : Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      onTap: () => bloc.add(UpdateCreateRoutine()),
+                                      backgroundColor: AppColors.butter,
+                                    )),
+                                  ]),
+                                  // BoxTypeRadioTextWidget(
+                                  //     onPressed: () =>
+                                  //         bloc.add(UpdateCreateRoutine()),
+                                  //     isSelected:
+                                  //     state.isCreateRoutine ?? false,
+                                  //     showHourDays: true,
+                                  //     routineHour: DateTimeHelper.formatTimeOfDay(state.routineHour, context),
+                                  //     changeHour: (timeOfDay) => bloc.add(UpdateRoutineHourEventAction(timeOfDay: timeOfDay)),
+                                  //     changeDate: (dateTime) => bloc.add(UpdateRoutineDateEventAction(dateTime: dateTime)),
+                                  //     routineDay: DateTimeHelper.formatDateTimeToDay(state.routineDate, currentLanguage: currentLanguage),
+                                  //     title: AppLocalizations.of(context)!
+                                  //         .create_routine),
+                                ],
+                              ),
                             ],
                           ),
                         ),
                       ),
-                      RoundedCustomButton(
-                        onPressed: () {
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
+                        child: SaveButton(onPressed: () {
                           if (state.sportFromFavorite?.isEmpty ?? true) {
                             if (bloc.validateSportList() ?? true) return;
                             if (state.info.orEmpty().isEmpty) return;
 
-                              if (state.isCreateRoutine ?? false) {
-                                if(state.routineHour.isNull() || state.routineDate.isNull()) return;
-                                if (state.info.orEmpty().length > 1) {
-                                  showAddSportNameDialog(
-                                    context: context,
-                                    onFinish: () => bloc.add(FinishCreateRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),),),),
-                                    onNameChange: (sportEventName) => bloc.add(SetEventSportNameAction(sportEventName: sportEventName)),
-                                  );
-                                } else {
-                                  state.eventSportName = state.info.orEmpty().map((e) => bloc.findSportById(e.id!).translate(context)).toString();
-                                  bloc.add(FinishCreateRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),),),);
-                                }
+                            if (state.isCreateRoutine ?? false) {
+                              if(state.routineHour.isNull() || state.routineDate.isNull()) { showRoutineTimeDialog(onTimeChanged: (timeOfDay) { bloc.add(UpdateRoutineHourEventAction(timeOfDay: timeOfDay)); bloc.add(UpdateRoutineDateEventAction(dateTime: DateTime.now()));},); return;};
+                              if (state.info.orEmpty().length > 1) {
+                                showAddSportNameDialog(
+                                  context: context,
+                                  onFinish: () => bloc.add(FinishCreateRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),),),),
+                                  onNameChange: (sportEventName) => bloc.add(SetEventSportNameAction(sportEventName: sportEventName)),
+                                );
                               } else {
-                                // state.eventSportName = state.info.orEmpty().map((e) => bloc.findSportById(e.id!).translate(context)).toString();
-                                // if(state.info.orEmpty().length > 1) {
-                                //   showAddSportNameDialog(
-                                //     context: context,
-                                //     onFinish: () => bloc.add(FinishWithoutRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),), context: context),),
-                                //     onNameChange: (sportEventName) => bloc.add(SetEventSportNameAction(sportEventName: sportEventName)),
-                                //   );
-                                // } else {
-                                  bloc.add(FinishWithoutRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),),context: context),);
-                                // }
+                                state.eventSportName = state.info.orEmpty().map((e) => bloc.findSportById(e.id!).translate(context)).toString();
+                                bloc.add(FinishCreateRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),),),);
                               }
+                            } else {
+                              bloc.add(FinishWithoutRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),),context: context),);
+                            }
                           } else {
                             bloc.add(FinishSportFavoriteAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()))));
                           }
-                        },
+                        },),
                       ),
+                      // RoundedCustomButton(
+                      //   onPressed: () {
+                      //     if (state.sportFromFavorite?.isEmpty ?? true) {
+                      //       if (bloc.validateSportList() ?? true) return;
+                      //       if (state.info.orEmpty().isEmpty) return;
+                      //
+                      //       if (state.isCreateRoutine ?? false) {
+                      //         if(state.routineHour.isNull() || state.routineDate.isNull()) return;
+                      //         if (state.info.orEmpty().length > 1) {
+                      //           showAddSportNameDialog(
+                      //             context: context,
+                      //             onFinish: () => bloc.add(FinishCreateRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),),),),
+                      //             onNameChange: (sportEventName) => bloc.add(SetEventSportNameAction(sportEventName: sportEventName)),
+                      //           );
+                      //         } else {
+                      //           state.eventSportName = state.info.orEmpty().map((e) => bloc.findSportById(e.id!).translate(context)).toString();
+                      //           bloc.add(FinishCreateRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),),),);
+                      //         }
+                      //       } else {
+                      //         // state.eventSportName = state.info.orEmpty().map((e) => bloc.findSportById(e.id!).translate(context)).toString();
+                      //         // if(state.info.orEmpty().length > 1) {
+                      //         //   showAddSportNameDialog(
+                      //         //     context: context,
+                      //         //     onFinish: () => bloc.add(FinishWithoutRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),), context: context),),
+                      //         //     onNameChange: (sportEventName) => bloc.add(SetEventSportNameAction(sportEventName: sportEventName)),
+                      //         //   );
+                      //         // } else {
+                      //         bloc.add(FinishWithoutRoutineEventAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()),),context: context),);
+                      //         // }
+                      //       }
+                      //     } else {
+                      //       bloc.add(FinishSportFavoriteAction(onFinish: () => _showConfirmationDialog(context: ctx, onResetState: () => bloc.add(ResetSportInfoAction()))));
+                      //     }
+                      //   },
+                      // ),
                     ],
                   ),
                 ),
-              ),
-            );
+              )
+            ],);
           },
         ),
       ),

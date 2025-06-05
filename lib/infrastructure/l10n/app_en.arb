@@ -314,6 +314,7 @@
     "feeding" : "Feeding",
     "depositions" : "Depositions",
     "this_week" : "This week",
+    "days_of_week" : "Days of the week",
     "no_liquid_events" : "You need to introduce liquid events",
     "water" : "Water",
     "hydration" : "Hydration",

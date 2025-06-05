@@ -16,6 +16,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/methods_helper.dar
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/presentation/barcodescanning/view/bar_code_scanning_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/floating_menu_controller.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
@@ -25,6 +26,7 @@ import 'package:nutrenaissance_flutter/presentation/energy_balance_detail/view/e
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/view/liquid_summary_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
+import 'package:nutrenaissance_flutter/presentation/mealtimedetails/view/meal_time_details_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/nutrients_detail/view/weekly_all_nutrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
@@ -237,6 +239,15 @@ class _DashboardScreen extends State<DashboardScreen>
                   ),
                   backgroundColor: Colors.transparent,
                   actions: [
+                    IconButton(
+                      onPressed: () => Navigator.pushNamed(context, BarCodeScanningScreen.routeName),
+                      icon: Image.asset(
+                        'assets/icon/scanner_icon.png',
+                        color: Colors.white,
+                        height: Dimens.heightXSmall,
+                        width: Dimens.heightXSmall,
+                      ),
+                    ),
                     IconButton(onPressed: () => showDialog(context: context, builder: (context) => SimpleDialog(alignment: Alignment.topCenter,
                 insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding5Large +5),
                 contentPadding: EdgeInsets.zero,
@@ -247,15 +258,6 @@ class _DashboardScreen extends State<DashboardScreen>
                   },),
                 ],
               ),), icon: SvgPicture.asset('assets/svg/calendar.svg',),),
-                    // IconButton(
-                    //   onPressed: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName),
-                    //   icon: Image.asset(
-                    //     'assets/icon/profile_icon.png',
-                    //     color: Colors.white,
-                    //     height: Dimens.height32,
-                    //     width: Dimens.width32,
-                    //   ),
-                    // ),
                   ],
                 ),
                 body: Container(
@@ -272,7 +274,7 @@ class _DashboardScreen extends State<DashboardScreen>
                         children: [
                           WeekCalendarWidget(callGetAllEvents: (day) => bloc.getEventsForDay(day)),
                           const SizedBox(height: Dimens.heightXSmall),
-                          SizedBox(height: Dimens.heightXXLarge, child: NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(),)),
+                          SizedBox(height: Dimens.height320, child: NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(),)),
                       // if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
                       //     title: AppLocalizations.of(context)!.menstruation,
                       //     currentState: state.isMenstruation ?? false,

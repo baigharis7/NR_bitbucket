@@ -15,6 +15,7 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_actions.dart';
@@ -295,7 +296,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
         final sportRoutineComplete = await uploadRoutineInteractor.execute(sportRoutine);
         try {
           await saveRoutineInteractor.execute(sportRoutine, state.isEdit ?? false);
-
+          ToastHelper().showToast(text: 'Routine is saved');
           _clearFields();
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));

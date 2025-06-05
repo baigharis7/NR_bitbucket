@@ -17,7 +17,7 @@ class NutrientElementWidget extends StatelessWidget {
     double progress = (current / goal).clamp(0.0, 1.0) * 100;
     return Column(
       children: [
-        AnimatedNutrientProgressBarWidget(percent: progress, title: label.toUpperCase(), width: Dimens.widthNormal, height: Dimens.height12, color: progressColor),
+        AnimatedNutrientProgressBarWidget(percent: progress, title: label.toUpperCase(), width: Dimens.widthNormal, height: Dimens.height12, color: progressColor,),
         Text('${current.toInt()}', style: const TextStyle(fontSize: Dimens.fontSizeXXLarge, fontWeight: FontWeight.bold, color: Colors.white),),
         Text('${AppLocalizations.of(context)!.from} ${goal.toInt()}$unit', style: const TextStyle(color: Colors.white70),),
       ],

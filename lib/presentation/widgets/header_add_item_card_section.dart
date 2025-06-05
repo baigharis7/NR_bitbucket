@@ -14,7 +14,8 @@ class HeaderAddItemCardSection extends StatefulWidget {
   final List<String>? items;
   final String? path;
   final Function(String, FocusNode)? onItemSelect;
-  const HeaderAddItemCardSection({super.key, this.title, this.onBackTap, this.image, this.items, this.onItemSelect, this.path});
+  final Widget? child;
+  const HeaderAddItemCardSection({super.key, this.title, this.onBackTap, this.image, this.items, this.onItemSelect, this.path, this.child});
 
   @override
   State<HeaderAddItemCardSection> createState() => _HeaderAddItemCardSectionState();
@@ -65,11 +66,11 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
                   borderRadius: BorderRadius.circular(200),
                   boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
                 ),
-                child: Image.asset(widget.image ?? 'assets/images/meal_time_0.png', height: 60, width: 60),
+                child: Image.asset(widget.image ?? 'assets/images/meal_time_0.png', height: 52, width: 52),
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             widget.title ?? '',
             style: const TextStyle(
@@ -78,7 +79,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 16),
+          if (widget.onItemSelect != null) const SizedBox(height: 16),
           if (widget.onItemSelect != null) Autocomplete<String>(
             fieldViewBuilder: (
                 BuildContext context,
@@ -134,6 +135,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
               _foodInputController.text = '';
             },
           ),
+          if (widget.child != null) widget.child!,
         ],
       ),
     );

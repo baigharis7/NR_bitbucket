@@ -50,7 +50,7 @@ class AnimatedNutrientProgressBarWidget extends StatelessWidget {
           margin: const EdgeInsets.symmetric(vertical: Dimens.marginXSmall),
           child: Text(
             title ?? '',
-            style: const TextStyle(fontSize: Dimens.fontSizeSmall, fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(fontSize: Dimens.fontSizeSmall, fontWeight: FontWeight.bold, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis
           ),
         ),
       ],),

@@ -13,12 +13,13 @@ class MealTimeWidget extends StatelessWidget {
   final Color? iconColor;
   final Color? backgroundColor;
   final Function onClick;
-  const MealTimeWidget({super.key, required this.name, this.svg, required this.onClick, this.backgroundImage, this.desc, this.iconColor, this.backgroundColor});
+  final Function? onItemClick;
+  const MealTimeWidget({super.key, required this.name, this.svg, required this.onClick, this.backgroundImage, this.desc, this.iconColor, this.backgroundColor, this.onItemClick});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => onClick.call(),
+      onTap: () => onItemClick?.call(),
       child: Card(clipBehavior: Clip.antiAlias,
         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge, vertical: Dimens.marginSmall),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border20), side: const BorderSide(color: Colors.white, width: 1,)),

@@ -46,8 +46,10 @@ class Dimens {
   static const fontSizeMedium = 16.0;
   static const fontSizeLarge = 18.0;
   static const fontSize20 = 20.0;
+  static const fontSize21 = 21.0;
   static const fontSizeXLarge = 22.0;
   static const fontSizeXXLarge = 24.0;
+  static const fontSize28 = 28.0;
   static const fontSize34 = 34.0;
 
   // Borders
@@ -68,6 +70,7 @@ class Dimens {
   static const heightXSmall = 20.0;
   static const height30 = 30.0;
   static const height32 = 32.0;
+  static const height37 = 37.0;
   static const heightSmall = 50.0;
   static const height60 = 60.0;
   static const height70 = 70.0;
@@ -78,6 +81,7 @@ class Dimens {
   static const heightLarge = 200.0;
   static const heightXLarge = 250.0;
   static const heightXXLarge = 300.0;
+  static const height320 = 320.0;
 
   // Widths
   static const width1 = 1.0;
@@ -85,6 +89,7 @@ class Dimens {
   static const width12 = 12.0;
   static const width18 = 18.0;
   static const width32 = 32.0;
+  static const width37 = 37.0;
   static const widthSmall = 50.0;
   static const width55 = 55.0;
   static const width60 = 60.0;

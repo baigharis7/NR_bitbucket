@@ -245,6 +245,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/waterevents/save_water_
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/save_water_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/upload_water_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/upload_water_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
 import 'package:nutrenaissance_flutter/domain/models/recipes/upload_recipe_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/repository/advices/advices_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/calendar/calendar_repository.dart';
@@ -272,6 +273,8 @@ import 'package:nutrenaissance_flutter/infrastructure/environment/environment.da
 import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/presentation/barcodedetail/view/bar_code_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/barcodescanning/view/bar_code_scanning_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/calendar/bloc/calendar_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/calendar/view/calendar_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/test_bloc.dart';
@@ -324,6 +327,8 @@ import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/view/liq
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/bloc/macro_nutrients_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
+import 'package:nutrenaissance_flutter/presentation/mealtimedetails/bloc/meal_time_details_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/mealtimedetails/view/meal_time_details_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/bloc/micro_nutrients_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrientsweekly/bloc/micro_nutrients_weekly_bloc.dart';
@@ -882,7 +887,12 @@ void main() async {
     getMasterFileInteractor: getMasterFileInteractor,
   );
 
-  final microNutrientsWeeklyBloc = MicroNutrientsWeeklyBloc(
+  final microNutrientsWeeklyBloc = MicroNutrientsWeeklyBloc();
+
+  final mealTimeDetailsBloc = MealTimeDetailsBloc(
+    getFoodEventsOfTodayInteractor: getFoodEventsOfTodayInteractor,
+    getProfileInteractor: getProfileInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
   );
 
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
@@ -931,6 +941,7 @@ void main() async {
         BlocProvider<RecipeTabBloc>(create: (context) => recipeTabBloc,),
         BlocProvider<RecipeDetailBloc>(create: (context) => recipeDetailBloc,),
         BlocProvider<MicroNutrientsWeeklyBloc>(create: (context) => microNutrientsWeeklyBloc,),
+        BlocProvider<MealTimeDetailsBloc>(create: (context) => mealTimeDetailsBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -1020,6 +1031,9 @@ void main() async {
           FecesScreen.routeName:(_) => const FecesScreen(),
           UrineScreen.routeName:(_) => const UrineScreen(),
           MicroNutrientsWeeklyScreen.routeName:(_) => const MicroNutrientsWeeklyScreen(),
+          MealTimeDetailScreen.routeName:(_) => const MealTimeDetailScreen(),
+          BarCodeScanningScreen.routeName:(_) => const BarCodeScanningScreen(),
+          BarcodeDetailScreen.routeName:(_) => const BarcodeDetailScreen(),
         },
       ),
     ),

@@ -76,12 +76,15 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                 ),
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+
                 children: [
                   ...widget.nutrientsList.map((nutrient) {
                     final double percent = (nutrient.quantityConsumed / nutrient.rda);
                     final double percentage = percent * 100;
                     final color = (percentage >= Constants.PERCENTAGE_110 && percentage <= Constants.PERCENTAGE_115) ? AppColors.mustardYellow : percentage > Constants.PERCENTAGE_115 ? AppColors.red : AppColors.mountainMeadow;
-                    return Expanded(
+                    return SizedBox(
+                      width: MediaQuery.of(context).size.width/4,
                       child: NutrientElementWidget(
                         label: nutrient.nutrientInfoMaster.translate(context),
                         current: nutrient.quantityConsumed,
