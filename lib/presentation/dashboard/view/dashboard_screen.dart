@@ -30,6 +30,7 @@ import 'package:nutrenaissance_flutter/presentation/mealtimedetails/view/meal_ti
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/nutrients_detail/view/weekly_all_nutrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/NutritionProgressWidget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/card_widget.dart';
@@ -343,6 +344,9 @@ class _DashboardScreen extends State<DashboardScreen>
                           MealTimeWidget(name: AppLocalizations.of(context)!.supplements, svg: 'assets/images/supplement.png', onClick: () {},),
                           DashTitleWidget(title: AppLocalizations.of(context)!.depositions),
                           MealTimeWidget(name: AppLocalizations.of(context)!.faeces_urine, svg: 'assets/images/feces_urine.png', onClick: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName), iconColor: Colors.black, backgroundColor: Colors.transparent, backgroundImage: 'assets/images/feces_urine_background.png'),
+                          DashTitleWidget(title: AppLocalizations.of(context)!.add_sport_event),
+                          MealTimeWidget(name: AppLocalizations.of(context)!.add_sport_event, desc: '', onClick: () => Navigator.pushNamed(context, AddSportEventScreen.routeName), iconColor: Colors.black, backgroundColor: AppColors.floralWhite,),
+                          const SizedBox(height: Dimens.height60),
                           // WaterWidget(),
                           // SizedBox(
                           //   height: 200,
