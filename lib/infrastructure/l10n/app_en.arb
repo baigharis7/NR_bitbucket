@@ -331,6 +331,8 @@
     "add_comment" : "Add comment",
     "add_favorite" : "Add favorite",
     "make_favorite" : "Make it favorite",
+    "save_as_favorite" : "Save as favorite",
+    "schedule" : "Schedule",
     "food_name" : "Food name",
     "spor_name" : "Sport name",
     "no_food_favorites" : "There are no favorites of this meal time",

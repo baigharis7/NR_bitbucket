@@ -94,6 +94,10 @@ class AddFoodEventFromDetailNavigation extends AddFoodEventActions {
 
 class UpdateCreteDishEventAction extends AddFoodEventActions {}
 
+class UpdateIsFavoriteEventAction extends AddFoodEventActions {}
+
+class UpdateIsCreateRoutineEventAction extends AddFoodEventActions {}
+
 class FinishFoodWithoutCreateDishEventAction extends AddFoodEventActions {
   final Function onFinish;
   final BuildContext context;

@@ -286,6 +286,18 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: false));
     },);
 
+    on<UpdateIsFavoriteEventAction>((event, emit) {
+      state.isFavorite = (state.isFavorite ?? false) ? false : true;
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<UpdateIsCreateRoutineEventAction>((event, emit) {
+      state.isCreateRoutine = (state.isCreateRoutine ?? false) ? false : true;
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
     on<FinishFoodWithoutCreateDishEventAction>((event, emit) async {
       for (FoodInEvent food in state.foodsInEvent.orEmpty()) {
         emit(state.copyWith(isLoading: true));

@@ -273,7 +273,10 @@ class _DashboardScreen extends State<DashboardScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          WeekCalendarWidget(callGetAllEvents: (day) => bloc.getEventsForDay(day)),
+                          WeekCalendarWidget(onDateClick: (date) {
+                            selectedDateTime = date;
+                            bloc.add(InitializeState(dateTime: date,));
+                          }, callGetAllEvents: (day) => bloc.getEventsForDay(day)),
                           const SizedBox(height: Dimens.heightXSmall),
                           SizedBox(height: Dimens.height320, child: NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(),)),
                       // if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(

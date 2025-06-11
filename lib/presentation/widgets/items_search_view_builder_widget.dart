@@ -24,7 +24,9 @@ class ItemsSearchViewBuilder extends StatelessWidget {
             width: double.infinity,
             constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - Dimens.margin_60, maxHeight: Dimens.heightXXLarge), // Adjust the width as needed
             child: SingleChildScrollView(
-              child: Column(children: List.generate(options.length, (index) {
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: List.generate(options.length, (index) {
                 return InkWell(
                   onTap: () => onSelected.call(options[index]),
                   child: Container(

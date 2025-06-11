@@ -32,6 +32,8 @@ class AddFoodEventState {
   List<FoodFavorite>? foodFavorites;
   List<FoodEventComplete>? weeklyFoodEvents;
   bool? isCreateDish;
+  bool? isFavorite;
+  bool? isCreateRoutine;
 
   AddFoodEventState({
     required this.isLoading,
@@ -54,6 +56,8 @@ class AddFoodEventState {
     this.foodFavorites,
     this.weeklyFoodEvents,
     this.isCreateDish,
+    this.isFavorite,
+    this.isCreateRoutine,
   });
 
   AddFoodEventState copyWith({
@@ -77,6 +81,8 @@ class AddFoodEventState {
     List<FoodFavorite>? foodFavorites,
     List<FoodEventComplete>? weeklyFoodEvents,
     bool? isCreateDish,
+    bool? isFavorite,
+    bool? isCreateRoutine,
   }) {
     return AddFoodEventState(
       isLoading: isLoading,
@@ -99,6 +105,8 @@ class AddFoodEventState {
       foodsFromFavorite: foodsFromFavorite ?? this.foodsFromFavorite,
       weeklyFoodEvents: weeklyFoodEvents ?? this.weeklyFoodEvents,
       isCreateDish: isCreateDish ?? this.isCreateDish,
+      isFavorite: isFavorite ?? this.isFavorite,
+      isCreateRoutine: isCreateRoutine ?? this.isCreateRoutine,
     );
   }
 }

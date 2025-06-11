@@ -50,12 +50,12 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget> {
               colorFilter: const ColorFilter.mode(AppColors.darkJungleGreen, BlendMode.srcIn),
             ),
           ), tooltip: AppLocalizations.of(context)!.start,),
-          BottomNavigationBarItem(icon: SizedBox(height: 35, child: SvgPicture.asset('assets/images/diary.svg', colorFilter: const ColorFilter.mode(AppColors.cloudyGrey, BlendMode.srcIn),)), label: AppLocalizations.of(context)!.diary, activeIcon: SizedBox(height: 35,
-            child: SvgPicture.asset(
-              'assets/images/diary.svg',
-              colorFilter: const ColorFilter.mode(AppColors.darkJungleGreen, BlendMode.srcIn),
-            ),
-          ), tooltip: AppLocalizations.of(context)!.diary,),
+          // BottomNavigationBarItem(icon: SizedBox(height: 35, child: SvgPicture.asset('assets/images/diary.svg', colorFilter: const ColorFilter.mode(AppColors.cloudyGrey, BlendMode.srcIn),)), label: AppLocalizations.of(context)!.diary, activeIcon: SizedBox(height: 35,
+          //   child: SvgPicture.asset(
+          //     'assets/images/diary.svg',
+          //     colorFilter: const ColorFilter.mode(AppColors.darkJungleGreen, BlendMode.srcIn),
+          //   ),
+          // ), tooltip: AppLocalizations.of(context)!.diary,),
           BottomNavigationBarItem(icon: SizedBox(height: 35, child: SvgPicture.asset('assets/images/tips.svg', colorFilter: const ColorFilter.mode(AppColors.cloudyGrey, BlendMode.srcIn),)), label: AppLocalizations.of(context)!.tips, activeIcon: SizedBox(height: 35,
             child: SvgPicture.asset(
               'assets/images/tips.svg',
@@ -88,15 +88,15 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget> {
             }
             break;
 
-            case 1: {
-              if (ModalRoute.of(context)!.settings.name != JournalScreen.routeName) {
-                // Navigator.popAndPushNamed(context, JournalScreen.routeName).then((value) {});
-                Navigator.pushNamedAndRemoveUntil(context, JournalScreen.routeName, (route) => false,).then((value) => {});
-              }
-            }
-            break;
+            // case 1: {
+            //   if (ModalRoute.of(context)!.settings.name != JournalScreen.routeName) {
+            //     // Navigator.popAndPushNamed(context, JournalScreen.routeName).then((value) {});
+            //     Navigator.pushNamedAndRemoveUntil(context, JournalScreen.routeName, (route) => false,).then((value) => {});
+            //   }
+            // }
+            // break;
 
-            case 2: {
+            case 1: {
               if (ModalRoute.of(context)!.settings.name != RecommendationsTabHolder.routeName) {
                 // Navigator.popAndPushNamed(context, RecommendationsTabHolder.routeName).then((value) {});
                 Navigator.pushNamedAndRemoveUntil(context, RecommendationsTabHolder.routeName, (route) => false,).then((value) => {});
@@ -104,7 +104,7 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget> {
             }
             break;
 
-            case 3: {
+            case 2: {
               if (ModalRoute.of(context)!.settings.name != RecipesTabsHolder.routeName) {
                 // Navigator.popAndPushNamed(context, RecipesTabsHolder.routeName).then((value) {});
                 Navigator.pushNamedAndRemoveUntil(context, RecipesTabsHolder.routeName, (route) => false,).then((value) => {});
@@ -112,7 +112,7 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget> {
             }
             break;
 
-            case 4: {
+            case 3: {
               if (ModalRoute.of(context)!.settings.name != ProfileScreen.routeName) {
                 // Navigator.popAndPushNamed(context, RecipesTabsHolder.routeName).then((value) {});
                 Navigator.pushNamedAndRemoveUntil(context, ProfileScreen.routeName, (route) => false,).then((value) => {});

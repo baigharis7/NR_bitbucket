@@ -236,6 +236,7 @@ domain.UserProfileModel mapToUserProfileModelFromUploadUser(upload.UploadUserPro
     symptoms: '',
     guts: uploadUserProfile.guts,
     micronutrients: uploadUserProfile.micronutrients,
+    temporaryMicronutrients: uploadUserProfile.temporaryMicronutrients,
     userRdas: userRdas,
     recommededIds: uploadUserProfile.recommededIds,
     kcal: uploadUserProfile.kcal,

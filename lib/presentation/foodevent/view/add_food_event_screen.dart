@@ -91,17 +91,17 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
     required BuildContext context,
     required Function onFinish,
     required Function onNameChange,
+    required Function onFavoriteChange,
   }) async {
     await showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (ctx) => AddItemNameDialog(
-        title: '${AppLocalizations.of(context)!.food_name}:',
+        title: AppLocalizations.of(context)!.food_name,
         onNameChange: (String foodName) => onNameChange.call(foodName),
         onFinish: () => onFinish.call(),
         onCancel: () => Navigator.pop(context),
       ),
-    ).then((_) => Navigator.pop(context));
+    ).then((_) {});
   }
 
   @override
@@ -277,6 +277,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                     bloc.add(AddFoodNameEventAction(
                                       foodName: foodName,),);
                                   },
+                                  onFavoriteChange: () {},
                                 );
                               }
                               else {

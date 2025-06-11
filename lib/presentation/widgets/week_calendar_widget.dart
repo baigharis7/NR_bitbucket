@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/week_widget.dart';
 
@@ -6,7 +7,8 @@ import '../../infrastructure/helpers/date_time_helper.dart';
 
 class WeekCalendarWidget extends StatelessWidget {
   final Function callGetAllEvents;
-  const WeekCalendarWidget({super.key, required this.callGetAllEvents});
+  final Function(DateTime) onDateClick;
+  const WeekCalendarWidget({super.key, required this.callGetAllEvents, required this.onDateClick});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class WeekCalendarWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ...weekDates.map((date) => SizedBox(width: Dimens.width55, height: Dimens.height70, child: WeekWidget(dateTime: date, events: callGetAllEvents.call(date)))),
+          ...weekDates.map((date) => InkWell(onTap: () => onDateClick.call(date), child: SizedBox(width: Dimens.width55, height: Dimens.height70, child: WeekWidget(dateTime: date, events: callGetAllEvents.call(date))))),
         ],
       ),
     );

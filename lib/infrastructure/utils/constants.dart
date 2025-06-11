@@ -59,8 +59,8 @@ class Constants {
 
   //Navigation id's
   static const DASHBOARD = 0;
-  static const JOURNAL = 1;
-  static const TIPS = 2;
-  static const RECIPES = 3;
-  static const PROFILE = 4;
+  static const JOURNAL = -1;
+  static const TIPS = 1;
+  static const RECIPES = 2;
+  static const PROFILE = 3;
 }
