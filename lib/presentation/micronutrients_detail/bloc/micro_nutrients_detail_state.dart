@@ -10,6 +10,8 @@ class MicroNutrientsDetailState {
   NutrientsInfoMaster? nutrientsInfoMaster;
   UserProfileModel? profile;
   List<FoodEventComplete>? foodEvents;
+  List<NutrientsModel>? allMicronutrients;
+  List<NutrientsModel>? filteredNutrientsLess15RDA;
 
   MicroNutrientsDetailState({
     required this.isLoading,
@@ -21,6 +23,8 @@ class MicroNutrientsDetailState {
     this.nutrientsInfoMaster,
     this.profile,
     this.foodEvents,
+    this.allMicronutrients,
+    this.filteredNutrientsLess15RDA,
   });
 
   MicroNutrientsDetailState copyWith({
@@ -33,6 +37,8 @@ class MicroNutrientsDetailState {
     NutrientsInfoMaster? nutrientsInfoMaster,
     UserProfileModel? profile,
     List<FoodEventComplete>? foodEvents,
+    List<NutrientsModel>? allMicronutrients,
+    List<NutrientsModel>? filteredNutrientsLess15RDA,
   }) {
     return MicroNutrientsDetailState(
       isLoading: isLoading,
@@ -44,6 +50,8 @@ class MicroNutrientsDetailState {
       nutrientsInfoMaster: nutrientsInfoMaster ?? this.nutrientsInfoMaster,
       profile: profile ?? this.profile,
       foodEvents: foodEvents ?? this.foodEvents,
+      allMicronutrients:  allMicronutrients ?? this.allMicronutrients,
+      filteredNutrientsLess15RDA: filteredNutrientsLess15RDA ?? this.filteredNutrientsLess15RDA,
     );
   }
 }

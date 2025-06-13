@@ -121,10 +121,10 @@ class _MicroNutrientsDetailScreenState
                       title: AppLocalizations.of(context)!.micronutrientss,
                       onBackTap: () => Navigator.pop(context),
                     ),
-                        Container(
+                    if (state.microNutrients.orEmpty().isNotEmpty) Container(
                           margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge),
                           padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingLarge),
-                          decoration: const BoxDecoration(color: AppColors.floralWhite, borderRadius: BorderRadius.all(Radius.circular(15))),
+                          decoration: const BoxDecoration(color: AppColors.floralWhite, borderRadius: BorderRadius.all(Radius.circular(Dimens.border15))),
                           child: Column(children: [
                             ListTile(
                               contentPadding: EdgeInsets.zero,
@@ -138,8 +138,7 @@ class _MicroNutrientsDetailScreenState
                           MicroNutrientDetailWidget(nutrientsModel: item,)),
                           ]),
                         ),
-
-                    Container(
+                    if (state.temporaryMicronutrients.orEmpty().isNotEmpty) Container(
                       margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge),
                       padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingLarge),
                       decoration: const BoxDecoration(color: AppColors.floralWhite, borderRadius: BorderRadius.all(Radius.circular(15))),
@@ -155,7 +154,40 @@ class _MicroNutrientsDetailScreenState
                         ...state.temporaryMicronutrients.orEmpty().where((element) => element.nutrientInfoMaster.translateDescription(context).isNotEmptyOrNull()).map((item) =>
                             MicroNutrientDetailWidget(nutrientsModel: item, titleColor: AppColors.redOxide,)),
                       ]),
-
+                    ),
+                    if (state.filteredNutrientsLess15RDA.orEmpty().isNotEmpty) Container(
+                      margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge),
+                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingLarge),
+                      decoration: const BoxDecoration(color: AppColors.floralWhite, borderRadius: BorderRadius.all(Radius.circular(15))),
+                      child: Column(children: [
+                        ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: Image.asset('assets/icon/deficiency_nutrients_icon.png', height: 40, width: 40),
+                          title: Text(AppLocalizations.of(context)!.deficiency_micronutrients, style: const TextStyle(
+                              color: AppColors.tigerOrange, fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline
+                          ),),
+                          trailing: InkWell(onTap: () => Navigator.pushNamed(context, MicroNutrientsWeeklyScreen.routeName, arguments: state.filteredNutrientsLess15RDA), child: Image.asset('assets/images/nutrient_graph.png', height: 30, width: 30)),
+                        ),
+                        ...state.filteredNutrientsLess15RDA.orEmpty().where((element) => element.nutrientInfoMaster.translateDescription(context).isNotEmptyOrNull()).map((item) =>
+                            MicroNutrientDetailWidget(nutrientsModel: item, titleColor: AppColors.tigerOrange,)),
+                      ]),
+                    ),
+                    if (state.allMicronutrients.orEmpty().isNotEmpty) Container(
+                      margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge),
+                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingLarge),
+                      decoration: const BoxDecoration(color: AppColors.floralWhite, borderRadius: BorderRadius.all(Radius.circular(15))),
+                      child: Column(children: [
+                        ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: Image.asset('assets/icon/deficiency_nutrients_icon.png', height: 40, width: 40),
+                          title: Text(AppLocalizations.of(context)!.micronutrientss, style: const TextStyle(
+                              color: AppColors.peacockBlue, fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline
+                          ),),
+                          trailing: InkWell(onTap: () => Navigator.pushNamed(context, MicroNutrientsWeeklyScreen.routeName, arguments: state.allMicronutrients), child: Image.asset('assets/images/nutrient_graph.png', height: 30, width: 30)),
+                        ),
+                        ...state.allMicronutrients.orEmpty().where((element) => element.nutrientInfoMaster.translateDescription(context).isNotEmptyOrNull()).map((item) =>
+                            MicroNutrientDetailWidget(nutrientsModel: item,)),
+                      ]),
                     ),
                   ],
                 ),

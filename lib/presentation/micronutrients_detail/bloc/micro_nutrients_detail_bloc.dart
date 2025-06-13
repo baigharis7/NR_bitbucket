@@ -68,7 +68,26 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
             (micronutrient) => getDataByWeekly(micronutrient),
       ).toList();
 
-      final b = state.profile?.userRdas?.userRdas;
+      state.allMicronutrients = state.profile?.userRdas?.userRdas
+          .orEmpty()
+          .map((nutrient) => NutrientsModel(
+        quantityConsumed: getQuantityConsumedSoFar(nutrient.name),
+        nutrientInfoMaster: getNutrientInfo(nutrient.name),
+        fractionToFill: 0.0,
+        unit: getUnitForMicronutrient(nutrient.name),
+        rda: getNutrientRda(nutrient.name),
+        upperLimit: getNutrientUpperLimit(nutrient.name),
+      ),).toList();
+
+      state.filteredNutrientsLess15RDA = state.allMicronutrients.orEmpty().where((nutrient) {
+        double percentage = (nutrient.quantityConsumed / nutrient.rda) * 100;
+        return percentage <= 15;
+      }).toList();
+
+      state.allMicronutrients = state.allMicronutrients = state.allMicronutrients.orEmpty().where((nutrient) {
+        double percentage = (nutrient.quantityConsumed / nutrient.rda) * 100;
+        return percentage > 15;
+      }).toList();
 
       emit(state.copyWith(isLoading: false));
     },);

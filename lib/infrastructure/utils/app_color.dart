@@ -51,4 +51,5 @@ class AppColors {
   static const black59Percent = Color(0x96000000);
   static const cloudyGrey = Color(0xFF696969);
   static const redOxide = Color(0xFF6C0909);
+  static const tigerOrange = Color(0xFFB88A3E);
 }

@@ -63,30 +63,6 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
     );
   }
 
-  Future<void> showAddFoodEventDialog(
-      Widget widget,
-      String foodName,
-  ) async {
-    final bloc = BlocProvider.of<AddFoodEventBloc>(context);
-
-    await showDialog(
-      useSafeArea: true,
-      barrierDismissible: false,
-      context: context,
-      builder: (ctx) {
-        return AddFoodDialog(
-          widget: widget,
-          foodName: foodName,
-        );
-      },
-    ).then((foodInEvent) {
-      if (foodInEvent != null) {
-        bloc.add(AddFoodFromEventAction(foodInEvent: foodInEvent));
-      }
-      setState(() => _foodInputController.text = '');
-    });
-  }
-
   Future<void> showAddFoodNameDialog({
     required BuildContext context,
     required Function onFinish,

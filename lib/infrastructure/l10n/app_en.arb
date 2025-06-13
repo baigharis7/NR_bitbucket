@@ -277,6 +277,7 @@
     "my_recipes": "My Recipes",
     "micronutrients" : "Micronutrients associated with objectives",
     "temporary_micronutrients" : "Related to your Temporary Needs",
+    "deficiency_micronutrients" : "Related to your nutritional deficiencies",
     "micronutrientss" : "Micronutrients",
     "micronutrients_achieve_object" : "Micronutrients to achieve your objectives",
     "update_your_data" : "Update your data",
