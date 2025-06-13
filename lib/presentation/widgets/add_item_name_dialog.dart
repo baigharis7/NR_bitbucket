@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/routine_days_widget.dart';
@@ -103,7 +104,6 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
                   if (state.isCreateRoutine ?? false)  Text(AppLocalizations.of(context)!.schedule, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w500, fontSize: Dimens.fontSize17)),
                   if (state.isCreateRoutine ?? false)  const SizedBox(height: Dimens.height12),
                   if (state.isCreateRoutine ?? false) Container(
-                    // height: Dimens.height42,
                     decoration: const BoxDecoration(
                         borderRadius:
                         BorderRadius.all(Radius.circular(11)),
@@ -111,6 +111,7 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
                             BorderSide(color: AppColors.silver, width: 1))),
                     child: DropdownButton<int>(
                       isExpanded: true,
+                      borderRadius: BorderRadius.circular(Dimens.border11),
                       alignment: Alignment.center,
                       underline: Container(),
                       icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
@@ -122,9 +123,20 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
                           .map<DropdownMenuItem<int>>(
                             (item) => DropdownMenuItem(
                           value: item.id,
-                          child: ListTile(
-                            leading: Image.asset('assets/images/meal_time_${item.id.orZero()}.png', height: Dimens.height32, width: Dimens.width32),
-                            title: Text(item.name!),
+                          child: Column(
+                            children: [
+                              SizedBox(height: 4,),
+                              Row(children: [
+                                Image.asset('assets/images/meal_time_${item.id.orZero()}.png', height: Dimens.height32, width: Dimens.width32),
+                                Text(item.name!),
+                              ],),
+                              // SizedBox(height: Dimens.height12,),
+                              Divider(height: 1, thickness: 1, color: Colors.black,),
+                              // ListTile(
+                              //   leading: Image.asset('assets/images/meal_time_${item.id.orZero()}.png', height: Dimens.height32, width: Dimens.width32),
+                              //   title: Text(item.name!),
+                              // ),
+                            ],
                           ),
                         ),
                       )
@@ -132,7 +144,10 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
                     ),
                   ),
                   if (state.isCreateRoutine ?? false) const SizedBox(height: Dimens.height12,),
-                  if (state.isCreateRoutine ?? false) RoutineDaysWidget(title: AppLocalizations.of(context)!.days_of_week, onDaySelect: (day) {},),
+                  if (state.isCreateRoutine ?? false) RoutineDaysWidget(title: AppLocalizations.of(context)!.days_of_week, daysOfWeek: state.daysOfWeek, onDaySelect: (day) {
+                    final dateMilliseconds = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(day);
+                    bloc.add(UpdateDaysOfWeekEventAction(day: dateMilliseconds));
+                  },),
                 ],
               ),
             ),

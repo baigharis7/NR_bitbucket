@@ -116,3 +116,9 @@ class UpdateOilUsedEventAction extends AddFoodEventActions {
 
   UpdateOilUsedEventAction({required this.foodInEvent});
 }
+
+class UpdateDaysOfWeekEventAction extends AddFoodEventActions {
+  final int day;
+
+  UpdateDaysOfWeekEventAction({required this.day});
+}

@@ -44,6 +44,9 @@ class Constants {
   static const IMPROVE_SPORT_PERFORMANCE = 47;
   static const REDUCE_RISK_OF_INJURY = 48;
   static const RECOVERY_AFTER_SPORT_INJURY = 49;
+  static const GAIN_MUSCLE = 50;
+  static const LOSE_FAT = 51;
+  static const MAINTAIN_WEIGHT = 52;
   static const TRYPTOPHAN_MG_PER_KG = 3.5;
   static const COOKING_METHOD_BREADED = -4;
   static const COOKING_METHOD_FRIED = 5;

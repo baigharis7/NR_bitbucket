@@ -58,6 +58,7 @@ class Dimens {
   static const borderNormal = 3.0;
   static const borderLarge = 6.0;
   static const borderXLarge = 10.0;
+  static const border11 = 11.0;
   static const border15 = 15.0;
   static const border18 = 18.0;
   static const border20 = 20.0;

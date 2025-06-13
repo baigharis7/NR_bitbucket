@@ -68,6 +68,8 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
             (micronutrient) => getDataByWeekly(micronutrient),
       ).toList();
 
+      final b = state.profile?.userRdas?.userRdas;
+
       emit(state.copyWith(isLoading: false));
     },);
 

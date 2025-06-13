@@ -34,6 +34,7 @@ class AddFoodEventState {
   bool? isCreateDish;
   bool? isFavorite;
   bool? isCreateRoutine;
+  List<int>? daysOfWeek;
 
   AddFoodEventState({
     required this.isLoading,
@@ -58,6 +59,7 @@ class AddFoodEventState {
     this.isCreateDish,
     this.isFavorite,
     this.isCreateRoutine,
+    this.daysOfWeek,
   });
 
   AddFoodEventState copyWith({
@@ -83,6 +85,7 @@ class AddFoodEventState {
     bool? isCreateDish,
     bool? isFavorite,
     bool? isCreateRoutine,
+    List<int>? daysOfWeek,
   }) {
     return AddFoodEventState(
       isLoading: isLoading,
@@ -107,6 +110,7 @@ class AddFoodEventState {
       isCreateDish: isCreateDish ?? this.isCreateDish,
       isFavorite: isFavorite ?? this.isFavorite,
       isCreateRoutine: isCreateRoutine ?? this.isCreateRoutine,
+      daysOfWeek: daysOfWeek ?? this.daysOfWeek,
     );
   }
 }

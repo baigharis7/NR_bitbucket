@@ -8,8 +8,9 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 class RoutineDaysWidget extends StatefulWidget {
   final String? title;
+  final List<int>? daysOfWeek;
   final Function(DateTime) onDaySelect;
-  const RoutineDaysWidget({super.key, this.title, required this.onDaySelect});
+  const RoutineDaysWidget({super.key, this.title, required this.onDaySelect, this.daysOfWeek});
 
   @override
   State<RoutineDaysWidget> createState() => _RoutineDaysWidgetState();
@@ -51,14 +52,15 @@ class _RoutineDaysWidgetState extends State<RoutineDaysWidget> {
           children: DateTimeHelper.getCurrentWeekDates().map((dateTime) {
             DateTime selectedDate = DateTime.now();
             final locale = Localizations.localeOf(context).languageCode;
-            final isSelected = DateTimeHelper.isSameDay(dateTime, selectedDate);
+            final isSelected = widget.daysOfWeek.orEmpty().contains(DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime));
             final dayAbbr = DateFormat.E(locale).format(dateTime); // LUN, MAR, etc.
 
             return GestureDetector(
               onTap: () {
-                setState(() {
-                  // selectedDays[index] = !isSelected;
-                });
+                // setState(() {
+                //   // selectedDays[index] = !isSelected;
+                // });
+                widget.onDaySelect.call(dateTime);
               },
               child: Container(
                 height: Dimens.height32,

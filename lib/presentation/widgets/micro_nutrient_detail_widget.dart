@@ -12,7 +12,8 @@ import 'fill_horizontal_bar.dart';
 
 class MicroNutrientDetailWidget extends StatefulWidget {
   final NutrientsModel nutrientsModel;
-  const MicroNutrientDetailWidget({super.key, required this.nutrientsModel});
+  final Color? titleColor;
+  const MicroNutrientDetailWidget({super.key, required this.nutrientsModel, this.titleColor});
 
   @override
   State<MicroNutrientDetailWidget> createState() =>
@@ -32,8 +33,8 @@ class _MicroNutrientDetailWidgetState extends State<MicroNutrientDetailWidget> {
         children: [
           Text(
             getNutrientName(widget.nutrientsModel.nutrientInfoMaster.translate(context)),
-            style: const TextStyle(
-              color: AppColors.peacockBlue, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline
+            style: TextStyle(
+              color: widget.titleColor ?? AppColors.peacockBlue, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline
             ),
           ),
           Container(

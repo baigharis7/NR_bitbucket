@@ -315,7 +315,7 @@ class _DashboardScreen extends State<DashboardScreen>
                       //   isEmpty: false,
                       //   screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                       // ),
-                          MicroNutrientsSection(micronutrients: state.micronutrients.orEmpty(), temporaryMicronutrients: state.temporaryMicronutrients.orEmpty()),
+                          MicroNutrientsSection(micronutrients: state.micronutrients.orEmpty(), temporaryMicronutrients: state.temporaryMicronutrients.orEmpty(), objectives: state.profile?.objectives.orEmpty().where((element) => ![Constants.COLD, Constants.DURING_MENSTRUATION, Constants.GAIN_MUSCLE, Constants.LOSE_FAT, Constants.MAINTAIN_WEIGHT].contains(element)).toList()),
                           Container(
                             margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                             child: Row(

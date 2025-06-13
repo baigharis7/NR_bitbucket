@@ -93,18 +93,14 @@ class _MicroNutrientsWeeklyScreenState extends State<MicroNutrientsWeeklyScreen>
                     decoration: const BoxDecoration(color: AppColors.floralWhite, borderRadius: BorderRadius.all(Radius.circular(15))),
                           child: Column(
                             children: [
-                              Row(children: [
-                                Image.asset('assets/images/goal_objectives.png', height: 40, width: 40),
-                                Expanded(
-                                  child: Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal,),
-                                    child: Text(AppLocalizations.of(context)!.micronutrients, style: const TextStyle(
-                                        color: AppColors.peacockBlue, fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline
-                                    ),),
-                                  ),
-                                ),
-                                // InkWell(onTap: () => Navigator.pushNamed(context, MicroNutrientsWeeklyScreen.routeName, arguments: state.micronutrientsWeekly), child: Image.asset('assets/images/nutrient_graph.png', height: 30, width: 30)),
-                              ],),
+                              ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                leading: Image.asset('assets/images/goal_objectives.png', height: 40, width: 40),
+                                title: Text(AppLocalizations.of(context)!.micronutrients, style: const TextStyle(
+                                    color: AppColors.peacockBlue, fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline
+                                ),),
+                                // trailing: InkWell(onTap: () => Navigator.pushNamed(context, MicroNutrientsWeeklyScreen.routeName, arguments: state.micronutrientsWeekly), child: Image.asset('assets/images/nutrient_graph.png', height: 30, width: 30)),
+                              ),
                               const SizedBox(height: Dimens.height32),
                               WeeklyNutrientGraphic(
                                 title: AppLocalizations.of(context)!.this_week,

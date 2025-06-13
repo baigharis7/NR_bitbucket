@@ -56,6 +56,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     isEdit: false,
     foodFavorites: [],
     foodsFromFavorite: [],
+    daysOfWeek: [],
   ),) {
 
     on<InitializeStateAction>((event, emit) async {
@@ -356,6 +357,17 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       if (state.foodsInEvent!.map((food) => food.id).contains((event.foodInEvent).id)) {
         final itemIndex = state.foodsInEvent!.indexOf(state.foodsInEvent!.firstWhere((food) => food.id == event.foodInEvent.id));
         state.foodsInEvent![itemIndex].usedOil = event.foodInEvent.usedOil;
+      }
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateDaysOfWeekEventAction>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      if (state.daysOfWeek.orEmpty().contains(event.day)) {
+        state.daysOfWeek?.remove(event.day);
+      } else {
+        state.daysOfWeek?.add(event.day);
       }
 
       emit(state.copyWith(isLoading: false));
