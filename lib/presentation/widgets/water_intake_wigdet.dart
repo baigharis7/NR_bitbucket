@@ -39,37 +39,73 @@ class WaterIntakeWidget extends StatelessWidget {
           ),
           child: Column(
             children: [
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(totalGlasses, (index) {
-                    bool isFilled = index < consumedGlasses;
-                    return InkWell(
-                      onTap: () {
-                        if (!isFilled) onAddWater.call();
-                      },
-                      child: Container(
-                        width: Dimens.widthSmall,
-                        height: Dimens.width55,
-                        // margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(isFilled
-                                ? 'assets/images/filled_glass.png'
-                                : 'assets/images/empty_glass.png'),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        child: !isFilled
-                            ? const Center(
-                          child: Icon(Icons.add, size: 18, color: Colors.white),
-                        )
-                            : null,
-                      ),
-                    );
-                  }),
+              GridView(
+                gridDelegate:
+                const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 8,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: Dimens.marginNormal,
+                  mainAxisExtent: 55.0,
                 ),
+                shrinkWrap: true,
+                children: List.generate(totalGlasses, (index) {
+                  bool isFilled = index < consumedGlasses;
+                  return InkWell(
+                    onTap: () {
+                      if (!isFilled) onAddWater.call();
+                    },
+                    child: Container(
+                      width: Dimens.widthSmall,
+                      height: Dimens.width55,
+                      // margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(isFilled
+                              ? 'assets/images/filled_glass.png'
+                              : 'assets/images/empty_glass.png'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: !isFilled
+                          ? const Center(
+                        child: Icon(Icons.add, size: 18, color: Colors.white),
+                      )
+                          : null,
+                    ),
+                  );
+                }),
               ),
+              // SingleChildScrollView(
+              //   scrollDirection: Axis.horizontal,
+              //   child: Row(
+              //     children: List.generate(totalGlasses, (index) {
+              //       bool isFilled = index < consumedGlasses;
+              //       return InkWell(
+              //         onTap: () {
+              //           if (!isFilled) onAddWater.call();
+              //         },
+              //         child: Container(
+              //           width: Dimens.widthSmall,
+              //           height: Dimens.width55,
+              //           // margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
+              //           decoration: BoxDecoration(
+              //             image: DecorationImage(
+              //               image: AssetImage(isFilled
+              //                   ? 'assets/images/filled_glass.png'
+              //                   : 'assets/images/empty_glass.png'),
+              //               fit: BoxFit.cover,
+              //             ),
+              //           ),
+              //           child: !isFilled
+              //               ? const Center(
+              //             child: Icon(Icons.add, size: 18, color: Colors.white),
+              //           )
+              //               : null,
+              //         ),
+              //       );
+              //     }),
+              //   ),
+              // ),
               // Progress Bar
               Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),

@@ -142,9 +142,9 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
                 ),
                 onTap: () {
                   if (_selectedTab == 0) {
-                    Navigator.pushNamed(context, FecesScreen.routeName).then((value) => Navigator.pop(context));
+                    Navigator.pushNamed(context, FecesScreen.routeName);
                   } else if (_selectedTab == 1) {
-                    Navigator.pushNamed(context, UrineScreen.routeName).then((value) => Navigator.pop(context));
+                    Navigator.pushNamed(context, UrineScreen.routeName);
                   }
                 },
               ),

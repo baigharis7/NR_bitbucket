@@ -18,7 +18,7 @@ class MealTimeSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(children: [
       DashTitleWidget(title: AppLocalizations.of(context)!.feeding),
-      ...MealTime.getAllMealTimes().map((meal) => MealTimeWidget(name: meal.name.orEmpty(), svg: 'assets/images/meal_time_${meal.id.orZero()}.png', onItemClick: () => Navigator.pushNamed(context, MealTimeDetailScreen.routeName, arguments: meal), onClick: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: meal.id).then((value) => then?.call()), desc: getFoodNames(foodEvents, meal.id) + ' / $totalKcal kcal.',)),
+      ...MealTime.getAllMealTimes().map((meal) => MealTimeWidget(name: meal.name.orEmpty(), svg: 'assets/images/meal_time_${meal.id.orZero()}.png', onItemClick: () => Navigator.pushNamed(context, MealTimeDetailScreen.routeName, arguments: meal).then((value) => then?.call()), onClick: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: meal.id).then((value) => then?.call()), desc: getFoodNames(foodEvents, meal.id) + ' / $totalKcal kcal.',)),
     ],);
   }
 

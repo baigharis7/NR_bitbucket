@@ -8,7 +8,8 @@ import '../../infrastructure/helpers/date_time_helper.dart';
 class WeekCalendarWidget extends StatelessWidget {
   final Function callGetAllEvents;
   final Function(DateTime) onDateClick;
-  const WeekCalendarWidget({super.key, required this.callGetAllEvents, required this.onDateClick});
+  final DateTime? selectedDateTime;
+  const WeekCalendarWidget({super.key, required this.callGetAllEvents, required this.onDateClick, this.selectedDateTime});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class WeekCalendarWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ...weekDates.map((date) => InkWell(onTap: () => onDateClick.call(date), child: SizedBox(width: Dimens.width55, height: Dimens.height70, child: WeekWidget(dateTime: date, events: callGetAllEvents.call(date))))),
+          ...weekDates.map((date) => InkWell(onTap: () => onDateClick.call(date), child: SizedBox(width: Dimens.width55, height: Dimens.height70, child: WeekWidget(dateTime: date, selectedDateTime: selectedDateTime, events: callGetAllEvents.call(date))))),
         ],
       ),
     );

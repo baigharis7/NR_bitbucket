@@ -276,7 +276,7 @@ class _DashboardScreen extends State<DashboardScreen>
                           WeekCalendarWidget(onDateClick: (date) {
                             selectedDateTime = date;
                             bloc.add(InitializeState(dateTime: date,));
-                          }, callGetAllEvents: (day) => bloc.getEventsForDay(day)),
+                          }, selectedDateTime: selectedDateTime, callGetAllEvents: (day) => bloc.getEventsForDay(day)),
                           const SizedBox(height: Dimens.heightXSmall),
                           SizedBox(height: Dimens.height320, child: NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(),)),
                       // if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
@@ -348,7 +348,7 @@ class _DashboardScreen extends State<DashboardScreen>
                           DashTitleWidget(title: AppLocalizations.of(context)!.depositions),
                           MealTimeWidget(name: AppLocalizations.of(context)!.faeces_urine, svg: 'assets/images/feces_urine.png', onClick: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName), iconColor: Colors.black, backgroundColor: Colors.transparent, backgroundImage: 'assets/images/feces_urine_background.png'),
                           DashTitleWidget(title: AppLocalizations.of(context)!.add_sport_event),
-                          MealTimeWidget(name: AppLocalizations.of(context)!.add_sport_event, desc: '', onClick: () => Navigator.pushNamed(context, AddSportEventScreen.routeName), iconColor: Colors.black, backgroundColor: AppColors.floralWhite,),
+                          MealTimeWidget(name: AppLocalizations.of(context)!.add_sport_event, desc: '', onClick: () => Navigator.pushNamed(context, AddSportEventScreen.routeName).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), iconColor: Colors.black, backgroundColor: AppColors.floralWhite,),
                           const SizedBox(height: Dimens.height60),
                           // WaterWidget(),
                           // SizedBox(

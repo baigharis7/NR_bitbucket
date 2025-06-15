@@ -41,7 +41,7 @@ class _UrineTabState extends State<UrineTab> {
         onDelete: () => onDelete.call(),
         onCancel: () => onCancel.call(),
       ),
-    ).then((value) => onCancel.call());
+    );
   }
 
   @override

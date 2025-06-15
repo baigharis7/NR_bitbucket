@@ -107,6 +107,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         await uploadFecesInteractor.execute(uploadFeces);
         try {
           await saveFecesEventInteractor.execute(uploadFeces);
+          add(InitializationFecesEventAction());
           _clearFields();
           // event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
@@ -130,6 +131,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         await uploadUrineInteractor.execute(uploadUrine);
         try {
           await saveUrineInteractor.execute(uploadUrine);
+          add(InitializationUrineEventAction());
           _clearFields();
           // event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
@@ -147,6 +149,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         await deleteFecesEventInteractor.execute(event.uploadFeces.userId, event.uploadFeces.eventId);
         try {
           await removeFecesEventInteractor.execute(event.uploadFeces);
+          add(InitializationFecesEventAction());
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
         } catch (_) {
@@ -163,6 +166,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         await deleteUrineEventInteractor.execute(event.uploadFeces.userId, event.uploadFeces.eventId);
         try {
           await removeUrineEventInteractor.execute(event.uploadFeces);
+          add(InitializationUrineEventAction());
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
         } catch (_) {

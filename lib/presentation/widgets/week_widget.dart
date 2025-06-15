@@ -9,7 +9,8 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 class WeekWidget extends StatelessWidget {
   final DateTime dateTime;
   final List<dynamic> events;
-  WeekWidget({super.key, required this.dateTime, required this.events});
+  final DateTime? selectedDateTime;
+  WeekWidget({super.key, required this.dateTime, required this.events, this.selectedDateTime});
 
   final todayDate = DateTime.now();
 
@@ -17,8 +18,8 @@ class WeekWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     DateTime selectedDate = DateTime.now();
     final locale = Localizations.localeOf(context).languageCode;
-    final isToday = DateTimeHelper.isSameDay(dateTime, DateTime.now());
-    final isSelected = DateTimeHelper.isSameDay(dateTime, selectedDate);
+    // final isToday = DateTimeHelper.isSameDay(dateTime, DateTime.now());
+    final isToday = DateTimeHelper.isSameDay(selectedDateTime ?? selectedDate, dateTime);
     final dayNum = DateFormat('d').format(dateTime);
     final dayAbbr = DateFormat.E(locale).format(dateTime); // LUN, MAR, etc.
 

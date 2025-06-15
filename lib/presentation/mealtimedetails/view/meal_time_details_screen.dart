@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/mealtimedetails/bloc/meal_time_details_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/item_info_card.dart';
@@ -11,6 +12,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/nutrient_row.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_border_box.dart';
 import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../infrastructure/utils/dimens.dart';
+import '../../foodevent/view/add_food_event_screen.dart';
 
 class MealTimeDetailScreen extends StatefulWidget {
   static const routeName = '/meal_time_details_screen';
@@ -42,7 +44,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
   @override
   void initState() {
     bloc = BlocProvider.of<MealTimeDetailsBloc>(context);
-    bloc.add(InitialMealTimeDetailsEventState());
+    // bloc.add(InitialMealTimeDetailsEventState());
 
     final widgetsBinding = WidgetsBinding.instance;
     widgetsBinding.addPostFrameCallback((callback) {
@@ -56,7 +58,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
         }
       }
     });
-
+    bloc.add(InitialMealTimeDetailsEventState());
     super.initState();
   }
 
@@ -99,7 +101,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                             title: state.mealTime?.name.orEmpty(),
                             image: 'assets/images/meal_time_${state.mealTime?.id ?? 0}.png',
                             child: Column(children: [
-                              const Text('370 Kcal', style: TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize28, color: Colors.white),),
+                              Text('${NutritionUtils.calculateKcal(foodEvents: state.foodEvents.orEmpty())} Kcal', style: TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize28, color: Colors.white),),
                               Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),child: const Divider(color: Colors.white, height: 1, thickness: 1)),
                               Row(children: [
                                 ...state.macronutrients.orEmpty().map((macroNutrient) {
@@ -118,7 +120,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                           Container(
                             margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                             child: ListTile(
-                              onTap: () {},
+                              onTap: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: state.mealTime?.id).then((value) => bloc.add(InitialMealTimeDetailsEventState())),
                               leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
                               title: Text(
                                 AppLocalizations.of(context)!.add_more,
@@ -127,7 +129,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                             ),
                           ),
 
-                          RoundedBorderBox(
+                          if (state.foodEvents.orEmpty().isNotEmpty) RoundedBorderBox(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

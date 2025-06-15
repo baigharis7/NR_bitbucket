@@ -41,7 +41,7 @@ class _FecesTabState extends State<FecesTab> {
         onDelete: () => onDelete.call(),
         onCancel: () => onCancel.call(),
       ),
-    ).then((value) => onCancel.call());
+    );
   }
 
   @override

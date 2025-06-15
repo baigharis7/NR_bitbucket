@@ -63,8 +63,9 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       _clearFields();
       emit(state.copyWith(isLoading: true,));
       if (state.foodNames!.foodsAndDrinksNames!.foodNames!.isEmpty) {
-        state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
-        state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames.orEmpty() ?? []);
+        final foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
+        state.foodNames = foodNames;
+        state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames.orEmpty().toList() ?? []);
       }
       state.oilTypes = await getMasterFileInteractor.execute(MasterFilesType.oilTypes);
       state.conversionFactors = await getMasterFileInteractor.execute(MasterFilesType.conversionFactors);

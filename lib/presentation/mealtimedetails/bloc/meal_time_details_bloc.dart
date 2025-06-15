@@ -31,6 +31,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
       emit(state.copyWith(isLoading: true));
       final a = await getFoodEventsOfTodayInteractor.execute();
       state.foodEvents = a;
+      state.foodEvents = state.foodEvents.orEmpty().where((foodEvent) => foodEvent.mealType == state.mealTime?.id.orZero()).toList();
       state.profile = await getProfileInteractor.execute();
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
 
