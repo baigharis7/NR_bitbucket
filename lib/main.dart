@@ -661,6 +661,8 @@ void main() async {
     getMasterFileInteractor: getMasterFileInteractor,
     getFoodFavoritesInteractor: getFoodFavoritesInteractor,
     getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
+    uploadFoodFavoriteInteractor: uploadFoodFavoriteInteractor,
+    saveFoodFavoriteInteractor: saveFoodFavoriteInteractor,
   );
 
   final foodEventBloc = FoodBloc(

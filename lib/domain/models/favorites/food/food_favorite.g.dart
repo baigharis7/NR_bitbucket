@@ -18,6 +18,8 @@ FoodFavorite _$FoodFavoriteFromJson(Map<String, dynamic> json) => FoodFavorite(
       comment: json['comment'] as String?,
       mealTime: json['mealTime'] as int,
       dish: json['dish'] as bool?,
+      isRoutine: json['isRoutine'] as bool?,
+      daysOfWeek: (json['daysOfWeek'] as List?)?.map((e) => e as int).toList(),
     );
 
 Map<String, dynamic> _$FoodFavoriteToJson(FoodFavorite instance) =>
@@ -29,6 +31,8 @@ Map<String, dynamic> _$FoodFavoriteToJson(FoodFavorite instance) =>
       'comment': instance.comment,
       'mealTime': instance.mealTime,
       'dish': instance.dish,
+      'isRoutine': instance.isRoutine,
+      'daysOfWeek': instance.daysOfWeek,
     };
 
 FoodInFavorite _$FoodInFavoriteFromJson(Map<String, dynamic> json) =>

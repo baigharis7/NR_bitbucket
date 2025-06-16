@@ -79,7 +79,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
         title: '${AppLocalizations.of(context)!.spor_name}:',
         onNameChange: (String sportEventName) =>
             onNameChange.call(sportEventName),
-        onFinish: () => onFinish.call(),
+        onSave: () => onFinish.call(),
         onCancel: () => Navigator.pop(context),
       ),
     ).then((_) => Navigator.pop(context));

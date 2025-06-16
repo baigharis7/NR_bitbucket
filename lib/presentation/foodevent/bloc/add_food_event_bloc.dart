@@ -1,5 +1,7 @@
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/get_food_favorites_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/save_food_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/upload_food_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart';
@@ -30,6 +32,8 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetFoodFavoritesInteractor getFoodFavoritesInteractor;
   final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor;
+  final UploadFoodFavoriteInteractor uploadFoodFavoriteInteractor;
+  final SaveFoodFavoriteInteractor saveFoodFavoriteInteractor;
 
   AddFoodEventBloc({
     required this.getUserIdInteractor,
@@ -38,6 +42,8 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     required this.getMasterFileInteractor,
     required this.getFoodFavoritesInteractor,
     required this.getWeekFoodEventsInteractor,
+    required this.uploadFoodFavoriteInteractor,
+    required this.saveFoodFavoriteInteractor,
   }) : super(AddFoodEventState(
     isLoading: false,
     foodNames: FoodsAndDrinksNamesMaster(
@@ -57,6 +63,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     foodFavorites: [],
     foodsFromFavorite: [],
     daysOfWeek: [],
+    mealType: 0,
   ),) {
 
     on<InitializeStateAction>((event, emit) async {
@@ -83,9 +90,10 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
       }
       state.foodFavorites = await getFoodFavoritesInteractor.execute();
-      state.weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
+      state.foodFavorites = state.foodFavorites.orEmpty().where((foodFav) => foodFav.mealTime == state.mealType).toList();
+      // state.weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
       // if (state.weeklyFoodEvents.orEmpty().isNotEmpty && state.foodFavorites.orEmpty().isNotEmpty) {
-        addFrequentFromWeek(state.weeklyFoodEvents.orEmpty(), state.foodFavorites.orEmpty());
+      //   addFrequentFromWeek(state.weeklyFoodEvents.orEmpty(), state.foodFavorites.orEmpty());
       // }
 
       emit(state.copyWith(isLoading: false, onError: null,));
@@ -130,6 +138,16 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: false));
     },);
 
+    on<UpdateFoodConversionFactor>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      if (state.foodsInEvent!.map((food) => food.id).contains((event.foodInEvent).id)) {
+        final itemIndex = state.foodsInEvent!.indexOf(state.foodsInEvent!.firstWhere((food) => food.id == event.foodInEvent.id));
+        state.foodsInEvent![itemIndex].conversionFactor = event.foodInEvent.conversionFactor;
+      }
+
+      emit(state.copyWith(isLoading: false));
+    });
+
     on<UpdateFoodCookingMethodEventAction>((event, emit) {
       emit(state.copyWith(isLoading: true));
       if (state.foodsInEvent!.map((food) => food.id).contains((event.foodInEvent).id)) {
@@ -140,9 +158,31 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: false));
     },);
 
+    on<UpdateOilUsedEventAction>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      if (state.foodsInEvent!.map((food) => food.id).contains((event.foodInEvent).id)) {
+        final itemIndex = state.foodsInEvent!.indexOf(state.foodsInEvent!.firstWhere((food) => food.id == event.foodInEvent.id));
+        state.foodsInEvent![itemIndex].usedOil = event.foodInEvent.usedOil;
+      }
+
+      emit(state.copyWith(isLoading: false));
+    });
+
     on<AddFoodNameEventAction>((event, emit) {
       state.foodName = event.foodName;
       emit(state.copyWith(isLoading: false, onError: null,));
+    },);
+
+    on<UpdateIsFavoriteEventAction>((event, emit) {
+      state.isFavorite = (state.isFavorite ?? false) ? false : true;
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<UpdateIsCreateRoutineEventAction>((event, emit) {
+      state.isCreateRoutine = (state.isCreateRoutine ?? false) ? false : true;
+
+      emit(state.copyWith(isLoading: false));
     },);
 
     on<AddFoodMealTypeEventAction>((event, emit) {
@@ -150,12 +190,67 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: false, onError: null,));
     },);
 
+    on<UpdateDaysOfWeekEventAction>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      if (state.daysOfWeek.orEmpty().contains(event.day)) {
+        state.daysOfWeek?.remove(event.day);
+      } else {
+        state.daysOfWeek?.add(event.day);
+      }
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateCreteDishEventAction>((event, emit) {
+      state.isCreateDish = (state.isCreateDish ?? false) ? false : true;
+
+      emit(state.copyWith(isLoading: false));
+    },);
+
+    on<ReceiveFoodsInEventFromNavigationAction>((event, emit) {
+      emit(state.copyWith(isLoading: true,));
+      state.isEdit = true;
+      state.eventDate = event.foodEventSimple.eventDate;
+      state.eventId = event.foodEventSimple.eventId;
+      state.mealType = event.foodEventSimple.mealType;
+      state.foodsInEvent = event.foodEventSimple.ingredients;
+      state.isCreateDish = event.foodEventSimple.dish;
+      emit(state.copyWith(isLoading: false,));
+    });
+
+    on<ReceiveEventDateAction>((event, emit) {
+      state.eventDate = event.dateTime.millisecondsSinceEpoch;
+      emit(state.copyWith(isLoading: false,));
+    });
+
+    on<AddFoodFromFavouriteEventAction>((event, emit) {
+      state.foodName = event.foodFavorite.title;
+      state.comment = event.foodFavorite.comment;
+      state.mealType = event.foodFavorite.mealTime;
+      state.foodsFromFavorite = event.foodFavorite.ingredients.map((item) {
+        return FoodInEvent(id: item.id, qty: item.qty, unit: item.unit, cookingMethod: item.cookingMethod);
+      },).toList();
+      emit(state.copyWith(isLoading: false,));
+    },);
+
+    on<AddFoodEventFromDetailNavigation>((event, emit) {
+      state.eventDate = event.foodEventComplete.eventDate;
+      state.eventId = event.foodEventComplete.eventId;
+      state.foodName = event.foodEventComplete.foodName;
+      state.comment = event.foodEventComplete.comment;
+      state.mealType = event.foodEventComplete.mealType;
+      state.isCreateDish = event.foodEventComplete.dish;
+      state.isEdit = true;
+      state.foodsInEvent = event.foodEventComplete.foodInfo?.map((food) => FoodInEvent(id: food.id!, qty: food.eventInfo!.qty!.toInt(), unit: food.eventInfo!.unit!, conversionFactor: food.eventInfo!.conversionFactor, cookingMethod: food.eventInfo!.cookingMethod!, usedOil: food.eventInfo!.usedOil)).toList();
+      emit(state.copyWith(isLoading: false,));
+    },);
+
     on<FinishFoodEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null,));
 
       final foodEvent = FoodEventSimple(
-          userId: getUserIdInteractor.execute(),
-          eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+        userId: getUserIdInteractor.execute(),
+        eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
         eventId: state.eventId ?? DateTime.now().millisecondsSinceEpoch,
         mealType: state.mealType,
         foodName: state.foodName ?? '',
@@ -188,50 +283,31 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       }
     });
 
-    on<ReceiveFoodsInEventFromNavigationAction>((event, emit) async {
-      emit(state.copyWith(isLoading: true,));
-      state.isEdit = true;
-      state.eventDate = event.foodEventSimple.eventDate;
-      state.eventId = event.foodEventSimple.eventId;
-      state.mealType = event.foodEventSimple.mealType;
-      state.foodsInEvent = event.foodEventSimple.ingredients;
-      state.isCreateDish = event.foodEventSimple.dish;
-      if (state.foodNames!.foodsAndDrinksNames!.foodNames!.isEmpty) {
-        state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
+    on<FinishFoodAsFavoriteEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      final foodFavorite = FoodFavorite(
+          title: 'Dummy Food name',
+          eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+          ingredients: state.foodsInEvent.orEmpty().map((food) => FoodInFavorite(id: food.id, name_en: '', name_es: '', qty: food.qty, unit: food.unit, cookingMethod: food.cookingMethod)).toList(),
+          drinks: [],
+          mealTime: state.mealType.orZero(),
+        isRoutine: state.isCreateRoutine,
+        daysOfWeek: state.daysOfWeek,
+      );
+      try {
+        final uploadFoodAsFavorite = await uploadFoodFavoriteInteractor.execute(foodFavorite);
+        try {
+          final saveFoodsAsFavorite = await saveFoodFavoriteInteractor.execute(foodFavorite, false);
+          state.foodFavorites = await getFoodFavoritesInteractor.execute();
+          _clearFields();
+          emit(state.copyWith(isLoading: false, onError: null,));
+        } catch (_) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadFoodFavoriteError));
+        }
+      } catch (_){
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveFoodFavoriteError));
       }
-      if (state.cookingMethodsInfoMaster!.cookingMethodsInfo!.isEmpty) {
-        state.cookingMethodsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
-      }
-      if (state.cookingMethodsMaster!.cookingMethods.isEmpty) {
-        state.cookingMethodsMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethods);
-      }
-      if (state.unitsFoodsMaster!.unitsFoodsMaster.isEmpty) {
-        state.unitsFoodsMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsFoods);
-      }
-      if (state.unitsInfoMaster!.unitsInfoMaster.isEmpty) {
-        state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
-      }
-      emit(state.copyWith(isLoading: false,));
     });
-
-    on<ResetFoodEventInfoAction>((event, emit) {
-      emit(state.copyWith(isLoading: false, onError: null, eventDate: null, foodsInEvent: [], isEdit: false,));
-    });
-
-    on<ReceiveEventDateAction>((event, emit) {
-      state.eventDate = event.dateTime.millisecondsSinceEpoch;
-      emit(state.copyWith(isLoading: false,));
-    });
-
-    on<AddFoodFromFavouriteEventAction>((event, emit) {
-      state.foodName = event.foodFavorite.title;
-      state.comment = event.foodFavorite.comment;
-      state.mealType = event.foodFavorite.mealTime;
-      state.foodsFromFavorite = event.foodFavorite.ingredients.map((item) {
-        return FoodInEvent(id: item.id, qty: item.qty, unit: item.unit, cookingMethod: item.cookingMethod);
-      },).toList();
-      emit(state.copyWith(isLoading: false,));
-    },);
 
     on<FinishFoodFavouriteEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null,));
@@ -268,36 +344,6 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         state.onError = ErrorTypes.uploadingFoodEventError;
         emit(state.copyWith(isLoading: false,));
       }
-    },);
-
-    on<AddFoodEventFromDetailNavigation>((event, emit) {
-      state.eventDate = event.foodEventComplete.eventDate;
-      state.eventId = event.foodEventComplete.eventId;
-      state.foodName = event.foodEventComplete.foodName;
-      state.comment = event.foodEventComplete.comment;
-      state.mealType = event.foodEventComplete.mealType;
-      state.isCreateDish = event.foodEventComplete.dish;
-      state.isEdit = true;
-      state.foodsInEvent = event.foodEventComplete.foodInfo?.map((food) => FoodInEvent(id: food.id!, qty: food.eventInfo!.qty!.toInt(), unit: food.eventInfo!.unit!, conversionFactor: food.eventInfo!.conversionFactor, cookingMethod: food.eventInfo!.cookingMethod!, usedOil: food.eventInfo!.usedOil)).toList();
-      emit(state.copyWith(isLoading: false,));
-    },);
-
-    on<UpdateCreteDishEventAction>((event, emit) {
-      state.isCreateDish = (state.isCreateDish ?? false) ? false : true;
-
-      emit(state.copyWith(isLoading: false));
-    },);
-
-    on<UpdateIsFavoriteEventAction>((event, emit) {
-      state.isFavorite = (state.isFavorite ?? false) ? false : true;
-
-      emit(state.copyWith(isLoading: false));
-    },);
-
-    on<UpdateIsCreateRoutineEventAction>((event, emit) {
-      state.isCreateRoutine = (state.isCreateRoutine ?? false) ? false : true;
-
-      emit(state.copyWith(isLoading: false));
     },);
 
     on<FinishFoodWithoutCreateDishEventAction>((event, emit) async {
@@ -343,36 +389,10 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       if (state.foodsInEvent.orEmpty().isNotEmpty) event.onFinish.call();
     },);
 
-    on<UpdateFoodConversionFactor>((event, emit) {
-      emit(state.copyWith(isLoading: true));
-      if (state.foodsInEvent!.map((food) => food.id).contains((event.foodInEvent).id)) {
-        final itemIndex = state.foodsInEvent!.indexOf(state.foodsInEvent!.firstWhere((food) => food.id == event.foodInEvent.id));
-        state.foodsInEvent![itemIndex].conversionFactor = event.foodInEvent.conversionFactor;
-      }
-
-      emit(state.copyWith(isLoading: false));
+    on<ResetFoodEventInfoAction>((event, emit) {
+      emit(state.copyWith(isLoading: false, onError: null, eventDate: null, foodsInEvent: [], isEdit: false,));
     });
 
-    on<UpdateOilUsedEventAction>((event, emit) {
-      emit(state.copyWith(isLoading: true));
-      if (state.foodsInEvent!.map((food) => food.id).contains((event.foodInEvent).id)) {
-        final itemIndex = state.foodsInEvent!.indexOf(state.foodsInEvent!.firstWhere((food) => food.id == event.foodInEvent.id));
-        state.foodsInEvent![itemIndex].usedOil = event.foodInEvent.usedOil;
-      }
-
-      emit(state.copyWith(isLoading: false));
-    });
-
-    on<UpdateDaysOfWeekEventAction>((event, emit) {
-      emit(state.copyWith(isLoading: true));
-      if (state.daysOfWeek.orEmpty().contains(event.day)) {
-        state.daysOfWeek?.remove(event.day);
-      } else {
-        state.daysOfWeek?.add(event.day);
-      }
-
-      emit(state.copyWith(isLoading: false));
-    });
   }
 
   void _clearFields() {
@@ -382,7 +402,6 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     state.comment = null;
     state.eventDate = null;
     state.eventId = null;
-    state.mealType = null;
     state.isEdit = false;
     state.isCreateDish = null;
   }

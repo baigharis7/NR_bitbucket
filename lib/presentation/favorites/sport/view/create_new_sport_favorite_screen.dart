@@ -64,7 +64,7 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
       builder: (ctx) => AddItemNameDialog(
         title: '${AppLocalizations.of(context)!.spor_name}:',
         onNameChange: (String sportName) => onNameChange.call(sportName),
-        onFinish: () => onFinish.call(),
+        onSave: () => onFinish.call(),
         onCancel: () => Navigator.pop(context),
       ),
     ).then((_) {

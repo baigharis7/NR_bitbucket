@@ -1,24 +1,29 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 class ItemInfoCard extends StatelessWidget {
   final String title;
-  final String subtitle;
-  final VoidCallback onDelete;
-  final VoidCallback onFavorite;
+  final String? subtitle;
+  final String? leadingSrc;
+  final String? trailingSrc;
+  final VoidCallback? leadingTap;
+  final VoidCallback? trailingTap;
   const ItemInfoCard({
     super.key,
     required this.title,
-    required this.subtitle,
-    required this.onDelete,
-    required this.onFavorite,});
+    this.subtitle,
+    this.leadingSrc,
+    this.trailingSrc,
+    this.leadingTap,
+    this.trailingTap,});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
+      margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal, horizontal: Dimens.marginLarge),
       decoration: BoxDecoration(
         color: AppColors.floralWhite, // light greenish
         borderRadius: BorderRadius.circular(20),
@@ -34,16 +39,16 @@ class ItemInfoCard extends StatelessWidget {
         // contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         titleAlignment: ListTileTitleAlignment.center,
         horizontalTitleGap: 0,
-        leading: /*Image.asset('assets/images/favorite_icon.png', width: 17, height: 17)*/ const SizedBox(),
+        leading: !leadingSrc.isNull() && !leadingTap.isNull() ? InkWell(onTap: () => leadingTap?.call(), child: Image.asset(leadingSrc!, width: 17, height: 17)) : const SizedBox(),
         title: Text(
           title,
           style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge,), maxLines: 1, overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text(
-          subtitle,
+        subtitle: !subtitle.isNull() ? Text(
+          subtitle!,
           style: const TextStyle(color: AppColors.battleshipGrey, fontWeight: FontWeight.w500, fontSize: Dimens.fontSizeXSmall),
-        ),
-        trailing: Image.asset('assets/images/delete_icon.png', height: 21, width: 17),
+        ) : const SizedBox(),
+        trailing: !trailingSrc.isNull() && !trailingTap.isNull() ? Image.asset(trailingSrc!, height: 21, width: 21) : const SizedBox(),
       ),
     );
   }

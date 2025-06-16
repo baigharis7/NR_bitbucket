@@ -19,9 +19,30 @@ import '../foodevent/bloc/add_food_event_state.dart';
 class AddItemNameDialog extends StatefulWidget {
   final String title;
   final Function(String) onNameChange;
-  final Function onFinish;
+  final Function onSave;
   final Function onCancel;
-  const AddItemNameDialog({super.key, required this.title, required this.onNameChange, required this.onFinish, required this.onCancel});
+  final bool? isFavorite;
+  final Function(bool)? onFavoriteChange;
+  final bool? isCreateRoutine;
+  final Function(bool)? onChangeCreateRoutine;
+  final Function(int)? onChangeWeekDays;
+  final Function(int?)? onMealTieChange;
+  final List<int>? daysOfWeek;
+  final int? mealTime;
+  const AddItemNameDialog({super.key,
+    required this.title,
+    required this.onNameChange,
+    required this.onSave,
+    required this.onCancel,
+    this.isFavorite,
+    this.onFavoriteChange,
+    this.isCreateRoutine,
+    this.onChangeWeekDays,
+    this.onMealTieChange,
+    this.daysOfWeek,
+    this.onChangeCreateRoutine,
+    this.mealTime,
+  });
 
   @override
   State<AddItemNameDialog> createState() => _AddItemNameDialogState();
@@ -30,10 +51,18 @@ class AddItemNameDialog extends StatefulWidget {
 class _AddItemNameDialogState extends State<AddItemNameDialog> {
   late AddFoodEventBloc bloc;
   final _itemNameController = TextEditingController();
+  late bool _isFavorite;
+  late bool _isCreateRoutine;
+  late int _mealTime;
+  late List<int> _daysOfWeek;
 
   @override
   void initState() {
     bloc = BlocProvider.of<AddFoodEventBloc>(context);
+    _isFavorite = widget.isFavorite ?? false;
+    _isCreateRoutine = widget.isCreateRoutine ?? false;
+    _mealTime = widget.mealTime ?? 0;
+    _daysOfWeek = widget.daysOfWeek ?? [];
     super.initState();
   }
 
@@ -43,11 +72,7 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
-      child: BlocProvider.value(value: bloc,
-          child: BlocConsumer<AddFoodEventBloc, AddFoodEventState>(
-        listener: (context, state) {},
-        builder: (context, state) =>
-            Column(
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Card(
@@ -87,23 +112,31 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
                     ),
                   ),
                   const SizedBox(height: Dimens.height12,),
-                  ListTile(
+                  if (widget.onFavoriteChange != null) ListTile(
                     contentPadding: EdgeInsets.zero,
                     horizontalTitleGap: 2,
                     title: Text(AppLocalizations.of(context)!.save_as_favorite),
-                    leading: Switch.adaptive(value: state.isFavorite ?? false, onChanged: (value) { bloc.add(UpdateIsFavoriteEventAction()); },),
+                    leading: Switch.adaptive(value: _isFavorite, onChanged: (value) {
+                      _isFavorite = !_isFavorite;
+                      setState(() {});
+                      widget.onFavoriteChange?.call(value);
+                      },),
                     trailing: Image.asset('assets/icon/un_favorite_outlined.png', height: Dimens.heightXSmall, width: Dimens.width20),
                   ),
-                  ListTile(
+                  if (widget.onChangeCreateRoutine != null) ListTile(
                     contentPadding: EdgeInsets.zero,
                     horizontalTitleGap: 2,
                     title: Text(AppLocalizations.of(context)!.create_routine),
-                    leading: Switch.adaptive(value: state.isCreateRoutine ?? false, onChanged: (value) { bloc.add(UpdateIsCreateRoutineEventAction()); },),
+                    leading: Switch.adaptive(value: _isCreateRoutine, onChanged: (value) {
+                      _isCreateRoutine = !_isCreateRoutine;
+                      setState(() {});
+                      widget.onChangeCreateRoutine?.call(value);
+                      },),
                     trailing: Image.asset('assets/icon/routine_icon.png', height: 25, width: 25),
                   ),
-                  if (state.isCreateRoutine ?? false)  Text(AppLocalizations.of(context)!.schedule, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w500, fontSize: Dimens.fontSize17)),
-                  if (state.isCreateRoutine ?? false)  const SizedBox(height: Dimens.height12),
-                  if (state.isCreateRoutine ?? false) Container(
+                  if (_isCreateRoutine)  Text(AppLocalizations.of(context)!.schedule, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w500, fontSize: Dimens.fontSize17)),
+                  if (_isCreateRoutine)  const SizedBox(height: Dimens.height12),
+                  if (_isCreateRoutine) Container(
                     decoration: const BoxDecoration(
                         borderRadius:
                         BorderRadius.all(Radius.circular(11)),
@@ -115,38 +148,31 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
                       alignment: Alignment.center,
                       underline: Container(),
                       icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
-                      value: state.mealType,
+                      value: _mealTime,
                       onChanged: (int? mealType) {
-                        bloc.add(AddFoodMealTypeEventAction(mealType: mealType!));
+                        _mealTime = mealType ?? 0;
+                        setState(() {});
+                        widget.onMealTieChange?.call(mealType);
                       },
                       items: MealTime.getAllMealTimes()
                           .map<DropdownMenuItem<int>>(
                             (item) => DropdownMenuItem(
                           value: item.id,
-                          child: Column(
-                            children: [
-                              SizedBox(height: 4,),
-                              Row(children: [
-                                Image.asset('assets/images/meal_time_${item.id.orZero()}.png', height: Dimens.height32, width: Dimens.width32),
-                                Text(item.name!),
-                              ],),
-                              // SizedBox(height: Dimens.height12,),
-                              Divider(height: 1, thickness: 1, color: Colors.black,),
-                              // ListTile(
-                              //   leading: Image.asset('assets/images/meal_time_${item.id.orZero()}.png', height: Dimens.height32, width: Dimens.width32),
-                              //   title: Text(item.name!),
-                              // ),
-                            ],
+                          child: ListTile(
+                            leading: Image.asset('assets/images/meal_time_${item.id.orZero()}.png', height: Dimens.height32, width: Dimens.width32),
+                            title: Text(item.name!),
                           ),
                         ),
                       )
                           .toList(),
                     ),
                   ),
-                  if (state.isCreateRoutine ?? false) const SizedBox(height: Dimens.height12,),
-                  if (state.isCreateRoutine ?? false) RoutineDaysWidget(title: AppLocalizations.of(context)!.days_of_week, daysOfWeek: state.daysOfWeek, onDaySelect: (day) {
+                  if (_isCreateRoutine) const SizedBox(height: Dimens.height12,),
+                  if (_isCreateRoutine) RoutineDaysWidget(title: AppLocalizations.of(context)!.days_of_week, daysOfWeek: _daysOfWeek, onDaySelect: (day) {
                     final dateMilliseconds = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(day);
-                    bloc.add(UpdateDaysOfWeekEventAction(day: dateMilliseconds));
+                    _daysOfWeek.contains(dateMilliseconds) ? _daysOfWeek.remove(dateMilliseconds) : _daysOfWeek.add(dateMilliseconds);
+                    setState(() {});
+                    widget.onChangeWeekDays?.call(dateMilliseconds);
                   },),
                 ],
               ),
@@ -157,17 +183,15 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
             child: SaveButton(
               text: AppLocalizations.of(context)!.save,
               onPressed: () {
-                if (_itemNameController.text == '') {
-                  ToastHelper().showToast(text: AppLocalizations.of(context)!.favorite_name_required);
-                } else {
-                  widget.onFinish.call();
-                }
+                // if (_itemNameController.text == '') {
+                //   ToastHelper().showToast(text: AppLocalizations.of(context)!.favorite_name_required);
+                // } else {
+                widget.onSave.call();
+                // }
               },
             ),
           ),
         ],
-      ),
-          ),
       ),
 
     );

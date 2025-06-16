@@ -105,7 +105,7 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
       builder: (ctx) => AddItemNameDialog(
         title: '${AppLocalizations.of(context)!.food_name}:',
         onNameChange: (String foodName) => onNameChange.call(foodName),
-        onFinish: () => onFinish.call(),
+        onSave: () => onFinish.call(),
         onCancel: () => Navigator.pop(context),
       ),
     ).then((_) => Navigator.pop(context));

@@ -20,6 +20,8 @@ UploadFoodFavorite _$UploadFoodFavoriteFromJson(Map<String, dynamic> json) =>
       comment: json['comment'] as String?,
       dish: json['dish'] as bool?,
       mealTime: json['mealTime'] as int,
+      isRoutine: json['isRoutine'] as bool?,
+      daysOfWeek: json['daysOfWeek'] as List<int>?,
     );
 
 Map<String, dynamic> _$UploadFoodFavoriteToJson(UploadFoodFavorite instance) =>
@@ -32,6 +34,8 @@ Map<String, dynamic> _$UploadFoodFavoriteToJson(UploadFoodFavorite instance) =>
       'comment': instance.comment,
       'mealTime': instance.mealTime,
       'dish': instance.dish,
+      'isRoutine': instance.isRoutine,
+      'daysOfWeek': instance.daysOfWeek,
     };
 
 UploadFoodInFavorite _$UploadFoodInFavoriteFromJson(

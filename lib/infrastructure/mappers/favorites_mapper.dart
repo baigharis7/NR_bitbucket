@@ -25,6 +25,8 @@ FoodFavorite mapToFoodFavoriteFromEntity(FoodFavoriteEntity foodFavoriteEntity) 
     mealTime: foodFavoriteEntity.mealTime,
     comment: foodFavoriteEntity.comment,
     dish: foodFavoriteEntity.dish,
+    isRoutine: foodFavoriteEntity.isRoutine,
+    daysOfWeek: foodFavoriteEntity.daysOfWeek,
   );
 }
 
@@ -50,6 +52,8 @@ FoodFavoriteEntity mapToFoodFavoriteEntity(FoodFavorite foodFavorite) {
     mealTime: foodFavorite.mealTime,
     comment: foodFavorite.comment,
     dish: foodFavorite.dish,
+    isRoutine: foodFavorite.isRoutine,
+    daysOfWeek: foodFavorite.daysOfWeek,
   );
 }
 
@@ -63,6 +67,8 @@ UploadFoodFavorite mapToUploadFoodFavorite(FoodFavorite foodFavorite, String use
     mealTime: foodFavorite.mealTime,
     comment: foodFavorite.comment,
     dish: foodFavorite.dish,
+    isRoutine: foodFavorite.isRoutine,
+    daysOfWeek: foodFavorite.daysOfWeek,
   );
 }
 

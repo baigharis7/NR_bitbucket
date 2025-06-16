@@ -12,6 +12,8 @@ class UploadFoodFavorite {
   String? comment;
   int mealTime;
   bool? dish;
+  bool? isRoutine;
+  List<int>? daysOfWeek;
 
   UploadFoodFavorite({
     required this.userId,
@@ -22,6 +24,8 @@ class UploadFoodFavorite {
     this.comment,
     this.dish,
     required this.mealTime,
+    this.isRoutine,
+    this.daysOfWeek,
   });
 
   factory UploadFoodFavorite.fromJson(Map<String, dynamic> json) => _$UploadFoodFavoriteFromJson(json);

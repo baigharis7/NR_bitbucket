@@ -116,7 +116,9 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                               ],),
                             ]),
                           ),
-                          ...state.foodEvents.orEmpty().map((food) => ItemInfoCard(title: food.foodInfo![0].translate(context), subtitle: '${food.eventKcals.orZero()} kcal. ${food.foodInfo![0].eventInfo?.qty.orZero().toInt()}', onDelete: () {}, onFavorite: () {},)),
+                          ...state.foodEvents.orEmpty().map((food) => ItemInfoCard(title: food.foodInfo![0].translate(context), subtitle: '${food.eventKcals.orZero()} kcal. ${food.foodInfo![0].eventInfo?.qty.orZero().toInt()}', trailingSrc: 'assets/images/delete_icon.png', trailingTap: () {
+
+                          },)),
                           Container(
                             margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                             child: ListTile(

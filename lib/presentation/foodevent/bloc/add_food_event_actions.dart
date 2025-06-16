@@ -48,6 +48,12 @@ class FinishFoodEventAction extends AddFoodEventActions {
   FinishFoodEventAction({required this.onFinish});
 }
 
+class FinishFoodAsFavoriteEventAction extends AddFoodEventActions {
+  Function onFinish;
+
+  FinishFoodAsFavoriteEventAction({required this.onFinish});
+}
+
 class AddFoodNameEventAction extends AddFoodEventActions {
   String foodName;
 

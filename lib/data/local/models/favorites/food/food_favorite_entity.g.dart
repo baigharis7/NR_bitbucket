@@ -24,13 +24,15 @@ class FoodFavoriteEntityAdapter extends TypeAdapter<FoodFavoriteEntity> {
       title: fields[4] as String,
       eventDate: fields[5] as int,
       dish: fields[6] as bool?,
+      isRoutine: fields[7] as bool?,
+      daysOfWeek: (fields[8] as List?)?.map((e) => e as int).toList(),
     );
   }
 
   @override
   void write(BinaryWriter writer, FoodFavoriteEntity obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.ingredients)
       ..writeByte(1)
@@ -44,7 +46,11 @@ class FoodFavoriteEntityAdapter extends TypeAdapter<FoodFavoriteEntity> {
       ..writeByte(5)
       ..write(obj.eventDate)
       ..writeByte(6)
-      ..write(obj.dish);
+      ..write(obj.dish)
+      ..writeByte(7)
+      ..write(obj.isRoutine)
+      ..writeByte(8)
+      ..write(obj.daysOfWeek);
   }
 
   @override
@@ -133,6 +139,8 @@ FoodFavoriteEntity _$FoodFavoriteEntityFromJson(Map<String, dynamic> json) =>
       title: json['title'] as String,
       eventDate: json['eventDate'] as int,
       dish: json['dish'] as bool?,
+      isRoutine: json['isRoutine'] as bool?,
+      daysOfWeek: json['daysOfWeek'] as List<int>?,
     );
 
 Map<String, dynamic> _$FoodFavoriteEntityToJson(FoodFavoriteEntity instance) =>
@@ -144,6 +152,8 @@ Map<String, dynamic> _$FoodFavoriteEntityToJson(FoodFavoriteEntity instance) =>
       'title': instance.title,
       'eventDate': instance.eventDate,
       'dish': instance.dish,
+      'isRoutine': instance.isRoutine,
+      'daysOfWeek': instance.daysOfWeek,
     };
 
 FoodInFavoriteEntity _$FoodInFavoriteEntityFromJson(
