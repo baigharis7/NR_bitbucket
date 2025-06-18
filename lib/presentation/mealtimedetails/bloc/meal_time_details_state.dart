@@ -12,8 +12,9 @@ class MealTimeDetailsState {
   List<NutrientsModel>? micronutrients;
   List<NutrientsModel>? macronutrients;
   MealTime? mealTime;
+  FoodsAndDrinksNamesMaster? foodNames;
 
-  MealTimeDetailsState({required this.isLoading, this.onError, this.foodEvents, this.profile, this.nutrientsInfoMaster, this.micronutrients, this.macronutrients, this.mealTime});
+  MealTimeDetailsState({required this.isLoading, this.onError, this.foodEvents, this.profile, this.nutrientsInfoMaster, this.micronutrients, this.macronutrients, this.mealTime, this.foodNames});
 
   MealTimeDetailsState copyWith({
     required bool isLoading,
@@ -24,6 +25,7 @@ class MealTimeDetailsState {
     List<NutrientsModel>? micronutrients,
     List<NutrientsModel>? macronutrients,
     MealTime? mealTime,
+    FoodsAndDrinksNamesMaster? foodNames,
   }) {
     return MealTimeDetailsState(
       isLoading: isLoading,
@@ -34,6 +36,7 @@ class MealTimeDetailsState {
       micronutrients: micronutrients ?? this.micronutrients,
       macronutrients: macronutrients ?? this.macronutrients,
       mealTime: mealTime ?? this.mealTime,
+      foodNames: foodNames ?? this.foodNames,
     );
   }
 }

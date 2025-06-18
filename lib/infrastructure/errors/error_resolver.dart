@@ -48,6 +48,10 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.locally_saving_food_event_error;
     case ErrorTypes.uploadingFoodEventError:
       return stringResolver.uploading_food_event_error;
+    case ErrorTypes.uploadingFoodRoutineEventError:
+      return stringResolver.uploading_food_routine_event_error;
+    case ErrorTypes.saveFoodRoutineEventError:
+      return stringResolver.save_food_routine_event_error;
     case ErrorTypes.retrieveFoodEventsError:
       return stringResolver.retrieve_food_events_error;
     case ErrorTypes.locallySavingSportEventError:

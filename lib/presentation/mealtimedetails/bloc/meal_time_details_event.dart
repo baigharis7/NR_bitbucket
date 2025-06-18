@@ -10,3 +10,10 @@ class UpdateMealTimeDetailsEventState extends MealTimeDetailsEvent {
 
   UpdateMealTimeDetailsEventState({required this.mealTime});
 }
+
+class DeleteFoodMealTimeDetailsEventAction extends MealTimeDetailsEvent {
+  final FoodEventComplete foodEventComplete;
+  final Function onFinish;
+
+  DeleteFoodMealTimeDetailsEventAction({required this.foodEventComplete, required this.onFinish});
+}

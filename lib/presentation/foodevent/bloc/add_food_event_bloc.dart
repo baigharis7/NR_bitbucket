@@ -1,10 +1,15 @@
+import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/delete_food_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/get_food_favorites_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/remove_food_favorite_from_local_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/save_food_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/upload_food_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/save_food_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/upload_food_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
@@ -24,6 +29,7 @@ import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_even
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_state.dart';
 
 import '../../../domain/models/favorites/food/meal_time.dart';
+import '../../../domain/models/foodroutine/food_routine_event.dart';
 
 class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> {
   final GetUserIdInteractor getUserIdInteractor;
@@ -34,6 +40,10 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
   final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor;
   final UploadFoodFavoriteInteractor uploadFoodFavoriteInteractor;
   final SaveFoodFavoriteInteractor saveFoodFavoriteInteractor;
+  final UploadFoodRoutineInteractor uploadFoodRoutineInteractor;
+  final SaveFoodRoutineInteractor saveFoodRoutineInteractor;
+  final DeleteFoodFavoriteInteractor deleteFoodFavoriteInteractor;
+  final RemoveFoodFavoriteFromLocalInteractor removeFoodFavoriteFromLocalInteractor;
 
   AddFoodEventBloc({
     required this.getUserIdInteractor,
@@ -44,6 +54,10 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     required this.getWeekFoodEventsInteractor,
     required this.uploadFoodFavoriteInteractor,
     required this.saveFoodFavoriteInteractor,
+    required this.uploadFoodRoutineInteractor,
+    required this.saveFoodRoutineInteractor,
+    required this.deleteFoodFavoriteInteractor,
+    required this.removeFoodFavoriteFromLocalInteractor,
   }) : super(AddFoodEventState(
     isLoading: false,
     foodNames: FoodsAndDrinksNamesMaster(
@@ -283,6 +297,46 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       }
     });
 
+    on<FinishFoodRoutineAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+
+      final foodRoutineEvent = FoodRoutineEvent(
+        userId: getUserIdInteractor.execute(),
+        eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+        eventId: state.eventId ?? DateTime.now().millisecondsSinceEpoch,
+        mealType: state.mealType,
+        foodName: state.foodName ?? '',
+        comment: state.comment,
+      );
+      foodRoutineEvent.ingredients = state.foodsInEvent.orEmpty().map((foodEvent) => FoodRoutineInEvent(id: foodEvent.id, qty: foodEvent.qty, unit:foodEvent. unit, cookingMethod: foodEvent.cookingMethod)).toList();
+      foodRoutineEvent.drinks = []; // TODO: is it necessary to implement drinks in food events?
+      foodRoutineEvent.dish = state.isCreateDish ?? false;
+      foodRoutineEvent.isRoutine = state.isCreateRoutine;
+      foodRoutineEvent.daysOfWeek = state.daysOfWeek;
+      foodRoutineEvent.time = DateFormat.Hm().format(DateTime.now().add(Duration(minutes: 10)));
+
+
+      try {
+        final uploadedRoutine = await uploadFoodRoutineInteractor.execute(foodRoutineEvent);
+        if (uploadedRoutine) {
+          try {
+            await saveFoodRoutineInteractor.execute(foodRoutineEvent, false);
+
+            _clearFields();
+            emit(state.copyWith(isLoading: false, onError: null, eventDate: null));
+            event.onFinish.call();
+          } catch (_) {
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveFoodRoutineEventError));
+          }
+
+        } else {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingFoodRoutineEventError));
+        }
+      } catch (_) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingFoodRoutineEventError));
+      }
+    });
+
     on<FinishFoodAsFavoriteEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       final foodFavorite = FoodFavorite(
@@ -306,6 +360,24 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         }
       } catch (_){
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveFoodFavoriteError));
+      }
+    });
+
+    on<RemoveFavoriteFoodAddFoodEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+
+      try {
+        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite.eventDate);
+        try {
+          await removeFoodFavoriteFromLocalInteractor.execute(event.foodFavorite);
+          state.foodFavorites = await getFoodFavoritesInteractor.execute();
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
+        } catch (error) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeFoodFavoriteError));
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteFoodFavoriteError));
       }
     });
 
@@ -404,6 +476,9 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     state.eventId = null;
     state.isEdit = false;
     state.isCreateDish = null;
+    state.isFavorite = false;
+    state.isCreateRoutine = false;
+    state.daysOfWeek = [];
   }
 
   UnitInfoMaster findUnitName(int unitId) {

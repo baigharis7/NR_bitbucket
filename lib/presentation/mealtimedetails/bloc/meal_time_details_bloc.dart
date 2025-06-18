@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
@@ -11,6 +13,7 @@ import '../../../domain/interactor/profile/get_profile_interactor.dart';
 import '../../../domain/models/dashboard/nutrients_model.dart';
 import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
+import '../../../domain/models/masterfiles/food_names_master.dart';
 import '../../../domain/models/masterfiles/nutrients_info_master.dart';
 import '../../../domain/models/profile/user_profile_model.dart';
 import '../../../infrastructure/errors/error_types.dart';
@@ -22,10 +25,14 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
   final GetProfileInteractor getProfileInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
+  final DeleteFoodEventInteractor deleteFoodEventInteractor;
+  final RemoveFoodEventInteractor removeFoodEventInteractor;
   MealTimeDetailsBloc({
     required this.getFoodEventsOfTodayInteractor,
     required this.getProfileInteractor,
     required this.getMasterFileInteractor,
+    required this.deleteFoodEventInteractor,
+    required this.removeFoodEventInteractor,
 }) : super(MealTimeDetailsState(isLoading: false)) {
     on<InitialMealTimeDetailsEventState>((event, emit) async {
       emit(state.copyWith(isLoading: true));
@@ -34,6 +41,9 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
       state.foodEvents = state.foodEvents.orEmpty().where((foodEvent) => foodEvent.mealType == state.mealTime?.id.orZero()).toList();
       state.profile = await getProfileInteractor.execute();
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
+      final foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
+      state.foodNames = foodNames;
+      state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames.orEmpty().toList() ?? []);
 
       state.micronutrients = state.profile?.micronutrients.orEmpty()
           .map(
@@ -70,6 +80,24 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
 
       emit(state.copyWith(isLoading: false));
     });
+
+    on<DeleteFoodMealTimeDetailsEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+
+      try {
+        await deleteFoodEventInteractor.execute(event.foodEventComplete.userId.orEmpty(), event.foodEventComplete.eventId!);
+        try {
+          await removeFoodEventInteractor.execute(event.foodEventComplete);
+          add(InitialMealTimeDetailsEventState());
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
+        } catch (error) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeFoodEventError));
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteFoodEventError));
+      }
+    },);
   }
 
   double getQuantityConsumedSoFar(String micronutrient) {

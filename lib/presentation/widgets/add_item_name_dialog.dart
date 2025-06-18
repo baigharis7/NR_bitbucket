@@ -169,10 +169,12 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
                   ),
                   if (_isCreateRoutine) const SizedBox(height: Dimens.height12,),
                   if (_isCreateRoutine) RoutineDaysWidget(title: AppLocalizations.of(context)!.days_of_week, daysOfWeek: _daysOfWeek, onDaySelect: (day) {
-                    final dateMilliseconds = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(day);
-                    _daysOfWeek.contains(dateMilliseconds) ? _daysOfWeek.remove(dateMilliseconds) : _daysOfWeek.add(dateMilliseconds);
+                    // final dateMilliseconds = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(day);
+                    // _daysOfWeek.contains(dateMilliseconds) ? _daysOfWeek.remove(dateMilliseconds) : _daysOfWeek.add(dateMilliseconds);
+                    final dayNumber = day.weekday;
+                    _daysOfWeek.contains(dayNumber) ? _daysOfWeek.remove(dayNumber) : _daysOfWeek.add(dayNumber);
                     setState(() {});
-                    widget.onChangeWeekDays?.call(dateMilliseconds);
+                    widget.onChangeWeekDays?.call(dayNumber);
                   },),
                 ],
               ),

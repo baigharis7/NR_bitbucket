@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/add_food_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -17,6 +18,7 @@ import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_even
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_event_item.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/add_item_name_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/dash_title_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/date_picker_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/food_actions_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/food_event_foods_cluster.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
@@ -31,6 +33,7 @@ import '../../../infrastructure/helpers/remove_diac.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
 import '../../widgets/item_info_card.dart';
 // import 'package:remove_diacritic/remove_diacritic.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 
 // TODO: tengo que poner lo de las bebidas en algún sitio.
 class AddFoodEventScreen extends StatefulWidget {
@@ -136,50 +139,49 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
 
     return BlocProvider.value(
       value: bloc,
-      child: SafeArea(
-        child: Scaffold(
-          // resizeToAvoidBottomInset: false,
-          // extendBody: true,
-          // extendBodyBehindAppBar: true,
-          // appBar: AppBar(automaticallyImplyLeading: false, backgroundColor: Colors.transparent, elevation: 0),
-          body: BlocConsumer<AddFoodEventBloc, AddFoodEventState>(
-            listener: (ctx, state) {
-              if (state.isLoading) {
-                LoadingScreen.instance().show(
-                  context: ctx,
-                  text: AppLocalizations.of(ctx)!.loading,
-                );
-              } else {
-                LoadingScreen.instance().hide();
-              }
-            },
-            builder: (context, state) {
-              return Stack(
-                children: [
-                  // Background image or gradient
-                  Container(
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/images/background.png'), // Your image
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+      child: BlocConsumer<AddFoodEventBloc, AddFoodEventState>(
+        listener: (ctx, state) {
+          if (state.isLoading) {
+            LoadingScreen.instance().show(
+              context: ctx,
+              text: AppLocalizations.of(ctx)!.loading,
+            );
+          } else {
+            LoadingScreen.instance().hide();
+          }
+        },
+        builder: (context, state) {
+          return Stack(
+            children: [
+              // Background image or gradient
+              Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/background.png'), // Your image
+                    fit: BoxFit.cover,
                   ),
+                ),
+              ),
 
-                  // Blur effect
-                  BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: Container(
-                      color: Colors.black.withOpacity(0), // Needed to activate the blur
-                    ),
-                  ),
+              // Blur effect
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  color: Colors.black.withOpacity(0), // Needed to activate the blur
+                ),
+              ),
 
-                  // Foreground content for the user interaction
-                  SingleChildScrollView(
+              // Foreground content for the user interaction
+              Scaffold(
+                backgroundColor: Colors.transparent,
+                body: SafeArea(
+                  child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(vertical: Dimens.paddingLarge),
                     // child: (state.mealType ?? -1) <= -1 ? MealTypeSelectionWidget(onSaveMealType: (mealType) => bloc.add(AddFoodMealTypeEventAction(mealType: mealType))) : Column(
                     child: Column(
                       children: [
+                        DatePickerBar(),
+                        const SizedBox(height: Dimens.height12),
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                           child: HeaderAddItemCardSection(
@@ -276,7 +278,14 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                           if (state.foodsInEvent.orEmpty().isEmpty && state.foodFavorites.orEmpty().isNotEmpty) Column(children: [
                             const SizedBox(height: Dimens.height12),
                             DashTitleWidget(title: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.mealType).name.orEmpty()+ ' favorites'),
-                            ...state.foodFavorites.orEmpty().map((favFood) => ItemInfoCard(title: favFood.title, leadingSrc: 'assets/images/favorite_icon.png', trailingSrc: 'assets/icon/add_icon.png', leadingTap: () {}, trailingTap: () {},)),
+                            ...state.foodFavorites.orEmpty().map((favFood) => ItemInfoCard(
+                              title: NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: favFood.ingredients, context: context),
+                              leadingSrc: 'assets/images/favorite_icon.png',
+                              trailingSrc: 'assets/icon/add_icon.png',
+                              leadingTap: () => bloc.add(RemoveFavoriteFoodAddFoodEventAction(foodFavorite: favFood, onFinish: () {})),
+                              trailingTap: () { ToastHelper().showToast(text: 'Work in progress'); },
+                              subtitle: '--- ---- ---',),
+                            ),
                           ]),
 
                           if (state.foodsInEvent.orEmpty().isNotEmpty || state.foodFavorites.orEmpty().isNotEmpty) Container(
@@ -293,7 +302,12 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                 if (state.isFavorite ?? false) {
                                   bloc.add(FinishFoodAsFavoriteEventAction(onFinish: () => _showConfirmationDialog(context)));
                                 } else {
-                                  bloc.add(FinishFoodEventAction(onFinish: () => _showConfirmationDialog(context)));
+                                  if (state.isCreateRoutine ?? false) {
+                                    ToastHelper().showToast(text: 'Work in progress for routines');
+                                    // bloc.add(FinishFoodRoutineAction(onFinish: () => _showConfirmationDialog(context)));
+                                  } else {
+                                    bloc.add(FinishFoodEventAction(onFinish: () => _showConfirmationDialog(context)));
+                                  }
                                 }
                                 // bloc.add(FinishFoodWithoutCreateDishEventAction(context: context, onFinish: () => _showConfirmationDialog(context)));
                               }
@@ -304,11 +318,11 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                       ],
                     ),
                   ),
-                ],
-              );
-              },
-          ),
-        ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

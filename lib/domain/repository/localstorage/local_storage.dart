@@ -3,6 +3,7 @@ import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplem
 import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
 import 'package:nutrenaissance_flutter/data/local/models/fecesurine/upload_feces_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/foodroutines/food_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
@@ -92,4 +93,5 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<bool> eraseDBEventsData();
   Future<ModelsAppearanceEntity?> showModelAppearance(int modelAppearanceId);
   Future<void> saveModelAppearance(int modelAppearanceId);
+  Future<void> saveFoodRoutine(FoodRoutineEntity foodRoutineEntity, {bool isEdit = false});
 }

@@ -14,6 +14,7 @@ import 'package:nutrenaissance_flutter/data/api/advices/advices_api.dart';
 import 'package:nutrenaissance_flutter/data/api/favorites/favorites_api.dart';
 import 'package:nutrenaissance_flutter/data/api/fecesurine/fece_urine_api.dart';
 import 'package:nutrenaissance_flutter/data/api/foodevents/food_events_api.dart';
+import 'package:nutrenaissance_flutter/data/api/foodroutines/food_routines_api.dart';
 import 'package:nutrenaissance_flutter/data/api/liquidevents/liquid_events_api.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
@@ -31,6 +32,7 @@ import 'package:nutrenaissance_flutter/data/local/models/favorites/liquid/liquid
 import 'package:nutrenaissance_flutter/data/local/models/favorites/sport/sport_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/fecesurine/upload_feces_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/foodroutines/food_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_info_entity.dart';
@@ -58,6 +60,7 @@ import 'package:nutrenaissance_flutter/data/repository/explainingcards/explainin
 import 'package:nutrenaissance_flutter/data/repository/favorites/favorites_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/fecesurine/feces_urine_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/foodevents/food_events_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/foodroutines/food_routines_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/liquidevents/liquid_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/localstorage/local_storage_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/login/login_repository_impl.dart';
@@ -140,6 +143,10 @@ import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_ev
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/save_food_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/save_food_routine_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/upload_food_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/upload_food_routine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/delete_liquid_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/delete_liquid_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
@@ -253,6 +260,7 @@ import 'package:nutrenaissance_flutter/domain/repository/explainingcards/explain
 import 'package:nutrenaissance_flutter/domain/repository/favorites/favorites_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/fecesurine/feces_urine_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/foodevents/food_events_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/foodroutines/food_routines_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/liquidevents/liquid_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart';
@@ -419,9 +427,13 @@ void main() async {
   final UploadProfileInteractor uploadProfileInteractor = UploadProfileInteractorImpl(profileRepository: profileRepository);
   final SaveProfileInteractor saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
   final FoodEventsApi foodEventsApi = FoodEventsApi(prefsRepository, authenticationService, chuck);
-  final FoodEventsRepository foodEventsRepository = FoodEventsRepositoryImpl(localStorageRepository: localStorageRepository, foodEventsApi: foodEventsApi, );
+  final FoodEventsRepository foodEventsRepository = FoodEventsRepositoryImpl(localStorageRepository: localStorageRepository, foodEventsApi: foodEventsApi,);
   final UploadFoodEventInteractor uploadFoodEventInteractor = UploadFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
   final SaveFoodEventInteractor saveFoodEventInteractor = SaveFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
+  final FoodRoutinesApi foodRoutinesApi = FoodRoutinesApi(prefsRepository, authenticationService, chuck);
+  final FoodRoutinesRepository foodRoutinesRepository = FoodRoutinesRepositoryImpl(foodRoutinesApi: foodRoutinesApi, localStorageRepository: localStorageRepository);
+  final UploadFoodRoutineInteractor uploadFoodRoutineInteractor = UploadFoodRoutineInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
+  final SaveFoodRoutineInteractor saveFoodRoutineInteractor = SaveFoodRoutineInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
   final RecommendationsApi recommendationsApi = RecommendationsApi(prefsRepository, authenticationService, chuck);
   final RecommendationsRepository recommendationsRepository = RecommendationsRepositoryImpl(recommendationsApi: recommendationsApi);
   final GetRecommendationInteractor getRecommendationInteractor = GetRecommendationInteractorImpl(recommendationsRepository: recommendationsRepository);
@@ -663,6 +675,10 @@ void main() async {
     getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
     uploadFoodFavoriteInteractor: uploadFoodFavoriteInteractor,
     saveFoodFavoriteInteractor: saveFoodFavoriteInteractor,
+    uploadFoodRoutineInteractor: uploadFoodRoutineInteractor,
+    saveFoodRoutineInteractor: saveFoodRoutineInteractor,
+    deleteFoodFavoriteInteractor: deleteFoodFavoriteInteractor,
+    removeFoodFavoriteFromLocalInteractor: removeFoodFavoriteFromLocalInteractor,
   );
 
   final foodEventBloc = FoodBloc(
@@ -895,6 +911,8 @@ void main() async {
     getFoodEventsOfTodayInteractor: getFoodEventsOfTodayInteractor,
     getProfileInteractor: getProfileInteractor,
     getMasterFileInteractor: getMasterFileInteractor,
+    deleteFoodEventInteractor: deleteFoodEventInteractor,
+    removeFoodEventInteractor: removeFoodEventInteractor,
   );
 
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
@@ -1119,4 +1137,6 @@ void initLocalStorage() async {
   Hive.registerAdapter(ConversionFactorsInfoEntityAdapter());
   Hive.registerAdapter(ConversionFactorInfoEntityAdapter());
   Hive.registerAdapter(ConversionInfoEntityAdapter());
+  Hive.registerAdapter(FoodRoutineEntityAdapter());
+  Hive.registerAdapter(FoodRoutineInEntityAdapter());
 }

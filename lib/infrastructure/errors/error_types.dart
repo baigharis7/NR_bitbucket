@@ -22,6 +22,8 @@ enum ErrorTypes {
   recommendationError,
   locallySavingFoodEventError,
   uploadingFoodEventError,
+  uploadingFoodRoutineEventError,
+  saveFoodRoutineEventError,
   retrieveFoodEventsError,
   deleteFoodEventError,
   removeFoodEventError,

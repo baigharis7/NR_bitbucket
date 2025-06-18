@@ -74,5 +74,7 @@ class HiveTypeIds {
   static const conversionFactorsInfoEntity = 71;
   static const conversionFactorInfoEntity = 72;
   static const conversionInfoEntity = 73;
+  static const foodRoutineEntity = 74;
+  static const foodRoutineInEntity = 75;
 
 }

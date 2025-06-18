@@ -182,6 +182,8 @@
     "recommendation_error" : "There was an error getting your recommendation. Try again later.",
     "locally_saving_food_event_error" : "There was an error saving your food event. Try again later.",
     "uploading_food_event_error" : "There was an error uploading the food event. Try again later.",
+    "uploading_food_routine_event_error" : "There was an error uploading the food routine event. Try again later.",
+    "save_food_routine_event_error" : "There was an error saving the food routine event. Try again later.",
     "retrieve_food_events_error" : "There was an error getting your food events. Try again later.",
     "delete_food_event_error" : "There was an error to delete food event. Try again later.",
     "remove_food_event_error" : "There was an error to remove food event. Try again later.",

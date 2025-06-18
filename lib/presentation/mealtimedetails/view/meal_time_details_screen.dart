@@ -11,7 +11,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrient_row.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_border_box.dart';
 import '../../../domain/models/favorites/food/meal_time.dart';
+import '../../../infrastructure/errors/error_resolver.dart';
+import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
+import '../../common/view/loading_screen.dart';
 import '../../foodevent/view/add_food_event_screen.dart';
 
 class MealTimeDetailScreen extends StatefulWidget {
@@ -67,7 +70,17 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
     return BlocProvider.value(
       value: bloc,
       child: BlocConsumer<MealTimeDetailsBloc, MealTimeDetailsState>(
-        listener: (context, state) {},
+        listener: (ctx, state) {
+          if (state.isLoading) {
+            LoadingScreen.instance().show(
+              context: ctx,
+              text: AppLocalizations.of(ctx)!.recal_nutrients,
+            );
+          } else {
+            LoadingScreen.instance().hide();
+          }
+          if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
+        },
         builder: (context, state) {
           return Stack(
             children: [
@@ -101,7 +114,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                             title: state.mealTime?.name.orEmpty(),
                             image: 'assets/images/meal_time_${state.mealTime?.id ?? 0}.png',
                             child: Column(children: [
-                              Text('${NutritionUtils.calculateKcal(foodEvents: state.foodEvents.orEmpty())} Kcal', style: TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize28, color: Colors.white),),
+                              Text('${NutritionUtils.calculateKcal(foodEvents: state.foodEvents.orEmpty())} Kcal', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize28, color: Colors.white),),
                               Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),child: const Divider(color: Colors.white, height: 1, thickness: 1)),
                               Row(children: [
                                 ...state.macronutrients.orEmpty().map((macroNutrient) {
@@ -116,9 +129,8 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                               ],),
                             ]),
                           ),
-                          ...state.foodEvents.orEmpty().map((food) => ItemInfoCard(title: food.foodInfo![0].translate(context), subtitle: '${food.eventKcals.orZero()} kcal. ${food.foodInfo![0].eventInfo?.qty.orZero().toInt()}', trailingSrc: 'assets/images/delete_icon.png', trailingTap: () {
-
-                          },)),
+                          ...state.foodEvents.orEmpty().map((food) => ItemInfoCard(title: NutritionUtils.findFoodsName(context: context, foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: food.foodInfo), subtitle: '${food.eventKcals.orZero()} kcal. ${food.foodInfo![0].eventInfo?.qty.orZero().toInt()}', trailingSrc: 'assets/images/delete_icon.png',
+                            trailingTap: () => bloc.add(DeleteFoodMealTimeDetailsEventAction(foodEventComplete: food, onFinish: () {})),)),
                           Container(
                             margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                             child: ListTile(

@@ -48,6 +48,19 @@ class FinishFoodEventAction extends AddFoodEventActions {
   FinishFoodEventAction({required this.onFinish});
 }
 
+class FinishFoodRoutineAction extends AddFoodEventActions {
+  Function onFinish;
+
+  FinishFoodRoutineAction({required this.onFinish});
+}
+
+class RemoveFavoriteFoodAddFoodEventAction extends AddFoodEventActions {
+  final FoodFavorite foodFavorite;
+  final Function onFinish;
+
+  RemoveFavoriteFoodAddFoodEventAction({required this.onFinish, required this.foodFavorite});
+}
+
 class FinishFoodAsFavoriteEventAction extends AddFoodEventActions {
   Function onFinish;
 

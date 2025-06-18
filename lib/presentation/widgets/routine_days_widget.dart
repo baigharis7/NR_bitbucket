@@ -52,7 +52,7 @@ class _RoutineDaysWidgetState extends State<RoutineDaysWidget> {
           children: DateTimeHelper.getCurrentWeekDates().map((dateTime) {
             DateTime selectedDate = DateTime.now();
             final locale = Localizations.localeOf(context).languageCode;
-            final isSelected = widget.daysOfWeek.orEmpty().contains(DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime));
+            final isSelected = widget.daysOfWeek.orEmpty().contains(dateTime.weekday);
             final dayAbbr = DateFormat.E(locale).format(dateTime); // LUN, MAR, etc.
 
             return GestureDetector(

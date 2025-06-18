@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/data/local/models/favorites/liquid/liquid
 import 'package:nutrenaissance_flutter/data/local/models/favorites/sport/sport_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/fecesurine/upload_feces_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/foodroutines/food_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
@@ -53,6 +54,7 @@ class LocalStorageImpl extends LocalStorageRepository {
 
   Box? _profileBox;
   Box? _foodEventsBox;
+  Box? _foodRoutinesBox;
   Box? _liquidEventsBox;
   Box? _waterEventsBox;
   Box? _cookingMethodsBox;
@@ -85,6 +87,7 @@ class LocalStorageImpl extends LocalStorageRepository {
 
   Future<Box> _openProfileBox() async => openBox(_profileBox, UserProfileEntity.boxName);
   Future<Box> _openFoodEventsBox() async => openBox(_foodEventsBox, FoodEventEntity.boxName);
+  Future<Box> _openFoodRoutinesBox() async => openBox(_foodRoutinesBox, FoodRoutineEntity.boxName);
   Future<Box> _openLiquidEventsBox() async => openBox(_liquidEventsBox, LiquidEventEntity.boxName);
   Future<Box> _openWaterEventsBox() async => openBox(_waterEventsBox, WaterEventEntity.boxName);
   Future<Box> _openMasterFilesBox(MasterFilesType masterFileType) async {
@@ -134,6 +137,7 @@ class LocalStorageImpl extends LocalStorageRepository {
 
   Future<Box> get _getProfileBox async => await _openProfileBox();
   Future<Box> get _getFoodEventsBox async => await _openFoodEventsBox();
+  Future<Box> get _getFoodRoutinesBox async => await _openFoodRoutinesBox();
   Future<Box> get _getLiquidEventsBox async => await _openLiquidEventsBox();
   Future<Box> get _getWaterEventsBox async => await _openWaterEventsBox();
   Future<Box> _getMasterFilesBox(MasterFilesType masterFilesType) async => await _openMasterFilesBox(masterFilesType);
@@ -1249,6 +1253,30 @@ class LocalStorageImpl extends LocalStorageRepository {
       });
     } catch (error) {
       rethrow;
+    }
+  }
+
+  @override
+  Future<void> saveFoodRoutine(FoodRoutineEntity foodRoutineEntity, {bool isEdit = false}) async {
+    try {
+      await foodRoutineEntity.save();
+    } catch(error) {
+      try {
+        _getFoodRoutinesBox.then((box) {
+          if (isEdit) {
+            final spoRoutinesMap = box.toMap();
+            spoRoutinesMap.forEach((key, value) {
+              if ((value as SportRoutineEntity).eventId == foodRoutineEntity.eventId) {
+                box.put(key, foodRoutineEntity);
+              }
+            });
+          } else {
+            box.add(foodRoutineEntity);
+          }
+        },);
+      } catch(error) {
+        rethrow;
+      }
     }
   }
 

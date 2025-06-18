@@ -48,7 +48,7 @@ class ItemInfoCard extends StatelessWidget {
           subtitle!,
           style: const TextStyle(color: AppColors.battleshipGrey, fontWeight: FontWeight.w500, fontSize: Dimens.fontSizeXSmall),
         ) : const SizedBox(),
-        trailing: !trailingSrc.isNull() && !trailingTap.isNull() ? Image.asset(trailingSrc!, height: 21, width: 21) : const SizedBox(),
+        trailing: !trailingSrc.isNull() && !trailingTap.isNull() ? InkWell(onTap: () => trailingTap?.call(), child: Image.asset(trailingSrc!, height: 21, width: 21)) : const SizedBox(),
       ),
     );
   }

@@ -1,9 +1,13 @@
 import 'package:nutrenaissance_flutter/data/api/foodevents/model/upload_food_event.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart' as entity;
+import 'package:nutrenaissance_flutter/data/local/models/foodroutines/food_routine_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart' as domain;
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+
+import '../../domain/models/foodroutine/food_routine_event.dart';
 
 entity.FoodEventEntity mapToFoodEventEntity(UploadFoodEvent uploadFoodEvent) {
   final List<entity.FoodInfo> foodInfoEntity = [];
@@ -370,4 +374,16 @@ SportEventSimple mapToSportEventSimple(SportEventComplete sportEventComplete) {
             minutes: sportEventComplete.minutes,
         ),).toList(),
     );
+}
+
+FoodRoutineEntity mapToFoodRoutineEntity(FoodRoutineEvent foodRoutineEvent) {
+  return FoodRoutineEntity(
+      userId: foodRoutineEvent.userId,
+      eventId: foodRoutineEvent.eventId,
+      eventDate: foodRoutineEvent.eventDate,
+      mealType: foodRoutineEvent.mealType,
+      ingredients: foodRoutineEvent.ingredients.orEmpty().map((foodRoutine) => FoodRoutineInEntity(id: foodRoutine.id, qty: foodRoutine.qty, unit: foodRoutine.unit, cookingMethod: foodRoutine.cookingMethod, conversionFactor: foodRoutine.conversionFactor, usedOil: foodRoutine.usedOil, unitsEquivalences: foodRoutine.unitsEquivalences)).toList(),
+      foodName: foodRoutineEvent.foodName,
+      comment: foodRoutineEvent.comment,
+  );
 }
