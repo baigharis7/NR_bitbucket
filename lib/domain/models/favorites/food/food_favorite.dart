@@ -14,6 +14,8 @@ class FoodFavorite {
   bool? dish;
   bool? isRoutine;
   List<int>? daysOfWeek;
+  String? time;
+  String? timeZone;
   FoodFavorite({
     required this.title,
     required this.eventDate,
@@ -24,6 +26,8 @@ class FoodFavorite {
     this.dish,
     this.isRoutine,
     this.daysOfWeek,
+    this.time,
+    this.timeZone,
   });
 
   factory FoodFavorite.fromJson(Map<String, dynamic> json) => _$FoodFavoriteFromJson(json);

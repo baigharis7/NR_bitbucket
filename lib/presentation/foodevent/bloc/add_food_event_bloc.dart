@@ -22,8 +22,10 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_mas
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_state.dart';
@@ -75,7 +77,6 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     eventDate: null,
     isEdit: false,
     foodFavorites: [],
-    foodsFromFavorite: [],
     daysOfWeek: [],
     mealType: 0,
   ),) {
@@ -238,17 +239,12 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     });
 
     on<AddFoodFromFavouriteEventAction>((event, emit) {
-      state.foodName = event.foodFavorite.title;
-      state.comment = event.foodFavorite.comment;
-      state.mealType = event.foodFavorite.mealTime;
-      state.foodsFromFavorite = event.foodFavorite.ingredients.map((item) {
-        return FoodInEvent(id: item.id, qty: item.qty, unit: item.unit, cookingMethod: item.cookingMethod);
-      },).toList();
+      final isSame = state.foodsFromFavorite == event.foodFavorite;
+      state.foodsFromFavorite = isSame ? null : event.foodFavorite;
       emit(state.copyWith(isLoading: false,));
     },);
 
     on<AddFoodEventFromDetailNavigation>((event, emit) {
-      state.eventDate = event.foodEventComplete.eventDate;
       state.eventId = event.foodEventComplete.eventId;
       state.foodName = event.foodEventComplete.foodName;
       state.comment = event.foodEventComplete.comment;
@@ -313,7 +309,8 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       foodRoutineEvent.dish = state.isCreateDish ?? false;
       foodRoutineEvent.isRoutine = state.isCreateRoutine;
       foodRoutineEvent.daysOfWeek = state.daysOfWeek;
-      foodRoutineEvent.time = DateFormat.Hm().format(DateTime.now().add(Duration(minutes: 10)));
+      foodRoutineEvent.time = DateFormat.Hm().format(DateTime.now().add(Duration(minutes: 5)),);
+      foodRoutineEvent.timeZone = await DateTimeHelper.getDeviceIANATimeZone();
 
 
       try {
@@ -347,6 +344,10 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
           mealTime: state.mealType.orZero(),
         isRoutine: state.isCreateRoutine,
         daysOfWeek: state.daysOfWeek,
+        time: DateFormat.Hm().format(DateTime.now().add(Duration(minutes: 10))),
+        comment: state.comment,
+        dish: state.isCreateDish,
+        timeZone: await DateTimeHelper.getDeviceIANATimeZone(),
       );
       try {
         final uploadFoodAsFavorite = await uploadFoodFavoriteInteractor.execute(foodFavorite);
@@ -382,41 +383,67 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     });
 
     on<FinishFoodFavouriteEventAction>((event, emit) async {
-      emit(state.copyWith(isLoading: true, onError: null,));
+      if (state.foodsFromFavorite?.isRoutine == true && state.foodsFromFavorite?.daysOfWeek?.isNotEmpty == true) {
+        final foodEventRoutine = mapToFoodRoutineEventFromFoodFavorite(state.foodsFromFavorite!);
+        foodEventRoutine.userId = getUserIdInteractor.execute();
+        foodEventRoutine.eventId = DateTime.now().millisecondsSinceEpoch;
+        foodEventRoutine.eventDate = DateTime.now().millisecondsSinceEpoch;
+        add(FinishAddFoodRoutineEventAction(foodRoutineEvent: foodEventRoutine, onFinish: event.onFinish));
+      } else {
+        final foodEventSimple = mapToFoodEventSimpleFromFoodFavorite(state.foodsFromFavorite!);
+        foodEventSimple.userId = getUserIdInteractor.execute();
+        foodEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
+        foodEventSimple.eventDate = DateTime.now().millisecondsSinceEpoch;
+        add(FinishAddFoodEventAction(foodEventSimple: foodEventSimple, onFinish: event.onFinish));
+      }
+    },);
 
-      final foodEvent = FoodEventSimple(
-        userId: getUserIdInteractor.execute(),
-        eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
-        eventId: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
-        foodName: state.foodName ?? '',
-        comment: state.comment,
-        mealType: state.mealType,
-      );
-      foodEvent.ingredients = state.foodsFromFavorite.orEmpty();
-      foodEvent.drinks = []; // TODO: is it necessary to implement drinks in food events?
+    on<FinishAddFoodEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
 
       try {
-        final uploadFoodEvent = await uploadFoodEventInteractor.execute(foodEvent);
+        final uploadFoodEvent = await uploadFoodEventInteractor.execute(event.foodEventSimple);
         if (uploadFoodEvent.uploadSuccess) {
           try {
             await saveFoodEventInteractor.execute(uploadFoodEvent, state.isEdit!);
 
             _clearFields();
-            emit(state.copyWith(isLoading: false, onError: null, eventDate: null));
+            emit(state.copyWith(isLoading: false,));
             event.onFinish.call();
           } catch (error) {
-            state.onError = ErrorTypes.locallySavingFoodEventError;
-            emit(state.copyWith(isLoading: false,));
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.locallySavingFoodEventError));
           }
         } else {
-          state.onError = ErrorTypes.uploadingFoodEventError;
-          emit(state.copyWith(isLoading: false,));
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingFoodEventError));
         }
       } catch (error) {
-        state.onError = ErrorTypes.uploadingFoodEventError;
-        emit(state.copyWith(isLoading: false,));
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingFoodEventError));
       }
-    },);
+    });
+
+    on<FinishAddFoodRoutineEventAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+
+      try {
+        final uploadedRoutine = await uploadFoodRoutineInteractor.execute(event.foodRoutineEvent);
+        if (uploadedRoutine) {
+          try {
+            await saveFoodRoutineInteractor.execute(event.foodRoutineEvent, false);
+
+            _clearFields();
+            emit(state.copyWith(isLoading: false, onError: null, eventDate: null));
+            event.onFinish.call();
+          } catch (_) {
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveFoodRoutineEventError));
+          }
+
+        } else {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingFoodRoutineEventError));
+        }
+      } catch (_) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingFoodRoutineEventError));
+      }
+    });
 
     on<FinishFoodWithoutCreateDishEventAction>((event, emit) async {
       for (FoodInEvent food in state.foodsInEvent.orEmpty()) {
@@ -468,7 +495,8 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
   }
 
   void _clearFields() {
-    state.foodsFromFavorite?.clear();
+    // state.foodsFromFavorite?.clear();
+    state.foodsFromFavorite = null;
     state.foodsInEvent?.clear();
     state.foodName = '';
     state.comment = null;

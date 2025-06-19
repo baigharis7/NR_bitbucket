@@ -11,6 +11,7 @@ class ItemInfoCard extends StatelessWidget {
   final String? trailingSrc;
   final VoidCallback? leadingTap;
   final VoidCallback? trailingTap;
+  final Color? color;
   const ItemInfoCard({
     super.key,
     required this.title,
@@ -18,14 +19,16 @@ class ItemInfoCard extends StatelessWidget {
     this.leadingSrc,
     this.trailingSrc,
     this.leadingTap,
-    this.trailingTap,});
+    this.trailingTap,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal, horizontal: Dimens.marginLarge),
       decoration: BoxDecoration(
-        color: AppColors.floralWhite, // light greenish
+        color: color ?? AppColors.floralWhite, // light greenish
         borderRadius: BorderRadius.circular(20),
         boxShadow: const [
           BoxShadow(

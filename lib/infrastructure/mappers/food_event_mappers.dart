@@ -1,6 +1,7 @@
 import 'package:nutrenaissance_flutter/data/api/foodevents/model/upload_food_event.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart' as entity;
 import 'package:nutrenaissance_flutter/data/local/models/foodroutines/food_routine_entity.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart' as domain;
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
@@ -385,5 +386,41 @@ FoodRoutineEntity mapToFoodRoutineEntity(FoodRoutineEvent foodRoutineEvent) {
       ingredients: foodRoutineEvent.ingredients.orEmpty().map((foodRoutine) => FoodRoutineInEntity(id: foodRoutine.id, qty: foodRoutine.qty, unit: foodRoutine.unit, cookingMethod: foodRoutine.cookingMethod, conversionFactor: foodRoutine.conversionFactor, usedOil: foodRoutine.usedOil, unitsEquivalences: foodRoutine.unitsEquivalences)).toList(),
       foodName: foodRoutineEvent.foodName,
       comment: foodRoutineEvent.comment,
+      timeZone: foodRoutineEvent.timeZone,
+      dish: foodRoutineEvent.dish,
+      isRoutine: foodRoutineEvent.isRoutine,
+      daysOfWeek: foodRoutineEvent.daysOfWeek,
+      drinks: [],
+  );
+}
+
+FoodEventSimple mapToFoodEventSimpleFromFoodFavorite(FoodFavorite foodFavorite) {
+  return FoodEventSimple(
+      userId: '',
+      eventDate: foodFavorite.eventDate,
+      eventId: foodFavorite.eventDate,
+      foodName: foodFavorite.title,
+      mealType: foodFavorite.mealTime,
+      dish: foodFavorite.dish,
+      ingredients: foodFavorite.ingredients.map((favIngredient) => FoodInEvent(id: favIngredient.id, qty: favIngredient.qty, unit: favIngredient.unit, cookingMethod: favIngredient.cookingMethod, usedOil: favIngredient.usedOil, conversionFactor: favIngredient.conversionFactor, unitsEquivalences: favIngredient.unitsEquivalences)).toList(),
+      drinks: foodFavorite.drinks.map((favDrink) => FoodInEvent(id: favDrink.id, qty: favDrink.qty, unit:favDrink.unit, cookingMethod: favDrink.cookingMethod, usedOil: favDrink.usedOil, conversionFactor: favDrink.conversionFactor, unitsEquivalences: favDrink.unitsEquivalences)).toList(),
+      comment: foodFavorite.comment,);
+}
+
+FoodRoutineEvent mapToFoodRoutineEventFromFoodFavorite(FoodFavorite foodFavorite) {
+  return FoodRoutineEvent(
+      userId: '',
+      eventId: foodFavorite.eventDate,
+      eventDate: foodFavorite.eventDate,
+      foodName: foodFavorite.title,
+      mealType: foodFavorite.mealTime,
+      dish: foodFavorite.dish,
+      ingredients: foodFavorite.ingredients.map((favIngredients) => FoodRoutineInEvent(id: favIngredients.id, qty: favIngredients.qty, unit: favIngredients.unit, cookingMethod: favIngredients.cookingMethod, usedOil: favIngredients.usedOil, conversionFactor: favIngredients.conversionFactor, unitsEquivalences: favIngredients.unitsEquivalences)).toList(),
+      drinks: foodFavorite.drinks.map((favDrinks) => FoodRoutineInEvent(id: favDrinks.id, qty:favDrinks.qty, unit: favDrinks.unit, cookingMethod: favDrinks.cookingMethod, usedOil: favDrinks.usedOil, conversionFactor: favDrinks.conversionFactor, unitsEquivalences: favDrinks.unitsEquivalences)).toList(),
+      isRoutine: foodFavorite.isRoutine,
+      daysOfWeek: foodFavorite.daysOfWeek,
+      time: foodFavorite.time,
+      comment: foodFavorite.comment,
+      timeZone: foodFavorite.timeZone,
   );
 }

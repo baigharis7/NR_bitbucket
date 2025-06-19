@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 class DateTimeHelper {
   DateTime provideCurrentDate() {
@@ -171,6 +172,16 @@ class DateTimeHelper {
     Duration diff = endTime!.difference(startTime!);
     double hours = diff.inMinutes / 60.0;
     return hours;
+  }
+
+  static Future<String> getDeviceIANATimeZone() async {
+    try {
+      final String timeZone = await FlutterTimezone.getLocalTimezone(); // e.g. "Asia/Karachi"
+      return timeZone;
+    } catch (e) {
+      print("Failed to get time zone: $e");
+      return 'UTC';
+    }
   }
 
 }

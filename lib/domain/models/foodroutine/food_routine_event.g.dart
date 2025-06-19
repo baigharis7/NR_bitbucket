@@ -24,6 +24,7 @@ FoodRoutineEvent _$FoodRoutineEventFromJson(Map<String, dynamic> json) =>
       isRoutine: json['isRoutine'] as bool?,
       daysOfWeek: json['daysOfWeek'] as List<int>?,
       time: json['time'] as String?,
+      timeZone: json['timeZone'] as String?,
     );
 
 Map<String, dynamic> _$FoodRoutineEventToJson(FoodRoutineEvent instance) =>
@@ -40,6 +41,7 @@ Map<String, dynamic> _$FoodRoutineEventToJson(FoodRoutineEvent instance) =>
       'isRoutine': instance.isRoutine,
       'daysOfWeek': instance.daysOfWeek,
       'time': instance.time,
+      'timeZone': instance.timeZone,
     };
 
 FoodRoutineInEvent _$FoodRoutineInEventFromJson(Map<String, dynamic> json) => FoodRoutineInEvent(

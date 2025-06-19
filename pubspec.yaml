@@ -57,6 +57,7 @@ dependencies:
   upgrader: ^9.0.0
   percent_indicator: ^4.2.2
   mobile_scanner: ^4.0.1
+  flutter_timezone: ^1.0.1
 
 dev_dependencies:
   flutter_test:

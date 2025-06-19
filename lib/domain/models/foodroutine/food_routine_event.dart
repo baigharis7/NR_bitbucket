@@ -16,8 +16,9 @@ class FoodRoutineEvent {
   bool? isRoutine;
   List<int>? daysOfWeek;
   String? time;
+  String? timeZone;
 
-  FoodRoutineEvent({required this.userId, required this.eventDate, this.eventId, this.mealType, required this.foodName, required this.comment, this.ingredients, this.drinks, this.dish, this.isRoutine, this.daysOfWeek, this.time});
+  FoodRoutineEvent({required this.userId, required this.eventDate, this.eventId, this.mealType, required this.foodName, required this.comment, this.ingredients, this.drinks, this.dish, this.isRoutine, this.daysOfWeek, this.time, this.timeZone});
 
   factory FoodRoutineEvent.fromJson(Map<String, dynamic> json) => _$FoodRoutineEventFromJson(json);
   Map<String, dynamic> toJson() => _$FoodRoutineEventToJson(this);

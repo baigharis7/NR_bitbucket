@@ -18,7 +18,7 @@ class AddFoodEventState {
   OilTypesResponse? oilTypes;
   ConversionFactorsResponse? conversionFactors;
   List<FoodInEvent>? foodsInEvent;
-  List<FoodInEvent>? foodsFromFavorite;
+  FoodFavorite? foodsFromFavorite;
   CookingMethodsMaster? cookingMethodsMaster;
   CookingMethodsInfoMaster? cookingMethodsInfoMaster;
   UnitsFoodsMaster? unitsFoodsMaster;
@@ -69,7 +69,7 @@ class AddFoodEventState {
     OilTypesResponse? oilTypes,
     ConversionFactorsResponse? conversionFactors,
     List<FoodInEvent>? foodsInEvent,
-    List<FoodInEvent>? foodsFromFavorite,
+    FoodFavorite? foodsFromFavorite,
     CookingMethodsMaster? cookingMethodsMaster,
     CookingMethodsInfoMaster? cookingMethodsInfoMaster,
     UnitsFoodsMaster? unitsFoodsMaster,

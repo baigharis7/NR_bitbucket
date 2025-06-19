@@ -3,6 +3,7 @@ import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorit
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 
 import '../../../domain/models/foodevents/food_event_complete.dart';
+import '../../../domain/models/foodroutine/food_routine_event.dart';
 
 class AddFoodEventActions {
   AddFoodEventActions();
@@ -46,6 +47,20 @@ class FinishFoodEventAction extends AddFoodEventActions {
   Function onFinish;
 
   FinishFoodEventAction({required this.onFinish});
+}
+
+class FinishAddFoodEventAction extends AddFoodEventActions {
+  FoodEventSimple foodEventSimple;
+  Function onFinish;
+
+  FinishAddFoodEventAction({required this.foodEventSimple, required this.onFinish});
+}
+
+class FinishAddFoodRoutineEventAction extends AddFoodEventActions {
+  FoodRoutineEvent foodRoutineEvent;
+  Function onFinish;
+
+  FinishAddFoodRoutineEventAction({required this.foodRoutineEvent, required this.onFinish});
 }
 
 class FinishFoodRoutineAction extends AddFoodEventActions {

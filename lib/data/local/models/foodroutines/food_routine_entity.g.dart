@@ -34,7 +34,7 @@ class FoodRoutineEntityAdapter extends TypeAdapter<FoodRoutineEntity> {
   @override
   void write(BinaryWriter writer, FoodRoutineEntity obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -56,7 +56,9 @@ class FoodRoutineEntityAdapter extends TypeAdapter<FoodRoutineEntity> {
       ..writeByte(9)
       ..write(obj.isRoutine)
       ..writeByte(10)
-      ..write(obj.daysOfWeek);
+      ..write(obj.daysOfWeek)
+      ..writeByte(11)
+      ..write(obj.timeZone);
   }
 
   @override
@@ -145,6 +147,7 @@ FoodRoutineEntity _$FoodRoutineEntityFromJson(Map<String, dynamic> json) =>
       daysOfWeek: (json['daysOfWeek'] as List<dynamic>?)
           ?.map((e) => (e as num).toInt())
           .toList(),
+      timeZone: json['timeZone'] as String?,
     );
 
 Map<String, dynamic> _$FoodRoutineEntityToJson(FoodRoutineEntity instance) =>
@@ -160,6 +163,7 @@ Map<String, dynamic> _$FoodRoutineEntityToJson(FoodRoutineEntity instance) =>
       'dish': instance.dish,
       'isRoutine': instance.isRoutine,
       'daysOfWeek': instance.daysOfWeek,
+      'timeZone': instance.timeZone,
     };
 
 FoodRoutineInEntity _$FoodRoutineInEntityFromJson(Map<String, dynamic> json) =>

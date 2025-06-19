@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_mast
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 import '../../domain/models/favorites/food/food_favorite.dart';
+import '../../domain/models/masterfiles/units_info_master.dart';
 
 class NutritionUtils {
 
@@ -40,5 +41,15 @@ class NutritionUtils {
     // return item.translate(context);
     return buffer.toString();
   }
+
+  static UnitInfoMaster findUnitName(int unitId, List<UnitInfoMaster> unitsInfoMaster) {
+    final unitInfo = unitsInfoMaster.firstWhere((unitInfo) => unitInfo.id == unitId, orElse: () => UnitInfoMaster.empty(),);
+    if (unitInfo.id == 0) {
+      return UnitInfoMaster.empty();
+    } else {
+      return unitInfo;
+    }
+  }
+
 
 }

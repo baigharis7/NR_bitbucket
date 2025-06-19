@@ -282,8 +282,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               title: NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: favFood.ingredients, context: context),
                               leadingSrc: 'assets/images/favorite_icon.png',
                               trailingSrc: 'assets/icon/add_icon.png',
+                              color: state.foodsFromFavorite == favFood ? AppColors.butter : AppColors.floralWhite,
                               leadingTap: () => bloc.add(RemoveFavoriteFoodAddFoodEventAction(foodFavorite: favFood, onFinish: () {})),
-                              trailingTap: () { ToastHelper().showToast(text: 'Work in progress'); },
+                              trailingTap: () { bloc.add(AddFoodFromFavouriteEventAction(foodFavorite: favFood)); },
                               subtitle: '--- ---- ---',),
                             ),
                           ]),
@@ -292,7 +293,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                             margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                             child: SaveButton(onPressed: () {
                               if(state.foodsInEvent!.isEmpty) {
-                                if (state.foodsFromFavorite!.isNotEmpty) {
+                                if (!state.foodsFromFavorite.isNull()) {
                                   bloc.add(FinishFoodFavouriteEventAction(onFinish: () => _showConfirmationDialog(context),),);
                                 }
                               }
@@ -303,8 +304,8 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                   bloc.add(FinishFoodAsFavoriteEventAction(onFinish: () => _showConfirmationDialog(context)));
                                 } else {
                                   if (state.isCreateRoutine ?? false) {
-                                    ToastHelper().showToast(text: 'Work in progress for routines');
-                                    // bloc.add(FinishFoodRoutineAction(onFinish: () => _showConfirmationDialog(context)));
+                                    // ToastHelper().showToast(text: 'Work in progress for routines');
+                                    bloc.add(FinishFoodRoutineAction(onFinish: () => _showConfirmationDialog(context)));
                                   } else {
                                     bloc.add(FinishFoodEventAction(onFinish: () => _showConfirmationDialog(context)));
                                   }
