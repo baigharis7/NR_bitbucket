@@ -30,8 +30,9 @@ class NutrientInfoEntity {
   @HiveField(5) String? description_en;
   @HiveField(6) String? foods_es;
   @HiveField(7) String? foods_en;
+  @HiveField(8) String? abbr;
 
-  NutrientInfoEntity({required this.name, required this.unit, required this.es, required this.en, this.description_es, this.description_en, this.foods_es, this.foods_en});
+  NutrientInfoEntity({required this.name, required this.unit, required this.es, required this.en, this.description_es, this.description_en, this.foods_es, this.foods_en, this.abbr});
 
   factory NutrientInfoEntity.fromJson(Map<String, dynamic> json) => _$NutrientInfoEntityFromJson(json);
   Map<String, dynamic> toJson() => _$NutrientInfoEntityToJson(this);

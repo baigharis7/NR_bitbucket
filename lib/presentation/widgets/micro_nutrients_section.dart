@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/vertical_nutrient_widget.dart';
@@ -13,8 +14,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class MicroNutrientsSection extends StatelessWidget {
   final List<NutrientsModel> micronutrients;
   final List<NutrientsModel> temporaryMicronutrients;
+  final List<NutrientsModel> filteredNutrientsLess15RDA;
   final List<int>? objectives;
-  const MicroNutrientsSection({super.key, required this.micronutrients, required this.temporaryMicronutrients, this.objectives});
+  const MicroNutrientsSection({super.key, required this.micronutrients, required this.temporaryMicronutrients, required this.filteredNutrientsLess15RDA, this.objectives});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +40,8 @@ class MicroNutrientsSection extends StatelessWidget {
               if (micronutrients.isNotEmpty) NutrientsSection(nutrients: micronutrients.take((objectives?.length ?? 0) * 3).toList(), title: AppLocalizations.of(context)!.objectives, image: 'assets/images/goal_objectives.png'),
               const SizedBox(width: Dimens.width18),
               if (temporaryMicronutrients.isNotEmpty) NutrientsSection(nutrients: temporaryMicronutrients, titleColor: AppColors.redOxide, title: AppLocalizations.of(context)!.temporary_objectives, image: 'assets/images/hour_glass.png'),
+              const SizedBox(width: Dimens.width18),
+              if (filteredNutrientsLess15RDA.isNotEmpty) NutrientsSection(nutrients: filteredNutrientsLess15RDA.where((element) => element.nutrientInfoMaster.translateDescription(context).isNotEmptyOrNull()).toList(), titleColor: AppColors.tigerOrange, title: AppLocalizations.of(context)!.deficiency_micronutrients, image: 'assets/icon/deficiency_nutrients_icon.png'),
             ],),
           ),
         ),

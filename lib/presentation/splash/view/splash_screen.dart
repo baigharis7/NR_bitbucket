@@ -1,8 +1,11 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/provider/splash_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SplashScreen extends StatelessWidget {
   static const routeName = '/splash_screen';
@@ -16,18 +19,55 @@ class SplashScreen extends StatelessWidget {
         toDashboard: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
     );
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge),
-          child: Image.asset(
-            'assets/images/logo_name_black.png',
-            fit: BoxFit.cover,
-            color: Colors.black,
+    return Stack(
+      children: [
+        // Background image or gradient
+        Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/background.png'), // Your image
+              fit: BoxFit.cover,
+            ),
           ),
         ),
-      ),
+
+        Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/opacity_splash.png'), // Your image
+              fit: BoxFit.cover,
+              opacity: 0.85,
+            ),
+          ),
+        ),
+
+        // Blur effect
+        // BackdropFilter(
+        //   filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+        //   child: Container(
+        //     color: Colors.black26.withOpacity(0.5), // Needed to activate the blur
+        //   ),
+        // ),
+
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SizedBox(
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/images/logo_name_white.png',
+                  fit: BoxFit.cover,
+                  height: 106, width: 242,
+                ),
+                const SizedBox(height: Dimens.heightSmall),
+                Text(AppLocalizations.of(context)!.welcome + ' :)', style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeXXLarge, color: Colors.white),),
+              ],
+            ),
+          ),
+        ),
+      ] ,
     );
   }
 }

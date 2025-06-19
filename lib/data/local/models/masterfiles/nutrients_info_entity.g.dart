@@ -65,13 +65,14 @@ class NutrientInfoEntityAdapter extends TypeAdapter<NutrientInfoEntity> {
       description_en: fields[5] as String?,
       foods_es: fields[6] as String?,
       foods_en: fields[7] as String?,
+      abbr: fields[8] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, NutrientInfoEntity obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -87,7 +88,9 @@ class NutrientInfoEntityAdapter extends TypeAdapter<NutrientInfoEntity> {
       ..writeByte(6)
       ..write(obj.foods_es)
       ..writeByte(7)
-      ..write(obj.foods_en);
+      ..write(obj.foods_en)
+      ..writeByte(8)
+      ..write(obj.abbr);
   }
 
   @override
@@ -132,6 +135,7 @@ NutrientInfoEntity _$NutrientInfoEntityFromJson(Map<String, dynamic> json) =>
       description_en: json['description_en'] as String?,
       foods_es: json['foods_es'] as String?,
       foods_en: json['foods_en'] as String?,
+      abbr: json['abbr'] as String?,
     );
 
 Map<String, dynamic> _$NutrientInfoEntityToJson(NutrientInfoEntity instance) =>
@@ -144,4 +148,5 @@ Map<String, dynamic> _$NutrientInfoEntityToJson(NutrientInfoEntity instance) =>
       'description_en': instance.description_en,
       'foods_es': instance.foods_es,
       'foods_en': instance.foods_en,
+      'abbr': instance.abbr,
     };

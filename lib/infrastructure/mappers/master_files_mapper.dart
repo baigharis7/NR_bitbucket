@@ -147,12 +147,12 @@ FoodsAndDrinksNamesMaster mapToFoodsAndDrinksNamesMaster(FoodsAndDrinksNamesEnti
 }
 
 NutrientsInfoEntity mapToNutrientsInfoEntity(NutrientsInfoResponse nutrientsInfoResponse) {
-  List<NutrientInfoEntity> data = nutrientsInfoResponse.data.map((item) => NutrientInfoEntity(name: item.officialName, unit: item.unit, es: item.name_es, en: item.name_en, description_es: item.description_es, description_en: item.description_en, foods_es: item.foods_es, foods_en: item.foods_en)).toList();
+  List<NutrientInfoEntity> data = nutrientsInfoResponse.data.map((item) => NutrientInfoEntity(name: item.officialName, unit: item.unit, es: item.name_es, en: item.name_en, description_es: item.description_es, description_en: item.description_en, foods_es: item.foods_es, foods_en: item.foods_en, abbr: item.abbr)).toList();
   return NutrientsInfoEntity(id: MasterFilesType.nutrientsInfo.index, v: nutrientsInfoResponse.v, data: data);
 }
 
 NutrientsInfoMaster mapToNutrientsInfoMaster(NutrientsInfoEntity nutrientsInfoEntity) {
-  List<NutrientInfoMaster> nutrientsInfo = nutrientsInfoEntity.data.map((item) => NutrientInfoMaster(officialName: item.name, unit: item.unit, es: item.es, en: item.en, description_es: item.description_es, description_en: item.description_en, foods_es: item.foods_es, foods_en: item.foods_en)).toList();
+  List<NutrientInfoMaster> nutrientsInfo = nutrientsInfoEntity.data.map((item) => NutrientInfoMaster(officialName: item.name, unit: item.unit, es: item.es, en: item.en, description_es: item.description_es, description_en: item.description_en, foods_es: item.foods_es, foods_en: item.foods_en, abbr: item.abbr)).toList();
   return NutrientsInfoMaster(nutrientsInfo: nutrientsInfo);
 }
 

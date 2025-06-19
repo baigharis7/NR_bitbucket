@@ -64,54 +64,57 @@ class _RecipesTabsHolderState extends State<RecipesTabsHolder>
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: blocRecipe,
-      child: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            title: Text(
-              AppLocalizations.of(context)!.recipes,
-              style: const TextStyle(
-                fontSize: Dimens.fontSizeLarge,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
+      child: BlocConsumer<RecipeTabBloc, RecipeTabState>(
+        listener: (ctx, state) {
+          if (state.isLoading) {
+            LoadingScreen.instance().show(
+              context: ctx,
+              text: AppLocalizations.of(ctx)!.loading,
+            );
+          } else {
+            LoadingScreen.instance().hide();
+          }
+          if (!state.onError.isNull()) showErrorSnackBar(ctx, resolveError(context, state.onError!));
+        },
+        builder: (context, state) => Stack(
+            children: [
+              // Background image or gradient
+              Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/recipes_bg.png'), // Your image
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
-            ),
-            centerTitle: true,
-            // bottom: TabBar(
-            //   controller: _tabController,
-            //   // onTap: (index) => _manageTabChange(context),
-            //   labelColor: Colors.black,
-            //   indicatorColor: Colors.black,
-            //   tabs: [
-            //     Tab(text: AppLocalizations.of(context)!.discover.toUpperCase()),
-            //     Tab(text: AppLocalizations.of(context)!.my_recipes.toUpperCase()),
-            //   ],
-            // ),
-          ),
-          body: BlocConsumer<RecipeTabBloc, RecipeTabState>(
-            listener: (ctx, state) {
-              if (state.isLoading) {
-                LoadingScreen.instance().show(
-                  context: ctx,
-                  text: AppLocalizations.of(ctx)!.loading,
-                );
-              } else {
-                LoadingScreen.instance().hide();
-              }
-              if (!state.onError.isNull()) showErrorSnackBar(ctx, resolveError(context, state.onError!));
-            },
-            builder: (context, state) => Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0,), color: Colors.black,), child: Center(child: Text(AppLocalizations.of(context)!.coming_soon, style: const TextStyle(color: Colors.white),),)),
-            /*TabBarView(
-              controller: _tabController,
-              children: const [
-                DiscoverTab(),
-                RecipesTab(),
-              ],
-            ),*/
-          ),
-          bottomNavigationBar: const CustomBottomNaviBarWidget(
-              activePosition: Constants.RECIPES,),
+
+
+              Scaffold(
+                backgroundColor: Colors.transparent,
+                body: SafeArea(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: Dimens.heightSmall),
+                  Image.asset(
+                    'assets/images/logo_name_white.png',
+                    fit: BoxFit.cover,
+                    height: 106, width: 242,
+                  ),
+                  const SizedBox(height: Dimens.height70, width: double.infinity),
+                  Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin_60), child: Text(AppLocalizations.of(context)!.slow_cooking, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeXXLarge, color: Colors.white, letterSpacing: 0.2,),)),
+                ],)),
+                bottomNavigationBar: const CustomBottomNaviBarWidget(
+                  activePosition: Constants.RECIPES,),
+              )
+            ],
         ),
+        /*TabBarView(
+            controller: _tabController,
+            children: const [
+              DiscoverTab(),
+              RecipesTab(),
+            ],
+          ),*/
       ),
     );
   }

@@ -29,7 +29,7 @@ class WelcomeScreen extends StatelessWidget {
               margin:
                   const EdgeInsets.symmetric(vertical: Dimens.marginXXLarge),
               child: Text(
-                AppLocalizations.of(context)!.welcome,
+                AppLocalizations.of(context)!.welcome + '!',
                 style: const TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: Dimens.fontSizeXLarge,

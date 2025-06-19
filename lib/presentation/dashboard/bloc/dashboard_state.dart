@@ -30,6 +30,7 @@ class DashboardState {
   List<NutrientsModel>? micronutrients;
   List<NutrientsModel>? temporaryMicronutrients;
   List<NutrientsModel>? macronutrients;
+  List<NutrientsModel>? filteredNutrientsLess15RDA;
   int? userKcal;
   EnergyModel? energyModel;
   List<WaterEventMaster>? waterEvents;
@@ -62,6 +63,7 @@ class DashboardState {
     this.micronutrients,
     this.temporaryMicronutrients,
     this.macronutrients,
+    this.filteredNutrientsLess15RDA,
     this.userKcal,
     this.energyModel,
     this.waterEvents,
@@ -96,6 +98,7 @@ class DashboardState {
     List<NutrientsModel>? micronutrients,
     List<NutrientsModel>? temporaryMicronutrients,
     List<NutrientsModel>? macronutrients,
+    List<NutrientsModel>? filteredNutrientsLess15RDA,
     int? userKcal,
     EnergyModel? energyModel,
     List<WaterEventMaster>? waterEvents,
@@ -129,6 +132,7 @@ class DashboardState {
       micronutrients: micronutrients ?? this.micronutrients,
       temporaryMicronutrients: temporaryMicronutrients ?? this.temporaryMicronutrients,
       macronutrients: macronutrients ?? this.macronutrients,
+      filteredNutrientsLess15RDA: filteredNutrientsLess15RDA ?? this.filteredNutrientsLess15RDA,
       userKcal: userKcal ?? this.userKcal,
       energyModel: energyModel ?? this.energyModel,
       waterEvents: waterEvents ?? this.waterEvents,

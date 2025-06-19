@@ -243,6 +243,23 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               upperLimit: getMacroNutrientRda(macronutrient),
             ),
       ).toList();
+
+      final allMicronutrients = state.profile?.userRdas?.userRdas
+          .orEmpty()
+          .map((nutrient) => NutrientsModel(
+        quantityConsumed: getQuantityConsumedSoFar(nutrient.name),
+        nutrientInfoMaster: getNutrientInfo(nutrient.name),
+        fractionToFill: 0.0,
+        unit: getUnitForMicronutrient(nutrient.name),
+        rda: getNutrientRda(nutrient.name),
+        upperLimit: getNutrientUpperLimit(nutrient.name),
+      ),).toList();
+
+      state.filteredNutrientsLess15RDA = allMicronutrients.orEmpty().where((nutrient) {
+        double percentage = (nutrient.quantityConsumed / nutrient.rda) * 100;
+        return percentage <= 15 && nutrient.rda > 0;
+      }).toList();
+
       state.energyModel = EnergyModel(
         fractionToFill: getFractionToFillKcal(caloriesConsumed.orZero()),
         totalKcal: state.userKcal.orZero(),
