@@ -179,7 +179,7 @@ class _MicroNutrientsDetailScreenState
                       child: Column(children: [
                         ListTile(
                           contentPadding: EdgeInsets.zero,
-                          leading: Image.asset('assets/icon/deficiency_nutrients_icon.png', height: 40, width: 40),
+                          leading: Image.asset('assets/icon/apple_icon.png', height: 40, width: 40),
                           title: Text(AppLocalizations.of(context)!.micronutrientss, style: const TextStyle(
                               color: AppColors.peacockBlue, fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline
                           ),),

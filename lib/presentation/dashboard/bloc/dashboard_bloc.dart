@@ -244,6 +244,11 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
             ),
       ).toList();
 
+      final existingListsOfNutrients = {
+        ...state.micronutrients.orEmpty().map((e) => e.nutrientInfoMaster),
+        ...state.temporaryMicronutrients.orEmpty().map((e) => e.nutrientInfoMaster),
+      };
+
       final allMicronutrients = state.profile?.userRdas?.userRdas
           .orEmpty()
           .map((nutrient) => NutrientsModel(
@@ -257,7 +262,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
       state.filteredNutrientsLess15RDA = allMicronutrients.orEmpty().where((nutrient) {
         double percentage = (nutrient.quantityConsumed / nutrient.rda) * 100;
-        return percentage <= 15 && nutrient.rda > 0;
+        return percentage <= 15 && nutrient.rda > 0 && !existingListsOfNutrients.contains(nutrient.nutrientInfoMaster);
       }).toList();
 
       state.energyModel = EnergyModel(
