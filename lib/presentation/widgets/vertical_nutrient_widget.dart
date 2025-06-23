@@ -114,7 +114,7 @@ class _VerticalNutrientWidgetState extends State<VerticalNutrientWidget> {
               ),
             ),
           ),
-          Text(widget.nutrient.nutrientInfoMaster.abbr.toString().toUpperCase(), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: widget.titleColor ?? AppColors.peacockBlue, decoration: TextDecoration.underline, decorationStyle: TextDecorationStyle.solid, decorationThickness: 2,)),
+          Text(widget.nutrient.nutrientInfoMaster.abbr.toString(), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: widget.titleColor ?? AppColors.peacockBlue, decoration: TextDecoration.underline, decorationStyle: TextDecorationStyle.solid, decorationThickness: 2,)),
         ],
       ),
     );

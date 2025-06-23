@@ -29,7 +29,7 @@ class AnimatedNutrientProgressBarWidget extends StatelessWidget {
               width: progressWidth,
               height: height ?? Dimens.height15,
               decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(Dimens.borderXLarge)),
+                borderRadius: BorderRadius.all(Radius.circular(Dimens.border100)),
                 color: AppColors.ceramic,
               ),
             ),
@@ -40,7 +40,7 @@ class AnimatedNutrientProgressBarWidget extends StatelessWidget {
                   width: value,
                   height: height ?? Dimens.height15,
                   decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(Dimens.borderXLarge)),
+                    borderRadius: const BorderRadius.all(Radius.circular(Dimens.border100)),
                     color: color ?? AppColors.mountainMeadow,
                   ),),
             ),

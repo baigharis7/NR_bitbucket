@@ -52,6 +52,7 @@ class Dimens {
   static const fontSizeXXLarge = 24.0;
   static const fontSize28 = 28.0;
   static const fontSize34 = 34.0;
+  static const fontSize35 = 35.0;
 
   // Borders
   static const borderSmall = 1.0;
@@ -65,6 +66,7 @@ class Dimens {
   static const border50 = 50.0;
   static const border80 = 80.0;
   static const border90 = 90.0;
+  static const border100 = 100.0;
 
   // Heights
   static const heightXXSmall = 10.0;

@@ -57,10 +57,8 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text('${remaining.clamp(0, widget.energyModel!.totalKcal * 1).toInt()}',
-                                  style: const TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold)),
-                              Text(AppLocalizations.of(context)!.kcal_remaining,
-                                  style: const TextStyle(fontSize: 12, color: Colors.white70)),
-                              Text(AppLocalizations.of(context)!.from + ' ${widget.energyModel!.totalKcal}.',
+                                  style: const TextStyle(fontSize: Dimens.fontSize35, color: Colors.white, fontWeight: FontWeight.w400)),
+                              Text('kcal\n'+ AppLocalizations.of(context)!.from + ' ${widget.energyModel!.totalKcal} kcal.',
                                   style: const TextStyle(fontSize: Dimens.fontSizeSmall, color: Colors.white54)),
                             ],
                           ),
