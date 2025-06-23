@@ -38,9 +38,9 @@ class MicroNutrientsSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             child: Row(children: [
               if (micronutrients.isNotEmpty) NutrientsSection(nutrients: micronutrients.take((objectives?.length ?? 0) * 3).toList(), title: AppLocalizations.of(context)!.objectives, image: 'assets/images/goal_objectives.png'),
-              const SizedBox(width: Dimens.width18),
+              // const SizedBox(width: Dimens.width18),
               if (temporaryMicronutrients.isNotEmpty) NutrientsSection(nutrients: temporaryMicronutrients, titleColor: AppColors.redOxide, title: AppLocalizations.of(context)!.temporary_objectives, image: 'assets/images/hour_glass.png'),
-              const SizedBox(width: Dimens.width18),
+              // const SizedBox(width: Dimens.width18),
               if (filteredNutrientsLess15RDA.isNotEmpty) NutrientsSection(nutrients: filteredNutrientsLess15RDA.where((element) => element.nutrientInfoMaster.translateDescription(context).isNotEmptyOrNull()).toList(), titleColor: AppColors.tigerOrange, title: AppLocalizations.of(context)!.deficiency_micronutrients, image: 'assets/icon/deficiency_nutrients_icon.png'),
             ],),
           ),

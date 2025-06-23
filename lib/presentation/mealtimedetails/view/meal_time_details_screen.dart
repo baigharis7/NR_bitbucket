@@ -137,7 +137,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                               onTap: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: state.mealTime?.id).then((value) => bloc.add(InitialMealTimeDetailsEventState())),
                               leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
                               title: Text(
-                                AppLocalizations.of(context)!.add_more,
+                                AppLocalizations.of(context)!.add_food,
                                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline,),
                               ),
                             ),

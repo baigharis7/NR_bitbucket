@@ -116,7 +116,12 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
 
     on<RemoveFoodFromEventAction>((event, emit) {
       emit(state.copyWith(isLoading: true,));
-      state.foodsInEvent!.remove(event.foodInEvent);
+      // state.foodsInEvent!.remove(event.foodInEvent);
+
+      if (state.foodsInEvent!.map((food) => food.id).contains((event.foodInEvent).id)) {
+        final itemIndex = state.foodsInEvent!.indexOf(state.foodsInEvent!.firstWhere((food) => food.id == event.foodInEvent.id));
+        state.foodsInEvent!.remove(state.foodsInEvent![itemIndex]);
+      }
 
       emit(state.copyWith(isLoading: false, onError: null,));
     });
@@ -128,7 +133,8 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         state.foodsInEvent!.remove(state.foodsInEvent![itemIndex]);
         state.foodsInEvent!.add(event.foodInEvent);
       } else {
-        state.foodsInEvent!.add(event.foodInEvent);
+        state.foodsInEvent!.insert(0, event.foodInEvent);
+        // state.foodsInEvent!.add(event.foodInEvent);
       }
       emit(state.copyWith(isLoading: false, onError: null,));
     });

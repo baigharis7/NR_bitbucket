@@ -23,6 +23,7 @@ class AnimatedNutrientProgressBarWidget extends StatelessWidget {
       child: Column(children: [
         Stack(
           clipBehavior: Clip.hardEdge,
+          fit: StackFit.loose,
           alignment: Alignment.centerLeft,
           children: [
             Container(
