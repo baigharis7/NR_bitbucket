@@ -17,6 +17,7 @@ class WeeklyItemChart extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const SizedBox(height: Dimens.height12,),
         Text(
           weeklyNutrientItem.nutrientInfoMaster.translate(context),
           style: const TextStyle(
@@ -35,6 +36,7 @@ class WeeklyItemChart extends StatelessWidget {
               child: Stack(
                 children: [
                   Row(
+                     crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Container(
                       width: 1,
@@ -44,15 +46,35 @@ class WeeklyItemChart extends StatelessWidget {
                       width: MediaQuery.sizeOf(context).width - 100,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          ...DateTimeHelper()
-                              .getWeekDaysInitialList(context)
-                              .map(
-                                (item) => Container(
+                          ...weeklyNutrientItem.weeklyData.map((weekDayItem) {
+                            final nutrientConsumed = weekDayItem['nutrientConsumed'] as double;
+                            final nutrientRda = weeklyNutrientItem.rda ?? 0;
+                            final nutrientFraction = nutrientConsumed / nutrientRda;
+                            final heightPercent = 104 * nutrientFraction;
+                            final upperLimit = (weeklyNutrientItem.upperLimit ?? 0);
+                            final color = (nutrientConsumed < upperLimit * 0.35 && upperLimit > 0)
+                                ? AppColors.red
+                                : (nutrientConsumed > upperLimit * 0.35 &&
+                                nutrientConsumed < upperLimit * 0.75 && upperLimit > 0)
+                                ? AppColors.mustardYellow
+                                : AppColors.mountainMeadow;
+                            return Container(
                               width: 11,
-                              decoration: const BoxDecoration(color: AppColors.mustardYellow, borderRadius: BorderRadius.vertical(top: Radius.circular(Dimens.borderLarge))),
-                            ),
-                          ).toList(),
+                              height: heightPercent.toDouble(),
+                              decoration: BoxDecoration(color: color, borderRadius: const BorderRadius.vertical(top: Radius.circular(Dimens.borderLarge))),
+                            );
+                          }),
+                          // ...DateTimeHelper()
+                          //     .getWeekDaysInitialList(context)
+                          //     .map(
+                          //       (item) => Container(
+                          //     width: 11,
+                          //     height: 50,
+                          //     decoration: const BoxDecoration(color: AppColors.mustardYellow, borderRadius: BorderRadius.vertical(top: Radius.circular(Dimens.borderLarge))),
+                          //   ),
+                          // ).toList(),
                         ],
                       ),
                     ),

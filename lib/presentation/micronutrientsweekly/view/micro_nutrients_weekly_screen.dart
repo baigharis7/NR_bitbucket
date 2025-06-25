@@ -103,8 +103,8 @@ class _MicroNutrientsWeeklyScreenState extends State<MicroNutrientsWeeklyScreen>
                                 ),),
                                 // trailing: InkWell(onTap: () => Navigator.pushNamed(context, MicroNutrientsWeeklyScreen.routeName, arguments: state.micronutrientsWeekly), child: Image.asset('assets/images/nutrient_graph.png', height: 30, width: 30)),
                               ),
-                              const SizedBox(height: Dimens.height32),
-                              // ...state.micronutrientsWeekly.orEmpty().map((weeklyNutrientItem) => WeeklyItemChart(weeklyNutrientItem: weeklyNutrientItem,)),
+                              // const SizedBox(height: Dimens.height12),
+                              ...state.micronutrientsWeekly.orEmpty().map((weeklyNutrientItem) => WeeklyItemChart(weeklyNutrientItem: weeklyNutrientItem,)),
                               // WeeklyItemChart()
                               // WeeklyNutrientGraphic(
                               //   title: AppLocalizations.of(context)!.this_week,

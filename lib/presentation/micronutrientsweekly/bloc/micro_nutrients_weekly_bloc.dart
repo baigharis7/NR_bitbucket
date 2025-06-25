@@ -16,7 +16,7 @@ class MicroNutrientsWeeklyBloc extends Bloc<MicroNutrientsWeeklyEvent, MicroNutr
       state.copyWith(isLoading: true);
       state.micronutrientsWeekly = event.micronutrientsWeekly;
 
-      state.copyWith(isLoading: false);
+      emit(state.copyWith(isLoading: false));
     });
   }
 }

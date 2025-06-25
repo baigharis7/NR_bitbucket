@@ -113,8 +113,8 @@ class _FoodEventItemState extends State<FoodEventItem> {
   Widget build(BuildContext context) {
     FoodInEvent ingredient = FoodInEvent(
       id: widget.foodInEvent.id,
-      qty: 0,
-      unit: -1,
+      qty: widget.foodInEvent.qty,
+      unit: widget.foodInEvent.unit,
       conversionFactor: widget.foodInEvent.conversionFactor,
       cookingMethod: widget.foodInEvent.cookingMethod,
       usedOil: widget.foodInEvent.usedOil,
@@ -180,7 +180,14 @@ class _FoodEventItemState extends State<FoodEventItem> {
                       child: TextField(
                         textAlignVertical: TextAlignVertical.center,
                         keyboardType: TextInputType.number,
-                        controller: _quantityController,
+                        controller: TextEditingController.fromValue(
+                          TextEditingValue(
+                            text: ingredient.qty == 0 ? '' : ingredient.qty.toString(),
+                            selection: TextSelection.collapsed(
+                              offset: ingredient.qty == 0 ? 0 : ingredient.qty.toString().length,
+                            ),
+                          ),
+                        ),
                         decoration: const InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
@@ -212,14 +219,11 @@ class _FoodEventItemState extends State<FoodEventItem> {
                                 isExpanded: true,
                                 underline: Container(),
                                 icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
-                                value: _unitName,
-                                onChanged: (String? unit) {
-                                  // setState(() {
-                                  _unitName = unit!;
-                                  ingredient.unit = SimpleItemHelper()
-                                      .findSimpleItemId(units, unit);
+                                value: units.firstWhere((u) => u.id == ingredient.unit, orElse: () => units.first).name,
+                                onChanged: (String? unitName) {
+                                  final unitId = SimpleItemHelper().findSimpleItemId(units, unitName!);
+                                  ingredient.unit = unitId;
                                   widget.onUnitChange.call(ingredient);
-                                  // });
                                 },
                                 items: units
                                     .map<DropdownMenuItem<String>>(

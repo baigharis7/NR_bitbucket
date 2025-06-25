@@ -180,7 +180,7 @@ class _MicroNutrientsDetailScreenState
                         ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: Image.asset('assets/icon/apple_icon.png', height: 40, width: 40),
-                          title: Text(AppLocalizations.of(context)!.micronutrientss, style: const TextStyle(
+                          title: Text(AppLocalizations.of(context)!.other_micronutrientss, style: const TextStyle(
                               color: AppColors.yellowishGreen, fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline
                           ),),
                           trailing: InkWell(onTap: () => Navigator.pushNamed(context, MicroNutrientsWeeklyScreen.routeName, arguments: state.allMicronutrients), child: Image.asset('assets/images/nutrient_graph.png', height: 30, width: 30)),

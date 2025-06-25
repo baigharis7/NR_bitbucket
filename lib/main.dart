@@ -371,7 +371,6 @@ import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/bloc/w
 import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/view/weekly_dashboard_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/welcome/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:upgrader/upgrader.dart';
 import 'data/api/eventssync/events_sync_api.dart';
 import 'data/local/models/steps/steps_entity.dart';
 import 'data/repository/eventssync/events_synchronization_repository_impl.dart';
@@ -406,7 +405,6 @@ void main() async {
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
   // await AndroidAlarmManager.initialize();
-  await Upgrader.clearSavedSettings();
 
   initLocalStorage();
 
