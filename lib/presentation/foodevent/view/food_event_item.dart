@@ -281,7 +281,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                   Text(AppLocalizations.of(context)!.cooked, style: const TextStyle(fontSize: Dimens.fontSizeLarge, fontWeight: FontWeight.w400)),
                 ],
               ),
-              Container(
+              if (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED) Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                 height: Dimens.heightSmall - 15,
                 child: (widget.cookingMethodsInfoMaster.cookingMethodsInfo.orEmpty().isEmpty)

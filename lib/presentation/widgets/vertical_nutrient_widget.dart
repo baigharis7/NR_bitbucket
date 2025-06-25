@@ -53,6 +53,7 @@ class _VerticalNutrientWidgetState extends State<VerticalNutrientWidget> {
                 children: [
                   Stack(
                     alignment: Alignment.bottomCenter,
+                    clipBehavior: Clip.hardEdge,
                     children: [
                       Container(
                         width: 31,
@@ -82,19 +83,6 @@ class _VerticalNutrientWidgetState extends State<VerticalNutrientWidget> {
                       ),
                     ],
                   ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: [
-                  //     Text(
-                  //       '${(widget.nutrient.quantityConsumed)}',
-                  //       style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeXSmall, fontWeight: FontWeight.w600),
-                  //     ),
-                  //     Text(
-                  //       '${widget.nutrient.unit}',
-                  //       style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSize5, fontWeight: FontWeight.w600),
-                  //     ),
-                  //   ],
-                  // ),
                   if (selectedNutrient != null && infoOffset != null)
                     Positioned(
                       top: Dimens.zero,

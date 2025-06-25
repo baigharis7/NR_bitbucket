@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
@@ -42,6 +43,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
       state.profile = await getProfileInteractor.execute();
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       final foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
+      state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
       state.foodNames = foodNames;
       state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames.orEmpty().toList() ?? []);
 

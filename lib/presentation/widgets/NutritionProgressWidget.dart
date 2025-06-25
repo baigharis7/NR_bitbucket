@@ -5,6 +5,8 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/presentation/energy_balance_detail/view/energy_balance_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/dash_title_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/ingested_spent_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -39,6 +41,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              DashTitleWidget(onInfoClick: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: widget.energyModel),),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge, vertical: Dimens.marginLarge),
                 child: Row(

@@ -62,8 +62,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
       width: mediaQuerySize.width,
       color: const Color.fromARGB(148, 104, 96, 96),
       child: ConfirmationDialog(message: AppLocalizations.of(context)!.food_event_successfully_saved),
-    ),).then((value) =>
-        Navigator.pop(context),
+    ),).then((value) {}
     );
   }
 

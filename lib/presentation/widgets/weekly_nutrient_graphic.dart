@@ -40,7 +40,7 @@ class WeeklyNutrientGraphic extends StatelessWidget {
                   child: Row(
                     children: [
                       SizedBox(
-                        height: 120,
+                        height: 103,
                         child: Container(
                           margin: const EdgeInsets.only(
                               bottom: Dimens.marginXLarge,),

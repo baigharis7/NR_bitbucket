@@ -22,108 +22,16 @@ class EnergyBalanceDetailWidget extends StatefulWidget {
 class _EnergyBalanceDetailWidgetState extends State<EnergyBalanceDetailWidget> {
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Card( 
+      color: AppColors.floralWhite,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
       margin: const EdgeInsets.all(Dimens.marginSmall),
       child: Container(
         margin: const EdgeInsets.all(Dimens.marginLarge),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Container(
-            //   alignment: Alignment.centerLeft,
-            //   margin: const EdgeInsets.only(
-            //     left: Dimens.marginNormal,
-            //     top: Dimens.marginSmall,
-            //   ),
-            //   child: SizedBox(
-            //     child: Text(
-            //       AppLocalizations.of(context)!.energy_balance_title,
-            //       style: const TextStyle(
-            //         color: Colors.black, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium
-            //       ),
-            //     ),
-            //   ),
-            // ),
             const SizedBox(height: Dimens.heightXSmall,),
-            // Container(
-            //   margin: const EdgeInsets.symmetric(
-            //     horizontal: Dimens.marginSmall,
-            //     vertical: Dimens.marginXSmall,
-            //   ),
-            //   child: Stack(
-            //     children: [
-            //       FillHorizontalBar(
-            //         fillColor: (widget.energyModel?.fractionToFill.orZero() ?? 0) >= 1 ? AppColors.errorRed : AppColors.mountainMeadow,
-            //         height: 30,
-            //         backgroundBarColor: AppColors.cardGreen_200,
-            //         fractionToFill: widget.energyModel?.fractionToFill ?? 0.0,
-            //       ),
-            //       Container(
-            //         alignment: Alignment.center,
-            //         margin: const EdgeInsets.only(top: Dimens.marginXSmall),
-            //         child: Text(
-            //           '${(widget.energyModel?.rawKcalTaken ?? 0) - (widget.energyModel?.spentKcal ?? 0)} kcal',
-            //           style: const TextStyle(color: Colors.white),
-            //         ),
-            //       )
-            //     ],
-            //   ),
-            // ),
-            // Container(
-            //   margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal, right: Dimens.marginNormal,),
-            //   alignment: Alignment.centerRight,
-            //   child: Text('${(widget.energyModel?.totalKcal ?? 0)} kcal'),
-            // ),
-            // const SizedBox(height: Dimens.heightSmall,),
-            // Row(
-            //   children: [
-            //     Expanded(child: Text(AppLocalizations.of(context)!.gross_kcal, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium))),
-            //     Text('${widget.energyModel?.rawKcalTaken} Kcal', style: const TextStyle(color: AppColors.mountainMeadow, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium)),
-            //   ],
-            // ),
-            // Container(
-            //   alignment: Alignment.centerLeft,
-            //   margin: const EdgeInsets.only(
-            //     left: Dimens.marginNormal,
-            //     top: Dimens.marginSmall,
-            //   ),
-            //   child: SizedBox(
-            //     child: Text(
-            //       AppLocalizations.of(context)!.gross_kcal,
-            //       style: const TextStyle(
-            //           color: Colors.black, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            // const SizedBox(height: Dimens.heightXSmall,),
-            // Container(
-            //   margin: const EdgeInsets.symmetric(
-            //     horizontal: Dimens.marginSmall,
-            //     vertical: Dimens.marginXSmall,
-            //   ),
-            //   child: Stack(
-            //     children: [
-            //       FillHorizontalBar(
-            //         height: 30,
-            //         backgroundBarColor: AppColors.cardGreen_200,
-            //         fractionToFill: (widget.energyModel!.rawKcalTaken.orZero() / widget.energyModel!.totalKcal) > 1 ? 1.0 : (widget.energyModel!.rawKcalTaken.orZero() / widget.energyModel!.totalKcal),
-            //       ),
-            //       Container(
-            //         alignment: Alignment.center,
-            //         margin: const EdgeInsets.only(top: Dimens.marginXSmall),
-            //         child: Text(
-            //           '${(widget.energyModel?.rawKcalTaken ?? 0)} kcal',
-            //           style: const TextStyle(color: Colors.white),
-            //         ),
-            //       )
-            //     ],
-            //   ),
-            // ),
-            // Container(
-            //   margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal, right: Dimens.marginNormal,),
-            //   alignment: Alignment.centerRight,
-            //   child: Text('${(widget.energyModel?.totalKcal ?? 0)} kcal'),
-            // ),
             if (!widget.weeklyEnergyWidget.isNull()) widget.weeklyEnergyWidget ?? Container(),
             const SizedBox(height: Dimens.heightSmall,),
             Container(alignment: Alignment.centerLeft, child: Text(AppLocalizations.of(context)!.kcal_ingested, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium))),

@@ -25,7 +25,8 @@ class WeeklyEnergyGraphWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     Color color = AppColors.mountainMeadow;
     return Card(
-      color: AppColors.gray,
+      color: AppColors.floralWhite,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
       elevation: 10,
       child: Container(
         margin: const EdgeInsets.symmetric(

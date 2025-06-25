@@ -20,8 +20,7 @@ class NutritionUtils {
     final buffer = StringBuffer();
 
     for (int i = 0; i < ingredients.orEmpty().length; i++) {
-      // final foodName = foodNames.orEmpty().firstWhere((f) => f.id == ingredients![i].id);
-      var foodName = FoodItemMaster();
+      var foodName = FoodItemMaster.empty();
 
       foodItemMasterLoop: for (FoodItemMaster food in foodNames.orEmpty()) {
         if (food.id == ingredients![i].id) {
@@ -37,18 +36,27 @@ class NutritionUtils {
         buffer.write(' - ');
       }
     }
-    // final item = foodNames.orEmpty().firstWhere((foodItemMaster) => foodId == foodItemMaster.id, orElse: FoodItemMaster.empty);
-    // return item.translate(context);
     return buffer.toString();
   }
 
-  static UnitInfoMaster findUnitName(int unitId, List<UnitInfoMaster> unitsInfoMaster) {
-    final unitInfo = unitsInfoMaster.firstWhere((unitInfo) => unitInfo.id == unitId, orElse: () => UnitInfoMaster.empty(),);
-    if (unitInfo.id == 0) {
-      return UnitInfoMaster.empty();
-    } else {
-      return unitInfo;
+  static String findUnitName(List<UnitInfoMaster>? unitsInfoMaster, List<FoodInfo>? ingredients, BuildContext? context) {
+    final buffer = StringBuffer();
+
+    for (int i = 0; i < ingredients.orEmpty().length; i++) {
+      var unitName = UnitInfoMaster.empty();
+      foodIUnitInfoMasterLoop: for (UnitInfoMaster unitInfoMaster in unitsInfoMaster.orEmpty()) {
+        if (unitInfoMaster.id == ingredients![i].eventInfo?.unit) {
+          unitName = unitInfoMaster;
+          break foodIUnitInfoMasterLoop;
+        }
+      }
+      buffer.write(unitName.translate(context!));
+      // Add separator only if not the last item
+      if (i < ingredients.orEmpty().length - 1) {
+        buffer.write(' - ');
+      }
     }
+    return buffer.toString();
   }
 
 
