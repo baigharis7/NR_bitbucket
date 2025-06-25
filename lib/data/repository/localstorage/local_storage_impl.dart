@@ -743,11 +743,12 @@ class LocalStorageImpl extends LocalStorageRepository {
 
   Future<bool> _clearBox(Future<Box> box) async {
     // Un poco fulera esta implemetación, si no funciona bien hacerlo bien.
-    await box.then((box) {
+    bool res = false;
+    res = await box.then((box) {
       box.clear();
-      return true;
+      return true ;
     });
-    return false;
+    return res;
   }
 
   @override
