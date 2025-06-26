@@ -11,6 +11,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrient_row.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_border_box.dart';
 import '../../../domain/models/favorites/food/meal_time.dart';
+import '../../../domain/models/foodevents/food_arguments_model.dart';
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
@@ -54,9 +55,8 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
       if (ModalRoute.of(context)?.settings.arguments != null) {
         var infoReceived = ModalRoute.of(context)?.settings.arguments;
         if (infoReceived != null) {
-          if (infoReceived is MealTime) {
-            final mealTime = infoReceived;
-            bloc.add(UpdateMealTimeDetailsEventState(mealTime: mealTime));
+          if (infoReceived is FoodArgumentsModel) {
+            bloc.add(UpdateFoodArgumentsModelEventState(foodArgumentsModel: infoReceived));
           }
         }
       }
@@ -134,7 +134,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                           Container(
                             margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                             child: ListTile(
-                              onTap: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: state.mealTime?.id).then((value) => bloc.add(InitialMealTimeDetailsEventState())),
+                              onTap: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: state.mealTime!, selectedDateTime: state.selectedDateTime!)).then((value) => bloc.add(InitialMealTimeDetailsEventState())),
                               leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
                               title: Text(
                                 AppLocalizations.of(context)!.add_food,

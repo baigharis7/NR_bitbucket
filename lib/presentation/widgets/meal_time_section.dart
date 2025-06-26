@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import '../../domain/models/favorites/food/meal_time.dart';
@@ -12,13 +13,14 @@ class MealTimeSection extends StatelessWidget {
   final List<FoodEventComplete> foodEvents;
   final int totalKcal;
   final Function? then;
-  const MealTimeSection({super.key, required this.foodEvents, required this.totalKcal, this.then,});
+  final DateTime selectedDateTime;
+  const MealTimeSection({super.key, required this.foodEvents, required this.totalKcal, this.then, required this.selectedDateTime});
 
   @override
   Widget build(BuildContext context) {
     return Column(children: [
       DashTitleWidget(title: AppLocalizations.of(context)!.feeding),
-      ...MealTime.getAllMealTimes().map((meal) => MealTimeWidget(name: meal.name.orEmpty(), svg: 'assets/images/meal_time_${meal.id.orZero()}.png', onItemClick: () => Navigator.pushNamed(context, MealTimeDetailScreen.routeName, arguments: meal).then((value) => then?.call()), onClick: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: meal.id).then((value) => then?.call()), desc: getFoodNames(foodEvents, meal.id) + ' / $totalKcal kcal.',)),
+      ...MealTime.getAllMealTimes().map((meal) => MealTimeWidget(name: meal.name.orEmpty(), svg: 'assets/images/meal_time_${meal.id.orZero()}.png', onItemClick: () => Navigator.pushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: meal, selectedDateTime: selectedDateTime)).then((value) => then?.call()), onClick: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: meal, selectedDateTime: selectedDateTime)).then((value) => then?.call()), desc: getFoodNames(foodEvents, meal.id) + ' / $totalKcal kcal.',)),
     ],);
   }
 

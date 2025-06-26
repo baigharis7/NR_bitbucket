@@ -13,7 +13,7 @@ class WeekCalendarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final weekDates = DateTimeHelper.getCurrentWeekDates();
+    final weekDates = DateTimeHelper.getWeekDays(dateTime: selectedDateTime);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall),

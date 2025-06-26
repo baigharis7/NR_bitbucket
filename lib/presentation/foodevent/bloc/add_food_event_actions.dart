@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 
 import '../../../domain/models/foodevents/food_event_complete.dart';
@@ -88,6 +89,12 @@ class AddFoodNameEventAction extends AddFoodEventActions {
   AddFoodNameEventAction({required this.foodName});
 }
 
+class AddFoodArgumentModelEventAction extends AddFoodEventActions {
+  FoodArgumentsModel foodArgumentsModel;
+
+  AddFoodArgumentModelEventAction({required this.foodArgumentsModel});
+}
+
 class AddFoodMealTypeEventAction extends AddFoodEventActions {
   int mealType;
 
@@ -155,4 +162,10 @@ class UpdateDaysOfWeekEventAction extends AddFoodEventActions {
   final int day;
 
   UpdateDaysOfWeekEventAction({required this.day});
+}
+
+class UpdateEventDateEventAction extends AddFoodEventActions {
+  final DateTime dateTime;
+
+  UpdateEventDateEventAction({required this.dateTime});
 }

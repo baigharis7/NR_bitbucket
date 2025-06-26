@@ -636,6 +636,7 @@ void main() async {
     uploadWaterEventInteractor: uploadWaterEventInteractor,
     saveWaterEventInteractor: saveWaterEventInteractor,
     getFoodEventsOfTodayInteractor: getFoodEventsOfTodayInteractor,
+    getWaterEventsTodayInteractor: getWaterEventsTodayInteractor,
   );
 
   final forgottenPasswordBloc = ForgottenPasswordBloc(loginRepository: loginRepository);

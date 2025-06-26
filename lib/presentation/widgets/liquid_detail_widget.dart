@@ -66,9 +66,10 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
                       alignment: Alignment.centerRight,
                       height: 150,
                       child: FillVerticalBar(
-                        width: 15,
+                        width: 12,
                         fractionToFill: widget.fractionToFill,
                         barColor: Colors.blue,
+                        backgroundColor: Colors.grey[300],
                       ),
                     ),
                   ),

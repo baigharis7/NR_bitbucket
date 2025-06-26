@@ -180,6 +180,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                       child: TextField(
                         textAlignVertical: TextAlignVertical.center,
                         keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.search,
                         controller: TextEditingController.fromValue(
                           TextEditingValue(
                             text: ingredient.qty == 0 ? '' : ingredient.qty.toString(),

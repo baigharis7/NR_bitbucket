@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_mas
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 
+import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
 
 class AddFoodEventState {

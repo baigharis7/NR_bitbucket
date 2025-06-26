@@ -51,37 +51,37 @@ class _VerticalNutrientWidgetState extends State<VerticalNutrientWidget> {
                 alignment: Alignment.center,
                 clipBehavior: Clip.none,
                 children: [
-                  Stack(
-                    alignment: Alignment.bottomCenter,
+                  Container(
+                    width: 31,
+                    height: 84,
                     clipBehavior: Clip.hardEdge,
-                    children: [
-                      Container(
-                        width: 31,
-                        height: 84,
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          color: AppColors.black,
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      color: AppColors.black,
+                    ),
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        TweenAnimationBuilder<double>(
+                          tween: Tween<double>(begin: 0, end: widget.nutrient.quantityConsumed),
+                          duration: const Duration(seconds: 5),
+                          builder: (context, value, child) {
+                            return Container(
+                              width: 30,
+                              height: (widget.nutrient.quantityConsumed / widget.nutrient.rda) * 84,
+                              // alignment: Alignment.bottomCenter,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(colors: colors, begin: Alignment.bottomCenter, end: Alignment.topCenter,),
+                                // gradient: LinearGradient(colors: [AppColors.algaeGreen, AppColors.mediumGreen], begin: Alignment.bottomCenter, end: Alignment.topCenter,),
+                                // gradient: LinearGradient(colors: [AppColors.rose, AppColors.persianRed], begin: Alignment.bottomCenter, end: Alignment.topCenter,),
+                                // color: AppColors.peacockBlue,
+                                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                              ),
+                            );
+                          },
                         ),
-                      ),
-                      TweenAnimationBuilder<double>(
-                        tween: Tween<double>(begin: 0, end: widget.nutrient.quantityConsumed),
-                        duration: const Duration(seconds: 5),
-                        builder: (context, value, child) {
-                          return Container(
-                            width: 31,
-                            height: (widget.nutrient.quantityConsumed / widget.nutrient.rda) * 84,
-                            // alignment: Alignment.bottomCenter,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(colors: colors, begin: Alignment.bottomCenter, end: Alignment.topCenter,),
-                              // gradient: LinearGradient(colors: [AppColors.algaeGreen, AppColors.mediumGreen], begin: Alignment.bottomCenter, end: Alignment.topCenter,),
-                              // gradient: LinearGradient(colors: [AppColors.rose, AppColors.persianRed], begin: Alignment.bottomCenter, end: Alignment.topCenter,),
-                              // color: AppColors.peacockBlue,
-                              borderRadius: const BorderRadius.all(Radius.circular(10)),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   if (selectedNutrient != null && infoOffset != null)
                     Positioned(

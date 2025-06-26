@@ -8,73 +8,77 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dashboard_calendar_widget.dart';
 
 class DatePickerBar extends StatefulWidget {
-  const DatePickerBar({super.key});
+  final DateTime? selectedDateTime;
+  final Function(DateTime) onChangeDate;
+  const DatePickerBar({super.key, this.selectedDateTime, required this.onChangeDate});
 
   @override
   _DatePickerBarState createState() => _DatePickerBarState();
 }
 
 class _DatePickerBarState extends State<DatePickerBar> {
-  DateTime selectedDate = DateTime.now();
+  DateTime todayDate = DateTime.now();
 
 
+  // Future<void> _showCalender() async {
+  //   String currentLanguage = Localizations.localeOf(context).languageCode;
+  //   await showDialog(context: context, builder: (context) => SimpleDialog(alignment: Alignment.topCenter,
+  //     insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding5Large +5),
+  //     contentPadding: EdgeInsets.zero,
+  //     children: [
+  //       DashboardCalendarWidget(currentLanguage: currentLanguage, focused: selectedDate, callGetAllEvents: (day) => [], selectedDateForEventsLoading: (date) {
+  //         selectedDate = date;
+  //         setState(() {
+  //
+  //         });
+  //         // bloc.add(InitializeState(dateTime: date, onFinish: () => Navigator.pop(context)));
+  //       },),
+  //     ],
+  //   ));
+  // }
 
-  Future<void> _showCalender() async {
-    String currentLanguage = Localizations.localeOf(context).languageCode;
-    await showDialog(context: context, builder: (context) => SimpleDialog(alignment: Alignment.topCenter,
-      insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding5Large +5),
-      contentPadding: EdgeInsets.zero,
-      children: [
-        DashboardCalendarWidget(currentLanguage: currentLanguage, focused: selectedDate, callGetAllEvents: (day) => [], selectedDateForEventsLoading: (date) {
-          selectedDate = date;
-          setState(() {
-
-          });
-          // bloc.add(InitializeState(dateTime: date, onFinish: () => Navigator.pop(context)));
-        },),
-      ],
-    ));
-  }
-
-  void _pickDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
-    );
-
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
+  // void _pickDate() async {
+  //   final DateTime? picked = await showDatePicker(
+  //     context: context,
+  //     initialDate: selectedDate,
+  //     firstDate: DateTime(2000),
+  //     lastDate: DateTime.now(),
+  //   );
+  //
+  //   if (picked != null && picked != selectedDate) {
+  //     setState(() {
+  //       selectedDate = picked;
+  //     });
+  //   }
+  // }
 
   void _goToPreviousDay() {
-    setState(() {
-      selectedDate = selectedDate.subtract(Duration(days: 1));
-    });
+    // setState(() {
+    //   selectedDate = selectedDate.subtract(Duration(days: 1));
+      widget.onChangeDate.call(widget.selectedDateTime!.subtract(const Duration(days: 1)));
+    // });
   }
 
   void _goToNextDay() {
     if (!isToday) {
-      setState(() {
-        selectedDate = selectedDate.add(Duration(days: 1));
-      });
+      // setState(() {
+        // selectedDate = selectedDate.add(Duration(days: 1));
+        widget.onChangeDate.call(widget.selectedDateTime!.add(const Duration(days: 1)));
+      // });
     }
   }
 
   bool get isToday {
     final now = DateTime.now();
-    return selectedDate.year == now.year &&
-        selectedDate.month == now.month &&
-        selectedDate.day == now.day;
+    return widget.selectedDateTime?.year == now.year &&
+        widget.selectedDateTime?.month == now.month &&
+        widget.selectedDateTime?.day == now.day;
   }
+
 
   @override
   Widget build(BuildContext context) {
-    final displayDate = isToday ? AppLocalizations.of(context)!.today : DateFormat('dd MMM yyyy').format(selectedDate);
+    final displayDate = isToday ? AppLocalizations.of(context)!.today : DateFormat('dd MMM yyyy').format(widget.selectedDateTime ?? todayDate);
 
     return Container(
       height: Dimens.height34,
@@ -116,7 +120,7 @@ class _DatePickerBarState extends State<DatePickerBar> {
                     ),
                   ),
                   InkWell(
-                    onTap: _pickDate,
+                    onTap: () {},
                     child: SvgPicture.asset('assets/svg/calendar.svg', color: Colors.black, width: 28, height: 28,),
                   ),
                   const SizedBox(width: Dimens.width12),

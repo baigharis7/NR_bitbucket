@@ -206,6 +206,19 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: false));
     },);
 
+    on<AddFoodArgumentModelEventAction>((event, emit) {
+      emit(state.copyWith(isLoading: true,));
+      state.mealType = event.foodArgumentsModel.mealTime.id;
+      state.eventDate = event.foodArgumentsModel.selectedDateTime.millisecondsSinceEpoch;
+      emit(state.copyWith(isLoading: false,));
+    },);
+
+    on<UpdateEventDateEventAction>((event, emit) {
+      emit(state.copyWith(isLoading: true,));
+      state.eventDate = event.dateTime.millisecondsSinceEpoch;
+      emit(state.copyWith(isLoading: false,));
+    },);
+
     on<AddFoodMealTypeEventAction>((event, emit) {
       state.mealType = event.mealType;
       emit(state.copyWith(isLoading: false, onError: null,));
@@ -287,11 +300,11 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
             event.onFinish.call();
           } catch (error) {
             state.onError = ErrorTypes.locallySavingFoodEventError;
-            emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+            emit(state.copyWith(isLoading: false,));
           }
         } else {
           state.onError = ErrorTypes.uploadingFoodEventError;
-          emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+          emit(state.copyWith(isLoading: false,));
         }
       } catch (error) {
         state.onError = ErrorTypes.uploadingFoodEventError;
@@ -392,14 +405,14 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       if (state.foodsFromFavorite?.isRoutine == true && state.foodsFromFavorite?.daysOfWeek?.isNotEmpty == true) {
         final foodEventRoutine = mapToFoodRoutineEventFromFoodFavorite(state.foodsFromFavorite!);
         foodEventRoutine.userId = getUserIdInteractor.execute();
-        foodEventRoutine.eventId = DateTime.now().millisecondsSinceEpoch;
-        foodEventRoutine.eventDate = DateTime.now().millisecondsSinceEpoch;
+        foodEventRoutine.eventId = state.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+        foodEventRoutine.eventDate = state.eventDate ?? DateTime.now().millisecondsSinceEpoch;
         add(FinishAddFoodRoutineEventAction(foodRoutineEvent: foodEventRoutine, onFinish: event.onFinish));
       } else {
         final foodEventSimple = mapToFoodEventSimpleFromFoodFavorite(state.foodsFromFavorite!);
         foodEventSimple.userId = getUserIdInteractor.execute();
-        foodEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
-        foodEventSimple.eventDate = DateTime.now().millisecondsSinceEpoch;
+        foodEventSimple.eventId = state.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+        foodEventSimple.eventDate = state.eventDate ?? DateTime.now().millisecondsSinceEpoch;
         add(FinishAddFoodEventAction(foodEventSimple: foodEventSimple, onFinish: event.onFinish));
       }
     },);
@@ -506,7 +519,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     state.foodsInEvent?.clear();
     state.foodName = '';
     state.comment = null;
-    state.eventDate = null;
+    // state.eventDate = null;
     state.eventId = null;
     state.isEdit = false;
     state.isCreateDish = null;

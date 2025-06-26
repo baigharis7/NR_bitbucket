@@ -84,10 +84,20 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
         return percentage <= 15;
       }).toList();
 
+      state.filteredNutrientsLess15RDAWeekly = state.filteredNutrientsLess15RDA.orEmpty()
+          .map(
+            (micronutrient) => getDataByWeekly(micronutrient.nutrientInfoMaster.officialName),
+      ).toList();
+
       state.allMicronutrients = state.allMicronutrients = state.allMicronutrients.orEmpty().where((nutrient) {
         double percentage = (nutrient.quantityConsumed / nutrient.rda) * 100;
         return percentage > 15;
       }).toList();
+
+      state.allMicronutrientsWeekly = state.allMicronutrients.orEmpty()
+          .map(
+            (micronutrient) => getDataByWeekly(micronutrient.nutrientInfoMaster.officialName),
+      ).toList();
 
       emit(state.copyWith(isLoading: false));
     },);

@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
@@ -87,6 +88,7 @@ class _DashboardScreen extends State<DashboardScreen>
     bloc = BlocProvider.of<DashboardBloc>(context);
     bloc.state.isShowDialog = false;
     bloc.add(InitializeState());
+    selectedDateTime = DateTime.now();
 
 
     _controller = AnimationController(duration: Duration(milliseconds: 250), vsync: this);
@@ -123,7 +125,7 @@ class _DashboardScreen extends State<DashboardScreen>
 
   List<Map<String, dynamic>> getMenuItems(BuildContext context) {
     final List<Map<String, dynamic>> menuItems = [
-      ...MealTime.getAllMealTimes().map((e) => {'label': e.name, 'id': e.id, 'icon': 'assets/images/meal_time_${e.id.orZero()}.png', 'onTap': () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: e.id)}),
+      ...MealTime.getAllMealTimes().map((e) => {'label': e.name, 'id': e.id, 'icon': 'assets/images/meal_time_${e.id.orZero()}.png', 'onTap': () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: e, selectedDateTime: selectedDateTime ?? DateTime.now()))}),
       // {'label': 'Actividad física', 'icon': Icons.fitness_center},
       {'label': AppLocalizations.of(context)!.faeces_urine, 'icon': 'assets/images/feces_urine.png', 'onTap': () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName)},
       {'label': AppLocalizations.of(context)!.supplements, 'icon': 'assets/images/supplement.png', 'onTap': () {}},
@@ -241,7 +243,8 @@ class _DashboardScreen extends State<DashboardScreen>
                     children: [
                       DashboardCalendarWidget(currentLanguage: currentLanguage, focused: selectedDateTime, callGetAllEvents: (day) => bloc.getEventsForDay(day), selectedDateForEventsLoading: (date) {
                         selectedDateTime = date;
-                        bloc.add(InitializeState(dateTime: date, onFinish: () => Navigator.pop(context)));
+                        Navigator.pop(context);
+                        bloc.add(InitializeState(dateTime: date, onFinish: () {}));
                       },),
                     ],
                   ),), icon: SvgPicture.asset('assets/svg/calendar.svg',),),
@@ -322,8 +325,9 @@ class _DashboardScreen extends State<DashboardScreen>
                           consumedGlasses: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty()) ~/ 0.25,
                           onInfoClick: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                           onAddWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () {})),
+                          onRemoveWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () {})),
                         ),
-                        MealTimeSection(foodEvents: state.foodEvents.orEmpty(), totalKcal: state.userKcal.orZero(), then: () => bloc.add(InitializeState())),
+                        MealTimeSection(foodEvents: state.foodEvents.orEmpty(), totalKcal: state.userKcal.orZero(), selectedDateTime: selectedDateTime!, then: () => bloc.add(InitializeState(dateTime: selectedDateTime))),
                         // WeeklyRDANutrientsDashboardWidget(
                         //   title: AppLocalizations.of(context)!.weekly_nutrients,
                         //   nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,

@@ -12,6 +12,8 @@ class MicroNutrientsDetailState {
   List<FoodEventComplete>? foodEvents;
   List<NutrientsModel>? allMicronutrients;
   List<NutrientsModel>? filteredNutrientsLess15RDA;
+  List<NutrientsWeeklyModel>? filteredNutrientsLess15RDAWeekly;
+  List<NutrientsWeeklyModel>? allMicronutrientsWeekly;
 
   MicroNutrientsDetailState({
     required this.isLoading,
@@ -25,6 +27,8 @@ class MicroNutrientsDetailState {
     this.foodEvents,
     this.allMicronutrients,
     this.filteredNutrientsLess15RDA,
+    this.filteredNutrientsLess15RDAWeekly,
+    this.allMicronutrientsWeekly,
   });
 
   MicroNutrientsDetailState copyWith({
@@ -39,6 +43,8 @@ class MicroNutrientsDetailState {
     List<FoodEventComplete>? foodEvents,
     List<NutrientsModel>? allMicronutrients,
     List<NutrientsModel>? filteredNutrientsLess15RDA,
+    List<NutrientsWeeklyModel>? filteredNutrientsLess15RDAWeekly,
+    List<NutrientsWeeklyModel>? allMicronutrientsWeekly,
   }) {
     return MicroNutrientsDetailState(
       isLoading: isLoading,
@@ -52,6 +58,8 @@ class MicroNutrientsDetailState {
       foodEvents: foodEvents ?? this.foodEvents,
       allMicronutrients:  allMicronutrients ?? this.allMicronutrients,
       filteredNutrientsLess15RDA: filteredNutrientsLess15RDA ?? this.filteredNutrientsLess15RDA,
+      filteredNutrientsLess15RDAWeekly: filteredNutrientsLess15RDAWeekly ?? this.filteredNutrientsLess15RDAWeekly,
+      allMicronutrientsWeekly: allMicronutrientsWeekly ?? this.allMicronutrientsWeekly,
     );
   }
 }

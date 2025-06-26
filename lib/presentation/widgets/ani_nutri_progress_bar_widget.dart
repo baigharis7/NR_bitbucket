@@ -21,30 +21,26 @@ class AnimatedNutrientProgressBarWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: Dimens.marginXSmall),
       child: Column(children: [
-        Stack(
-          clipBehavior: Clip.hardEdge,
+        Container(
+          width: progressWidth,
+          height: height ?? Dimens.height15,
           alignment: Alignment.centerLeft,
-          children: [
-            Container(
-              width: progressWidth,
+          clipBehavior: Clip.hardEdge,
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(Dimens.border100)),
+            color: AppColors.ceramic,
+          ),
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: progressFromPercent),
+            duration: const Duration(milliseconds: 500),
+            builder: (context, value, child) => Container(
+              width: value,
               height: height ?? Dimens.height15,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(Dimens.border100)),
-                color: AppColors.ceramic,
-              ),
-            ),
-            TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0, end: progressFromPercent),
-                duration: const Duration(seconds: 4),
-                builder: (context, value, child) => Container(
-                  width: value,
-                  height: height ?? Dimens.height15,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(Dimens.border100)),
-                    color: color ?? AppColors.mountainMeadow,
-                  ),),
-            ),
-          ],
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(Dimens.border100)),
+                color: color ?? AppColors.mountainMeadow,
+              ),),
+          ),
         ),
         if (title.isNotNull()) Container(
           margin: const EdgeInsets.symmetric(vertical: Dimens.marginXSmall),

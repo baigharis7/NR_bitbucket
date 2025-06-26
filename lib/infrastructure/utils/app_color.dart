@@ -54,4 +54,5 @@ class AppColors {
   static const tigerOrange = Color(0xFFB88A3E);
   static const greenishYellow = Color(0xFF5A6E00);
   static const greyChateau = Color(0xFFABA6A6);
+  static const davyGrey = Color(0xFF5C5C5C);
 }

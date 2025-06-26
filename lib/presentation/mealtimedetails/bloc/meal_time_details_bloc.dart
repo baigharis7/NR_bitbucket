@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
@@ -37,7 +38,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
 }) : super(MealTimeDetailsState(isLoading: false)) {
     on<InitialMealTimeDetailsEventState>((event, emit) async {
       emit(state.copyWith(isLoading: true));
-      final a = await getFoodEventsOfTodayInteractor.execute();
+      final a = await getFoodEventsOfTodayInteractor.execute(dateTime: event.dateTime);
       state.foodEvents = a;
       state.foodEvents = state.foodEvents.orEmpty().where((foodEvent) => foodEvent.mealType == state.mealTime?.id.orZero()).toList();
       state.profile = await getProfileInteractor.execute();
@@ -76,10 +77,11 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
       emit(state.copyWith(isLoading: false));
     });
 
-    on<UpdateMealTimeDetailsEventState>((event, emit) {
+    on<UpdateFoodArgumentsModelEventState>((event, emit) {
       emit(state.copyWith(isLoading: true));
-      state.mealTime = event.mealTime;
-
+      state.mealTime = event.foodArgumentsModel.mealTime;
+      state.selectedDateTime = event.foodArgumentsModel.selectedDateTime;
+      add(InitialMealTimeDetailsEventState(dateTime: state.selectedDateTime));
       emit(state.copyWith(isLoading: false));
     });
 

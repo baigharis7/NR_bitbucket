@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
@@ -28,6 +29,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.dart';
 
 import '../../../domain/models/favorites/food/meal_time.dart';
+import '../../../domain/models/foodevents/food_arguments_model.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../../infrastructure/helpers/remove_diac.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
@@ -114,8 +116,8 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
           }
           else if (infoReceived is FoodEventComplete) {
             bloc.add(AddFoodEventFromDetailNavigation(infoReceived));
-          } else if (infoReceived is int) {
-            bloc.add(AddFoodMealTypeEventAction(mealType: infoReceived));
+          } else if (infoReceived is FoodArgumentsModel) {
+            bloc.add(AddFoodArgumentModelEventAction(foodArgumentsModel: infoReceived));
           }
         }
       }
@@ -179,7 +181,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                     // child: (state.mealType ?? -1) <= -1 ? MealTypeSelectionWidget(onSaveMealType: (mealType) => bloc.add(AddFoodMealTypeEventAction(mealType: mealType))) : Column(
                     child: Column(
                       children: [
-                        DatePickerBar(),
+                        DatePickerBar(selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.eventDate), onChangeDate: (dateTime) {
+                          bloc.add(UpdateEventDateEventAction(dateTime: dateTime));
+                        },),
                         const SizedBox(height: Dimens.height12),
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),

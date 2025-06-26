@@ -216,6 +216,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               upperLimit: getNutrientUpperLimit(micronutrient),
             ),
       ).toList();
+      state.micronutrients?.sort((a, b) => b.rda.compareTo(a.rda),);
 
       state.temporaryMicronutrients = state.profile?.temporaryMicronutrients.orEmpty()
           .map(
@@ -229,8 +230,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               upperLimit: getNutrientUpperLimit(micronutrient),
             ),
       ).toList();
+      state.temporaryMicronutrients?.sort((a, b) => b.rda.compareTo(a.rda),);
 
-      // state.micronutrients?.sort((a, b) => b.fractionToFill.compareTo(a.fractionToFill),);
       state.macronutrients = ['proteinSci', 'carbsAvailable', 'fatTotal']
           .map(
             (macronutrient) =>
@@ -264,6 +265,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         double percentage = (nutrient.quantityConsumed / nutrient.rda) * 100;
         return percentage <= 15 && nutrient.rda > 0 && !existingListsOfNutrients.contains(nutrient.nutrientInfoMaster);
       }).toList();
+      state.filteredNutrientsLess15RDA?.sort((a, b) => b.rda.compareTo(a.rda),);
 
       state.energyModel = EnergyModel(
         fractionToFill: getFractionToFillKcal(caloriesConsumed.orZero()),
@@ -282,6 +284,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.todayCreatineSupplement = SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement());
       state.todayCollagenSupplement = SupplementInfo('Collagen peptides', 'Péptidos de colágeno', todayCollagen, 10);
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
+      emit(state.copyWith(isLoading: false, onError: null,),);
 
       final getMasterFileVersionCookingMethods = await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethods);
       final getMasterFileVersionNutrientsInfo = await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo);
@@ -414,7 +417,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     });
 
     on<FinishWaterEventAction>((event, emit) async {
-      emit(state.copyWith(isLoading: true, onError: null,));
+      emit(state.copyWith(isLoading: false, onError: null,));
 
       final waterEventMaster = WaterEventMaster(
         getUserIdInteractor.execute(),

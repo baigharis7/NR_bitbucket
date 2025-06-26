@@ -155,6 +155,12 @@ class DateTimeHelper {
     return List.generate(7, (index) => monday.add(Duration(days: index)));
   }
 
+  static List<DateTime> getWeekDays({DateTime? dateTime}) {
+    final now = dateTime ?? DateTime.now();
+    final monday = now.subtract(Duration(days: now.weekday - 1));
+    return List.generate(7, (index) => monday.add(Duration(days: index)));
+  }
+
   static bool isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }

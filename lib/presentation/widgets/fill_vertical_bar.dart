@@ -4,8 +4,9 @@ class FillVerticalBar extends StatelessWidget {
   final double? fractionToFill;
   final double? width;
   final Color? barColor;
+  final Color? backgroundColor;
 
-  const FillVerticalBar({Key? key, required this.fractionToFill, this.width, this.barColor}) : super(key: key);
+  const FillVerticalBar({Key? key, required this.fractionToFill, this.width, this.barColor, this.backgroundColor}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class FillVerticalBar extends StatelessWidget {
                   Container(
                     alignment: Alignment.bottomCenter,
                     decoration: BoxDecoration(
-                      color: Colors.transparent,
+                      color: backgroundColor ?? Colors.transparent,
                       borderRadius: BorderRadius.circular(20.00,),
                       shape: BoxShape.rectangle,
                     ),

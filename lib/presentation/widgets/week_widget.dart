@@ -60,7 +60,7 @@ class WeekWidget extends StatelessWidget {
             ],
           ),
         ),
-        if (DateTimeHelper.isPastDate(dateTime) && events.isEmpty) Positioned(
+        if ((DateTimeHelper.isPastDate(dateTime) || DateTimeHelper.isSameDay(selectedDate, dateTime)) && events.isEmpty) Positioned(
           top: 2,
           right: 4,
           child: Container(

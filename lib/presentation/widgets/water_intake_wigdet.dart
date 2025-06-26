@@ -11,6 +11,7 @@ class WaterIntakeWidget extends StatelessWidget {
   final int consumedGlasses;    // e.g. 5
   final Function? onInfoClick;
   final Function onAddWater;
+  final Function onRemoveWater;
   final double glassVolume = 0.25; // 250ml per glass
 
   const WaterIntakeWidget({super.key,
@@ -18,6 +19,7 @@ class WaterIntakeWidget extends StatelessWidget {
     required this.consumedGlasses,
     this.onInfoClick,
     required this.onAddWater,
+    required this.onRemoveWater,
   });
 
   @override
@@ -52,7 +54,7 @@ class WaterIntakeWidget extends StatelessWidget {
                   bool isFilled = index < consumedGlasses;
                   return InkWell(
                     onTap: () {
-                      if (!isFilled) onAddWater.call();
+                      !isFilled ? onAddWater.call() : onRemoveWater.call();
                     },
                     child: Container(
                       width: Dimens.widthSmall,

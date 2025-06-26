@@ -45,7 +45,6 @@ class _MicroNutrientsDetailScreenState
   @override
   void initState() {
     bloc = BlocProvider.of<MicroNutrientsDetailBloc>(context);
-    bloc.add(InitializationEventAction());
     super.initState();
 
     _controller = AnimationController(duration: const Duration(milliseconds: 250), vsync: this);
@@ -63,6 +62,7 @@ class _MicroNutrientsDetailScreenState
         }
       }
     });
+    bloc.add(InitializationEventAction());
   }
 
   List<Map<String, dynamic>> getMenuItems(BuildContext context) {
@@ -166,7 +166,7 @@ class _MicroNutrientsDetailScreenState
                           title: Text(AppLocalizations.of(context)!.deficiency_micronutrients, style: const TextStyle(
                               color: AppColors.tigerOrange, fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline
                           ),),
-                          trailing: InkWell(onTap: () => Navigator.pushNamed(context, MicroNutrientsWeeklyScreen.routeName, arguments: state.filteredNutrientsLess15RDA), child: Image.asset('assets/images/nutrient_graph.png', height: 30, width: 30)),
+                          trailing: InkWell(onTap: () => Navigator.pushNamed(context, MicroNutrientsWeeklyScreen.routeName, arguments: state.filteredNutrientsLess15RDAWeekly), child: Image.asset('assets/images/nutrient_graph.png', height: 30, width: 30)),
                         ),
                         ...state.filteredNutrientsLess15RDA.orEmpty().where((element) => element.nutrientInfoMaster.translateDescription(context).isNotEmptyOrNull()).map((item) =>
                             MicroNutrientDetailWidget(nutrientsModel: item, titleColor: AppColors.tigerOrange,)),
@@ -183,7 +183,7 @@ class _MicroNutrientsDetailScreenState
                           title: Text(AppLocalizations.of(context)!.other_micronutrientss, style: const TextStyle(
                               color: AppColors.yellowishGreen, fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline
                           ),),
-                          trailing: InkWell(onTap: () => Navigator.pushNamed(context, MicroNutrientsWeeklyScreen.routeName, arguments: state.allMicronutrients), child: Image.asset('assets/images/nutrient_graph.png', height: 30, width: 30)),
+                          trailing: InkWell(onTap: () => Navigator.pushNamed(context, MicroNutrientsWeeklyScreen.routeName, arguments: state.allMicronutrientsWeekly), child: Image.asset('assets/images/nutrient_graph.png', height: 30, width: 30)),
                         ),
                         ...state.allMicronutrients.orEmpty().where((element) => element.nutrientInfoMaster.translateDescription(context).isNotEmptyOrNull()).map((item) =>
                             MicroNutrientDetailWidget(nutrientsModel: item, titleColor: AppColors.yellowishGreen,)),

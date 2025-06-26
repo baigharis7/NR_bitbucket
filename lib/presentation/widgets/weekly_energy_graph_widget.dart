@@ -81,74 +81,76 @@ class WeeklyEnergyGraphWidget extends StatelessWidget {
                                 width: 1,
                               ),
                             ),
-                            Column(
-                              children: [
-                                SizedBox(
-                                  width: 250,
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          margin: const EdgeInsets.only(right: Dimens.marginNormal),
-                                          color: Colors.grey.shade400,
-                                          height: 1,
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    width: 250,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            margin: const EdgeInsets.only(right: Dimens.marginNormal),
+                                            color: Colors.grey.shade400,
+                                            height: 1,
+                                          ),
                                         ),
-                                      ),
-                                      Text('$total Kcal'),
-                                    ],
+                                        Text('$total Kcal'),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                SizedBox(
-                                  width: 250,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      ...data.map((energySummaryItem) =>
-                                          Container(
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: Dimens.marginSmall),
-                                            child: SizedBox(
-                                              height: 70,
-                                              child: FillVerticalBar(
-                                                fractionToFill:
-                                                    energySummaryItem['Kcal']
-                                                        as double,
-                                                barColor: color,
+                                  SizedBox(
+                                    width: 250,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        ...data.map((energySummaryItem) =>
+                                            Container(
+                                              margin: const EdgeInsets.symmetric(
+                                                  horizontal: Dimens.marginSmall),
+                                              child: SizedBox(
+                                                height: 70,
+                                                child: FillVerticalBar(
+                                                  fractionToFill:
+                                                      energySummaryItem['Kcal']
+                                                          as double,
+                                                  barColor: color,
+                                                ),
                                               ),
-                                            ),
-                                          )),
-                                    ],
+                                            )),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                Container(
-                                  color: Colors.black,
-                                  height: 1,
-                                  width: 250,
-                                ),
-                                SizedBox(
-                                  width: 250,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      ...DateTimeHelper()
-                                          .getWeekDaysInitialList(context)
-                                          .map(
-                                            (item) => Container(
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal:
-                                                          Dimens.marginSmall),
-                                              child: Text(item),
-                                            ),
-                                          )
-                                          .toList()
-                                    ],
+                                  Container(
+                                    color: Colors.black,
+                                    height: 1,
+                                    width: 250,
                                   ),
-                                )
-                              ],
-                            )
+                                  SizedBox(
+                                    width: 250,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        ...DateTimeHelper()
+                                            .getWeekDaysInitialList(context)
+                                            .map(
+                                              (item) => Container(
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal:
+                                                            Dimens.marginSmall),
+                                                child: Text(item),
+                                              ),
+                                            )
+                                            .toList()
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),

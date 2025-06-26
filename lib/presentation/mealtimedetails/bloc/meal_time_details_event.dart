@@ -3,12 +3,16 @@ part of 'meal_time_details_bloc.dart';
 // @immutable
 abstract class MealTimeDetailsEvent {}
 
-class InitialMealTimeDetailsEventState extends MealTimeDetailsEvent {}
+class InitialMealTimeDetailsEventState extends MealTimeDetailsEvent {
+  final DateTime? dateTime;
 
-class UpdateMealTimeDetailsEventState extends MealTimeDetailsEvent {
-  final MealTime mealTime;
+  InitialMealTimeDetailsEventState({this.dateTime});
+}
 
-  UpdateMealTimeDetailsEventState({required this.mealTime});
+class UpdateFoodArgumentsModelEventState extends MealTimeDetailsEvent {
+  final FoodArgumentsModel foodArgumentsModel;
+
+  UpdateFoodArgumentsModelEventState({required this.foodArgumentsModel});
 }
 
 class DeleteFoodMealTimeDetailsEventAction extends MealTimeDetailsEvent {
