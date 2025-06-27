@@ -32,44 +32,27 @@ class _TextFieldGeneralQuestState extends State<TextFieldGeneralQuest> {
       textController.text = widget.value.orZero() <= 0 ? '' : widget.value.toString();
     }
 
-    return Card(
-      color: AppColors.snow,
-      margin: const EdgeInsets.symmetric(
-          horizontal: Dimens.marginSmall, vertical: Dimens.marginSmall),
-      elevation: 5.0,
-      child: Container(decoration: BoxDecoration(border: Border.all(color: widget.errorBorderColor, width: 2),
-        borderRadius: const BorderRadius.all(Radius.circular(5)),),
-        child: Row(
-          children: [
-            Expanded(
-              flex: 4,
-              child: Container(
-                margin: const EdgeInsets.symmetric(
-                    horizontal: Dimens.marginSmall, vertical: Dimens.marginSmall),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(widget.title),
-                    TextField(
-                      keyboardType:
-                          widget.isNumeric ? TextInputType.number : TextInputType.text,
-                      controller: textController,
-                      decoration: const InputDecoration(),
-                      onChanged: (value) {
-                        widget.onChanged.call(textController.text.toString().isEmpty ? '-1' : textController.text);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Container(),
-            )
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize17, color: Colors.white)),
+        TextField(
+          keyboardType:
+              widget.isNumeric ? TextInputType.number : TextInputType.text,
+          controller: textController,
+          cursorColor: Colors.white,
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            focusColor: Colors.white,
+            contentPadding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
+            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+          ),
+          onChanged: (value) {
+            widget.onChanged.call(textController.text.toString().isEmpty ? '-1' : textController.text);
+          },
         ),
-      ),
+      ],
     );
   }
 }

@@ -60,4 +60,13 @@ class NutritionUtils {
   }
 
 
+
+
+
+  static int millisecondsToYears(int milliseconds) {
+    final years = milliseconds / (1000 * 60 * 60 * 24 * 365.25);
+    return years.toInt();
+  }
+
+
 }

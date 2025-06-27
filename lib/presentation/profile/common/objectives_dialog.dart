@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_state.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/text_checkbox_box.dart';
 
@@ -42,88 +44,75 @@ class _ObjectivesDialogState extends State<ObjectivesDialog> {
         },
         builder: (ctx, state) {
           return SimpleDialog(
-            backgroundColor: Colors.grey[100],
+            backgroundColor: Colors.transparent,
             children: [
               SingleChildScrollView(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        alignment: Alignment.centerRight,
-                        child: IconButton(
-                          icon: const Icon(Icons.cancel_outlined),
-                          onPressed: () => Navigator.pop(ctx),
-                        ),
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        margin: const EdgeInsets.only(bottom: Dimens.marginXLarge, ),
-                        child: Text(
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingXXLarge),
+                      decoration: BoxDecoration(
+                        color: AppColors.white85Percent,
+                        borderRadius: BorderRadius.circular(Dimens.border18),),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                        Text(
                           AppLocalizations.of(ctx)!.objectives,
-                          style: const TextStyle(
-                            fontSize: Dimens.fontSizeXXLarge,
-                          ),
+                          style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeXXLarge, color: AppColors.yellowishGreen),
                         ),
-                      ),
-                      Column(crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
-                              child: Text(AppLocalizations.of(context)!.metabolic_objectives, style: const TextStyle(
-                                fontSize: Dimens.fontSizeNormal,
-                                fontWeight: FontWeight.bold,
-                              ),)),
-                          ...state.objectivesInfoMaster!.metabolicObjectives.map((objective) =>
-                              TextCheckboxBox(
-                                title: objective.translate(context),
-                                checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
-                                onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
-                                overflow: TextOverflow.clip,
-                              ),
-                          ).toList(),
-                        ],
-                      ),
-                      Column(crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
-                              child: Text(AppLocalizations.of(context)!.body_composition_objectives, style: const TextStyle(
-                                fontSize: Dimens.fontSizeNormal,
-                                fontWeight: FontWeight.bold,
-                              ),)),
-                          ...state.objectivesInfoMaster!.bodyCompositionObjectives.map((objective) =>
-                              TextRadioButton(
-                                title: objective.translate(context),
-                                isSelected: state.profile!.objectives.orEmpty().contains(objective.id),
-                                onPressed: () => bloc.add(AddRadioObjectiveToListAction(id: objective.id)),
-                              ),
-                          ).toList(),
-                        ],
-                      ),
-                      Column(crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
-                              child: Text(AppLocalizations.of(context)!.other_objectives, style: const TextStyle(
-                                fontSize: Dimens.fontSizeNormal,
-                                fontWeight: FontWeight.bold,
-                              ),)),
-                          ...state.objectivesFilteredList.orEmpty().map((objective) =>
-                              TextCheckboxBox(
-                                title: objective.translate(context),
-                                checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
-                                onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
-                                overflow: TextOverflow.clip,
-                              ),
-                          ).toList(),
-                        ],
-                      ),
-                      RoundedCustomButton(onPressed: () => Navigator.pop(context),)
-                    ],
-                  ),
+                            const SizedBox(height: Dimens.height12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(AppLocalizations.of(context)!.metabolic_objectives, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),),
+                            const SizedBox(height: Dimens.height12),
+                            ...state.objectivesInfoMaster!.metabolicObjectives.map((objective) =>
+                                TextCheckboxBox(
+                                  title: objective.translate(context),
+                                  checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
+                                  onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
+                                  overflow: TextOverflow.clip,
+                                ),
+                            ).toList(),
+                          ],
+                        ),
+                        const SizedBox(height: Dimens.height12),
+                        Column(crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(AppLocalizations.of(context)!.body_composition_objectives, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),),
+                            const SizedBox(height: Dimens.height12),
+                            ...state.objectivesInfoMaster!.bodyCompositionObjectives.map((objective) =>
+                                TextRadioButtonExpansible(
+                                  title: objective.translate(context),
+                                  explanation: '',
+                                  isSelected: state.profile!.objectives.orEmpty().contains(objective.id),
+                                  onPressed: () => bloc.add(AddRadioObjectiveToListAction(id: objective.id)),
+                                ),
+                            ).toList(),
+                          ],
+                        ),
+                            const SizedBox(height: Dimens.height12),
+                        Column(crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(AppLocalizations.of(context)!.other_objectives, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),),
+                            const SizedBox(height: Dimens.height12),
+                            ...state.objectivesFilteredList.orEmpty().map((objective) =>
+                                TextCheckboxBox(
+                                  title: objective.translate(context),
+                                  checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
+                                  onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
+                                  overflow: TextOverflow.clip,
+                                ),
+                            ).toList(),
+                          ],
+                        ),
+                      ]),
+                    ),
+
+                    const SizedBox(height: Dimens.height32),
+                    GeneralButton(title: AppLocalizations.of(context)!.save, onTap: () => Navigator.pop(context),),
+                  ],
                 ),
               ),
             ],

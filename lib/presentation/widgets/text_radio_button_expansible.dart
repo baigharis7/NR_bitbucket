@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
+import '../../infrastructure/utils/app_color.dart';
+
 class TextRadioButtonExpansible extends StatelessWidget {
   final String title;
   final String explanation;
@@ -17,70 +19,61 @@ class TextRadioButtonExpansible extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      child: InkWell(
-        onTap: () => onPressed.call(),
-        child: Container(
-          margin: const EdgeInsets.only(top: Dimens.marginLarge, bottom: Dimens.marginLarge),
-          child: Column(
-            children: [
+    return InkWell(
+      onTap: () => onPressed.call(),
+      child: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+              const SizedBox(height: Dimens.height12),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    flex: 2,
+                  Text(
+                    title,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: Dimens.fontSize15,
+                      color: AppColors.yellowishGreen,
+                    ),
+                  ),
+                  Container(
+                    height: 21,
+                    width: 21,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      border: Border.all(
+                        color: AppColors.cloudyGrey,
+                        width: Dimens.borderSmall,
+                      ),
+                    ),
                     child: Container(
-                      margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                      child: Text(
-                        title,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: Dimens.fontSizeNormal,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      margin: isSelected ? const EdgeInsets.symmetric(horizontal: 2, vertical: 2) : null,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: isSelected ? AppColors.carbonGrey : AppColors.carbonGrey27,
                       ),
                     ),
                   ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      alignment: Alignment.centerRight,
-                      margin: const EdgeInsets.only(right: Dimens.marginNormal),
-                      child: Container(
-                        height: 21,
-                        width: 21,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          border: Border.all(
-                            color: Colors.black,
-                            width: Dimens.borderSmall,
-                          ),
-                        ),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: isSelected ? Colors.black : Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
                 ],
               ),
-              if (isSelected && explanation != '') Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginSmall),
-                child: Text(
-                  explanation,
-                  maxLines: 3,
-                  overflow: TextOverflow.clip,
-                ),
-              )
-            ],
+              const SizedBox(height: Dimens.heightXXSmall),
+              if (isSelected && explanation != '') Text(
+                explanation,
+                maxLines: 3,
+                overflow: TextOverflow.clip,
+                style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize11, color: AppColors.yellowishGreen),
+              ),
+              if (isSelected && explanation != '') const SizedBox(height: Dimens.heightXXSmall),
+            ],),
           ),
-        ),
+          const Divider(color: AppColors.cloudyGrey, height: 1, thickness: 1,),
+        ],
       ),
     );
   }

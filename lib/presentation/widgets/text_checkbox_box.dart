@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 class TextCheckboxBox extends StatefulWidget {
@@ -26,51 +27,41 @@ class _TextCheckboxBoxState extends State<TextCheckboxBox> {
   Widget build(BuildContext context) {
     _isChecked = widget.checkboxValue;
 
-    return Card(
-      elevation: 4,
-      child: Container(
-        alignment: Alignment.centerLeft,
-        margin: const EdgeInsets.only(left: Dimens.marginLarge),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              flex: 5,
-              child: Container(
-                alignment: Alignment.centerLeft,
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
                 child: Text(
                   widget.title,
                   overflow: widget.overflow ?? TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: Dimens.fontSizeNormal,
+                    fontWeight: FontWeight.w300,
+                    fontSize: Dimens.fontSize15,
+                    color: AppColors.yellowishGreen,
                   ),
                 ),
               ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  alignment: Alignment.centerRight,
-                  child: Checkbox(
-                    fillColor: MaterialStateProperty.all(Colors.grey[400]),
-                    checkColor: Colors.black,
-                    side: const BorderSide(width: 1, color: Colors.black,),
-                    value: _isChecked,
-                    onChanged: (value) {
-                      setState(() {
-                        _isChecked = value!;
-                        widget.onChangedCheckbox.call();
-                      });
-                    },
-                  ),
-                ),
-              ),
-            )
-          ],
+              Checkbox(
+                fillColor: MaterialStateProperty.all(Colors.grey[400]),
+                checkColor: AppColors.yellowishGreen,
+                side: const BorderSide(width: 1, color: AppColors.yellowishGreen,),
+                value: _isChecked,
+                onChanged: (value) {
+                  setState(() {
+                    _isChecked = value!;
+                    widget.onChangedCheckbox.call();
+                  });
+                },
+              )
+            ],
+          ),
         ),
-      ),
+        const Divider(color: AppColors.cloudyGrey, height: 1, thickness: 1,),
+      ],
     );
   }
 

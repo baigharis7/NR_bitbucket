@@ -401,6 +401,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
           profile.kcal = userProfileResponse.kcal;
           try {
             await saveProfileInteractor.execute(profile);
+            state.profile = await getProfileInteractor.execute();
             event.nextScreen.call();
             emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {

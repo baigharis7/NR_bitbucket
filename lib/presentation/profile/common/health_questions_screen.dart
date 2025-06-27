@@ -1,14 +1,20 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_state.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/text_checkbox_box.dart';
+
+import '../../../infrastructure/utils/app_color.dart';
 
 // TODO: think a new name for title and take it from AppLocalizations.
 class HealthQuestionsScreen extends StatefulWidget {
@@ -25,82 +31,94 @@ class _HealthQuestionsScreen extends State<HealthQuestionsScreen> {
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<ProfileBloc>(context);
 
-    return SafeArea(
-      child: BlocProvider.value(
-        value: bloc,
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          body: BlocConsumer<ProfileBloc, ProfileState>(
-            listener: (ctx, state) {
-              if (state.isLoading) {
-                LoadingScreen.instance().show(
-                  context: ctx,
-                  text: AppLocalizations.of(ctx)!.loading,
-                );
-              } else {
-                LoadingScreen.instance().hide();
-              }
-            },
-            builder: (ctx, state) {
-              return SingleChildScrollView(
+    return BlocProvider.value(
+      value: bloc,
+      child: BlocConsumer<ProfileBloc, ProfileState>(
+        listener: (ctx, state) {
+          if (state.isLoading) {
+            LoadingScreen.instance().show(
+              context: ctx,
+              text: AppLocalizations.of(ctx)!.loading,
+            );
+          } else {
+            LoadingScreen.instance().hide();
+          }
+        },
+        builder: (ctx, state) {
+          return Stack(children: [
+            // Background image or gradient
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/background.png'), // Your image
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+
+            // Blur effect
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              child: Container(
+                color: Colors.black.withOpacity(0), // Needed to activate the blur
+              ),
+            ),
+
+
+            Scaffold(
+              backgroundColor: Colors.transparent,
+              body: SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(Dimens.padding20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Stack(
-                      children: [
-                        IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 25,),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: Dimens.marginNormal, bottom: Dimens.marginXLarge),
-                          child: Center(
-                            child: Image.asset(
-                              'assets/icon/app_icon.png',
-                              height: 59,
-                              width: 59,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Card(
-                      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                      color: Colors.grey[100],
-                      child: Column(
-                        children: [
-                          Container(
-                            alignment: Alignment.center,
-                            margin: const EdgeInsets.only(
-                                top: Dimens.marginXXLarge,
-                                bottom: Dimens.marginXLarge,
-                            ),
-                            child: Text(
-                              AppLocalizations.of(ctx)!.medical_history,
-                              style: const TextStyle(fontSize: Dimens.fontSizeXXLarge),
-                            ),
-                          ),
-                          ...state.commonDiseases.orEmpty().map((commonDisease) {
-                            return TextCheckboxBox(
-                              title: commonDisease.name.orEmpty(),
-                              checkboxValue: state.profile!.medicalSituation!
-                                  .commonDiseases!.contains(commonDisease.id),
-                              onChangedCheckbox: () =>
-                                  bloc.add(ManageCommonDiseaseAction(commonDiseaseId: commonDisease.id!)),
-                              overflow: TextOverflow.clip,
-                            );
-                          }).toList(),
-                          RoundedCustomButton(onPressed: () => Navigator.pop(context),)
-                        ],
+                    Container(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: IconButton(
+                        onPressed: () => Navigator.pop(context, Constants.BACK),
+                        icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 25,),
                       ),
                     ),
+                    Image.asset(
+                      'assets/images/logo_name_white.png',
+                      width: Dimens.width242,
+                    ),
+                    const SizedBox(height: Dimens.heightSmall),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingXXLarge),
+                      decoration: BoxDecoration(
+                        color: AppColors.white85Percent,
+                        borderRadius: BorderRadius.circular(Dimens.border18),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                        Text(
+                          AppLocalizations.of(ctx)!.medical_history,
+                          style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen),
+                        ),
+                        const SizedBox(height: Dimens.height12),
+                        ...state.commonDiseases.orEmpty().map((commonDisease) {
+                          return TextCheckboxBox(
+                            title: commonDisease.name.orEmpty(),
+                            checkboxValue: state.profile!.medicalSituation!
+                                .commonDiseases!.contains(commonDisease.id),
+                            onChangedCheckbox: () =>
+                                bloc.add(ManageCommonDiseaseAction(commonDiseaseId: commonDisease.id!)),
+                            overflow: TextOverflow.clip,
+                          );
+                        }).toList(),
+                      ],),
+                    ),
+                    const SizedBox(height: Dimens.height32),
+                    GeneralButton(title: AppLocalizations.of(context)!.save, onTap: () => Navigator.pop(context),),
                   ],
                 ),
-              );
-            },
-          ),
-        ),
+              ),
+              ),
+            ),
+          ],);
+        },
       ),
     );
   }

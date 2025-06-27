@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
@@ -11,7 +12,8 @@ class AnimatedNutrientProgressBarWidget extends StatelessWidget {
   final String? title;
   final double percent;
   final Color? color;
-  const AnimatedNutrientProgressBarWidget({super.key, this.height, this.width, this.title, required this.percent, this.color});
+  final Color? backgroundColor;
+  const AnimatedNutrientProgressBarWidget({super.key, this.height, this.width, this.title, required this.percent, this.color, this.backgroundColor});
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +28,10 @@ class AnimatedNutrientProgressBarWidget extends StatelessWidget {
           height: height ?? Dimens.height15,
           alignment: Alignment.centerLeft,
           clipBehavior: Clip.hardEdge,
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(Dimens.border100)),
-            color: AppColors.ceramic,
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(Dimens.border100)),
+            color: backgroundColor ?? AppColors.ceramic,
+
           ),
           child: TweenAnimationBuilder<double>(
             tween: Tween(begin: 0, end: progressFromPercent),

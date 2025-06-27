@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -7,6 +9,7 @@ import 'package:nutrenaissance_flutter/domain/models/profile/height_weight_units
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_picker_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -16,6 +19,7 @@ import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/centered_icon_box.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_button_1.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
 import '../../widgets/text_field_general_quest.dart';
@@ -55,61 +59,78 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
     if (_commonNameController.text == '') _commonNameController.text = bloc.state.profile!.commonName ?? '';
     String language = Localizations.localeOf(context).languageCode;
 
-    return SafeArea(
-      child: BlocProvider.value(
-        value: bloc,
-        child: Scaffold(
-          // appBar: AppBar(backgroundColor: Colors.white, leading: IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black,))),
-          body: BlocConsumer<ProfileBloc, ProfileState>(
-            listener: (ctx, state) {
-              if (state.isLoading) {
-                LoadingScreen.instance().show(
-                  context: ctx,
-                  text: AppLocalizations.of(ctx)!.loading,
-                );
-              } else {
-                LoadingScreen.instance().hide();
-              }
-            },
-            builder: (BuildContext ctx, ProfileState state) {
-              return SingleChildScrollView(
-                child: Container(
-                  margin: const EdgeInsets.only(top: Dimens.marginXLarge),
-                  child: Stack(
+    return BlocProvider.value(
+      value: bloc,
+      child: BlocConsumer<ProfileBloc, ProfileState>(
+        listener: (ctx, state) {
+          if (state.isLoading) {
+            LoadingScreen.instance().show(
+              context: ctx,
+              text: AppLocalizations.of(ctx)!.loading,
+            );
+          } else {
+            LoadingScreen.instance().hide();
+          }
+        },
+        builder: (BuildContext ctx, ProfileState state) {
+          return Stack(children: [
+            // Background image or gradient
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/background.png'), // Your image
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+
+            // Blur effect
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+              child: Container(
+                color: AppColors.black59Percent, // Needed to activate the blur
+              ),
+            ),
+
+            Scaffold(
+              backgroundColor: Colors.transparent,
+              body: SafeArea(child: SingleChildScrollView(
+                padding: const EdgeInsets.all(Dimens.padding20),
+                child: Stack(
                     children: [
-                      IconButton(onPressed: () => Navigator.pop(context, Constants.BACK), icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black,)),
                       Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Center(
-                            child: Image.asset(
-                              'assets/icon/app_icon.png',
-                              height: 59,
-                              width: 59,
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(width: double.infinity),
+                            Container(alignment: AlignmentDirectional.centerStart, child: IconButton(onPressed: () => Navigator.pop(context, Constants.BACK), icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white,))),
+                            Image.asset(
+                              'assets/images/logo_name_white.png',
+                              width: Dimens.width242,
                             ),
-                          ),
-                          Container(
-                            alignment: Alignment.center,
-                            margin: const EdgeInsets.all(Dimens.marginNormal),
-                            child: Text(
+                            const SizedBox(height: Dimens.height37),
+                            Text(
                               AppLocalizations.of(context)!.body_measurements,
                               style: const TextStyle(
+                                fontWeight: FontWeight.w400,
                                 fontSize: Dimens.fontSizeXXLarge,
+                                color: Colors.white,
                               ),
                             ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: Dimens.marginNormal,
-                                vertical: Dimens.marginSmall),
-                            child: TextFormField(
+                            const SizedBox(height: Dimens.heightSmall),
+                            TextFormField(
                               controller: _commonNameController,
+                              cursorColor: Colors.white,
+                              style: const TextStyle(color: Colors.white),
                               decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
                                 hintText:
-                                    AppLocalizations.of(ctx)!.write_your_name_here,
+                                AppLocalizations.of(ctx)!.write_your_name_here,
+                                hintStyle: const TextStyle(color: Colors.white),
+                                focusColor: Colors.white,
+                                enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
+                                focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
                                 errorMaxLines: 2,
                               ),
                               validator: (value) {
@@ -119,387 +140,163 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                               //     .add(RefreshCommonNameAction(commonName: name)),
                               onChanged: (value) {
                                 _formKey.currentState!.validate();
-                               /*alue.isEmptyOrNull() ? _formKey.currentState!.validate() : */bloc.add(RefreshCommonNameAction(commonName: value));
+                                bloc.add(RefreshCommonNameAction(commonName: value));
                               },
                             ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: Dimens.marginNormal,),
-                                  child: TextFormField(readOnly: true, keyboardType: TextInputType.none, controller: _dateController,
-                                      onTap: () {
-                                      showDatePicker(context: context,
-                                          initialDate: DateTime(DateTime.now().year-19),
-                                          firstDate: DateTime(DateTime.now().year-100),
-                                          lastDate: DateTime(DateTime.now().year-19)).then((pickedDate) {
-                                            _formKey.currentState!.validate();
-                                            if (pickedDate != null) bloc.add(RefreshBirthdateAction(birthdate: pickedDate.millisecondsSinceEpoch));
-                                          });
-                                    // DatePickerHelper.presentDatePicker(
-                                    //   context: ctx,
-                                    //   saveDate: (DateTime pickedDate) {
-                                    //     bloc.add(RefreshBirthdateAction(
-                                    //         birthdate:
-                                    //         pickedDate.millisecondsSinceEpoch));
-                                    //   },
-                                    // );
-                                  }, decoration: InputDecoration(
-                                          errorMaxLines: 2,
-                                          hintText: state.profile!.birthDate == null ? AppLocalizations.of(ctx)!.birthday_question : DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.birthDate!)),),
-                                  validator: (value) => state.profile?.birthDate?.isNull() ?? true ? AppLocalizations.of(context)!.must_complete_field : null,),
-                                ),
-                              ),
-                              // Container(
-                              //   child: state.profile!.birthDate != null
-                              //       ? Text(
-                              //           DateFormat('dd/MM/yyyy').format(
-                              //               DateTime.fromMillisecondsSinceEpoch(
-                              //                   state.profile!.birthDate!)),
-                              //           overflow: TextOverflow.fade,
-                              //         )
-                              //       : const Text(''),
-                              // ),
-                              // IconButton(
-                              //   icon: const Icon(Icons.calendar_month,
-                              //       color: Colors.grey),
-                              //   onPressed: () {
-                              //     DatePickerHelper.presentDatePicker(
-                              //       context: ctx,
-                              //       saveDate: (DateTime pickedDate) {
-                              //         bloc.add(RefreshBirthdateAction(
-                              //             birthdate:
-                              //                 pickedDate.millisecondsSinceEpoch));
-                              //       },
-                              //     );
-                              //   },
-                              // )
-                            ],
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(top: Dimens.marginLarge),
-                            child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                            const SizedBox(height: Dimens.height12),
+                            TextFormField(
+                              readOnly: true,
+                              keyboardType: TextInputType.none,
+                              controller: _dateController,
+                              onTap: () {
+                                showDatePicker(context: context,
+                                    initialDate: DateTime(DateTime.now().year-19),
+                                    firstDate: DateTime(DateTime.now().year-100),
+                                    lastDate: DateTime(DateTime.now().year-19)).then((pickedDate) {
+                                  _formKey.currentState!.validate();
+                                  if (pickedDate != null) bloc.add(RefreshBirthdateAction(birthdate: pickedDate.millisecondsSinceEpoch));
+                                });
+                              }, decoration: InputDecoration(
+                                errorMaxLines: 2,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+                                hintStyle: const TextStyle(color: Colors.white),
+                              enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
+                                hintText: state.profile!.birthDate == null ? AppLocalizations.of(ctx)!.birthday_question : DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.birthDate!)),),
+                              validator: (value) => state.profile?.birthDate?.isNull() ?? true ? AppLocalizations.of(context)!.must_complete_field : null,),
+                            const SizedBox(height: Dimens.height32),
+                            Column(crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (state.profile?.sex?.isNull() ?? true) Container(margin: const EdgeInsets.only(
-                          left: Dimens.marginNormal,
-                            right: Dimens.marginXSmall,
-                          ),child: Text(AppLocalizations.of(context)!.must_complete_field+':', style: const TextStyle(color: Colors.red,),textAlign: TextAlign.start)),
+                                if (state.profile?.sex?.isNull() ?? true) Text(AppLocalizations.of(context)!.select_gender, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: Colors.white),),
+                                if (state.profile?.sex?.isNull() ?? true) const SizedBox(height: Dimens.height32),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
                                     Expanded(
-                                      flex: 1,
-                                      child: Container(
-                                        margin: const EdgeInsets.only(
-                                          left: Dimens.marginNormal,
-                                          right: Dimens.marginXSmall,
-                                        ),
-                                        child: CenteredIconBox(
-                                          errorBorderColor: (state.profile?.sex?.isNull() ?? true) ? Colors.red : Colors.grey.shade100,
-                                          colorSelected: Colors.amber,
-                                          icon: Icons.male,
-                                          onClick: () =>
-                                              bloc.add(SetSexAction(sex: SexType.male)),
-                                          isSelected:
-                                              state.profile!.sex == SexType.male,
-                                        ),
+                                      child: CenteredIconBox(
+                                        colorSelected: AppColors.floralWhite,
+                                        icon: Icons.male,
+                                        onClick: () =>
+                                            bloc.add(SetSexAction(sex: SexType.male)),
+                                        isSelected:
+                                        state.profile!.sex == SexType.male,
                                       ),
                                     ),
+                                    const SizedBox(width: Dimens.width25),
                                     Expanded(
-                                      flex: 1,
-                                      child: Container(
-                                        margin: const EdgeInsets.only(
-                                          right: Dimens.marginNormal,
-                                          left: Dimens.marginXSmall,
-                                        ),
-                                        child: CenteredIconBox(
-                                          errorBorderColor: (state.profile?.sex?.isNull() ?? true) ? Colors.red : Colors.grey.shade100,
-                                          colorSelected: Colors.amber,
-                                          icon: Icons.female,
-                                          onClick: () => bloc
-                                              .add(SetSexAction(sex: SexType.female)),
-                                          isSelected:
-                                              state.profile!.sex == SexType.female,
-                                        ),
+                                      child: CenteredIconBox(
+                                        colorSelected: AppColors.floralWhite,
+                                        icon: Icons.female,
+                                        onClick: () => bloc
+                                            .add(SetSexAction(sex: SexType.female)),
+                                        isSelected:
+                                        state.profile!.sex == SexType.female,
                                       ),
                                     ),
                                   ],
                                 ),
                               ],
                             ),
-                          ),
-                          if (state.profile!.sex == SexType.female)
+                            if (state.profile!.sex == SexType.female)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: Dimens.height32),
+                                  Text(AppLocalizations.of(context)!.regularity_period_question, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: Colors.white)),
+                                  const SizedBox(height: Dimens.height12),
+                                  if (state.profile?.femaleCharacteristics?.menstruation?.regularity.isNull() ?? true) Text(AppLocalizations.of(context)!.must_complete_field+':', style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: Colors.white),textAlign: TextAlign.start),
+                                  const SizedBox(height: Dimens.heightXXSmall),
+                                  Row(
+                                    children: [
+                                      Expanded(flex: 1,
+                                          child: GeneralButton(
+                                        title: AppLocalizations.of(context)!.regular,
+                                            selectedColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.regular.index ? AppColors.floralWhite : AppColors.yellowishGreen,
+                                            textColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.regular.index ? AppColors.yellowishGreen : AppColors.floralWhite,
+                                            onTap: () => bloc.add(SetPeriodRegularityAction(periodRegularity: MenstruationRegularity.regular.index)),
+                                      ),),
+                                      const SizedBox(width: Dimens.width25,),
+                                      Expanded(flex: 1,
+                                          child: GeneralButton(
+                                            title: AppLocalizations.of(context)!.irregular,
+                                            selectedColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? AppColors.floralWhite : AppColors.yellowishGreen,
+                                            textColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? AppColors.yellowishGreen : AppColors.floralWhite,
+                                            onTap: () => bloc.add(SetPeriodRegularityAction(periodRegularity: MenstruationRegularity.irregular.index)),
+                                          ),),
+                                    ],
+                                  ),
+                                  const SizedBox(height: Dimens.heightXSmall),
+                                  Row(
+                                    children: [
+                                      Expanded(flex: 1,
+                                        child: GeneralButton(
+                                          title: AppLocalizations.of(context)!.menopause,
+                                          selectedColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.menopause.index ? AppColors.floralWhite : AppColors.yellowishGreen,
+                                          textColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.menopause.index ? AppColors.yellowishGreen : AppColors.floralWhite,
+                                          onTap: () => bloc.add(SetPeriodRegularityAction(periodRegularity: MenstruationRegularity.menopause.index)),
+                                        ),),
+                                      const SizedBox(width: Dimens.width25,),
+                                      Expanded(flex: 1,
+                                        child: GeneralButton(
+                                          title: AppLocalizations.of(context)!.without_period,
+                                          selectedColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.withoutPeriod.index ? AppColors.floralWhite : AppColors.yellowishGreen,
+                                          textColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.withoutPeriod.index ? AppColors.yellowishGreen : AppColors.floralWhite,
+                                          onTap: () => bloc.add(SetPeriodRegularityAction(periodRegularity: MenstruationRegularity.withoutPeriod.index)),
+                                        ),),
+                                    ],
+                                  ),
+                                  state.profile!.femaleCharacteristics!.menstruation!
+                                      .regularity ==
+                                      MenstruationRegularity.regular.index
+                                      ? Column(
+                                    children: [
+                                      const SizedBox(height: Dimens.height32,),
+                                      Text(AppLocalizations.of(context)!.period_duration_question, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: Colors.white),),
+                                      const SizedBox(height: Dimens.height12),
+                                      NumberPicker(
+                                        minValue: Constants.MIN_PERIOD_DURATION,
+                                        maxValue: Constants.MAX_PERIOD_DURATION,
+                                        value: state.profile!.femaleCharacteristics!.menstruation!.daysOfCycle ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
+                                        axis: Axis.horizontal,
+                                        step: 1,
+                                        textStyle: const TextStyle(fontSize: Dimens.fontSizeNormal, color: Colors.white),
+                                        selectedTextStyle: const TextStyle(fontSize: Dimens.fontSizeNormal, color: Colors.white),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                          BorderRadius.circular(30),
+                                          border: Border.all(color: Colors.white),
+                                        ),
+                                        onChanged: (duration) => context.read<ProfileBloc>().add(SetPeriodDurationAction(days: duration),),
+                                      ),
+                                      const SizedBox(height: Dimens.height12),
+                                      Text(AppLocalizations.of(context)!.last_period_question, style: const TextStyle(fontWeight: FontWeight.w400,fontSize: Dimens.fontSizeNormal, color: Colors.white),),
+                                      TextFormField(
+                                        decoration: InputDecoration(
+                                          hintText: state.profile!.femaleCharacteristics!.menstruation!.lastStartDate != null ? DateFormat('yyyy/MM/dd').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.femaleCharacteristics!.menstruation!.lastStartDate!,),) : '',
+                                          border: InputBorder.none,
+                                          hintStyle: const TextStyle(color: Colors.white),
+                                          prefixIcon: IconButton(onPressed: () {
+                                            DatePickerHelper
+                                                .presentDatePicker(
+                                              context: context,
+                                              saveDate: (pickedDate) {
+                                                context.read<ProfileBloc>().add(SetLastPeriodDateAction(date: pickedDate,),);
+                                              },
+                                            );
+                                          }, icon: const Icon(Icons.calendar_month, color: Colors.white),),
+                                          errorMaxLines: 2,
+                                        ),
+                                        validator: (value) => state.profile!.femaleCharacteristics?.menstruation?.lastStartDate.isNull() ?? true ? AppLocalizations.of(context)!.must_complete_field : null,
+                                      ),
+                                    ],
+                                  )
+                                      : Container(),
+                                ],
+                              ),
+                            const SizedBox(height: Dimens.height32),
                             Column(
                               children: [
-                                Container(
-                                  alignment: Alignment.centerLeft,
-                                  margin: const EdgeInsets.fromLTRB(
-                                    Dimens.marginNormal,
-                                    Dimens.marginXLarge,
-                                    Dimens.marginLarge,
-                                    Dimens.zero,
-                                  ),
-                                  child: Text(AppLocalizations.of(context)!
-                                      .regularity_period_question),
-                                ),
-                                if (state.profile?.femaleCharacteristics?.menstruation?.regularity.isNull() ?? true) Container(alignment: Alignment.centerLeft, margin: const EdgeInsets.symmetric(
-                                  horizontal: Dimens.marginNormal,
-                                  vertical: Dimens.marginNormal,
-                                ),child: Text(AppLocalizations.of(context)!.must_complete_field+':', style: const TextStyle(color: Colors.red,),textAlign: TextAlign.start)),
-                                const SizedBox(height: Dimens.heightXXSmall),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      flex: 1,
-                                      child: Container(
-                                        margin: const EdgeInsets.only(
-                                            left: Dimens.marginNormal,
-                                            right: Dimens.marginSmall),
-                                        child: CustomButton1(
-                                          message:
-                                              AppLocalizations.of(context)!.regular,
-                                          isSelected: state
-                                                  .profile!
-                                                  .femaleCharacteristics!
-                                                  .menstruation!
-                                                  .regularity ==
-                                              MenstruationRegularity.regular.index,
-                                          action: () {
-                                            bloc.add(SetPeriodRegularityAction(
-                                                periodRegularity:
-                                                    MenstruationRegularity
-                                                        .regular.index));
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Container(
-                                        margin: const EdgeInsets.only(
-                                            right: Dimens.marginNormal,
-                                            left: Dimens.marginSmall),
-                                        child: CustomButton1(
-                                          message: AppLocalizations.of(context)!
-                                              .irregular,
-                                          isSelected: state
-                                                  .profile!
-                                                  .femaleCharacteristics!
-                                                  .menstruation!
-                                                  .regularity ==
-                                              MenstruationRegularity
-                                                  .irregular.index,
-                                          action: () {
-                                            bloc.add(SetPeriodRegularityAction(
-                                                periodRegularity:
-                                                    MenstruationRegularity
-                                                        .irregular.index));
-                                          },
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(height: Dimens.heightXSmall),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      flex: 1,
-                                      child: Container(
-                                        margin: const EdgeInsets.only(
-                                            left: Dimens.marginNormal,
-                                            right: Dimens.marginSmall),
-                                        child: CustomButton1(
-                                          message:
-                                              AppLocalizations.of(context)!.menopause,
-                                          isSelected: state
-                                                  .profile!
-                                                  .femaleCharacteristics!
-                                                  .menstruation!
-                                                  .regularity ==
-                                              MenstruationRegularity.menopause.index,
-                                          action: () {
-                                            bloc.add(SetPeriodRegularityAction(
-                                                periodRegularity:
-                                                    MenstruationRegularity
-                                                        .menopause.index));
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Container(
-                                        margin: const EdgeInsets.only(
-                                            right: Dimens.marginNormal,
-                                            left: Dimens.marginSmall),
-                                        child: CustomButton1(
-                                          message: AppLocalizations.of(context)!
-                                              .without_period,
-                                          isSelected: state
-                                                  .profile!
-                                                  .femaleCharacteristics!
-                                                  .menstruation!
-                                                  .regularity ==
-                                              MenstruationRegularity
-                                                  .withoutPeriod.index,
-                                          action: () {
-                                            bloc.add(SetPeriodRegularityAction(
-                                                periodRegularity:
-                                                    MenstruationRegularity
-                                                        .withoutPeriod.index));
-                                          },
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                state.profile!.femaleCharacteristics!.menstruation!
-                                            .regularity ==
-                                        MenstruationRegularity.regular.index
-                                    ? Column(
-                                        children: [
-                                          Container(
-                                            alignment: Alignment.centerLeft,
-                                            margin: const EdgeInsets.fromLTRB(
-                                              Dimens.marginNormal,
-                                              Dimens.marginXLarge,
-                                              Dimens.marginLarge,
-                                              Dimens.zero,
-                                            ),
-                                            child: Text(
-                                                AppLocalizations.of(context)!
-                                                    .period_duration_question),
-                                          ),
-                                          NumberPicker(
-                                            minValue: Constants.MIN_PERIOD_DURATION,
-                                            maxValue: Constants.MAX_PERIOD_DURATION,
-                                            value: state
-                                                    .profile!
-                                                    .femaleCharacteristics!
-                                                    .menstruation!
-                                                    .daysOfCycle ??
-                                                Constants
-                                                    .PERIOD_DURATION_INITIAL_VALUE,
-                                            axis: Axis.horizontal,
-                                            step: 1,
-                                            textStyle: const TextStyle(
-                                              fontSize: Dimens.fontSizeNormal,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                              border: Border.all(
-                                                  color: Colors.blueGrey),
-                                            ),
-                                            onChanged: (duration) =>
-                                                context.read<ProfileBloc>().add(
-                                                      SetPeriodDurationAction(
-                                                          days: duration),
-                                                    ),
-                                          ),
-                                          Container(
-                                            alignment: Alignment.centerLeft,
-                                            margin: const EdgeInsets.fromLTRB(
-                                              Dimens.marginNormal,
-                                              Dimens.marginXLarge,
-                                              Dimens.marginSmall,
-                                              Dimens.zero,
-                                            ),
-                                            child: Text(
-                                                AppLocalizations.of(context)!
-                                                    .last_period_question),
-                                          ),
-                                          Container(
-                                            margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
-                                            child: TextFormField(
-                                              decoration: InputDecoration(
-                                                hintText: state.profile!.femaleCharacteristics!.menstruation!.lastStartDate != null ? DateFormat('yyyy/MM/dd').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.femaleCharacteristics!.menstruation!.lastStartDate!,),) : '',
-                                                border: InputBorder.none,
-                                                prefixIcon: IconButton(onPressed: () {
-                                                  DatePickerHelper
-                                                      .presentDatePicker(
-                                                    context: context,
-                                                    saveDate: (pickedDate) {
-                                                      context.read<ProfileBloc>().add(SetLastPeriodDateAction(date: pickedDate,),);
-                                                      },
-                                                  );
-                                                }, icon: const Icon(Icons.calendar_month, color: Colors.black),),
-                                                errorMaxLines: 2,
-                                              ),
-                                              validator: (value) => state.profile!.femaleCharacteristics?.menstruation?.lastStartDate.isNull() ?? true ? AppLocalizations.of(context)!.must_complete_field : null,
-                                            ),
-                                          ),
-                                          // Row(
-                                          //   children:
-                                          //     Container(
-                                          //       alignment: Alignment.centerLeft,
-                                          //       margin: const EdgeInsets.only(
-                                          //           left: Dimens.marginLarge),
-                                          //       child: IconButton(
-                                          //         onPressed: () => DatePickerHelper
-                                          //             .presentDatePicker(
-                                          //           context: context,
-                                          //           saveDate: (pickedDate) => context
-                                          //               .read<ProfileBloc>()
-                                          //               .add(
-                                          //                   SetLastPeriodDateAction(
-                                          //                       date: pickedDate)),
-                                          //         ),
-                                          //         icon: const Icon(
-                                          //             Icons.calendar_month),
-                                          //       ),
-                                          //     ),
-                                          //     Container(
-                                          //       alignment: Alignment.centerLeft,
-                                          //       margin: const EdgeInsets.only(
-                                          //           left: Dimens.marginNormal),
-                                          //       child: Text(
-                                          //         state
-                                          //                     .profile!
-                                          //                     .femaleCharacteristics!
-                                          //                     .menstruation!
-                                          //                     .lastStartDate !=
-                                          //                 null
-                                          //             ? DateFormat('dd/MM/yyyy')
-                                          //                 .format(
-                                          //                 DateTime.fromMillisecondsSinceEpoch(
-                                          //                     state
-                                          //                         .profile!
-                                          //                         .femaleCharacteristics!
-                                          //                         .menstruation!
-                                          //                         .lastStartDate!),
-                                          //               )
-                                          //             : '',
-                                          //       ),
-                                          //     ),
-                                          //   ],
-                                          // )
-                                        ],
-                                      )
-                                    : Container(),
-                                Container(
-                                  margin: const EdgeInsets.only(
-                                      bottom: Dimens.marginXLarge,),
-                                ),
-                              ],
-                            ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                              top: Dimens.marginLarge,
-                              right: Dimens.marginNormal,
-                              left: Dimens.marginNormal,
-                            ),
-                            child: Column(
-                              children: [
                                 Card(
-                                  margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall, horizontal: Dimens.marginSmall),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5),side: const BorderSide(color: Colors.black12)),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border11),),
+                                  color: AppColors.floralWhite,
                                   child: Container(
                                     height: Dimens.heightSmall - 20,
                                     padding: const EdgeInsets.symmetric(vertical: Dimens.paddingSmall -4, horizontal: Dimens.paddingSmall -2),
@@ -507,18 +304,12 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                     child: DropdownButton<int>(
                                       isExpanded: true,
                                       value: state.unitWeightHeight?.id ?? 1,
-                                      // icon: const Icon(Icons.arrow_downward),
-                                      // elevation: 16,
-                                      // style: const TextStyle(color: Colors.deepPurple),
+                                      icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
                                       underline: Container(),
                                       onChanged: (int? value) {
-                                        // This is called when the user selects an item.
-                                        // setState(() {
-                                        //   dropdownValue = value.orEmpty();
-                                        // });
-
                                         bloc.add(SetUnitWeightHeight(unitWeightHeight: _heightWeightTypeList.firstWhere((element) => element.id == value,)));
                                       },
+                                      dropdownColor: AppColors.floralWhite,
                                       items: _heightWeightTypeList.map<DropdownMenuItem<int>>((HeightWeightUnits value) {
                                         final val = language == 'es' ? value.unitEs.orEmpty() : value.unitEn.orEmpty();
                                         return DropdownMenuItem<int>(
@@ -529,6 +320,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                     ),
                                   ),
                                 ),
+                                const SizedBox(height: Dimens.height32),
                                 Row(
                                   children: [
                                     Expanded(
@@ -548,6 +340,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                         },
                                       ),
                                     ),
+                                    const SizedBox(width: Dimens.width32),
                                     Expanded(
                                       child: TextFieldGeneralQuest(
                                         errorBorderColor: (state.profile?.physicalCharacteristics?.weight ?? 0) <= 0 ? Colors.red : Colors.grey.shade100,
@@ -567,6 +360,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                     ),
                                   ],
                                 ),
+                                const SizedBox(height: Dimens.height12),
                                 Row(
                                   children: [
                                     Expanded(
@@ -585,6 +379,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                         },
                                       ),
                                     ),
+                                    const SizedBox(width: Dimens.width32),
                                     Expanded(
                                       child: TextFieldGeneralQuest(
                                         errorBorderColor: Colors.grey.shade100,
@@ -603,34 +398,25 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                     ),
                                   ],
                                 ),
-                                Container(
-                                  margin: const EdgeInsets.only(
-                                      top: Dimens.marginXLarge),
-                                  child: RoundedCustomButton(
-                                    onPressed: () {
-                                      if (_formKey.currentState!.validate() && ((state.profile?.physicalCharacteristics?.height ?? 0) > 0) && ((state.profile?.physicalCharacteristics?.weight ?? 0) > 0)) {
-                                        // ToastHelper().showToast(text: 'validate');
-                                        bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName)));
-                                        // bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, GeneralQuestionsScreen.routeName)));
-                                      }
-                                      // else {
-                                      //   bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName)));
-                                      // }
-                                    },
-                                  ),
+                                const SizedBox(height: Dimens.height32),
+                                GeneralButton(
+                                  title: AppLocalizations.of(context)!.save,
+                                  onTap: () {
+                                    if (_formKey.currentState!.validate() && ((state.profile?.physicalCharacteristics?.height ?? 0) > 0) && ((state.profile?.physicalCharacteristics?.weight ?? 0) > 0)) {
+                                      bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName)));
+                                    }
+                                  },
                                 )
                               ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),]
-                  ),
+                            )
+                          ],
+                        ),
+                      ),]
                 ),
-              );
-            },
-          ),
-        ),
+              ),),
+            )
+          ],);
+        },
       ),
     );
   }

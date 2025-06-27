@@ -7,6 +7,7 @@ class Dimens {
   static const padding10 = 10.0;
   static const paddingNormal = 12.0;
   static const paddingLarge = 16.0;
+  static const padding20 = 20.0;
   static const paddingXLarge = 24.0;
   static const paddingXXLarge = 40.0;
   static const paddingXXXLarge = 60.0;
@@ -40,12 +41,15 @@ class Dimens {
   // Font sizes
   static const fontSize5 = 5.0;
   static const fontSizeXSmall = 10.0;
+  static const fontSize11 = 11.0;
   static const fontSizeSmall = 12.0;
   static const fontSize13 = 13.0;
   static const fontSizeNormal = 14.0;
+  static const fontSize15 = 15.0;
   static const fontSizeMedium = 16.0;
   static const fontSize17 = 17.0;
   static const fontSizeLarge = 18.0;
+  static const fontSize19 = 19.0;
   static const fontSize20 = 20.0;
   static const fontSize21 = 21.0;
   static const fontSizeXLarge = 22.0;
@@ -61,6 +65,7 @@ class Dimens {
   static const borderXLarge = 10.0;
   static const border11 = 11.0;
   static const border15 = 15.0;
+  static const border16 = 16.0;
   static const border18 = 18.0;
   static const border20 = 20.0;
   static const border50 = 50.0;
@@ -69,6 +74,7 @@ class Dimens {
   static const border100 = 100.0;
 
   // Heights
+  static const height5 = 5.0;
   static const heightXXSmall = 10.0;
   static const height12 = 12.0;
   static const height15 = 15.0;
@@ -79,6 +85,7 @@ class Dimens {
   static const height37 = 37.0;
   static const height42 = 42.0;
   static const heightSmall = 50.0;
+  static const height55 = 55.0;
   static const height60 = 60.0;
   static const height70 = 70.0;
   static const height80 = 80.0;
@@ -92,10 +99,12 @@ class Dimens {
 
   // Widths
   static const width1 = 1.0;
+  static const width5 = 5.0;
   static const widthXXXXSmall = 10.0;
   static const width12 = 12.0;
   static const width18 = 18.0;
-  static const width20 = 18.0;
+  static const width20 = 20.0;
+  static const width25 = 25.0;
   static const width32 = 32.0;
   static const width37 = 37.0;
   static const widthSmall = 50.0;
@@ -106,6 +115,7 @@ class Dimens {
   static const widthMedium = 150.0;
   static const widthLarge = 200.0;
   static const widthXLarge = 221.0;
+  static const width242 = 242.0;
   static const widthXXLarge = 270.0;
 }
 

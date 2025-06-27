@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 // TODO: Set the right icon.
@@ -6,7 +7,6 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 class CenteredIconBox extends StatefulWidget {
   final IconData icon;
   final Color colorSelected;
-  final Color errorBorderColor;
   final Function onClick;
   final bool isSelected;
 
@@ -14,7 +14,6 @@ class CenteredIconBox extends StatefulWidget {
     Key? key,
     required this.icon,
     required this.colorSelected,
-    required this.errorBorderColor,
     required this.onClick,
     this.isSelected = false,
   }) : super(key: key);
@@ -27,28 +26,23 @@ class _CenteredIconBox extends State<CenteredIconBox> {
   @override
   Widget build(BuildContext context) {
 
-    return Card(
-      elevation: 4.0,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(5)),
+    return Container(
+      decoration: BoxDecoration(
+        color: widget.isSelected ? widget.colorSelected : AppColors.yellowishGreen,
+        shape: BoxShape.rectangle,
+        borderRadius: const BorderRadius.all(Radius.circular(Dimens.border18)),
       ),
-      child: Container(
-        decoration: BoxDecoration(border: Border.all(color: widget.errorBorderColor, width: 2),
-          color: widget.isSelected ? widget.colorSelected : Colors.grey[100],
-          shape: BoxShape.rectangle,
-          borderRadius: const BorderRadius.all(Radius.circular(5)),
-        ),
-        child: InkWell(
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          onTap: () {
-            widget.onClick.call();
-          },
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal,),
-            child: Icon(
-              widget.icon,
-              size: 29,
-            ),
+      child: InkWell(
+        borderRadius: const BorderRadius.all(Radius.circular(Dimens.border18)),
+        onTap: () {
+          widget.onClick.call();
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal,),
+          child: Icon(
+            widget.icon,
+            size: 29,
+            color: widget.isSelected ? Colors.black : Colors.white,
           ),
         ),
       ),

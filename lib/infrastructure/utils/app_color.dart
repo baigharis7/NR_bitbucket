@@ -36,6 +36,7 @@ class AppColors {
   static const mustardYellow = Color(0xFFD1C413);
   static const red = Color(0xFFF76C5E);
   static const whit = Color(0xBEFFFFFF);
+  static const white90Percent = Color(0xE6FFFFFF);
   static const white85Percent = Color(0xD9FFFFFF);
   static const white65Percent = Color(0xA6FFFFFF);
   static const white70Percent = Color(0xB3FFFFFF);
@@ -44,6 +45,8 @@ class AppColors {
   static const bluishGreen = Color(0xFF15A95F);
   static const silver = Color(0xFFC8C7C7);
   static const yellowishGreen = Color(0xFF28421D);
+  static const yellowishGreen50 = Color(0x8028421D);
+  static const yellowishGreen80 = Color(0xCC28421D);
   static const butter = Color(0xFFFFFF9C);
   static const red45Percent = Color(0x73C50707);
   static const black15Percent = Color(0x26000000);
@@ -55,4 +58,6 @@ class AppColors {
   static const greenishYellow = Color(0xFF5A6E00);
   static const greyChateau = Color(0xFFABA6A6);
   static const davyGrey = Color(0xFF5C5C5C);
+  static const carbonGrey27 = Color(0x455D5D5D);
+  static const carbonGrey = Color(0xFF5D5D5D);
 }
