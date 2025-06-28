@@ -13,7 +13,6 @@ import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_urine_i
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_feces_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_urine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
-import 'package:nutrenaissance_flutter/domain/models/fecesurine/chart_days_data.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/urine.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
@@ -106,14 +105,14 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
       emit(state.copyWith(isLoading: true));
       UploadFeces uploadFeces = UploadFeces(
           userId: getUserIdInteractor.execute(),
-          eventId: state.fecesDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch,
+          eventId: state.calendarDateTime?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch,
           fecesId: state.fecesId ?? -1,
       );
       try {
         await uploadFecesInteractor.execute(uploadFeces);
         try {
           await saveFecesEventInteractor.execute(uploadFeces);
-          add(InitializationFecesEventAction());
+          state.facesDayEvents = await getFaecesByDateInteractor.execute(dateTime: state.calendarDateTime);
           _clearFields();
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
@@ -130,14 +129,14 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
       emit(state.copyWith(isLoading: true));
       UploadFeces uploadUrine = UploadFeces(
         userId: getUserIdInteractor.execute(),
-        eventId: state.urineDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch,
+        eventId: state.calendarDateTime?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch,
         fecesId: state.urineId ?? -1,
       );
       try {
         await uploadUrineInteractor.execute(uploadUrine);
         try {
           await saveUrineInteractor.execute(uploadUrine);
-          add(InitializationUrineEventAction());
+          state.urineDayEvents = await getUrineByDateInteractor.execute(dateTime: state.calendarDateTime);
           _clearFields();
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
@@ -155,7 +154,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         await deleteFecesEventInteractor.execute(event.uploadFeces.userId, event.uploadFeces.eventId);
         try {
           await removeFecesEventInteractor.execute(event.uploadFeces);
-          add(InitializationFecesEventAction());
+          state.facesDayEvents = await getFaecesByDateInteractor.execute(dateTime: state.calendarDateTime);
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
         } catch (_) {
@@ -172,7 +171,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         await deleteUrineEventInteractor.execute(event.uploadFeces.userId, event.uploadFeces.eventId);
         try {
           await removeUrineEventInteractor.execute(event.uploadFeces);
-          add(InitializationUrineEventAction());
+          state.urineDayEvents = await getUrineByDateInteractor.execute(dateTime: state.calendarDateTime);
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
         } catch (_) {
