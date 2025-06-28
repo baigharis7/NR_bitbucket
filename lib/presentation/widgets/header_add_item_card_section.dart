@@ -15,7 +15,8 @@ class HeaderAddItemCardSection extends StatefulWidget {
   final String? path;
   final Function(String, FocusNode)? onItemSelect;
   final Widget? child;
-  const HeaderAddItemCardSection({super.key, this.title, this.onBackTap, this.image, this.items, this.onItemSelect, this.path, this.child});
+  final String? backgroundImage;
+  const HeaderAddItemCardSection({super.key, this.title, this.onBackTap, this.image, this.items, this.onItemSelect, this.path, this.child, this.backgroundImage});
 
   @override
   State<HeaderAddItemCardSection> createState() => _HeaderAddItemCardSectionState();
@@ -33,6 +34,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
       decoration: BoxDecoration(
         color: AppColors.darkJungleGreen,
         borderRadius: BorderRadius.circular(16),
+        image: !widget.backgroundImage.isNull() ? DecorationImage(image: AssetImage(widget.backgroundImage!), fit: BoxFit.cover, opacity: 0.40,) : null,
         boxShadow: const [
           BoxShadow(
             color: Colors.black26,
@@ -46,6 +48,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               InkWell(
                 onTap: () => widget.onBackTap?.call(),
@@ -70,7 +73,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          if (widget.image.isNotNull()) const SizedBox(height: 16),
           Text(
             widget.title ?? '',
             style: const TextStyle(

@@ -3,6 +3,10 @@ part of 'feces_urine_bloc.dart';
 @immutable
 abstract class FecesUrineEvent {}
 
+class InitializeFecesUrineEventAction extends FecesUrineEvent {
+
+}
+
 class InitializationFecesEventAction extends FecesUrineEvent {
   final DateTime? dateTime;
   final Function? onFinish;
@@ -67,4 +71,10 @@ class SelectedUrineDayEvents extends FecesUrineEvent {
   final Function onFinish;
 
   SelectedUrineDayEvents({required this.dateTime, required this.onFinish});
+}
+
+class UpdateCalendarDateFecesUrineEventAction extends FecesUrineEvent {
+  final DateTime? dateTime;
+
+  UpdateCalendarDateFecesUrineEventAction({required this.dateTime,});
 }

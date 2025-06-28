@@ -13,6 +13,7 @@ import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../widgets/dashboard_calendar_widget.dart';
 import '../../widgets/delete_item_dialog.dart';
+import '../../widgets/feces_urine_chart.dart';
 import '../../widgets/rounded_background_container.dart';
 
 class UrineTab extends StatefulWidget {
@@ -24,13 +25,10 @@ class UrineTab extends StatefulWidget {
 
 class _UrineTabState extends State<UrineTab> {
   late FecesUrineBloc fecesUrineBloc;
-  DateTime? selectedDateTime;
 
   @override
   void initState() {
     fecesUrineBloc = BlocProvider.of<FecesUrineBloc>(context);
-    selectedDateTime = fecesUrineBloc.state.urineDate;
-    fecesUrineBloc.add(InitializationUrineEventAction(dateTime: selectedDateTime));
     super.initState();
   }
 
@@ -63,30 +61,14 @@ class _UrineTabState extends State<UrineTab> {
             if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
           },
           builder: (context, state) => Scaffold(
+            backgroundColor: Colors.transparent,
             body: Column(
               children: [
-                RoundedBackgroundContainer(
-                  margin: const EdgeInsets.all(Dimens.marginLarge,),
-                  widget: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(AppLocalizations.of(context)!.calendar),
-                      const Icon(Icons.calendar_today_outlined),
-                    ],),
-                  onTap: () {
-                    showDialog(context: context, builder: (context) => SimpleDialog(alignment: Alignment.topCenter,
-                      insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding9Large -5),
-                      contentPadding: EdgeInsets.zero,
-                      children: [
-                        DashboardCalendarWidget(currentLanguage: currentLanguage, focused: selectedDateTime, callGetAllEvents: (day) => fecesUrineBloc.getEventsForDay(state.urineEvents.orEmpty(), day), selectedDateForEventsLoading: (date) {
-                          selectedDateTime = date;
-                          fecesUrineBloc.add(InitializationUrineEventAction(dateTime: date, onFinish: () => Navigator.pop(context)));
-                        }),
-                      ],
-                    ),
-                    );
-                  },
+                FecesUrineChart(
+                  valuesList: state.urineChart14DaysData.orEmpty(),
+                  imagePaths: state.urinesList.orEmpty().map((e) => e.image).toList(),
                 ),
+                const SizedBox(height: Dimens.height5),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(

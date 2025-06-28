@@ -136,9 +136,10 @@ class DateTimeHelper {
     }
   }
 
-  static int calculateMidNightMillisecondsFromDateTime(DateTime dateTim) {
-    DateTime dateTime = DateTime(dateTim.year, dateTim.month, dateTim.day, 0, 0);
-    return dateTime.millisecondsSinceEpoch;
+  static int calculateMidNightMillisecondsFromDateTime(DateTime? dateTim) {
+    final dateTime = dateTim ?? DateTime.now();
+    DateTime dateWithoutTime = DateTime(dateTime.year, dateTime.month, dateTime.day, 0, 0);
+    return dateWithoutTime.millisecondsSinceEpoch;
   }
 
   static int calculateMidNightMillisecondsFromInt(int milliSeconds) {
@@ -188,6 +189,10 @@ class DateTimeHelper {
       print("Failed to get time zone: $e");
       return 'UTC';
     }
+  }
+
+  static DateTime getDateDaysAgo({int? daysAgo}) {
+    return DateTime.now().subtract(Duration(days: daysAgo ?? 14));
   }
 
 }

@@ -82,7 +82,6 @@ class _DatePickerBarState extends State<DatePickerBar> {
 
     return Container(
       height: Dimens.height34,
-      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
       child: Row(
         children: [
           InkWell(

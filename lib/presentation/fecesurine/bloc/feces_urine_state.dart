@@ -16,6 +16,9 @@ class FecesUrineState {
   int? urineId;
   DateTime? fecesDate;
   DateTime? urineDate;
+  List<Map<String, dynamic>>? chart14DaysData;
+  List<Map<String, dynamic>>? urineChart14DaysData;
+  DateTime? calendarDateTime;
 
   FecesUrineState({
     required this.isLoading,
@@ -30,6 +33,9 @@ class FecesUrineState {
     this.urineId,
     this.fecesDate,
     this.urineDate,
+    this.chart14DaysData,
+    this.urineChart14DaysData,
+    this.calendarDateTime,
   });
 
   FecesUrineState copyWith({
@@ -45,6 +51,9 @@ class FecesUrineState {
     int? urineId,
     DateTime? fecesDate,
     DateTime? urineDate,
+    List<Map<String, dynamic>>? chart14DaysData,
+    List<Map<String, dynamic>>? urineChart14DaysData,
+    DateTime? calendarDateTime,
   }) {
     return FecesUrineState(
       isLoading: isLoading,
@@ -59,6 +68,9 @@ class FecesUrineState {
       urineId: urineId ?? this.urineId,
       fecesDate: fecesDate ?? this.fecesDate,
       urineDate: urineDate ?? this.urineDate,
+      chart14DaysData: chart14DaysData ?? this.chart14DaysData,
+      urineChart14DaysData: urineChart14DaysData ?? this.urineChart14DaysData,
+      calendarDateTime: calendarDateTime ?? this.calendarDateTime,
     );
   }
 }

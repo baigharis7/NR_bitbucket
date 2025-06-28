@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -9,8 +12,12 @@ import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces/view/f
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/urine/view/urine_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/urine_tab.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
 
+import '../../../infrastructure/helpers/date_time_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
+import '../../widgets/date_picker_bar.dart';
 import '../../widgets/rounded_custom_button.dart';
 
 class FecesUrineTabHolder extends StatefulWidget {
@@ -25,32 +32,40 @@ class FecesUrineTabHolder extends StatefulWidget {
 class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
     with SingleTickerProviderStateMixin {
   late FecesUrineBloc fecesUrineBloc;
-  String? title;
   late TabController _tabController;
   int _selectedTab = 0;
 
-  void _manageTabChange(BuildContext context) {
-    setState(() {
-      if (_selectedTab == 0) {
-        title = AppLocalizations.of(context)!.faeces;
-      } else if (_selectedTab == 1) {
-        title = AppLocalizations.of(context)!.urine;
-      }
-    });
+  List<String> _tabs = ['', ''];
+
+  @override
+  void didChangeDependencies() {
+    _tabs = [AppLocalizations.of(context)!.faeces.toUpperCase(), AppLocalizations.of(context)!.urine.toUpperCase()];
+    super.didChangeDependencies();
   }
 
   @override
   void initState() {
     fecesUrineBloc = BlocProvider.of<FecesUrineBloc>(context);
-    // fecesUrineBloc.add(InitializationFecesEventAction());
-
-    _tabController = TabController(length: 2, vsync: this);
+    fecesUrineBloc.add(InitializeFecesUrineEventAction());
+    _tabController = TabController(length: _tabs.length, vsync: this);
     _tabController.addListener(() {
       setState(() {
         _selectedTab = _tabController.index;
-        _manageTabChange(context);
       });
     });
+
+    final widgetsBinding = WidgetsBinding.instance;
+    widgetsBinding.addPostFrameCallback((callback) {
+      if (ModalRoute.of(context)?.settings.arguments != null) {
+        var infoReceived = ModalRoute.of(context)?.settings.arguments;
+        if (infoReceived != null) {
+          if (infoReceived is DateTime?) {
+            fecesUrineBloc.add(UpdateCalendarDateFecesUrineEventAction(dateTime: infoReceived as DateTime?,));
+          }
+        }
+      }
+    });
+
     super.initState();
   }
 
@@ -62,96 +77,100 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          titleSpacing: Dimens.marginNormal,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black,
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: Row(
-            children: [
-              Text(
-                AppLocalizations.of(context)!.journal,
-                style: const TextStyle(
-                  fontSize: Dimens.fontSizeXXLarge,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Container(
-                height: 28,
-                margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                child: Image.asset('assets/icon/journal_icon.png'),
-              ),
-            ],
-          ),
-          bottom: TabBar(
-            controller: _tabController,
-            onTap: (index) => _manageTabChange(context),
-            labelColor: Colors.black,
-            indicatorColor: Colors.black,
-            tabs: [
-              Tab(text: AppLocalizations.of(context)!.faeces.toUpperCase()),
-              Tab(text: AppLocalizations.of(context)!.urine.toUpperCase()),
-            ],
-          ),
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: TabBarView(
-                // physics: const NeverScrollableScrollPhysics(),
-                controller: _tabController,
-                children: const [
-                  FecesTab(),
-                  UrineTab(),
-                ],
-              ),
-            ),
+    return BlocProvider.value(
+      value: fecesUrineBloc,
+      child: BlocConsumer<FecesUrineBloc, FecesUrineState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          return Stack(children: [
+            // Background image or gradient
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadiusDirectional.vertical(
-                        top: Radius.circular(5.0),),
-                    color: Colors.white,
-                    boxShadow: [BoxShadow(blurRadius: 5.0)],),
-              child: InkWell(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall, vertical: Dimens.marginXXLarge),
-                  padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.rectangle,
-                    color: AppColors.mountainMeadow,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(AppLocalizations.of(context)!.add_deposition, style: const TextStyle(color: Colors.white)),
-                      const Icon(Icons.add_circle, color: Colors.white),
-                    ],
-                  ),
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/background.png'), // Your image
+                  fit: BoxFit.cover,
                 ),
-                onTap: () {
-                  if (_selectedTab == 0) {
-                    Navigator.pushNamed(context, FecesScreen.routeName);
-                  } else if (_selectedTab == 1) {
-                    Navigator.pushNamed(context, UrineScreen.routeName);
-                  }
-                },
               ),
             ),
-          ],
-        ),
-      ),
-    );
+
+            // Blur effect
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                color: Colors.black.withOpacity(0), // Needed to activate the blur
+              ),
+            ),
+
+            Scaffold(
+              backgroundColor: Colors.transparent,
+              body: SafeArea(child: Container(
+                margin: const EdgeInsets.all(Dimens.marginSmall),
+                child: Column(
+                  children: [
+                    DatePickerBar(selectedDateTime: state.calendarDateTime, onChangeDate: (dateTime) {
+                      fecesUrineBloc.add(UpdateCalendarDateFecesUrineEventAction(dateTime: dateTime,));
+                    },),
+                    const SizedBox(height: Dimens.height12),
+                    HeaderAddItemCardSection(title: AppLocalizations.of(context)!.faeces_urine, onBackTap: () => Navigator.pop(context), image: 'assets/images/feces_urine.png', backgroundImage: 'assets/images/feces_urine_background.png'),
+                    const SizedBox(height: Dimens.height12),
+                    TabBar(
+                      controller: _tabController,
+                      indicator: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(Dimens.borderNormal),
+                      ),
+                      labelPadding: const EdgeInsets.symmetric(horizontal: Dimens.padding10),
+                      labelColor: Colors.white,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      unselectedLabelColor: AppColors.yellowishGreen,
+                      tabs: List.generate(_tabs.length, (index) {
+                        final isSelected = _tabController.index == index;
+                        return Container(
+                          height: 45,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(Dimens.borderNormal),
+                            color: isSelected ? AppColors.yellowishGreen : AppColors.butter59,
+                          ),
+                          child: Text(_tabs[index]),
+                        );
+                      }),
+                      // tabs: [
+                      //   Tab(text: AppLocalizations.of(context)!.faeces.toUpperCase()),
+                      //   Tab(text: AppLocalizations.of(context)!.urine.toUpperCase()),
+                      // ],
+                    ),
+                    const SizedBox(height: Dimens.height5),
+                    const Divider(color: AppColors.yellowishGreen, height: 2, thickness: 2,),
+                    const SizedBox(height: Dimens.height12),
+                    Expanded(
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: const [
+                          FecesTab(),
+                          UrineTab(),
+                        ],
+                      ),
+                    ),
+                    ListTile(
+                      onTap: () {
+                        if (_selectedTab == 0) {
+                          Navigator.pushNamed(context, FecesScreen.routeName);
+                        } else if (_selectedTab == 1) {
+                          Navigator.pushNamed(context, UrineScreen.routeName);
+                        }
+                      },
+                      leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
+                      title: Text(
+                        AppLocalizations.of(context)!.add_deposition,
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline,),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+            ),
+          ],);
+        },),);
   }
 }

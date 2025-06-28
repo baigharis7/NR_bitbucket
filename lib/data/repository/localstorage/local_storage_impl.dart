@@ -1027,23 +1027,25 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<List> getFecesEventsByDate({DateTime? dateTime}) async {
+  Future<List> getFecesEventsByDate({DateTime? dateTime, int? prevDays}) async {
     List list = await _getFecesEventsBox.then((box) {
       return box.values.toList();
     });
 
-    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
-    return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == midnightTime).toList();
+    final midnightTime = prevDays.isNull() ? DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime) : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(DateTimeHelper.getDateDaysAgo(daysAgo: prevDays));
+    if (prevDays.isNull()) return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == midnightTime).toList();
+    return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) >= midnightTime).toList();
   }
 
   @override
-  Future<List> getUrineEventsByDate({DateTime? dateTime}) async {
+  Future<List> getUrineEventsByDate({DateTime? dateTime, int? prevDays}) async {
     List list = await _getUrineEventsBox.then((box) {
       return box.values.toList();
     });
 
-    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
-    return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == midnightTime).toList();
+    final midnightTime = prevDays.isNull() ? DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime) : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(DateTimeHelper.getDateDaysAgo(daysAgo: prevDays));
+    if (prevDays.isNull()) return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == midnightTime).toList();
+    return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) >= midnightTime).toList();
   }
 
   @override

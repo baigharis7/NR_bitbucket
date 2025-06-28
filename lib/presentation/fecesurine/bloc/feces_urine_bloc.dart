@@ -13,6 +13,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_urine_i
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_feces_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_urine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/fecesurine/chart_days_data.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/urine.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
@@ -55,45 +56,50 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
     required this.getFaecesByDateInteractor,
     required this.getUrineByDateInteractor,
   }) : super(FecesUrineState(isLoading: false)) {
+
+    on<InitializeFecesUrineEventAction>((event, emit) {
+      emit(state.copyWith(isLoading: true));
+      add(InitializationFecesEventAction());
+
+      add(InitializationUrineEventAction());
+      emit(state.copyWith(isLoading: false));
+    });
+
     on<InitializationFecesEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.fecesList = Feces.listOfAllFeces();
-      state.urinesList = Urines.listOfAllUrines();
-      state.fecesEvents = await getFecesEventsInteractor.execute();
-      state.facesDayEvents = await getFaecesByDateInteractor.execute(dateTime: event.dateTime);
+      // state.facesDayEvents = await getFaecesByDateInteractor.execute(dateTime: state.calendarDateTime);
+      final prev14DaysEvents = await getFaecesByDateInteractor.execute(prevDays: 14);
+      state.chart14DaysData = getPrevDaysData(list: prev14DaysEvents);
+      state.chart14DaysData.orEmpty().removeWhere((element) => element['fecesId'] == 0);
 
-      if (event.dateTime != null) state.fecesDate = event.dateTime;
-      if (event.onFinish != null) event.onFinish?.call();
       emit(state.copyWith(isLoading: false));
     });
 
     on<InitializationUrineEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
-      state.urineEvents = await getUrineEventsInteractor.execute();
-      state.urineDayEvents = await getUrineByDateInteractor.execute(dateTime: event.dateTime);
+      state.urinesList = Urines.listOfAllUrines();
+      // final urineEvents = await getUrineByDateInteractor.execute(dateTime: state.calendarDateTime);
+      // state.urineDayEvents = urineEvents;
+      final urineChart14DaysData = await getUrineByDateInteractor.execute(prevDays: 14);
+      state.urineChart14DaysData = getPrevDaysData(list: urineChart14DaysData);
 
-      if (event.dateTime != null) state.urineDate = event.dateTime;
-      if (event.onFinish != null) event.onFinish?.call();
       emit(state.copyWith(isLoading: false));
     },);
 
-    on<UpdateFecesEventAction>(
-      (event, emit) {
+    on<UpdateFecesEventAction>((event, emit) {
         emit(state.copyWith(isLoading: true));
-        state.fecesId = event.feceId;
+        state.fecesId = state.fecesId == event.feceId ? null : event.feceId;
 
         emit(state.copyWith(isLoading: false));
-      },
-    );
+      },);
 
-    on<UpdateUrineEventAction>(
-      (event, emit) {
+    on<UpdateUrineEventAction>((event, emit) {
         emit(state.copyWith(isLoading: true));
-        state.urineId = event.urineId;
+        state.urineId = state.urineId == event.urineId ? null : event.urineId;
 
         emit(state.copyWith(isLoading: false));
-      },
-    );
+      },);
 
     on<UploadFecesEventAction>((event, emit) async {
       if (state.fecesId.isNull()) return;
@@ -177,6 +183,16 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
       }
     },);
 
+    on<UpdateCalendarDateFecesUrineEventAction>((event, emit) async {
+      state.calendarDateTime = event.dateTime;
+      final fecesDayList = await getFaecesByDateInteractor.execute(dateTime: event.dateTime);
+      state.facesDayEvents = fecesDayList;
+      final urineDayList = await getUrineByDateInteractor.execute(dateTime: event.dateTime);
+      state.urineDayEvents = urineDayList;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
     on<SelectedFacesDayEvents>((event, emit) {
       emit(state.copyWith(isLoading: true));
       state.facesDayEvents = [];
@@ -213,5 +229,40 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
   void _clearFields() {
     state.fecesId = null;
     state.urineId = null;
+  }
+
+  List<Map<String, dynamic>> getPrevDaysData({required List<UploadFeces> list}) {
+    // final Map<int, int> fecesCountMap = {};
+    //
+    // for (var item in list) {
+    //   int fecesId = item.fecesId;
+    //   fecesCountMap[fecesId] = (fecesCountMap[fecesId] ?? 0) + 1;
+    // }
+    //
+    // // Convert to list of maps (optional if you want structured result)
+    // return fecesCountMap.entries.map((e) => {
+    //   'fecesId': e.key,
+    //   'count': (e.value / 14) * 100,
+    // },).toList();
+
+    // Initialize map with all IDs from 0 to 7 and default count 0
+    final Map<int, int> fecesCountMap = {
+      for (int i = 0; i <= 7; i++) i: 0,
+    };
+
+    // Count actual occurrences
+    for (var item in list) {
+      int fecesId = item.fecesId;
+      if (fecesCountMap.containsKey(fecesId)) {
+        fecesCountMap[fecesId] = fecesCountMap[fecesId]! + 1;
+      }
+    }
+
+    // Convert to list of maps for consistency
+    return fecesCountMap.entries
+        .map((entry) => {
+      'fecesId': entry.key,
+      'count': (entry.value / 14) * 100,
+    }).toList();
   }
 }

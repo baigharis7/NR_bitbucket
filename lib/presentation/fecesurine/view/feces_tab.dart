@@ -4,11 +4,13 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/bloc/feces_urine_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/feces_urine_chart.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/radio_title_desc_image.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_background_container.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
+import '../../../domain/models/profile/feces.dart';
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../common/view/loading_screen.dart';
@@ -30,7 +32,6 @@ class _FecesTabState extends State<FecesTab> {
   void initState() {
     fecesUrineBloc = BlocProvider.of<FecesUrineBloc>(context);
     selectedDateTime = fecesUrineBloc.state.fecesDate;
-    fecesUrineBloc.add(InitializationFecesEventAction(dateTime: selectedDateTime));
     super.initState();
   }
 
@@ -63,41 +64,47 @@ class _FecesTabState extends State<FecesTab> {
             if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
           },
           builder: (context, state) => Scaffold(
+            backgroundColor: Colors.transparent,
             body: Column(
               children: [
-                RoundedBackgroundContainer(
-                  margin: const EdgeInsets.all(
-                    Dimens.marginLarge,
-                  ),
-                  widget: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(AppLocalizations.of(context)!.calendar),
-                      const Icon(Icons.calendar_today_outlined),
-                    ],
-                  ),
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => SimpleDialog(
-                        alignment: Alignment.topCenter,
-                        insetPadding: const EdgeInsets.symmetric(
-                            horizontal: Dimens.paddingLarge,
-                            vertical: Dimens.padding9Large - 5),
-                        contentPadding: EdgeInsets.zero,
-                        children: [
-                          DashboardCalendarWidget(
-                              callGetAllEvents: (day) =>
-                                  fecesUrineBloc.getEventsForDay(
-                                      state.fecesEvents.orEmpty(), day), focused: selectedDateTime, selectedDateForEventsLoading: (date) {
-                                selectedDateTime = date;
-                                fecesUrineBloc.add(InitializationFecesEventAction(dateTime: date, onFinish: () => Navigator.pop(context)));
-                          }, currentLanguage: currentLanguage,),
-                        ],
-                      ),
-                    );
-                  },
+                // RoundedBackgroundContainer(
+                //   margin: const EdgeInsets.all(
+                //     Dimens.marginLarge,
+                //   ),
+                //   widget: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: [
+                //       Text(AppLocalizations.of(context)!.calendar),
+                //       const Icon(Icons.calendar_today_outlined),
+                //     ],
+                //   ),
+                //   onTap: () {
+                //     showDialog(
+                //       context: context,
+                //       builder: (context) => SimpleDialog(
+                //         alignment: Alignment.topCenter,
+                //         insetPadding: const EdgeInsets.symmetric(
+                //             horizontal: Dimens.paddingLarge,
+                //             vertical: Dimens.padding9Large - 5),
+                //         contentPadding: EdgeInsets.zero,
+                //         children: [
+                //           DashboardCalendarWidget(
+                //               callGetAllEvents: (day) =>
+                //                   fecesUrineBloc.getEventsForDay(
+                //                       state.fecesEvents.orEmpty(), day), focused: selectedDateTime, selectedDateForEventsLoading: (date) {
+                //                 selectedDateTime = date;
+                //                 fecesUrineBloc.add(InitializationFecesEventAction(dateTime: date, onFinish: () => Navigator.pop(context)));
+                //           }, currentLanguage: currentLanguage,),
+                //         ],
+                //       ),
+                //     );
+                //   },
+                // ),
+                FecesUrineChart(
+                valuesList: state.chart14DaysData.orEmpty(),
+                imagePaths: Feces.listOfAllFeces().map((e) => e.image).toList(),
                 ),
+                const SizedBox(height: Dimens.height5),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(

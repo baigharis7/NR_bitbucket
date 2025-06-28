@@ -181,9 +181,12 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                     // child: (state.mealType ?? -1) <= -1 ? MealTypeSelectionWidget(onSaveMealType: (mealType) => bloc.add(AddFoodMealTypeEventAction(mealType: mealType))) : Column(
                     child: Column(
                       children: [
-                        DatePickerBar(selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.eventDate), onChangeDate: (dateTime) {
-                          bloc.add(UpdateEventDateEventAction(dateTime: dateTime));
-                        },),
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+                          child: DatePickerBar(selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.eventDate), onChangeDate: (dateTime) {
+                            bloc.add(UpdateEventDateEventAction(dateTime: dateTime));
+                          },),
+                        ),
                         const SizedBox(height: Dimens.height12),
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
