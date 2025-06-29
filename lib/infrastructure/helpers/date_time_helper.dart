@@ -195,4 +195,19 @@ class DateTimeHelper {
     return DateTime.now().subtract(Duration(days: daysAgo ?? 14));
   }
 
+  static TimeOfDay timeOfDayFrom24HrString(String? timeString) {
+    if(timeString.isNull()) return TimeOfDay.now();
+    final parts = timeString!.split(':');
+    final hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+    return TimeOfDay(hour: hour, minute: minute);
+  }
+
+  static String timeOfDayTo24HrString(TimeOfDay time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return '$hour:$minute'; // e.g., 21:05
+  }
+
+
 }

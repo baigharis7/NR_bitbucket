@@ -73,7 +73,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
               ),
             ],
           ),
-          if (widget.image.isNotNull()) const SizedBox(height: 16),
+          if (widget.image.isNull()) const SizedBox(height: Dimens.height12),
           Text(
             widget.title ?? '',
             style: const TextStyle(

@@ -80,6 +80,7 @@ class Dimens {
   static const height12 = 12.0;
   static const height15 = 15.0;
   static const heightXSmall = 20.0;
+  static const height27 = 27.0;
   static const height30 = 30.0;
   static const height32 = 32.0;
   static const height34 = 34.0;

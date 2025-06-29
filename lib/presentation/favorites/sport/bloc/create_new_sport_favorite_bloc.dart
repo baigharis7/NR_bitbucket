@@ -140,9 +140,6 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
       state.comment = event.favoritesSport.comment;
       state.favoriteSportName = event.favoritesSport.title;
       state.isEdit = true;
-      state.isCreateRoutine = !event.favoritesSport.routineTime.isNull();
-      state.routineHour = DateTimeHelper.timeOfDayFromMillis(int.tryParse(event.favoritesSport.routineTime.orEmpty()));
-      state.routineDate = DateTimeHelper.dateTimeFromMilliseconds(int.tryParse(event.favoritesSport.routineTime.orEmpty()));
 
       emit(state.copyWith(isLoading: false));
     },);
@@ -169,7 +166,6 @@ class CreateNewSportFavoriteBloc extends BaseBloc<CreateNewSportFavoriteActions,
         comment: state.comment,
         // info: state.info,
         info: state.info?.map((favSport) => AddSportFavInfo(id: favSport.id, minutes: favSport.minutes, intensity: favSport.intensity, timeStart: int.tryParse(routineTime), name_en: favSport.name_en, name_es: favSport.name_es)).toList(),
-        routineTime: routineTime,
       );
 
       try {

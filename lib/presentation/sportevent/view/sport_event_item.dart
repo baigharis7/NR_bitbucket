@@ -10,15 +10,15 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
+import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../domain/models/favorites/sport/sport_favorite.dart';
 
 class SportEventItem extends StatefulWidget {
   final int? sportIntensities;
-  final SportInfo sport;
+  final AddSportFavInfo sport;
   final Function removeSport;
-  final Function(SportInfo) editMinutes;
-  final Function(SportInfo) editIntensity;
-  final Function(SportInfo) editDateTime;
+  final Function(AddSportFavInfo) editMinutes;
+  final Function(AddSportFavInfo) editIntensity;
   const SportEventItem({
     Key? key,
     required this.sportIntensities,
@@ -26,7 +26,6 @@ class SportEventItem extends StatefulWidget {
     required this.removeSport,
     required this.editMinutes,
     required this.editIntensity,
-    required this.editDateTime,
   }) : super(key: key);
 
   @override
@@ -38,7 +37,6 @@ class _SportEventItem extends State<SportEventItem> {
   int? _sportIntensities;
   int? _duration;
   int? _intensity;
-  String? _timeOfDay;
   bool _error = false;
   final _durationTextController = TextEditingController();
 
@@ -64,25 +62,21 @@ class _SportEventItem extends State<SportEventItem> {
 
   @override
   Widget build(BuildContext context) {
-    final currentLanguage = Localizations.localeOf(context).languageCode;
-    final eventsHelper = EventsHelper();
-    // if (widget.sportName != null && widget.sportName != '') {
+    final sportInfo = widget.sport;
       _sportIntensities = widget.sportIntensities;
       _sportName = widget.sport.translate(context);
-    // }
     if (widget.sport.minutes != null && _durationTextController.text == '') {
       _duration = widget.sport.minutes;
       _durationTextController.text = _duration.toString();
     }
-    if (widget.sport.timeStart != null) _timeOfDay = DateFormat('hh:mm a, MM/dd/yy').format(DateTime.fromMillisecondsSinceEpoch(widget.sport.timeStart ?? 0));
+
     if (widget.sport.intensity != null) _intensity = widget.sport.intensity;
-    // _error = widget.sport.minutes == null || widget.sport.intensity == null || widget.sport.timeStart == null;
     _error = widget.sport.minutes == null || widget.sport.intensity == null;
 
     return Container(
       decoration: BoxDecoration(
         border: _error ? const Border.fromBorderSide(BorderSide(color: AppColors.red45Percent,  width: 4)) : null,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(Dimens.border15),
         color: _error ? AppColors.white65Percent : AppColors.white85Percent,),
       margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge,),
       padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingNormal),
@@ -92,35 +86,25 @@ class _SportEventItem extends State<SportEventItem> {
           Row(
             children: [
               Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(
-                      left: Dimens.marginNormal,
-                  ),
-                  child: Text(
-                    _sportName.orEmpty(),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: Dimens.fontSizeLarge,
-                    ),
+                child: Text(
+                  _sportName.orEmpty(),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: Dimens.fontSizeLarge,
                   ),
                 ),
               ),
-              IconButton(
-                onPressed: () => widget.removeSport.call(),
-                icon: const Icon(Icons.cancel_outlined, size: Dimens.heightXSmall),
-              ),
+              // InkWell(onTap: () { /*assets/images/favorite_icon.png*/ }, child: Image.asset('assets/icon/un_favorite_outlined.png', height: Dimens.heightXSmall)),
+              const SizedBox(width: Dimens.width12),
+              InkWell(onTap: () => widget.removeSport.call(), child: const Icon(Icons.cancel_outlined, size: Dimens.height27, color: AppColors.yellowishGreen)),
             ],
           ),
-          Container(
-            margin: const EdgeInsets.symmetric(
-              horizontal: Dimens.marginNormal,
-            ),
-            child:
-            Text(AppLocalizations.of(context)!.duration, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal)),
-          ),
+          Text(AppLocalizations.of(context)!.duration, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal)),
           const SizedBox(height: Dimens.height12),
           SizedBox(
-            height: Dimens.heightSmall - 15,
+            height: Dimens.height34,
             child: Row(
               children: [
                 Expanded(
@@ -128,49 +112,39 @@ class _SportEventItem extends State<SportEventItem> {
                   child: TextField(
                     keyboardType: TextInputType.number,
                     controller: _durationTextController,
+                    textAlignVertical: TextAlignVertical.center,
                     decoration: const InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(11)),
-                        borderSide: BorderSide(color: AppColors.silver, width: 1),
-                      ),
+                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.silver, width: 1), borderRadius: BorderRadius.all(Radius.circular(Dimens.border11))),
+                      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.silver, width: 1), borderRadius: BorderRadius.all(Radius.circular(Dimens.border11))),
                     ),
                     onChanged: (minutes) {
-                      widget.editMinutes.call(SportInfo(id: widget.sport.id, name_es: widget.sport.name_es, name_en: widget.sport.name_en, intensity: widget.sport.intensity, minutes: minutes.isEmpty ? null : int.parse(minutes), timeStart: widget.sport.timeStart));
+                      sportInfo.minutes = minutes.isEmpty ? null : int.parse(minutes);
+                      widget.editMinutes.call(sportInfo);
                     },
                   ),
                 ),
+                const SizedBox(width: Dimens.width12),
                 Expanded(
                   flex: 2,
                   child: Container(
                     alignment: Alignment.center,
-                    margin: const EdgeInsets.only(
-                        left: Dimens.marginNormal,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
+                    padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
                     decoration: const BoxDecoration(
                         color: Colors.white,
-                        borderRadius:
-                        BorderRadius.all(Radius.circular(11)),
-                        border: Border.fromBorderSide(
-                            BorderSide(color: AppColors.silver, width: 2))),
-                    child: Text(
-                      AppLocalizations.of(context)!.minutes.toLowerCase(),
+                        borderRadius: BorderRadius.all(Radius.circular(Dimens.border11)),
+                        border: Border.fromBorderSide(BorderSide(color: AppColors.silver, width: 1))),
+                    child: Text(AppLocalizations.of(context)!.minutes.toLowerCase(),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          Container(
-            alignment: Alignment.centerLeft,
-            margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-            child: Text(AppLocalizations.of(context)!.intensity, style: const TextStyle(color: AppColors.yellowishGreen, fontSize: Dimens.fontSizeNormal, fontWeight: FontWeight.w700)),
-          ),
-          _sportIntensities != null && _sportIntensities! > 1
-              ? Container(
+          const SizedBox(height: Dimens.height12),
+          if (_sportIntensities != null && _sportIntensities! > 1) Text(AppLocalizations.of(context)!.intensity, style: const TextStyle(color: AppColors.yellowishGreen, fontSize: Dimens.fontSizeNormal, fontWeight: FontWeight.w700)),
+          if (_sportIntensities != null && _sportIntensities! > 1) Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
                 height: Dimens.heightSmall - 15,
                 decoration: const BoxDecoration(
@@ -187,7 +161,8 @@ class _SportEventItem extends State<SportEventItem> {
                   value: _intensity.isNull() ? null : getIntensityList(_sportIntensities!, context)[_intensity!],
                   onChanged: (String? intensity) {
                     final intensityIndex = getIntensityList(_sportIntensities!, context,).indexOf(intensity ?? '');
-                    widget.editIntensity.call(SportInfo(id: widget.sport.id, name_es: widget.sport.name_es, name_en: widget.sport.name_en, intensity: intensityIndex, minutes: widget.sport.minutes, timeStart: widget.sport.timeStart));
+                    sportInfo.intensity = intensityIndex;
+                    widget.editIntensity.call(sportInfo);
                   },
                   items: getIntensityList(_sportIntensities!, context,)
                       .map<DropdownMenuItem<String>>(
@@ -205,8 +180,7 @@ class _SportEventItem extends State<SportEventItem> {
                   )
                       .toList(),
                 ),
-              )
-              : Container(),
+              ),
         ],
       ),
     );

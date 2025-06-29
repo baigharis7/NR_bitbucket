@@ -320,6 +320,7 @@
     "finish" : "Finalizar",
     "event_saved_successfully" : "Se ha guardado el evento con éxito",
     "add_sport_event" : "Añadir ejercicio",
+    "add_physical_activity" : "Agregar actividad física",
     "liquid_event" : "Evento de bebida",
     "ml" : "ml",
     "liters" : "litros",

@@ -7,11 +7,12 @@ part 'sport_event_simple.g.dart';
 class SportEventSimple {
   String? userId;
   int? eventId;
+  int? eventDate;
   List<SportInfo>? info;
   String? comment;
   String? sportName;
 
-  SportEventSimple({this.userId, this.eventId, this.info, this.comment, this.sportName});
+  SportEventSimple({this.userId, this.eventId, this.eventDate, this.info, this.comment, this.sportName});
   SportEventSimple.empty() {
     userId = null;
     eventId = null;

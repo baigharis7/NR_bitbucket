@@ -251,12 +251,11 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
                         child: Column(children: [
                           ...state.info.orEmpty().map((sport) => SportEventItem(
                             sportIntensities: eventsHelper.getChosenSportIntensities(sport.translate(context), state.sportsInfo!, currentLanguage),
-                            sport: SportInfo(id: sport.id, name_es: sport.name_es, name_en: sport.name_en, timeStart: sport.timeStart, intensity: sport.intensity, minutes: sport.minutes),
+                            sport: AddSportFavInfo(id: sport.id, name_es: sport.name_es, name_en: sport.name_en, timeStart: sport.timeStart, intensity: sport.intensity, minutes: sport.minutes),
                             removeSport: () { bloc.add(RemoveSportFavAction(addSportFavInfo: sport)); },
                             editMinutes: (updatedSport) { bloc.add(UpdateMinutesSportFavAction(addSportFavInfo: AddSportFavInfo(id: updatedSport.id, minutes: updatedSport.minutes, intensity: updatedSport.intensity, timeStart: updatedSport.timeStart, name_en: updatedSport.name_en, name_es: updatedSport.name_es))); },
                             editIntensity: (updatedSport) { bloc.add(UpdateIntensitySportFavAction(addSportFavInfo: AddSportFavInfo(id: updatedSport.id, minutes: updatedSport.minutes, intensity: updatedSport.intensity, timeStart: updatedSport.timeStart, name_en: updatedSport.name_en, name_es: updatedSport.name_es))); },
-                            editDateTime: (updatedSport) { bloc.add(UpdateTimeStartSportFavAction(addSportFavInfo: AddSportFavInfo(id: updatedSport.id, minutes: updatedSport.minutes, intensity: updatedSport.intensity, timeStart: updatedSport.timeStart, name_en: updatedSport.name_en, name_es: updatedSport.name_es))); },
-                          ),),
+                            ),),
                           if (state.info.orEmpty().isNotEmpty) IconButton(
                             onPressed: () { _focusInputController.requestFocus(); },
                             icon: const Icon(Icons.add_circle, color: Colors.teal, size: 28),

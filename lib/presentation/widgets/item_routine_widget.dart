@@ -2,52 +2,51 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/routine_days_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.dart';
 
 import '../../infrastructure/helpers/date_time_helper.dart';
 
 class ItemRoutineWidget extends StatefulWidget {
   final Function(TimeOfDay) onTimeChange;
-  const ItemRoutineWidget({super.key, required this.onTimeChange});
+  final Function(int)? onChangeWeekDays;
+  final List<int>? daysOfWeek;
+  final TimeOfDay? scheduleTime;
+  const ItemRoutineWidget({super.key, required this.onTimeChange, required this.onChangeWeekDays, required this.daysOfWeek, required this.scheduleTime});
 
   @override
   State<ItemRoutineWidget> createState() => _ItemRoutineWidgetState();
 }
 
 class _ItemRoutineWidgetState extends State<ItemRoutineWidget> {
-  TimeOfDay selectedTime = TimeOfDay(hour: 0, minute: 0);
-
-  List<String> dayAbbreviations = [];
-  List<bool> selectedDays = List.generate(7, (_) => false);
+  late TimeOfDay _selectedTime;
+  late List<int> _daysOfWeek;
 
   @override
   void initState() {
-    _generateWeekdayAbbreviations();
+    _daysOfWeek = widget.daysOfWeek ?? [];
+    _selectedTime = widget.scheduleTime ?? TimeOfDay.now();
     super.initState();
-  }
-
-  void _generateWeekdayAbbreviations() {
-    // final currentLanguage = Localizations.localeOf(context).languageCode;
-    final now = DateTime.now();
-    final DateFormat formatter = DateFormat.E('en'); // Spanish short weekday names
-    // final weekDates = DateTimeHelper.getCurrentWeekDates();;
-    dayAbbreviations = List.generate(7, (i) {
-      final day = now.subtract(Duration(days: now.weekday - 1)).add(Duration(days: i));
-      return formatter.format(day).substring(0, 2); // e.g., "Lu", "Ma"
-    });
-    // setState(() {});
   }
 
   void _pickTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: selectedTime,
+      initialTime: _selectedTime,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), // 👈 enables 24-hour picker UI
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       widget.onTimeChange.call(picked);
       setState(() {
-        selectedTime = picked;
+        _selectedTime = picked;
       });
     }
   }
@@ -55,88 +54,60 @@ class _ItemRoutineWidgetState extends State<ItemRoutineWidget> {
   @override
   Widget build(BuildContext context) {
     final mediaQuerySize = MediaQuery.of(context).size;
-    if (dayAbbreviations.isEmpty) return CircularProgressIndicator();
 
     return SimpleDialog(
       backgroundColor: Colors.transparent,
       contentPadding: const EdgeInsets.all(Dimens.paddingXLarge),
       insetPadding: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
       children: [
         Column(
           children: [
             SizedBox(
               width: mediaQuerySize.width,
-              height: mediaQuerySize.height/2.5,
+              // height: mediaQuerySize.height/2.5,
               child: Card(
-                color: Colors.grey[200],
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                color: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
                 child: Container(
-                  padding: EdgeInsets.all(Dimens.paddingLarge),
+                  padding: const EdgeInsets.all(Dimens.paddingLarge),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      /// Title Row
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             AppLocalizations.of(context)!.create_routine,
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),
                           ),
-                          Icon(Icons.access_time),
+                          const Icon(Icons.access_time, color: AppColors.yellowishGreen),
                         ],
                       ),
-
-                      SizedBox(height: 16),
-
-                      /// Time Picker
-                      Text(AppLocalizations.of(context)!.hour, style: TextStyle(fontWeight: FontWeight.bold)),
-                      SizedBox(height: 8),
+                      const SizedBox(height: Dimens.height12),
+                      Text(AppLocalizations.of(context)!.hour, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen)),
+                      const SizedBox(height: Dimens.height5),
                       InkWell(
                         onTap: _pickTime,
                         child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                          padding: const EdgeInsets.all(Dimens.padding10,),
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade400),
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(Dimens.border11),
                           ),
                           child: Text(
-                            selectedTime.format(context),
-                            style: TextStyle(fontSize: 16),
+                            _selectedTime.format(context),
+                            style: const TextStyle(fontWeight: FontWeight.w500, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),
                           ),
                         ),
                       ),
-
-                      SizedBox(height: 16),
-
-                      /// Week Days
-                      Text(AppLocalizations.of(context)!.days_of_week, style: TextStyle(fontWeight: FontWeight.bold)),
-                      SizedBox(height: 12),
-                      Wrap(
-                        spacing: 8,
-                        children: List.generate(dayAbbreviations.length, (index) {
-                          bool isSelected = selectedDays[index];
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedDays[index] = !isSelected;
-                              });
-                            },
-                            child: CircleAvatar(
-                              backgroundColor: isSelected ? Colors.green[900] : Colors.white,
-                              radius: 20,
-                              child: Text(
-                                dayAbbreviations[index],
-                                style: TextStyle(
-                                  color: isSelected ? Colors.white : Colors.black87,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          );
-                        }),
-                      ),
+                      const SizedBox(height: Dimens.height15),
+                      RoutineDaysWidget(title: AppLocalizations.of(context)!.days_of_week, daysOfWeek: _daysOfWeek, onDaySelect: (day) {
+                        final dayNumber = day.weekday - 1;
+                        _daysOfWeek.contains(dayNumber) ? _daysOfWeek.remove(dayNumber) : _daysOfWeek.add(dayNumber);
+                        setState(() {});
+                        // widget.onChangeWeekDays?.call(dayNumber);
+                      },),
                     ],
                   ),
                 ),
@@ -144,16 +115,14 @@ class _ItemRoutineWidgetState extends State<ItemRoutineWidget> {
             ),
           ],
         ),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-          child: SaveButton(
-            text: AppLocalizations.of(context)!.save,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+        const SizedBox(height: Dimens.height32),
+        GeneralButton(
+          title: AppLocalizations.of(context)!.save,
+          onTap: () {
+            Navigator.pop(context);
+          },
         ),
-      ]
+      ],
     );
   }
 }

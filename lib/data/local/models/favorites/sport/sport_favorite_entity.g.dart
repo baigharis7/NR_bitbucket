@@ -22,7 +22,6 @@ class SportFavoriteEntityAdapter extends TypeAdapter<SportFavoriteEntity> {
       title: fields[2] as String?,
       comment: fields[3] as String?,
       info: (fields[4] as List?)?.cast<SportFavoriteInfoEntity>(),
-      routineTime: fields[5] as String?,
     );
   }
 
@@ -39,9 +38,7 @@ class SportFavoriteEntityAdapter extends TypeAdapter<SportFavoriteEntity> {
       ..writeByte(3)
       ..write(obj.comment)
       ..writeByte(4)
-      ..write(obj.info)
-      ..writeByte(5)
-      ..write(obj.routineTime);
+      ..write(obj.info);
   }
 
   @override
@@ -119,7 +116,6 @@ SportFavoriteEntity _$SportFavoriteEntityFromJson(Map<String, dynamic> json) =>
           ?.map((e) =>
               SportFavoriteInfoEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
-      routineTime: json['routineTime'] as String?,
     );
 
 Map<String, dynamic> _$SportFavoriteEntityToJson(
@@ -130,7 +126,6 @@ Map<String, dynamic> _$SportFavoriteEntityToJson(
       'title': instance.title,
       'comment': instance.comment,
       'info': instance.info?.map((e) => e.toJson()).toList(),
-      'routineTime' : instance.routineTime,
     };
 
 SportFavoriteInfoEntity _$SportFavoriteInfoEntityFromJson(

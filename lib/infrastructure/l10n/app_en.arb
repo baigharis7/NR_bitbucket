@@ -319,6 +319,7 @@
     "finish" : "Finish",
     "event_saved_successfully" : "Event saved successfully",
     "add_sport_event" : "Add sport event",
+    "add_physical_activity" : "Add Physical Activity",
     "liquid_event" : "Liquid event",
     "ml" : "ml",
     "liters" : "liters",

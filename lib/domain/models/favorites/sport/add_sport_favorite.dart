@@ -6,19 +6,24 @@ part 'add_sport_favorite.g.dart';
 @JsonSerializable(explicitToJson: true)
 class AddSportFavorite extends Translatable {
   String? userId;
+  int? eventId;
   int? eventDate;
   String? comment;
   String? title;
   List<AddSportFavInfo>? info;
-  String? routineTime;
+  String? scheduleTime;
+  List<int>? daysOfWeek;
+
 
   AddSportFavorite({
     this.userId,
+    this.eventId,
     this.eventDate,
     this.comment,
     this.title,
     this.info,
-    this.routineTime,
+    this.scheduleTime,
+    this.daysOfWeek,
   });
 
   factory AddSportFavorite.fromJson(Map<String, dynamic> json) => _$AddSportFavoriteFromJson(json);

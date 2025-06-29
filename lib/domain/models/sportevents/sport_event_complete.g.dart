@@ -9,7 +9,8 @@ part of 'sport_event_complete.dart';
 SportEventComplete _$SportEventCompleteFromJson(Map<String, dynamic> json) =>
     SportEventComplete(
       userId: json['userId'] as String,
-      eventDate: json['eventId'] as int,
+      eventId: json['eventId'] as int,
+      eventDate: json['eventDate'] as int,
       comment: json['comment'] as String?,
       sportName: json['sportName'] as String?,
       info: (json['info'] as List<dynamic>?)
@@ -21,6 +22,7 @@ SportEventComplete _$SportEventCompleteFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$SportEventCompleteToJson(SportEventComplete instance) =>
     <String, dynamic>{
       'userId': instance.userId,
+      'eventId': instance.eventId,
       'eventDate': instance.eventDate,
       'comment': instance.comment,
       'sportName': instance.sportName,

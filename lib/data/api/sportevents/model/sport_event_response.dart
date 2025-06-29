@@ -6,6 +6,7 @@ part 'sport_event_response.g.dart';
 class SportEventResponse {
   String userId;
   int eventId;
+  int eventDate;
   String? comment;
   String? sportName;
   List<SportEventInfoResponse>? info;
@@ -14,6 +15,7 @@ class SportEventResponse {
   SportEventResponse({
     required this.userId,
     required this.eventId,
+    required this.eventDate,
     required this.comment,
     required this.sportName,
     required this.info,

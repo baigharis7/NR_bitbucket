@@ -9,23 +9,27 @@ part of 'add_sport_favorite.dart';
 AddSportFavorite _$AddSportFavoriteFromJson(Map<String, dynamic> json) =>
     AddSportFavorite(
       userId: json['userId'] as String?,
+      eventId: json['eventId'] as int?,
       eventDate: json['eventDate'] as int?,
       comment: json['comment'] as String?,
       title: json['title'] as String?,
       info: (json['info'] as List<dynamic>?)
           ?.map((e) => AddSportFavInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
-      routineTime: json['routineTime'] as String?,
+      scheduleTime: json['scheduleTime'] as String?,
+      daysOfWeek: json['daysOfWeek'] as List<int>?,
     );
 
 Map<String, dynamic> _$AddSportFavoriteToJson(AddSportFavorite instance) =>
     <String, dynamic>{
       'userId': instance.userId,
+      'eventId': instance.eventId,
       'eventDate': instance.eventDate,
       'comment': instance.comment,
       'title': instance.title,
       'info': instance.info?.map((e) => e.toJson()).toList(),
-      'routineTime': instance.routineTime,
+      'scheduleTime': instance.scheduleTime,
+      'daysOfWeek': instance.daysOfWeek,
     };
 
 AddSportFavInfo _$AddSportFavInfoFromJson(Map<String, dynamic> json) =>

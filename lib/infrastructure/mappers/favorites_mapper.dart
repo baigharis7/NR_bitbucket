@@ -91,7 +91,6 @@ AddSportFavorite mapToSportFavoriteFromRoutine(SportRoutineCompleted sportRoutin
     eventDate: sportRoutineCompleted.eventId,
     title: sportRoutineCompleted.sportName,
     info: sportRoutineCompleted.info?.map((e) => AddSportFavInfo(id: e.id?.toInt(), name_en: e.nameEn, name_es: e.nameEs, minutes: e.minutes?.toInt(), timeStart: e.timeStart?.toInt(), intensity: e.intensity?.toInt())).toList(),
-    routineTime: sportRoutineCompleted.routineTime,
     comment: sportRoutineCompleted.comment,
   );
 }
@@ -118,7 +117,6 @@ SportFavoriteEntity mapToSportFavoriteEntity(AddSportFavorite sportFavorite) {
     comment: sportFavorite.comment,
     title: sportFavorite.title,
     info: sportFavorite.info?.map((item) => SportFavoriteInfoEntity(id: item.id, intensity: item.intensity, minutes: item.minutes, timeStart: item.timeStart, name_en: item.name_en, name_es: item.name_es)).toList(),
-    routineTime: sportFavorite.routineTime,
   );
 }
 
@@ -130,7 +128,6 @@ AddSportFavorite mapToSportFavoriteFromEntity(SportFavoriteEntity sportFavoriteE
     comment: sportFavoriteEntity.comment,
     title: sportFavoriteEntity.title,
     info: sportFavoriteEntity.info?.map((sportItem) => AddSportFavInfo(id: sportItem.id, minutes: sportItem.minutes, intensity: sportItem.intensity, timeStart: sportItem.timeStart, name_en: sportItem.name_en, name_es: sportItem.name_es)).toList(),
-    routineTime: sportFavoriteEntity.routineTime,
   );
 }
 

@@ -15,6 +15,7 @@ class SportEventEntity extends HiveObject {
   @HiveField(3) String? sportName;
   @HiveField(4) List<SportEventInfoEntity>? info;
   @HiveField(5) int? eventKcals;
+  @HiveField(6) int eventId;
 
   SportEventEntity({
     required this.userId,
@@ -23,6 +24,7 @@ class SportEventEntity extends HiveObject {
     required this.sportName,
     required this.info,
     this.eventKcals,
+    required this.eventId,
   });
 
   factory SportEventEntity.fromJson(Map<String, dynamic> json) => _$SportEventEntityFromJson(json);

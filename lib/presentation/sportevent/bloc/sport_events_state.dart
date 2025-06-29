@@ -11,98 +11,44 @@ class SportEventsState {
   bool isLoading;
   ErrorTypes? onError;
   SportsInfoMaster? sportsInfo;
-  SportEventSimple? sportEventSimple;
-  List<AddSportFavorite>? sportsFavorite;
-  List<AddSportFavInfo>? sportFromFavorite;
-  DateTime? dateStart;
-  TimeOfDay? timeStart;
-  int? intensity;
-  String? sportName;
-  int? sportIntensities;
-  int? sportId;
-  int? minutes;
+  AddSportFavorite? sportSimpleEvent;
   int? eventDate;
   bool? isEdit;
-  String? comment;
-  String? eventSportName;
   List<SportInfo>? info;
-  bool? isCreateRoutine;
-  List<SportEventComplete>? weeklySports;
-  TimeOfDay? routineHour;
-  DateTime? routineDate;
+  DateTime? calendarDate;
 
   SportEventsState({
     required this.isLoading,
     this.onError,
     this.sportsInfo,
-    this.sportEventSimple,
-    this.sportsFavorite,
-    this.sportFromFavorite,
-    this.dateStart,
-    this.timeStart,
-    this.intensity,
-    this.sportName,
-    this.sportIntensities,
-    this.sportId,
-    this.minutes,
+    this.sportSimpleEvent,
     this.eventDate,
     this.isEdit,
-    this.comment,
-    this.eventSportName,
     this.info,
-    this.isCreateRoutine,
-    this.weeklySports,
-    this.routineHour,
-    this.routineDate,
+    this.calendarDate,
   });
 
   SportEventsState copyWith({
     required bool isLoading,
     ErrorTypes? onError,
     SportsInfoMaster? sportsInfo,
-    SportEventSimple? sportEventSimple,
-    List<AddSportFavorite>? sportsFavorite,
-    List<AddSportFavInfo>? sportFromFavorite,
-    DateTime? dateStart,
-    TimeOfDay? timeStart,
-    int? intensity,
-    String? sportName,
-    int? sportIntensities,
+    AddSportFavorite? sportSimpleEvent,
     int? sportId,
     int? minutes,
     int? eventDate,
     bool? isEdit,
-    String? comment,
-    String? eventSportName,
     List<SportInfo>? info,
-    bool? isCreateRoutine,
-    List<SportEventComplete>? weeklySports,
-    TimeOfDay? routineHour,
-    DateTime? routineDate,
+    DateTime? calendarDate,
   }) {
     return SportEventsState(
       isLoading: isLoading,
       onError: onError ?? this.onError,
       sportsInfo: sportsInfo ?? this.sportsInfo,
-      sportEventSimple: sportEventSimple ?? this.sportEventSimple,
-      sportsFavorite: sportsFavorite ?? this.sportsFavorite,
-      sportFromFavorite: sportFromFavorite ?? this.sportFromFavorite,
-      dateStart: dateStart ?? this.dateStart,
-      timeStart: timeStart ?? this.timeStart,
-      intensity: intensity ?? this.intensity,
-      sportName: sportName ?? this.sportName,
-      sportIntensities: sportIntensities ?? this.sportIntensities,
-      sportId: sportId ?? this.sportId,
-      minutes: minutes ?? this.minutes,
+      sportSimpleEvent: sportSimpleEvent ?? this.sportSimpleEvent,
       eventDate: eventDate ?? this.eventDate,
       isEdit: isEdit ?? this.isEdit,
-      comment: comment ?? this.comment,
-      eventSportName: eventSportName ?? this.eventSportName,
       info: info ?? this.info,
-      isCreateRoutine: isCreateRoutine ?? this.isCreateRoutine,
-      weeklySports: weeklySports ?? this.weeklySports,
-      routineHour: routineHour ?? this.routineHour,
-      routineDate: routineDate ?? this.routineDate,
+      calendarDate: calendarDate ?? this.calendarDate,
     );
   }
 

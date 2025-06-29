@@ -6,7 +6,8 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 SportEventComplete mapToSportEventCompleteFromResponse(response.SportEventResponse sportEventResponse) {
   final sportEventComplete = SportEventComplete(
     userId: sportEventResponse.userId,
-    eventDate: sportEventResponse.eventId,
+    eventId: sportEventResponse.eventId,
+    eventDate: sportEventResponse.eventDate,
     comment: sportEventResponse.comment,
     sportName: sportEventResponse.sportName,
     eventKcals: sportEventResponse.eventKcal,
@@ -27,6 +28,7 @@ SportEventComplete mapToSportEventCompleteFromResponse(response.SportEventRespon
 SportEventEntity mapToSportEventEntity(SportEventComplete sportEventComplete) {
   final SportEventEntity sportEventEntity = SportEventEntity(
     userId: sportEventComplete.userId,
+    eventId: sportEventComplete.eventId,
     eventDate: sportEventComplete.eventDate,
     comment: sportEventComplete.comment,
     sportName: sportEventComplete.sportName,
@@ -48,6 +50,7 @@ SportEventEntity mapToSportEventEntity(SportEventComplete sportEventComplete) {
 SportEventComplete mapToSportEventComplete(SportEventEntity entity) {
   final SportEventComplete sportEventComplete = SportEventComplete(
     userId: entity.userId,
+    eventId: entity.eventId,
     eventDate: entity.eventDate,
     comment: entity.comment,
     sportName: entity.sportName,

@@ -23,13 +23,14 @@ class SportEventEntityAdapter extends TypeAdapter<SportEventEntity> {
       sportName: fields[3] as String?,
       info: (fields[4] as List?)?.cast<SportEventInfoEntity>(),
       eventKcals: fields[5] as int?,
+      eventId: fields[6] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, SportEventEntity obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class SportEventEntityAdapter extends TypeAdapter<SportEventEntity> {
       ..writeByte(4)
       ..write(obj.info)
       ..writeByte(5)
-      ..write(obj.eventKcals);
+      ..write(obj.eventKcals)
+      ..writeByte(6)
+      ..write(obj.eventId);
   }
 
   @override
@@ -114,6 +117,7 @@ class SportEventInfoEntityAdapter extends TypeAdapter<SportEventInfoEntity> {
 SportEventEntity _$SportEventEntityFromJson(Map<String, dynamic> json) =>
     SportEventEntity(
       userId: json['userId'] as String,
+      eventId: json['eventId'] as int,
       eventDate: json['eventDate'] as int,
       comment: json['comment'] as String?,
       sportName: json['sportName'] as String?,
@@ -126,6 +130,7 @@ SportEventEntity _$SportEventEntityFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$SportEventEntityToJson(SportEventEntity instance) =>
     <String, dynamic>{
       'userId': instance.userId,
+      'eventId': instance.eventId,
       'eventDate': instance.eventDate,
       'comment': instance.comment,
       'sportName': instance.sportName,

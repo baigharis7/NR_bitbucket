@@ -8,6 +8,7 @@ part 'sport_event_complete.g.dart';
 @JsonSerializable(explicitToJson: true)
 class SportEventComplete {
   String userId;
+  int eventId;
   int eventDate;
   String? comment;
   String? sportName;
@@ -16,6 +17,7 @@ class SportEventComplete {
 
   SportEventComplete({
     required this.userId,
+    required this.eventId,
     required this.eventDate,
     required this.comment,
     required this.sportName,
