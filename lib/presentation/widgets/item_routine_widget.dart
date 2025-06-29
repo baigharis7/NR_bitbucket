@@ -103,7 +103,7 @@ class _ItemRoutineWidgetState extends State<ItemRoutineWidget> {
                       ),
                       const SizedBox(height: Dimens.height15),
                       RoutineDaysWidget(title: AppLocalizations.of(context)!.days_of_week, daysOfWeek: _daysOfWeek, onDaySelect: (day) {
-                        final dayNumber = day.weekday - 1;
+                        final dayNumber = day.weekday;
                         _daysOfWeek.contains(dayNumber) ? _daysOfWeek.remove(dayNumber) : _daysOfWeek.add(dayNumber);
                         setState(() {});
                         // widget.onChangeWeekDays?.call(dayNumber);
