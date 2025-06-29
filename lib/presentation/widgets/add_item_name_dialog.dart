@@ -171,7 +171,7 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
                   if (_isCreateRoutine) RoutineDaysWidget(title: AppLocalizations.of(context)!.days_of_week, daysOfWeek: _daysOfWeek, onDaySelect: (day) {
                     // final dateMilliseconds = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(day);
                     // _daysOfWeek.contains(dateMilliseconds) ? _daysOfWeek.remove(dateMilliseconds) : _daysOfWeek.add(dateMilliseconds);
-                    final dayNumber = day.weekday;
+                    final dayNumber = day.weekday - 1;
                     _daysOfWeek.contains(dayNumber) ? _daysOfWeek.remove(dayNumber) : _daysOfWeek.add(dayNumber);
                     setState(() {});
                     widget.onChangeWeekDays?.call(dayNumber);
