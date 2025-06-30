@@ -173,6 +173,15 @@ class DateTimeHelper {
 
     return inputDateOnly.isBefore(todayDateOnly);
   }
+
+  static bool isFutureDate(DateTime inputDate) {
+    final today = DateTime.now();
+    final todayDateOnly = DateTime(today.year, today.month, today.day);
+    final inputDateOnly = DateTime(inputDate.year, inputDate.month, inputDate.day);
+
+    return inputDateOnly.isAfter(todayDateOnly);
+  }
+
   static double calculateDifferenceHours(start, end) {
     final startTime = dateTimeFromMilliseconds(start);
     final endTime = dateTimeFromMilliseconds(end);

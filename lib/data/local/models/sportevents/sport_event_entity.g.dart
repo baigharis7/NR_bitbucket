@@ -70,10 +70,10 @@ class SportEventInfoEntityAdapter extends TypeAdapter<SportEventInfoEntity> {
     };
     return SportEventInfoEntity(
       id: fields[0] as int,
-      intensity: fields[1] as int,
+      intensity: fields[1] as int?,
       minutes: fields[2] as int,
-      timeStart: fields[3] as int,
-      kcal: fields[4] as int,
+      timeStart: fields[3] as int?,
+      kcal: fields[4] as int?,
       name_en: fields[5] as String?,
       name_es: fields[6] as String?,
     );
@@ -142,10 +142,10 @@ SportEventInfoEntity _$SportEventInfoEntityFromJson(
         Map<String, dynamic> json) =>
     SportEventInfoEntity(
       id: json['id'] as int,
-      intensity: json['intensity'] as int,
+      intensity: json['intensity'] as int?,
       minutes: json['minutes'] as int,
-      timeStart: json['timeStart'] as int,
-      kcal: json['kcal'] as int,
+      timeStart: json['timeStart'] as int?,
+      kcal: json['kcal'] as int?,
       name_en: json['name_en'] as String?,
       name_es: json['name_es'] as String?,
     );

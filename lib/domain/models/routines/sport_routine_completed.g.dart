@@ -11,12 +11,15 @@ SportRoutineCompleted _$SportRoutineCompletedFromJson(
     SportRoutineCompleted(
       userId: json['userId'] as String?,
       eventId: json['eventId'] as int?,
+      eventDate: json['eventDate'] as int?,
+      info: (json['info'] as List<dynamic>?)
+              ?.map((e) => Info.fromJson(e as Map<String, dynamic>))
+              .toList(),
       comment: json['comment'] as String?,
       sportName: json['sportName'] as String?,
-      routineTime: json['routineTime'] as String?,
-      info: (json['info'] as List<dynamic>?)
-          ?.map((e) => Info.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      scheduleTime: json['scheduleTime'] as String,
+      daysOfWeek: json['daysOfWeek'] as List<int>?,
+      timeZone: json['timeZone'] as String?,
     );
 
 Map<String, dynamic> _$SportRoutineCompletedToJson(
@@ -24,10 +27,13 @@ Map<String, dynamic> _$SportRoutineCompletedToJson(
     <String, dynamic>{
       'userId': instance.userId,
       'eventId': instance.eventId,
+      'eventDate': instance.eventDate,
+      'info': instance.info?.map((e) => e.toJson()).toList(),
       'comment': instance.comment,
       'sportName': instance.sportName,
-      'routineTime': instance.routineTime,
-      'info': instance.info?.map((e) => e.toJson()).toList(),
+      'scheduleTime': instance.scheduleTime,
+      'daysOfWeek': instance.daysOfWeek,
+      'timeZone': instance.timeZone,
     };
 
 Info _$InfoFromJson(Map<String, dynamic> json) => Info(

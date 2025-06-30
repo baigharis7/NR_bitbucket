@@ -15,9 +15,10 @@ EventsSynchronizationResponse _$EventsSynchronizationResponseFromJson(
       sportEvents: (json['sportEvents'] as List<dynamic>)
           .map((e) => SportEventComplete.fromJson(e as Map<String, dynamic>))
           .toList(),
-      sportRoutines: (json['sportRoutines'] as List<dynamic>)
-          .map((e) => SportRoutineCompleted.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      sportRoutines: [],
+          // sportRoutines: (json['sportRoutines'] as List<dynamic>)
+          // .map((e) => SportRoutineCompleted.fromJson(e as Map<String, dynamic>))
+          // .toList(),
       liquidEvents: (json['liquidEvents'] as List<dynamic>)
           .map((e) => UploadLiquidEvent.fromJson(e as Map<String, dynamic>))
           .toList(),

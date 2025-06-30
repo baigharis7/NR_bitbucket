@@ -229,15 +229,20 @@ class _DashboardScreen extends State<DashboardScreen>
                 backgroundColor: Colors.transparent,
                 actions: [
                   IconButton(
+                    alignment: Alignment.centerRight,
+                    visualDensity: VisualDensity.compact,
                     onPressed: () => Navigator.pushNamed(context, BarCodeScanningScreen.routeName),
                     icon: Image.asset(
                       'assets/icon/scanner_icon.png',
                       color: Colors.white,
-                      height: Dimens.heightXSmall,
-                      width: Dimens.heightXSmall,
+                      height: Dimens.height18,
+                      width: Dimens.height18,
                     ),
                   ),
-                  IconButton(onPressed: () => showDialog(context: context, builder: (context) => SimpleDialog(alignment: Alignment.topCenter,
+                  IconButton(
+                    alignment: Alignment.centerLeft,
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () => showDialog(context: context, builder: (context) => SimpleDialog(alignment: Alignment.topCenter,
                     insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding5Large +5),
                     contentPadding: EdgeInsets.zero,
                     children: [
@@ -335,10 +340,10 @@ class _DashboardScreen extends State<DashboardScreen>
                         //   screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                         // ),
                         MealTimeWidget(name: AppLocalizations.of(context)!.supplements, svg: 'assets/images/supplement.png', onClick: () {},),
+                        DashTitleWidget(title: AppLocalizations.of(context)!.physical_activity),
+                        MealTimeWidget(name: AppLocalizations.of(context)!.physical_activity, onClick: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), iconColor: Colors.black, backgroundColor: AppColors.floralWhite, svg: 'assets/images/sport.png'),
                         DashTitleWidget(title: AppLocalizations.of(context)!.depositions),
                         MealTimeWidget(name: AppLocalizations.of(context)!.faeces_urine, svg: 'assets/images/feces_urine.png', onClick: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), iconColor: Colors.black, backgroundColor: Colors.transparent, backgroundImage: 'assets/images/feces_urine_background.png'),
-                        DashTitleWidget(title: AppLocalizations.of(context)!.add_sport_event),
-                        MealTimeWidget(name: AppLocalizations.of(context)!.add_sport_event, desc: '', onClick: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), iconColor: Colors.black, backgroundColor: AppColors.floralWhite,),
                         const SizedBox(height: Dimens.height60),
                         // WaterWidget(),
                         // SizedBox(

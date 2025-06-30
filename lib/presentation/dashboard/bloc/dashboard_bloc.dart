@@ -802,20 +802,20 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   }
 
   int getFoundedRoutineTime(List<SportRoutineCompleted> routines) {
-    int remainingHours = -1;
-    routineLoop: for (SportRoutineCompleted routine in routines) {
-      if (routine.routineTime.orEmpty().isNotEmpty) {
-        final a = DateTimeHelper.dateTimeFromMilliseconds(int.parse(routine.routineTime ?? '0'));
-        final currentDateTime = DateTime.now();
-        if (a?.day == currentDateTime.day && a?.month == currentDateTime.month && a?.year == currentDateTime.year) {
-          if (a?.hour != null) {
-            remainingHours = a!.hour - currentDateTime.hour;
-            if (remainingHours > -1) break routineLoop;
-          }
-        }
-      }
-    }
-    return remainingHours;
+    // int remainingHours = -1;
+    // routineLoop: for (SportRoutineCompleted routine in routines) {
+    //   if (routine.routineTime.orEmpty().isNotEmpty) {
+    //     final a = DateTimeHelper.dateTimeFromMilliseconds(int.parse(routine.routineTime ?? '0'));
+    //     final currentDateTime = DateTime.now();
+    //     if (a?.day == currentDateTime.day && a?.month == currentDateTime.month && a?.year == currentDateTime.year) {
+    //       if (a?.hour != null) {
+    //         remainingHours = a!.hour - currentDateTime.hour;
+    //         if (remainingHours > -1) break routineLoop;
+    //       }
+    //     }
+    //   }
+    // }
+    return -1;
   }
 
   void _clearData() {

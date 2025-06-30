@@ -53,6 +53,7 @@ class WeeklyEnergyGraphWidget extends StatelessWidget {
                           Text(averageConsumed.toInt().toString()+'Kcal', style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: Dimens.fontSizeMedium,
+                            color: AppColors.mountainMeadow,
                           ),),
                         ],
                       ),

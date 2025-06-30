@@ -40,7 +40,7 @@ class ProfileInfoCard extends StatelessWidget {
                   ),
                   const SizedBox(height: Dimens.height5),
                   Text(
-                    '${userProfile?.sex?.index == SexType.male.index ? AppLocalizations.of(context)!.male : AppLocalizations.of(context)!.female}.${NutritionUtils.millisecondsToYears(userProfile?.birthDate ?? 0)} years old.',
+                    '${userProfile?.sex?.index == SexType.male.index ? AppLocalizations.of(context)!.male : AppLocalizations.of(context)!.female}.${NutritionUtils.millisecondsToYears(userProfile?.birthDate ?? 0)} ${AppLocalizations.of(context)!.years_old}',
                     style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15, color: Colors.white),
                   ),
                 ],
@@ -48,17 +48,20 @@ class ProfileInfoCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: Dimens.height32),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _MetricItem(value: userProfile?.physicalCharacteristics?.height, label: AppLocalizations.of(context)!.height),
-              Container(color: AppColors.cloudyGrey, height: 50, width: 2),
-              _MetricItem(value: userProfile?.physicalCharacteristics?.weight, label: AppLocalizations.of(context)!.weight),
-              Container(color: AppColors.cloudyGrey, height: 50, width: 2),
-              _MetricItem(value: userProfile?.physicalCharacteristics?.bodyFat, label: AppLocalizations.of(context)!.body_fat),
-              Container(color: AppColors.cloudyGrey, height: 50, width: 2),
-              _MetricItem(value: userProfile?.physicalCharacteristics?.waistMeasurement, label: AppLocalizations.of(context)!.waist),
-            ],
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _MetricItem(value: userProfile?.physicalCharacteristics?.height, label: AppLocalizations.of(context)!.height),
+                Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall), color: AppColors.butter59, height: 50, width: 2),
+                _MetricItem(value: userProfile?.physicalCharacteristics?.weight, label: AppLocalizations.of(context)!.weight),
+                Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall), color: AppColors.butter59, height: 50, width: 2),
+                _MetricItem(value: userProfile?.physicalCharacteristics?.bodyFat, label: AppLocalizations.of(context)!.body_fat),
+                Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall), color: AppColors.butter59, height: 50, width: 2),
+                _MetricItem(value: userProfile?.physicalCharacteristics?.waistMeasurement, label: AppLocalizations.of(context)!.waist),
+              ],
+            ),
           ),
           const SizedBox(height: Dimens.heightXSmall),
           GestureDetector(

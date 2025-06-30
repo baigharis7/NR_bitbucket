@@ -51,9 +51,9 @@ class _DashboardCalendarWidgetState extends State<DashboardCalendarWidget> {
       calendarStyle: const CalendarStyle(
         outsideDaysVisible: false,
       ),
-      firstDay: DateTime(DateTime.now().year-1),
+      firstDay: DateTime(DateTime.now().year - 1),
       focusedDay: _focusedDay,
-      lastDay: DateTime.now(),
+      lastDay: DateTime(DateTime.now().year + 2),
       eventLoader: (day) {
         return widget.callGetAllEvents.call(day);
       },

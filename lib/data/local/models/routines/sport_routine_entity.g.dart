@@ -17,12 +17,15 @@ class SportRoutineEntityAdapter extends TypeAdapter<SportRoutineEntity> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return SportRoutineEntity(
-      fields[0] as String?,
-      fields[1] as int?,
-      fields[2] as String?,
-      fields[3] as String?,
-      fields[4] as String?,
-      (fields[5] as List?)?.cast<SportRoutineInfoEntity>(),
+      userId: fields[0] as String?,
+      eventId: fields[1] as int?,
+      comment: fields[2] as String?,
+      sportName: fields[3] as String?,
+      scheduleTime: fields[4] as String?,
+      info: (fields[5] as List?)?.cast<SportRoutineInfoEntity>(),
+      eventDate: fields[6] as int?,
+      daysOfWeek: fields[7] as List<int>?,
+      timeZone: fields[8] as String?,
     );
   }
 
@@ -39,9 +42,15 @@ class SportRoutineEntityAdapter extends TypeAdapter<SportRoutineEntity> {
       ..writeByte(3)
       ..write(obj.sportName)
       ..writeByte(4)
-      ..write(obj.routineTime)
+      ..write(obj.scheduleTime)
       ..writeByte(5)
-      ..write(obj.info);
+      ..write(obj.info)
+      ..writeByte(6)
+      ..write(obj.eventDate)
+      ..writeByte(7)
+      ..write(obj.daysOfWeek)
+      ..writeByte(8)
+      ..write(obj.scheduleTime);
   }
 
   @override
@@ -67,12 +76,12 @@ class SportRoutineInfoEntityAdapter
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return SportRoutineInfoEntity(
-      fields[0] as num?,
-      fields[1] as String?,
-      fields[2] as String?,
-      fields[3] as num?,
-      fields[4] as num?,
-      fields[5] as num?,
+      id: fields[0] as num?,
+      nameEs: fields[1] as String?,
+      nameEn: fields[2] as String?,
+      minutes: fields[3] as num?,
+      intensity: fields[4] as num?,
+      timeStart: fields[5] as num?,
     );
   }
 
@@ -111,36 +120,39 @@ class SportRoutineInfoEntityAdapter
 
 SportRoutineEntity _$SportRoutineEntityFromJson(Map<String, dynamic> json) =>
     SportRoutineEntity(
-      json['userId'] as String?,
-      json['eventId'] as int?,
-      json['comment'] as String?,
-      json['sportName'] as String?,
-      json['routineTime'] as String?,
-      (json['info'] as List<dynamic>?)
-          ?.map(
-              (e) => SportRoutineInfoEntity.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      userId: json['userId'] as String?,
+      eventId: json['eventId'] as int?,
+      eventDate: json['eventDate'] as int?,
+      comment: json['comment'] as String?,
+      sportName: json['sportName'] as String?,
+      scheduleTime: json['scheduleTime'] as String?,
+      info: (json['info'] as List<dynamic>?)?.map((e) => SportRoutineInfoEntity.fromJson(e as Map<String, dynamic>)).toList(),
+      daysOfWeek: json['daysOfWeek'] as List<int>?,
+      timeZone: json['timeZone'] as String?,
     );
 
 Map<String, dynamic> _$SportRoutineEntityToJson(SportRoutineEntity instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'eventId': instance.eventId,
+      'eventDate': instance.eventDate,
       'comment': instance.comment,
       'sportName': instance.sportName,
-      'routineTime': instance.routineTime,
+      'scheduleTime': instance.scheduleTime,
       'info': instance.info?.map((e) => e.toJson()).toList(),
+      'daysOfWeek': instance.daysOfWeek,
+      'timeZone': instance.timeZone,
     };
 
 SportRoutineInfoEntity _$SportRoutineInfoEntityFromJson(
         Map<String, dynamic> json) =>
     SportRoutineInfoEntity(
-      json['id'] as num?,
-      json['nameEn'] as String?,
-      json['nameEs'] as String?,
-      json['timeStart'] as num?,
-      json['intensity'] as num?,
-      json['minutes'] as num?,
+      id: json['id'] as num?,
+      nameEn: json['nameEn'] as String?,
+      nameEs: json['nameEs'] as String?,
+      timeStart: json['timeStart'] as num?,
+      intensity: json['intensity'] as num?,
+      minutes: json['minutes'] as num?,
     );
 
 Map<String, dynamic> _$SportRoutineInfoEntityToJson(

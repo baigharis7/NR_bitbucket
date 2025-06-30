@@ -1,9 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_completed.dart';
-import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
-
 import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
-import '../../../domain/models/sportevents/sport_event_complete.dart';
 
 class SportEventsActions {
   SportEventsActions();
@@ -23,18 +18,6 @@ class SetMinutesAction extends SportEventsActions {
   final AddSportFavInfo sportInfo;
 
   SetMinutesAction({required this.sportInfo});
-}
-
-class FinishSportEventAction extends SportEventsActions {
-  Function onFinish;
-
-  FinishSportEventAction({required this.onFinish});
-}
-
-class FinishSportFavoriteAction extends SportEventsActions {
-  Function onFinish;
-
-  FinishSportFavoriteAction({required this.onFinish});
 }
 
 class ResetSportInfoAction extends SportEventsActions {
@@ -75,4 +58,16 @@ class UpdateTimeOfDaySportEventAction extends SportEventsActions {
   final String scheduleTime;
 
   UpdateTimeOfDaySportEventAction({required this.scheduleTime});
+}
+
+class FinishSportEventAction extends SportEventsActions {
+  Function onFinish;
+
+  FinishSportEventAction({required this.onFinish});
+}
+
+class FinishSportRoutineAddSportAction extends SportEventsActions {
+  Function onFinish;
+
+  FinishSportRoutineAddSportAction({required this.onFinish});
 }

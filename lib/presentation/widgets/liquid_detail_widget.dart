@@ -63,7 +63,6 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
                         vertical: Dimens.marginNormal,
                         horizontal: Dimens.marginXLarge,
                       ),
-                      alignment: Alignment.centerRight,
                       height: 150,
                       child: FillVerticalBar(
                         width: 12,
@@ -74,7 +73,7 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
                     ),
                   ),
                   Expanded(
-                    flex: 2,
+                    flex: 1,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,7 +94,7 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
                     ),
                   ),
                   Expanded(
-                    flex: 3,
+                    flex: 4,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -106,7 +105,7 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
                               icon: const Icon(Icons.add_circle_outline_sharp, size: 30, color: Colors.blue,),
                             ),
                           ),
-                          Text(AppLocalizations.of(context)!.water_description, style: const TextStyle(fontSize: Dimens.fontSizeSmall),),
+                          Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge), child: Text(AppLocalizations.of(context)!.water_description, style: const TextStyle(fontSize: Dimens.fontSizeSmall),)),
                           Container(
                             alignment: Alignment.bottomRight,
                             child: IconButton(
@@ -120,12 +119,14 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
               ),
             ),
           ),
-          Container(width: double.infinity, margin: const EdgeInsets.all(Dimens.marginXLarge), child: Text(AppLocalizations.of(context)!.minimum_water_required, style: const TextStyle(
+          const SizedBox(height: Dimens.height32),
+          Container(width: double.infinity, margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge,), child: Text(AppLocalizations.of(context)!.minimum_water_required, style: const TextStyle(
             fontSize: Dimens.fontSizeMedium,
             color: Colors.black,
             fontWeight: FontWeight.bold,
           ),),),
-          Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge, vertical: Dimens.marginLarge), child: Text(AppLocalizations.of(context)!.minimum_water_description),),
+          const SizedBox(height: Dimens.height12),
+          Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge,), child: Text(AppLocalizations.of(context)!.minimum_water_description),),
         ],
       ),
     );

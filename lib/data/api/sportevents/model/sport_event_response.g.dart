@@ -35,12 +35,12 @@ SportEventInfoResponse _$SportEventInfoResponseFromJson(
         Map<String, dynamic> json) =>
     SportEventInfoResponse(
       id: json['id'] as int,
-      name_en: json['name_en'] as String,
-      name_es: json['name_es'] as String,
-      intensity: json['intensity'] as int,
+      name_en: json['name_en'] as String?,
+      name_es: json['name_es'] as String?,
+      intensity: json['intensity'] as int?,
       minutes: json['minutes'] as int,
-      timeStart: json['timeStart'] as int,
-      kcal: json['kcal'] as int,
+      timeStart: json['timeStart'] as int?,
+      kcal: json['kcal'] as int?,
     );
 
 Map<String, dynamic> _$SportEventInfoResponseToJson(

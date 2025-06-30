@@ -5,18 +5,24 @@ part 'sport_routine_completed.g.dart';
 class SportRoutineCompleted {
   String? userId;
   int? eventId;
+  int? eventDate;
+  List<Info>? info;
   String? comment;
   String? sportName;
-  String? routineTime;
-  List<Info>? info;
+  String? scheduleTime;
+  List<int>? daysOfWeek;
+  String? timeZone;
 
   SportRoutineCompleted({
     this.userId,
     this.eventId,
+    this.eventDate,
+    this.info,
     this.comment,
     this.sportName,
-    this.routineTime,
-    this.info,
+    this.scheduleTime,
+    this.daysOfWeek,
+    this.timeZone,
   });
 
   factory SportRoutineCompleted.fromJson(Map<String, dynamic> json) => _$SportRoutineCompletedFromJson(json);

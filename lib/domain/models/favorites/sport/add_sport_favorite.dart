@@ -28,6 +28,11 @@ class AddSportFavorite extends Translatable {
 
   factory AddSportFavorite.fromJson(Map<String, dynamic> json) => _$AddSportFavoriteFromJson(json);
   Map<String, dynamic> toJson() => _$AddSportFavoriteToJson(this);
+
+  AddSportFavorite.empty() {
+    info = [];
+    daysOfWeek = [];
+  }
 }
 
 @JsonSerializable(explicitToJson: true)

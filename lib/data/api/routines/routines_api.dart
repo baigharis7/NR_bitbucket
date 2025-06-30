@@ -12,7 +12,7 @@ class RoutinesApi extends ApiHelper {
   Future<Map<String, dynamic>> uploadRoutine(SportRoutineCompleted sportRoutineCompleted) => post(
     Uri.https(
       Environment().config!.baseUrl,
-      '${Environment().config!.distributionPath}/sport-routine',
+      '${Environment().config!.distributionPath}/sport-routine/v2',
     ),
     sportRoutineCompleted,
   );

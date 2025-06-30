@@ -20,8 +20,8 @@ class SportEventEntity extends HiveObject {
   SportEventEntity({
     required this.userId,
     required this.eventDate,
-    required this.comment,
-    required this.sportName,
+    this.comment,
+    this.sportName,
     required this.info,
     this.eventKcals,
     required this.eventId,
@@ -35,19 +35,19 @@ class SportEventEntity extends HiveObject {
 @HiveType(typeId: HiveTypeIds.sportEventInfoEntity)
 class SportEventInfoEntity {
   @HiveField(0) int id;
-  @HiveField(1) int intensity;
+  @HiveField(1) int? intensity;
   @HiveField(2) int minutes;
-  @HiveField(3) int timeStart;
-  @HiveField(4) int kcal;
+  @HiveField(3) int? timeStart;
+  @HiveField(4) int? kcal;
   @HiveField(5) String? name_en;
   @HiveField(6) String? name_es;
 
   SportEventInfoEntity({
     required this.id,
-    required this.intensity,
+    this.intensity,
     required this.minutes,
-    required this.timeStart,
-    required this.kcal,
+    this.timeStart,
+    this.kcal,
     this.name_en,
     this.name_es,
   });

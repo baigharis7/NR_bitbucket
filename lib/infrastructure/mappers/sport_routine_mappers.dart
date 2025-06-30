@@ -6,20 +6,26 @@ SportRoutineEntity mapToSportRoutineEntity(
   SportRoutineCompleted sportRoutineCompleted,
 ) {
   return SportRoutineEntity(
-    sportRoutineCompleted.userId,
-    sportRoutineCompleted.eventId,
-    sportRoutineCompleted.comment,
-    sportRoutineCompleted.sportName,
-    sportRoutineCompleted.routineTime,
-    sportRoutineCompleted.info.orEmpty().map((sRoutineInfo) => SportRoutineInfoEntity(sRoutineInfo.id, sRoutineInfo.nameEn, sRoutineInfo.nameEs, sRoutineInfo.timeStart, sRoutineInfo.intensity, sRoutineInfo.minutes)).toList(),
+    userId: sportRoutineCompleted.userId,
+    eventId: sportRoutineCompleted.eventId,
+    eventDate: sportRoutineCompleted.eventDate,
+    comment: sportRoutineCompleted.comment,
+    sportName: sportRoutineCompleted.sportName,
+    scheduleTime: sportRoutineCompleted.scheduleTime,
+    info: sportRoutineCompleted.info.orEmpty().map((sRoutineInfo) => SportRoutineInfoEntity(id: sRoutineInfo.id, nameEn:  sRoutineInfo.nameEn, nameEs:  sRoutineInfo.nameEs, timeStart:  sRoutineInfo.timeStart, intensity:  sRoutineInfo.intensity, minutes:  sRoutineInfo.minutes)).toList(),
+    daysOfWeek: sportRoutineCompleted.daysOfWeek,
+    timeZone: sportRoutineCompleted.timeZone,
   );
 }
 
 SportRoutineCompleted mapToSportRoutineCompleted(SportRoutineEntity sportRoutineEntity) => SportRoutineCompleted(
   userId: sportRoutineEntity.userId,
   eventId: sportRoutineEntity.eventId,
+  eventDate: sportRoutineEntity.eventDate,
   comment: sportRoutineEntity.comment,
   sportName: sportRoutineEntity.sportName,
-  routineTime: sportRoutineEntity.routineTime,
   info: sportRoutineEntity.info.orEmpty().map((sRoutineEntity) => Info(id: sRoutineEntity.id, nameEn: sRoutineEntity.nameEn, nameEs: sRoutineEntity.nameEs, minutes: sRoutineEntity.minutes, intensity: sRoutineEntity.intensity, timeStart: sRoutineEntity.timeStart,)).toList(),
+  scheduleTime: sportRoutineEntity.scheduleTime,
+  daysOfWeek: sportRoutineEntity.daysOfWeek,
+  timeZone: sportRoutineEntity.timeZone,
 );

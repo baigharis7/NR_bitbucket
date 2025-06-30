@@ -61,9 +61,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
           message: AppLocalizations.of(context)!.sport_event_successfully_saved,
         ),
       ),
-    ).then((value) {
-      Navigator.pop(context);
-    });
+    ).then((value) {});
   }
 
   Future<void> showAddSportNameDialog({
@@ -229,11 +227,12 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                           if (state.sportSimpleEvent?.info.orEmpty().isEmpty == true) return;
 
                           if (state.sportSimpleEvent!.scheduleTime.isNotEmptyOrNull() && state.sportSimpleEvent!.daysOfWeek.orEmpty().isNotEmpty) {
-
+                            // bloc.add(FinishSportRoutineAddSportAction(onFinish: () => _showConfirmationDialog(context: context)));
                           } else {
-                            // bloc.add(FinishSportEventAction(onFinish: () => _showConfirmationDialog(context: context,)));
+                            // FocusScope.of(context).unfocus();
+                            // _sportFocusInputController.unfocus();
+                            bloc.add(FinishSportEventAction(onFinish: () => _showConfirmationDialog(context: context,)));
                           }
-
                       },),
                     ),
                   ],

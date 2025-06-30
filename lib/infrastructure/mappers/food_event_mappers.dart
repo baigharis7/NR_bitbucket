@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorit
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart' as domain;
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
+import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_completed.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
@@ -386,6 +387,19 @@ SportEventSimple mapToSportEventSimpleFromAddFavoriteSport(AddSportFavorite addS
         info: addSportFavorite.info.orEmpty().map((e) => SportInfo(id: e.id, minutes: e.minutes, intensity: e.intensity)).toList(),
         comment: addSportFavorite.comment,
         sportName: addSportFavorite.title,
+    );
+}
+
+SportRoutineCompleted mapAddFavSportToSportRoutineCompleted(AddSportFavorite addSportFavorite) {
+    return SportRoutineCompleted(
+        userId: addSportFavorite.userId,
+        eventId: addSportFavorite.eventId,
+        eventDate: addSportFavorite.eventDate,
+        info: addSportFavorite.info.orEmpty().map((e) => Info(id: e.id, minutes: e.minutes, intensity: e.intensity)).toList(),
+        comment: addSportFavorite.comment,
+        sportName: addSportFavorite.title,
+        scheduleTime: addSportFavorite.scheduleTime,
+        daysOfWeek: addSportFavorite.daysOfWeek,
     );
 }
 
