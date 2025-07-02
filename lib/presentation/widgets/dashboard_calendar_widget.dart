@@ -74,7 +74,7 @@ class _DashboardCalendarWidgetState extends State<DashboardCalendarWidget> {
             margin: const EdgeInsets.only(left: Dimens.marginSmall, bottom: Dimens.marginXSmall),
             child: Icon(
               events.isEmpty ? Icons.clear : Icons.done,
-              color: events.isEmpty ? Colors.red : Colors.green,
+              color: events.isEmpty ? DateTimeHelper.isFutureDate(date) ? AppColors.greyChateau : Colors.red : Colors.green,
               size: 19,
             ),
           ) : Container();

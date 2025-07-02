@@ -40,7 +40,7 @@ class ProfileInfoCard extends StatelessWidget {
                   ),
                   const SizedBox(height: Dimens.height5),
                   Text(
-                    '${userProfile?.sex?.index == SexType.male.index ? AppLocalizations.of(context)!.male : AppLocalizations.of(context)!.female}.${NutritionUtils.millisecondsToYears(userProfile?.birthDate ?? 0)} ${AppLocalizations.of(context)!.years_old}',
+                    '${userProfile?.sex?.index == SexType.male.index ? AppLocalizations.of(context)!.male : AppLocalizations.of(context)!.female}. ${NutritionUtils.millisecondsToYears(userProfile?.birthDate ?? 0)} ${AppLocalizations.of(context)!.years_old}',
                     style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15, color: Colors.white),
                   ),
                 ],
@@ -48,20 +48,17 @@ class ProfileInfoCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: Dimens.height32),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _MetricItem(value: userProfile?.physicalCharacteristics?.height, label: AppLocalizations.of(context)!.height),
-                Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall), color: AppColors.butter59, height: 50, width: 2),
-                _MetricItem(value: userProfile?.physicalCharacteristics?.weight, label: AppLocalizations.of(context)!.weight),
-                Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall), color: AppColors.butter59, height: 50, width: 2),
-                _MetricItem(value: userProfile?.physicalCharacteristics?.bodyFat, label: AppLocalizations.of(context)!.body_fat),
-                Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall), color: AppColors.butter59, height: 50, width: 2),
-                _MetricItem(value: userProfile?.physicalCharacteristics?.waistMeasurement, label: AppLocalizations.of(context)!.waist),
-              ],
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _MetricItem(value: userProfile?.physicalCharacteristics?.height, label: AppLocalizations.of(context)!.height),
+              Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6), color: AppColors.butter59, height: 50, width: 2),
+              _MetricItem(value: userProfile?.physicalCharacteristics?.weight, label: AppLocalizations.of(context)!.weight),
+              Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6), color: AppColors.butter59, height: 50, width: 2),
+              _MetricItem(value: userProfile?.physicalCharacteristics?.bodyFat, label: 'IGC'),
+              Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6), color: AppColors.butter59, height: 50, width: 2),
+              _MetricItem(value: userProfile?.physicalCharacteristics?.waistMeasurement, label: AppLocalizations.of(context)!.waist),
+            ],
           ),
           const SizedBox(height: Dimens.heightXSmall),
           GestureDetector(
@@ -73,7 +70,7 @@ class ProfileInfoCard extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.w500, fontSize: Dimens.fontSizeSmall, color: Colors.white, decoration: TextDecoration.underline),
                 ),
                 const SizedBox(width: Dimens.width5),
-                const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.white),
+                const Icon(Icons.arrow_forward_ios, size: Dimens.fontSizeSmall, color: Colors.white),
               ],
             ),
           ),
@@ -95,12 +92,12 @@ class _MetricItem extends StatelessWidget {
       children: [
         Text(
           !value.isNull() ? value!.toInt() > 0 ? value!.toInt().toString() : '-' : value.toString(),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeSmall),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: Dimens.height5),
         Text(
           label,
-          style: const TextStyle(color: Colors.white60, fontSize: 12),
+          style: const TextStyle(fontWeight: FontWeight.w400, color: Colors.white60, fontSize: Dimens.fontSizeXSmall),
         ),
       ],
     );

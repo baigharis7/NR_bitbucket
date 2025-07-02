@@ -32,18 +32,21 @@ class TextRadioButtonExpansible extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    title,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w300,
-                      fontSize: Dimens.fontSize15,
-                      color: AppColors.yellowishGreen,
+                  Expanded(
+                    child: Text(
+                      title,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w300,
+                        fontSize: Dimens.fontSize15,
+                        color: AppColors.yellowishGreen,
+                      ),
                     ),
                   ),
                   Container(
                     height: 21,
                     width: 21,
+                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.white,

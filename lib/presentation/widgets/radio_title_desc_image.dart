@@ -59,11 +59,12 @@ class RadioTitleDescImage extends StatelessWidget {
                   ),
                 ),
                 Expanded(
+                  flex: 3,
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                     Text(fece.title ?? '', style: TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeNormal, color: isSelected ? Colors.white : Colors.black)),
                       if (fece.description?.isNotEmpty ?? false) const SizedBox(height: Dimens.height5),
-                    if (fece.description?.isNotEmpty ?? false) Text(fece.description ?? '',  style: TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize13, color: isSelected ? Colors.white : Colors.black)),
+                    if (fece.description?.isNotEmpty ?? false) Text(fece.description ?? '',  style: TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize13, color: isSelected ? Colors.white : Colors.black),),
                   ],),
                 ),
                 if (fece.image?.isNotEmpty ?? false) Container(
@@ -72,7 +73,7 @@ class RadioTitleDescImage extends StatelessWidget {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(Dimens.border100),
                     ),
-                    child: Image.asset(fece.image!, width: 34, height: 34,),
+                    child: Image.asset(fece.image!, width: 60, height: 34,),
                 ),
               ],
             ),

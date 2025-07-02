@@ -59,14 +59,13 @@ class _ObjectivesDialogState extends State<ObjectivesDialog> {
                           children: [
                         Text(
                           AppLocalizations.of(ctx)!.objectives,
-                          style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeXXLarge, color: AppColors.yellowishGreen),
+                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeXXLarge, color: AppColors.yellowishGreen),
                         ),
-                            const SizedBox(height: Dimens.height12),
+                            const SizedBox(height: Dimens.height27),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(AppLocalizations.of(context)!.metabolic_objectives, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),),
-                            const SizedBox(height: Dimens.height12),
+                            Text(AppLocalizations.of(context)!.metabolic_objectives, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),),
                             ...state.objectivesInfoMaster!.metabolicObjectives.map((objective) =>
                                 TextCheckboxBox(
                                   title: objective.translate(context),
@@ -77,11 +76,10 @@ class _ObjectivesDialogState extends State<ObjectivesDialog> {
                             ).toList(),
                           ],
                         ),
-                        const SizedBox(height: Dimens.height12),
+                        const SizedBox(height: Dimens.height27),
                         Column(crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(AppLocalizations.of(context)!.body_composition_objectives, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),),
-                            const SizedBox(height: Dimens.height12),
+                            Text(AppLocalizations.of(context)!.body_composition_objectives, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),),
                             ...state.objectivesInfoMaster!.bodyCompositionObjectives.map((objective) =>
                                 TextRadioButtonExpansible(
                                   title: objective.translate(context),
@@ -92,11 +90,10 @@ class _ObjectivesDialogState extends State<ObjectivesDialog> {
                             ).toList(),
                           ],
                         ),
-                            const SizedBox(height: Dimens.height12),
+                        const SizedBox(height: Dimens.height27),
                         Column(crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(AppLocalizations.of(context)!.other_objectives, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),),
-                            const SizedBox(height: Dimens.height12),
+                            Text(AppLocalizations.of(context)!.other_objectives, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),),
                             ...state.objectivesFilteredList.orEmpty().map((objective) =>
                                 TextCheckboxBox(
                                   title: objective.translate(context),

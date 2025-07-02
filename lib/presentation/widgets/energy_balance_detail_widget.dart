@@ -34,7 +34,12 @@ class _EnergyBalanceDetailWidgetState extends State<EnergyBalanceDetailWidget> {
             const SizedBox(height: Dimens.height5,),
             if (!widget.weeklyEnergyWidget.isNull()) widget.weeklyEnergyWidget ?? Container(),
             const SizedBox(height: Dimens.heightSmall,),
-            Container(alignment: Alignment.centerLeft, child: Text(AppLocalizations.of(context)!.kcal_ingested, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium))),
+            Row(
+              children: [
+                Expanded(child: Text(AppLocalizations.of(context)!.kcal_ingested, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium))),
+                Text('${widget.energyModel?.rawKcalTaken} Kcal', style: const TextStyle(color: AppColors.mountainMeadow, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium)),
+              ],
+            ),
             const SizedBox(height: Dimens.height12,),
             Text(AppLocalizations.of(context)!.gross_description,),
             const SizedBox(height: Dimens.heightXSmall,),

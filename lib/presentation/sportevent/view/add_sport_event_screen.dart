@@ -227,7 +227,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                           if (state.sportSimpleEvent?.info.orEmpty().isEmpty == true) return;
 
                           if (state.sportSimpleEvent!.scheduleTime.isNotEmptyOrNull() && state.sportSimpleEvent!.daysOfWeek.orEmpty().isNotEmpty) {
-                            // bloc.add(FinishSportRoutineAddSportAction(onFinish: () => _showConfirmationDialog(context: context)));
+                            bloc.add(FinishSportRoutineAddSportAction(onFinish: () => _showConfirmationDialog(context: context)));
                           } else {
                             // FocusScope.of(context).unfocus();
                             // _sportFocusInputController.unfocus();

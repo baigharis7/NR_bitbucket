@@ -56,7 +56,7 @@ class _TextCheckboxBoxState extends State<TextCheckboxBox> {
                     widget.onChangedCheckbox.call();
                   });
                 },
-              )
+              ),
             ],
           ),
         ),
