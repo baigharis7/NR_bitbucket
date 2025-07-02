@@ -14,6 +14,7 @@ import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_state.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/recommendations_food_group_card.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
@@ -54,7 +55,7 @@ class _RecommendationsTabState extends State<RecommendationsTab> {
         },
         builder: (ctx, state) {
           return Scaffold(
-            backgroundColor: Colors.grey[200],
+            backgroundColor: Colors.transparent,
             body: SingleChildScrollView(
               child: Column(
                 children: [
@@ -85,27 +86,7 @@ class _RecommendationsTabState extends State<RecommendationsTab> {
                 ],
               ),
             ),
-            bottomNavigationBar: RoundedCustomButton(horizontalMargin: Dimens.marginXSmall, verticalMargin: Dimens.marginSmall, onPressed: () => bloc.add(UpdateProfileAction())),
-            // bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: 2,)
-            // CustomBottomAppBar(initStateCallback: () => initState()),
-            // resizeToAvoidBottomInset: true,
-            // floatingActionButton: FloatingActionButton(
-            //   elevation: 2.0,
-            //   backgroundColor: Colors.white,
-            //   onPressed: () {
-            //     bloc.add(EmptyRecommendationAction());
-            //     Navigator.popAndPushNamed(context, DashboardScreen.routeName);
-            //   },
-            //   child: Container(
-            //     padding: const EdgeInsets.all(Dimens.paddingSmall),
-            //     child: Image.asset(
-            //       'assets/images/logo_black.png',
-            //       fit: BoxFit.cover,
-            //       color: Colors.black,
-            //     ),
-            //   ),
-            // ),
-            // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            bottomNavigationBar: Container(margin: const EdgeInsets.all(Dimens.marginSmall), child: GeneralButton(title: AppLocalizations.of(context)!.save, onTap: () => bloc.add(UpdateProfileAction()))),
           );
           },
       ),

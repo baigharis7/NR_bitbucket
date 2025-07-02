@@ -37,60 +37,66 @@ class _RecommendationsItemState extends State<RecommendationsItem> {
   @override
   Widget build(BuildContext context) {
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginSmall),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 3,
-            child: Text(
-              widget.foodItemMaster.translate(context),
-              overflow: TextOverflow.clip,
-              style: TextStyle(color: widget.checkBoxColor),
-            ),
-          ),
-          /*if (widget.alternativeUsualHealthyFoods.orEmpty().isNotEmpty) */Expanded(
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+          child: Row(
+            children: [
+              Expanded(
                 flex: 2,
-                child: DropdownButton<RecommendationFoodInfo>(
-                  // value: null,
-                  isExpanded: true,
-                  padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXXLarge),
-                  iconEnabledColor: Colors.black,
-                  icon: const Icon(Icons.arrow_drop_down),
-                  elevation: 16,
-                  style: const TextStyle(color: Colors.black),
-                  borderRadius: BorderRadius.circular(10),
-                  dropdownColor: AppColors.anti_flash_white,
-                  underline: Container(),
-                  menuMaxHeight: 200,
-                  onChanged: (RecommendationFoodInfo? value) {
-                    // setState(() {
-                      widget.onAlternativeAdd.call(value);
-                    // });
-                  },
-                  items: widget.alternativeUsualHealthyFoods.orEmpty().map<DropdownMenuItem<RecommendationFoodInfo>>((RecommendationFoodInfo value) {
-                    final itemSelected = widget.isAlternativeChecked.call(value.foodItemMaster.id ?? -1) ?? false;
-                    return DropdownMenuItem<RecommendationFoodInfo>(
-                      value: value,
-                      child: Container(padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal, vertical: Dimens.paddingNormal), width: double.infinity, color: itemSelected ? widget.checkBoxColor ?? AppColors.mountainMeadow : Colors.transparent, child: Text(value.foodItemMaster.translate(context), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: itemSelected ? Colors.white : Colors.black),)),
-                    );
-                  }).toList(),
-                ),),
-          Expanded(
-            flex: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SquareCheckbox(
-                  color: widget.checkBoxColor ?? AppColors.mountainMeadow,
-                  isChecked: widget.isChecked,
-                  onChanged: () => widget.onAdd.call(),
+                child: Text(
+                  widget.foodItemMaster.translate(context),
+                  overflow: TextOverflow.clip,
+                  style: TextStyle(color: widget.checkBoxColor ?? Colors.black),
                 ),
-              ],
-            ),
+              ),
+              /*if (widget.alternativeUsualHealthyFoods.orEmpty().isNotEmpty) */Expanded(
+                    flex: 2,
+                    child: DropdownButton<RecommendationFoodInfo>(
+                      // value: null,
+                      isExpanded: true,
+                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXXLarge),
+                      iconEnabledColor: Colors.black,
+                      icon: const Icon(Icons.arrow_drop_down),
+                      elevation: 16,
+                      style: const TextStyle(color: Colors.black),
+                      borderRadius: BorderRadius.circular(10),
+                      dropdownColor: AppColors.anti_flash_white,
+                      underline: Container(),
+                      menuMaxHeight: 200,
+                      onChanged: (RecommendationFoodInfo? value) {
+                        // setState(() {
+                          widget.onAlternativeAdd.call(value);
+                        // });
+                      },
+                      items: widget.alternativeUsualHealthyFoods.orEmpty().map<DropdownMenuItem<RecommendationFoodInfo>>((RecommendationFoodInfo value) {
+                        final itemSelected = widget.isAlternativeChecked.call(value.foodItemMaster.id ?? -1) ?? false;
+                        return DropdownMenuItem<RecommendationFoodInfo>(
+                          value: value,
+                          child: Container(padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal, vertical: Dimens.paddingNormal), width: double.infinity, color: itemSelected ? widget.checkBoxColor ?? AppColors.mountainMeadow : Colors.transparent, child: Text(value.foodItemMaster.translate(context), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: itemSelected ? Colors.white : Colors.black),)),
+                        );
+                      }).toList(),
+                    ),),
+              Expanded(
+                flex: 1,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SquareCheckbox(
+                      color: widget.checkBoxColor ?? AppColors.mountainMeadow,
+                      isChecked: widget.isChecked,
+                      onChanged: () => widget.onAdd.call(),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: Dimens.height5),
+        Divider(height: 1, thickness: 1, color: widget.checkBoxColor ?? Colors.black),
+      ],
     );
   }
 }

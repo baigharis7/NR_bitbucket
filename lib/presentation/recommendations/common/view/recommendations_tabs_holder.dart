@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -5,10 +7,14 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_state.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/foodslist/view/food_list_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/recipes/view/recipes_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/recommendations/view/recommendations_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
+
+import '../../../../infrastructure/utils/app_color.dart';
+import '../../../widgets/header_add_item_card_section.dart';
 
 class RecommendationsTabHolder extends StatefulWidget {
   static const routeName = '/recommendations_holder';
@@ -20,34 +26,25 @@ class RecommendationsTabHolder extends StatefulWidget {
 }
 
 class _RecommendationsTabHolderState extends State<RecommendationsTabHolder> with SingleTickerProviderStateMixin {
-  String? title;
-  late TabController _tabController;
   late RecommendationsGeneralBloc _recommendationsBloc;
+  late TabController _tabController;
   int _selectedTab = 0;
+  List<String> _tabs = ['', ''];
 
-  void _manageTabChange(BuildContext context) {
-    setState(() {
-      if (_selectedTab == 0) {
-        title = AppLocalizations.of(context)!.recommendations;
-      } else if (_selectedTab == 1) {
-        // title = AppLocalizations.of(context)!.recipes;
-        title = AppLocalizations.of(context)!.foods_list;
-      }
-      // else if (_selectedTab == 2) {
-      //   title = AppLocalizations.of(context)!.foods_list;
-      // }
-    });
+  @override
+  void didChangeDependencies() {
+    _tabs = [AppLocalizations.of(context)!.tips.toUpperCase(), AppLocalizations.of(context)!.list.toUpperCase()];
+    super.didChangeDependencies();
   }
 
   @override
   void initState() {
     _recommendationsBloc = BlocProvider.of<RecommendationsGeneralBloc>(context);
     _recommendationsBloc.add(InitialStateAction());
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: _tabs.length, vsync: this);
     _tabController.addListener(() {
         setState(() {
           _selectedTab = _tabController.index;
-          _manageTabChange(context);
         });
     });
     super.initState();
@@ -61,50 +58,86 @@ class _RecommendationsTabHolderState extends State<RecommendationsTabHolder> wit
 
   @override
   Widget build(BuildContext context) {
-    // final recommendationsBloc = BlocProvider.of<RecommendationsGeneralBloc>(context);
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          titleSpacing: Dimens.marginNormal,
-          title: Center(
-            child: Text(
-              title ?? AppLocalizations.of(context)!.recommendations,
-              style: const TextStyle(
-                fontSize: Dimens.fontSizeXXLarge,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
+    return BlocProvider.value(
+      value: _recommendationsBloc,
+      child: BlocConsumer<RecommendationsGeneralBloc, RecommendationsGeneralState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          return Stack(children: [
+            // Background image or gradient
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/background.png'), // Your image
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          bottom: TabBar(
-            controller: _tabController,
-            onTap: (index) => _manageTabChange(context),
-            labelColor: Colors.black,
-            indicatorColor: Colors.black,
-            tabs: [
-              Tab(text: AppLocalizations.of(context)!.tips.toUpperCase()),
-              // Tab(text: AppLocalizations.of(context)!.recipes.toUpperCase()),
-              Tab(text: AppLocalizations.of(context)!.list.toUpperCase()),
-            ],
-          ),
-        ),
-        body: TabBarView(
-          // physics: const NeverScrollableScrollPhysics(),
-          controller: _tabController,
-          children: [
-            const RecommendationsTab(),
-            // RecipesTab(foodItems: recommendationsBloc.state.foodItems ?? []),
-            FoodListScreen(foodItems: _recommendationsBloc.state.foodItems ?? []),
-          ],
-        ),
-        bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.TIPS),
-      ),
-    );
+
+            // Blur effect
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                color: Colors.black.withOpacity(0), // Needed to activate the blur
+              ),
+            ),
+
+            Scaffold(
+              backgroundColor: Colors.transparent,
+              body: SafeArea(
+                child: Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.all(Dimens.marginNormal),
+                      child: Column(children: [
+                        HeaderAddItemCardSection(title: AppLocalizations.of(context)!.recommendations, onBackTap: () => Navigator.pop(context),),
+                        const SizedBox(height: Dimens.height12),
+                        TabBar(
+                          controller: _tabController,
+                          indicator: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(Dimens.borderNormal),
+                          ),
+                          labelPadding: const EdgeInsets.symmetric(horizontal: Dimens.padding10),
+                          labelColor: Colors.white,
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          unselectedLabelColor: AppColors.yellowishGreen,
+                          tabs: List.generate(_tabs.length, (index) {
+                            final isSelected = _tabController.index == index;
+                            return Container(
+                              height: 45,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(Dimens.borderNormal),
+                                color: isSelected ? AppColors.yellowishGreen : AppColors.butter59,
+                              ),
+                              child: Text(_tabs[index]),
+                            );
+                          }),
+                        ),
+                        const SizedBox(height: Dimens.height5),
+                        const Divider(color: AppColors.yellowishGreen, height: 2, thickness: 2,),
+                      ]),
+                    ),
+                    // const SizedBox(height: Dimens.height12),
+                    Expanded(
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: [
+                          const RecommendationsTab(),
+                          // RecipesTab(foodItems: recommendationsBloc.state.foodItems ?? []),
+                          FoodListScreen(foodItems: _recommendationsBloc.state.foodItems ?? []),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.TIPS),
+            ),
+          ],);
+        },),);
   }
 
 }

@@ -34,7 +34,6 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
   late FecesUrineBloc fecesUrineBloc;
   late TabController _tabController;
   int _selectedTab = 0;
-
   List<String> _tabs = ['', ''];
 
   @override

@@ -94,50 +94,34 @@ class _FoodListScreen extends State<FoodListScreen> {
         },
         builder: (ctx, state) {
           return Scaffold(
-            backgroundColor: Colors.grey[100],
+            backgroundColor: Colors.transparent,
             body: SingleChildScrollView(
-              child: Container(
-                margin: const EdgeInsets.all(Dimens.marginNormal),
-                color: Colors.grey[100],
-                child: Column(
-                  children: [
-                    if (state.showFoodListCard != null && state.showFoodListCard!) ExplainingCardsHelper().getExplainingCardWithId(
-                      context: context,
-                      explainingCardId: ExplainingCardRefs.foodList.index,
-                      onHideCard: () => bloc.add(HideFoodListExplainingCardAction()),
+              padding: const EdgeInsets.all(Dimens.paddingNormal),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (state.showFoodListCard != null && state.showFoodListCard!) ExplainingCardsHelper().getExplainingCardWithId(
+                    context: context,
+                    explainingCardId: ExplainingCardRefs.foodList.index,
+                    onHideCard: () => bloc.add(HideFoodListExplainingCardAction()),
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.my_foods_list.appendColon(),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: Dimens.fontSize17,
+                      color: AppColors.yellowishGreen,
                     ),
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: const EdgeInsets.all(Dimens.marginNormal),
-                      child: Text(
-                        AppLocalizations.of(context)!.my_foods_list.appendColon(),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: Dimens.fontSizeNormal,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: Dimens.marginNormal),
-                    ),
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        children: [
-                          ...state.foodItems!.map((foodItem) => FoodListItem(
-                            foodName: bloc.findFood(foodItem.id).translate(context),
-                            // onDelete: () => bloc.add(OnDeleteFoodIdFromList(foodItem: foodItem)),
-                            onDelete: () {
-                              _showDelFoodDialog(onDelFood: () => bloc.add(OnDeleteFoodIdFromList(foodItem: foodItem)));
-                            },
-                          ),),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: Dimens.heightXSmall),
+                  ...state.foodItems!.map((foodItem) => FoodListItem(
+                    foodName: bloc.findFood(foodItem.id).translate(context),
+                    // onDelete: () => bloc.add(OnDeleteFoodIdFromList(foodItem: foodItem)),
+                    onDelete: () {
+                      _showDelFoodDialog(onDelFood: () => bloc.add(OnDeleteFoodIdFromList(foodItem: foodItem)));
+                    },
+                  ),),
+                ],
               ),
             ),
             // bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: 2,)
