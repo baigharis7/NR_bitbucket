@@ -155,7 +155,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
             ),
           ),
           floatingActionButton: Container(
-            margin: const EdgeInsets.only(bottom: Dimens.margin56),
+            margin: const EdgeInsets.only(bottom: Dimens.margin62),
             child: FloatingActionButton(
               clipBehavior: Clip.hardEdge,
               onPressed: _closeMenu,

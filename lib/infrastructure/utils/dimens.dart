@@ -33,6 +33,7 @@ class Dimens {
   static const marginXXXLarge = 50.0;
   static const margin56 = 56.0;
   static const margin_60 = 60.0;
+  static const margin62 = 62.0;
   static const marginXXXXLarge = 100.0;
   static const margin156 = 156.0;
   static const margin5XLarge = 200.0;
