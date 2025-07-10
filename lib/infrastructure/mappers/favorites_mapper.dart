@@ -45,11 +45,11 @@ List<FoodInFavorite> mapToFoodFavoriteList(List<FoodInfo> foodInfoList) {
 
 FoodFavoriteEntity mapToFoodFavoriteEntity(FoodFavorite foodFavorite) {
   return FoodFavoriteEntity(
-    title: foodFavorite.title,
-    eventDate: foodFavorite.eventDate,
+    title: foodFavorite.title.orEmpty(),
+    eventDate: foodFavorite.eventDate.orZero(),
     ingredients: foodFavorite.ingredients.map((ingredient) => FoodInFavoriteEntity(id: ingredient.id, name_en: ingredient.name_en.orEmpty(), name_es: ingredient.name_es.orEmpty(), qty: ingredient.qty, unit: ingredient.unit, conversionFactor: ingredient.conversionFactor, cookingMethod: ingredient.cookingMethod, usedOil: ingredient.usedOil, unitsEquivalences: ingredient.unitsEquivalences)).toList(),
     drinks: foodFavorite.drinks.map((drink) => FoodInFavoriteEntity(id: drink.id, name_en: drink.name_en.orEmpty(), name_es: drink.name_es.orEmpty(), qty: drink.qty, unit: drink.unit, cookingMethod: drink.cookingMethod, unitsEquivalences: drink.unitsEquivalences)).toList(),
-    mealTime: foodFavorite.mealTime,
+    mealTime: foodFavorite.mealTime.orZero(),
     comment: foodFavorite.comment,
     dish: foodFavorite.dish,
     isRoutine: foodFavorite.isRoutine,
@@ -60,11 +60,11 @@ FoodFavoriteEntity mapToFoodFavoriteEntity(FoodFavorite foodFavorite) {
 UploadFoodFavorite mapToUploadFoodFavorite(FoodFavorite foodFavorite, String userId,) {
   return UploadFoodFavorite(
     userId: userId,
-    eventDate:foodFavorite.eventDate,
-    title: foodFavorite.title,
+    eventDate:foodFavorite.eventDate.orZero(),
+    title: foodFavorite.title.orEmpty(),
     ingredients: foodFavorite.ingredients.map((ingredient) => UploadFoodInFavorite(id: ingredient.id, name_en: ingredient.name_en.orEmpty(), name_es: ingredient.name_es.orEmpty(), qty: ingredient.qty, unit: ingredient.unit, conversionFactor: ingredient.conversionFactor, cookingMethod: ingredient.cookingMethod, usedOil: ingredient.usedOil, unitsEquivalences: ingredient.unitsEquivalences)).toList(),
     drinks: foodFavorite.drinks.map((drink) => UploadFoodInFavorite(id: drink.id, name_en: drink.name_en.orEmpty(), name_es: drink.name_es.orEmpty(), qty: drink.qty, unit: drink.unit, cookingMethod: drink.cookingMethod, unitsEquivalences: drink.unitsEquivalences)).toList(),
-    mealTime: foodFavorite.mealTime,
+    mealTime: foodFavorite.mealTime.orZero(),
     comment: foodFavorite.comment,
     dish: foodFavorite.dish,
     isRoutine: foodFavorite.isRoutine,

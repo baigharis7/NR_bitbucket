@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/favorite_foods_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/favorite_foods_bloc.dart';
@@ -110,11 +111,11 @@ class FavoriteFoodsClusterScreen extends StatelessWidget {
                           ),
                         ),
                         ...bloc.getFavorites(bloc.getMealTimeById(mealTime.id!)).map((favorite) => EventListItem(
-                          title: favorite.title,
+                          title: favorite.title.orEmpty(),
                           onEdit: () => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: favorite).then((value) => bloc.add(InitializeState())),
                           onFavorite: () => showUndoFavoriteDialog(
                             context: context,
-                            foodTitle: favorite.title,
+                            foodTitle: favorite.title.orEmpty(),
                             onUndoFavorite: () => bloc.add(
                               RemoveFavoriteAction(
                                 foodFavorite: favorite,

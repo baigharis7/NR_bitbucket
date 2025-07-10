@@ -175,43 +175,43 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
                                 flex: 1,
                                 child: InkWell(
                                   onTap: () {
-                                    if (arguments is FoodFavorite) {
-                                      showUndoFavoriteDialog(
-                                        context: context,
-                                        foodTitle: arguments.title,
-                                        onUndoFavorite: () => bloc.add(
-                                          RemoveFavoriteFoodEventAction(
-                                            onFinish: () =>
-                                                Navigator.pop(context),
-                                            foodFavorite: arguments,
-                                          ),
-                                        ),
-                                      );
-                                    } else if (arguments is FoodEventComplete) {
-                                      if (bloc.isFoodFavourite(arguments)) {
-                                        showUndoFavoriteDialog(
-                                          context: context,
-                                          foodTitle: (arguments).foodName ?? '',
-                                          onUndoFavorite: () => bloc.add(
-                                            RemoveFavoriteFoodEventAction(
-                                              onFinish: () =>
-                                                  Navigator.pop(context),
-                                              foodFavorite: bloc.isFoundObjectFromFavoriteList(mapToFoodFavoriteFromFoodEvent(arguments)),
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                      else {
-                                        bloc.add(
-                                            FinishAddingFavoriteAction(
-                                              onFinish: () =>
-                                                  _showConfirmationDialog(
-                                                    context,
-                                                  ),
-                                            ),
-                                          );
-                                      }
-                                    }
+                                    // if (arguments is FoodFavorite) {
+                                    //   showUndoFavoriteDialog(
+                                    //     context: context,
+                                    //     foodTitle: arguments.title,
+                                    //     onUndoFavorite: () => bloc.add(
+                                    //       RemoveFavoriteFoodEventAction(
+                                    //         onFinish: () =>
+                                    //             Navigator.pop(context),
+                                    //         foodFavorite: arguments,
+                                    //       ),
+                                    //     ),
+                                    //   );
+                                    // } else if (arguments is FoodEventComplete) {
+                                    //   if (bloc.isFoodFavourite(arguments)) {
+                                    //     showUndoFavoriteDialog(
+                                    //       context: context,
+                                    //       foodTitle: (arguments).foodName ?? '',
+                                    //       onUndoFavorite: () => bloc.add(
+                                    //         RemoveFavoriteFoodEventAction(
+                                    //           onFinish: () =>
+                                    //               Navigator.pop(context),
+                                    //           foodFavorite: bloc.isFoundObjectFromFavoriteList(mapToFoodFavoriteFromFoodEvent(arguments)),
+                                    //         ),
+                                    //       ),
+                                    //     );
+                                    //   }
+                                    //   else {
+                                    //     bloc.add(
+                                    //         FinishAddingFavoriteAction(
+                                    //           onFinish: () =>
+                                    //               _showConfirmationDialog(
+                                    //                 context,
+                                    //               ),
+                                    //         ),
+                                    //       );
+                                    //   }
+                                    // }
                                   },
                                   child: (arguments is FoodFavorite ||
                                           (arguments is FoodEventComplete

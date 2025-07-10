@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/favorite_foods_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/favorite_foods_state.dart';
@@ -45,7 +46,7 @@ class FavoriteFoodsBloc extends BaseBloc<FavoriteFoodsActions, FavoriteFoodsStat
       emit(state.copyWith(isLoading: true));
 
       try {
-        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite.eventDate);
+        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite.eventDate.orZero());
         try {
           await removeFoodFavoriteFromLocalInteractor.execute(event.foodFavorite);
           state.foodFavorites = await getFoodFavoritesInteractor.execute();

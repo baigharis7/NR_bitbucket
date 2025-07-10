@@ -24,6 +24,7 @@ import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_act
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
 import 'package:nutrenaissance_flutter/presentation/energy_balance_detail/view/energy_balance_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/favorites_tab_holder.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/view/liquid_summary_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
@@ -344,6 +345,15 @@ class _DashboardScreen extends State<DashboardScreen>
                         MealTimeWidget(name: AppLocalizations.of(context)!.physical_activity, onClick: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), iconColor: Colors.black, backgroundColor: AppColors.floralWhite, svg: 'assets/images/sport.png'),
                         DashTitleWidget(title: AppLocalizations.of(context)!.depositions),
                         MealTimeWidget(name: AppLocalizations.of(context)!.faeces_urine, svg: 'assets/images/feces_urine.png', onClick: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), iconColor: Colors.black, backgroundColor: Colors.transparent, backgroundImage: 'assets/images/feces_urine_background.png'),
+                        // ListTile(
+                        //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border11),),
+                        //   tileColor: AppColors.floralWhite,
+                        //   onTap: () {
+                        //     Navigator.pushNamed(context, FavoritesTabHolder.routeName);
+                        //   },
+                        //   leading: Image.asset('assets/images/favorite_icon.png',color: Colors.white, height: 21, width: 21),
+                        //   title: Text(AppLocalizations.of(context)!.favorites, style: const TextStyle(color: Colors.white)),
+                        // ),
                         const SizedBox(height: Dimens.height60),
                         // WaterWidget(),
                         // SizedBox(

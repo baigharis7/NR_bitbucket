@@ -422,8 +422,8 @@ FoodRoutineEntity mapToFoodRoutineEntity(FoodRoutineEvent foodRoutineEvent) {
 
 FoodEventSimple mapToFoodEventSimpleFromFoodFavorite(FoodFavorite foodFavorite) {
   return FoodEventSimple(
-      userId: '',
-      eventDate: foodFavorite.eventDate,
+      userId: foodFavorite.userId!,
+      eventDate: foodFavorite.eventDate!,
       eventId: foodFavorite.eventDate,
       foodName: foodFavorite.title,
       mealType: foodFavorite.mealTime,
@@ -435,9 +435,9 @@ FoodEventSimple mapToFoodEventSimpleFromFoodFavorite(FoodFavorite foodFavorite) 
 
 FoodRoutineEvent mapToFoodRoutineEventFromFoodFavorite(FoodFavorite foodFavorite) {
   return FoodRoutineEvent(
-      userId: '',
+      userId: foodFavorite.userId!,
       eventId: foodFavorite.eventDate,
-      eventDate: foodFavorite.eventDate,
+      eventDate: foodFavorite.eventDate!,
       foodName: foodFavorite.title,
       mealType: foodFavorite.mealTime,
       dish: foodFavorite.dish,

@@ -308,6 +308,8 @@ import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/sport_f
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/create_new_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/favorite_sports_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/favoritestabs/bloc/favorites_tabs_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/favorites_tab_holder.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/bloc/feces_urine_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces/view/feces_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces_urine_tab_holder.dart';
@@ -337,6 +339,7 @@ import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/bloc/m
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
 import 'package:nutrenaissance_flutter/presentation/mealtimedetails/bloc/meal_time_details_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/mealtimedetails/view/meal_time_details_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/mealtimeitem/view/meal_time_item_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/bloc/micro_nutrients_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrientsweekly/bloc/micro_nutrients_weekly_bloc.dart';
@@ -914,6 +917,14 @@ void main() async {
     removeFoodEventInteractor: removeFoodEventInteractor,
   );
 
+  final favoritesTabsBloc = FavoritesTabsBloc(
+    getFoodFavoritesInteractor: getFoodFavoritesInteractor,
+    deleteFoodFavoriteInteractor: deleteFoodFavoriteInteractor,
+    removeFoodFavoriteFromLocalInteractor: removeFoodFavoriteFromLocalInteractor,
+    getUserIdInteractor: getUserIdInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
+  );
+
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
 
   runApp(
@@ -961,6 +972,7 @@ void main() async {
         BlocProvider<RecipeDetailBloc>(create: (context) => recipeDetailBloc,),
         BlocProvider<MicroNutrientsWeeklyBloc>(create: (context) => microNutrientsWeeklyBloc,),
         BlocProvider<MealTimeDetailsBloc>(create: (context) => mealTimeDetailsBloc,),
+        BlocProvider<FavoritesTabsBloc>(create: (context) => favoritesTabsBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -1053,6 +1065,8 @@ void main() async {
           MealTimeDetailScreen.routeName:(_) => const MealTimeDetailScreen(),
           BarCodeScanningScreen.routeName:(_) => const BarCodeScanningScreen(),
           BarcodeDetailScreen.routeName:(_) => const BarcodeDetailScreen(),
+          MealTimeItemScreen.routeName:(_) => const MealTimeItemScreen(),
+          FavoritesTabHolder.routeName:(_) => const FavoritesTabHolder(),
         },
       ),
     ),

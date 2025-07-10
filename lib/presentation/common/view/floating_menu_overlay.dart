@@ -1,8 +1,12 @@
 import 'dart:ffi';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/favorites_tab_holder.dart';
 
 class FloatingMenuOverlay extends StatefulWidget {
   final VoidCallback onClose;
@@ -127,7 +131,8 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
             color: Colors.transparent,
             child: GestureDetector(
               onTap: _closeMenu,
-              child: Stack(alignment: Alignment.bottomRight,
+              child: Stack(
+                alignment: Alignment.bottomRight,
                 children: [
                   // Background blur with fade
                   Opacity(
@@ -144,10 +149,48 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.end,
-                      children: List.generate(widget.menuItems.length, (i) {
-                        final item = widget.menuItems[i];
-                        return buildMenuItem(item['label'], item['icon'], item['onTap'], widget.menuItems.length - i);
-                      }),
+                      children: [
+                        Row(
+                          children: [
+                            // Expanded(
+                            //   child: Container(
+                            //     decoration: BoxDecoration(
+                            //       color: AppColors.yellowishGreen,
+                            //       borderRadius: BorderRadius.circular(Dimens.border50),
+                            //     ),
+                            //     child: ListTile(
+                            //       onTap: () { _closeMenu(); Navigator.pushNamed(context, FavoritesTabHolder.routeName);},
+                            //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border50)),
+                            //       tileColor: Colors.black,
+                            //       leading: Image.asset('assets/images/favorite_icon.png', width: 22, height: 22, color: Colors.white),
+                            //       title: Text(AppLocalizations.of(context)!.routines, style: const TextStyle(fontSize: Dimens.fontSizeMedium, color: Colors.white),),
+                            //     ),
+                            //   ),
+                            // ),
+                            // const SizedBox(width: Dimens.width12),
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: AppColors.yellowishGreen,
+                                  borderRadius: BorderRadius.circular(Dimens.border50),
+                                ),
+                                child: ListTile(
+                                  onTap: () { _closeMenu(); Navigator.pushNamed(context, FavoritesTabHolder.routeName);},
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border50)),
+                                  tileColor: Colors.black,
+                                    leading: Image.asset('assets/images/favorite_icon.png', width: 22, height: 22, color: Colors.white),
+                                    title: Text(AppLocalizations.of(context)!.favorites, style: const TextStyle(fontSize: Dimens.fontSizeMedium, color: Colors.white),),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: Dimens.height32),
+                        ...List.generate(widget.menuItems.length, (i) {
+                          final item = widget.menuItems[i];
+                          return buildMenuItem(item['label'], item['icon'], item['onTap'], widget.menuItems.length - i);
+                        }),
+                      ],
                     ),
                   ),
                 ],

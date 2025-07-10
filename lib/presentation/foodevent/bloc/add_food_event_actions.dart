@@ -15,31 +15,31 @@ class InitializeStateAction extends AddFoodEventActions {
 }
 
 class RemoveFoodFromEventAction extends AddFoodEventActions {
-  FoodInEvent foodInEvent;
+  FoodInFavorite foodInEvent;
 
   RemoveFoodFromEventAction({required this.foodInEvent});
 }
 
 class AddFoodFromEventAction extends AddFoodEventActions {
-  FoodInEvent foodInEvent;
+  FoodInFavorite foodInEvent;
 
   AddFoodFromEventAction({required this.foodInEvent});
 }
 
 class UpdateFoodQuantityEventAction extends AddFoodEventActions {
-  FoodInEvent foodInEvent;
+  FoodInFavorite foodInEvent;
 
   UpdateFoodQuantityEventAction({required this.foodInEvent});
 }
 
 class UpdateFoodUnitEventAction extends AddFoodEventActions {
-  FoodInEvent foodInEvent;
+  FoodInFavorite foodInEvent;
 
   UpdateFoodUnitEventAction({required this.foodInEvent});
 }
 
 class UpdateFoodCookingMethodEventAction extends AddFoodEventActions {
-  FoodInEvent foodInEvent;
+  FoodInFavorite foodInEvent;
 
   UpdateFoodCookingMethodEventAction({required this.foodInEvent});
 }
@@ -78,9 +78,10 @@ class RemoveFavoriteFoodAddFoodEventAction extends AddFoodEventActions {
 }
 
 class FinishFoodAsFavoriteEventAction extends AddFoodEventActions {
+  FoodFavorite foodFavorite;
   Function onFinish;
 
-  FinishFoodAsFavoriteEventAction({required this.onFinish});
+  FinishFoodAsFavoriteEventAction({required this.foodFavorite, required this.onFinish});
 }
 
 class AddFoodNameEventAction extends AddFoodEventActions {
@@ -101,19 +102,8 @@ class AddFoodMealTypeEventAction extends AddFoodEventActions {
   AddFoodMealTypeEventAction({required this.mealType});
 }
 
-class ReceiveFoodsInEventFromNavigationAction extends AddFoodEventActions {
-  final FoodEventSimple foodEventSimple;
-  ReceiveFoodsInEventFromNavigationAction({required this.foodEventSimple});
-}
-
 class ResetFoodEventInfoAction extends AddFoodEventActions {
   ResetFoodEventInfoAction();
-}
-
-class ReceiveEventDateAction extends AddFoodEventActions {
-  final DateTime dateTime;
-
-  ReceiveEventDateAction({required this.dateTime});
 }
 
 class AddFoodFromFavouriteEventAction extends AddFoodEventActions {
@@ -125,12 +115,6 @@ class FinishFoodFavouriteEventAction extends AddFoodEventActions {
   Function onFinish;
 
   FinishFoodFavouriteEventAction({required this.onFinish});
-}
-
-class AddFoodEventFromDetailNavigation extends AddFoodEventActions {
-  final FoodEventComplete foodEventComplete;
-
-  AddFoodEventFromDetailNavigation(this.foodEventComplete);
 }
 
 class UpdateCreteDishEventAction extends AddFoodEventActions {}
@@ -147,13 +131,13 @@ class FinishFoodWithoutCreateDishEventAction extends AddFoodEventActions {
 }
 
 class UpdateFoodConversionFactor extends AddFoodEventActions {
-  final FoodInEvent foodInEvent;
+  final FoodInFavorite foodInEvent;
 
   UpdateFoodConversionFactor({required this.foodInEvent});
 }
 
 class UpdateOilUsedEventAction extends AddFoodEventActions {
-  final FoodInEvent foodInEvent;
+  final FoodInFavorite foodInEvent;
 
   UpdateOilUsedEventAction({required this.foodInEvent});
 }
@@ -168,4 +152,16 @@ class UpdateEventDateEventAction extends AddFoodEventActions {
   final DateTime dateTime;
 
   UpdateEventDateEventAction({required this.dateTime});
+}
+
+class UpdateFoodDataFromFavoritesAddFoodEventActions extends AddFoodEventActions {
+  final FoodFavorite foodFavorite;
+
+  UpdateFoodDataFromFavoritesAddFoodEventActions({required this.foodFavorite});
+}
+
+class FinishFoodEventAddFoodEventActions extends AddFoodEventActions {
+  Function onFinish;
+
+  FinishFoodEventAddFoodEventActions({required this.onFinish});
 }

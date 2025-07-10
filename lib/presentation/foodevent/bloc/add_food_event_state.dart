@@ -18,24 +18,15 @@ class AddFoodEventState {
   FoodsAndDrinksNamesMaster? foodNames;
   OilTypesResponse? oilTypes;
   ConversionFactorsResponse? conversionFactors;
-  List<FoodInEvent>? foodsInEvent;
+  FoodFavorite? foodEvent;
   FoodFavorite? foodsFromFavorite;
   CookingMethodsMaster? cookingMethodsMaster;
   CookingMethodsInfoMaster? cookingMethodsInfoMaster;
   UnitsFoodsMaster? unitsFoodsMaster;
   UnitsInfoMaster? unitsInfoMaster;
-  String? foodName;
-  String? comment;
-  int? eventDate;
-  int? eventId;
-  int? mealType;
   bool? isEdit;
   List<FoodFavorite>? foodFavorites;
   List<FoodEventComplete>? weeklyFoodEvents;
-  bool? isCreateDish;
-  bool? isFavorite;
-  bool? isCreateRoutine;
-  List<int>? daysOfWeek;
 
   AddFoodEventState({
     required this.isLoading,
@@ -43,24 +34,15 @@ class AddFoodEventState {
     this.foodNames,
     this.oilTypes,
     this.conversionFactors,
-    this.foodsInEvent,
+    this.foodEvent,
     this.foodsFromFavorite,
     this.cookingMethodsMaster,
     this.cookingMethodsInfoMaster,
     this.unitsFoodsMaster,
     this.unitsInfoMaster,
-    this.foodName,
-    this.comment,
-    this.eventDate,
-    this.eventId,
-    this.mealType,
     this.isEdit,
     this.foodFavorites,
     this.weeklyFoodEvents,
-    this.isCreateDish,
-    this.isFavorite,
-    this.isCreateRoutine,
-    this.daysOfWeek,
   });
 
   AddFoodEventState copyWith({
@@ -69,24 +51,15 @@ class AddFoodEventState {
     FoodsAndDrinksNamesMaster? foodNames,
     OilTypesResponse? oilTypes,
     ConversionFactorsResponse? conversionFactors,
-    List<FoodInEvent>? foodsInEvent,
+    FoodFavorite? foodEvent,
     FoodFavorite? foodsFromFavorite,
     CookingMethodsMaster? cookingMethodsMaster,
     CookingMethodsInfoMaster? cookingMethodsInfoMaster,
     UnitsFoodsMaster? unitsFoodsMaster,
     UnitsInfoMaster? unitsInfoMaster,
-    String? foodName,
-    String? comment,
-    int? eventDate,
-    int? eventId,
-    int? mealType,
     bool? isEdit,
     List<FoodFavorite>? foodFavorites,
     List<FoodEventComplete>? weeklyFoodEvents,
-    bool? isCreateDish,
-    bool? isFavorite,
-    bool? isCreateRoutine,
-    List<int>? daysOfWeek,
   }) {
     return AddFoodEventState(
       isLoading: isLoading,
@@ -94,24 +67,15 @@ class AddFoodEventState {
       foodNames: foodNames ?? this.foodNames,
       oilTypes: oilTypes ?? this.oilTypes,
       conversionFactors: conversionFactors ?? this.conversionFactors,
-      foodsInEvent: foodsInEvent ?? this.foodsInEvent,
+      foodEvent: foodEvent ?? this.foodEvent,
       cookingMethodsMaster: cookingMethodsMaster ?? this.cookingMethodsMaster,
       cookingMethodsInfoMaster: cookingMethodsInfoMaster ?? this.cookingMethodsInfoMaster,
       unitsFoodsMaster: unitsFoodsMaster ?? this.unitsFoodsMaster,
       unitsInfoMaster: unitsInfoMaster ?? this.unitsInfoMaster,
-      foodName: foodName ?? this.foodName,
-      comment: comment ?? this.comment,
-      eventDate: eventDate ?? this.eventDate,
-      eventId: eventId ?? this.eventId,
-      mealType: mealType ?? this.mealType,
       isEdit: isEdit ?? this.isEdit,
       foodFavorites: foodFavorites ?? this.foodFavorites,
       foodsFromFavorite: foodsFromFavorite ?? this.foodsFromFavorite,
       weeklyFoodEvents: weeklyFoodEvents ?? this.weeklyFoodEvents,
-      isCreateDish: isCreateDish ?? this.isCreateDish,
-      isFavorite: isFavorite ?? this.isFavorite,
-      isCreateRoutine: isCreateRoutine ?? this.isCreateRoutine,
-      daysOfWeek: daysOfWeek ?? this.daysOfWeek,
     );
   }
 }

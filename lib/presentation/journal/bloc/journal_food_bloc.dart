@@ -126,7 +126,7 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
       emit(state.copyWith(isLoading: true));
 
       try {
-        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite!.eventDate);
+        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite!.eventDate.orZero());
         try {
           await removeFoodFavoriteFromLocalInteractor.execute(event.foodFavorite!);
           state.foodFavorites = await getFoodFavoritesInteractor.execute();

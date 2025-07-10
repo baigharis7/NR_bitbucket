@@ -28,10 +28,12 @@ import 'package:nutrenaissance_flutter/presentation/widgets/meal_type_selection_
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.dart';
 
+import '../../../domain/models/favorites/food/food_favorite.dart';
 import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../domain/models/foodevents/food_arguments_model.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../../infrastructure/helpers/remove_diac.dart';
+import '../../../infrastructure/mappers/food_event_mappers.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
 import '../../widgets/item_info_card.dart';
 // import 'package:remove_diacritic/remove_diacritic.dart';
@@ -107,17 +109,10 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
       if (ModalRoute.of(context)?.settings.arguments != null) {
         var infoReceived = ModalRoute.of(context)?.settings.arguments;
         if (infoReceived != null) {
-          if (infoReceived is FoodEventSimple?) {
-            final foodEventSimple = infoReceived as FoodEventSimple?;
-            bloc.add(ReceiveFoodsInEventFromNavigationAction(foodEventSimple: foodEventSimple!));
-          } else if (infoReceived is DateTime?) {
-            final eventDate = infoReceived as DateTime?;
-            bloc.add(ReceiveEventDateAction(dateTime: eventDate!));
-          }
-          else if (infoReceived is FoodEventComplete) {
-            bloc.add(AddFoodEventFromDetailNavigation(infoReceived));
-          } else if (infoReceived is FoodArgumentsModel) {
+          if (infoReceived is FoodArgumentsModel) {
             bloc.add(AddFoodArgumentModelEventAction(foodArgumentsModel: infoReceived));
+          } else if (infoReceived is FoodFavorite) {
+            bloc.add(UpdateFoodDataFromFavoritesAddFoodEventActions(foodFavorite: infoReceived));
           }
         }
       }
@@ -183,7 +178,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                       children: [
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                          child: DatePickerBar(selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.eventDate), onChangeDate: (dateTime) {
+                          child: DatePickerBar(selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate), onChangeDate: (dateTime) {
                             bloc.add(UpdateEventDateEventAction(dateTime: dateTime));
                           },),
                         ),
@@ -191,8 +186,8 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                           child: HeaderAddItemCardSection(
-                            title: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.mealType).name,
-                            image: 'assets/images/meal_time_${state.mealType}.png',
+                            title: MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name,
+                            image: 'assets/images/meal_time_${state.foodEvent?.mealTime}.png',
                             onBackTap: () => Navigator.pop(context),
                             items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),
                             onItemSelect: (option, focus) {
@@ -205,10 +200,10 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                         ),
                         // (state.foodsInEvent.orEmpty().isNotEmpty)
                         Column(children: [
-                          if (state.foodsInEvent.orEmpty().isNotEmpty) Container(
+                          if (state.foodEvent!.ingredients.orEmpty().isNotEmpty) Container(
                             margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                             child: Column(children: [
-                              ...state.foodsInEvent.orEmpty().map((foodInEvent) {
+                              ...state.foodEvent!.ingredients.orEmpty().map((foodInEvent) {
                                 final option = eventHelper.findFoodNameFromId(foodInEvent.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                                 final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                                 return FoodEventItem(
@@ -235,10 +230,10 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                   rightSideWidget: const Icon(Icons.add_circle),
                                   onTap: () => showAddFoodNameDialog(
                                     context: context,
-                                    isFavorite: state.isFavorite,
-                                    isCreateRoutine: state.isCreateRoutine,
-                                    mealTime: state.mealType,
-                                    daysOfWeek: state.daysOfWeek,
+                                    isFavorite: state.foodEvent?.isFavorite,
+                                    isCreateRoutine: state.foodEvent!.isRoutine,
+                                    mealTime: state.foodEvent?.mealTime,
+                                    daysOfWeek: state.foodEvent?.daysOfWeek,
                                     onFinish: () => Navigator.pop(context),
                                     onNameChange: (foodName) => bloc.add(AddFoodNameEventAction(foodName: foodName,),),
                                     onFavoriteChange: (value) => bloc.add(UpdateIsFavoriteEventAction()),
@@ -281,9 +276,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                             ]),
                           ),
 
-                          if (state.foodsInEvent.orEmpty().isEmpty && state.foodFavorites.orEmpty().isNotEmpty) Column(children: [
+                          if (state.foodEvent!.ingredients.orEmpty().isEmpty && state.foodFavorites.orEmpty().isNotEmpty) Column(children: [
                             const SizedBox(height: Dimens.height12),
-                            DashTitleWidget(title: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.mealType).name.orEmpty()+ ' favorites'),
+                            DashTitleWidget(title: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime).name.orEmpty()+ ' favorites'),
                             ...state.foodFavorites.orEmpty().map((favFood) => ItemInfoCard(
                               title: NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: favFood.ingredients, context: context),
                               leadingSrc: 'assets/images/favorite_icon.png',
@@ -295,10 +290,10 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                             ),
                           ]),
 
-                          if (state.foodsInEvent.orEmpty().isNotEmpty || state.foodFavorites.orEmpty().isNotEmpty) Container(
+                          if (state.foodEvent!.ingredients.orEmpty().isNotEmpty || state.foodFavorites.orEmpty().isNotEmpty) Container(
                             margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                             child: SaveButton(onPressed: () {
-                              if(state.foodsInEvent!.isEmpty) {
+                              if(state.foodEvent!.ingredients.isEmpty) {
                                 if (!state.foodsFromFavorite.isNull()) {
                                   bloc.add(FinishFoodFavouriteEventAction(onFinish: () => _showConfirmationDialog(context),),);
                                 }
@@ -306,16 +301,11 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               else {
                                 if (bloc.validateList() ?? true) return;
 
-                                if (state.isFavorite ?? false) {
-                                  bloc.add(FinishFoodAsFavoriteEventAction(onFinish: () => _showConfirmationDialog(context)));
-                                } else {
-                                  if (state.isCreateRoutine ?? false) {
-                                    // ToastHelper().showToast(text: 'Work in progress for routines');
-                                    bloc.add(FinishFoodRoutineAction(onFinish: () => _showConfirmationDialog(context)));
-                                  } else {
-                                    bloc.add(FinishFoodEventAction(onFinish: () => _showConfirmationDialog(context)));
-                                  }
-                                }
+                                // if (state.foodEvent?.isFavorite ?? false) {
+                                //   bloc.add(FinishFoodAsFavoriteEventAction(onFinish: () => _showConfirmationDialog(context)));
+                                // } else {
+                                  bloc.add(FinishFoodEventAddFoodEventActions(onFinish: () => _showConfirmationDialog(context)));
+                                // }
                                 // bloc.add(FinishFoodWithoutCreateDishEventAction(context: context, onFinish: () => _showConfirmationDialog(context)));
                               }
                             },

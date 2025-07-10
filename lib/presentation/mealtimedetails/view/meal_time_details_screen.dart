@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/mealtimedetails/bloc/meal_time_details_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/mealtimeitem/view/meal_time_item_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/item_info_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -130,6 +131,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                             ]),
                           ),
                           ...state.foodEvents.orEmpty().map((food) => ItemInfoCard(
+                            onItemTap: () => Navigator.pushNamed(context, MealTimeItemScreen.routeName),
                             title: NutritionUtils.findFoodsName(context: context, foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: food.foodInfo),
                             subtitle: '${food.eventKcals.orZero()} kcal. ${food.foodInfo![0].eventInfo?.qty.orZero().toInt()} ${NutritionUtils.findUnitName(state.unitsInfoMaster?.unitsInfoMaster, food.foodInfo, context)}.',
                             trailingSrc: 'assets/images/delete_icon.png',

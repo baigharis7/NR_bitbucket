@@ -249,14 +249,14 @@ class EventsHelper {
     }
   }
 
-  FoodInEvent? findFoodByFoodName(String foodName, String currentLanguage, List<FoodItemMaster> foodNames) {
+  FoodInFavorite? findFoodByFoodName(String foodName, String currentLanguage, List<FoodItemMaster> foodNames) {
     FoodItemMaster? foodItem;
     if (currentLanguage == 'es') {
       foodItem = foodNames.firstWhere((food) => food.es == foodName);
     } else {
       foodItem = foodNames.firstWhere((food) => food.en == foodName);
     }
-      return FoodInEvent(id: foodItem.id!, qty: 0, unit: -1, conversionFactor: -1, cookingMethod: -1, usedOil: 0);
+      return FoodInFavorite(id: foodItem.id!, qty: 0, unit: -1, conversionFactor: -1, cookingMethod: -1, usedOil: 0);
   }
 
   FoodInFavorite? findFoodIdToFavorite(String foodName, String currentLanguage, List<FoodItemMaster> foodNames) {

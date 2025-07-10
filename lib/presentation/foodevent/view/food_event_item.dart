@@ -17,9 +17,10 @@ import 'package:nutrenaissance_flutter/presentation/widgets/box_type_radio_text_
 import 'package:nutrenaissance_flutter/presentation/widgets/radio_button_with_text.dart';
 
 import '../../../data/api/masterfiles/model/oil_types_response.dart';
+import '../../../domain/models/favorites/food/food_favorite.dart';
 
 class FoodEventItem extends StatefulWidget {
-  final FoodInEvent foodInEvent;
+  final FoodInFavorite foodInEvent;
   final String foodGroup;
   final CookingMethodsMaster cookingMethodsMaster;
   final OilTypesResponse? oilTypes;
@@ -29,11 +30,11 @@ class FoodEventItem extends StatefulWidget {
   final UnitsFoodsMaster unitsFoodsMaster;
   final String options;
   final Function onRemove;
-  final Function(FoodInEvent) onQtyChange;
-  final Function(FoodInEvent) onUnitChange;
-  final Function(FoodInEvent) onCookingMethodChange;
-  final Function(FoodInEvent) onConversionFactorChange;
-  final Function(FoodInEvent) onOilUsedChange;
+  final Function(FoodInFavorite) onQtyChange;
+  final Function(FoodInFavorite) onUnitChange;
+  final Function(FoodInFavorite) onCookingMethodChange;
+  final Function(FoodInFavorite) onConversionFactorChange;
+  final Function(FoodInFavorite) onOilUsedChange;
 
   const FoodEventItem({
     Key? key,
@@ -111,7 +112,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
 
   @override
   Widget build(BuildContext context) {
-    FoodInEvent ingredient = FoodInEvent(
+    FoodInFavorite ingredient = FoodInFavorite(
       id: widget.foodInEvent.id,
       qty: widget.foodInEvent.qty,
       unit: widget.foodInEvent.unit,

@@ -187,7 +187,7 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
       emit(state.copyWith(isLoading: true));
 
       try {
-        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite!.eventDate);
+        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite!.eventDate.orZero());
         try {
           await removeFoodFavoriteFromLocalInteractor.execute(event.foodFavorite!);
           _clearData();

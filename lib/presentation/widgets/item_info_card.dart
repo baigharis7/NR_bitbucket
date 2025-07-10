@@ -12,6 +12,7 @@ class ItemInfoCard extends StatelessWidget {
   final VoidCallback? leadingTap;
   final VoidCallback? trailingTap;
   final Color? color;
+  final VoidCallback? onItemTap;
   const ItemInfoCard({
     super.key,
     required this.title,
@@ -21,6 +22,7 @@ class ItemInfoCard extends StatelessWidget {
     this.leadingTap,
     this.trailingTap,
     this.color,
+    this.onItemTap,
   });
 
   @override
@@ -39,6 +41,7 @@ class ItemInfoCard extends StatelessWidget {
         ],
       ),
       child: ListTile(
+        onTap: onItemTap,
         // contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         titleAlignment: ListTileTitleAlignment.center,
         horizontalTitleGap: 0,
