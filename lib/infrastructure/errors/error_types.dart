@@ -31,6 +31,7 @@ enum ErrorTypes {
   uploadingSportEventError,
   deleteSportEventError,
   removeSportEventError,
+  locallySavingSportRoutineError,
   uploadingSportRoutineError,
   locallySavingWaterEventError,
   uploadingWaterEventError,

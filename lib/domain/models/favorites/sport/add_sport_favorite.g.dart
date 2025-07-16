@@ -17,7 +17,10 @@ AddSportFavorite _$AddSportFavoriteFromJson(Map<String, dynamic> json) =>
           ?.map((e) => AddSportFavInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
       scheduleTime: json['scheduleTime'] as String?,
-      daysOfWeek: json['daysOfWeek'] as List<int>?,
+      daysOfWeek: (json['daysOfWeek'] as List?)?.map((e) => e as int).toList(),
+      isFavorite: json['isFavorite'] as bool?,
+      isCreateRoutine: json['isCreateRoutine'] as bool?,
+      timeZone: json['timeZone'] as String?,
     );
 
 Map<String, dynamic> _$AddSportFavoriteToJson(AddSportFavorite instance) =>
@@ -30,6 +33,9 @@ Map<String, dynamic> _$AddSportFavoriteToJson(AddSportFavorite instance) =>
       'info': instance.info?.map((e) => e.toJson()).toList(),
       'scheduleTime': instance.scheduleTime,
       'daysOfWeek': instance.daysOfWeek,
+      'isFavorite': instance.isFavorite,
+      'isCreateRoutine': instance.isCreateRoutine,
+      'timeZone': instance.timeZone,
     };
 
 AddSportFavInfo _$AddSportFavInfoFromJson(Map<String, dynamic> json) =>

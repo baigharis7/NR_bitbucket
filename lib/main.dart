@@ -364,6 +364,8 @@ import 'package:nutrenaissance_flutter/presentation/resetpassword/bloc/reset_pas
 import 'package:nutrenaissance_flutter/presentation/resetpassword/view/reset_password_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/routines/bloc/routines_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/routines/view/routines_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/routinestabs/bloc/routines_tab_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/routinestabs/view/routines_tab_holder.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
@@ -696,6 +698,10 @@ void main() async {
     getWeekSportsInteractor: getWeekSportsInteractor,
     uploadRoutineInteractor: uploadRoutineInteractor,
     saveRoutineInteractor: saveRoutineInteractor,
+    uploadSportFavoriteInteractor: uploadSportFavoriteInteractor,
+    saveSportFavoriteInteractor: saveSportFavoriteInteractor,
+    deleteSportFavoriteInteractor: deleteSportFavoriteInteractor,
+    removeSportFavoriteInteractor: removeSportFavoriteInteractor,
   );
 
   final liquidEventBloc = LiquidEventBloc(
@@ -923,7 +929,13 @@ void main() async {
     removeFoodFavoriteFromLocalInteractor: removeFoodFavoriteFromLocalInteractor,
     getUserIdInteractor: getUserIdInteractor,
     getMasterFileInteractor: getMasterFileInteractor,
+    getSportFavoritesInteractor: getSportFavoritesInteractor,
+    deleteSportFavoriteInteractor: deleteSportFavoriteInteractor,
+    removeSportFavoriteInteractor: removeSportFavoriteInteractor,
   );
+
+
+  final routinesTabBloc = RoutinesTabBloc();
 
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
 
@@ -973,6 +985,7 @@ void main() async {
         BlocProvider<MicroNutrientsWeeklyBloc>(create: (context) => microNutrientsWeeklyBloc,),
         BlocProvider<MealTimeDetailsBloc>(create: (context) => mealTimeDetailsBloc,),
         BlocProvider<FavoritesTabsBloc>(create: (context) => favoritesTabsBloc,),
+        BlocProvider<RoutinesTabBloc>(create: (context) => routinesTabBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -1067,6 +1080,7 @@ void main() async {
           BarcodeDetailScreen.routeName:(_) => const BarcodeDetailScreen(),
           MealTimeItemScreen.routeName:(_) => const MealTimeItemScreen(),
           FavoritesTabHolder.routeName:(_) => const FavoritesTabHolder(),
+          RoutinesTabHolder.routeName:(_) => const RoutinesTabHolder(),
         },
       ),
     ),

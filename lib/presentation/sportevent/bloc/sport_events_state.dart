@@ -11,20 +11,20 @@ class SportEventsState {
   bool isLoading;
   ErrorTypes? onError;
   SportsInfoMaster? sportsInfo;
+  List<AddSportFavorite>? favSports;
   AddSportFavorite? sportSimpleEvent;
-  int? eventDate;
+  AddSportFavorite? sportFavoriteEvent;
   bool? isEdit;
-  List<SportInfo>? info;
   DateTime? calendarDate;
 
   SportEventsState({
     required this.isLoading,
     this.onError,
     this.sportsInfo,
+    this.favSports,
     this.sportSimpleEvent,
-    this.eventDate,
+    this.sportFavoriteEvent,
     this.isEdit,
-    this.info,
     this.calendarDate,
   });
 
@@ -32,22 +32,20 @@ class SportEventsState {
     required bool isLoading,
     ErrorTypes? onError,
     SportsInfoMaster? sportsInfo,
+    List<AddSportFavorite>? favSports,
     AddSportFavorite? sportSimpleEvent,
-    int? sportId,
-    int? minutes,
-    int? eventDate,
+    AddSportFavorite? sportFavoriteEvent,
     bool? isEdit,
-    List<SportInfo>? info,
     DateTime? calendarDate,
   }) {
     return SportEventsState(
       isLoading: isLoading,
       onError: onError ?? this.onError,
       sportsInfo: sportsInfo ?? this.sportsInfo,
+      favSports: favSports ?? this.favSports,
       sportSimpleEvent: sportSimpleEvent ?? this.sportSimpleEvent,
-      eventDate: eventDate ?? this.eventDate,
+      sportFavoriteEvent: sportFavoriteEvent ?? this.sportFavoriteEvent,
       isEdit: isEdit ?? this.isEdit,
-      info: info ?? this.info,
       calendarDate: calendarDate ?? this.calendarDate,
     );
   }

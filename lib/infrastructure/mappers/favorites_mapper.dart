@@ -112,22 +112,33 @@ UploadSportFavorite mapToUploadSportFavorite(SportFavorite sportFavorite, String
 
 SportFavoriteEntity mapToSportFavoriteEntity(AddSportFavorite sportFavorite) {
   return SportFavoriteEntity(
+    eventId: sportFavorite.eventId,
     eventDate: sportFavorite.eventDate ?? -1,
     userId: sportFavorite.userId.toString(),
     comment: sportFavorite.comment,
     title: sportFavorite.title,
     info: sportFavorite.info?.map((item) => SportFavoriteInfoEntity(id: item.id, intensity: item.intensity, minutes: item.minutes, timeStart: item.timeStart, name_en: item.name_en, name_es: item.name_es)).toList(),
+    isFavorite: sportFavorite.isFavorite,
+    isCreateRoutine: sportFavorite.isCreateRoutine,
+    scheduleTime: sportFavorite.scheduleTime,
+    daysOfWeek: sportFavorite.daysOfWeek,
+    timeZone: sportFavorite.timeZone,
   );
 }
 
 AddSportFavorite mapToSportFavoriteFromEntity(SportFavoriteEntity sportFavoriteEntity) {
-  final dateTimeHelper = DateTimeHelper();
   return AddSportFavorite(
     userId: sportFavoriteEntity.userId,
+    eventId: sportFavoriteEntity.eventId,
     eventDate: sportFavoriteEntity.eventDate,
     comment: sportFavoriteEntity.comment,
     title: sportFavoriteEntity.title,
     info: sportFavoriteEntity.info?.map((sportItem) => AddSportFavInfo(id: sportItem.id, minutes: sportItem.minutes, intensity: sportItem.intensity, timeStart: sportItem.timeStart, name_en: sportItem.name_en, name_es: sportItem.name_es)).toList(),
+    isFavorite: sportFavoriteEntity.isFavorite,
+    isCreateRoutine: sportFavoriteEntity.isCreateRoutine,
+    scheduleTime: sportFavoriteEntity.scheduleTime,
+    daysOfWeek: sportFavoriteEntity.daysOfWeek,
+    timeZone: sportFavoriteEntity.scheduleTime,
   );
 }
 

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/delete_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/get_sport_favorites_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/remove_sport_favorite_from_local_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_week_sports_interactor.dart';
@@ -22,6 +24,8 @@ import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_state.dart';
 
+import '../../../domain/interactor/favorites/sport/save_sport_favorite_interactor.dart';
+import '../../../domain/interactor/favorites/sport/upload_sport_favorite_interactor.dart';
 import '../../../domain/interactor/routines/save_routine_interactor.dart';
 import '../../../domain/interactor/routines/upload_routine_interactor.dart';
 import '../../../domain/models/sportevents/sport_event_complete.dart';
@@ -35,6 +39,10 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
   final GetWeekSportsInteractor getWeekSportsInteractor;
   final UploadRoutineInteractor uploadRoutineInteractor;
   final SaveRoutineInteractor saveRoutineInteractor;
+  final UploadSportFavoriteInteractor uploadSportFavoriteInteractor;
+  final SaveSportFavoriteInteractor saveSportFavoriteInteractor;
+  final DeleteSportFavoriteInteractor deleteSportFavoriteInteractor;
+  final RemoveSportFavoriteInteractor removeSportFavoriteInteractor;
 
   SportEventsBloc({
     required this.getUserIdInteractor,
@@ -45,12 +53,16 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
     required this.getWeekSportsInteractor,
     required this.uploadRoutineInteractor,
     required this.saveRoutineInteractor,
+    required this.uploadSportFavoriteInteractor,
+    required this.saveSportFavoriteInteractor,
+    required this.deleteSportFavoriteInteractor,
+    required this.removeSportFavoriteInteractor,
   }) : super(SportEventsState(
     isLoading: false,
     sportsInfo: SportsInfoMaster(sportsInfoMaster: []),
     isEdit: false,
     sportSimpleEvent: AddSportFavorite.empty(),
-    info: [],
+    favSports: [],
   ),) {
 
     on<InitializeStateAction>((event, emit) async {
@@ -59,25 +71,15 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       // state.sportEventSimple?.userId = getUserIdInteractor.execute();
       final sportInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
       state.sportsInfo = sportInfo;
+      state.favSports = await getSportFavoritesInteractor.execute();
 
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
-    on<SetIntensityAction>((event, emit) {
-      if (state.info!.map((sport) => sport.id).contains((event.sportInfo).id)) {
-        final itemIndex = state.info!.indexOf(state.info!.firstWhere((food) => food.id == event.sportInfo.id));
-        state.info![itemIndex].intensity = event.sportInfo.intensity;
-      }
-      emit(state.copyWith(isLoading: false, onError: null));
-    });
+    on<UpdateCalendarDateSportEventAction>((event, emit) {
+      state.calendarDate = event.calendarDate;
 
-    on<SetMinutesAction>((event, emit) {
-      emit(state.copyWith(isLoading: true, onError: null));
-      if (state.info!.map((sport) => sport.id).contains((event.sportInfo).id)) {
-        final itemIndex = state.info!.indexOf(state.info!.firstWhere((food) => food.id == event.sportInfo.id));
-        state.info![itemIndex].minutes = event.sportInfo.minutes;
-      }
-      emit(state.copyWith(isLoading: false, onError: null));
+      emit(state.copyWith(isLoading: false));
     });
 
     on<AddSportEventAction>((event, emit) {
@@ -106,25 +108,96 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
+    on<SetMinutesAction>((event, emit) {
+      emit(state.copyWith(isLoading: true, onError: null));
+      if (state.sportSimpleEvent!.info.orEmpty().map((sport) => sport.id).contains((event.sportInfo).id)) {
+        final itemIndex = state.sportSimpleEvent!.info.orEmpty().indexOf(state.sportSimpleEvent!.info.orEmpty().firstWhere((food) => food.id == event.sportInfo.id));
+        state.sportSimpleEvent!.info.orEmpty()[itemIndex].minutes = event.sportInfo.minutes;
+      }
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
+
+    on<SetIntensityAction>((event, emit) {
+      if (state.sportSimpleEvent!.info.orEmpty().map((sport) => sport.id).contains((event.sportInfo).id)) {
+        final itemIndex = state.sportSimpleEvent!.info.orEmpty().indexOf(state.sportSimpleEvent!.info.orEmpty().firstWhere((food) => food.id == event.sportInfo.id));
+        state.sportSimpleEvent!.info.orEmpty()[itemIndex].intensity = event.sportInfo.intensity;
+      }
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
+
+    on<SetEventSportNameAction>((event, emit) {
+      state.sportSimpleEvent?.title = event.sportEventName;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateIsFavoriteSportEventsActions>((event, emit) {
+      state.sportSimpleEvent?.isFavorite = event.isFavorite;
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateIsCreateRoutineSportEventsActions>((event, emit) {
+      state.sportSimpleEvent?.isCreateRoutine = event.isCreateRoutine;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateTimeOfDaySportEventAction>((event, emit) {
+      state.sportSimpleEvent?.scheduleTime = event.scheduleTime;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateDaysOfWeekSportEventAction>((event, emit) {
+      // final daysOfWeek = state.sportSimpleEvent?.daysOfWeek.orEmpty() ?? [];
+      // if (state.sportSimpleEvent?.daysOfWeek.orEmpty().contains(event.weekDay) ?? false) {
+      //   state.sportSimpleEvent?.daysOfWeek?.remove(event.weekDay);
+      // } else {
+      //   state.sportSimpleEvent?.daysOfWeek?.add(event.weekDay);
+      // }
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<AddSportFavoriteFromFavoriteEvent>((event, emit) {
+      final isSame = state.sportFavoriteEvent == event.sportFavorite;
+      state.sportFavoriteEvent = isSame ? null : event.sportFavorite;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateSportFromFavoriteTabSportEventsActions>((event, emit) {
+      state.sportSimpleEvent = event.addSportFavorite;
+      state.calendarDate = DateTimeHelper.dateTimeFromMilliseconds(event.addSportFavorite.eventDate);
+      state.isEdit = true;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<FinishSportEventActions>((event, emit) async {
+      state.sportSimpleEvent?.userId = getUserIdInteractor.execute();
+      state.sportSimpleEvent?.eventId = state.sportSimpleEvent?.eventId ?? DateTime.now().millisecondsSinceEpoch;
+      state.sportSimpleEvent?.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
+      state.sportSimpleEvent?.timeZone = await DateTimeHelper.getDeviceIANATimeZone();
+      if (state.sportSimpleEvent?.isFavorite == true) {
+        add(FinishSportFavouriteAddSportAction(sportFavorite: state.sportSimpleEvent!, onFinish: event.onFinish));
+      }
+      else if (state.sportSimpleEvent?.isCreateRoutine == true && state.sportSimpleEvent!.daysOfWeek.orEmpty().isNotEmpty && state.sportSimpleEvent!.scheduleTime.orEmpty().isNotEmpty) {
+        final sportRoutineCompleted = mapAddFavSportToSportRoutineCompleted(state.sportSimpleEvent!);
+        add(FinishSportRoutineAddSportAction(sportRoutineCompleted: sportRoutineCompleted,onFinish: event.onFinish));
+      } else {
+        final sportEventSimple = mapToSportEventSimpleFromAddFavoriteSport(state.sportSimpleEvent!);
+        add(FinishSportEventAction(sportEventSimple: sportEventSimple, onFinish: event.onFinish));
+      }
+    });
+
     on<FinishSportEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
-      state.sportSimpleEvent?.userId = getUserIdInteractor.execute();
-      state.sportSimpleEvent?.eventId = DateTime.now().millisecondsSinceEpoch;
-      state.sportSimpleEvent?.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
-      final sportEventSimple = mapToSportEventSimpleFromAddFavoriteSport(state.sportSimpleEvent!);
-
-        // final sportEventSimple = SportEventSimple(
-        //   userId: getUserIdInteractor.execute(),
-        //   eventId: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
-        //   info: state.info,
-        //   comment: '',
-        //   sportName: '',
-        // );
 
         try {
-          final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
+          final sportEventComplete = await uploadSportsEventInteractor.execute(event.sportEventSimple);
           try {
-            await saveSportEventInteractor.execute(sportEventComplete, state.isEdit ?? false);
+            await saveSportEventInteractor.execute(sportEventComplete, false);
 
             _clearFields();
             event.onFinish.call();
@@ -141,11 +214,6 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
 
     on<FinishSportRoutineAddSportAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
-      final sportRoutineEvent = mapAddFavSportToSportRoutineCompleted(state.sportSimpleEvent!);
-      sportRoutineEvent.userId = getUserIdInteractor.execute();
-      sportRoutineEvent.eventId = DateTime.now().millisecondsSinceEpoch;
-      sportRoutineEvent.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
-      sportRoutineEvent.timeZone = await DateTimeHelper.getDeviceIANATimeZone();
         // final sportRoutineEvent = SportRoutineCompleted(
         //   userId: getUserIdInteractor.execute(),
         //   eventId: DateTime.now().millisecondsSinceEpoch,
@@ -156,7 +224,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
         // );
 
         try {
-          final sportEventComplete = await uploadRoutineInteractor.execute(sportRoutineEvent);
+          final sportEventComplete = await uploadRoutineInteractor.execute(event.sportRoutineCompleted);
           try {
             // await saveSportEventInteractor.execute(sportEventComplete, false);
 
@@ -164,41 +232,71 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
             event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {
-            state.onError = ErrorTypes.locallySavingSportEventError;
+            state.onError = ErrorTypes.locallySavingSportRoutineError;
             emit(state.copyWith(isLoading: false, onError: state.onError,));
           }
         } catch (error) {
-          state.onError = ErrorTypes.uploadingSportEventError;
+          state.onError = ErrorTypes.uploadingSportRoutineError;
           emit(state.copyWith(isLoading: false, onError: state.onError,));
         }
       });
 
-    on<ResetSportInfoAction>((event, emit) {
-      _clearFields();
-      emit(state.copyWith(isLoading: false, onError: null));
+    on<FinishSportFavouriteAddSportAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true, onError: null));
+
+      try {
+        final uploadResult = await uploadSportFavoriteInteractor.execute(event.sportFavorite);
+        if (uploadResult) {
+          await saveSportFavoriteInteractor.execute(event.sportFavorite, state.isEdit ?? false);
+
+          _clearFields();
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null,));
+        } else {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveSportFavoriteError));
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSportFavoriteError));
+      }
     });
 
-    on<UpdateCalendarDateSportEventAction>((event, emit) {
-      state.calendarDate = event.calendarDate;
-
-      emit(state.copyWith(isLoading: false));
+    on<FinishSportFavoriteActions>((event, emit) {
+      state.sportFavoriteEvent?.eventId = DateTime.now().millisecondsSinceEpoch;
+      state.sportFavoriteEvent?.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
+      if (state.sportFavoriteEvent?.isCreateRoutine == true && state.sportFavoriteEvent!.daysOfWeek.orEmpty().isNotEmpty && state.sportFavoriteEvent!.scheduleTime.orEmpty().isNotEmpty) {
+        final sportRoutineCompleted = mapAddFavSportToSportRoutineCompleted(state.sportFavoriteEvent!);
+        add(FinishSportRoutineAddSportAction(sportRoutineCompleted: sportRoutineCompleted,onFinish: event.onFinish));
+      } else {
+        final sportEventSimple = mapToSportEventSimpleFromAddFavoriteSport(state.sportFavoriteEvent!);
+        add(FinishSportEventAction(sportEventSimple: sportEventSimple, onFinish: event.onFinish));
+      }
     });
 
-    on<UpdateDaysOfWeekSportEventAction>((event, emit) {
-      final daysOfWeek = state.sportSimpleEvent?.daysOfWeek.orEmpty() ?? [];
-      // if (daysOfWeek.contains(event.weekDay)) {
-      //   state.sportSimpleEvent?.daysOfWeek?.remove(event.weekDay);
-      // } else {
-      //   state.sportSimpleEvent?.daysOfWeek?.add(event.weekDay);
-      // }
+    on<DeleteFavSportSportEventsAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
 
-      emit(state.copyWith(isLoading: false));
-    });
-
-    on<UpdateTimeOfDaySportEventAction>((event, emit) {
-      state.sportSimpleEvent?.scheduleTime = event.scheduleTime;
-
-      emit(state.copyWith(isLoading: false));
+      final userId = getUserIdInteractor.execute();
+      try {
+        final deleteFavorite = await deleteSportFavoriteInteractor.execute(userId, event.sportFavorite.eventDate!);
+        if (deleteFavorite) {
+          try {
+            final removeFromLocalResult = await removeSportFavoriteInteractor.execute(event.sportFavorite);
+            if (removeFromLocalResult) {
+              state.favSports = await getSportFavoritesInteractor.execute();
+              event.onFinish.call();
+              emit(state.copyWith(isLoading: false, onError: null));
+            } else {
+              emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeSportFavoriteError));
+            }
+          } catch (error) {
+            emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeSportFavoriteError));
+          }
+        } else {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteSportFavoriteError));
+        }
+      } catch (error) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteSportFavoriteError));
+      }
     });
   }
 
@@ -235,15 +333,14 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
   }
 
   void _clearFields() {
-    state.sportSimpleEvent = AddSportFavorite.empty();
-    state.info = [];
+    state.sportSimpleEvent = AddSportFavorite.empty(eventData: state.sportSimpleEvent?.eventDate);
+    state.sportFavoriteEvent = AddSportFavorite.empty(eventData: state.sportSimpleEvent?.eventDate);
     state.isEdit = false;
-    state.eventDate = null;
   }
 
   bool? validateSportList() {
-    return state.info?.any((sport) {
-      return sport.minutes == null || sport.intensity == null || sport.timeStart == null;
+    return state.sportSimpleEvent?.info?.any((sport) {
+      return sport.minutes.orZero() <= 0 || sport.intensity == null;
     },);
   }
 

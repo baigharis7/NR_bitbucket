@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/favorites_tab_holder.dart';
+import 'package:nutrenaissance_flutter/presentation/routinestabs/view/routines_tab_holder.dart';
 
 class FloatingMenuOverlay extends StatefulWidget {
   final VoidCallback onClose;
@@ -150,40 +151,53 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Row(
-                          children: [
-                            // Expanded(
-                            //   child: Container(
-                            //     decoration: BoxDecoration(
-                            //       color: AppColors.yellowishGreen,
-                            //       borderRadius: BorderRadius.circular(Dimens.border50),
-                            //     ),
-                            //     child: ListTile(
-                            //       onTap: () { _closeMenu(); Navigator.pushNamed(context, FavoritesTabHolder.routeName);},
-                            //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border50)),
-                            //       tileColor: Colors.black,
-                            //       leading: Image.asset('assets/images/favorite_icon.png', width: 22, height: 22, color: Colors.white),
-                            //       title: Text(AppLocalizations.of(context)!.routines, style: const TextStyle(fontSize: Dimens.fontSizeMedium, color: Colors.white),),
-                            //     ),
-                            //   ),
-                            // ),
-                            // const SizedBox(width: Dimens.width12),
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: AppColors.yellowishGreen,
-                                  borderRadius: BorderRadius.circular(Dimens.border50),
-                                ),
-                                child: ListTile(
-                                  onTap: () { _closeMenu(); Navigator.pushNamed(context, FavoritesTabHolder.routeName);},
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border50)),
-                                  tileColor: Colors.black,
-                                    leading: Image.asset('assets/images/favorite_icon.png', width: 22, height: 22, color: Colors.white),
-                                    title: Text(AppLocalizations.of(context)!.favorites, style: const TextStyle(fontSize: Dimens.fontSizeMedium, color: Colors.white),),
+                        SlideTransition(
+                          position: Tween<Offset>(
+                            begin: Offset(0, 0.2 * (7 + 1)),
+                            end: Offset.zero,
+                          ).animate(CurvedAnimation(
+                            parent: _fadeController,
+                            curve: const Interval(0.0, 1.0, curve: Curves.easeOut),
+                          )),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.yellowishGreen,
+                                    borderRadius: BorderRadius.circular(Dimens.border50),
+                                  ),
+                                  child: ListTile(
+                                    onTap: () { _closeMenu(); Navigator.pushNamed(context, RoutinesTabHolder.routeName); },
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border50)),
+                                    visualDensity: VisualDensity.compact,
+                                    horizontalTitleGap: Dimens.zero,
+                                    tileColor: Colors.black,
+                                    leading: Image.asset('assets/icon/routine_icon.png', width: 22, height: 22, color: Colors.white),
+                                    title: Text(AppLocalizations.of(context)!.routines, style: const TextStyle(fontSize: Dimens.fontSizeMedium, color: Colors.white),),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: Dimens.width12),
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.yellowishGreen,
+                                    borderRadius: BorderRadius.circular(Dimens.border50),
+                                  ),
+                                  child: ListTile(
+                                    onTap: () { _closeMenu(); Navigator.pushNamed(context, FavoritesTabHolder.routeName);},
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border50)),
+                                    visualDensity: VisualDensity.compact,
+                                    horizontalTitleGap: Dimens.zero,
+                                    tileColor: Colors.black,
+                                      leading: Image.asset('assets/images/favorite_icon.png', width: 22, height: 22, color: Colors.white),
+                                      title: Text(AppLocalizations.of(context)!.favorites, style: const TextStyle(fontSize: Dimens.fontSizeMedium, color: Colors.white),),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: Dimens.height32),
                         ...List.generate(widget.menuItems.length, (i) {

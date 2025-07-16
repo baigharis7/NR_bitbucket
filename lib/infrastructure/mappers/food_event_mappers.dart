@@ -400,6 +400,7 @@ SportRoutineCompleted mapAddFavSportToSportRoutineCompleted(AddSportFavorite add
         sportName: addSportFavorite.title,
         scheduleTime: addSportFavorite.scheduleTime,
         daysOfWeek: addSportFavorite.daysOfWeek,
+        timeZone: addSportFavorite.timeZone,
     );
 }
 

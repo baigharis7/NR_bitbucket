@@ -22,13 +22,19 @@ class SportFavoriteEntityAdapter extends TypeAdapter<SportFavoriteEntity> {
       title: fields[2] as String?,
       comment: fields[3] as String?,
       info: (fields[4] as List?)?.cast<SportFavoriteInfoEntity>(),
+      eventId: fields[5] as int?,
+      scheduleTime: fields[6] as String?,
+      daysOfWeek: fields[7] as List<int>?,
+      isFavorite: fields[8] as bool?,
+      isCreateRoutine: fields[9] as bool?,
+      timeZone: fields[10] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SportFavoriteEntity obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -38,7 +44,19 @@ class SportFavoriteEntityAdapter extends TypeAdapter<SportFavoriteEntity> {
       ..writeByte(3)
       ..write(obj.comment)
       ..writeByte(4)
-      ..write(obj.info);
+      ..write(obj.info)
+      ..writeByte(5)
+      ..write(obj.eventId)
+      ..writeByte(6)
+      ..write(obj.scheduleTime)
+      ..writeByte(7)
+      ..write(obj.daysOfWeek)
+      ..writeByte(8)
+      ..write(obj.isFavorite)
+      ..writeByte(9)
+      ..write(obj.isCreateRoutine)
+      ..writeByte(10)
+      ..write(obj.timeZone);
   }
 
   @override
@@ -116,6 +134,12 @@ SportFavoriteEntity _$SportFavoriteEntityFromJson(Map<String, dynamic> json) =>
           ?.map((e) =>
               SportFavoriteInfoEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
+      eventId: json['eventId'] as int?,
+      scheduleTime: json['scheduleTime'] as String?,
+      daysOfWeek: json['daysOfWeek'] as List<int>?,
+      isCreateRoutine: json['isCreateRoutine'] as bool?,
+      isFavorite: json['isFavorite'] as bool?,
+      timeZone: json['timeZone'] as String?,
     );
 
 Map<String, dynamic> _$SportFavoriteEntityToJson(

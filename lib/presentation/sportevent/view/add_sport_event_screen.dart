@@ -24,11 +24,14 @@ import '../../../domain/models/sportevents/sport_event_complete.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
 import '../../../infrastructure/helpers/remove_diac.dart';
 import '../../../infrastructure/utils/app_color.dart';
+import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../widgets/add_item_name_dialog.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
+import '../../widgets/dash_title_widget.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/food_actions_widget.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../widgets/item_info_card.dart';
 import '../../widgets/item_routine_widget.dart';
 
 class AddSportEventScreen extends StatefulWidget {
@@ -73,7 +76,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AddItemNameDialog(
-        title: '${AppLocalizations.of(context)!.spor_name}:',
+        title: '${AppLocalizations.of(context)!.sport_name}:',
         onNameChange: (String sportEventName) =>
             onNameChange.call(sportEventName),
         onSave: () => onFinish.call(),
@@ -85,8 +88,12 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
   Future<void> showRoutineTimeDialog({
     required Function onTimeChanged,
     required Function(int) onChangeWeekDays,
+    required Function(bool) onFavoriteChange,
+    required Function(bool) onChangeCreateRoutine,
     required List<int>? daysOfWeek,
     required TimeOfDay? scheduleTime,
+    required bool? isFavorite,
+    required bool? isCreateRoutine,
 }) async {
     await showDialog(
       context: context,
@@ -96,6 +103,10 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
         onChangeWeekDays: (weekDay) => onChangeWeekDays.call(weekDay),
         daysOfWeek: daysOfWeek,
         scheduleTime: scheduleTime,
+        isFavorite: isFavorite,
+        isCreateRoutine: isCreateRoutine,
+        onFavoriteChange: (value) => onFavoriteChange.call(value),
+        onChangeCreateRoutine: (value) => onChangeCreateRoutine.call(value),
       ),
     ).then((_) {});
   }
@@ -103,8 +114,8 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
   @override
   void initState() {
     bloc = BlocProvider.of<SportEventsBloc>(context);
-    bloc.add(InitializeStateAction());
-    super.initState();
+
+
 
     final widgetsBinding = WidgetsBinding.instance;
     widgetsBinding.addPostFrameCallback((callback) {
@@ -113,10 +124,14 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
         if (infoReceived != null) {
           if (infoReceived is DateTime?) {
             bloc.add(UpdateCalendarDateSportEventAction(calendarDate: infoReceived as DateTime));
+          } else if (infoReceived is AddSportFavorite) {
+            bloc.add(UpdateSportFromFavoriteTabSportEventsActions(addSportFavorite: infoReceived));
           }
         }
       }
     });
+    bloc.add(InitializeStateAction());
+    super.initState();
   }
 
   @override
@@ -168,54 +183,78 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                   children: [
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingLarge),
+                        // padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingLarge),
                         child: Column(
                           children: [
+                            const SizedBox(height: Dimens.height12),
                             Container(
-                              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+                              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall,),
                               child: DatePickerBar(selectedDateTime: state.calendarDate, onChangeDate: (dateTime) {
                                 bloc.add(UpdateCalendarDateSportEventAction(calendarDate: dateTime));
                               },),
                             ),
                             const SizedBox(height: Dimens.height12),
-                            HeaderAddItemCardSection(
-                              title: AppLocalizations.of(context)!.add_physical_activity,
-                              onBackTap: () => Navigator.pop(context),
-                              image: 'assets/images/sport.png',
-                              items: state.sportsInfo!.sportsInfoMaster.map((sport) => sport.translate(context)).toList(),
-                              onItemSelect: (sportName, focus) {
-                                _sportFocusInputController = focus;
-                                final sportIntensities = eventsHelper.getChosenSportIntensities(sportName, state.sportsInfo!, currentLanguage);
-                                final sportId = eventsHelper.getSportIdByName(sportName, state.sportsInfo!, currentLanguage);
-                                final sportInfo = bloc.findSportById(sportId);
-                                final info = AddSportFavInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null, timeStart: DateTime.now().millisecondsSinceEpoch);
-                                bloc.add(AddSportEventAction(info));
-                              },
+                            Container(
+                              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+                              child: HeaderAddItemCardSection(
+                                title: AppLocalizations.of(context)!.add_physical_activity,
+                                onBackTap: () => Navigator.pop(context),
+                                image: 'assets/images/sport.png',
+                                items: state.sportsInfo!.sportsInfoMaster.map((sport) => sport.translate(context)).toList(),
+                                onItemSelect: (sportName, focus) {
+                                  _sportFocusInputController = focus;
+                                  final sportIntensities = eventsHelper.getChosenSportIntensities(sportName, state.sportsInfo!, currentLanguage);
+                                  final sportId = eventsHelper.getSportIdByName(sportName, state.sportsInfo!, currentLanguage);
+                                  final sportInfo = bloc.findSportById(sportId);
+                                  final info = AddSportFavInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null, timeStart: DateTime.now().millisecondsSinceEpoch);
+                                  bloc.add(AddSportEventAction(info));
+                                },
+                              ),
                             ),
-                            if (state.sportSimpleEvent?.info?.orEmpty().isNotEmpty == true) Column(
-                              children: [
-                                  ...?state.sportSimpleEvent?.info?.orEmpty().map((sport) => SportEventItem(
-                                    sportIntensities: eventsHelper.getChosenSportIntensities(sport.translate(context), state.sportsInfo!, currentLanguage),
-                                      sport: sport,
-                                      removeSport: () => bloc.add(RemoveSportEventAction(sportInfo: sport)),
-                                      editMinutes: (updatedSport) => bloc.add(SetMinutesAction(sportInfo: updatedSport)),
-                                      editIntensity: (updatedSport) => bloc.add(SetIntensityAction(sportInfo: updatedSport)),
+                            if (state.sportSimpleEvent?.info?.orEmpty().isNotEmpty == true) Container(
+                              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+                              child: Column(
+                                children: [
+                                    ...?state.sportSimpleEvent?.info?.orEmpty().map((sport) => SportEventItem(
+                                      sportIntensities: eventsHelper.getChosenSportIntensities(sport.translate(context), state.sportsInfo!, currentLanguage),
+                                        sport: sport,
+                                        removeSport: () => bloc.add(RemoveSportEventAction(sportInfo: sport)),
+                                        editMinutes: (updatedSport) => bloc.add(SetMinutesAction(sportInfo: updatedSport)),
+                                        editIntensity: (updatedSport) => bloc.add(SetIntensityAction(sportInfo: updatedSport)),
+                                      ),
                                     ),
+                                  ListTile(
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
+                                    tileColor: AppColors.floralWhite,
+                                    onTap: () => showRoutineTimeDialog(
+                                        onTimeChanged: (time) => bloc.add(UpdateTimeOfDaySportEventAction(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
+                                      onChangeWeekDays: (weekDay) => bloc.add(UpdateDaysOfWeekSportEventAction(weekDay: weekDay)),
+                                      onFavoriteChange: (value) => bloc.add(UpdateIsFavoriteSportEventsActions(isFavorite: value)),
+                                      onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineSportEventsActions(isCreateRoutine: value)),
+                                      daysOfWeek: state.sportSimpleEvent?.daysOfWeek,
+                                      scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.sportSimpleEvent?.scheduleTime),
+                                      isFavorite: state.sportSimpleEvent?.isFavorite,
+                                      isCreateRoutine: state.sportSimpleEvent?.isCreateRoutine,
+                                    ),
+                                    title: Text(AppLocalizations.of(context)!.add_more_options),
+                                    trailing: const Icon(Icons.add_circle, color: Colors.black),
                                   ),
-                                ListTile(
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
-                                  tileColor: AppColors.floralWhite,
-                                  onTap: () => showRoutineTimeDialog(
-                                      onTimeChanged: (time) => bloc.add(UpdateTimeOfDaySportEventAction(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
-                                    onChangeWeekDays: (weekDay) => bloc.add(UpdateDaysOfWeekSportEventAction(weekDay: weekDay)),
-                                    daysOfWeek: state.sportSimpleEvent?.daysOfWeek,
-                                    scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.sportSimpleEvent?.scheduleTime),
-                                  ),
-                                  title: const Text('Add more options'),
-                                  trailing: const Icon(Icons.add_circle, color: Colors.black),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
+                            if (state.sportSimpleEvent!.info.orEmpty().isEmpty) Column(children: [
+                              const SizedBox(height: Dimens.height12),
+                              DashTitleWidget(title: '${AppLocalizations.of(context)!.physical_activity} favorites'),
+                              ...state.favSports.orEmpty().map((favSport) => ItemInfoCard(
+                                title: NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: favSport.info, context: context),
+                                leadingSrc: 'assets/images/favorite_icon.png',
+                                trailingSrc: 'assets/icon/add_icon.png',
+                                color: state.sportFavoriteEvent == favSport ? AppColors.butter : AppColors.floralWhite,
+                                leadingTap: () => bloc.add(DeleteFavSportSportEventsAction(sportFavorite: favSport, onFinish: () => _showConfirmationDialog(context: context))),
+                                trailingTap: () => bloc.add(AddSportFavoriteFromFavoriteEvent(sportFavorite: favSport)),
+                                subtitle: '--- ---- ---',),
+                              ),
+                            ],),
                           ],
                         ),
                       ),
@@ -224,14 +263,15 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
                       child: SaveButton(onPressed: () {
                           if (bloc.validateSportList() ?? true) return;
-                          if (state.sportSimpleEvent?.info.orEmpty().isEmpty == true) return;
 
-                          if (state.sportSimpleEvent!.scheduleTime.isNotEmptyOrNull() && state.sportSimpleEvent!.daysOfWeek.orEmpty().isNotEmpty) {
-                            bloc.add(FinishSportRoutineAddSportAction(onFinish: () => _showConfirmationDialog(context: context)));
+                          if (state.sportSimpleEvent!.info.orEmpty().isEmpty) {
+                            if (!state.sportFavoriteEvent.isNull()) {
+                              bloc.add(FinishSportFavoriteActions(onFinish: () => _showConfirmationDialog(context: context)));
+                            }
                           } else {
                             // FocusScope.of(context).unfocus();
                             // _sportFocusInputController.unfocus();
-                            bloc.add(FinishSportEventAction(onFinish: () => _showConfirmationDialog(context: context,)));
+                            bloc.add(FinishSportEventActions(onFinish: () => _showConfirmationDialog(context: context,)));
                           }
                       },),
                     ),

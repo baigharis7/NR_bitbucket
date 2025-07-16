@@ -13,6 +13,9 @@ class AddSportFavorite extends Translatable {
   List<AddSportFavInfo>? info;
   String? scheduleTime;
   List<int>? daysOfWeek;
+  bool? isFavorite;
+  bool? isCreateRoutine;
+  String? timeZone;
 
 
   AddSportFavorite({
@@ -24,14 +27,18 @@ class AddSportFavorite extends Translatable {
     this.info,
     this.scheduleTime,
     this.daysOfWeek,
+    this.isFavorite,
+    this.isCreateRoutine,
+    this.timeZone,
   });
 
   factory AddSportFavorite.fromJson(Map<String, dynamic> json) => _$AddSportFavoriteFromJson(json);
   Map<String, dynamic> toJson() => _$AddSportFavoriteToJson(this);
 
-  AddSportFavorite.empty() {
+  AddSportFavorite.empty({int? eventData,}) {
     info = [];
     daysOfWeek = [];
+    eventDate = eventData;
   }
 }
 

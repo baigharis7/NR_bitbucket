@@ -114,6 +114,8 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.email_sent_error;
     case ErrorTypes.confirmationCodeError:
       return stringResolver.incorrect_confirmation_code;
+    case ErrorTypes.locallySavingSportRoutineError:
+      return stringResolver.locally_saving_sport_routine_error;
     case ErrorTypes.uploadingSportRoutineError:
       return stringResolver.uploading_sport_routine_error;
     case ErrorTypes.deleteFoodEventError:

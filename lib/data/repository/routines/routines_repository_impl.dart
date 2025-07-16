@@ -19,7 +19,7 @@ class RoutinesRepositoryImpl extends RoutinesRepository {
       final result = await routinesApi.uploadRoutine(sportRoutineCompleted);
       return true;
     } catch (_) {
-      return false;
+      rethrow;
     }
   }
 

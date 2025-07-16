@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_mast
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 import '../../domain/models/favorites/food/food_favorite.dart';
+import '../../domain/models/masterfiles/sports_info_master.dart';
 import '../../domain/models/masterfiles/units_info_master.dart';
 
 class NutritionUtils {
@@ -51,6 +52,29 @@ class NutritionUtils {
         }
       }
       buffer.write(unitName.translate(context!));
+      // Add separator only if not the last item
+      if (i < ingredients.orEmpty().length - 1) {
+        buffer.write(' - ');
+      }
+    }
+    return buffer.toString();
+  }
+
+  static String findSportName({List<dynamic>? names, List<dynamic>? ingredients, BuildContext? context}) {
+    final buffer = StringBuffer();
+
+    for (int i = 0; i < ingredients.orEmpty().length; i++) {
+      var name = SportInfoMaster.empty();
+
+      foodItemMasterLoop: for (SportInfoMaster item in names.orEmpty()) {
+        if (item.id == ingredients![i].id) {
+          name = item;
+          break foodItemMasterLoop;
+        }
+      }
+
+      buffer.write(name.translate(context!));
+
       // Add separator only if not the last item
       if (i < ingredients.orEmpty().length - 1) {
         buffer.write(' - ');

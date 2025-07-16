@@ -23,7 +23,7 @@ class FavoritesTabHolder extends StatefulWidget {
   State<FavoritesTabHolder> createState() => _FavoritesTabHolderState();
 }
 
-class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTickerProviderStateMixin  {
+class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTickerProviderStateMixin {
   String? title;
   late TabController _tabController;
   int _selectedTab = 0;

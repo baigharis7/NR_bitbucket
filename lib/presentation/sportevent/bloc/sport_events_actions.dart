@@ -1,4 +1,8 @@
+import 'package:flutter/cupertino.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
+
 import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
+import '../../../domain/models/routines/sport_routine_completed.dart';
 
 class SportEventsActions {
   SportEventsActions();
@@ -8,20 +12,10 @@ class InitializeStateAction extends SportEventsActions {
   InitializeStateAction();
 }
 
-class SetIntensityAction extends SportEventsActions {
-  final AddSportFavInfo sportInfo;
+class UpdateCalendarDateSportEventAction extends SportEventsActions {
+  final DateTime? calendarDate;
 
-  SetIntensityAction({required this.sportInfo});
-}
-
-class SetMinutesAction extends SportEventsActions {
-  final AddSportFavInfo sportInfo;
-
-  SetMinutesAction({required this.sportInfo});
-}
-
-class ResetSportInfoAction extends SportEventsActions {
-  ResetSportInfoAction();
+  UpdateCalendarDateSportEventAction({required this.calendarDate});
 }
 
 class AddSportEventAction extends SportEventsActions {
@@ -36,22 +30,22 @@ class RemoveSportEventAction extends SportEventsActions {
   RemoveSportEventAction({required this.sportInfo});
 }
 
+class SetIntensityAction extends SportEventsActions {
+  final AddSportFavInfo sportInfo;
+
+  SetIntensityAction({required this.sportInfo});
+}
+
+class SetMinutesAction extends SportEventsActions {
+  final AddSportFavInfo sportInfo;
+
+  SetMinutesAction({required this.sportInfo});
+}
+
 class SetEventSportNameAction extends SportEventsActions {
   final String sportEventName;
 
   SetEventSportNameAction({required this.sportEventName});
-}
-
-class UpdateCalendarDateSportEventAction extends SportEventsActions {
-  final DateTime? calendarDate;
-
-  UpdateCalendarDateSportEventAction({required this.calendarDate});
-}
-
-class UpdateDaysOfWeekSportEventAction extends SportEventsActions {
-  final int weekDay;
-
-  UpdateDaysOfWeekSportEventAction({required this.weekDay});
 }
 
 class UpdateTimeOfDaySportEventAction extends SportEventsActions {
@@ -60,14 +54,71 @@ class UpdateTimeOfDaySportEventAction extends SportEventsActions {
   UpdateTimeOfDaySportEventAction({required this.scheduleTime});
 }
 
-class FinishSportEventAction extends SportEventsActions {
-  Function onFinish;
+class UpdateDaysOfWeekSportEventAction extends SportEventsActions {
+  final int weekDay;
 
-  FinishSportEventAction({required this.onFinish});
+  UpdateDaysOfWeekSportEventAction({required this.weekDay});
 }
 
-class FinishSportRoutineAddSportAction extends SportEventsActions {
+class UpdateIsFavoriteSportEventsActions extends SportEventsActions {
+  bool isFavorite;
+
+  UpdateIsFavoriteSportEventsActions({required this.isFavorite});
+}
+
+class UpdateIsCreateRoutineSportEventsActions extends SportEventsActions {
+  bool isCreateRoutine;
+
+  UpdateIsCreateRoutineSportEventsActions({required this.isCreateRoutine});
+}
+
+class AddSportFavoriteFromFavoriteEvent extends SportEventsActions {
+  AddSportFavorite sportFavorite;
+
+  AddSportFavoriteFromFavoriteEvent({required this.sportFavorite});
+}
+
+class UpdateSportFromFavoriteTabSportEventsActions extends SportEventsActions {
+  AddSportFavorite addSportFavorite;
+
+  UpdateSportFromFavoriteTabSportEventsActions({required this.addSportFavorite});
+}
+
+class FinishSportEventAction extends SportEventsActions {
+  SportEventSimple sportEventSimple;
   Function onFinish;
 
-  FinishSportRoutineAddSportAction({required this.onFinish});
+  FinishSportEventAction({required this.sportEventSimple, required this.onFinish});
+}
+
+class FinishSportEventActions extends SportEventsActions {
+  Function onFinish;
+
+  FinishSportEventActions({required this.onFinish});
+}
+class FinishSportRoutineAddSportAction extends SportEventsActions {
+  SportRoutineCompleted sportRoutineCompleted;
+  Function onFinish;
+
+  FinishSportRoutineAddSportAction({required this.sportRoutineCompleted, required this.onFinish});
+}
+
+class FinishSportFavouriteAddSportAction extends SportEventsActions {
+  AddSportFavorite sportFavorite;
+  Function onFinish;
+
+  FinishSportFavouriteAddSportAction({required this.sportFavorite, required this.onFinish});
+}
+
+class FinishSportFavoriteActions extends SportEventsActions {
+  Function onFinish;
+
+  FinishSportFavoriteActions({required this.onFinish});
+}
+
+class DeleteFavSportSportEventsAction extends SportEventsActions {
+  AddSportFavorite sportFavorite;
+  Function onFinish;
+
+  DeleteFavSportSportEventsAction({required this.sportFavorite, required this.onFinish});
 }
