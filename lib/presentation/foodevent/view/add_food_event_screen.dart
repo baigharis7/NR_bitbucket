@@ -32,7 +32,9 @@ import '../../../domain/models/favorites/food/food_favorite.dart';
 import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../domain/models/foodevents/food_arguments_model.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
+import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/remove_diac.dart';
+import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/mappers/food_event_mappers.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
 import '../../widgets/item_info_card.dart';
@@ -144,6 +146,10 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
             );
           } else {
             LoadingScreen.instance().hide();
+          }
+
+          if (state.onError != null) {
+            showErrorSnackBar(ctx, resolveError(context, state.onError!));
           }
         },
         builder: (context, state) {

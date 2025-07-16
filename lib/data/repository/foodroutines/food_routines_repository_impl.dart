@@ -17,7 +17,7 @@ class FoodRoutinesRepositoryImpl extends FoodRoutinesRepository {
       final result = await foodRoutinesApi.uploadRoutine(foodRoutineEvent);
       return true;
     } catch (_) {
-      return false;
+      rethrow;
     }
   }
 
