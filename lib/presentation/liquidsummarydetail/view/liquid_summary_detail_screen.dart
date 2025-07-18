@@ -55,14 +55,14 @@ class _LiquidSummaryDetailScreenState extends State<LiquidSummaryDetailScreen> {
           child:
               BlocConsumer<LiquidSummaryDetailBloc, LiquidSummaryDetailState>(
         listener: (ctx, state) {
-          if (state.isLoading) {
-            LoadingScreen.instance().show(
-              context: ctx,
-              text: AppLocalizations.of(ctx)!.loading,
-            );
-          } else {
-            LoadingScreen.instance().hide();
-          }
+          // if (state.isLoading) {
+          //   LoadingScreen.instance().show(
+          //     context: ctx,
+          //     text: AppLocalizations.of(ctx)!.loading,
+          //   );
+          // } else {
+          //   LoadingScreen.instance().hide();
+          // }
           if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
         },
         builder: (context, state) => Scaffold(

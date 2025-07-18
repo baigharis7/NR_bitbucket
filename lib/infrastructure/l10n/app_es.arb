@@ -471,6 +471,8 @@
     "fiber_description" : "Sus efectos en la salud son múltiples y es imprescindible para tener una microbiota saludable.\n\n\nLa obtenemos de los alimentos de origen vegetal. Sobre todo, si los consumimos enteros e integrales.",
     "water_description" : "El agua es la mejor opción para hidratarnos.\n\nTambién obtenemos agua de las infusiones, caldos, purés, verduras o frutas.",
     "minimum_water_required" : "Mínimo de líquidos requeridos",
-    "minimum_water_description" : "Beber agua es esencial. Adapta la ingesta de agua recomendada en función de tu actividad física, el tipo de clima y los hábitos dietéticos.\n\nCuanta más actividad realices más agua tendrás que beber.\n\n\n"
+    "minimum_water_description" : "Beber agua es esencial. Adapta la ingesta de agua recomendada en función de tu actividad física, el tipo de clima y los hábitos dietéticos.\n\nCuanta más actividad realices más agua tendrás que beber.\n\n\n",
+    "micros_keep_eye_on": "Micros a tener en cuenta"
+
 
 }
