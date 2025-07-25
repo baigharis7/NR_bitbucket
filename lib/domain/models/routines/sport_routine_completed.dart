@@ -12,6 +12,7 @@ class SportRoutineCompleted {
   String? scheduleTime;
   List<int>? daysOfWeek;
   String? timeZone;
+  bool? isRoutine;
 
   SportRoutineCompleted({
     this.userId,
@@ -23,6 +24,7 @@ class SportRoutineCompleted {
     this.scheduleTime,
     this.daysOfWeek,
     this.timeZone,
+    this.isRoutine,
   });
 
   factory SportRoutineCompleted.fromJson(Map<String, dynamic> json) => _$SportRoutineCompletedFromJson(json);

@@ -131,7 +131,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                             ]),
                           ),
                           ...state.foodEvents.orEmpty().map((food) => ItemInfoCard(
-                            onItemTap: () => Navigator.pushNamed(context, MealTimeItemScreen.routeName),
+                            onItemTap: () /*=> Navigator.pushNamed(context, MealTimeItemScreen.routeName)*/ {},
                             title: NutritionUtils.findFoodsName(context: context, foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: food.foodInfo),
                             subtitle: '${food.eventKcals.orZero()} kcal. ${food.foodInfo![0].eventInfo?.qty.orZero().toInt()} ${NutritionUtils.findUnitName(state.unitsInfoMaster?.unitsInfoMaster, food.foodInfo, context)}.',
                             trailingSrc: 'assets/images/delete_icon.png',

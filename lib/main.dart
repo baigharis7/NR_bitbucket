@@ -143,6 +143,12 @@ import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_ev
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/delete_food_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/delete_food_routine_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/get_food_routines_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/get_food_routines_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/remove_food_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/remove_food_routine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/save_food_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/save_food_routine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/upload_food_routine_interactor.dart';
@@ -406,7 +412,7 @@ import 'package:chuck_interceptor/chuck.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
-  const String environmentName = String.fromEnvironment(Environment.DEV, defaultValue: Environment.DEV);
+  const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
   // await AndroidAlarmManager.initialize();
@@ -437,6 +443,9 @@ void main() async {
   final FoodRoutinesRepository foodRoutinesRepository = FoodRoutinesRepositoryImpl(foodRoutinesApi: foodRoutinesApi, localStorageRepository: localStorageRepository);
   final UploadFoodRoutineInteractor uploadFoodRoutineInteractor = UploadFoodRoutineInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
   final SaveFoodRoutineInteractor saveFoodRoutineInteractor = SaveFoodRoutineInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
+  final GetFoodRoutinesInteractor getFoodRoutinesInteractor = GetFoodRoutinesInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
+  final RemoveFoodRoutineInteractor removeFoodRoutineInteractor = RemoveFoodRoutineInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
+  final DeleteFoodRoutineInteractor deleteFoodRoutineInteractor = DeleteFoodRoutineInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
   final RecommendationsApi recommendationsApi = RecommendationsApi(prefsRepository, authenticationService, chuck);
   final RecommendationsRepository recommendationsRepository = RecommendationsRepositoryImpl(recommendationsApi: recommendationsApi);
   final GetRecommendationInteractor getRecommendationInteractor = GetRecommendationInteractorImpl(recommendationsRepository: recommendationsRepository);
@@ -935,7 +944,15 @@ void main() async {
   );
 
 
-  final routinesTabBloc = RoutinesTabBloc();
+  final routinesTabBloc = RoutinesTabBloc(
+    getFoodRoutinesInteractor: getFoodRoutinesInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
+    getRoutinesInteractor: getRoutinesInteractor,
+    removeFoodRoutineInteractor: removeFoodRoutineInteractor,
+    deleteFoodRoutineInteractor: deleteFoodRoutineInteractor,
+    deleteSportRoutineInteractor: deleteSportRoutineInteractor,
+    removeSportRoutineInteractor: removeSportRoutineInteractor,
+  );
 
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
 

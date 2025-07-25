@@ -18,6 +18,11 @@ class FoodFavoriteEntity extends HiveObject  {
   @HiveField(6) bool? dish;
   @HiveField(7) bool? isRoutine;
   @HiveField(8) List<int>? daysOfWeek;
+  @HiveField(9) int? eventId;
+  @HiveField(10) String? userId;
+  @HiveField(11) bool? isFavorite;
+  @HiveField(12) String? time;
+  @HiveField(13) String? timeZone;
 
 
   FoodFavoriteEntity({
@@ -30,6 +35,11 @@ class FoodFavoriteEntity extends HiveObject  {
     this.dish,
     this.isRoutine,
     this.daysOfWeek,
+    this.eventId,
+    this.userId,
+    this.isFavorite,
+    this.time,
+    this.timeZone,
   });
 
   factory FoodFavoriteEntity.fromJson(Map<String, dynamic> json) => _$FoodFavoriteEntityFromJson(json);

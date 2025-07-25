@@ -12,16 +12,17 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../domain/models/favorites/sport/sport_favorite.dart';
+import '../../../infrastructure/utils/nutrition_utils.dart';
 
 class SportEventItem extends StatefulWidget {
-  final int? sportIntensities;
+  final List<SportInfoMaster> allSportsInfo;
   final AddSportFavInfo sport;
   final Function removeSport;
   final Function(AddSportFavInfo) editMinutes;
   final Function(AddSportFavInfo) editIntensity;
   const SportEventItem({
     Key? key,
-    required this.sportIntensities,
+    required this.allSportsInfo,
     required this.sport,
     required this.removeSport,
     required this.editMinutes,
@@ -63,8 +64,8 @@ class _SportEventItem extends State<SportEventItem> {
   @override
   Widget build(BuildContext context) {
     final sportInfo = widget.sport;
-      _sportIntensities = widget.sportIntensities;
-      _sportName = widget.sport.translate(context);
+      _sportIntensities = NutritionUtils.findSportIntensities(names: widget.allSportsInfo, id: sportInfo.id);
+      _sportName = NutritionUtils.findSportName(names: widget.allSportsInfo, ingredients: [sportInfo], context: context);
     if (widget.sport.minutes != null && _durationTextController.text == '') {
       _duration = widget.sport.minutes;
       _durationTextController.text = _duration.toString();

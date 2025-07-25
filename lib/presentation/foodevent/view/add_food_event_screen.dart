@@ -32,6 +32,7 @@ import '../../../domain/models/favorites/food/food_favorite.dart';
 import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../domain/models/foodevents/food_arguments_model.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
+import '../../../domain/models/foodroutine/food_routine_event.dart';
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/remove_diac.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
@@ -115,6 +116,8 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
             bloc.add(AddFoodArgumentModelEventAction(foodArgumentsModel: infoReceived));
           } else if (infoReceived is FoodFavorite) {
             bloc.add(UpdateFoodDataFromFavoritesAddFoodEventActions(foodFavorite: infoReceived));
+          } else if (infoReceived is FoodRoutineEvent) {
+            bloc.add(UpdateFoodRoutineFromRoutines(foodRoutineEvent: infoReceived));
           }
         }
       }

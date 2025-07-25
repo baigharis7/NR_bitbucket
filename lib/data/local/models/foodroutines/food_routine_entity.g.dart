@@ -148,6 +148,7 @@ FoodRoutineEntity _$FoodRoutineEntityFromJson(Map<String, dynamic> json) =>
           ?.map((e) => (e as num).toInt())
           .toList(),
       timeZone: json['timeZone'] as String?,
+      schedule: json['schedule'] as String?,
     );
 
 Map<String, dynamic> _$FoodRoutineEntityToJson(FoodRoutineEntity instance) =>
@@ -164,6 +165,7 @@ Map<String, dynamic> _$FoodRoutineEntityToJson(FoodRoutineEntity instance) =>
       'isRoutine': instance.isRoutine,
       'daysOfWeek': instance.daysOfWeek,
       'timeZone': instance.timeZone,
+      'schedule': instance.schedule,
     };
 
 FoodRoutineInEntity _$FoodRoutineInEntityFromJson(Map<String, dynamic> json) =>

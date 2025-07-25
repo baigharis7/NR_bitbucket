@@ -13,6 +13,7 @@ class ItemInfoCard extends StatelessWidget {
   final VoidCallback? trailingTap;
   final Color? color;
   final VoidCallback? onItemTap;
+  final double? leadingIconSize;
   const ItemInfoCard({
     super.key,
     required this.title,
@@ -23,6 +24,7 @@ class ItemInfoCard extends StatelessWidget {
     this.trailingTap,
     this.color,
     this.onItemTap,
+    this.leadingIconSize,
   });
 
   @override
@@ -45,7 +47,7 @@ class ItemInfoCard extends StatelessWidget {
         // contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         titleAlignment: ListTileTitleAlignment.center,
         horizontalTitleGap: 0,
-        leading: !leadingSrc.isNull() && !leadingTap.isNull() ? InkWell(onTap: () => leadingTap?.call(), child: Image.asset(leadingSrc!, width: 17, height: 17)) : const SizedBox(),
+        leading: !leadingSrc.isNull() && !leadingTap.isNull() ? InkWell(onTap: () => leadingTap?.call(), child: Image.asset(leadingSrc!, width: leadingIconSize ?? 17, height: leadingIconSize ?? 17)) : const SizedBox(),
         title: Text(
           title,
           style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge,), maxLines: 1, overflow: TextOverflow.ellipsis,

@@ -52,6 +52,10 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.uploading_food_routine_event_error;
     case ErrorTypes.saveFoodRoutineEventError:
       return stringResolver.save_food_routine_event_error;
+    case ErrorTypes.deleteSportRoutineError:
+      return stringResolver.delete_sport_routine_error;
+    case ErrorTypes.removeSportRoutineError:
+      return stringResolver.remove_sport_routine_error;
     case ErrorTypes.retrieveFoodEventsError:
       return stringResolver.retrieve_food_events_error;
     case ErrorTypes.locallySavingSportEventError:
@@ -84,6 +88,10 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.delete_favorite_error;
     case ErrorTypes.removeFoodFavoriteError:
       return stringResolver.remove_favorite_error;
+    case ErrorTypes.deleteFoodRoutineError:
+      return stringResolver.delete_food_routine_error;
+    case ErrorTypes.removerFoodRoutineError:
+      return stringResolver.remove_food_routine_error;
     case ErrorTypes.saveSportFavoriteError:
       return stringResolver.save_favorite_error;
     case ErrorTypes.uploadSportFavoriteError:

@@ -22,7 +22,9 @@ FoodRoutineEvent _$FoodRoutineEventFromJson(Map<String, dynamic> json) =>
           .toList(),
       dish: json['dish'] as bool?,
       isRoutine: json['isRoutine'] as bool?,
-      daysOfWeek: json['daysOfWeek'] as List<int>?,
+      daysOfWeek: (json['daysOfWeek'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
       time: json['time'] as String?,
       timeZone: json['timeZone'] as String?,
     );

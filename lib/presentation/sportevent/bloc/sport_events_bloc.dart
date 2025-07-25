@@ -174,6 +174,15 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       emit(state.copyWith(isLoading: false));
     });
 
+    on<UpdateSportFromRoutinesTabSportEventsActions>((event, emit) {
+      final item = mapToSportFavoriteFromRoutine(event.sportRoutineCompleted);
+      item.isCreateRoutine = true;
+      state.sportSimpleEvent = item;
+      state.isEdit = true;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
     on<FinishSportEventActions>((event, emit) async {
       state.sportSimpleEvent?.userId = getUserIdInteractor.execute();
       state.sportSimpleEvent?.eventId = state.sportSimpleEvent?.eventId ?? DateTime.now().millisecondsSinceEpoch;
@@ -214,19 +223,11 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
 
     on<FinishSportRoutineAddSportAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
-        // final sportRoutineEvent = SportRoutineCompleted(
-        //   userId: getUserIdInteractor.execute(),
-        //   eventId: DateTime.now().millisecondsSinceEpoch,
-        //   eventDate: state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch,
-        //   info: [],
-        //   comment: '',
-        //   sportName: '',
-        // );
 
         try {
           final sportEventComplete = await uploadRoutineInteractor.execute(event.sportRoutineCompleted);
           try {
-            // await saveSportEventInteractor.execute(sportEventComplete, false);
+            await saveRoutineInteractor.execute(event.sportRoutineCompleted, state.isEdit ?? false);
 
             _clearFields();
             event.onFinish.call();
@@ -277,7 +278,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
 
       final userId = getUserIdInteractor.execute();
       try {
-        final deleteFavorite = await deleteSportFavoriteInteractor.execute(userId, event.sportFavorite.eventDate!);
+        final deleteFavorite = await deleteSportFavoriteInteractor.execute(userId, event.sportFavorite.eventId!);
         if (deleteFavorite) {
           try {
             final removeFromLocalResult = await removeSportFavoriteInteractor.execute(event.sportFavorite);

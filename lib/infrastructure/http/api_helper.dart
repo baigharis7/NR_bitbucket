@@ -48,6 +48,39 @@ abstract class ApiHelper {
     }
   }
 
+  Future<Map<String, dynamic>> put(Uri call, dynamic body) async {
+    String idToken = await _getToken();
+    final httpRequestBuild = http.put(
+      call,
+      body: json.encode(body),
+      headers: {
+        'Authorization': idToken
+      },
+    );
+    if (kDebugMode) {
+      httpRequestBuild.interceptWithChuck(_chuck);
+    }
+    final http.Response response = await httpRequestBuild;
+    // final http.Response response = await http.post(
+    //     call,
+    //     body: json.encode(body),
+    //     headers: {
+    //       'Authorization': idToken
+    //     },
+    // ).interceptWithChuck(_chuck);
+
+    if (response.statusCode == 200) {
+      try {
+        final Map<String, dynamic> jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+        return jsonResponse;
+      } catch (error) {
+        rethrow;
+      }
+    } else {
+      throw (response);
+    }
+  }
+
   Future<Map<String, dynamic>> get(Uri call) async {
     String idToken = await _getToken();
     final httpRequestBuild = http.get(

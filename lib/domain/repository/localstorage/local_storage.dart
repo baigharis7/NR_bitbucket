@@ -94,4 +94,6 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<ModelsAppearanceEntity?> showModelAppearance(int modelAppearanceId);
   Future<void> saveModelAppearance(int modelAppearanceId);
   Future<void> saveFoodRoutine(FoodRoutineEntity foodRoutineEntity, {bool isEdit = false});
+  Future<List> getFoodRoutine();
+  Future<void> removeFoodRoutine(FoodRoutineEntity foodRoutineEntity);
 }

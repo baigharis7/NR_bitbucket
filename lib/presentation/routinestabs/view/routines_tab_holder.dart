@@ -39,7 +39,7 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
   @override
   void initState() {
     routinesTabsBloc = BlocProvider.of<RoutinesTabBloc>(context);
-    // routinesTabsBloc.add(InitializeFavoritesTabsEvent());
+    routinesTabsBloc.add(InitializeRoutinesTabEvent());
     _tabController = TabController(length: _tabs.length, vsync: this);
     _tabController.addListener(() {
       setState(() {
@@ -128,7 +128,7 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
                   Expanded(
                     child: TabBarView(
                       controller: _tabController,
-                      children: [
+                      children: const [
                         MealRoutinesTab(),
                         PhysicalActivityRoutinesTab(),
                       ],

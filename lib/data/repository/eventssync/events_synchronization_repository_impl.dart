@@ -41,6 +41,7 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
         /*allEventsIds.urineEvents.map((e) => e.toString()).toList()*/ [],
         /*allEventsIds.creatineEvents.map((e) => e.toString()).toList()*/ [],
         /*allEventsIds.collagenEvents.map((e) => e.toString()).toList()*/ [],
+        [],
       );
       final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
       return await _saveSynchronizedEvents(eventsSyncResponse).then((value) => value);
@@ -55,6 +56,13 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
         await localStorageRepository.saveFoodEvent(mapToFoodEventEntity(foodEvent), false);
       }
     }
+
+    if (eventsSynchronizationResponse.foodRoutines.isNotEmpty) {
+      for (var foodRoutine in eventsSynchronizationResponse.foodRoutines) {
+        await localStorageRepository.saveFoodRoutine(mapToFoodRoutineEntity(foodRoutine), isEdit: false);
+      }
+    }
+
     if (eventsSynchronizationResponse.sportEvents.isNotEmpty) {
       for (var sportEvent in eventsSynchronizationResponse.sportEvents) {
         await localStorageRepository.saveSportEvent(mapToSportEventEntity(sportEvent), false);

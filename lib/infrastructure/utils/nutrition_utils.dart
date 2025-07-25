@@ -83,6 +83,19 @@ class NutritionUtils {
     return buffer.toString();
   }
 
+  static int findSportIntensities({List<dynamic>? names, int? id}) {
+    // if (sportName == null || sportsInfo.sportsInfoMaster.isEmpty) return null;
+    // final sportChosen = names.orEmpty().firstWhere((sport) => sport.id == id);
+    SportInfoMaster sportChosen = SportInfoMaster.empty();
+    for (SportInfoMaster sportInfo in names.orEmpty()) {
+      if (sportInfo.id == id) {
+        sportChosen = sportInfo;
+        break;
+      }
+    }
+    return sportChosen.mets;
+  }
+
 
 
 

@@ -11,6 +11,7 @@ class EventsSyncApi extends ApiHelper {
   Future<Map<String, dynamic>> sendEventsIds(
     String userId,
     List<String> foodEvents,
+    List<String> foodRoutines,
     List<String> sportEvents,
     List<String> sportRoutines,
     List<String> liquidEvents,
@@ -33,6 +34,7 @@ class EventsSyncApi extends ApiHelper {
       {
         'userId' : userId,
         'foodEvents': foodEvents,
+        'foodRoutines': foodRoutines,
         'sportEvents': sportEvents,
         'sportRoutines': sportRoutines,
         'liquidEvents': liquidEvents,

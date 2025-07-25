@@ -126,6 +126,8 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
             bloc.add(UpdateCalendarDateSportEventAction(calendarDate: infoReceived as DateTime));
           } else if (infoReceived is AddSportFavorite) {
             bloc.add(UpdateSportFromFavoriteTabSportEventsActions(addSportFavorite: infoReceived));
+          } else if (infoReceived is SportRoutineCompleted) {
+            bloc.add(UpdateSportFromRoutinesTabSportEventsActions(sportRoutineCompleted: infoReceived));
           }
         }
       }
@@ -216,7 +218,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                               child: Column(
                                 children: [
                                     ...?state.sportSimpleEvent?.info?.orEmpty().map((sport) => SportEventItem(
-                                      sportIntensities: eventsHelper.getChosenSportIntensities(sport.translate(context), state.sportsInfo!, currentLanguage),
+                                      allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
                                         sport: sport,
                                         removeSport: () => bloc.add(RemoveSportEventAction(sportInfo: sport)),
                                         editMinutes: (updatedSport) => bloc.add(SetMinutesAction(sportInfo: updatedSport)),
@@ -242,7 +244,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                 ],
                               ),
                             ),
-                            if (state.sportSimpleEvent!.info.orEmpty().isEmpty) Column(children: [
+                            if (state.sportSimpleEvent!.info.orEmpty().isEmpty && state.favSports.orEmpty().isNotEmpty) Column(children: [
                               const SizedBox(height: Dimens.height12),
                               DashTitleWidget(title: '${AppLocalizations.of(context)!.physical_activity} favorites'),
                               ...state.favSports.orEmpty().map((favSport) => ItemInfoCard(

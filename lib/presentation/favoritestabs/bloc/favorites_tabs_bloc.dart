@@ -66,8 +66,7 @@ class FavoritesTabsBloc extends Bloc<FavoritesTabsEvent, FavoritesTabsState> {
       emit(state.copyWith(isLoading: true));
 
       try {
-        await deleteFoodFavoriteInteractor.execute(
-            getUserIdInteractor.execute(), event.foodFavorite.eventDate.orZero());
+        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite.eventId.orZero());
         try {
           await removeFoodFavoriteFromLocalInteractor.execute(event.foodFavorite);
           state.favFoods = await getFoodFavoritesInteractor.execute();
@@ -85,12 +84,12 @@ class FavoritesTabsBloc extends Bloc<FavoritesTabsEvent, FavoritesTabsState> {
 
       final userId = getUserIdInteractor.execute();
       try {
-        final deleteFavorite = await deleteSportFavoriteInteractor.execute(userId, event.sportFavorite.eventDate!);
+        final deleteFavorite = await deleteSportFavoriteInteractor.execute(userId, event.sportFavorite.eventId!);
         if (deleteFavorite) {
           try {
             final removeFromLocalResult = await removeSportFavoriteInteractor.execute(event.sportFavorite);
             if (removeFromLocalResult) {
-              state.favFoods = await getFoodFavoritesInteractor.execute();
+              state.favSports = await getSportFavoritesInteractor.execute();
               // event.onFinish.call();
               emit(state.copyWith(isLoading: false, onError: null));
             } else {

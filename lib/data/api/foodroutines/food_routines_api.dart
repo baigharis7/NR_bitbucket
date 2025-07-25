@@ -16,4 +16,15 @@ class FoodRoutinesApi extends ApiHelper {
     ),
     foodRoutineEvent,
   );
+
+  Future<Map<String, dynamic>> deleteRoutine(FoodRoutineEvent foodRoutineEvent) => delete(
+    Uri.https(
+      Environment().config!.baseUrl,
+      '${Environment().config!.distributionPath}/food-routines',
+    ),
+    {
+      'userId': foodRoutineEvent.userId,
+      'eventId': foodRoutineEvent.eventId,
+    },
+  );
 }

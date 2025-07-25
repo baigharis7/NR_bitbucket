@@ -84,6 +84,12 @@ class UpdateSportFromFavoriteTabSportEventsActions extends SportEventsActions {
   UpdateSportFromFavoriteTabSportEventsActions({required this.addSportFavorite});
 }
 
+class UpdateSportFromRoutinesTabSportEventsActions extends SportEventsActions {
+  SportRoutineCompleted sportRoutineCompleted;
+
+  UpdateSportFromRoutinesTabSportEventsActions({required this.sportRoutineCompleted});
+}
+
 class FinishSportEventAction extends SportEventsActions {
   SportEventSimple sportEventSimple;
   Function onFinish;

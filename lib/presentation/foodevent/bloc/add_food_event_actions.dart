@@ -160,6 +160,12 @@ class UpdateFoodDataFromFavoritesAddFoodEventActions extends AddFoodEventActions
   UpdateFoodDataFromFavoritesAddFoodEventActions({required this.foodFavorite});
 }
 
+class UpdateFoodRoutineFromRoutines extends AddFoodEventActions {
+  final FoodRoutineEvent foodRoutineEvent;
+
+  UpdateFoodRoutineFromRoutines({required this.foodRoutineEvent});
+}
+
 class FinishFoodEventAddFoodEventActions extends AddFoodEventActions {
   Function onFinish;
 

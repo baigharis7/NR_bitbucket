@@ -456,7 +456,7 @@ class LocalStorageImpl extends LocalStorageRepository {
           if (isEdit != null && isEdit) {
             final foodFavoritesMap = box.toMap();
             foodFavoritesMap.forEach((key, value) {
-              if ((value as FoodFavoriteEntity).eventDate == foodFavoriteEntity.eventDate) {
+              if ((value as FoodFavoriteEntity).eventId == foodFavoriteEntity.eventId) {
                 box.put(key, foodFavoriteEntity);
               }
             });
@@ -481,7 +481,7 @@ class LocalStorageImpl extends LocalStorageRepository {
         _getFoodFavoritesBox.then((box) {
           final favoritesMap = box.toMap();
           favoritesMap.forEach((key, value){
-            if ((value as FoodFavoriteEntity).eventDate == foodFavorite.eventDate) {
+            if ((value as FoodFavoriteEntity).eventId == foodFavorite.eventId) {
               box.delete(key);
             }
           });
@@ -511,7 +511,7 @@ class LocalStorageImpl extends LocalStorageRepository {
           if (isEdit) {
             final sportFavoritesMap = box.toMap();
             sportFavoritesMap.forEach((key, value) {
-              if ((value as SportFavoriteEntity).eventDate == sportFavoriteEntity.eventDate) {
+              if ((value as SportFavoriteEntity).eventId == sportFavoriteEntity.eventId) {
                 box.put(key, sportFavoriteEntity);
               }
             });
@@ -547,7 +547,7 @@ class LocalStorageImpl extends LocalStorageRepository {
           final favoritesMap = box.toMap();
           dynamic desiredKey;
           favoritesMap.forEach((key, value){
-            if ((value as SportFavoriteEntity).eventDate == sportFavorite.eventDate) {
+            if ((value as SportFavoriteEntity).eventId == sportFavorite.eventId) {
               desiredKey = key;
             }
           });
@@ -647,6 +647,10 @@ class LocalStorageImpl extends LocalStorageRepository {
     final foodEvents = <int>[];
     foodEventsMap.forEach((key, value) => foodEvents.add((value as FoodEventEntity).eventDate!));
 
+    final foodRoutinesMap = await _getFoodRoutinesBox.then((box) => box.toMap());
+    final foodRoutines = <int>[];
+    foodRoutinesMap.forEach((key, value) => foodRoutines.add((value as FoodRoutineEntity).eventId!));
+
     final sportEventsMap = await _getSportEventsBox.then((box) => box.toMap());
     final sportEvents = <int>[];
     sportEventsMap.forEach((key, value) => sportEvents.add((value as SportEventEntity).eventDate));
@@ -701,6 +705,7 @@ class LocalStorageImpl extends LocalStorageRepository {
 
     return EventsSynchronizationRequest(
       foodEvents: foodEvents,
+      foodRoutines: foodRoutines,
       sportEvents: sportEvents,
       sportRoutines: sportRoutines,
       liquidEvents: liquidEvents,
@@ -1214,6 +1219,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   @override
   Future<bool> eraseDBEventsData() async {
     await _clearBox(_getFoodEventsBox);
+    await _clearBox(_getFoodRoutinesBox);
     await _clearBox(_getLiquidEventsBox);
     await _clearBox(_getWaterEventsBox);
     await _clearBox(_getSportEventsBox);
@@ -1269,7 +1275,7 @@ class LocalStorageImpl extends LocalStorageRepository {
           if (isEdit) {
             final spoRoutinesMap = box.toMap();
             spoRoutinesMap.forEach((key, value) {
-              if ((value as SportRoutineEntity).eventId == foodRoutineEntity.eventId) {
+              if ((value as FoodRoutineEntity).eventId == foodRoutineEntity.eventId) {
                 box.put(key, foodRoutineEntity);
               }
             });
@@ -1278,6 +1284,37 @@ class LocalStorageImpl extends LocalStorageRepository {
           }
         },);
       } catch(error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<List> getFoodRoutine() async {
+    List foodRoutines = await _getFoodRoutinesBox.then((box) {
+      return box.values.toList();
+    },);
+
+    return foodRoutines;
+  }
+
+  @override
+  Future<void> removeFoodRoutine(FoodRoutineEntity foodRoutineEntity) async {
+    try {
+      await foodRoutineEntity.delete();
+    } catch (error) {
+      try {
+        _getFoodRoutinesBox.then((box) {
+          final foodRoutineMap = box.toMap();
+          dynamic desiredKey;
+          foodRoutineMap.forEach((key, value) {
+            if ((value as FoodRoutineEntity).eventId == foodRoutineEntity.eventId) {
+              desiredKey = key;
+            }
+          });
+          box.delete(desiredKey);
+        },);
+      } catch (error) {
         rethrow;
       }
     }

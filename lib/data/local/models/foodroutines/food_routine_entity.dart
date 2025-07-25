@@ -21,8 +21,9 @@ class FoodRoutineEntity extends HiveObject {
   @HiveField(9) bool? isRoutine;
   @HiveField(10) List<int>? daysOfWeek;
   @HiveField(11) String? timeZone;
+  @HiveField(12) String? schedule;
 
-  FoodRoutineEntity({required this.userId, required this.eventDate, this.eventId, this.mealType, required this.foodName, required this.comment, this.ingredients, this.drinks, this.dish, this.isRoutine, this.daysOfWeek, this.timeZone});
+  FoodRoutineEntity({required this.userId, required this.eventDate, this.eventId, this.mealType, required this.foodName, required this.comment, this.ingredients, this.drinks, this.dish, this.isRoutine, this.daysOfWeek, this.timeZone, this.schedule});
 
   factory FoodRoutineEntity.fromJson(Map<String, dynamic> json) => _$FoodRoutineEntityFromJson(json);
   Map<String, dynamic> toJson() => _$FoodRoutineEntityToJson(this);

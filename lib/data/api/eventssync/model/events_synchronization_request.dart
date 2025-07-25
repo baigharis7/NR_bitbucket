@@ -1,5 +1,6 @@
 class EventsSynchronizationRequest {
   List<int> foodEvents;
+  List<int> foodRoutines;
   List<int> sportEvents;
   List<int> sportRoutines;
   List<int> liquidEvents;
@@ -16,6 +17,7 @@ class EventsSynchronizationRequest {
 
   EventsSynchronizationRequest({
     required this.foodEvents,
+    required this.foodRoutines,
     required this.sportEvents,
     required this.sportRoutines,
     required this.liquidEvents,

@@ -246,9 +246,19 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     },);
 
     on<UpdateFoodDataFromFavoritesAddFoodEventActions>((event, emit) {
-      state.foodEvent = event.foodFavorite;
+      final item = event.foodFavorite;
+      item.isFavorite = true;
+      state.foodEvent = item;
       state.isEdit = true;
       emit(state.copyWith(isLoading: false, onError: null));
+    });
+
+    on<UpdateFoodRoutineFromRoutines>((event, emit) {
+      final item = mapToFoodFavoriteFromRoutine(event.foodRoutineEvent);
+      item.isRoutine = true;
+      state.foodEvent = item;
+      state.isEdit = true;
+      emit(state.copyWith(isLoading: false));
     });
 
     on<FinishFoodAsFavoriteEventAction>((event, emit) async {
@@ -286,7 +296,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: true, onError: null));
 
       try {
-        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite.eventDate.orZero());
+        await deleteFoodFavoriteInteractor.execute(getUserIdInteractor.execute(), event.foodFavorite.eventId.orZero());
         try {
           await removeFoodFavoriteFromLocalInteractor.execute(event.foodFavorite);
           state.foodFavorites = await getFoodFavoritesInteractor.execute();
@@ -310,9 +320,6 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         add(FinishAddFoodRoutineEventAction(foodRoutineEvent: foodEventRoutine, onFinish: event.onFinish));
       } else {
         final foodEventSimple = mapToFoodEventSimpleFromFoodFavorite(state.foodsFromFavorite!);
-        // foodEventSimple.userId = getUserIdInteractor.execute();
-        // foodEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
-        // foodEventSimple.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
         add(FinishAddFoodEventAction(foodEventSimple: foodEventSimple, onFinish: event.onFinish));
       }
     },);
@@ -321,8 +328,9 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       state.foodEvent?.userId = getUserIdInteractor.execute();
       state.foodEvent?.eventId = state.foodEvent?.eventId ?? DateTime.now().millisecondsSinceEpoch;
       state.foodEvent?.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+
       state.foodEvent?.timeZone = await DateTimeHelper.getDeviceIANATimeZone();
-      state.foodEvent?.time = DateFormat.Hm().format(DateTime.now().add(Duration(minutes: 10)));
+      state.foodEvent?.time = state.foodEvent?.time ?? DateFormat.Hm().format(DateTime.now().add(Duration(minutes: 10)));
       if (state.foodEvent?.isFavorite ?? false) {
         add(FinishFoodAsFavoriteEventAction(foodFavorite: state.foodEvent!, onFinish: event.onFinish));
       }
@@ -365,7 +373,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         final uploadedRoutine = await uploadFoodRoutineInteractor.execute(event.foodRoutineEvent);
         if (uploadedRoutine) {
           try {
-            await saveFoodRoutineInteractor.execute(event.foodRoutineEvent, false);
+            await saveFoodRoutineInteractor.execute(event.foodRoutineEvent, state.isEdit ?? false);
 
             _clearFields();
             emit(state.copyWith(isLoading: false, onError: null,));
