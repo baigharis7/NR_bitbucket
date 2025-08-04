@@ -8,7 +8,6 @@ import '../../domain/models/masterfiles/sports_info_master.dart';
 import '../../domain/models/masterfiles/units_info_master.dart';
 
 class NutritionUtils {
-
   static int calculateKcal({required List<FoodEventComplete> foodEvents}) {
     int totalKcal = 0;
     for (FoodEventComplete food in foodEvents) {
@@ -17,13 +16,17 @@ class NutritionUtils {
     return totalKcal;
   }
 
-  static String findFoodsName({List<FoodItemMaster>? foodNames, List<dynamic>? ingredients, BuildContext? context}) {
+  static String findFoodsName(
+      {List<FoodItemMaster>? foodNames,
+      List<dynamic>? ingredients,
+      BuildContext? context}) {
     final buffer = StringBuffer();
 
     for (int i = 0; i < ingredients.orEmpty().length; i++) {
       var foodName = FoodItemMaster.empty();
 
-      foodItemMasterLoop: for (FoodItemMaster food in foodNames.orEmpty()) {
+      foodItemMasterLoop:
+      for (FoodItemMaster food in foodNames.orEmpty()) {
         if (food.id == ingredients![i].id) {
           foodName = food;
           break foodItemMasterLoop;
@@ -40,12 +43,14 @@ class NutritionUtils {
     return buffer.toString();
   }
 
-  static String findUnitName(List<UnitInfoMaster>? unitsInfoMaster, List<FoodInfo>? ingredients, BuildContext? context) {
+  static String findUnitName(List<UnitInfoMaster>? unitsInfoMaster,
+      List<FoodInfo>? ingredients, BuildContext? context) {
     final buffer = StringBuffer();
 
     for (int i = 0; i < ingredients.orEmpty().length; i++) {
       var unitName = UnitInfoMaster.empty();
-      foodIUnitInfoMasterLoop: for (UnitInfoMaster unitInfoMaster in unitsInfoMaster.orEmpty()) {
+      foodIUnitInfoMasterLoop:
+      for (UnitInfoMaster unitInfoMaster in unitsInfoMaster.orEmpty()) {
         if (unitInfoMaster.id == ingredients![i].eventInfo?.unit) {
           unitName = unitInfoMaster;
           break foodIUnitInfoMasterLoop;
@@ -60,13 +65,17 @@ class NutritionUtils {
     return buffer.toString();
   }
 
-  static String findSportName({List<dynamic>? names, List<dynamic>? ingredients, BuildContext? context}) {
+  static String findSportName(
+      {List<dynamic>? names,
+      List<dynamic>? ingredients,
+      BuildContext? context}) {
     final buffer = StringBuffer();
 
     for (int i = 0; i < ingredients.orEmpty().length; i++) {
       var name = SportInfoMaster.empty();
 
-      foodItemMasterLoop: for (SportInfoMaster item in names.orEmpty()) {
+      foodItemMasterLoop:
+      for (SportInfoMaster item in names.orEmpty()) {
         if (item.id == ingredients![i].id) {
           name = item;
           break foodItemMasterLoop;
@@ -96,14 +105,14 @@ class NutritionUtils {
     return sportChosen.mets;
   }
 
-
-
-
-
   static int millisecondsToYears(int milliseconds) {
-    final years = milliseconds / (1000 * 60 * 60 * 24 * 365.25);
-    return years.toInt();
+    final birthDate = DateTime.fromMillisecondsSinceEpoch(milliseconds);
+    final now = DateTime.now();
+    int age = now.year - birthDate.year;
+    if (now.month < birthDate.month ||
+        (now.month == birthDate.month && now.day < birthDate.day)) {
+      age--;
+    }
+    return age;
   }
-
-
 }
