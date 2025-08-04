@@ -72,14 +72,14 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
       value: bloc,
       child: BlocConsumer<MealTimeDetailsBloc, MealTimeDetailsState>(
         listener: (ctx, state) {
-          if (state.isLoading) {
-            LoadingScreen.instance().show(
-              context: ctx,
-              text: AppLocalizations.of(ctx)!.recal_nutrients,
-            );
-          } else {
-            LoadingScreen.instance().hide();
-          }
+          // if (state.isLoading) {
+          //   LoadingScreen.instance().show(
+          //     context: ctx,
+          //     text: AppLocalizations.of(ctx)!.recal_nutrients,
+          //   );
+          // } else {
+          //   LoadingScreen.instance().hide();
+          // }
           if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
         },
         builder: (context, state) {
