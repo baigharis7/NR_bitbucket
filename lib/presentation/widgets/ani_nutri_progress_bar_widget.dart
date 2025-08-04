@@ -35,7 +35,7 @@ class AnimatedNutrientProgressBarWidget extends StatelessWidget {
           ),
           child: TweenAnimationBuilder<double>(
             tween: Tween(begin: 0, end: progressFromPercent),
-            duration: const Duration(milliseconds: 500),
+            duration: const Duration(microseconds: 0),
             builder: (context, value, child) => Container(
               width: value,
               height: height ?? Dimens.height15,
