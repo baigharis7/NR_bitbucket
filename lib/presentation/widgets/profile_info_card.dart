@@ -92,7 +92,7 @@ class _MetricItem extends StatelessWidget {
       children: [
         Text(
           !value.isNull() ? value!.toInt() > 0 ? value!.toInt().toString() : '-' : value.toString(),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeSmall),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeMedium),
         ),
         const SizedBox(height: Dimens.height5),
         Text(
