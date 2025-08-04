@@ -172,7 +172,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                   children: [
                                     Expanded(
                                       child: CenteredIconBox(
-                                        colorSelected: AppColors.floralWhite,
+                                        colorSelected: AppColors.yellowishGreen,
                                         icon: Icons.male,
                                         onClick: () =>
                                             bloc.add(SetSexAction(sex: SexType.male)),
