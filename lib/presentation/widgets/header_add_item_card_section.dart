@@ -94,7 +94,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
               _focusInputController = focusNode;
               return TextField(
                 style: const TextStyle(color: Colors.white),
-                showCursor: false,
+                showCursor: true,
                 decoration: InputDecoration(
                   fillColor: Colors.white,
                   hintText: AppLocalizations.of(context)!.write_here_hint,

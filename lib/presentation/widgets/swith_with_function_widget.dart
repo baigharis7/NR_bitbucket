@@ -30,19 +30,30 @@ class _SwitchDashboardWidgetState extends State<SwitchDashboardWidget> {
       color: widget.backgroundColor ?? AppColors.darkJungleGreen,
       margin: const EdgeInsets.symmetric(
           horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Dimens.border15)),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(widget.title, style: TextStyle(color: widget.color ?? Colors.white,fontWeight: FontWeight.w400, fontSize: Dimens.fontSize13)),
+            Text(widget.title,
+                style: TextStyle(
+                    color: widget.color ?? Colors.white,
+                    fontWeight: FontWeight.w400,
+                    fontSize: Dimens.fontSize13)),
             Switch.adaptive(
               inactiveTrackColor: Colors.white,
-              activeTrackColor: widget.color ?? AppColors.mountainMeadow,
+              thumbColor: MaterialStateProperty.resolveWith<Color?>((states) {
+                if (widget.currentState == true) {
+                  return widget.color ?? AppColors.mountainMeadow;
+                } else {
+                  return Colors.white;
+                }
+              }),
               applyCupertinoTheme: true,
               value: widget.currentState,
-              activeColor: widget.color ?? AppColors.mountainMeadow,
+              activeColor: Colors.white,
               onChanged: (bool value) {
                 widget.onStateChange.call(value);
               },
