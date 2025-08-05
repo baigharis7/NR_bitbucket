@@ -282,6 +282,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         try {
           final saveFoodsAsFavorite = await saveFoodFavoriteInteractor.execute(event.foodFavorite, state.isEdit!);
           state.foodFavorites = await getFoodFavoritesInteractor.execute();
+          state.foodFavorites = state.foodFavorites.orEmpty().where((foodFav) => foodFav.mealTime == state.foodEvent?.mealTime).toList();
           _clearFields();
           emit(state.copyWith(isLoading: false, onError: null,));
         } catch (_) {

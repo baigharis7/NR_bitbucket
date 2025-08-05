@@ -287,7 +287,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
 
                           if (state.foodEvent!.ingredients.orEmpty().isEmpty && state.foodFavorites.orEmpty().isNotEmpty) Column(children: [
                             const SizedBox(height: Dimens.height12),
-                            DashTitleWidget(title: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime).name.orEmpty()+ ' favorites'),
+                            DashTitleWidget(title: AppLocalizations.of(context)!.favorites + ' - ' + MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime).name.orEmpty()),
                             ...state.foodFavorites.orEmpty().map((favFood) => ItemInfoCard(
                               title: NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: favFood.ingredients, context: context),
                               leadingSrc: 'assets/images/favorite_icon.png',
