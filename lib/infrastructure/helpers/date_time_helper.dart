@@ -218,5 +218,11 @@ class DateTimeHelper {
     return '$hour:$minute'; // e.g., 21:05
   }
 
+  static String formatMonthYear(DateTime date) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return '${months[date.month - 1]} ${date.year}';
+  }
+
 
 }

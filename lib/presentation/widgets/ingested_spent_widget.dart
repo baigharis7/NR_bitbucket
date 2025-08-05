@@ -16,7 +16,7 @@ class IngestedSpentWidget extends StatelessWidget {
       SvgPicture.asset(svg,),
       const SizedBox(height: Dimens.height12),
       Text(value.toString(), style: const TextStyle(fontSize: Dimens.fontSizeXXLarge, color: Colors.white, fontWeight: FontWeight.bold)),
-      Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: Dimens.fontSizeSmall, color: Colors.white)),
+      Text(title.toUpperCase(), textAlign: TextAlign.center, style: const TextStyle(fontSize: Dimens.fontSizeSmall, color: Colors.white)),
     ],);
   }
 

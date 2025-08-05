@@ -273,7 +273,7 @@ class _DashboardScreen extends State<DashboardScreen>
                           bloc.add(InitializeState(dateTime: date,));
                         }, selectedDateTime: selectedDateTime, callGetAllEvents: (day) => bloc.getEventsForDay(day)),
                         const SizedBox(height: Dimens.heightXSmall),
-                        SizedBox(height: Dimens.height320, child: NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(),)),
+                        SizedBox(height: Dimens.height350, child: NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(),)),
                         // if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
                         //     title: AppLocalizations.of(context)!.menstruation,
                         //     currentState: state.isMenstruation ?? false,

@@ -100,6 +100,7 @@ class Dimens {
   static const heightXLarge = 250.0;
   static const heightXXLarge = 300.0;
   static const height320 = 320.0;
+  static const height350 = 350.0;
 
   // Widths
   static const width1 = 1.0;
