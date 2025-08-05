@@ -137,6 +137,11 @@ flutter:
         - asset: assets/fonts/montserrat-regular.ttf
         - asset: assets/fonts/montserrat-bold.ttf
           weight: 700
+    - family: MerriWeather
+      fonts:
+        - asset: assets/fonts/merriweather-regular.ttf
+        - asset: assets/fonts/merriweather-bold.ttf
+          weight: 700
 
 flutter_launcher_icons:
   android: "launcher_icon"

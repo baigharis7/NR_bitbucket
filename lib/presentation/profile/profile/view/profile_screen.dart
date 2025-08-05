@@ -209,7 +209,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(Dimens.border16)),
-                                child: Text(e.translate(context), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeSmall, color: AppColors.peacockBlue,), maxLines: 1, overflow: TextOverflow.ellipsis,))),
+                                child: Text(e.translate(context).toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeSmall, color: AppColors.peacockBlue,), maxLines: 1, overflow: TextOverflow.ellipsis,))),
                            const SizedBox(height: Dimens.height32),
                             InkWell(
                               onTap: () => _showObjectivesBottomModalSheet(context: context, onSaveChanges: () => bloc.add(SaveChangesAction()),),

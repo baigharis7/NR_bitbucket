@@ -1019,7 +1019,7 @@ void main() async {
         navigatorKey: navigatorKey,
         title: 'NutreNaissance',
         theme: ThemeData(
-          fontFamily: 'Montserrat',
+          fontFamily: 'MerriWeather',
           colorScheme: ColorScheme.fromSwatch().copyWith(
             primary: const Color.fromARGB(255, 107, 107, 107),
             secondary: const Color.fromARGB(255, 0, 0, 0),
