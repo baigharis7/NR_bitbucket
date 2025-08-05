@@ -97,6 +97,7 @@ class Dimens {
   static const heightNormal = 100.0;
   static const heightMedium = 150.0;
   static const heightLarge = 200.0;
+  static const height_220 = 220.0;
   static const heightXLarge = 250.0;
   static const heightXXLarge = 300.0;
   static const height320 = 320.0;
