@@ -171,10 +171,11 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     showCard: false,
     isMenstruation: false,
     energyModel: EnergyModel(fractionToFill: 0.0, totalKcal: 0, rawKcalTaken: 0, spentKcal: 0),
+    foundedRoutineRemainingHours: null,
   ),) {
     on<InitializeState>((event, emit) async {
       // _clearData();
-      emit(state.copyWith(isLoading: true, foundedRoutineRemainingHours: null));
+      // emit(state.copyWith(isLoading: true, foundedRoutineRemainingHours: null));
       try {
       // await eraseDBLocalEventsInteractor.execute();
       // await synchronizeEventsInteractor.execute(getUserIdInteractor.execute());
@@ -284,7 +285,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.todayCreatineSupplement = SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement());
       state.todayCollagenSupplement = SupplementInfo('Collagen peptides', 'Péptidos de colágeno', todayCollagen, 10);
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
-      emit(state.copyWith(isLoading: false, onError: null,),);
+      // emit(state.copyWith(isLoading: false, onError: null,),);
 
       final getMasterFileVersionCookingMethods = await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethods);
       final getMasterFileVersionNutrientsInfo = await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo);

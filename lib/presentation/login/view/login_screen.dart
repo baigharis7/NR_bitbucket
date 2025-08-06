@@ -623,7 +623,7 @@ class _LoginScreenState extends State<LoginScreen>
                               },
                               child: RichText(text: TextSpan(
                                 text: model.isLogin ? AppLocalizations.of(context)!.dont_have_account : AppLocalizations.of(context)!.already_have_account,
-                                style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeMedium,),
+                                style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeMedium, fontFamily: 'MerriWeather'),
                                 children: <TextSpan>[
                                   TextSpan(text: model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),),
                                 ],
