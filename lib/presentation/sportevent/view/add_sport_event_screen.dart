@@ -246,7 +246,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                             ),
                             if (state.sportSimpleEvent!.info.orEmpty().isEmpty && state.favSports.orEmpty().isNotEmpty) Column(children: [
                               const SizedBox(height: Dimens.height12),
-                              DashTitleWidget(title: '${AppLocalizations.of(context)!.physical_activity} favorites'),
+                              DashTitleWidget(title: AppLocalizations.of(context)!.favorites + ' - ' + AppLocalizations.of(context)!.physical_activity),
                               ...state.favSports.orEmpty().map((favSport) => ItemInfoCard(
                                 title: NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: favSport.info, context: context),
                                 leadingSrc: 'assets/images/favorite_icon.png',

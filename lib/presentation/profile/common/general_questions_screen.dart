@@ -183,7 +183,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                     const SizedBox(width: Dimens.width25),
                                     Expanded(
                                       child: CenteredIconBox(
-                                        colorSelected: AppColors.floralWhite,
+                                        colorSelected: AppColors.yellowishGreen,
                                         icon: Icons.female,
                                         onClick: () => bloc
                                             .add(SetSexAction(sex: SexType.female)),
@@ -209,16 +209,16 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       Expanded(flex: 1,
                                           child: GeneralButton(
                                         title: AppLocalizations.of(context)!.regular,
-                                            selectedColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.regular.index ? AppColors.floralWhite : AppColors.yellowishGreen,
-                                            textColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.regular.index ? AppColors.yellowishGreen : AppColors.floralWhite,
+                                            selectedColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.regular.index ? AppColors.yellowishGreen : AppColors.floralWhite,
+                                            textColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.regular.index ? AppColors.floralWhite : AppColors.yellowishGreen,
                                             onTap: () => bloc.add(SetPeriodRegularityAction(periodRegularity: MenstruationRegularity.regular.index)),
                                       ),),
                                       const SizedBox(width: Dimens.width25,),
                                       Expanded(flex: 1,
                                           child: GeneralButton(
                                             title: AppLocalizations.of(context)!.irregular,
-                                            selectedColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? AppColors.floralWhite : AppColors.yellowishGreen,
-                                            textColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? AppColors.yellowishGreen : AppColors.floralWhite,
+                                            selectedColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? AppColors.yellowishGreen : AppColors.floralWhite,
+                                            textColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? AppColors.floralWhite : AppColors.yellowishGreen,
                                             onTap: () => bloc.add(SetPeriodRegularityAction(periodRegularity: MenstruationRegularity.irregular.index)),
                                           ),),
                                     ],
@@ -229,16 +229,16 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       Expanded(flex: 1,
                                         child: GeneralButton(
                                           title: AppLocalizations.of(context)!.menopause,
-                                          selectedColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.menopause.index ? AppColors.floralWhite : AppColors.yellowishGreen,
-                                          textColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.menopause.index ? AppColors.yellowishGreen : AppColors.floralWhite,
+                                          selectedColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.menopause.index ? AppColors.yellowishGreen : AppColors.floralWhite,
+                                          textColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.menopause.index ? AppColors.floralWhite : AppColors.yellowishGreen,
                                           onTap: () => bloc.add(SetPeriodRegularityAction(periodRegularity: MenstruationRegularity.menopause.index)),
                                         ),),
                                       const SizedBox(width: Dimens.width25,),
                                       Expanded(flex: 1,
                                         child: GeneralButton(
                                           title: AppLocalizations.of(context)!.without_period,
-                                          selectedColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.withoutPeriod.index ? AppColors.floralWhite : AppColors.yellowishGreen,
-                                          textColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.withoutPeriod.index ? AppColors.yellowishGreen : AppColors.floralWhite,
+                                          selectedColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.withoutPeriod.index ? AppColors.yellowishGreen : AppColors.floralWhite,
+                                          textColor: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.withoutPeriod.index ? AppColors.floralWhite : AppColors.yellowishGreen,
                                           onTap: () => bloc.add(SetPeriodRegularityAction(periodRegularity: MenstruationRegularity.withoutPeriod.index)),
                                         ),),
                                     ],

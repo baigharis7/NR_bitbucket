@@ -235,7 +235,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               }).toList(),
                               Row(children: [
                                 Expanded(child: FoodActionsWidget(
-                                  title: 'Add more options',
+                                  title: AppLocalizations.of(context)!.add_more_options,
                                   rightSideWidget: const Icon(Icons.add_circle),
                                   onTap: () => showAddFoodNameDialog(
                                     context: context,

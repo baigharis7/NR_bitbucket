@@ -95,21 +95,21 @@ class WeeklyItemChart extends StatelessWidget {
                     ],
                   ),
                   Positioned(
-                    top: 35,
+                    top: 30,
                     child: Container(
                       width: MediaQuery.sizeOf(context).width - 100,
                       height: 1,
                       color: AppColors.greyChateau,
                     ),
                   ),
-                  Positioned(
-                    bottom: 35,
-                    child: Container(
-                      width: MediaQuery.sizeOf(context).width - 100,
-                      height: 1,
-                      color: AppColors.greyChateau,
-                    ),
-                  ),
+                  // Positioned(
+                  //   bottom: 35,
+                  //   child: Container(
+                  //     width: MediaQuery.sizeOf(context).width - 100,
+                  //     height: 1,
+                  //     color: AppColors.greyChateau,
+                  //   ),
+                  // ),
                   // Positioned(top: 35, child: DashedLine(width: MediaQuery.sizeOf(context).width - 100, color: AppColors.greyChateau, dashWidth: 5, dashSpacing: 5, dashHeight: 2)),
                   // Positioned(bottom: 35, child: DashedLine(width: MediaQuery.sizeOf(context).width - 100, color: AppColors.greyChateau, dashWidth: 5, dashSpacing: 5, dashHeight: 2)),
                 ],

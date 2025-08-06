@@ -71,7 +71,8 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       // state.sportEventSimple?.userId = getUserIdInteractor.execute();
       final sportInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
       state.sportsInfo = sportInfo;
-      state.favSports = await getSportFavoritesInteractor.execute();
+      final favSports = await getSportFavoritesInteractor.execute();
+      state.favSports = favSports;
 
       emit(state.copyWith(isLoading: false, onError: null));
     });
@@ -79,7 +80,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
     on<UpdateCalendarDateSportEventAction>((event, emit) {
       state.calendarDate = event.calendarDate;
 
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isLoading: false, onError: null));
     });
 
     on<AddSportEventAction>((event, emit) {
@@ -128,24 +129,24 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
     on<SetEventSportNameAction>((event, emit) {
       state.sportSimpleEvent?.title = event.sportEventName;
 
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isLoading: false, onError: null));
     });
 
     on<UpdateIsFavoriteSportEventsActions>((event, emit) {
       state.sportSimpleEvent?.isFavorite = event.isFavorite;
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isLoading: false, onError: null));
     });
 
     on<UpdateIsCreateRoutineSportEventsActions>((event, emit) {
       state.sportSimpleEvent?.isCreateRoutine = event.isCreateRoutine;
 
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isLoading: false, onError: null));
     });
 
     on<UpdateTimeOfDaySportEventAction>((event, emit) {
       state.sportSimpleEvent?.scheduleTime = event.scheduleTime;
 
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isLoading: false, onError: null));
     });
 
     on<UpdateDaysOfWeekSportEventAction>((event, emit) {
@@ -156,14 +157,14 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       //   state.sportSimpleEvent?.daysOfWeek?.add(event.weekDay);
       // }
 
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isLoading: false, onError: null));
     });
 
     on<AddSportFavoriteFromFavoriteEvent>((event, emit) {
       final isSame = state.sportFavoriteEvent == event.sportFavorite;
       state.sportFavoriteEvent = isSame ? null : event.sportFavorite;
 
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isLoading: false, onError: null));
     });
 
     on<UpdateSportFromFavoriteTabSportEventsActions>((event, emit) {
@@ -171,7 +172,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       state.calendarDate = DateTimeHelper.dateTimeFromMilliseconds(event.addSportFavorite.eventDate);
       state.isEdit = true;
 
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isLoading: false, onError: null));
     });
 
     on<UpdateSportFromRoutinesTabSportEventsActions>((event, emit) {
@@ -180,7 +181,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       state.sportSimpleEvent = item;
       state.isEdit = true;
 
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isLoading: false, onError: null));
     });
 
     on<FinishSportEventActions>((event, emit) async {

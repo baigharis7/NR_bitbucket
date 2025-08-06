@@ -40,7 +40,7 @@ class SportEventsState {
   }) {
     return SportEventsState(
       isLoading: isLoading,
-      onError: onError ?? this.onError,
+      onError: onError,
       sportsInfo: sportsInfo ?? this.sportsInfo,
       favSports: favSports ?? this.favSports,
       sportSimpleEvent: sportSimpleEvent ?? this.sportSimpleEvent,
