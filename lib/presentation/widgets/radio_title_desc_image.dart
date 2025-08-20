@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import '../../domain/models/profile/feces.dart';
+import '../../infrastructure/helpers/app_text_styles.dart';
 import '../../infrastructure/utils/dimens.dart';
 
 class RadioTitleDescImage extends StatelessWidget {
@@ -62,9 +63,9 @@ class RadioTitleDescImage extends StatelessWidget {
                   flex: 3,
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                    Text(fece.title ?? '', style: TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeNormal, color: isSelected ? Colors.white : Colors.black)),
+                    Text(fece.title ?? '', style: AppTextStyles.merriWeather.copyWith(color: isSelected ? Colors.white : Colors.black)),
                       if (fece.description?.isNotEmpty ?? false) const SizedBox(height: Dimens.height5),
-                    if (fece.description?.isNotEmpty ?? false) Text(fece.description ?? '',  style: TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize13, color: isSelected ? Colors.white : Colors.black),),
+                    if (fece.description?.isNotEmpty ?? false) Text(fece.description ?? '',  style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize13, color: isSelected ? Colors.white : Colors.black),),
                   ],),
                 ),
                 if (fece.image?.isNotEmpty ?? false) Container(

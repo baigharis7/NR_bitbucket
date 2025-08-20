@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 import '../../infrastructure/utils/app_color.dart';
@@ -36,11 +37,7 @@ class TextRadioButtonExpansible extends StatelessWidget {
                     child: Text(
                       title,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w300,
-                        fontSize: Dimens.fontSize15,
-                        color: AppColors.yellowishGreen,
-                      ),
+                      style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15, color: AppColors.yellowishGreen),
                     ),
                   ),
                   Container(
@@ -70,7 +67,7 @@ class TextRadioButtonExpansible extends StatelessWidget {
                 explanation,
                 maxLines: 3,
                 overflow: TextOverflow.clip,
-                style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize11, color: AppColors.yellowishGreen),
+                style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize11, color: AppColors.yellowishGreen),
               ),
               if (isSelected && explanation != '') const SizedBox(height: Dimens.heightXXSmall),
             ],),

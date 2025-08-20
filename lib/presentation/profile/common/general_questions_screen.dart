@@ -22,6 +22,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/custom_button_1.dart
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
+import '../../../infrastructure/helpers/app_text_styles.dart';
 import '../../widgets/text_field_general_quest.dart';
 
 class GeneralQuestionsScreen extends StatefulWidget {
@@ -112,22 +113,18 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                             const SizedBox(height: Dimens.height37),
                             Text(
                               AppLocalizations.of(context)!.body_measurements,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: Dimens.fontSizeXXLarge,
-                                color: Colors.white,
-                              ),
+                              style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeXXLarge,),
                             ),
                             const SizedBox(height: Dimens.heightSmall),
                             TextFormField(
                               controller: _commonNameController,
                               cursorColor: Colors.white,
-                              style: const TextStyle(color: Colors.white),
+                              style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
                               decoration: InputDecoration(
                                 contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
                                 hintText:
                                 AppLocalizations.of(ctx)!.write_your_name_here,
-                                hintStyle: const TextStyle(color: Colors.white),
+                                hintStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
                                 focusColor: Colors.white,
                                 enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
                                 focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
@@ -156,17 +153,19 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                   _formKey.currentState!.validate();
                                   if (pickedDate != null) bloc.add(RefreshBirthdateAction(birthdate: pickedDate.millisecondsSinceEpoch));
                                 });
-                              }, decoration: InputDecoration(
+                              },
+                              style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
+                              decoration: InputDecoration(
                                 errorMaxLines: 2,
                               contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
-                                hintStyle: const TextStyle(color: Colors.white),
+                                hintStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
                               enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
                                 hintText: state.profile!.birthDate == null ? AppLocalizations.of(ctx)!.birthday_question : DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.birthDate!)),),
                               validator: (value) => state.profile?.birthDate?.isNull() ?? true ? AppLocalizations.of(context)!.must_complete_field : null,),
                             const SizedBox(height: Dimens.height32),
                             Column(crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (state.profile?.sex?.isNull() ?? true) Text(AppLocalizations.of(context)!.select_gender, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: Colors.white),),
+                                if (state.profile?.sex?.isNull() ?? true) Text(AppLocalizations.of(context)!.select_gender, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17,),),
                                 if (state.profile?.sex?.isNull() ?? true) const SizedBox(height: Dimens.height32),
                                 Row(
                                   children: [
@@ -200,9 +199,9 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const SizedBox(height: Dimens.height32),
-                                  Text(AppLocalizations.of(context)!.regularity_period_question, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: Colors.white)),
+                                  Text(AppLocalizations.of(context)!.regularity_period_question, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17,)),
                                   const SizedBox(height: Dimens.height12),
-                                  if (state.profile?.femaleCharacteristics?.menstruation?.regularity.isNull() ?? true) Text(AppLocalizations.of(context)!.must_complete_field+':', style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: Colors.white),textAlign: TextAlign.start),
+                                  if (state.profile?.femaleCharacteristics?.menstruation?.regularity.isNull() ?? true) Text(AppLocalizations.of(context)!.must_complete_field+':', style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17,), textAlign: TextAlign.start),
                                   const SizedBox(height: Dimens.heightXXSmall),
                                   Row(
                                     children: [
@@ -247,32 +246,37 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       .regularity ==
                                       MenstruationRegularity.regular.index
                                       ? Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       const SizedBox(height: Dimens.height32,),
-                                      Text(AppLocalizations.of(context)!.period_duration_question, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: Colors.white),),
+                                      Text(AppLocalizations.of(context)!.period_duration_question, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17,),),
                                       const SizedBox(height: Dimens.height12),
-                                      NumberPicker(
-                                        minValue: Constants.MIN_PERIOD_DURATION,
-                                        maxValue: Constants.MAX_PERIOD_DURATION,
-                                        value: state.profile!.femaleCharacteristics!.menstruation!.daysOfCycle ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
-                                        axis: Axis.horizontal,
-                                        step: 1,
-                                        textStyle: const TextStyle(fontSize: Dimens.fontSizeNormal, color: Colors.white),
-                                        selectedTextStyle: const TextStyle(fontSize: Dimens.fontSizeNormal, color: Colors.white),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                          BorderRadius.circular(30),
-                                          border: Border.all(color: Colors.white),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        width: double.infinity,
+                                        child: NumberPicker(
+                                          minValue: Constants.MIN_PERIOD_DURATION,
+                                          maxValue: Constants.MAX_PERIOD_DURATION,
+                                          value: state.profile!.femaleCharacteristics!.menstruation!.daysOfCycle ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
+                                          axis: Axis.horizontal,
+                                          step: 1,
+                                          textStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
+                                          selectedTextStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                            BorderRadius.circular(30),
+                                            border: Border.all(color: Colors.white),
+                                          ),
+                                          onChanged: (duration) => context.read<ProfileBloc>().add(SetPeriodDurationAction(days: duration),),
                                         ),
-                                        onChanged: (duration) => context.read<ProfileBloc>().add(SetPeriodDurationAction(days: duration),),
                                       ),
                                       const SizedBox(height: Dimens.height12),
-                                      Text(AppLocalizations.of(context)!.last_period_question, style: const TextStyle(fontWeight: FontWeight.w400,fontSize: Dimens.fontSizeNormal, color: Colors.white),),
+                                      Text(AppLocalizations.of(context)!.last_period_question, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),),
                                       TextFormField(
                                         decoration: InputDecoration(
                                           hintText: state.profile!.femaleCharacteristics!.menstruation!.lastStartDate != null ? DateFormat('yyyy/MM/dd').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.femaleCharacteristics!.menstruation!.lastStartDate!,),) : '',
                                           border: InputBorder.none,
-                                          hintStyle: const TextStyle(color: Colors.white),
+                                          hintStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
                                           prefixIcon: IconButton(onPressed: () {
                                             DatePickerHelper
                                                 .presentDatePicker(
@@ -304,6 +308,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                     child: DropdownButton<int>(
                                       isExpanded: true,
                                       value: state.unitWeightHeight?.id ?? 1,
+                                      style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal, color: Colors.black),
                                       icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
                                       underline: Container(),
                                       onChanged: (int? value) {
@@ -314,7 +319,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                         final val = language == 'es' ? value.unitEs.orEmpty() : value.unitEn.orEmpty();
                                         return DropdownMenuItem<int>(
                                           value: value.id,
-                                          child: Text(val,),
+                                          child: Text(val, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal, color: Colors.black),),
                                         );
                                       }).toList(),
                                     ),

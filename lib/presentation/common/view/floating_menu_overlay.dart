@@ -92,7 +92,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
                   ),
-                  child: Text(label, style: const TextStyle(fontSize: Dimens.fontSizeMedium)),
+                  child: Text(label, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black)),
                 ),
                 Container(
                   padding: const EdgeInsets.all(Dimens.padding6),
@@ -174,7 +174,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                                     horizontalTitleGap: Dimens.zero,
                                     tileColor: Colors.black,
                                     leading: Image.asset('assets/icon/routine_icon.png', width: 22, height: 22, color: Colors.white),
-                                    title: Text(AppLocalizations.of(context)!.routines, style: const TextStyle(fontSize: Dimens.fontSizeMedium, color: Colors.white),),
+                                    title: Text(AppLocalizations.of(context)!.routines, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.white),),
                                   ),
                                 ),
                               ),
@@ -192,7 +192,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                                     horizontalTitleGap: Dimens.zero,
                                     tileColor: Colors.black,
                                       leading: Image.asset('assets/images/favorite_icon.png', width: 22, height: 22, color: Colors.white),
-                                      title: Text(AppLocalizations.of(context)!.favorites, style: const TextStyle(fontSize: Dimens.fontSizeMedium, color: Colors.white),),
+                                      title: Text(AppLocalizations.of(context)!.favorites, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.white),),
                                   ),
                                 ),
                               ),
@@ -204,6 +204,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                           final item = widget.menuItems[i];
                           return buildMenuItem(item['label'], item['icon'], item['onTap'], widget.menuItems.length - i);
                         }),
+                        const SizedBox(height: Dimens.height32),
                       ],
                     ),
                   ),

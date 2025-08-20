@@ -11,4 +11,8 @@ class AppTextStyles {
   static const TextStyle h3 = TextStyle(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize21, color: Colors.white);
   static const TextStyle subtitle2 = TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeNormal, color: Colors.white);
 
+  //fonts
+  static const TextStyle merriWeather = TextStyle(fontFamily: 'MerriWeather', fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeNormal, color: Colors.white,);
+
+  static const TextStyle radioCanadaBig = TextStyle(fontFamily: 'RadioCanadaBig', fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeNormal, color: Colors.white,);
 }

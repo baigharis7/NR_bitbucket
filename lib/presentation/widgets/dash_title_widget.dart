@@ -1,13 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 class DashTitleWidget extends StatelessWidget {
   final String? title;
   final Function? onInfoClick;
-  const DashTitleWidget({super.key, this.title, this.onInfoClick});
+  final TextStyle? style;
+  const DashTitleWidget({super.key, this.title, this.onInfoClick, this.style});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class DashTitleWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge,),
           alignment: Alignment.center,
           child: Text(
-            title ?? '', style: const TextStyle(fontSize: Dimens.fontSize20, color: Colors.white, fontWeight: FontWeight.w300),
+            title ?? '', style: style ?? AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize19),
           ),
         ),
         const Spacer(),

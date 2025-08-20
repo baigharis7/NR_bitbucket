@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_file
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_picker_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
@@ -91,10 +92,7 @@ class _SportEventItem extends State<SportEventItem> {
                   _sportName.orEmpty(),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: Dimens.fontSizeLarge,
-                  ),
+                  style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),
                 ),
               ),
               // InkWell(onTap: () { /*assets/images/favorite_icon.png*/ }, child: Image.asset('assets/icon/un_favorite_outlined.png', height: Dimens.heightXSmall)),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 import '../../infrastructure/utils/app_color.dart';
@@ -38,10 +39,7 @@ class _SwitchDashboardWidgetState extends State<SwitchDashboardWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(widget.title,
-                style: TextStyle(
-                    color: widget.color ?? Colors.white,
-                    fontWeight: FontWeight.w400,
-                    fontSize: Dimens.fontSize13)),
+                style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize13, color: widget.color),),
             Switch.adaptive(
               inactiveTrackColor: Colors.white,
               thumbColor: MaterialStateProperty.resolveWith<Color?>((states) {

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
@@ -88,11 +89,7 @@ class _ItemRoutineWidgetState extends State<ItemRoutineWidget> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           AppLocalizations.of(context)!.spor_name,
-                          style: const TextStyle(
-                            color: AppColors.yellowishGreen,
-                            fontSize: Dimens.fontSize17,
-                            fontWeight: FontWeight.w400,
-                          ),
+                          style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),
                         ),
                       ),
                       Container(

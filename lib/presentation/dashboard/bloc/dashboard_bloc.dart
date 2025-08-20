@@ -172,6 +172,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     isMenstruation: false,
     energyModel: EnergyModel(fractionToFill: 0.0, totalKcal: 0, rawKcalTaken: 0, spentKcal: 0),
     foundedRoutineRemainingHours: null,
+    lastTap: null,
   ),) {
     on<InitializeState>((event, emit) async {
       // _clearData();
@@ -418,6 +419,11 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     });
 
     on<FinishWaterEventAction>((event, emit) async {
+      if (state.lastTap != null && DateTime.now().difference(state.lastTap!) < const Duration(milliseconds: 500)) {
+        return;
+      }
+      state.lastTap = DateTime.now();
+
       emit(state.copyWith(isLoading: false, onError: null,));
 
       final waterEventMaster = WaterEventMaster(

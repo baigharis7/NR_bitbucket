@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import '../../infrastructure/helpers/app_text_styles.dart';
 import '../../infrastructure/utils/app_color.dart';
 import '../../infrastructure/utils/dimens.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FecesUrineChart extends StatelessWidget {
   final List<Map<String, dynamic>> valuesList;
@@ -22,9 +24,9 @@ class FecesUrineChart extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Evolution of the last 14 days',
-            style: TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: Colors.white),
+          Text(
+            AppLocalizations.of(context)!.evolution_14_days,
+            style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17,),
           ),
           // const SizedBox(height: Dimens.height5),
           // const Text(

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
@@ -23,7 +24,7 @@ class FoodActionsWidget extends StatelessWidget {
         onTap: () => onTap?.call(),
         child: Row(
           children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeMedium)),
+            Text(title, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15, color: Colors.black)),
             const Spacer(),
             if (rightSideWidget != null) rightSideWidget!,
           ],

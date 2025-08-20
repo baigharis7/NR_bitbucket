@@ -5,6 +5,8 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
+import '../../infrastructure/helpers/app_text_styles.dart';
+
 class MealTimeWidget extends StatelessWidget {
   final String name;
   final String? svg;
@@ -41,7 +43,7 @@ class MealTimeWidget extends StatelessWidget {
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(name, style: TextStyle(fontSize: Dimens.fontSizeXLarge, color: iconColor),),
+                  Text(name, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black),),
                   const SizedBox(height: Dimens.heightXXSmall),
                   if (desc.isNotNull()) Text(desc!, style: TextStyle(fontSize: Dimens.fontSizeSmall, color: iconColor ?? AppColors.battleshipGrey),),
                 ],),

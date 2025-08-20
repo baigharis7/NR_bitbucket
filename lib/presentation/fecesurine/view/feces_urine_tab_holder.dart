@@ -15,6 +15,7 @@ import 'package:nutrenaissance_flutter/presentation/fecesurine/view/urine_tab.da
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
 
+import '../../../infrastructure/helpers/app_text_styles.dart';
 import '../../../infrastructure/helpers/date_time_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../widgets/date_picker_bar.dart';
@@ -163,7 +164,7 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
                       leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
                       title: Text(
                         AppLocalizations.of(context)!.add_deposition,
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline,),
+                        style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),
                       ),
                     ),
                   ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/energy_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/nutrients_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
@@ -17,9 +18,10 @@ import 'nutrient_element_widget.dart';
 class NutritionProgressWidget extends StatefulWidget {
   final EnergyModel? energyModel;
   final List<NutrientsModel> nutrientsList;
+  final DateTime? selectedDate;
 
   const NutritionProgressWidget(
-      {super.key, required this.energyModel, required this.nutrientsList});
+      {super.key, required this.energyModel, required this.nutrientsList, this.selectedDate});
 
   @override
   _NutritionProgressWidgetState createState() =>
@@ -59,12 +61,9 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                     const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
                 child: Row(
                   children: [
-                    Text(
-                      DateTimeHelper.formatMonthYear(DateTime.now()),
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: Dimens.fontSize13,
-                          color: Colors.white),
+                    if (!widget.selectedDate.isNull()) Text(
+                      DateTimeHelper.formatMonthYear(widget.selectedDate!),
+                      style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w700,),
                     ),
                     const Spacer(),
                     InkWell(
@@ -107,19 +106,12 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                             children: [
                               Text(
                                   '${remaining.clamp(0, widget.energyModel!.totalKcal * 1).toInt()}',
-                                  style: const TextStyle(
-                                      fontSize: Dimens.fontSize35,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w400)),
+                                  style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSize35)),
                               Text(
                                 'kcal\n' +
                                     AppLocalizations.of(context)!.from +
-                                    ' ${widget.energyModel!.totalKcal} kcal.',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: Dimens.fontSizeXSmall,
-                                  color: AppColors.davyGrey,
-                                ),
+                                    ' ${widget.energyModel!.totalKcal} kcal.'.toUpperCase(),
+                                style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSizeXSmall),
                                 textAlign: TextAlign.center,
                               ),
                             ],

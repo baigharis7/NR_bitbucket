@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/diet_type.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -61,7 +62,7 @@ class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                      Text(AppLocalizations.of(context)!.diet_type, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeXXLarge, color: AppColors.yellowishGreen)),
+                      Text(AppLocalizations.of(context)!.diet_type, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeXXLarge, color: AppColors.yellowishGreen)),
                       const SizedBox(height: Dimens.height32),
                       ...state.dietTypes!.map((dietType) {
                         return TextRadioButtonExpansible(
@@ -111,7 +112,7 @@ class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(AppLocalizations.of(context)!.allergens, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeXXLarge, color: AppColors.yellowishGreen)),
+                        Text(AppLocalizations.of(context)!.allergens, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeXXLarge, color: AppColors.yellowishGreen)),
                         const SizedBox(height: Dimens.height32),
                         ...bloc.state.allergens!.map((allergen) {
                           return BlocConsumer<ProfileBloc, ProfileState>(
@@ -153,7 +154,7 @@ class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(AppLocalizations.of(context)!.intolerances, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeXXLarge, color: AppColors.yellowishGreen)),
+                        Text(AppLocalizations.of(context)!.intolerances, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeXXLarge, color: AppColors.yellowishGreen)),
                         const SizedBox(height: Dimens.height32),
                         ...bloc.state.intolerances!.map((intolerance) {
                           return BlocConsumer<ProfileBloc, ProfileState>(
@@ -242,20 +243,12 @@ class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
                         children: [
                           Text(
                             AppLocalizations.of(ctx)!.diet,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: Dimens.fontSize19,
-                              color: AppColors.yellowishGreen,
-                            ),
+                            style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen),
                           ),
                           const SizedBox(height: Dimens.height12),
                           Text(
                             AppLocalizations.of(ctx)!.diet_specification,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: Dimens.fontSizeSmall,
-                              color: AppColors.yellowishGreen,
-                            ),
+                            style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeSmall, color: AppColors.yellowishGreen),
                           ),
                         ],
                       ),
@@ -272,7 +265,7 @@ class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
                         onClick: (id) => ctx.read<ProfileBloc>().add(SetDietTypeAction(dietType: id),),
                         stopShowingVegetarianDiets: () => bloc.add(StopShowingVegetarianDiets()),
                       ),
-                      title: Text(AppLocalizations.of(ctx)!.diet_type, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize17, color: Colors.black),),
+                      title: Text(AppLocalizations.of(ctx)!.diet_type, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black),),
                       trailing: const Icon(Icons.add_circle, size: 26, color: Colors.black),
                       ),
                     ),
@@ -284,7 +277,7 @@ class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
                         ),
                       child: ListTile(
                       onTap: () => _showAllergensDialog(ctx, (id) => ctx.read<ProfileBloc>().add(AddAllergenAction(allergenId: id)),),
-                      title: Text(AppLocalizations.of(ctx)!.allergens, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize17, color: Colors.black),),
+                      title: Text(AppLocalizations.of(ctx)!.allergens, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black),),
                       trailing: const Icon(Icons.add_circle, size: 26, color: Colors.black),
                       ),
                     ),
@@ -296,7 +289,7 @@ class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
                         ),
                       child: ListTile(
                       onTap: () => _showIntolerancesDialog(ctx, (id) => ctx.read<ProfileBloc>().add(AddIntolerancesAction(intoleranceId: id)),),
-                      title: Text(AppLocalizations.of(ctx)!.intolerances, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize17, color: Colors.black),),
+                      title: Text(AppLocalizations.of(ctx)!.intolerances, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black),),
                       trailing: const Icon(Icons.add_circle, size: 26, color: Colors.black),
                       ),
                     ),
@@ -308,7 +301,7 @@ class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
                         ),
                       child: ListTile(
                       onTap: () => Navigator.pushNamed(context, AversionsScreen.routeName),
-                      title: Text(AppLocalizations.of(ctx)!.aversions, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize17, color: Colors.black),),
+                      title: Text(AppLocalizations.of(ctx)!.aversions, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black),),
                       trailing: const Icon(Icons.add_circle, size: 26, color: Colors.black),
                       ),
                     ),

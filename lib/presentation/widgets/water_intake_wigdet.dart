@@ -3,6 +3,7 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/dash_title_widget.dart';
+import '../../infrastructure/helpers/app_text_styles.dart';
 import '../../infrastructure/utils/dimens.dart';
 import 'ani_nutri_progress_bar_widget.dart';
 
@@ -30,7 +31,7 @@ class WaterIntakeWidget extends StatelessWidget {
 
     return Column(
       children: [
-        DashTitleWidget(title: AppLocalizations.of(context)!.hydration, onInfoClick: onInfoClick.isNull() ? null : () => onInfoClick?.call()),
+        DashTitleWidget(title: AppLocalizations.of(context)!.hydration, onInfoClick: onInfoClick.isNull() ? null : () => onInfoClick?.call(), style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall, vertical: Dimens.marginNormal),
           padding: const EdgeInsets.all(Dimens.paddingLarge),
@@ -84,7 +85,11 @@ class WaterIntakeWidget extends StatelessWidget {
                     bool isFilled = index < consumedGlasses;
                     return InkWell(
                       onTap: () {
-                        if (!isFilled) onAddWater.call();
+                        if (!isFilled) {
+                          onAddWater.call();
+                        } else {
+                          onRemoveWater.call();
+                        }
                       },
                       child: Container(
                         width: Dimens.widthSmall,
@@ -117,18 +122,11 @@ class WaterIntakeWidget extends StatelessWidget {
                 children: [
                   Text(
                     '${totalConsumedLiters.toStringAsFixed(2)} l.',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: Dimens.fontSizeLarge,
-                      color: Colors.white,
-                    ),
+                    style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeXLarge),
                   ),
                   Text(
                     '${AppLocalizations.of(context)!.from} ${totalLitersGoal.toStringAsFixed(2)} ${AppLocalizations.of(context)!.liters}.',
-                    style: const TextStyle(
-                      fontSize: Dimens.fontSizeMedium,
-                      color: Colors.white70,
-                    ),
+                    style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSize13, color: Colors.white70),
                   ),
                 ],
               )

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
@@ -50,7 +51,7 @@ class ItemInfoCard extends StatelessWidget {
         leading: !leadingSrc.isNull() && !leadingTap.isNull() ? InkWell(onTap: () => leadingTap?.call(), child: Image.asset(leadingSrc!, width: leadingIconSize ?? 17, height: leadingIconSize ?? 17)) : const SizedBox(),
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge,), maxLines: 1, overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black), maxLines: 1, overflow: TextOverflow.ellipsis,
         ),
         subtitle: !subtitle.isNull() ? Text(
           subtitle!,

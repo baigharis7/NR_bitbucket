@@ -25,7 +25,7 @@ class ItemsSearchViewBuilder extends StatelessWidget {
               color: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: Dimens.paddingXLarge),
               width: double.infinity,
-              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - Dimens.margin_60, maxHeight: Dimens.heightXXLarge), // Adjust the width as needed
+              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - Dimens.margin_60, maxHeight: Dimens.height170,), // Adjust the width as needed
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

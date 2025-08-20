@@ -3,6 +3,8 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
+import '../../infrastructure/helpers/app_text_styles.dart';
+
 class TextFieldGeneralQuest extends StatefulWidget {
   final String title;
   final Function onChanged;
@@ -35,13 +37,13 @@ class _TextFieldGeneralQuestState extends State<TextFieldGeneralQuest> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize17, color: Colors.white)),
+        Text(widget.title, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize17,)),
         TextField(
           keyboardType:
               widget.isNumeric ? TextInputType.number : TextInputType.text,
           controller: textController,
           cursorColor: Colors.white,
-          style: const TextStyle(color: Colors.white),
+          style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal,),
           decoration: const InputDecoration(
             focusColor: Colors.white,
             contentPadding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),

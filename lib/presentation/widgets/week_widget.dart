@@ -6,6 +6,8 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.d
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
+import '../../infrastructure/helpers/app_text_styles.dart';
+
 class WeekWidget extends StatelessWidget {
   final DateTime dateTime;
   final List<dynamic> events;
@@ -43,11 +45,7 @@ class WeekWidget extends StatelessWidget {
             children: [
               Text(
                 dayNum,
-                style: TextStyle(
-                  fontSize: Dimens.fontSizeLarge,
-                  color: isToday ? Colors.black : Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: isToday ? FontWeight.w600 : null, fontSize: isToday ? Dimens.fontSizeXXLarge : Dimens.fontSize19, color: isToday ? Colors.black : Colors.white),
               ),
               Text(
                 dayAbbr.toUpperCase(),

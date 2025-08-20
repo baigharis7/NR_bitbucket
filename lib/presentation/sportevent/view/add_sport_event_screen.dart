@@ -15,6 +15,7 @@ import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_state.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/sport_event_item.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.dart';
 
@@ -262,8 +263,8 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
-                      child: SaveButton(onPressed: () {
+                      margin: const EdgeInsets.all(Dimens.marginLarge),
+                      child: GeneralButton(onTap: () {
                           if (bloc.validateSportList() ?? true) return;
 
                           if (state.sportSimpleEvent!.info.orEmpty().isEmpty) {

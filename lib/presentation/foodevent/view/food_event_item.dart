@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/simple_item_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
@@ -160,7 +161,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                     Expanded(
                       child: Text(
                         widget.options,
-                        style: const TextStyle(color: AppColors.yellowishGreen,fontSize: Dimens.fontSizeLarge, fontWeight: FontWeight.w400),
+                        style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),
                       ),
                     ),
                     InkWell(
@@ -231,6 +232,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                                     .map<DropdownMenuItem<String>>(
                                       (item) => DropdownMenuItem(
                                         value: item.name,
+                                        alignment: Alignment.center,
                                         child: SizedBox(
                                           child: Text(
                                             item.name,
@@ -277,7 +279,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
               //   ),
               // ),
               const SizedBox(width: Dimens.widthXXXXSmall),
-              Text(AppLocalizations.of(context)!.conversion_factor, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeMedium)),
+              Text(AppLocalizations.of(context)!.conversion_factor, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal)),
               Row(
                 children: [
                   Switch.adaptive(value: ingredient.conversionFactor == 1, onChanged: (isChecked) {

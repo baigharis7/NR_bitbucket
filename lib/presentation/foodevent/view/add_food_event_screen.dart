@@ -22,6 +22,8 @@ import 'package:nutrenaissance_flutter/presentation/widgets/dash_title_widget.da
 import 'package:nutrenaissance_flutter/presentation/widgets/date_picker_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/food_actions_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/food_event_foods_cluster.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/generic_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/meal_time_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/meal_type_selection_widget.dart';
@@ -301,7 +303,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
 
                           if (state.foodEvent!.ingredients.orEmpty().isNotEmpty || state.foodFavorites.orEmpty().isNotEmpty) Container(
                             margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                            child: SaveButton(onPressed: () {
+                            child: GeneralButton(onTap: () {
                               if(state.foodEvent!.ingredients.isEmpty) {
                                 if (!state.foodsFromFavorite.isNull()) {
                                   bloc.add(FinishFoodFavouriteEventAction(onFinish: () => _showConfirmationDialog(context),),);

@@ -10,6 +10,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/errors/error_types.dart';
+import '../../../infrastructure/helpers/app_text_styles.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';
@@ -129,27 +130,20 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
                                 ),
                                 child: Text(
                                   AppLocalizations.of(context)!.forgotten_password,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: Dimens.fontSizeXXLarge,
-                                  ),
+                                  style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeXXLarge),
                                   textAlign: TextAlign.center,
                                 ),
                               ),
                               Text(
                                 AppLocalizations.of(context)!.enter_email_for_link,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: Dimens.fontSizeMedium,
-                                  fontWeight: FontWeight.w400,
-                                ),
+                                style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeMedium),
                                 textAlign: TextAlign.center,
                               ),
                               Container(
                                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginXXLarge),
                                 child: TextFormField(
                                   cursorColor: Colors.white,
+                                  style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
                                   decoration: InputDecoration(
                                     focusColor: Colors.white,
                                     enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
@@ -163,7 +157,7 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
                                         fit: BoxFit.contain,
                                       ),
                                     ),
-                                    hintStyle: const TextStyle(color: Colors.white),
+                                    hintStyle: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
                                     hintText:
                                     AppLocalizations.of(context)!.email,
                                     errorMaxLines: 3,
@@ -194,10 +188,10 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
                                 child: InkWell(
                                   onTap: () => Navigator.pop(context),
                                   child: RichText(text: TextSpan(
-                                    text: AppLocalizations.of(context)!.already_have_account,
-                                    style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeMedium,),
+                                    text: AppLocalizations.of(context)!.already_have_account + '  ',
+                                    style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeMedium),
                                     children: <TextSpan>[
-                                      TextSpan(text: AppLocalizations.of(context)!.login, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),),
+                                      TextSpan(text: AppLocalizations.of(context)!.login, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline)),
                                     ],
                                   ),),
                                 ),
