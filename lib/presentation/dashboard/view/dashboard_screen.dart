@@ -129,8 +129,9 @@ class _DashboardScreen extends State<DashboardScreen>
     final List<Map<String, dynamic>> menuItems = [
       ...MealTime.getAllMealTimes().map((e) => {'label': e.name, 'id': e.id, 'icon': 'assets/images/meal_time_${e.id.orZero()}.png', 'onTap': () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: e, selectedDateTime: selectedDateTime ?? DateTime.now()))}),
       // {'label': 'Actividad física', 'icon': Icons.fitness_center},
-      {'label': AppLocalizations.of(context)!.faeces_urine, 'icon': 'assets/images/feces_urine.png', 'onTap': () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName)},
+      {'label': AppLocalizations.of(context)!.physical_activity, 'icon': 'assets/images/sport.png', 'onTap': () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime)},
       {'label': AppLocalizations.of(context)!.supplements, 'icon': 'assets/images/supplement.png', 'onTap': () {}},
+      {'label': AppLocalizations.of(context)!.faeces_urine, 'icon': 'assets/images/feces_urine.png', 'onTap': () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName)},
     ];
 
     return menuItems;
