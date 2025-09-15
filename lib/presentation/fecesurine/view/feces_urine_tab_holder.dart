@@ -12,6 +12,7 @@ import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces/view/f
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/urine/view/urine_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/urine_tab.dart';
+import 'package:nutrenaissance_flutter/presentation/fecesurinedetails/view/feces_urine_tabs.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
 
@@ -155,15 +156,11 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
                     ),
                     ListTile(
                       onTap: () {
-                        if (_selectedTab == 0) {
-                          Navigator.pushNamed(context, FecesScreen.routeName);
-                        } else if (_selectedTab == 1) {
-                          Navigator.pushNamed(context, UrineScreen.routeName);
-                        }
+                          Navigator.pushNamed(context, FecesUrineTabs.routeName, arguments: _selectedTab);
                       },
                       leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
                       title: Text(
-                        AppLocalizations.of(context)!.add_deposition,
+                        AppLocalizations.of(context)!.add_new,
                         style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),
                       ),
                     ),

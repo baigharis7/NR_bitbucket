@@ -1032,25 +1032,85 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<List> getFecesEventsByDate({DateTime? dateTime, int? prevDays}) async {
+  Future<List> getFecesEventsByDate({DateTime? dateTime, DateTime? endDate, int? days}) async {
     List list = await _getFecesEventsBox.then((box) {
       return box.values.toList();
     });
 
-    final midnightTime = prevDays.isNull() ? DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime) : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(DateTimeHelper.getDateDaysAgo(daysAgo: prevDays));
-    if (prevDays.isNull()) return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == midnightTime).toList();
-    return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) >= midnightTime).toList();
+    // Case 1: Days provided (highest priority)
+    if (days != null) {
+      final end = dateTime ?? DateTime.now();
+      final start = end.subtract(Duration(days: days - 1));
+
+      final startMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(start);
+      final endMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(end);
+
+      return list.where((element) {
+        final eventMidnight = DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId);
+        return eventMidnight >= startMidnight && eventMidnight <= endMidnight;
+      }).toList();
+    }
+
+    // Case 2: No days → fall back to date filters
+    if (dateTime != null && endDate != null) {
+      final startMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+      final endMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(endDate);
+
+      return list.where((element) {
+        final eventMidnight = DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId);
+        return eventMidnight >= startMidnight && eventMidnight <= endMidnight;
+      }).toList();
+    }
+
+    if (dateTime != null) {
+      final midnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+      return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == midnight).toList();
+    }
+
+    // Default → today
+    final todayMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(DateTime.now());
+    return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == todayMidnight).toList();
   }
 
   @override
-  Future<List> getUrineEventsByDate({DateTime? dateTime, int? prevDays}) async {
+  Future<List> getUrineEventsByDate({DateTime? dateTime, DateTime? endDate, int? days}) async {
     List list = await _getUrineEventsBox.then((box) {
       return box.values.toList();
     });
 
-    final midnightTime = prevDays.isNull() ? DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime) : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(DateTimeHelper.getDateDaysAgo(daysAgo: prevDays));
-    if (prevDays.isNull()) return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == midnightTime).toList();
-    return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) >= midnightTime).toList();
+    // Case 1: Days provided (highest priority)
+    if (days != null) {
+      final end = dateTime ?? DateTime.now();
+      final start = end.subtract(Duration(days: days - 1));
+
+      final startMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(start);
+      final endMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(end);
+
+      return list.where((element) {
+        final eventMidnight = DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId);
+        return eventMidnight >= startMidnight && eventMidnight <= endMidnight;
+      }).toList();
+    }
+
+    // Case 2: No days → fall back to date filters
+    if (dateTime != null && endDate != null) {
+      final startMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+      final endMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(endDate);
+
+      return list.where((element) {
+        final eventMidnight = DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId);
+        return eventMidnight >= startMidnight && eventMidnight <= endMidnight;
+      }).toList();
+    }
+
+    if (dateTime != null) {
+      final midnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+      return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == midnight).toList();
+    }
+
+    // Default → today
+    final todayMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(DateTime.now());
+    return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == todayMidnight).toList();
   }
 
   @override

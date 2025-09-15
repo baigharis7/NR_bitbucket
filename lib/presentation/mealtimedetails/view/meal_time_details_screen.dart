@@ -18,6 +18,7 @@ import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../foodevent/view/add_food_event_screen.dart';
+import '../../widgets/date_picker_bar.dart';
 
 class MealTimeDetailScreen extends StatefulWidget {
   static const routeName = '/meal_time_details_screen';
@@ -107,9 +108,13 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                 backgroundColor: Colors.transparent,
                 body: SafeArea(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingLarge),
+                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingLarge),
                       child: Column(
                         children: [
+                          DatePickerBar(selectedDateTime: state.selectedDateTime, onChangeDate: (dateTime) {
+                            bloc.add(UpdateDateTimeMealTimeDetailsEvent(dateTime: dateTime));
+                          },),
+                          const SizedBox(height: Dimens.height12),
                           HeaderAddItemCardSection(
                             onBackTap: () => Navigator.pop(context),
                             title: state.mealTime?.name.orEmpty(),

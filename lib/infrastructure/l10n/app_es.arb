@@ -333,6 +333,8 @@
     "add_sport_event" : "Añadir ejercicio",
     "add_physical_activity" : "Agregar actividad física",
     "physical_activity" : "Actividad física",
+    "information" : "Información",
+    "physical_summary_exp" : "Información Aquí se mostrará una lista de tus registros de actividad física. Añade una actividad física para ver cómo funciona.",
     "liquid_event" : "Evento de bebida",
     "ml" : "ml",
     "liters" : "litros",

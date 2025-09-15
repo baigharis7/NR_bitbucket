@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/bloc/feces_urine_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/feces_urine_chart.dart';
@@ -116,13 +117,13 @@ class _FecesTabState extends State<FecesTab> {
                           .map(
                             (fece) => RadioTitleDescImage(
                               isSelected: true,
-                              fece: state.fecesList.orEmpty().firstWhere(
-                                  (element) => element.id == fece.fecesId),
+                              fece: state.fecesList.orEmpty().firstWhere((element) => element.id == fece.fecesId),
                               onSelect: (id) =>
                                 deleteItemDialog(
                                     onDelete: () => fecesUrineBloc.add(DeleteFecesEventAction(uploadFeces: fece, onFinish: () => Navigator.pop(context))),
                                     onCancel: ()=> Navigator.pop(context),
                                 ),
+                              leading: Image.asset('assets/images/delete_icon.png', color: AppColors.floralWhite, width: Dimens.width20,),
                             ),
                           )
                           .toList(),

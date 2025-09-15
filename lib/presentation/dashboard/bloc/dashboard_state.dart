@@ -51,6 +51,7 @@ class DashboardState {
   bool? isShowDialog;
   ModelsAppearanceEntity? sportInjuryModal;
   DateTime? lastTap;
+  List<SportEventComplete>? sportEvents;
 
   DashboardState({
     required this.isLoading,
@@ -85,6 +86,7 @@ class DashboardState {
     this.isShowDialog,
     this.sportInjuryModal,
     this.lastTap,
+    this.sportEvents,
   });
 
   DashboardState copyWith({
@@ -122,6 +124,7 @@ class DashboardState {
     bool? isShowDialog,
     ModelsAppearanceEntity? sportInjuryModal,
     DateTime? lastTap,
+    List<SportEventComplete>? sportEvents,
   }) {
     return DashboardState(
       isLoading: isLoading,
@@ -156,6 +159,7 @@ class DashboardState {
       isShowDialog: isShowDialog ?? this.isShowDialog,
       sportInjuryModal: sportInjuryModal ?? this.sportInjuryModal,
       lastTap: lastTap ?? this.lastTap,
+      sportEvents: sportEvents ?? this.sportEvents,
     );
   }
 

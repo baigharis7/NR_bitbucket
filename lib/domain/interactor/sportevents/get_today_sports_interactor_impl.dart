@@ -8,5 +8,5 @@ class GetTodaySportsInteractorImpl extends GetTodaySportsInteractor {
   GetTodaySportsInteractorImpl({required this.sportEventsRepository});
 
   @override
-  Future<List<SportEventComplete>> execute() => sportEventsRepository.getTodaySportEvents();
+  Future<List<SportEventComplete>> execute({DateTime? dateTime}) => sportEventsRepository.getTodaySportEvents(dateTime: dateTime);
 }

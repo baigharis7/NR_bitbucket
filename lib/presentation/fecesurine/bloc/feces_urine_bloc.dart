@@ -68,7 +68,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
       emit(state.copyWith(isLoading: true));
       state.fecesList = Feces.listOfAllFeces();
       // state.facesDayEvents = await getFaecesByDateInteractor.execute(dateTime: state.calendarDateTime);
-      final prev14DaysEvents = await getFaecesByDateInteractor.execute(prevDays: 14);
+      final prev14DaysEvents = await getFaecesByDateInteractor.execute(days: 14);
       state.chart14DaysData = getPrevDaysData(list: prev14DaysEvents);
       state.chart14DaysData.orEmpty().removeWhere((element) => element['fecesId'] == 0);
 
@@ -80,7 +80,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
       state.urinesList = Urines.listOfAllUrines();
       // final urineEvents = await getUrineByDateInteractor.execute(dateTime: state.calendarDateTime);
       // state.urineDayEvents = urineEvents;
-      final urineChart14DaysData = await getUrineByDateInteractor.execute(prevDays: 14);
+      final urineChart14DaysData = await getUrineByDateInteractor.execute(days: 14);
       state.urineChart14DaysData = getPrevDaysData(list: urineChart14DaysData);
 
       emit(state.copyWith(isLoading: false));
@@ -188,6 +188,13 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
       state.facesDayEvents = fecesDayList;
       final urineDayList = await getUrineByDateInteractor.execute(dateTime: event.dateTime);
       state.urineDayEvents = urineDayList;
+
+      final prev14DaysEvents = await getFaecesByDateInteractor.execute(dateTime: event.dateTime, days: 14);
+      state.chart14DaysData = getPrevDaysData(list: prev14DaysEvents);
+      state.chart14DaysData.orEmpty().removeWhere((element) => element['fecesId'] == 0);
+
+      final urineChart14DaysData = await getUrineByDateInteractor.execute(dateTime: event.dateTime, days: 14);
+      state.urineChart14DaysData = getPrevDaysData(list: urineChart14DaysData);
 
       emit(state.copyWith(isLoading: false));
     });

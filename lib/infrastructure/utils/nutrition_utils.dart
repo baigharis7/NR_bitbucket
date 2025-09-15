@@ -1,19 +1,41 @@
 import 'package:flutter/cupertino.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
+import '../../domain/interactor/masterfiles/get_master_file_interactor.dart';
 import '../../domain/models/favorites/food/food_favorite.dart';
 import '../../domain/models/masterfiles/sports_info_master.dart';
 import '../../domain/models/masterfiles/units_info_master.dart';
 
 class NutritionUtils {
-  static int calculateKcal({required List<FoodEventComplete> foodEvents}) {
-    int totalKcal = 0;
-    for (FoodEventComplete food in foodEvents) {
-      totalKcal = totalKcal + food.eventKcals.orZero();
+  final GetMasterFileInteractor getMasterFileInteractor;
+
+  static GetMasterFileInteractor? _getMasterFileInteractor;
+
+  static NutritionUtils? _instance;
+  factory NutritionUtils({required GetMasterFileInteractor getMasterFileInteractor}) {
+    _instance ??= NutritionUtils._internal(getMasterFileInteractor: getMasterFileInteractor);
+    return _instance!;
+  }
+
+  NutritionUtils._internal({required this.getMasterFileInteractor});
+
+  Future<void> init() async {
+    _getMasterFileInteractor = getMasterFileInteractor;
+  }
+
+
+
+  // const NutritionUtils({required this.getMasterFileInteractor});
+
+  static int calculateKcal({required List<dynamic> foodEvents}) {
+    int? totalKcal = 0;
+    for (dynamic food in foodEvents) {
+      totalKcal = (totalKcal! + food.eventKcals) as int?;
     }
-    return totalKcal;
+    return totalKcal.orZero();
   }
 
   static String findFoodsName(
@@ -114,5 +136,11 @@ class NutritionUtils {
       age--;
     }
     return age;
+  }
+
+  static int findSportLength() {
+    // final sportNames = await _getMasterFileInteractor!.execute(MasterFilesType.sportsInfo);
+    // return sportNames?.sportsInfoMaster.length ?? 0;
+    return 2;
   }
 }

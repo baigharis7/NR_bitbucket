@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_model_appearance_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_model_appearance_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/modelsappearance/models_appearance_refs.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/ApiLogger.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
@@ -118,6 +119,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final Chuck chuck;
   final ShowModelAppearanceInteractor showModelAppearanceInteractor;
   final SaveModelAppearanceInteractor saveModelAppearanceInteractor;
+  final GetTodaySportsInteractor getTodaySportsInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -160,6 +162,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.chuck,
     required this.showModelAppearanceInteractor,
     required this.saveModelAppearanceInteractor,
+    required this.getTodaySportsInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -218,7 +221,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               upperLimit: getNutrientUpperLimit(micronutrient),
             ),
       ).toList();
-      state.micronutrients?.sort((a, b) => b.rda.compareTo(a.rda),);
 
       state.temporaryMicronutrients = state.profile?.temporaryMicronutrients.orEmpty()
           .map(
@@ -232,7 +234,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
               upperLimit: getNutrientUpperLimit(micronutrient),
             ),
       ).toList();
-      state.temporaryMicronutrients?.sort((a, b) => b.rda.compareTo(a.rda),);
 
       state.macronutrients = ['proteinSci', 'carbsAvailable', 'fatTotal']
           .map(

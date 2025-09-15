@@ -287,6 +287,7 @@ import 'package:nutrenaissance_flutter/infrastructure/environment/environment.da
 import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/barcodedetail/view/bar_code_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/barcodescanning/view/bar_code_scanning_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/calendar/bloc/calendar_bloc.dart';
@@ -320,6 +321,7 @@ import 'package:nutrenaissance_flutter/presentation/fecesurine/bloc/feces_urine_
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces/view/feces_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces_urine_tab_holder.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/urine/view/urine_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/fecesurinedetails/view/feces_urine_tabs.dart';
 import 'package:nutrenaissance_flutter/presentation/fiber_detail/bloc/fiber_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/fiber_detail/view/fiber_detail_Screen.dart';
 import 'package:nutrenaissance_flutter/presentation/food/bloc/food_bloc.dart';
@@ -375,6 +377,8 @@ import 'package:nutrenaissance_flutter/presentation/routinestabs/view/routines_t
 import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/sportitems/bloc/sport_items_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/sportitems/view/sport_items_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/bloc/sugar_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/waterevent/bloc/water_event_bloc.dart';
@@ -570,6 +574,8 @@ void main() async {
   final ShowModelAppearanceInteractor showModelAppearanceInteractor = ShowModelAppearanceInteractorImpl(modelsAppearanceRepository: modelsAppearanceRepository);
   final SaveModelAppearanceInteractor saveModelAppearanceInteractor = SaveModelAppearanceInteractorImpl(modelsAppearanceRepository: modelsAppearanceRepository);
 
+  await NutritionUtils(getMasterFileInteractor: getMasterFileInteractor).init();
+
   final dashboardBloc = DashboardBloc(
     getAdviceInteractor: getAdviceInteractor,
     getFoodEventsOfTodayInteractor: getFoodEventsOfTodayInteractor,
@@ -611,6 +617,7 @@ void main() async {
     chuck: chuck,
     showModelAppearanceInteractor: showModelAppearanceInteractor,
     saveModelAppearanceInteractor: saveModelAppearanceInteractor,
+    getTodaySportsInteractor: getTodaySportsInteractor,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(
@@ -954,6 +961,13 @@ void main() async {
     removeSportRoutineInteractor: removeSportRoutineInteractor,
   );
 
+  final sportItemsBloc = SportItemsBloc(
+    getMasterFileInteractor: getMasterFileInteractor,
+    getTodaySportsInteractor: getTodaySportsInteractor,
+    deleteSportEventInteractor: deleteSportEventInteractor,
+    removeSportEventInteractor: removeSportEventInteractor,
+  );
+
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
 
   runApp(
@@ -1003,6 +1017,7 @@ void main() async {
         BlocProvider<MealTimeDetailsBloc>(create: (context) => mealTimeDetailsBloc,),
         BlocProvider<FavoritesTabsBloc>(create: (context) => favoritesTabsBloc,),
         BlocProvider<RoutinesTabBloc>(create: (context) => routinesTabBloc,),
+        BlocProvider<SportItemsBloc>(create: (context) => sportItemsBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -1098,6 +1113,8 @@ void main() async {
           MealTimeItemScreen.routeName:(_) => const MealTimeItemScreen(),
           FavoritesTabHolder.routeName:(_) => const FavoritesTabHolder(),
           RoutinesTabHolder.routeName:(_) => const RoutinesTabHolder(),
+          SportItemsScreen.routeName:(_) => const SportItemsScreen(),
+          FecesUrineTabs.routeName:(_) => const FecesUrineTabs(),
         },
       ),
     ),

@@ -17,6 +17,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/methods_helper.dar
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/barcodescanning/view/bar_code_scanning_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/floating_menu_controller.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -25,6 +26,7 @@ import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_blo
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
 import 'package:nutrenaissance_flutter/presentation/energy_balance_detail/view/energy_balance_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/favorites_tab_holder.dart';
+import 'package:nutrenaissance_flutter/presentation/fecesurinedetails/view/feces_urine_tabs.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/view/liquid_summary_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
@@ -33,6 +35,7 @@ import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/m
 import 'package:nutrenaissance_flutter/presentation/nutrients_detail/view/weekly_all_nutrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/sportitems/view/sport_items_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/NutritionProgressWidget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/card_widget.dart';
@@ -337,9 +340,22 @@ class _DashboardScreen extends State<DashboardScreen>
                         // ),
                         MealTimeWidget(name: AppLocalizations.of(context)!.supplements, svg: 'assets/images/supplement.png', onClick: () {},),
                         DashTitleWidget(title: AppLocalizations.of(context)!.physical_activity, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
-                        MealTimeWidget(name: AppLocalizations.of(context)!.physical_activity, onClick: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), iconColor: Colors.black, backgroundColor: AppColors.floralWhite, svg: 'assets/images/sport.png'),
+                        MealTimeWidget(
+                            name: AppLocalizations.of(context)!.physical_activity,
+                            onItemClick: () => Navigator.pushNamed(context, SportItemsScreen.routeName),
+                            onClick: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                            iconColor: Colors.black, backgroundColor: AppColors.floralWhite, svg: 'assets/images/sport.png',
+                          ),
                         DashTitleWidget(title: AppLocalizations.of(context)!.depositions, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
-                        MealTimeWidget(name: AppLocalizations.of(context)!.faeces_urine, svg: 'assets/images/feces_urine.png', onClick: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), iconColor: Colors.black, backgroundColor: Colors.transparent, backgroundImage: 'assets/images/feces_urine_background.png'),
+                        MealTimeWidget(
+                            name: AppLocalizations.of(context)!.faeces_urine,
+                            svg: 'assets/images/feces_urine.png',
+                            onItemClick: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                            onClick: () => Navigator.pushNamed(context, FecesUrineTabs.routeName,).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                            iconColor: Colors.black,
+                            backgroundColor: Colors.transparent,
+                            backgroundImage: 'assets/images/feces_urine_background.png',
+                        ),
                         // ListTile(
                         //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border11),),
                         //   tileColor: AppColors.floralWhite,

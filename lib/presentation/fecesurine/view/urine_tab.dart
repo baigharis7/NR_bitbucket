@@ -9,6 +9,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
+import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../widgets/dashboard_calendar_widget.dart';
@@ -84,6 +85,7 @@ class _UrineTabState extends State<UrineTab> {
                             onDelete: () => fecesUrineBloc.add(DeleteUrineEventAction(uploadFeces: urine, onFinish: () => Navigator.pop(context))),
                             onCancel: ()=> Navigator.pop(context),
                           ),
+                            leading: Image.asset('assets/images/delete_icon.png', color: AppColors.floralWhite, width: Dimens.width20,),
                         );
                         }
                         ).toList(),
