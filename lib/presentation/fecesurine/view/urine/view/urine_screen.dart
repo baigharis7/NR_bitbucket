@@ -15,6 +15,7 @@ import '../../../../widgets/general_button.dart';
 import '../../../../widgets/radio_title_desc_image.dart';
 import '../../../../widgets/rounded_custom_button.dart';
 import '../../../bloc/feces_urine_bloc.dart';
+import '../../feces_urine_tab_holder.dart';
 
 class UrineScreen extends StatefulWidget {
   static const routeName = '/urine_screen';
@@ -76,7 +77,7 @@ class _UrineScreenState extends State<UrineScreen> {
             margin: const EdgeInsets.all(Dimens.marginNormal),
             child: GeneralButton(
               title: AppLocalizations.of(context)!.save,
-              onTap: () => fecesUrineBloc.add(UploadUrineEventAction(onFinish: () => {})),
+              onTap: () => fecesUrineBloc.add(UploadUrineEventAction(onFinish: () => Navigator.popAndPushNamed(context, FecesUrineTabHolder.routeName, arguments: 1))),
             ),
           ),
         ),

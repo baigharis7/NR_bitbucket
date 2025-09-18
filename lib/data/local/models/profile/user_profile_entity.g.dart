@@ -37,13 +37,15 @@ class UserProfileEntityAdapter extends TypeAdapter<UserProfileEntity> {
       recommededIds: (fields[17] as List?)?.cast<int>(),
       kcal: fields[18] as int?,
       temporaryMicronutrients: (fields[19] as List?)?.cast<String>(),
+      userAll: (fields[20] as List?)?.cast<String>(),
+      temporaryAll: (fields[21] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfileEntity obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(22)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -83,7 +85,11 @@ class UserProfileEntityAdapter extends TypeAdapter<UserProfileEntity> {
       ..writeByte(18)
       ..write(obj.kcal)
       ..writeByte(19)
-      ..write(obj.temporaryMicronutrients);
+      ..write(obj.temporaryMicronutrients)
+      ..writeByte(20)
+      ..write(obj.userAll)
+      ..writeByte(21)
+      ..write(obj.temporaryAll);
   }
 
   @override

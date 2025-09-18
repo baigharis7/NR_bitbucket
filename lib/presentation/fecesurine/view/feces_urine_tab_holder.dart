@@ -63,6 +63,9 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
         if (infoReceived != null) {
           if (infoReceived is DateTime?) {
             fecesUrineBloc.add(UpdateCalendarDateFecesUrineEventAction(dateTime: infoReceived as DateTime?,));
+          } else if (infoReceived is int?) {
+            _selectedTab = infoReceived as int;
+            _tabController.index = _selectedTab;
           }
         }
       }
@@ -156,7 +159,7 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
                     ),
                     ListTile(
                       onTap: () {
-                          Navigator.pushNamed(context, FecesUrineTabs.routeName, arguments: _selectedTab);
+                          Navigator.popAndPushNamed(context, FecesUrineTabs.routeName, arguments: _selectedTab);
                       },
                       leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
                       title: Text(

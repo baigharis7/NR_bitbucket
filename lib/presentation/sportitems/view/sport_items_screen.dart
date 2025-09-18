@@ -26,6 +26,12 @@ class SportItemsScreen extends StatelessWidget {
     final bloc = BlocProvider.of<SportItemsBloc>(context);
     bloc.add(SportItemsInitialization());
 
+    final widgetBinding = WidgetsBinding.instance;
+    widgetBinding.addPostFrameCallback((timeStamp) {
+      final args = ModalRoute.of(context)!.settings.arguments as DateTime;
+      bloc.add(UpdateDatetimeSportItemsEvents(dateTime: args));
+    });
+
     return BlocProvider.value(
       value: bloc,
       child: BlocConsumer<SportItemsBloc, SportItemsState>(
@@ -118,7 +124,7 @@ class SportItemsScreen extends StatelessWidget {
                         ),
                         // Add Activity Button
                         ListTile(
-                          onTap: () => Navigator.pushNamed(context, AddSportEventScreen.routeName),
+                          onTap: () => Navigator.popAndPushNamed(context, AddSportEventScreen.routeName),
                           leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
                           title: Text(
                             AppLocalizations.of(context)!.add_physical_activity,

@@ -25,6 +25,8 @@ class UserProfileEntity extends HiveObject {
   @HiveField(17) List<int>? recommededIds;
   @HiveField(18) int? kcal;
   @HiveField(19) List<String>? temporaryMicronutrients;
+  @HiveField(20) List<String>? userAll;
+  @HiveField(21) List<String>? temporaryAll;
 
   static const boxName = 'profile';
 
@@ -45,9 +47,11 @@ class UserProfileEntity extends HiveObject {
     this.guts,
     required this.objectives,
     this.micronutrients,
+    this.userAll,
     this.userRdas,
     this.recommededIds,
     this.temporaryMicronutrients,
+    this.temporaryAll,
     this.kcal,
   });
 

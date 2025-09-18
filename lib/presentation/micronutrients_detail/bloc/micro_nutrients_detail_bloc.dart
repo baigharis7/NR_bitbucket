@@ -45,7 +45,7 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
 
       state.foodEvents = await getFoodEventsOfTodayInteractor.execute();
 
-      state.temporaryMicronutrients = state.profile?.temporaryMicronutrients.orEmpty()
+      state.microNutrients = state.profile?.userAll.orEmpty()
           .map(
             (micronutrient) =>
             NutrientsModel(
@@ -58,12 +58,25 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
             ),
       ).toList();
 
-      state.micronutrientsWeekly = state.profile?.micronutrients.orEmpty()
+      state.temporaryMicronutrients = state.profile?.temporaryAll.orEmpty()
+          .map(
+            (micronutrient) =>
+            NutrientsModel(
+              quantityConsumed: getQuantityConsumedSoFar(micronutrient),
+              nutrientInfoMaster: getNutrientInfo(micronutrient),
+              fractionToFill: 0.0,
+              unit: getUnitForMicronutrient(micronutrient),
+              rda: getNutrientRda(micronutrient),
+              upperLimit: getNutrientUpperLimit(micronutrient),
+            ),
+      ).toList();
+
+      state.micronutrientsWeekly = state.profile?.userAll.orEmpty()
           .map(
               (micronutrient) => getDataByWeekly(micronutrient),
       ).toList();
 
-      state.temporaryMicronutrientsWeekly = state.profile?.temporaryMicronutrients.orEmpty()
+      state.temporaryMicronutrientsWeekly = state.profile?.temporaryAll.orEmpty()
           .map(
             (micronutrient) => getDataByWeekly(micronutrient),
       ).toList();
@@ -103,7 +116,7 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
     },);
 
     on<LoadMicroNutrientsDetails>((event, emit) {
-      state.microNutrients = event.micronutrientsList;
+      // state.microNutrients = event.micronutrientsList;
 
       emit(state.copyWith(isLoading: false));
     });

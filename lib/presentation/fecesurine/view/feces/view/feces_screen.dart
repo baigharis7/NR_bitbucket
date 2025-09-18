@@ -13,6 +13,7 @@ import '../../../../../infrastructure/utils/dimens.dart';
 import '../../../../common/view/loading_screen.dart';
 import '../../../../widgets/radio_title_desc_image.dart';
 import '../../../bloc/feces_urine_bloc.dart';
+import '../../feces_urine_tab_holder.dart';
 
 class FecesScreen extends StatefulWidget {
   static const routeName = '/feces_screen';
@@ -74,7 +75,7 @@ class _FecesScreenState extends State<FecesScreen> {
               margin: const EdgeInsets.all(Dimens.marginNormal),
               child: GeneralButton(
                 title: AppLocalizations.of(context)!.save,
-                onTap: () => fecesUrineBloc.add(UploadFecesEventAction(onFinish: () => {})),
+                onTap: () => fecesUrineBloc.add(UploadFecesEventAction(onFinish: () => Navigator.popAndPushNamed(context, FecesUrineTabHolder.routeName, arguments: state.calendarDateTime))),
               ),
             ),
           ),

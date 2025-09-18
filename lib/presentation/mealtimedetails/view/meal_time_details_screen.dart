@@ -145,7 +145,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                           Container(
                             margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                             child: ListTile(
-                              onTap: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: state.mealTime!, selectedDateTime: state.selectedDateTime!)).then((value) => bloc.add(InitialMealTimeDetailsEventState())),
+                              onTap: () => Navigator.popAndPushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: state.mealTime!, selectedDateTime: state.selectedDateTime!)).then((value) => bloc.add(InitialMealTimeDetailsEventState())),
                               leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
                               title: Text(
                                 AppLocalizations.of(context)!.add_food,

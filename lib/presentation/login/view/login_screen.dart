@@ -150,43 +150,28 @@ class _LoginScreenState extends State<LoginScreen>
                         maxLength: 6,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Dimens.paddingXLarge,
-                        vertical: Dimens.paddingSmall,
-                      ),
-                      child: RoundedCustomButton(
-                        buttonText: AppLocalizations.of(context)!.accept,
-                        onPressed: () {
-                          if (_mfaController.text.isNotEmpty) sendVerificationCode.call(_mfaController.text);
-                          _mfaController.text = '';
-                          Navigator.pop(context);
-                        },
-                      ),
+                    RoundedCustomButton(
+                      verticalMargin: Dimens.marginSmall,
+                      horizontalMargin: Dimens.marginLarge,
+                      buttonText: AppLocalizations.of(context)!.accept,
+                      onPressed: () {
+                        if (_mfaController.text.isNotEmpty) sendVerificationCode.call(_mfaController.text);
+                        _mfaController.text = '';
+                        Navigator.pop(context);
+                      },
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Dimens.paddingXLarge,
-                        vertical: Dimens.paddingSmall,
-                      ),
-                      child: RoundedCustomButton(
-                        buttonText: AppLocalizations.of(context)!.resend_verification_code,
-                        onPressed: () => resendVerificationCode.call(),
-                      ),
+                    RoundedCustomButton(
+                      verticalMargin: Dimens.marginSmall,
+                      horizontalMargin: Dimens.marginLarge,
+                      buttonText: AppLocalizations.of(context)!.resend_verification_code,
+                      onPressed: () => resendVerificationCode.call(),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Dimens.paddingXLarge,
-                        vertical: Dimens.paddingSmall,
-                      ),
-                      child: RoundedCustomButton(
-                        buttonText: AppLocalizations.of(context)!.cancel,
-                        onPressed: () => _showExitConfirmationDialog(context),
-                      ),
+                    RoundedCustomButton(
+                      verticalMargin: Dimens.marginSmall,
+                      horizontalMargin: Dimens.marginLarge,
+                      buttonText: AppLocalizations.of(context)!.cancel,
+                      onPressed: () => _showExitConfirmationDialog(context),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: Dimens.paddingLarge),
-                    )
                   ],
                 ),
               ],

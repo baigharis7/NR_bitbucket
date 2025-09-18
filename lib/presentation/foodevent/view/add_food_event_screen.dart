@@ -39,6 +39,7 @@ import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/remove_diac.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/mappers/food_event_mappers.dart';
+import '../../mealtimedetails/view/meal_time_details_screen.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
 import '../../widgets/item_info_card.dart';
 // import 'package:remove_diacritic/remove_diacritic.dart';
@@ -62,7 +63,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
 
 
   // TODO: si esto permanece se puede convertir en un widget en un momento.
-  void _showConfirmationDialog(BuildContext context) {
+  void _showConfirmationDialog(BuildContext context, Function onDismiss) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
     final mediaQuerySize = MediaQuery.of(context).size;
 
@@ -71,7 +72,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
       width: mediaQuerySize.width,
       color: const Color.fromARGB(148, 104, 96, 96),
       child: ConfirmationDialog(message: AppLocalizations.of(context)!.food_event_successfully_saved),
-    ),).then((value) {}
+    ),).then((value) {
+      onDismiss.call();
+    }
     );
   }
 
@@ -306,7 +309,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                             child: GeneralButton(onTap: () {
                               if(state.foodEvent!.ingredients.isEmpty) {
                                 if (!state.foodsFromFavorite.isNull()) {
-                                  bloc.add(FinishFoodFavouriteEventAction(onFinish: () => _showConfirmationDialog(context),),);
+                                  bloc.add(FinishFoodFavouriteEventAction(onFinish: () => _showConfirmationDialog(context, () {}),),);
                                 }
                               }
                               else {
@@ -315,7 +318,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                 // if (state.foodEvent?.isFavorite ?? false) {
                                 //   bloc.add(FinishFoodAsFavoriteEventAction(onFinish: () => _showConfirmationDialog(context)));
                                 // } else {
-                                  bloc.add(FinishFoodEventAddFoodEventActions(onFinish: () => _showConfirmationDialog(context)));
+                                  bloc.add(FinishFoodEventAddFoodEventActions(onFinish: () => _showConfirmationDialog(context, () {
+                                    Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!));
+                                  })));
                                 // }
                                 // bloc.add(FinishFoodWithoutCreateDishEventAction(context: context, onFinish: () => _showConfirmationDialog(context)));
                               }

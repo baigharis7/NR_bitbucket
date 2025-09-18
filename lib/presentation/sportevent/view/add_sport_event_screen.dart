@@ -26,6 +26,7 @@ import '../../../infrastructure/helpers/events_helper.dart';
 import '../../../infrastructure/helpers/remove_diac.dart';
 import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
+import '../../sportitems/view/sport_items_screen.dart';
 import '../../widgets/add_item_name_dialog.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
 import '../../widgets/dash_title_widget.dart';
@@ -51,7 +52,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
   late SportEventsBloc bloc;
   int filteredListLength = 0;
 
-  void _showConfirmationDialog({required BuildContext context}) {
+  void _showConfirmationDialog({required BuildContext context, required Function onDismiss}) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
     final mediaQuerySize = MediaQuery.of(context).size;
 
@@ -65,7 +66,9 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
           message: AppLocalizations.of(context)!.sport_event_successfully_saved,
         ),
       ),
-    ).then((value) {});
+    ).then((value) {
+      onDismiss.call();
+    });
   }
 
   Future<void> showAddSportNameDialog({
@@ -253,7 +256,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                 leadingSrc: 'assets/images/favorite_icon.png',
                                 trailingSrc: 'assets/icon/add_icon.png',
                                 color: state.sportFavoriteEvent == favSport ? AppColors.butter : AppColors.floralWhite,
-                                leadingTap: () => bloc.add(DeleteFavSportSportEventsAction(sportFavorite: favSport, onFinish: () => _showConfirmationDialog(context: context))),
+                                leadingTap: () => bloc.add(DeleteFavSportSportEventsAction(sportFavorite: favSport, onFinish: () => _showConfirmationDialog(context: context, onDismiss: () {}))),
                                 trailingTap: () => bloc.add(AddSportFavoriteFromFavoriteEvent(sportFavorite: favSport)),
                                 subtitle: '--- ---- ---',),
                               ),
@@ -269,12 +272,14 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
 
                           if (state.sportSimpleEvent!.info.orEmpty().isEmpty) {
                             if (!state.sportFavoriteEvent.isNull()) {
-                              bloc.add(FinishSportFavoriteActions(onFinish: () => _showConfirmationDialog(context: context)));
+                              bloc.add(FinishSportFavoriteActions(onFinish: () => _showConfirmationDialog(context: context, onDismiss: () {})));
                             }
                           } else {
                             // FocusScope.of(context).unfocus();
                             // _sportFocusInputController.unfocus();
-                            bloc.add(FinishSportEventActions(onFinish: () => _showConfirmationDialog(context: context,)));
+                            bloc.add(FinishSportEventActions(onFinish: () => _showConfirmationDialog(context: context, onDismiss: () {
+                              Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate);
+                            })));
                           }
                       },),
                     ),

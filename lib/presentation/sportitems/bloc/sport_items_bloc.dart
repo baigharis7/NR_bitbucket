@@ -32,6 +32,7 @@ class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
     });
 
     on<UpdateDatetimeSportItemsEvents>((event, emit) async {
+      await Future.delayed(const Duration(seconds: 1));
       state.dateTime = event.dateTime;
       state.sportEvents = await getTodaySportsInteractor.execute(dateTime: event.dateTime);
 
