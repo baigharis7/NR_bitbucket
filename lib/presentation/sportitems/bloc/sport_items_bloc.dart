@@ -44,7 +44,7 @@ class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
         await deleteSportEventInteractor.execute(event.sportEventComplete.userId, event.sportEventComplete.eventId);
         try {
           await removeSportEventInteractor.execute(event.sportEventComplete);
-          state.sportEvents = await getTodaySportsInteractor.execute();
+          state.sportEvents = await getTodaySportsInteractor.execute(dateTime: state.dateTime);
           emit(state.copyWith(isLoading: false));
         } catch (_) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeSportEventError));

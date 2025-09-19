@@ -17,6 +17,7 @@ import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../common/view/loading_screen.dart';
 import '../../widgets/dashboard_calendar_widget.dart';
 import '../../widgets/delete_item_dialog.dart';
+import '../../widgets/remove_item_widget.dart';
 
 class FecesTab extends StatefulWidget {
   const FecesTab({super.key});
@@ -36,12 +37,16 @@ class _FecesTabState extends State<FecesTab> {
     super.initState();
   }
 
-  Future<void> deleteItemDialog({String? title, required Function onDelete, required Function onCancel}) async {
-    await showDialog(
+  // TODO: Remove Item from db
+  void _showRemoveDialog({required String description, required VoidCallback onCancel, required VoidCallback onConfirm}) {
+    final mediaQuerySize = MediaQuery.of(context).size;
+
+    showDialog(
       context: context,
-      builder: (context) => DeleteItemDialog(
-        onDelete: () => onDelete.call(),
-        onCancel: () => onCancel.call(),
+      builder: (context) => RemoveItemWidget(
+        description: description,
+        onConfirm: onConfirm,
+        onCancel: onCancel,
       ),
     );
   }
@@ -112,19 +117,20 @@ class _FecesTabState extends State<FecesTab> {
                       horizontal: Dimens.paddingNormal,
                     ),
                     child: Column(
-                      children: state.facesDayEvents
-                          .orEmpty()
-                          .map(
-                            (fece) => RadioTitleDescImage(
-                              isSelected: true,
-                              fece: state.fecesList.orEmpty().firstWhere((element) => element.id == fece.fecesId),
-                              onSelect: (id) =>
-                                deleteItemDialog(
-                                    onDelete: () => fecesUrineBloc.add(DeleteFecesEventAction(uploadFeces: fece, onFinish: () => Navigator.pop(context))),
-                                    onCancel: ()=> Navigator.pop(context),
+                      children: state.facesDayEvents.orEmpty().map(
+                            (fece) {
+                              final item = state.fecesList.orEmpty().firstWhere((element) => element.id == fece.fecesId);
+                              return RadioTitleDescImage(
+                                isSelected: true,
+                                fece: item,
+                                onSelect: (id) => _showRemoveDialog(
+                                  description: AppLocalizations.of(context)!.remove_item(item.title.orEmpty()),
+                                  onCancel: () => Navigator.pop(context),
+                                  onConfirm: () => fecesUrineBloc.add(DeleteFecesEventAction(uploadFeces: fece, onFinish: () {})),
                                 ),
-                              leading: Image.asset('assets/images/delete_icon.png', color: AppColors.floralWhite, width: Dimens.width20,),
-                            ),
+                                leading: Image.asset('assets/images/delete_icon.png', color: AppColors.floralWhite, width: Dimens.width20,),
+                              );
+                            },
                           )
                           .toList(),
                     ),

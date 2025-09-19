@@ -64,4 +64,5 @@ class AppColors {
   static const carbonGrey27 = Color(0x455D5D5D);
   static const carbonGrey = Color(0xFF5D5D5D);
   static const silverSand40Percent = Color(0x66C1C1C1);
+  static const deepAquamarine = Color(0xFF3D8762);
 }

@@ -15,6 +15,8 @@ import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../widgets/date_picker_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../widgets/remove_item_widget.dart';
+
 class SportItemsScreen extends StatelessWidget {
   static const routeName = '/sport_items_screen';
 
@@ -31,6 +33,20 @@ class SportItemsScreen extends StatelessWidget {
       final args = ModalRoute.of(context)!.settings.arguments as DateTime;
       bloc.add(UpdateDatetimeSportItemsEvents(dateTime: args));
     });
+
+    // TODO: Remove Item from db
+    void _showRemoveDialog({required String description, required VoidCallback onCancel, required VoidCallback onConfirm}) {
+      final mediaQuerySize = MediaQuery.of(context).size;
+
+      showDialog(
+        context: context,
+        builder: (context) => RemoveItemWidget(
+          description: description,
+          onConfirm: onConfirm,
+          onCancel: onCancel,
+        ),
+      );
+    }
 
     return BlocProvider.value(
       value: bloc,
@@ -114,10 +130,16 @@ class SportItemsScreen extends StatelessWidget {
                             itemCount: state.sportEvents?.length ?? 0,
                             itemBuilder: (context, index) {
                               final activity = state.sportEvents![index];
+                              final itemName = NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: activity.info, context: context);
                               return ActivityCard(
-                                title: NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: activity.info, context: context),
+                                title: itemName,
                                 subtitle: '${activity.info![0].minutes} min. -${activity.eventKcals} kcal.',
-                                onDelete: () => bloc.add(DeleteSportItemSportItemsEvents(sportEventComplete: activity)),
+                                // onDelete: () => bloc.add(DeleteSportItemSportItemsEvents(sportEventComplete: activity)),
+                                onDelete: () => _showRemoveDialog(
+                                  description: AppLocalizations.of(context)!.remove_item(itemName),
+                                  onCancel: () => Navigator.pop(context),
+                                  onConfirm: () => bloc.add(DeleteSportItemSportItemsEvents(sportEventComplete: activity)),
+                                ),
                               );
                             },
                           ),

@@ -15,6 +15,7 @@ import '../../common/view/loading_screen.dart';
 import '../../widgets/dashboard_calendar_widget.dart';
 import '../../widgets/delete_item_dialog.dart';
 import '../../widgets/feces_urine_chart.dart';
+import '../../widgets/remove_item_widget.dart';
 import '../../widgets/rounded_background_container.dart';
 
 class UrineTab extends StatefulWidget {
@@ -33,12 +34,16 @@ class _UrineTabState extends State<UrineTab> {
     super.initState();
   }
 
-  Future<void> deleteItemDialog({String? title, required Function onDelete, required Function onCancel}) async {
-    await showDialog(
+  // TODO: Remove Item from db
+  void _showRemoveDialog({required String description, required VoidCallback onCancel, required VoidCallback onConfirm}) {
+    final mediaQuerySize = MediaQuery.of(context).size;
+
+    showDialog(
       context: context,
-      builder: (context) => DeleteItemDialog(
-        onDelete: () => onDelete.call(),
-        onCancel: () => onCancel.call(),
+      builder: (context) => RemoveItemWidget(
+        description: description,
+        onConfirm: onConfirm,
+        onCancel: onCancel,
       ),
     );
   }
@@ -81,9 +86,10 @@ class _UrineTabState extends State<UrineTab> {
                           return RadioTitleDescImage(
                             isSelected: true,
                             fece: Feces(urin.id, urin.title, '', urin.image),
-                          onSelect: (id) => deleteItemDialog(
-                            onDelete: () => fecesUrineBloc.add(DeleteUrineEventAction(uploadFeces: urine, onFinish: () => Navigator.pop(context))),
-                            onCancel: ()=> Navigator.pop(context),
+                          onSelect: (id) => _showRemoveDialog(
+                            description: AppLocalizations.of(context)!.remove_item(urin.title.orEmpty()),
+                            onCancel: () => Navigator.pop(context),
+                            onConfirm: () => fecesUrineBloc.add(DeleteUrineEventAction(uploadFeces: urine, onFinish: () {})),
                           ),
                             leading: Image.asset('assets/images/delete_icon.png', color: AppColors.floralWhite, width: Dimens.width20,),
                         );
