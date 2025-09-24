@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
+import 'package:nutrenaissance_flutter/presentation/itemupdate/view/item_update_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/mealtimedetails/bloc/meal_time_details_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/mealtimeitem/view/meal_time_item_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
@@ -158,6 +159,8 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                               title: itemName,
                               subtitle: '${food.eventKcals.orZero()} kcal. ${food.foodInfo![0].eventInfo?.qty.orZero().toInt()} ${NutritionUtils.findUnitName(state.unitsInfoMaster?.unitsInfoMaster, food.foodInfo, context)}.',
                               trailingSrc: 'assets/images/delete_icon.png',
+                              beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                              beforeTrailingTap: () => Navigator.pushNamed(context, ItemUpdateScreen.routeName, arguments: food).then((value) => bloc.add(InitialMealTimeDetailsEventState(dateTime: state.selectedDateTime))),
                               // trailingTap: () => bloc.add(DeleteFoodMealTimeDetailsEventAction(foodEventComplete: food, onFinish: () {})),
                               trailingTap: () => _showRemoveDialog(
                                 description: AppLocalizations.of(context)!.remove_item(itemName),
@@ -211,7 +214,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                         ],
                       ),
                     )),
-              )
+              ),
             ],
           );
         },

@@ -203,12 +203,21 @@ UploadLiquidFavorite mapToUploadLiquidFavorite(LiquidFavorite liquidFavorite, St
 }
 
 FoodFavorite mapToFoodFavoriteFromFoodEvent(FoodEventComplete foodEventComplete) {
-  return FoodFavorite(title: foodEventComplete.foodName ?? '',
+  return FoodFavorite(
+    title: foodEventComplete.foodName ?? '',
+      userId: foodEventComplete.userId,
+      eventId: foodEventComplete.eventId,
       eventDate: foodEventComplete.eventDate ?? -1,
-      ingredients: foodEventComplete.foodInfo!.map((e) => FoodInFavorite(id: e.id!, name_en: e.name_en!, name_es: e.name_es!, qty: e.eventInfo!.qty!.toInt(), unit: e.eventInfo!.unit!, cookingMethod: e.eventInfo!.cookingMethod!)).toList(),
+      ingredients: foodEventComplete.foodInfo!.map((e) => FoodInFavorite(id: e.id!, name_en: e.name_en!, name_es: e.name_es!, qty: e.eventInfo!.qty!.toInt(), unit: e.eventInfo!.unit!, usedOil: e.eventInfo!.usedOil, conversionFactor: e.eventInfo!.conversionFactor, cookingMethod: e.eventInfo!.cookingMethod!,)).toList(),
       drinks: [],
       mealTime: foodEventComplete.mealType ?? -1,
+    dish: foodEventComplete.dish,
+    comment: foodEventComplete.comment,
   );
+}
+
+FoodInFavorite mapToFoodInFavortie(FoodInfo e) {
+  return FoodInFavorite(id: e.id!, name_en: e.name_en!, name_es: e.name_es!, qty: e.eventInfo!.qty!.toInt(), unit: e.eventInfo!.unit!, cookingMethod: e.eventInfo!.cookingMethod!);
 }
 
 FoodFavorite mapToFoodFavoriteFromRoutine(FoodRoutineEvent foodRoutineEvent) {
@@ -232,6 +241,7 @@ AddSportFavorite mapToSportFavoriteFromEventComplete(
     SportEventComplete sportEventComplete) {
   return AddSportFavorite(
     userId: sportEventComplete.userId,
+    eventId: sportEventComplete.eventId,
     eventDate: sportEventComplete.eventDate,
     comment: sportEventComplete.comment,
     title: sportEventComplete.sportName,

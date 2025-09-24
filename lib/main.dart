@@ -330,6 +330,8 @@ import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_even
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/forgottenpassword/bloc/forgotten_password_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/forgottenpassword/view/fogotten_password_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/itemupdate/bloc/item_update_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/itemupdate/view/item_update_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_food_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_liquid_bloc.dart';
@@ -379,6 +381,8 @@ import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportitems/bloc/sport_items_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportitems/view/sport_items_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/sportupdate/bloc/sport_update_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/sportupdate/view/sport_update_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/bloc/sugar_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/waterevent/bloc/water_event_bloc.dart';
@@ -968,6 +972,18 @@ void main() async {
     removeSportEventInteractor: removeSportEventInteractor,
   );
 
+  final itemUpdateBloc = ItemUpdateBloc(
+      getMasterFileInteractor: getMasterFileInteractor,
+    uploadFoodEventInteractor: uploadFoodEventInteractor,
+    saveFoodEventInteractor: saveFoodEventInteractor,
+  );
+
+  final sportUpdateBloc = SportUpdateBloc(
+      getMasterFileInteractor: getMasterFileInteractor,
+    uploadSportEventsInteractor: uploadSportEventsInteractor,
+    saveSportEventInteractor: saveSportEventInteractor,
+  );
+
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
 
   runApp(
@@ -1018,6 +1034,8 @@ void main() async {
         BlocProvider<FavoritesTabsBloc>(create: (context) => favoritesTabsBloc,),
         BlocProvider<RoutinesTabBloc>(create: (context) => routinesTabBloc,),
         BlocProvider<SportItemsBloc>(create: (context) => sportItemsBloc,),
+        BlocProvider<ItemUpdateBloc>(create: (context) => itemUpdateBloc,),
+        BlocProvider<SportUpdateBloc>(create: (context) => sportUpdateBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -1115,6 +1133,8 @@ void main() async {
           RoutinesTabHolder.routeName:(_) => const RoutinesTabHolder(),
           SportItemsScreen.routeName:(_) => const SportItemsScreen(),
           FecesUrineTabs.routeName:(_) => const FecesUrineTabs(),
+          ItemUpdateScreen.routeName:(_) => const ItemUpdateScreen(),
+          SportUpdateScreen.routeName:(context) => const SportUpdateScreen(),
         },
       ),
     ),
