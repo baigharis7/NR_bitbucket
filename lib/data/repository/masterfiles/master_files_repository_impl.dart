@@ -48,6 +48,7 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
       int sportsInfoVersion,
       int unitsInfoVersion,
       int unitsFoodsVersion,
+      int supplementsInfoVersion,
       int subjectiveAnalysisVersion,
   ) async {
     final response = await masterFilesApi.manageMasterFiles(
@@ -63,6 +64,7 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
       sportsInfoVersion,
       unitsInfoVersion,
       unitsFoodsVersion,
+      supplementsInfoVersion,
       subjectiveAnalysisVersion,
     );
     if (response.isNotEmpty) {
@@ -107,6 +109,8 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
         return mapToUnitsInfoMaster(masterFileEntity as UnitsInfoEntity);
       case MasterFilesType.unitsFoods:
         return mapToUnitsFoodsMaster(masterFileEntity as UnitsFoodsEntity);
+      case MasterFilesType.supplementsInfo:
+        return [];
       case MasterFilesType.subjectiveAnalysis:
         return mapToSubjectiveAnalysisMaster(masterFileEntity as SubjectiveAnalysisListEntity);
     }

@@ -76,6 +76,9 @@ dynamic mapToMasterFileEntity(dynamic masterFileResponse, MasterFilesType master
     case MasterFilesType.unitsFoods:
       return mapToUnitsFoodsEntity(masterFileResponse as UnitsFoodsResponse);
 
+    case MasterFilesType.supplementsInfo:
+      return [];
+
     case MasterFilesType.subjectiveAnalysis:
       return mapToSubjectiveAnalysisListMaster(masterFileResponse as SubjectiveAnalysisListResponse);
   }

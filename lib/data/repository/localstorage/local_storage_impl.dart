@@ -71,6 +71,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _sportRoutinesBox;
   Box? _unitsInfoBox;
   Box? _unitsFoodsBox;
+  Box? _supplementsInfoBox;
   Box? _subjectiveAnalysisBox;
   Box? _favoriteFoodsBox;
   Box? _favoriteSportsBox;
@@ -116,6 +117,8 @@ class LocalStorageImpl extends LocalStorageRepository {
         return openBox(_unitsInfoBox, unitsInfoBoxName);
       case MasterFilesType.unitsFoods:
         return openBox(_unitsFoodsBox, unitsFoodsBoxName);
+      case MasterFilesType.supplementsInfo:
+        return openBox(_supplementsInfoBox, supplementsInfoBoxName);
       case MasterFilesType.subjectiveAnalysis:
         return openBox(_subjectiveAnalysisBox, subjectiveAnalysisBoxName);
     }

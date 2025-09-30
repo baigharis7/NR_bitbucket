@@ -10,6 +10,7 @@ import 'package:nutrenaissance_flutter/data/api/masterfiles/model/oil_types_resp
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/recommendation_groups_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/sports_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/subjective_analysis_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/supplements_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/units_foods_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/units_info_response.dart';
 
@@ -29,6 +30,7 @@ class MasterFilesResponse {
   SportsInfoResponse? sportsInfoResponse;
   UnitsInfoResponse? unitsInfoResponse;
   UnitsFoodsResponse? unitsFoodsResponse;
+  SupplementsInfoResponse? supplementsInfoResponse;
   SubjectiveAnalysisListResponse? subjectiveAnalysisResponse;
 
   MasterFilesResponse(
@@ -45,6 +47,7 @@ class MasterFilesResponse {
         this.sportsInfoResponse,
         this.unitsInfoResponse,
         this.unitsFoodsResponse,
+        this.supplementsInfoResponse,
         this.subjectiveAnalysisResponse,
       }
   );

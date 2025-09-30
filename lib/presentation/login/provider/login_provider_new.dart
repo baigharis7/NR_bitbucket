@@ -483,6 +483,7 @@ class LoginProviderNew extends BaseProvider {
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.sportsInfo),
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.unitsInfo),
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.unitsFoods),
+        await getMasterFilesVersionInteractor!.execute(MasterFilesType.supplementsInfo),
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.subjectiveAnalysis),
       ).then((masterFilesResponse) => _onSuccessManageMasterFiles(masterFilesResponse, userId, onFinish));
     } catch (errorManageMasterFiles) {
@@ -559,6 +560,13 @@ class LoginProviderNew extends BaseProvider {
       saveMasterFileInteractor?.execute(
         masterFilesResponse.unitsFoodsResponse,
         MasterFilesType.unitsFoods,
+      );
+    });
+
+    masterFilesResponse.supplementsInfoResponse.doIfAintNull(() {
+      saveMasterFileInteractor?.execute(
+        masterFilesResponse.supplementsInfoResponse,
+        MasterFilesType.supplementsInfo,
       );
     });
 

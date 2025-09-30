@@ -37,6 +37,8 @@ import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportitems/view/sport_items_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/supplementsdetail/view/supplements_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/NutritionProgressWidget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/card_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
@@ -338,7 +340,12 @@ class _DashboardScreen extends State<DashboardScreen>
                         //   isEmpty: false,
                         //   screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                         // ),
-                        MealTimeWidget(name: AppLocalizations.of(context)!.supplements, svg: 'assets/images/supplement.png', onClick: () {},),
+                        MealTimeWidget(
+                          name: AppLocalizations.of(context)!.supplements,
+                          svg: 'assets/images/supplement.png',
+                          onItemClick: () => Navigator.pushNamed(context, SupplementsDetailScreen.routeName),
+                          onClick: () => Navigator.pushNamed(context, SupplementsScreen.routeName),
+                        ),
                         DashTitleWidget(title: AppLocalizations.of(context)!.physical_activity, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
                         MealTimeWidget(
                             name: AppLocalizations.of(context)!.physical_activity,

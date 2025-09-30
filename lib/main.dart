@@ -385,6 +385,10 @@ import 'package:nutrenaissance_flutter/presentation/sportupdate/bloc/sport_updat
 import 'package:nutrenaissance_flutter/presentation/sportupdate/view/sport_update_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/bloc/sugar_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/supplements/bloc/supplements_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/supplementsdetail/bloc/supplements_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/supplementsdetail/view/supplements_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/waterevent/bloc/water_event_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/bloc/weekly_dashboard_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/view/weekly_dashboard_detail_screen.dart';
@@ -984,6 +988,12 @@ void main() async {
     saveSportEventInteractor: saveSportEventInteractor,
   );
 
+  final supplementsBloc = SupplementsBloc(
+    getProfileInteractor: getProfileInteractor,
+  );
+
+  final supplementsDetailBloc = SupplementsDetailBloc();
+
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
 
   runApp(
@@ -1036,6 +1046,8 @@ void main() async {
         BlocProvider<SportItemsBloc>(create: (context) => sportItemsBloc,),
         BlocProvider<ItemUpdateBloc>(create: (context) => itemUpdateBloc,),
         BlocProvider<SportUpdateBloc>(create: (context) => sportUpdateBloc,),
+        BlocProvider<SupplementsBloc>(create: (context) => supplementsBloc,),
+        BlocProvider<SupplementsDetailBloc>(create: (context) => supplementsDetailBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -1134,7 +1146,9 @@ void main() async {
           SportItemsScreen.routeName:(_) => const SportItemsScreen(),
           FecesUrineTabs.routeName:(_) => const FecesUrineTabs(),
           ItemUpdateScreen.routeName:(_) => const ItemUpdateScreen(),
-          SportUpdateScreen.routeName:(context) => const SportUpdateScreen(),
+          SportUpdateScreen.routeName:(_) => const SportUpdateScreen(),
+          SupplementsScreen.routeName:(_) => const SupplementsScreen(),
+          SupplementsDetailScreen.routeName:(_) => const SupplementsDetailScreen(),
         },
       ),
     ),

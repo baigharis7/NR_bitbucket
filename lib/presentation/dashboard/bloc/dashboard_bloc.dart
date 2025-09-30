@@ -291,7 +291,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
       final getMasterFileVersionCookingMethods = await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethods);
       final getMasterFileVersionNutrientsInfo = await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo);
-      final getMasterFile = await manageMasterFilesInteractor.execute(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+      final getMasterFile = await manageMasterFilesInteractor.execute(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
       state.isUpdatedDataNeeded = getMasterFileVersionCookingMethods != getMasterFile.cookingMethodsResponse?.v || getMasterFileVersionNutrientsInfo != getMasterFile.nutrientsInfoResponse?.v;
       final routines = await getRoutinesInteractor.execute();
       state.foundedRoutineRemainingHours = getFoundedRoutineTime(routines);
