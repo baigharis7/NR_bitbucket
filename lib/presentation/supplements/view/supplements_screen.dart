@@ -8,11 +8,15 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/supplements/bloc/supplements_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/supplement_item_widget.dart';
 
+import '../../../infrastructure/errors/error_resolver.dart';
+import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
+import '../../common/view/loading_screen.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
 
@@ -41,7 +45,20 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
     return BlocProvider.value(
       value: supplementsBloc,
       child: BlocConsumer<SupplementsBloc, SupplementsState>(
-        listener: (context, state) {},
+        listener: (ctx, state) {
+          if (state.isLoading) {
+            LoadingScreen.instance().show(
+              context: ctx,
+              text: AppLocalizations.of(ctx)!.loading,
+            );
+          } else {
+            LoadingScreen.instance().hide();
+          }
+
+          if (state.onError != null) {
+            showErrorSnackBar(ctx, resolveError(context, state.onError!));
+          }
+        },
         builder: (context, state) => Stack(
           children: [
             // Background image or gradient
@@ -82,29 +99,38 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                     onBackTap: () => Navigator.pop(context),
                     title: AppLocalizations.of(context)!.supplements,
                     image: 'assets/images/supplement.png',
-                    items: state.userProfile?.userRdas?.userRdas.map((nutrient) => nutrient.name).toList(),
+                    items: state.supplementsInfo?.data.map((element) => element.translate(context)).toList(),
                     onItemSelect: (supplementName, focus) {
                       focus.unfocus();
-                      final id = Random().nextInt(10);
-                      supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: id, unit: 1, amount: 0)));
+                      final supplement = NutritionUtils.findSupplementByName(state.supplementsInfo?.data ?? [], supplementName, context);
+                      supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: supplement.id, unit: supplement.unit, amount: 0)));
                     },
                   ),
                   const SizedBox(height: Dimens.height12),
-                  ListView.builder(
+                  if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) ListView.builder(
                     shrinkWrap: true,
                     primary: false,
                     itemCount: state.supplementObj?.info?.orEmpty().length,
                     itemBuilder: (context, index) {
                       final nutriInfo = state.supplementObj?.info.orEmpty()[index];
                       return SupplementItemWidget(
-                        onChangeAmount: (amount) {},
+                        title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
+                        amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
+                        units: nutriInfo != null ? [nutriInfo.unit] : [],
+                        unit: nutriInfo?.unit,
+                        onChangeAmount: (amount) {
+                          nutriInfo?.amount = amount.isEmpty ? 0 : int.parse(amount);
+                          supplementsBloc.add(UpdateAmountSupplementsAction(nutriInfo: nutriInfo!));
+                        },
                         onRemoveItem: () => supplementsBloc.add(RemoveSupplementInfoSupplementsAction(nutriInfo: nutriInfo!)),
                       );
                     },
                   ),
                   const SizedBox(height: Dimens.height32),
-                  GeneralButton(
-                    onTap: () {},
+                  if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) GeneralButton(
+                    onTap: () {
+                      supplementsBloc.add(SavingEventSupplementsAction());
+                    },
                   ),
                 ],
                 ),

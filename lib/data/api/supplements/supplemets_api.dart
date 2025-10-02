@@ -1,5 +1,6 @@
 import 'package:chuck_interceptor/chuck.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplements_ev.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/http/api_helper.dart';
@@ -26,6 +27,15 @@ class SupplementApi extends ApiHelper {
           '${Environment().config!.distributionPath}/collagen',
         ),
         uploadSupplementCollagenEvent,
+      );
+
+  Future<Map<String, dynamic>> uploadSupplementEvent(UploadSupplementsEv uploadSupplementsEv) =>
+      post(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/supplements',
+        ),
+        uploadSupplementsEv,
       );
 
 }

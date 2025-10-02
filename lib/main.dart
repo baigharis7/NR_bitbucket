@@ -45,6 +45,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/oil_types_e
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_analysis_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/supplements_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/modelsappearence/models_appearance_entity.dart';
@@ -252,6 +253,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_coll
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_collagen_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_creatine_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_creatine_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/save_water_event_interactor.dart';
@@ -581,6 +584,7 @@ void main() async {
   final ModelsAppearanceRepository modelsAppearanceRepository = ModelsAppearanceRepositoryImpl(localStorageRepository: localStorageRepository);
   final ShowModelAppearanceInteractor showModelAppearanceInteractor = ShowModelAppearanceInteractorImpl(modelsAppearanceRepository: modelsAppearanceRepository);
   final SaveModelAppearanceInteractor saveModelAppearanceInteractor = SaveModelAppearanceInteractorImpl(modelsAppearanceRepository: modelsAppearanceRepository);
+  final UploadSupplementEventInteractor uploadSupplementEventInteractor = UploadSupplementEventInteractorImpl(supplementsRepository: supplementsRepository);
 
   await NutritionUtils(getMasterFileInteractor: getMasterFileInteractor).init();
 
@@ -989,7 +993,9 @@ void main() async {
   );
 
   final supplementsBloc = SupplementsBloc(
-    getProfileInteractor: getProfileInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
+    uploadSupplementEventInteractor: uploadSupplementEventInteractor,
+    getUserIdInteractor: getUserIdInteractor,
   );
 
   final supplementsDetailBloc = SupplementsDetailBloc();
@@ -1234,4 +1240,6 @@ void initLocalStorage() async {
   Hive.registerAdapter(ConversionInfoEntityAdapter());
   Hive.registerAdapter(FoodRoutineEntityAdapter());
   Hive.registerAdapter(FoodRoutineInEntityAdapter());
+  Hive.registerAdapter(SupplementsInfoEntityAdapter());
+  Hive.registerAdapter(SupplementInfoEntityAdapter());
 }

@@ -71,6 +71,7 @@ enum ErrorTypes {
   saveCollagenError,
   uploadLiquidEventError,
   saveLiquidEventError,
+  uploadSupplementEventError,
 }
 
 enum FormErrorTypes {

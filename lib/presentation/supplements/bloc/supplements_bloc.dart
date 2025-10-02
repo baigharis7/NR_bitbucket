@@ -2,28 +2,38 @@ import 'dart:async';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:bloc/bloc.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/supplements_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 import '../../../domain/interactor/profile/get_profile_interactor.dart';
 import '../../../domain/models/profile/user_profile_model.dart';
 import '../../../domain/models/supplements/supplement_simple.dart';
+import '../../../infrastructure/mappers/supplement_mappers.dart';
 
 part 'supplements_event.dart';
 
 part 'supplements_state.dart';
 
 class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
-  final GetProfileInteractor getProfileInteractor;
+  final GetMasterFileInteractor getMasterFileInteractor;
+  final UploadSupplementEventInteractor uploadSupplementEventInteractor;
+  final GetUserIdInteractor getUserIdInteractor;
 
   SupplementsBloc({
-    required this.getProfileInteractor,
+    required this.getMasterFileInteractor,
+    required this.uploadSupplementEventInteractor,
+    required this.getUserIdInteractor,
   }) : super(SupplementsState(isLoading: false, supplementObj: SupplementSimple.empty())) {
 
     on<InitializationSupplementsAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
-      state.userProfile = await getProfileInteractor.execute();
-
+      state.supplementsInfo = await getMasterFileInteractor.execute(MasterFilesType.supplementsInfo);
+      state.supplementObj?.userId = getUserIdInteractor.execute();
       emit(state.copyWith(isLoading: false,));
     });
 
@@ -66,5 +76,29 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
 
       emit(state.copyWith(isLoading: false));
     });
+
+    on<SavingEventSupplementsAction>((event, emit) {
+      if (state.supplementObj?.info.orEmpty().isEmpty == true) return;
+
+      add(FinishEventSupplementsAction());
+    });
+
+    on<FinishEventSupplementsAction>((event, emit) async {
+      emit(state.copyWith(isLoading: true, onError: null));
+      try {
+        state.supplementObj?.eventId = DateTime.now().millisecondsSinceEpoch;
+        state.supplementObj?.eventDate = state.supplementObj?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+        final uploadSupplements = mapToUploadSupplementsEv(state.supplementObj!);
+
+        await uploadSupplementEventInteractor.execute(uploadSupplements);
+        _clearData();
+        emit(state.copyWith(isLoading: false));
+      } catch(_) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementEventError));
+      }
+    });
+  }
+  void _clearData() {
+    state.supplementObj = SupplementSimple.empty();
   }
 }

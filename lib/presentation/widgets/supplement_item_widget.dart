@@ -8,13 +8,25 @@ import '../../infrastructure/utils/app_color.dart';
 import '../../infrastructure/utils/dimens.dart';
 
 class SupplementItemWidget extends StatelessWidget {
-  final bool _error = false;
+  final String title;
+  final String amount;
+  final List<String> units;
+  final String? unit;
   final VoidCallback onRemoveItem;
-  final Function(int) onChangeAmount;
-  const SupplementItemWidget({super.key, required this.onRemoveItem, required this.onChangeAmount});
+  final Function(String) onChangeAmount;
+  const SupplementItemWidget({super.key, required this.title, required this.amount, required this.units, required this.unit, required this.onRemoveItem, required this.onChangeAmount});
 
   @override
   Widget build(BuildContext context) {
+    bool _error = false;
+    final _controller = TextEditingController();
+
+    _controller.text = amount;
+    _controller.selection = TextSelection.fromPosition( // keep cursor at end
+      TextPosition(offset: _controller.text.length),
+    );
+    _error = amount.isEmpty;
+
     return Container(
       decoration: BoxDecoration(
         border: _error ? const Border.fromBorderSide(BorderSide(color: AppColors.red45Percent,  width: 4)) : null,
@@ -31,12 +43,12 @@ class SupplementItemWidget extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'Ameer',
+                    title,
                     style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),
                   ),
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: onRemoveItem,
                   child: const Icon(Icons.cancel_outlined, size: Dimens.heightXSmall),
                 ),
               ],
@@ -53,15 +65,7 @@ class SupplementItemWidget extends StatelessWidget {
                   child: TextField(
                     textAlignVertical: TextAlignVertical.center,
                     keyboardType: TextInputType.number,
-                    textInputAction: TextInputAction.search,
-                    controller: TextEditingController.fromValue(
-                      TextEditingValue(
-                        text: '2',
-                        selection: TextSelection.collapsed(
-                          offset: 0,
-                        ),
-                      ),
-                    ),
+                    controller: _controller,
                     decoration: const InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
@@ -70,9 +74,7 @@ class SupplementItemWidget extends StatelessWidget {
                         borderSide: BorderSide(color: AppColors.silver, width: 1),
                       ),
                     ),
-                    onChanged: (amount) {
-
-                    },
+                    onChanged: onChangeAmount,
                   ),
                 ),
                 const SizedBox(width: Dimens.widthXXXXSmall),
@@ -92,9 +94,9 @@ class SupplementItemWidget extends StatelessWidget {
                       isExpanded: true,
                       underline: Container(),
                       icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
-                      value: 'Hamza',
+                      value: unit,
                       onChanged: (String? unitName) {},
-                      items: ['Ameer', 'Hamza']
+                      items: units
                           .map<DropdownMenuItem<String>>(
                             (item) => DropdownMenuItem(
                           value: item,

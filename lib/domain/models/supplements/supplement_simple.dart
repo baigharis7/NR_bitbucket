@@ -15,9 +15,10 @@ class SupplementSimple {
   }
 }
 
+@JsonSerializable(explicitToJson: true)
 class NutriInfo {
   int id;
-  int unit;
+  String unit;
   int amount;
 
   NutriInfo({required this.id, required this.unit, required this.amount});

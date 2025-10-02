@@ -1,4 +1,5 @@
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplements_ev.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/supplemets_api.dart';
 import 'package:nutrenaissance_flutter/data/local/models/supplements/upload_supplement_event_entity.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
@@ -78,6 +79,16 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
   Future<List<UploadSupplementEvent>> getAllCollagenEvents() async {
     final List allEvents = await localStorageRepository.getAllCreatineEvents();
     return allEvents.map((creatineEvent) => mapToSupplementEvent(creatineEvent as UploadSupplementEventEntity)).toList();
+  }
+
+  //New
+  @override
+  Future<void> uploadSupplementEvent(UploadSupplementsEv uploadSupplementsEv) async {
+    try {
+      await supplementApi.uploadSupplementEvent(uploadSupplementsEv);
+    } catch(_) {
+      rethrow;
+    }
   }
 
 }

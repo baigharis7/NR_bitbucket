@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import '../../domain/interactor/masterfiles/get_master_file_interactor.dart';
 import '../../domain/models/favorites/food/food_favorite.dart';
 import '../../domain/models/masterfiles/sports_info_master.dart';
+import '../../domain/models/masterfiles/supplements_info_master.dart';
 import '../../domain/models/masterfiles/units_info_master.dart';
 
 class NutritionUtils {
@@ -125,6 +126,16 @@ class NutritionUtils {
       }
     }
     return sportChosen.mets;
+  }
+
+  static SupplementInfoMaster findSupplementByName(List<SupplementInfoMaster> supplements, String name, BuildContext context) {
+    final element = supplements.firstWhere((element) => element.translate(context) == name,);
+    return element;
+  }
+
+  static SupplementInfoMaster findSupplementById(List<SupplementInfoMaster> supplements, int id) {
+    final element = supplements.firstWhere((element) => element.id == id,);
+    return element;
   }
 
   static int millisecondsToYears(int milliseconds) {

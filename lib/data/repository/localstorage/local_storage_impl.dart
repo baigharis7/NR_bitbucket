@@ -18,6 +18,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_analysis_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/supplements_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/modelsappearence/models_appearance_entity.dart';
@@ -72,6 +73,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _unitsInfoBox;
   Box? _unitsFoodsBox;
   Box? _supplementsInfoBox;
+  Box? _supplementEventsBox;
   Box? _subjectiveAnalysisBox;
   Box? _favoriteFoodsBox;
   Box? _favoriteSportsBox;
@@ -705,6 +707,10 @@ class LocalStorageImpl extends LocalStorageRepository {
     final collagenEventsMap = await _getCollagenEventsBox.then((box) => box.toMap());
     final collagenEvents = <int>[];
     collagenEventsMap.forEach((key, value) => collagenEvents.add((value as UploadSupplementEventEntity).eventId!));
+
+    final supplementEventsMap = await _getFoodEventsBox.then((box) => box.toMap());
+    final supplementEvents = <int>[];
+    // supplementEventsMap.forEach((key, value) => supplementEvents.add((value as SupplementsInfoEntity).eventDate!));
 
     return EventsSynchronizationRequest(
       foodEvents: foodEvents,

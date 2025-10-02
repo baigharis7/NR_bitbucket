@@ -6,13 +6,13 @@ part of 'supplements_bloc.dart';
 class SupplementsState {
   bool isLoading;
   ErrorTypes? onError;
-  UserProfileModel? userProfile;
+  SupplementsInfoMaster? supplementsInfo;
   SupplementSimple? supplementObj;
 
   SupplementsState({
     required this.isLoading,
     this.onError,
-    this.userProfile,
+    this.supplementsInfo,
     this.supplementObj,
   });
 
@@ -20,12 +20,13 @@ class SupplementsState {
     required bool isLoading,
     ErrorTypes? onError,
     UserProfileModel? userProfile,
+    SupplementsInfoMaster? supplementsInfo,
     SupplementSimple? supplementObj,
   }) {
     return SupplementsState(
       isLoading: isLoading,
-      onError: onError ?? this.onError,
-      userProfile: userProfile ?? this.userProfile,
+      onError: onError,
+      supplementsInfo: supplementsInfo ?? this.supplementsInfo,
       supplementObj: supplementObj ?? this.supplementObj,
     );
   }

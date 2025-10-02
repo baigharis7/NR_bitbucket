@@ -12,6 +12,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/oil_types_e
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_analysis_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/supplements_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
@@ -110,7 +111,7 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
       case MasterFilesType.unitsFoods:
         return mapToUnitsFoodsMaster(masterFileEntity as UnitsFoodsEntity);
       case MasterFilesType.supplementsInfo:
-        return [];
+        return mapToSupplementsInfoMaster(masterFileEntity as SupplementsInfoEntity);
       case MasterFilesType.subjectiveAnalysis:
         return mapToSubjectiveAnalysisMaster(masterFileEntity as SubjectiveAnalysisListEntity);
     }

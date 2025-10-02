@@ -18,6 +18,7 @@ import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_compl
 import '../../data/api/masterfiles/model/conversion_factors_response.dart';
 import '../../data/api/masterfiles/model/oil_types_response.dart';
 import '../../domain/models/favorites/sport/add_sport_favorite.dart';
+import '../../domain/models/masterfiles/supplements_info_master.dart';
 import '../../domain/models/profile/height_weight_units.dart';
 import '../lists/SupplementInfo.dart';
 
@@ -234,6 +235,12 @@ extension LanguageSelector<T> on T {
           return (this as UnitInfoMaster).es.orEmpty();
         } else {
           return (this as UnitInfoMaster).en.orEmpty();
+        }
+      } else if (this is SupplementInfoMaster) {
+        if (language == 'es') {
+          return (this as SupplementInfoMaster).es;
+        } else {
+          return (this as SupplementInfoMaster).en;
         }
       } else if (this is RecommendationGroup) {
         if (language == 'es') {

@@ -17,7 +17,7 @@ class AddSupplementInfoSupplementsAction extends SupplementsEvent{
   AddSupplementInfoSupplementsAction({required this.nutriInfo});
 }
 
-class RemoveSupplementInfoSupplementsAction extends SupplementsEvent{
+class RemoveSupplementInfoSupplementsAction extends SupplementsEvent {
   NutriInfo nutriInfo;
 
   RemoveSupplementInfoSupplementsAction({required this.nutriInfo});
@@ -28,3 +28,7 @@ class UpdateAmountSupplementsAction extends SupplementsEvent{
 
   UpdateAmountSupplementsAction({required this.nutriInfo});
 }
+
+class SavingEventSupplementsAction extends SupplementsEvent {}
+
+class FinishEventSupplementsAction extends SupplementsEvent{}
