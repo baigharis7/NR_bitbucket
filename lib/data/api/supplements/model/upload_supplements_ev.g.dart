@@ -9,20 +9,21 @@ part of 'upload_supplements_ev.dart';
 UploadSupplementsEv _$UploadSupplementsEvFromJson(Map<String, dynamic> json) =>
     UploadSupplementsEv(
       userId: json['userId'] as String,
-      eventId: json['eventId'] as int,
-      eventDate: json['eventDate'] as int,
+      eventId: (json['eventId'] as num).toInt(),
+      eventDate: (json['eventDate'] as num).toInt(),
       info: (json['info'] as List<dynamic>)
           .map((e) => UploadSupplementInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$UploadSupplementsEvToJson(UploadSupplementsEv instance) =>
+Map<String, dynamic> _$UploadSupplementsEvToJson(
+        UploadSupplementsEv instance) =>
     <String, dynamic>{
-  'userId': instance.userId,
-  'eventId': instance.eventId,
-  'eventDate': instance.eventDate,
-  'info': instance.info,
-};
+      'userId': instance.userId,
+      'eventId': instance.eventId,
+      'eventDate': instance.eventDate,
+      'info': instance.info.map((e) => e.toJson()).toList(),
+    };
 
 UploadSupplementInfo _$UploadSupplementInfoFromJson(Map<String, dynamic> json) =>
     UploadSupplementInfo(

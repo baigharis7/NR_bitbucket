@@ -72,6 +72,9 @@ enum ErrorTypes {
   uploadLiquidEventError,
   saveLiquidEventError,
   uploadSupplementEventError,
+  saveSupplementEventError,
+  deleteSupplementEventError,
+  removeSupplementEventError,
 }
 
 enum FormErrorTypes {

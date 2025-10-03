@@ -56,8 +56,8 @@ class WaterEventEntityAdapter extends TypeAdapter<WaterEventEntity> {
 WaterEventEntity _$WaterEventEntityFromJson(Map<String, dynamic> json) =>
     WaterEventEntity(
       json['userId'] as String?,
-      json['eventDate'] as int?,
-      json['eventId'] as int?,
+      (json['eventDate'] as num?)?.toInt(),
+      (json['eventId'] as num?)?.toInt(),
       (json['qty'] as num).toDouble(),
     );
 

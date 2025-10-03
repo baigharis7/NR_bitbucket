@@ -154,6 +154,12 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.save_liquid_event_error;
     case ErrorTypes.uploadSupplementEventError:
       return stringResolver.upload_supplement_event_error;
+    case ErrorTypes.saveSupplementEventError:
+      return stringResolver.save_supplement_event_error;
+    case ErrorTypes.deleteSupplementEventError:
+      return stringResolver.delete_supplement_event_error;
+    case ErrorTypes.removeSupplementEventError:
+      return stringResolver.remove_supplement_event_error;
   }
 }
 

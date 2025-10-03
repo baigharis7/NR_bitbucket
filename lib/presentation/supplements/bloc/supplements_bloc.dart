@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/supplements_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
@@ -22,15 +23,18 @@ part 'supplements_state.dart';
 class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
   final GetMasterFileInteractor getMasterFileInteractor;
   final UploadSupplementEventInteractor uploadSupplementEventInteractor;
+  final SaveSupplementEventInteractor saveSupplementEventInteractor;
   final GetUserIdInteractor getUserIdInteractor;
 
   SupplementsBloc({
     required this.getMasterFileInteractor,
     required this.uploadSupplementEventInteractor,
+    required this.saveSupplementEventInteractor,
     required this.getUserIdInteractor,
   }) : super(SupplementsState(isLoading: false, supplementObj: SupplementSimple.empty())) {
 
     on<InitializationSupplementsAction>((event, emit) async {
+      _clearData();
       emit(state.copyWith(isLoading: true, onError: null));
       state.supplementsInfo = await getMasterFileInteractor.execute(MasterFilesType.supplementsInfo);
       state.supplementObj?.userId = getUserIdInteractor.execute();
@@ -41,6 +45,18 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
       state.supplementObj?.eventDate = event.dateTime.millisecondsSinceEpoch;
 
       emit(state.copyWith(isLoading: false, onError: null));
+    });
+
+    on<GetSupplementFromNavAction>((event, emit) {
+      state.supplementObj = event.supplementSimple;
+      state.isEdit = true;
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateScreenTitle>((event, emit) {
+      state.screenTitle = event.screenTitle;
+
+      emit(state.copyWith(isLoading: false));
     });
 
     on<AddSupplementInfoSupplementsAction>((event, emit) {
@@ -86,19 +102,26 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
     on<FinishEventSupplementsAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
       try {
-        state.supplementObj?.eventId = DateTime.now().millisecondsSinceEpoch;
+        state.supplementObj?.userId = getUserIdInteractor.execute();
+        state.supplementObj?.eventId = state.supplementObj?.eventId ?? DateTime.now().millisecondsSinceEpoch;
         state.supplementObj?.eventDate = state.supplementObj?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
         final uploadSupplements = mapToUploadSupplementsEv(state.supplementObj!);
-
         await uploadSupplementEventInteractor.execute(uploadSupplements);
-        _clearData();
-        emit(state.copyWith(isLoading: false));
+        try {
+          await saveSupplementEventInteractor.execute(state.supplementObj!, state.isEdit ?? false);
+          _clearData();
+          emit(state.copyWith(isLoading: false));
+        } catch(_) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementEventError));
+        }
       } catch(_) {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementEventError));
       }
     });
   }
   void _clearData() {
+    state.screenTitle = null;
+    state.isEdit = null;
     state.supplementObj = SupplementSimple.empty();
   }
 }

@@ -53,6 +53,7 @@ import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_en
 import 'package:nutrenaissance_flutter/data/local/models/recipes/recipe_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/supplements/supplement_events_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/supplements/upload_supplement_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/watervents/water_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/advices/advices_repository_impl.dart';
@@ -241,14 +242,22 @@ import 'package:nutrenaissance_flutter/domain/interactor/steps/save_steps_intera
 import 'package:nutrenaissance_flutter/domain/interactor/steps/save_steps_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_day_supplement_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_day_supplement_events_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_collagen_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_collagen_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_creatine_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_creatine_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_collagen_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_collagen_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_creatine_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_creatine_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_collagen_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_collagen_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_creatine_event_interactor.dart';
@@ -585,6 +594,10 @@ void main() async {
   final ShowModelAppearanceInteractor showModelAppearanceInteractor = ShowModelAppearanceInteractorImpl(modelsAppearanceRepository: modelsAppearanceRepository);
   final SaveModelAppearanceInteractor saveModelAppearanceInteractor = SaveModelAppearanceInteractorImpl(modelsAppearanceRepository: modelsAppearanceRepository);
   final UploadSupplementEventInteractor uploadSupplementEventInteractor = UploadSupplementEventInteractorImpl(supplementsRepository: supplementsRepository);
+  final GetDaySupplementEventsInteractor getDaySupplementEventsInteractor = GetDaySupplementEventsInteractorImpl(supplementsRepository: supplementsRepository);
+  final SaveSupplementEventInteractor saveSupplementEventInteractor = SaveSupplementInteractorImpl(supplementsRepository: supplementsRepository);
+  final DeleteSupplementEventInteractor deleteSupplementEventInteractor = DeleteSupplementEventInteractorImpl(supplementsRepository: supplementsRepository);
+  final RemoveSupplementEventInteractor removeSupplementEventInteractor = RemoveSupplementEventInteractorImpl(supplementsRepository: supplementsRepository);
 
   await NutritionUtils(getMasterFileInteractor: getMasterFileInteractor).init();
 
@@ -995,10 +1008,16 @@ void main() async {
   final supplementsBloc = SupplementsBloc(
     getMasterFileInteractor: getMasterFileInteractor,
     uploadSupplementEventInteractor: uploadSupplementEventInteractor,
+    saveSupplementEventInteractor: saveSupplementEventInteractor,
     getUserIdInteractor: getUserIdInteractor,
   );
 
-  final supplementsDetailBloc = SupplementsDetailBloc();
+  final supplementsDetailBloc = SupplementsDetailBloc(
+    getDaySupplementEventsInteractor: getDaySupplementEventsInteractor,
+    deleteSupplementEventInteractor: deleteSupplementEventInteractor,
+    removeSupplementEventInteractor: removeSupplementEventInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
+  );
 
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
 
@@ -1242,4 +1261,6 @@ void initLocalStorage() async {
   Hive.registerAdapter(FoodRoutineInEntityAdapter());
   Hive.registerAdapter(SupplementsInfoEntityAdapter());
   Hive.registerAdapter(SupplementInfoEntityAdapter());
+  Hive.registerAdapter(SupplementEventsEntityAdapter());
+  Hive.registerAdapter(SupplementEventsInfoEntityAdapter());
 }

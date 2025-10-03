@@ -37,6 +37,18 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
     supplementsBloc = BlocProvider.of<SupplementsBloc>(context);
     supplementsBloc.add(InitializationSupplementsAction());
 
+    final widgetBinding = WidgetsBinding.instance;
+    widgetBinding.addPostFrameCallback((timeStamp) {
+      final arguments = ModalRoute.of(context)!.settings.arguments;
+      if (arguments != null) {
+        if (arguments is SupplementSimple) {
+          // supplementsBloc.state.screenTitle = AppLocalizations.of(context)!.update + ' ' + AppLocalizations.of(context)!.supplement;
+          supplementsBloc.add(UpdateScreenTitle(screenTitle: AppLocalizations.of(context)!.update + ' ' + AppLocalizations.of(context)!.supplement));
+          supplementsBloc.add(GetSupplementFromNavAction(supplementSimple: arguments));
+        }
+      }
+    });
+
     super.initState();
   }
 
@@ -97,7 +109,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                   const SizedBox(height: Dimens.height12),
                   HeaderAddItemCardSection(
                     onBackTap: () => Navigator.pop(context),
-                    title: AppLocalizations.of(context)!.supplements,
+                    title: state.screenTitle ?? (AppLocalizations.of(context)!.add + ' ' + AppLocalizations.of(context)!.supplement),
                     image: 'assets/images/supplement.png',
                     items: state.supplementsInfo?.data.map((element) => element.translate(context)).toList(),
                     onItemSelect: (supplementName, focus) {
@@ -136,7 +148,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                 ),
               ),
               ),
-            )
+            ),
           ],
         ),
       ),

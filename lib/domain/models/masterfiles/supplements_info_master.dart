@@ -23,6 +23,6 @@ class SupplementInfoMaster extends Translatable {
 
   SupplementInfoMaster({required this.id, required this.es, required this.en, required this.unit});
 
-  factory SupplementInfoMaster.fromJson(Map<String, dynamic> json) => _$SupplementInfoMaster(json);
+  factory SupplementInfoMaster.fromJson(Map<String, dynamic> json) => _$SupplementInfoMasterFromJson(json);
   Map<String, dynamic> toJson() => _$SupplementInfoMasterToJson(this);
 }

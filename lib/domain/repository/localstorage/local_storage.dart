@@ -10,6 +10,7 @@ import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_en
 import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/supplements/supplement_events_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/supplements/upload_supplement_event_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/analysis/subjective/subjective_analysis_result.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
@@ -20,6 +21,7 @@ import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_compl
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/recipes/upload_recipe_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 
 import '../../../data/local/models/modelsappearence/models_appearance_entity.dart';
@@ -86,6 +88,9 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<void> removeUrineEvent(UploadFecesEventEntity uploadFecesEventEntity);
   Future<void> saveCreatineEvent(UploadSupplementEventEntity supplementCreatineEventEntity, {bool isEdit = false});
   Future<void> saveCollagenEvent(UploadSupplementEventEntity supplementCollagenEventEntity, {bool isEdit = false});
+  Future<void> saveSupplementEvent(SupplementEventsEntity supplementEventsEntity, {bool isEdit = false});
+  Future<List> getSupplementEventsDay({DateTime? dateTime});
+  Future<void> removeSupplementEvent(SupplementEventsEntity supplementEventsEntity);
   Future<UploadSupplementEventEntity?> getCreatineTodayEvent({DateTime? dateTime});
   Future<UploadSupplementEventEntity?> getCollagenTodayEvent({DateTime? dateTime});
   Future<List> getAllCreatineEvents();

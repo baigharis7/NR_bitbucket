@@ -10,3 +10,9 @@ class UpdateEventsDateSupplementsDetailEvent extends SupplementsDetailEvent {
 
   UpdateEventsDateSupplementsDetailEvent({required this.dateTime});
 }
+
+class DeleteSupplementEventAction extends SupplementsDetailEvent {
+  final SupplementSimple supplement;
+
+  DeleteSupplementEventAction({required this.supplement});
+}

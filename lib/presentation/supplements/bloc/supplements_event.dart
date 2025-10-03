@@ -11,6 +11,18 @@ class UpdateDateSupplementsAction extends SupplementsEvent {
   UpdateDateSupplementsAction({required this.dateTime});
 }
 
+class UpdateScreenTitle extends SupplementsEvent {
+  final String screenTitle;
+
+  UpdateScreenTitle({required this.screenTitle});
+}
+
+class GetSupplementFromNavAction extends SupplementsEvent {
+  final SupplementSimple supplementSimple;
+
+  GetSupplementFromNavAction({required this.supplementSimple});
+}
+
 class AddSupplementInfoSupplementsAction extends SupplementsEvent{
   NutriInfo nutriInfo;
 

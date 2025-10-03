@@ -3,13 +3,18 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/supplementsdetail/bloc/supplements_detail_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/item_info_card.dart';
 
+import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/app_text_styles.dart';
+import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
+import '../../../infrastructure/utils/nutrition_utils.dart';
+import '../../common/view/loading_screen.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
@@ -29,6 +34,7 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
   @override
   void initState() {
     supplementsDetailBloc = BlocProvider.of<SupplementsDetailBloc>(context);
+    supplementsDetailBloc.add(InitializeSupplementsDetailEvent());
 
     super.initState();
   }
@@ -38,7 +44,20 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
     return BlocProvider.value(
       value: supplementsDetailBloc,
       child: BlocConsumer<SupplementsDetailBloc, SupplementsDetailState>(
-        listener: (context, state) {},
+        listener: (ctx, state) {
+          if (state.isLoading) {
+            LoadingScreen.instance().show(
+              context: ctx,
+              text: AppLocalizations.of(ctx)!.loading,
+            );
+          } else {
+            LoadingScreen.instance().hide();
+          }
+
+          if (state.onError != null) {
+            showErrorSnackBar(ctx, resolveError(context, state.onError!));
+          }
+        },
         builder: (context, state) => Stack(
           children: [
             // Background image or gradient
@@ -84,13 +103,16 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
                     ListView.builder(
                       shrinkWrap: true,
                       primary: false,
-                      itemCount: 5,
+                      itemCount: state.supplementEvents.length,
                       itemBuilder: (context, index) {
+                        final supplement = state.supplementEvents[index];
                         return ItemInfoCard(
-                            title: 'Vitamin B12',
+                            title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplement.info.orEmpty()[0].id).translate(context),
                           trailingSrc: 'assets/images/delete_icon.png',
-                          subtitle: '12 grams',
-                          trailingTap: () {},
+                          subtitle: supplement.info.orEmpty()[0].amount.toString() + ' ' +supplement.info.orEmpty()[0].unit,
+                          trailingTap: () => supplementsDetailBloc.add(DeleteSupplementEventAction(supplement: supplement)),
+                            beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                            beforeTrailingTap: () => Navigator.popAndPushNamed(context, SupplementsScreen.routeName, arguments: supplement),
                         );
                       },
                     ),

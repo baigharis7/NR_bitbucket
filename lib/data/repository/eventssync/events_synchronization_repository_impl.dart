@@ -42,6 +42,7 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
         /*allEventsIds.creatineEvents.map((e) => e.toString()).toList()*/ [],
         /*allEventsIds.collagenEvents.map((e) => e.toString()).toList()*/ [],
         [],
+        /*allEventsIds.supplementEvents.map((e) => e.toString()).toList()*/ [],
       );
       final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
       return await _saveSynchronizedEvents(eventsSyncResponse).then((value) => value);
@@ -128,6 +129,12 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
     if (eventsSynchronizationResponse.collagenEvents.isNotEmpty) {
       for (var uploadCollagenEvent in eventsSynchronizationResponse.collagenEvents) {
         await localStorageRepository.saveCollagenEvent(mapToSupplementEventEntity(uploadCollagenEvent));
+      }
+    }
+
+    if (eventsSynchronizationResponse.supplementEvents.isNotEmpty) {
+      for (var supplementEvent in eventsSynchronizationResponse.supplementEvents) {
+        await localStorageRepository.saveSupplementEvent(mapToSupplementEventsEntity(supplementEvent));
       }
     }
 

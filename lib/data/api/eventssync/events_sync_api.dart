@@ -25,6 +25,7 @@ class EventsSyncApi extends ApiHelper {
     List<String> urineEvents,
     List<String> creatineEvents,
     List<String> collagenEvents,
+    List<String> supplementEvents,
   ) {
     return post(
       Uri.https(
@@ -48,6 +49,7 @@ class EventsSyncApi extends ApiHelper {
         'urineEvents': urineEvents,
         'creatineEvents': creatineEvents,
         'collagenEvents': collagenEvents,
+        'supplementEvents': supplementEvents,
       },
     );
   }

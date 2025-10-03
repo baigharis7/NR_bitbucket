@@ -6,12 +6,16 @@ part of 'supplements_bloc.dart';
 class SupplementsState {
   bool isLoading;
   ErrorTypes? onError;
+  String? screenTitle;
+  bool? isEdit;
   SupplementsInfoMaster? supplementsInfo;
   SupplementSimple? supplementObj;
 
   SupplementsState({
     required this.isLoading,
     this.onError,
+    this.screenTitle,
+    this.isEdit,
     this.supplementsInfo,
     this.supplementObj,
   });
@@ -19,6 +23,8 @@ class SupplementsState {
   SupplementsState copyWith({
     required bool isLoading,
     ErrorTypes? onError,
+    String? screenTitle,
+    bool? isEdit,
     UserProfileModel? userProfile,
     SupplementsInfoMaster? supplementsInfo,
     SupplementSimple? supplementObj,
@@ -26,6 +32,8 @@ class SupplementsState {
     return SupplementsState(
       isLoading: isLoading,
       onError: onError,
+      isEdit: isEdit ?? this.isEdit,
+      screenTitle: screenTitle ?? this.screenTitle,
       supplementsInfo: supplementsInfo ?? this.supplementsInfo,
       supplementObj: supplementObj ?? this.supplementObj,
     );

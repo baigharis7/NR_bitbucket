@@ -6,30 +6,33 @@ part of 'supplements_info_master.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-SupplementsInfoMaster _$SupplementsInfoMasterFromJson(Map<String, dynamic> json) =>
+SupplementsInfoMaster _$SupplementsInfoMasterFromJson(
+        Map<String, dynamic> json) =>
     SupplementsInfoMaster(
-      v: json['v'] as int,
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
-          .map(
-              (e) => SupplementInfoMaster.fromJson(e as Map<String, dynamic>))
+          .map((e) => SupplementInfoMaster.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$SupplementsInfoMasterToJson(SupplementsInfoMaster instance) =>
+Map<String, dynamic> _$SupplementsInfoMasterToJson(
+        SupplementsInfoMaster instance) =>
     <String, dynamic>{
       'v': instance.v,
       'data': instance.data.map((e) => e.toJson()).toList(),
     };
 
-SupplementInfoMaster _$SupplementInfoMaster(Map<String, dynamic> json) =>
+SupplementInfoMaster _$SupplementInfoMasterFromJson(
+        Map<String, dynamic> json) =>
     SupplementInfoMaster(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       es: json['es'] as String,
       en: json['en'] as String,
       unit: json['unit'] as String,
     );
 
-Map<String, dynamic> _$SupplementInfoMasterToJson(SupplementInfoMaster instance) =>
+Map<String, dynamic> _$SupplementInfoMasterToJson(
+        SupplementInfoMaster instance) =>
     <String, dynamic>{
       'id': instance.id,
       'es': instance.es,

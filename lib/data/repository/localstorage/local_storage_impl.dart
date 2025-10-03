@@ -27,6 +27,7 @@ import 'package:nutrenaissance_flutter/data/local/models/recipes/recipe_favorite
 import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/supplements/supplement_events_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/supplements/upload_supplement_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/watervents/water_event_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/analysis/subjective/subjective_analysis_result.dart';
@@ -130,6 +131,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> _openFoodFavoritesBox() async => openBox(_favoriteFoodsBox, FoodFavoriteEntity.boxName);
   Future<Box> _openSportFavoritesBox() async => openBox(_favoriteSportsBox, SportFavoriteEntity.boxName);
   Future<Box> _openLiquidFavoritesBox() async => openBox(_favoriteLiquidsBox, LiquidFavoriteEntity.boxName);
+  Future<Box> _openSupplementEventsBox() async => openBox(_supplementEventsBox, SupplementEventsEntity.boxName);
   Future<Box> _openExplainingCardsBox() async => openBox(_explainingCardsBox, ExplainingCardEntity.boxName);
   Future<Box> _openSubjectiveAnalysisResultsBox() async => openBox(_subjectiveAnalysisResultsBox, SubjectiveAnalysisResultEntity.boxName);
   Future<Box> _openUserStepsInfoBox() async => openBox(_userStepsInfoBox, StepsEntity.boxName);
@@ -151,6 +153,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> get _getFoodFavoritesBox async => await _openFoodFavoritesBox();
   Future<Box> get _getSportFavoritesBox async => await _openSportFavoritesBox();
   Future<Box> get _getLiquidFavoritesBox async => await _openLiquidFavoritesBox();
+  Future<Box> get _getSupplementEventsBox async => await _openSupplementEventsBox();
   Future<Box> get _getExplainingCardsBox async => await _openExplainingCardsBox();
   Future<Box> get _getSubjectiveAnalysisResultsBox async => await _openSubjectiveAnalysisResultsBox();
   Future<Box> get _getUserStepsInfoBox async => await _openUserStepsInfoBox();
@@ -708,9 +711,9 @@ class LocalStorageImpl extends LocalStorageRepository {
     final collagenEvents = <int>[];
     collagenEventsMap.forEach((key, value) => collagenEvents.add((value as UploadSupplementEventEntity).eventId!));
 
-    final supplementEventsMap = await _getFoodEventsBox.then((box) => box.toMap());
+    final supplementEventsMap = await _getSupplementEventsBox.then((box) => box.toMap());
     final supplementEvents = <int>[];
-    // supplementEventsMap.forEach((key, value) => supplementEvents.add((value as SupplementsInfoEntity).eventDate!));
+    supplementEventsMap.forEach((key, value) => supplementEvents.add((value as SupplementEventsEntity).eventId));
 
     return EventsSynchronizationRequest(
       foodEvents: foodEvents,
@@ -728,6 +731,7 @@ class LocalStorageImpl extends LocalStorageRepository {
       urineEvents: urineEvents,
       creatineEvents: creatineEvents,
       collagenEvents: collagenEvents,
+      supplementEvents: supplementEvents,
     );
   }
 
@@ -742,6 +746,7 @@ class LocalStorageImpl extends LocalStorageRepository {
     await _clearBox(_getFoodFavoritesBox);
     await _clearBox(_getSportFavoritesBox);
     await _clearBox(_getLiquidFavoritesBox);
+    await _clearBox(_getSupplementEventsBox);
     await _clearBox(_getSubjectiveAnalysisResultsBox);
     await _clearBox(_getRecipeFavoritesBox);
     await _clearBox(_getFecesEventsBox);
@@ -1286,6 +1291,62 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
+  Future<void> saveSupplementEvent(SupplementEventsEntity supplementEventsEntity, {bool isEdit = false}) async {
+    try {
+      await supplementEventsEntity.save();
+    } catch (error) {
+      try {
+        _getSupplementEventsBox.then((box) {
+          if (isEdit) {
+            final supplementEventsMap = box.toMap();
+            supplementEventsMap.forEach((key, value) {
+              if ((value as SupplementEventsEntity).eventId == supplementEventsEntity.eventId) {
+                box.put(key, supplementEventsEntity);
+              }
+            });
+          } else {
+            box.add(supplementEventsEntity);
+          }
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<List> getSupplementEventsDay({DateTime? dateTime}) async {
+    List supplementsEvents = await _getSupplementEventsBox.then((box) {
+      return box.values.toList();
+    },);
+
+    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+    return supplementsEvents.where((event) => DateTimeHelper.calculateMidNightMillisecondsFromInt(event.eventDate) == midnightTime).toList();
+  }
+
+  @override
+  Future<void> removeSupplementEvent(SupplementEventsEntity supplementEventsEntity) async {
+    try {
+      await supplementEventsEntity.delete();
+    } catch (error) {
+      try {
+        _getSupplementEventsBox.then((box) {
+          final supplementEventsMap = box.toMap();
+          dynamic desiredKey;
+          supplementEventsMap.forEach((key, value) {
+            if ((value as SupplementEventsEntity).eventId == supplementEventsEntity.eventId) {
+              desiredKey = key;
+            }
+          });
+          box.delete(desiredKey);
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
   Future<bool> eraseDBEventsData() async {
     await _clearBox(_getFoodEventsBox);
     await _clearBox(_getFoodRoutinesBox);
@@ -1296,6 +1357,7 @@ class LocalStorageImpl extends LocalStorageRepository {
     await _clearBox(_getFoodFavoritesBox);
     await _clearBox(_getSportFavoritesBox);
     await _clearBox(_getLiquidFavoritesBox);
+    await _clearBox(_getSupplementEventsBox);
     await _clearBox(_getSubjectiveAnalysisResultsBox);
     await _clearBox(_getRecipeFavoritesBox);
     await _clearBox(_getFecesEventsBox);

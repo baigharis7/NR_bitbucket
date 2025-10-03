@@ -14,6 +14,7 @@ class EventsSynchronizationRequest {
   List<int> urineEvents;
   List<int> creatineEvents;
   List<int> collagenEvents;
+  List<int> supplementEvents;
 
   EventsSynchronizationRequest({
     required this.foodEvents,
@@ -31,6 +32,7 @@ class EventsSynchronizationRequest {
     required this.urineEvents,
     required this.creatineEvents,
     required this.collagenEvents,
+    required this.supplementEvents,
   });
 
 }
