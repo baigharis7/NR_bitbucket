@@ -376,7 +376,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   ),
                                 ),
                                 hintStyle: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
-                                hintText: model.isLogin ? AppLocalizations.of(context)!.email : AppLocalizations.of(context)!.name,
+                                hintText: model.isLogin ? AppLocalizations.of(context)!.email : AppLocalizations.of(context)!.username,
                                 errorMaxLines: 3,
                               ),
                               controller: _usernameController,

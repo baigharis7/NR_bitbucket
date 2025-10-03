@@ -22,6 +22,7 @@ class SupplementEventsEntityAdapter
       eventId: fields[1] as int,
       eventDate: fields[2] as int,
       info: (fields[3] as List).cast<SupplementEventsInfoEntity>(),
+      name: fields[4] as String?,
     );
   }
 
@@ -36,7 +37,9 @@ class SupplementEventsEntityAdapter
       ..writeByte(2)
       ..write(obj.eventDate)
       ..writeByte(3)
-      ..write(obj.info);
+      ..write(obj.info)
+      ..writeByte(4)
+      ..write(obj.name);
   }
 
   @override
@@ -105,6 +108,7 @@ SupplementEventsEntity _$SupplementEventsEntityFromJson(
           .map((e) =>
               SupplementEventsInfoEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
+      name: json['name'] as String?,
     );
 
 Map<String, dynamic> _$SupplementEventsEntityToJson(
@@ -114,6 +118,7 @@ Map<String, dynamic> _$SupplementEventsEntityToJson(
       'eventId': instance.eventId,
       'eventDate': instance.eventDate,
       'info': instance.info.map((e) => e.toJson()).toList(),
+      'name': instance.name,
     };
 
 SupplementEventsInfoEntity _$SupplementEventsInfoEntityFromJson(

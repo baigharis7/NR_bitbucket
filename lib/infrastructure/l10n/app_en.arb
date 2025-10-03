@@ -430,7 +430,7 @@
     "sign_in_error" : "Error signing in. Try again.",
     "sign_out_error" : "Error signing out. Try again.",
     "mandatory_fields_not_filled_body" : "The following fields are not filled:",
-    "name" : "Username",
+    "name" : "Name",
     "sex" : "Sex",
     "birthdate" : "Birthdate",
     "foods_selection" : "Selected foods:",

@@ -8,13 +8,15 @@ part 'supplement_events_entity.g.dart';
 @HiveType(typeId: HiveTypeIds.supplementEventsEntity)
 class SupplementEventsEntity extends HiveObject {
   static const boxName = 'supplement_events';
+  static const boxNameFavorites = 'supplement_favorites';
 
   @HiveField(0) String userId;
   @HiveField(1) int eventId;
   @HiveField(2) int eventDate;
   @HiveField(3) List<SupplementEventsInfoEntity> info;
+  @HiveField(4) String? name;
 
-  SupplementEventsEntity({required this.userId, required this.eventId, required this.eventDate, required this.info});
+  SupplementEventsEntity({required this.userId, required this.eventId, required this.eventDate, required this.info, this.name});
   factory SupplementEventsEntity.fromJson(Map<String, dynamic> json) => _$SupplementEventsEntityFromJson(json);
   Map<String, dynamic> toJson() => _$SupplementEventsEntityToJson(this);
 }

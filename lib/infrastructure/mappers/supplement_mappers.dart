@@ -1,3 +1,4 @@
+import 'package:nutrenaissance_flutter/data/api/supplements/model/supplement_favorite.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplements_ev.dart';
 import 'package:nutrenaissance_flutter/data/local/models/supplements/supplement_events_entity.dart';
@@ -43,6 +44,7 @@ SupplementSimple mapToSupplementSimple(SupplementEventsEntity supplementEventsEn
       eventId: supplementEventsEntity.eventId,
       eventDate: supplementEventsEntity.eventDate,
       info: supplementEventsEntity.info.map((e) => NutriInfo(id: e.id, unit: e.unit, amount: int.parse(e.amount))).toList(),
+      name: supplementEventsEntity.name,
     );
 
 SupplementEventsEntity mapToSupplementEventEntityFromSupplementSimple(SupplementSimple supplementSimple) =>
@@ -51,4 +53,22 @@ SupplementEventsEntity mapToSupplementEventEntityFromSupplementSimple(Supplement
       eventId: supplementSimple.eventId!,
       eventDate: supplementSimple.eventDate!,
       info: supplementSimple.info.orEmpty().map((e) => SupplementEventsInfoEntity(id: e.id, amount: e.amount.toString(), unit: e.unit)).toList(),
+    );
+
+SupplementFavorite mapToSupplementFavoriteFromSupplement(SupplementSimple supplement) =>
+    SupplementFavorite(
+        userId: supplement.userId!,
+        eventId: supplement.eventId!,
+        eventDate: supplement.eventDate!,
+        data: supplement.info.orEmpty().map((e) => SupplementFavoriteNutrient(id: e.id, amount: e.amount, unit: e.unit)).toList(),
+        name: supplement.name.orEmpty(),
+    );
+
+SupplementEventsEntity mapToSupplementEventEntityFromFavorite(SupplementFavorite supplementFavorite) =>
+    SupplementEventsEntity(
+      userId: supplementFavorite.userId,
+      eventId: supplementFavorite.eventId,
+      eventDate: supplementFavorite.eventDate,
+      info: supplementFavorite.data.map((e) => SupplementEventsInfoEntity(id: e.id, amount: e.amount.toString(), unit: e.unit)).toList(),
+      name: supplementFavorite.name,
     );

@@ -59,6 +59,9 @@ EventsSynchronizationResponse _$EventsSynchronizationResponseFromJson(
       supplementEvents: (json['supplementEvents'] as List<dynamic>)
           .map((e) => UploadSupplementsEv.fromJson(e as Map<String, dynamic>))
           .toList(),
+      supplementFavorites: (json['supplementFavorites'] as List<dynamic>)
+          .map((e) => SupplementFavorite.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$EventsSynchronizationResponseToJson(
@@ -82,4 +85,5 @@ Map<String, dynamic> _$EventsSynchronizationResponseToJson(
       'creatineEvents': instance.creatineEvents.map((e) => e.toJson()).toList(),
       'collagenEvents': instance.collagenEvents.map((e) => e.toJson()).toList(),
       'supplementEvents': instance.supplementEvents.map((e) => e.toJson()).toList(),
+      'supplementFavorites': instance.supplementFavorites.map((e) => e.toJson()).toList(),
     };

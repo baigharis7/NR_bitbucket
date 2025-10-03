@@ -4,9 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/presentation/favoritestabs/bloc/favorites_tabs_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/meal_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/physical_activity_tab.dart';
+import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/supplements_tab.dart';
 
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
@@ -27,12 +29,12 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
   String? title;
   late TabController _tabController;
   int _selectedTab = 0;
-  List<String> _tabs = ['', ''];
+  List<String> _tabs = ['', '', ''];
   late FavoritesTabsBloc favoritesTabsBloc;
 
   @override
   void didChangeDependencies() {
-    _tabs = [AppLocalizations.of(context)!.meal.toUpperCase(), AppLocalizations.of(context)!.physical_activity.toUpperCase(),];
+    _tabs = [AppLocalizations.of(context)!.meal.toUpperCase(), AppLocalizations.of(context)!.physical_activity.toUpperCase(), AppLocalizations.of(context)!.supplements];
     super.didChangeDependencies();
   }
 
@@ -100,7 +102,10 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
             body: SafeArea(child: Container(
               padding: const EdgeInsets.all(Dimens.paddingLarge),
               child: Column(children: [
-                HeaderAddItemCardSection(title: AppLocalizations.of(context)!.favorites, onBackTap: () => Navigator.pop(context),),
+                HeaderAddItemCardSection(
+                  title: AppLocalizations.of(context)!.favorites,
+                  onBackTap: () => Navigator.pop(context),
+                ),
                 const SizedBox(height: Dimens.height12),
                 TabBar(
                   controller: _tabController,
@@ -108,7 +113,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(Dimens.borderNormal),
                   ),
-                  labelPadding: const EdgeInsets.symmetric(horizontal: Dimens.padding10),
+                  labelPadding: const EdgeInsets.symmetric(horizontal: Dimens.padding6),
                   labelColor: Colors.white,
                   indicatorSize: TabBarIndicatorSize.tab,
                   unselectedLabelColor: AppColors.yellowishGreen,
@@ -121,7 +126,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
                         borderRadius: BorderRadius.circular(Dimens.borderNormal),
                         color: isSelected ? AppColors.yellowishGreen : AppColors.butter59,
                       ),
-                      child: Text(_tabs[index]),
+                      child: Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6), child: Text(_tabs[index], style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize11), textAlign: TextAlign.center)),
                     );
                   }),
                 ),
@@ -133,6 +138,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
                     children: const [
                       MealTab(),
                       PhysicalActivityTab(),
+                      SupplementsTab(),
                     ],
                   ),
                 ),

@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/remove_f
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/get_sport_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 import '../../../domain/interactor/favorites/food/get_food_favorites_interactor.dart';
@@ -17,6 +18,8 @@ import '../../../domain/models/favorites/food/food_favorite.dart';
 import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../domain/models/masterfiles/food_names_master.dart';
 import '../../../domain/models/masterfiles/sports_info_master.dart';
+import '../../../domain/models/masterfiles/supplements_info_master.dart';
+import '../../../domain/models/supplements/supplement_simple.dart';
 import '../../../infrastructure/errors/error_types.dart';
 
 part 'favorites_tabs_event.dart';
@@ -26,11 +29,11 @@ part 'favorites_tabs_state.dart';
 class FavoritesTabsBloc extends Bloc<FavoritesTabsEvent, FavoritesTabsState> {
   final GetFoodFavoritesInteractor getFoodFavoritesInteractor;
   final DeleteFoodFavoriteInteractor deleteFoodFavoriteInteractor;
-  final RemoveFoodFavoriteFromLocalInteractor
-      removeFoodFavoriteFromLocalInteractor;
+  final RemoveFoodFavoriteFromLocalInteractor removeFoodFavoriteFromLocalInteractor;
   final GetUserIdInteractor getUserIdInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetSportFavoritesInteractor getSportFavoritesInteractor;
+  final GetSupplementFavoritesInteractor getSupplementFavoritesInteractor;
   final DeleteSportFavoriteInteractor deleteSportFavoriteInteractor;
   final RemoveSportFavoriteInteractor removeSportFavoriteInteractor;
 
@@ -41,6 +44,7 @@ class FavoritesTabsBloc extends Bloc<FavoritesTabsEvent, FavoritesTabsState> {
     required this.getUserIdInteractor,
     required this.getMasterFileInteractor,
     required this.getSportFavoritesInteractor,
+    required this.getSupplementFavoritesInteractor,
     required this.deleteSportFavoriteInteractor,
     required this.removeSportFavoriteInteractor,
   }) : super(FavoritesTabsState(
@@ -56,8 +60,10 @@ class FavoritesTabsBloc extends Bloc<FavoritesTabsEvent, FavoritesTabsState> {
       state.favFoods = await getFoodFavoritesInteractor.execute();
       state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
       state.sportsInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
+      state.supplementsInfo = await getMasterFileInteractor.execute(MasterFilesType.supplementsInfo);
       state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames ?? []);
       state.favSports = await getSportFavoritesInteractor.execute();
+      state.favSupplements = await getSupplementFavoritesInteractor.execute();
 
       emit(state.copyWith(isLoading: false));
     });

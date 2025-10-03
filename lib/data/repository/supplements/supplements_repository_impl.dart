@@ -1,3 +1,4 @@
+import 'package:nutrenaissance_flutter/data/api/supplements/model/supplement_favorite.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplements_ev.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/supplemets_api.dart';
@@ -126,6 +127,34 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
   Future<void> removeSupplementEvent(SupplementSimple supplementEvent) async {
     try {
       await localStorageRepository.removeSupplementEvent(mapToSupplementEventEntityFromSupplementSimple(supplementEvent));
+    } catch(_) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> uploadSupplementFavorite(SupplementFavorite supplementFavorite) async {
+    try {
+      await supplementApi.uploadSupplementFavorite(supplementFavorite);
+    } catch(_) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> saveSupplementFavorite(SupplementFavorite supplementFavorite, bool isEdit) async {
+    try {
+      await localStorageRepository.saveSupplementFavorite(mapToSupplementEventEntityFromFavorite(supplementFavorite), isEdit: isEdit);
+    } catch(_) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<SupplementSimple>> getSupplementFavorite() async {
+    try {
+      final List events = await localStorageRepository.getSupplementFavorites();
+      return events.map((event) => mapToSupplementSimple(event as SupplementEventsEntity)).toList();
     } catch(_) {
       rethrow;
     }

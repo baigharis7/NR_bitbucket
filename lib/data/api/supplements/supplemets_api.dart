@@ -1,4 +1,5 @@
 import 'package:chuck_interceptor/chuck.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/model/supplement_favorite.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplements_ev.dart';
 import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simple.dart';
@@ -50,6 +51,15 @@ class SupplementApi extends ApiHelper {
           'userId': supplementEvent.userId,
           'eventId': supplementEvent.eventId,
         },
+      );
+
+  Future<Map<String, dynamic>> uploadSupplementFavorite(SupplementFavorite supplementFavorite) =>
+      post(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/favorites/supplement',
+        ),
+        supplementFavorite,
       );
 
 }

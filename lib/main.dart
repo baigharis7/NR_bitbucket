@@ -246,6 +246,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supp
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_day_supplement_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_day_supplement_events_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_collagen_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_collagen_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_creatine_event_interactor.dart';
@@ -257,6 +258,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_collag
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_creatine_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_creatine_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_favorite_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_collagen_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_collagen_event_interactor_impl.dart';
@@ -264,6 +267,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_crea
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_creatine_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_favorite_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/save_water_event_interactor.dart';
@@ -419,6 +424,7 @@ import 'domain/interactor/masterfiles/get_master_file_version_interactor_impl.da
 import 'domain/interactor/masterfiles/manage_master_files_interactor_impl.dart';
 import 'domain/interactor/profile/get_user_objectives_interactor.dart';
 import 'domain/interactor/profile/get_user_objectives_interactor_impl.dart';
+import 'domain/interactor/supplements/get_supplement_favorites_interactor_impl.dart';
 import 'presentation/profile/common/aversions_screen.dart';
 import 'presentation/profile/common/health_questions_screen.dart';
 import 'presentation/recommendations/common/view/recommendations_tabs_holder.dart';
@@ -598,6 +604,9 @@ void main() async {
   final SaveSupplementEventInteractor saveSupplementEventInteractor = SaveSupplementInteractorImpl(supplementsRepository: supplementsRepository);
   final DeleteSupplementEventInteractor deleteSupplementEventInteractor = DeleteSupplementEventInteractorImpl(supplementsRepository: supplementsRepository);
   final RemoveSupplementEventInteractor removeSupplementEventInteractor = RemoveSupplementEventInteractorImpl(supplementsRepository: supplementsRepository);
+  final UploadSupplementFavoriteInteractor uploadSupplementFavoriteInteractor = UploadSupplementFavoriteInteractorImpl(supplementsRepository: supplementsRepository);
+  final SaveSupplementFavoriteInteractor saveSupplementFavoriteInteractor = SaveSupplementFavoriteInteractorImpl(supplementsRepository: supplementsRepository);
+  final GetSupplementFavoritesInteractor getSupplementFavoritesInteractor = GetSupplementFavoritesInteractorImpl(supplementsRepository: supplementsRepository);
 
   await NutritionUtils(getMasterFileInteractor: getMasterFileInteractor).init();
 
@@ -971,6 +980,7 @@ void main() async {
     getUserIdInteractor: getUserIdInteractor,
     getMasterFileInteractor: getMasterFileInteractor,
     getSportFavoritesInteractor: getSportFavoritesInteractor,
+    getSupplementFavoritesInteractor: getSupplementFavoritesInteractor,
     deleteSportFavoriteInteractor: deleteSportFavoriteInteractor,
     removeSportFavoriteInteractor: removeSportFavoriteInteractor,
   );
@@ -1009,6 +1019,9 @@ void main() async {
     getMasterFileInteractor: getMasterFileInteractor,
     uploadSupplementEventInteractor: uploadSupplementEventInteractor,
     saveSupplementEventInteractor: saveSupplementEventInteractor,
+    uploadSupplementFavoriteInteractor: uploadSupplementFavoriteInteractor,
+    saveSupplementFavoriteInteractor: saveSupplementFavoriteInteractor,
+    getSupplementFavoritesInteractor: getSupplementFavoritesInteractor,
     getUserIdInteractor: getUserIdInteractor,
   );
 

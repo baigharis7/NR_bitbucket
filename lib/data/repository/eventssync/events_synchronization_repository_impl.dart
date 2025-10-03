@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:nutrenaissance_flutter/data/api/eventssync/events_sync_api.dart';
 import 'package:nutrenaissance_flutter/data/api/eventssync/model/events_synchronization_response.dart';
 import 'package:nutrenaissance_flutter/domain/repository/eventssync/events_synchronization_repository.dart';
@@ -43,6 +44,7 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
         /*allEventsIds.collagenEvents.map((e) => e.toString()).toList()*/ [],
         [],
         /*allEventsIds.supplementEvents.map((e) => e.toString()).toList()*/ [],
+        /*allEventsIds.supplementFavorites.map((e) => e.toString()).toList()*/ [],
       );
       final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
       return await _saveSynchronizedEvents(eventsSyncResponse).then((value) => value);
@@ -135,6 +137,12 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
     if (eventsSynchronizationResponse.supplementEvents.isNotEmpty) {
       for (var supplementEvent in eventsSynchronizationResponse.supplementEvents) {
         await localStorageRepository.saveSupplementEvent(mapToSupplementEventsEntity(supplementEvent));
+      }
+    }
+
+    if (eventsSynchronizationResponse.supplementFavorites.isNotEmpty) {
+      for (var supplementFavorite in eventsSynchronizationResponse.supplementFavorites) {
+        await localStorageRepository.saveSupplementFavorite(mapToSupplementEventEntityFromFavorite(supplementFavorite));
       }
     }
 

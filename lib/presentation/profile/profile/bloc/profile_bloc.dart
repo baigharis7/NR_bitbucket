@@ -646,7 +646,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     }
     if (state.profile!.commonName.isNull()) {
       error = '''$error 
-      ${AppLocalizations.of(context)!.name}
+      ${AppLocalizations.of(context)!.username}
       ''';
     }
     if (state.profile!.sex.isNull()) {

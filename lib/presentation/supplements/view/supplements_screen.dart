@@ -15,10 +15,13 @@ import 'package:nutrenaissance_flutter/presentation/widgets/supplement_item_widg
 
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
+import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../widgets/item_info_card.dart';
+import '../../widgets/item_routine_widget.dart';
 
 class SupplementsScreen extends StatefulWidget {
   static const routeName = '/supplements_screen';
@@ -50,6 +53,36 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
     });
 
     super.initState();
+  }
+
+  Future<void> showRoutineTimeDialog({
+    Function? onNameChange,
+    required Function onTimeChanged,
+    required Function(int) onChangeWeekDays,
+    required Function(bool) onFavoriteChange,
+    required Function(bool) onChangeCreateRoutine,
+    String? name,
+    required List<int>? daysOfWeek,
+    required TimeOfDay? scheduleTime,
+    required bool? isFavorite,
+    required bool? isCreateRoutine,
+  }) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) => ItemRoutineWidget(
+        onNameChange: (name) => onNameChange?.call(name),
+        onTimeChange: (pickedTime) => onTimeChanged.call(pickedTime),
+        onChangeWeekDays: (weekDay) => onChangeWeekDays.call(weekDay),
+        name: name,
+        daysOfWeek: daysOfWeek,
+        scheduleTime: scheduleTime,
+        isFavorite: isFavorite,
+        isCreateRoutine: isCreateRoutine,
+        onFavoriteChange: (value) => onFavoriteChange.call(value),
+        onChangeCreateRoutine: (value) => onChangeCreateRoutine.call(value),
+      ),
+    ).then((_) {});
   }
 
   @override
@@ -137,6 +170,41 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                         onRemoveItem: () => supplementsBloc.add(RemoveSupplementInfoSupplementsAction(nutriInfo: nutriInfo!)),
                       );
                     },
+                  ),
+                  if (state.supplementObj?.info?.orEmpty().isEmpty == true && state.supplementFavorites.orEmpty().isNotEmpty == true) ListView.builder(
+                    shrinkWrap: true,
+                    primary: false,
+                    itemCount: state.supplementFavorites?.length,
+                    itemBuilder: (context, index) {
+                      final supplementFavorite = state.supplementFavorites?.orEmpty()[index];
+                      return ItemInfoCard(
+                        title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite?.info![0].id ?? -1).translate(context),
+                        trailingSrc: 'assets/icon/add_icon.png',
+                        trailingTap: () {},
+                        subtitle: '${supplementFavorite?.info![0].amount.toString()} ${supplementFavorite?.info![0].unit}',
+                        leadingSrc: 'assets/images/favorite_icon.png',
+                        leadingTap: () {},
+                      );
+                    },
+                  ),
+                  const SizedBox(height: Dimens.height32),
+                  if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) ListTile(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
+                    tileColor: AppColors.floralWhite,
+                    onTap: () => showRoutineTimeDialog(
+                      onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
+                      onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
+                      onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
+                      onFavoriteChange: (value) => supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: value)),
+                      onChangeCreateRoutine: (value) => supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: value)),
+                      name: state.supplementObj?.name,
+                      daysOfWeek: state.supplementObj?.daysOfWeek,
+                      scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
+                      isFavorite: state.supplementObj?.isFavorite,
+                      isCreateRoutine: state.supplementObj?.isRoutine,
+                    ),
+                    title: Text(AppLocalizations.of(context)!.add_more_options),
+                    trailing: const Icon(Icons.add_circle, color: Colors.black),
                   ),
                   const SizedBox(height: Dimens.height32),
                   if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) GeneralButton(

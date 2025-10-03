@@ -5,11 +5,15 @@ import 'package:bloc/bloc.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/supplements_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 
 import '../../../domain/interactor/profile/get_profile_interactor.dart';
 import '../../../domain/models/profile/user_profile_model.dart';
@@ -24,12 +28,18 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
   final GetMasterFileInteractor getMasterFileInteractor;
   final UploadSupplementEventInteractor uploadSupplementEventInteractor;
   final SaveSupplementEventInteractor saveSupplementEventInteractor;
+  final UploadSupplementFavoriteInteractor uploadSupplementFavoriteInteractor;
+  final SaveSupplementFavoriteInteractor saveSupplementFavoriteInteractor;
+  final GetSupplementFavoritesInteractor getSupplementFavoritesInteractor;
   final GetUserIdInteractor getUserIdInteractor;
 
   SupplementsBloc({
     required this.getMasterFileInteractor,
     required this.uploadSupplementEventInteractor,
     required this.saveSupplementEventInteractor,
+    required this.uploadSupplementFavoriteInteractor,
+    required this.saveSupplementFavoriteInteractor,
+    required this.getSupplementFavoritesInteractor,
     required this.getUserIdInteractor,
   }) : super(SupplementsState(isLoading: false, supplementObj: SupplementSimple.empty())) {
 
@@ -37,6 +47,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
       _clearData();
       emit(state.copyWith(isLoading: true, onError: null));
       state.supplementsInfo = await getMasterFileInteractor.execute(MasterFilesType.supplementsInfo);
+      state.supplementFavorites = await getSupplementFavoritesInteractor.execute();
       state.supplementObj?.userId = getUserIdInteractor.execute();
       emit(state.copyWith(isLoading: false,));
     });
@@ -93,10 +104,54 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
       emit(state.copyWith(isLoading: false));
     });
 
+    on<UpdateNameSupplementsEvent>((event, emit) {
+      state.supplementObj?.name = event.name;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateFavoriteActionSupplementsEvent>((event, emit) {
+      state.supplementObj?.isFavorite = event.isFavorite;
+      state.supplementObj?.isRoutine = event.isFavorite == true ? false : false;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateRoutineActionSupplementsEvent>((event, emit) {
+      state.supplementObj?.isRoutine = event.isRoutine;
+      state.supplementObj?.isFavorite = event.isRoutine == true ? false : false;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateTimeOfDaySupplementsEvent>((event, emit) {
+      state.supplementObj?.scheduleTime = event.scheduleTime;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateDaysOfWeekSupplementsEvent>((event, emit) {
+      final daysOfWeek = state.supplementObj?.daysOfWeek.orEmpty() ?? [];
+      if (state.supplementObj?.daysOfWeek.orEmpty().contains(event.weekDay) ?? false) {
+        state.supplementObj?.daysOfWeek?.remove(event.weekDay);
+      } else {
+        state.supplementObj?.daysOfWeek?.add(event.weekDay);
+      }
+
+      emit(state.copyWith(isLoading: false));
+    });
+
     on<SavingEventSupplementsAction>((event, emit) {
       if (state.supplementObj?.info.orEmpty().isEmpty == true) return;
 
-      add(FinishEventSupplementsAction());
+      if (state.supplementObj?.isFavorite == true) {
+        add(FinishSupplementFavorite());
+      } else if (state.supplementObj?.isRoutine == true) {
+        if (state.supplementObj?.daysOfWeek?.isEmpty == true || state.supplementObj?.scheduleTime.isEmptyOrNull() == true) return;
+
+      } else {
+        add(FinishEventSupplementsAction());
+      }
     });
 
     on<FinishEventSupplementsAction>((event, emit) async {
@@ -109,6 +164,27 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
         await uploadSupplementEventInteractor.execute(uploadSupplements);
         try {
           await saveSupplementEventInteractor.execute(state.supplementObj!, state.isEdit ?? false);
+          _clearData();
+          emit(state.copyWith(isLoading: false));
+        } catch(_) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementEventError));
+        }
+      } catch(_) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementEventError));
+      }
+    });
+
+    on<FinishSupplementFavorite>((event, emit) async {
+      emit(state.copyWith(isLoading: true, onError: null));
+      try {
+        state.supplementObj?.userId = getUserIdInteractor.execute();
+        state.supplementObj?.eventId = state.supplementObj?.eventId ?? DateTime.now().millisecondsSinceEpoch;
+        state.supplementObj?.eventDate = state.supplementObj?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+        final uploadSupplementFavorite = mapToSupplementFavoriteFromSupplement(state.supplementObj!);
+        await uploadSupplementFavoriteInteractor.execute(uploadSupplementFavorite);
+        try {
+          await saveSupplementFavoriteInteractor.execute(uploadSupplementFavorite);
+          state.supplementFavorites = await getSupplementFavoritesInteractor.execute();
           _clearData();
           emit(state.copyWith(isLoading: false));
         } catch(_) {
