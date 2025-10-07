@@ -45,6 +45,7 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
         [],
         /*allEventsIds.supplementEvents.map((e) => e.toString()).toList()*/ [],
         /*allEventsIds.supplementFavorites.map((e) => e.toString()).toList()*/ [],
+        /*allEventsIds.supplementRoutines.map((e) => e.toString()).toList()*/ [],
       );
       final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
       return await _saveSynchronizedEvents(eventsSyncResponse).then((value) => value);
@@ -143,6 +144,12 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
     if (eventsSynchronizationResponse.supplementFavorites.isNotEmpty) {
       for (var supplementFavorite in eventsSynchronizationResponse.supplementFavorites) {
         await localStorageRepository.saveSupplementFavorite(mapToSupplementEventEntityFromFavorite(supplementFavorite));
+      }
+    }
+
+    if (eventsSynchronizationResponse.supplementRoutines.isNotEmpty) {
+      for (var supplementRoutine in eventsSynchronizationResponse.supplementRoutines) {
+        await localStorageRepository.saveSupplementRoutine(mapToSupplementEventEntityFromRoutine(supplementRoutine));
       }
     }
 

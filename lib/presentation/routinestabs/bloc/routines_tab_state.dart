@@ -9,7 +9,9 @@ class RoutinesTabState {
   List<FoodRoutineEvent>? mealRoutines;
   FoodsAndDrinksNamesMaster? foodNames;
   List<SportRoutineCompleted>? sportRoutines;
+  List<SupplementSimple>? supplementRoutines;
   SportsInfoMaster? sportsInfo;
+  SupplementsInfoMaster? supplementsInfo;
 
   RoutinesTabState({
     required this.isLoading,
@@ -17,7 +19,9 @@ class RoutinesTabState {
     this.mealRoutines,
     this.foodNames,
     this.sportRoutines,
+    this.supplementRoutines,
     this.sportsInfo,
+    this.supplementsInfo,
   });
 
   RoutinesTabState copyWith({
@@ -26,7 +30,9 @@ class RoutinesTabState {
     List<FoodRoutineEvent>? mealRoutines,
     FoodsAndDrinksNamesMaster? foodNames,
     List<SportRoutineCompleted>? sportRoutines,
+    List<SupplementSimple>? supplementRoutines,
     SportsInfoMaster? sportsInfo,
+    SupplementsInfoMaster? supplementsInfo,
   }) {
     return RoutinesTabState(
       isLoading: isLoading,
@@ -34,7 +40,9 @@ class RoutinesTabState {
       mealRoutines: mealRoutines ?? this.mealRoutines,
       foodNames: foodNames ?? this.foodNames,
       sportRoutines: sportRoutines ?? this.sportRoutines,
+      supplementRoutines: supplementRoutines ?? this.supplementRoutines,
       sportsInfo: sportsInfo ?? this.sportsInfo,
+      supplementsInfo: supplementsInfo ?? this.supplementsInfo,
     );
   }
 }

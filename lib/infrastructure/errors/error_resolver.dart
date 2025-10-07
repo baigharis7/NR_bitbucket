@@ -160,6 +160,14 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.delete_supplement_event_error;
     case ErrorTypes.removeSupplementEventError:
       return stringResolver.remove_supplement_event_error;
+    case ErrorTypes.uploadSupplementFavoriteError:
+      return stringResolver.upload_supplement_favorite_event_error;
+    case ErrorTypes.saveSupplementFavoriteError:
+      return stringResolver.save_supplement_favorite_event_error;
+    case ErrorTypes.uploadSupplementRoutineError:
+      return stringResolver.upload_supplement_routine_error;
+    case ErrorTypes.saveSupplementRoutineError:
+      return stringResolver.save_supplement_routine_error;
   }
 }
 

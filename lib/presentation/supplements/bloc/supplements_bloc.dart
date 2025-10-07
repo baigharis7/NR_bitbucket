@@ -8,16 +8,20 @@ import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/supplements_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 
 import '../../../domain/interactor/profile/get_profile_interactor.dart';
 import '../../../domain/models/profile/user_profile_model.dart';
 import '../../../domain/models/supplements/supplement_simple.dart';
+import '../../../infrastructure/helpers/date_time_helper.dart';
 import '../../../infrastructure/mappers/supplement_mappers.dart';
 
 part 'supplements_event.dart';
@@ -31,6 +35,8 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
   final UploadSupplementFavoriteInteractor uploadSupplementFavoriteInteractor;
   final SaveSupplementFavoriteInteractor saveSupplementFavoriteInteractor;
   final GetSupplementFavoritesInteractor getSupplementFavoritesInteractor;
+  final UploadSupplementRoutineInteractor uploadSupplementRoutineInteractor;
+  final SaveSupplementRoutineInteractor saveSupplementRoutineInteractor;
   final GetUserIdInteractor getUserIdInteractor;
 
   SupplementsBloc({
@@ -40,6 +46,8 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
     required this.uploadSupplementFavoriteInteractor,
     required this.saveSupplementFavoriteInteractor,
     required this.getSupplementFavoritesInteractor,
+    required this.uploadSupplementRoutineInteractor,
+    required this.saveSupplementRoutineInteractor,
     required this.getUserIdInteractor,
   }) : super(SupplementsState(isLoading: false, supplementObj: SupplementSimple.empty())) {
 
@@ -148,7 +156,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
         add(FinishSupplementFavorite());
       } else if (state.supplementObj?.isRoutine == true) {
         if (state.supplementObj?.daysOfWeek?.isEmpty == true || state.supplementObj?.scheduleTime.isEmptyOrNull() == true) return;
-
+        add(FinishSupplementRoutineSupplementsEvent());
       } else {
         add(FinishEventSupplementsAction());
       }
@@ -185,6 +193,46 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
         try {
           await saveSupplementFavoriteInteractor.execute(uploadSupplementFavorite);
           state.supplementFavorites = await getSupplementFavoritesInteractor.execute();
+          _clearData();
+          emit(state.copyWith(isLoading: false));
+        } catch(_) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveSupplementFavoriteError));
+        }
+      } catch(_) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementFavoriteError));
+      }
+    });
+
+    on<FinishSupplementRoutineSupplementsEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true, onError: null));
+      try {
+        state.supplementObj?.userId = getUserIdInteractor.execute();
+        state.supplementObj?.eventId = state.supplementObj?.eventId ?? DateTime.now().millisecondsSinceEpoch;
+        state.supplementObj?.eventDate = state.supplementObj?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+        state.supplementObj?.timeZone = await DateTimeHelper.getDeviceIANATimeZone();
+        final uploadSupplementRoutine = mapToSupplementRoutineFromSupplement(state.supplementObj!);
+        await uploadSupplementRoutineInteractor.execute(uploadSupplementRoutine);
+        try {
+          await saveSupplementRoutineInteractor.execute(uploadSupplementRoutine);
+          _clearData();
+          emit(state.copyWith(isLoading: false));
+        } catch(_) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveSupplementRoutineError));
+        }
+      } catch(_) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementRoutineError));
+      }
+    });
+
+    on<FinishSupplementFavoriteSupplementsEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      try {
+        event.supplement.eventId = DateTime.now().millisecondsSinceEpoch;
+        event.supplement.eventDate = DateTime.now().millisecondsSinceEpoch;
+        final uploadSupplements = mapToUploadSupplementsEv(event.supplement);
+        await uploadSupplementEventInteractor.execute(uploadSupplements);
+        try {
+          await saveSupplementEventInteractor.execute(event.supplement, false);
           _clearData();
           emit(state.copyWith(isLoading: false));
         } catch(_) {

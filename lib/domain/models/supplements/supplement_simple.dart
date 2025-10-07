@@ -12,8 +12,9 @@ class SupplementSimple {
   bool isRoutine;
   String? scheduleTime;
   List<int>? daysOfWeek;
+  String? timeZone;
 
-  SupplementSimple({this.userId, this.eventId, this.eventDate, this.info, this.name, this.isFavorite = false, this.isRoutine = false, this.scheduleTime, this.daysOfWeek});
+  SupplementSimple({this.userId, this.eventId, this.eventDate, this.info, this.name, this.isFavorite = false, this.isRoutine = false, this.scheduleTime, this.daysOfWeek, this.timeZone});
 
   SupplementSimple.empty()
       : info = [],

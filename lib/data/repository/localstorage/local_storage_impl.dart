@@ -76,6 +76,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _supplementsInfoBox;
   Box? _supplementEventsBox;
   Box? _supplementFavoritesBox;
+  Box? _supplementRoutinesBox;
   Box? _subjectiveAnalysisBox;
   Box? _favoriteFoodsBox;
   Box? _favoriteSportsBox;
@@ -134,6 +135,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> _openLiquidFavoritesBox() async => openBox(_favoriteLiquidsBox, LiquidFavoriteEntity.boxName);
   Future<Box> _openSupplementEventsBox() async => openBox(_supplementEventsBox, SupplementEventsEntity.boxName);
   Future<Box> _openSupplementFavoritesBox() async => openBox(_supplementFavoritesBox, SupplementEventsEntity.boxNameFavorites);
+  Future<Box> _openSupplementRoutinesBox() async => openBox(_supplementRoutinesBox, SupplementEventsEntity.boxNameRoutines);
   Future<Box> _openExplainingCardsBox() async => openBox(_explainingCardsBox, ExplainingCardEntity.boxName);
   Future<Box> _openSubjectiveAnalysisResultsBox() async => openBox(_subjectiveAnalysisResultsBox, SubjectiveAnalysisResultEntity.boxName);
   Future<Box> _openUserStepsInfoBox() async => openBox(_userStepsInfoBox, StepsEntity.boxName);
@@ -157,6 +159,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> get _getLiquidFavoritesBox async => await _openLiquidFavoritesBox();
   Future<Box> get _getSupplementEventsBox async => await _openSupplementEventsBox();
   Future<Box> get _getSupplementFavoritesBox async => await _openSupplementFavoritesBox();
+  Future<Box> get _getSupplementRoutinesBox async => await _openSupplementRoutinesBox();
   Future<Box> get _getExplainingCardsBox async => await _openExplainingCardsBox();
   Future<Box> get _getSubjectiveAnalysisResultsBox async => await _openSubjectiveAnalysisResultsBox();
   Future<Box> get _getUserStepsInfoBox async => await _openUserStepsInfoBox();
@@ -722,6 +725,10 @@ class LocalStorageImpl extends LocalStorageRepository {
     final supplementFavorites = <int>[];
     supplementFavoritesMap.forEach((key, value) => supplementFavorites.add((value as SupplementEventsEntity).eventId));
 
+    final supplementRoutinesMap = await _getSupplementRoutinesBox.then((box) => box.toMap());
+    final supplementRoutines = <int>[];
+    supplementRoutinesMap.forEach((key, value) => supplementRoutines.add((value as SupplementEventsEntity).eventId));
+
     return EventsSynchronizationRequest(
       foodEvents: foodEvents,
       foodRoutines: foodRoutines,
@@ -740,6 +747,7 @@ class LocalStorageImpl extends LocalStorageRepository {
       collagenEvents: collagenEvents,
       supplementEvents: supplementEvents,
       supplementFavorites: supplementFavorites,
+      supplementRoutines: supplementRoutines,
     );
   }
 
@@ -756,6 +764,7 @@ class LocalStorageImpl extends LocalStorageRepository {
     await _clearBox(_getLiquidFavoritesBox);
     await _clearBox(_getSupplementEventsBox);
     await _clearBox(_getSupplementFavoritesBox);
+    await _clearBox(_getSupplementRoutinesBox);
     await _clearBox(_getSubjectiveAnalysisResultsBox);
     await _clearBox(_getRecipeFavoritesBox);
     await _clearBox(_getFecesEventsBox);
@@ -1391,6 +1400,63 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
+  Future<void> saveSupplementRoutine(SupplementEventsEntity supplementRoutineEntity, {bool isEdit = false}) async {
+    try {
+      await supplementRoutineEntity.save();
+    } catch (error) {
+      try {
+        _getSupplementRoutinesBox.then((box) {
+          if (isEdit) {
+            final supplementRoutinesMap = box.toMap();
+            supplementRoutinesMap.forEach((key, value) {
+              if ((value as SupplementEventsEntity).eventId == supplementRoutineEntity.eventId) {
+                box.put(key, supplementRoutineEntity);
+              }
+            });
+          } else {
+            box.add(supplementRoutineEntity);
+          }
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<List> getSupplementRoutines() async {
+    List supplementRoutines = await _getSupplementRoutinesBox.then((box) {
+      return box.values.toList();
+    },);
+
+    // final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+    // return supplementsFavorites.where((event) => DateTimeHelper.calculateMidNightMillisecondsFromInt(event.eventDate) == midnightTime).toList();
+    return supplementRoutines;
+  }
+
+  @override
+  Future<void> removeSupplementRoutine(SupplementEventsEntity supplementEntity) async {
+    try {
+      await supplementEntity.delete();
+    } catch (error) {
+      try {
+        _getSupplementRoutinesBox.then((box) {
+          final supplementRoutinesMap = box.toMap();
+          dynamic desiredKey;
+          supplementRoutinesMap.forEach((key, value) {
+            if ((value as SupplementEventsEntity).eventId == supplementEntity.eventId) {
+              desiredKey = key;
+            }
+          });
+          box.delete(desiredKey);
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
   Future<bool> eraseDBEventsData() async {
     await _clearBox(_getFoodEventsBox);
     await _clearBox(_getFoodRoutinesBox);
@@ -1403,6 +1469,7 @@ class LocalStorageImpl extends LocalStorageRepository {
     await _clearBox(_getLiquidFavoritesBox);
     await _clearBox(_getSupplementEventsBox);
     await _clearBox(_getSupplementFavoritesBox);
+    await _clearBox(_getSupplementRoutinesBox);
     await _clearBox(_getSubjectiveAnalysisResultsBox);
     await _clearBox(_getRecipeFavoritesBox);
     await _clearBox(_getFecesEventsBox);

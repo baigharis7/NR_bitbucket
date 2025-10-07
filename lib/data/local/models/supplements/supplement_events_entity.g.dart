@@ -23,13 +23,16 @@ class SupplementEventsEntityAdapter
       eventDate: fields[2] as int,
       info: (fields[3] as List).cast<SupplementEventsInfoEntity>(),
       name: fields[4] as String?,
+      scheduleTime: fields[5] as String?,
+      daysOfWeek: (fields[6] as List?)?.map((e) => e as int).toList(),
+      timeZone: fields[7] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SupplementEventsEntity obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -39,7 +42,13 @@ class SupplementEventsEntityAdapter
       ..writeByte(3)
       ..write(obj.info)
       ..writeByte(4)
-      ..write(obj.name);
+      ..write(obj.name)
+      ..writeByte(5)
+      ..write(obj.scheduleTime)
+      ..writeByte(6)
+      ..write(obj.daysOfWeek)
+      ..writeByte(7)
+      ..write(obj.timeZone);
   }
 
   @override
@@ -109,6 +118,11 @@ SupplementEventsEntity _$SupplementEventsEntityFromJson(
               SupplementEventsInfoEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
       name: json['name'] as String?,
+      scheduleTime: json['scheduleTime'] as String?,
+      daysOfWeek: (json['daysOfWeek'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
+      timeZone: json['timeZone'] as String?,
     );
 
 Map<String, dynamic> _$SupplementEventsEntityToJson(
@@ -119,6 +133,9 @@ Map<String, dynamic> _$SupplementEventsEntityToJson(
       'eventDate': instance.eventDate,
       'info': instance.info.map((e) => e.toJson()).toList(),
       'name': instance.name,
+      'scheduleTime': instance.scheduleTime,
+      'daysOfWeek': instance.daysOfWeek,
+      'timeZone': instance.timeZone,
     };
 
 SupplementEventsInfoEntity _$SupplementEventsInfoEntityFromJson(

@@ -1,6 +1,7 @@
 import 'package:chuck_interceptor/chuck.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/supplement_favorite.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_routine.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplements_ev.dart';
 import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simple.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
@@ -60,6 +61,27 @@ class SupplementApi extends ApiHelper {
           '${Environment().config!.distributionPath}/favorites/supplement',
         ),
         supplementFavorite,
+      );
+
+  Future<Map<String, dynamic>> uploadSupplementRoutine(UploadSupplementRoutine uploadSupplementRoutine) =>
+      post(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/supplement-routines',
+        ),
+        uploadSupplementRoutine,
+      );
+
+  Future<Map<String, dynamic>> deleteSupplementRoutine(SupplementSimple supplement) =>
+      delete(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/supplement-routines',
+        ),
+        {
+          'userId': supplement.userId,
+          'eventId': supplement.eventId,
+        },
       );
 
 }

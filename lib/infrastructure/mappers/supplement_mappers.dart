@@ -1,5 +1,6 @@
 import 'package:nutrenaissance_flutter/data/api/supplements/model/supplement_favorite.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_routine.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplements_ev.dart';
 import 'package:nutrenaissance_flutter/data/local/models/supplements/supplement_events_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/supplements/upload_supplement_event_entity.dart';
@@ -71,4 +72,40 @@ SupplementEventsEntity mapToSupplementEventEntityFromFavorite(SupplementFavorite
       eventDate: supplementFavorite.eventDate,
       info: supplementFavorite.data.map((e) => SupplementEventsInfoEntity(id: e.id, amount: e.amount.toString(), unit: e.unit)).toList(),
       name: supplementFavorite.name,
+    );
+
+UploadSupplementRoutine mapToSupplementRoutineFromSupplement(SupplementSimple supplement) =>
+    UploadSupplementRoutine(
+        userId: supplement.userId!,
+        eventId: supplement.eventId!,
+        eventDate: supplement.eventDate!,
+        info: supplement.info.orEmpty().map((e) => UploadSupplementRoutineInfo(id: e.id, amount: e.amount, unit: e.unit)).toList(),
+        time: supplement.scheduleTime!,
+        daysOfWeek: supplement.daysOfWeek.orEmpty(),
+        timeZone: supplement.timeZone.orEmpty(),
+    );
+
+SupplementEventsEntity mapToSupplementEventEntityFromRoutine(UploadSupplementRoutine supplementRoutine) =>
+    SupplementEventsEntity(
+      userId: supplementRoutine.userId,
+      eventId: supplementRoutine.eventId,
+      eventDate: supplementRoutine.eventDate,
+      info: supplementRoutine.info.map((e) => SupplementEventsInfoEntity(id: e.id, amount: e.amount.toString(), unit: e.unit)).toList(),
+      name: supplementRoutine.name,
+      scheduleTime: supplementRoutine.time,
+      daysOfWeek: supplementRoutine.daysOfWeek,
+      timeZone: supplementRoutine.timeZone.orEmpty(),
+    );
+
+SupplementSimple mapToSupplementSimpleFromSupplementEntity(SupplementEventsEntity supplementEntity) =>
+    SupplementSimple(
+      userId: supplementEntity.userId,
+      eventId: supplementEntity.eventId,
+      eventDate: supplementEntity.eventDate,
+      info: supplementEntity.info.map((e) => NutriInfo(id: e.id, amount: int.parse(e.amount), unit: e.unit)).toList(),
+      name: supplementEntity.name,
+      isRoutine: true,
+      scheduleTime: supplementEntity.scheduleTime,
+      daysOfWeek: supplementEntity.daysOfWeek,
+      timeZone: supplementEntity.timeZone,
     );

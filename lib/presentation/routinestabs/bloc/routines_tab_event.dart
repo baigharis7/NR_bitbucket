@@ -16,3 +16,9 @@ class DeleteSportRoutineAction extends RoutinesTabEvent {
 
   DeleteSportRoutineAction({required this.sportRoutineCompleted});
 }
+
+class DeleteSupplementRoutineRoutinesTabEvent extends RoutinesTabEvent {
+  final SupplementSimple supplement;
+
+  DeleteSupplementRoutineRoutinesTabEvent({required this.supplement});
+}

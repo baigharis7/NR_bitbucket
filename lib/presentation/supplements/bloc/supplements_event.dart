@@ -76,3 +76,11 @@ class SavingEventSupplementsAction extends SupplementsEvent {}
 class FinishEventSupplementsAction extends SupplementsEvent{}
 
 class FinishSupplementFavorite extends SupplementsEvent {}
+
+class FinishSupplementRoutineSupplementsEvent extends SupplementsEvent {}
+
+class FinishSupplementFavoriteSupplementsEvent extends SupplementsEvent {
+  final SupplementSimple supplement;
+
+  FinishSupplementFavoriteSupplementsEvent({required this.supplement});
+}

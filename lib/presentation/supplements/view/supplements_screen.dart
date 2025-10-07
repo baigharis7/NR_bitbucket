@@ -176,12 +176,12 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                     primary: false,
                     itemCount: state.supplementFavorites?.length,
                     itemBuilder: (context, index) {
-                      final supplementFavorite = state.supplementFavorites?.orEmpty()[index];
+                      final supplementFavorite = state.supplementFavorites.orEmpty()[index];
                       return ItemInfoCard(
-                        title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite?.info![0].id ?? -1).translate(context),
+                        title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite.info![0].id ?? -1).translate(context),
                         trailingSrc: 'assets/icon/add_icon.png',
-                        trailingTap: () {},
-                        subtitle: '${supplementFavorite?.info![0].amount.toString()} ${supplementFavorite?.info![0].unit}',
+                        trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(supplement: supplementFavorite)),
+                        subtitle: '${supplementFavorite.info![0].amount.toString()} ${supplementFavorite.info![0].unit}',
                         leadingSrc: 'assets/images/favorite_icon.png',
                         leadingTap: () {},
                       );

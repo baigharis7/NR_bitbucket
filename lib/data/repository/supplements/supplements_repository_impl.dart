@@ -1,5 +1,6 @@
 import 'package:nutrenaissance_flutter/data/api/supplements/model/supplement_favorite.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_routine.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplements_ev.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/supplemets_api.dart';
 import 'package:nutrenaissance_flutter/data/local/models/supplements/supplement_events_entity.dart';
@@ -159,5 +160,52 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<void> uploadSupplementRoutine(UploadSupplementRoutine uploadSupplementRoutine) async {
+    try {
+      await supplementApi.uploadSupplementRoutine(uploadSupplementRoutine);
+    } catch(_) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> saveSupplementRoutine(UploadSupplementRoutine supplementRoutine) async {
+    try {
+      await localStorageRepository.saveSupplementRoutine(mapToSupplementEventEntityFromRoutine(supplementRoutine));
+    } catch(_) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<SupplementSimple>> getSupplementRoutines() async {
+    try {
+      final supplementRoutines = await localStorageRepository.getSupplementRoutines();
+      return supplementRoutines.map((e) => mapToSupplementSimpleFromSupplementEntity(e as SupplementEventsEntity)).toList();
+    } catch(_) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteSupplementRoutine(SupplementSimple supplement) async {
+    try {
+      await supplementApi.deleteSupplementRoutine(supplement);
+    } catch(_) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> removeSupplementRoutine(SupplementSimple supplement) async {
+    try {
+      await localStorageRepository.removeSupplementRoutine(mapToSupplementEventEntityFromSupplementSimple(supplement));
+    } catch(_) {
+      rethrow;
+    }
+  }
+
 
 }

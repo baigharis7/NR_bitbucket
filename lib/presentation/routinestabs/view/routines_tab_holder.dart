@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/presentation/routinestabs/bloc/routines_t
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/routinestabs/view/meal_routines_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/routinestabs/view/physical_activity_routines_tab.dart';
+import 'package:nutrenaissance_flutter/presentation/routinestabs/view/supplement_routines_tab.dart';
 
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
@@ -27,12 +28,12 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
   String? title;
   late TabController _tabController;
   int _selectedTab = 0;
-  List<String> _tabs = ['', ''];
+  List<String> _tabs = ['', '', ''];
   late RoutinesTabBloc routinesTabsBloc;
 
   @override
   void didChangeDependencies() {
-    _tabs = [AppLocalizations.of(context)!.meal.toUpperCase(), AppLocalizations.of(context)!.physical_activity.toUpperCase(),];
+    _tabs = [AppLocalizations.of(context)!.meal.toUpperCase(), AppLocalizations.of(context)!.physical_activity.toUpperCase(), AppLocalizations.of(context)!.supplements];
     super.didChangeDependencies();
   }
 
@@ -106,7 +107,7 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
                       color: Colors.transparent,
                       borderRadius: BorderRadius.circular(Dimens.borderNormal),
                     ),
-                    labelPadding: const EdgeInsets.symmetric(horizontal: Dimens.padding10),
+                    labelPadding: const EdgeInsets.symmetric(horizontal: Dimens.padding6),
                     labelColor: Colors.white,
                     indicatorSize: TabBarIndicatorSize.tab,
                     unselectedLabelColor: AppColors.yellowishGreen,
@@ -119,7 +120,7 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
                           borderRadius: BorderRadius.circular(Dimens.borderNormal),
                           color: isSelected ? AppColors.yellowishGreen : AppColors.butter59,
                         ),
-                        child: Text(_tabs[index]),
+                        child: Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6), child: Text(_tabs[index], style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize11), textAlign: TextAlign.center)),
                       );
                     }),
                   ),
@@ -128,9 +129,10 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
                   Expanded(
                     child: TabBarView(
                       controller: _tabController,
-                      children: const [
+                      children:  const [
                         MealRoutinesTab(),
                         PhysicalActivityRoutinesTab(),
+                        SupplementRoutinesTab(),
                       ],
                     ),
                   ),
