@@ -79,6 +79,8 @@ enum ErrorTypes {
   saveSupplementFavoriteError,
   uploadSupplementRoutineError,
   saveSupplementRoutineError,
+  deleteSupplementRoutineError,
+  removeSupplementRoutineError,
 }
 
 enum FormErrorTypes {

@@ -8,6 +8,7 @@ class SupplementsState {
   ErrorTypes? onError;
   String? screenTitle;
   bool? isEdit;
+  UserProfileModel? userProfile;
   SupplementsInfoMaster? supplementsInfo;
   List<SupplementSimple>? supplementFavorites;
   SupplementSimple? supplementObj;
@@ -17,6 +18,7 @@ class SupplementsState {
     this.onError,
     this.screenTitle,
     this.isEdit,
+    this.userProfile,
     this.supplementsInfo,
     this.supplementFavorites,
     this.supplementObj,
@@ -27,6 +29,7 @@ class SupplementsState {
     ErrorTypes? onError,
     String? screenTitle,
     bool? isEdit,
+    UserProfileModel? userProfile,
     SupplementsInfoMaster? supplementsInfo,
     List<SupplementSimple>? supplementFavorites,
     SupplementSimple? supplementObj,
@@ -36,6 +39,7 @@ class SupplementsState {
       onError: onError,
       isEdit: isEdit ?? this.isEdit,
       screenTitle: screenTitle ?? this.screenTitle,
+      userProfile: userProfile ?? this.userProfile,
       supplementsInfo: supplementsInfo ?? this.supplementsInfo,
       supplementFavorites: supplementFavorites ?? this.supplementFavorites,
       supplementObj: supplementObj ?? this.supplementObj,

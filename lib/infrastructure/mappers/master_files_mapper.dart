@@ -219,12 +219,12 @@ UnitsFoodsMaster mapToUnitsFoodsMaster(UnitsFoodsEntity unitsFoodsEntity) {
 }
 
 SupplementsInfoEntity mapToSupplementsInfoEntity(SupplementsInfoResponse supplementsInfoResponse) {
-  List<SupplementInfoEntity> data = supplementsInfoResponse.data.map((element) => SupplementInfoEntity(id: element.id, es: element.es, en: element.en, unit: element.unit)).toList();
+  List<SupplementInfoEntity> data = supplementsInfoResponse.data.map((element) => SupplementInfoEntity(id: element.id, es: element.es, en: element.en, unit: element.unit, computerName: element.computerName)).toList();
   return SupplementsInfoEntity(v: supplementsInfoResponse.v, data: data);
 }
 
 SupplementsInfoMaster mapToSupplementsInfoMaster(SupplementsInfoEntity supplementsInfoEntity) {
-  List<SupplementInfoMaster> data = supplementsInfoEntity.data.map((element) => SupplementInfoMaster(id: element.id, es: element.es, en: element.en, unit: element.unit)).toList();
+  List<SupplementInfoMaster> data = supplementsInfoEntity.data.map((element) => SupplementInfoMaster(id: element.id, es: element.es, en: element.en, unit: element.unit, computerName: element.computerName)).toList();
   return SupplementsInfoMaster(v: supplementsInfoEntity.v, data: data);
 }
 

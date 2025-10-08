@@ -667,6 +667,7 @@ void main() async {
     showModelAppearanceInteractor: showModelAppearanceInteractor,
     saveModelAppearanceInteractor: saveModelAppearanceInteractor,
     getTodaySportsInteractor: getTodaySportsInteractor,
+    getDaySupplementEventsInteractor: getDaySupplementEventsInteractor,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(
@@ -1034,6 +1035,7 @@ void main() async {
   );
 
   final supplementsBloc = SupplementsBloc(
+    getProfileInteractor: getProfileInteractor,
     getMasterFileInteractor: getMasterFileInteractor,
     uploadSupplementEventInteractor: uploadSupplementEventInteractor,
     saveSupplementEventInteractor: saveSupplementEventInteractor,
@@ -1050,6 +1052,7 @@ void main() async {
     deleteSupplementEventInteractor: deleteSupplementEventInteractor,
     removeSupplementEventInteractor: removeSupplementEventInteractor,
     getMasterFileInteractor: getMasterFileInteractor,
+    getProfileInteractor: getProfileInteractor,
   );
 
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);

@@ -27,6 +27,7 @@ SupplementInfoResponse _$SupplementInfoResponse(Map<String, dynamic> json) =>
       es: json['es'] as String,
       en: json['en'] as String,
       unit: json['unit'] as String,
+      computerName: json['computer_name'] as String?,
     );
 
 Map<String, dynamic> _$SupplementInfoResponseToJson(SupplementInfoResponse instance) =>
@@ -35,4 +36,5 @@ Map<String, dynamic> _$SupplementInfoResponseToJson(SupplementInfoResponse insta
       'es': instance.es,
       'en': instance.en,
       'unit': instance.unit,
+      'computer_name': instance.computerName,
     };

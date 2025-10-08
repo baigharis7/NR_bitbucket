@@ -105,7 +105,7 @@ class RoutinesTabBloc extends Bloc<RoutinesTabEvent, RoutinesTabState> {
       emit(state.copyWith(isLoading: true, onError: null));
 
       try {
-        // await deleteSupplementRoutineInteractor.execute(event.supplement);
+        await deleteSupplementRoutineInteractor.execute(event.supplement);
         try {
           // throw Exception('');
           await removeSupplementRoutineInteractor.execute(event.supplement);

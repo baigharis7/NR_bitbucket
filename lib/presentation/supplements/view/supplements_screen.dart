@@ -7,7 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/supplements/bloc/supplements_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
@@ -150,6 +152,41 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                       final supplement = NutritionUtils.findSupplementByName(state.supplementsInfo?.data ?? [], supplementName, context);
                       supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: supplement.id, unit: supplement.unit, amount: 0)));
                     },
+                  ),
+                  if ((state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) && state.supplementObj?.info?.orEmpty().isEmpty == true) const SizedBox(height: Dimens.height12),
+                  if ((state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) && state.supplementObj?.info?.orEmpty().isEmpty == true) Container(
+                    padding: const EdgeInsets.all(Dimens.paddingSmall),
+                    decoration: BoxDecoration(
+                      color: AppColors.white70Percent,
+                      borderRadius: BorderRadius.circular(Dimens.border11),
+                    ),
+                    child: Column(children: [
+                      ListTile(
+                        leading: Image.asset('assets/images/goal_objectives.png', height: Dimens.height32),
+                        visualDensity: VisualDensity.compact,
+                        title: Text(AppLocalizations.of(context)!.related_objectives,
+                          style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSize17, color: AppColors.peacockBlue),),
+                        trailing: Image.asset('assets/images/info.png', height: Dimens.heightXSmall, color: AppColors.peacockBlue),
+                      ),
+                      if (state.userProfile?.objectives?.contains(Constants.REDUCE_RISK_OF_INJURY) ?? false) ItemInfoCard(
+                        title: AppLocalizations.of(context)!.creatine,
+                        leadingIconSize: Dimens.height25,
+                        trailingSrc: 'assets/icon/add_icon.png',
+                        trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(supplement: SupplementSimple(info: [NutriInfo(id: Constants.CREATINE, unit: 'mg', amount: (0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt())]))),
+                        subtitle: '${(0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt()} mg',
+                        leadingSrc: 'assets/images/goal_objectives.png',
+                        leadingTap: () {},
+                      ),
+                      if (state.userProfile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) ItemInfoCard(
+                        title: AppLocalizations.of(context)!.collagen,
+                        leadingIconSize: Dimens.height25,
+                        trailingSrc: 'assets/icon/add_icon.png',
+                        trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(supplement: SupplementSimple(info: [NutriInfo(id: Constants.COLLAGEN, unit: 'mg', amount: 10)]))),
+                        subtitle: '10 mg',
+                        leadingSrc: 'assets/images/goal_objectives.png',
+                        leadingTap: () {},
+                      ),
+                    ],),
                   ),
                   const SizedBox(height: Dimens.height12),
                   if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) ListView.builder(

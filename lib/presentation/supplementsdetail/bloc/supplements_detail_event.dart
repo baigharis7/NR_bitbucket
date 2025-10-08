@@ -3,7 +3,11 @@ part of 'supplements_detail_bloc.dart';
 @immutable
 abstract class SupplementsDetailEvent {}
 
-class InitializeSupplementsDetailEvent extends SupplementsDetailEvent {}
+class InitializeSupplementsDetailEvent extends SupplementsDetailEvent {
+  final DateTime? eventDate;
+
+  InitializeSupplementsDetailEvent({this.eventDate});
+}
 
 class UpdateEventsDateSupplementsDetailEvent extends SupplementsDetailEvent {
   final DateTime dateTime;

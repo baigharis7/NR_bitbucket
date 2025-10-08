@@ -168,6 +168,10 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.upload_supplement_routine_error;
     case ErrorTypes.saveSupplementRoutineError:
       return stringResolver.save_supplement_routine_error;
+    case ErrorTypes.deleteSupplementRoutineError:
+      return stringResolver.delete_supplement_routine_error;
+    case ErrorTypes.removeSupplementRoutineError:
+      return stringResolver.remove_supplement_routine_error;
   }
 }
 

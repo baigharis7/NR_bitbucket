@@ -29,6 +29,7 @@ part 'supplements_event.dart';
 part 'supplements_state.dart';
 
 class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
+  final GetProfileInteractor getProfileInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final UploadSupplementEventInteractor uploadSupplementEventInteractor;
   final SaveSupplementEventInteractor saveSupplementEventInteractor;
@@ -40,6 +41,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
   final GetUserIdInteractor getUserIdInteractor;
 
   SupplementsBloc({
+    required this.getProfileInteractor,
     required this.getMasterFileInteractor,
     required this.uploadSupplementEventInteractor,
     required this.saveSupplementEventInteractor,
@@ -54,6 +56,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
     on<InitializationSupplementsAction>((event, emit) async {
       _clearData();
       emit(state.copyWith(isLoading: true, onError: null));
+      state.userProfile = await getProfileInteractor.execute();
       state.supplementsInfo = await getMasterFileInteractor.execute(MasterFilesType.supplementsInfo);
       state.supplementFavorites = await getSupplementFavoritesInteractor.execute();
       state.supplementObj?.userId = getUserIdInteractor.execute();
@@ -227,8 +230,9 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
     on<FinishSupplementFavoriteSupplementsEvent>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       try {
+        event.supplement.userId = getUserIdInteractor.execute();
         event.supplement.eventId = DateTime.now().millisecondsSinceEpoch;
-        event.supplement.eventDate = DateTime.now().millisecondsSinceEpoch;
+        event.supplement.eventDate = state.supplementObj?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
         final uploadSupplements = mapToUploadSupplementsEv(event.supplement);
         await uploadSupplementEventInteractor.execute(uploadSupplements);
         try {

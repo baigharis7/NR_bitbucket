@@ -12,6 +12,8 @@ import 'package:nutrenaissance_flutter/presentation/widgets/item_info_card.dart'
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/app_text_styles.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
+import '../../../infrastructure/utils/app_color.dart';
+import '../../../infrastructure/utils/constants.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../common/view/loading_screen.dart';
@@ -34,7 +36,7 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
   @override
   void initState() {
     supplementsDetailBloc = BlocProvider.of<SupplementsDetailBloc>(context);
-    supplementsDetailBloc.add(InitializeSupplementsDetailEvent());
+    supplementsDetailBloc.add(InitializeSupplementsDetailEvent(eventDate: DateTime.now()));
 
     super.initState();
   }
@@ -98,6 +100,41 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
                       onBackTap: () => Navigator.pop(context),
                       title: AppLocalizations.of(context)!.supplements,
                       image: 'assets/images/supplement.png',
+                    ),
+                    if (state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) const SizedBox(height: Dimens.height12),
+                    if (state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) Container(
+                      padding: const EdgeInsets.all(Dimens.paddingSmall),
+                      decoration: BoxDecoration(
+                        color: AppColors.white70Percent,
+                        borderRadius: BorderRadius.circular(Dimens.border11),
+                      ),
+                      child: Column(children: [
+                        ListTile(
+                          leading: Image.asset('assets/images/goal_objectives.png', height: Dimens.height32),
+                          visualDensity: VisualDensity.compact,
+                          title: Text(AppLocalizations.of(context)!.related_objectives,
+                            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSize17, color: AppColors.peacockBlue),),
+                          trailing: Image.asset('assets/images/info.png', height: Dimens.heightXSmall, color: AppColors.peacockBlue),
+                        ),
+                        if (state.userProfile?.objectives?.contains(Constants.REDUCE_RISK_OF_INJURY) ?? false) ItemInfoCard(
+                          title: AppLocalizations.of(context)!.creatine,
+                          leadingIconSize: Dimens.height25,
+                          trailingSrc: 'assets/images/delete_icon.png',
+                          trailingTap: state.supplemntCreatines.orEmpty().isNotEmpty == true ? () => supplementsDetailBloc.add(DeleteSupplementEventAction(supplement: state.supplemntCreatines!.first)) : null,
+                          subtitle: '${state.totalAmountCreatine.orZero()} mg',
+                          leadingSrc: 'assets/images/goal_objectives.png',
+                          leadingTap: () {},
+                        ),
+                        if (state.userProfile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) ItemInfoCard(
+                          title: AppLocalizations.of(context)!.collagen,
+                          leadingIconSize: Dimens.height25,
+                          trailingSrc: 'assets/images/delete_icon.png',
+                          trailingTap: state.supplemntCollagens.orEmpty().isNotEmpty == true ? () => supplementsDetailBloc.add(DeleteSupplementEventAction(supplement: state.supplemntCollagens!.first)) : null,
+                          subtitle: '${state.totalAmountCollagen.orZero()} mg',
+                          leadingSrc: 'assets/images/goal_objectives.png',
+                          leadingTap: () {},
+                        ),
+                      ],),
                     ),
                     const SizedBox(height: Dimens.height12),
                     ListView.builder(

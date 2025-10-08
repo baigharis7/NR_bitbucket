@@ -3,6 +3,7 @@ import 'package:nutrenaissance_flutter/domain/models/dashboard/nutrients_model.d
 import 'package:nutrenaissance_flutter/domain/models/dashboard/sugar_&_fiber_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/supplements_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
@@ -17,6 +18,7 @@ import '../../../domain/models/dashboard/nutrients_weekly_model.dart';
 import '../../../domain/models/liquidevents/liquid_event_complete.dart';
 import '../../../domain/models/masterfiles/objectives_info_master.dart';
 import '../../../domain/models/sportevents/sport_event_complete.dart';
+import '../../../domain/models/supplements/supplement_simple.dart';
 
 class DashboardState {
   bool isLoading;
@@ -25,6 +27,7 @@ class DashboardState {
   List<LiquidEventComplete>? todayLiquidEvents;
   NutrientsInfoMaster? nutrientsInfoMaster;
   ObjectivesInfoMaster? objectivesInfoMaster;
+  SupplementsInfoMaster? supplementsInfoMaster;
   UserProfileModel? profile;
   String? advice;
   List<NutrientsModel>? micronutrients;
@@ -52,6 +55,7 @@ class DashboardState {
   ModelsAppearanceEntity? sportInjuryModal;
   DateTime? lastTap;
   List<SportEventComplete>? sportEvents;
+  List<SupplementSimple>? supplementEvents;
 
   DashboardState({
     required this.isLoading,
@@ -60,6 +64,7 @@ class DashboardState {
     this.todayLiquidEvents,
     this.nutrientsInfoMaster,
     this.objectivesInfoMaster,
+    this.supplementsInfoMaster,
     this.profile,
     this.advice,
     this.micronutrients,
@@ -87,6 +92,7 @@ class DashboardState {
     this.sportInjuryModal,
     this.lastTap,
     this.sportEvents,
+    this.supplementEvents,
   });
 
   DashboardState copyWith({
@@ -97,6 +103,7 @@ class DashboardState {
     bool? infoLoaded,
     NutrientsInfoMaster? nutrientsInfoMaster,
     ObjectivesInfoMaster? objectivesInfoMaster,
+    SupplementsInfoMaster? supplementsInfoMaster,
     UserProfileModel? profile,
     String? advice,
     List<NutrientsModel>? micronutrients,
@@ -125,6 +132,7 @@ class DashboardState {
     ModelsAppearanceEntity? sportInjuryModal,
     DateTime? lastTap,
     List<SportEventComplete>? sportEvents,
+    List<SupplementSimple>? supplementEvents,
   }) {
     return DashboardState(
       isLoading: isLoading,
@@ -133,6 +141,7 @@ class DashboardState {
       todayLiquidEvents: todayLiquidEvents ?? this.todayLiquidEvents,
       nutrientsInfoMaster: nutrientsInfoMaster ?? this.nutrientsInfoMaster,
       objectivesInfoMaster: objectivesInfoMaster ?? this.objectivesInfoMaster,
+      supplementsInfoMaster: supplementsInfoMaster ?? this.supplementsInfoMaster,
       profile: profile ?? this.profile,
       advice: advice ?? this.advice,
       micronutrients: micronutrients ?? this.micronutrients,
@@ -160,6 +169,7 @@ class DashboardState {
       sportInjuryModal: sportInjuryModal ?? this.sportInjuryModal,
       lastTap: lastTap ?? this.lastTap,
       sportEvents: sportEvents ?? this.sportEvents,
+      supplementEvents: supplementEvents ?? this.supplementEvents,
     );
   }
 

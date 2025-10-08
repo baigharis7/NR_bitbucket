@@ -23,8 +23,9 @@ class SupplementInfoEntity {
   @HiveField(1) String es;
   @HiveField(2) String en;
   @HiveField(3) String unit;
+  @HiveField(4) String? computerName;
 
-  SupplementInfoEntity({required this.id, required this.es, required this.en, required this.unit});
+  SupplementInfoEntity({required this.id, required this.es, required this.en, required this.unit, this.computerName});
 
   factory SupplementInfoEntity.fromJson(Map<String, dynamic> json) => _$SupplementInfoEntityFromJson(json);
   Map<String, dynamic> toJson() => _$SupplementInfoEntityToJson(this);

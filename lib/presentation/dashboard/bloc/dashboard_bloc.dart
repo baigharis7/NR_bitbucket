@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_model_appearance_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_model_appearance_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_day_supplement_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/modelsappearance/models_appearance_refs.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/ApiLogger.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
@@ -120,6 +121,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final ShowModelAppearanceInteractor showModelAppearanceInteractor;
   final SaveModelAppearanceInteractor saveModelAppearanceInteractor;
   final GetTodaySportsInteractor getTodaySportsInteractor;
+  final GetDaySupplementEventsInteractor getDaySupplementEventsInteractor;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -163,6 +165,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.showModelAppearanceInteractor,
     required this.saveModelAppearanceInteractor,
     required this.getTodaySportsInteractor,
+    required this.getDaySupplementEventsInteractor,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -185,6 +188,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       // await synchronizeEventsInteractor.execute(getUserIdInteractor.execute());
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo,);
+      state.supplementsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.supplementsInfo,);
       state.profile = await getProfileInteractor.execute();
       state.sportInjuryModal = await showModelAppearanceInteractor.execute(ModelsAppearanceRefs.recoveryAfterSportInjury.index);
       if (state.profile?.physicalCharacteristics?.unit == 2) {
@@ -208,6 +212,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       // state.allCalendarEvents = await getAllEventsSortedByDateInteractor.execute();
       state.waterEvents = await getWaterEventsTodayInteractor.execute(dateTime: event.dateTime);
       state.allCalendarEvents = await getAllDashboardEventsSortedByDateInteractor.execute();
+      state.supplementEvents = await getDaySupplementEventsInteractor.execute(dateTime: event.dateTime);
 
       state.micronutrients = state.profile?.micronutrients.orEmpty()
           .map(

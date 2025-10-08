@@ -19,8 +19,9 @@ class SupplementInfoResponse {
   String es;
   String en;
   String unit;
+  String? computerName;
 
-  SupplementInfoResponse({required this.id, required this.es, required this.en, required this.unit});
+  SupplementInfoResponse({required this.id, required this.es, required this.en, required this.unit, this.computerName});
 
   factory SupplementInfoResponse.fromJson(Map<String, dynamic> json) => _$SupplementInfoResponse(json);
   Map<String, dynamic> toJson() => _$SupplementInfoResponseToJson(this);

@@ -58,13 +58,14 @@ class SupplementInfoEntityAdapter extends TypeAdapter<SupplementInfoEntity> {
       es: fields[1] as String,
       en: fields[2] as String,
       unit: fields[3] as String,
+      computerName: fields[4] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SupplementInfoEntity obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -72,7 +73,9 @@ class SupplementInfoEntityAdapter extends TypeAdapter<SupplementInfoEntity> {
       ..writeByte(2)
       ..write(obj.en)
       ..writeByte(3)
-      ..write(obj.unit);
+      ..write(obj.unit)
+      ..writeByte(4)
+      ..write(obj.computerName);
   }
 
   @override
@@ -113,6 +116,7 @@ SupplementInfoEntity _$SupplementInfoEntityFromJson(
       es: json['es'] as String,
       en: json['en'] as String,
       unit: json['unit'] as String,
+      computerName: json['computer_name'] as String?,
     );
 
 Map<String, dynamic> _$SupplementInfoEntityToJson(
@@ -122,4 +126,5 @@ Map<String, dynamic> _$SupplementInfoEntityToJson(
       'es': instance.es,
       'en': instance.en,
       'unit': instance.unit,
+      'computer_name': instance.computerName,
     };
