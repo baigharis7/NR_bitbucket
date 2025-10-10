@@ -41,6 +41,19 @@ class SportUpdateBloc extends Bloc<SportUpdateEvent, SportUpdateState> {
       emit(state.copyWith(isLoading: false));
     });
 
+    on<AddSportSportUpdateEvent>((event, emit) {
+      final listOfIds = state.sportSimpleEvent?.info.orEmpty().map((e) => e.id).toList();
+
+      if (listOfIds.orEmpty().contains((event.sportInfo).id)) {
+        final itemIndex = state.sportSimpleEvent!.info!.indexOf(state.sportSimpleEvent!.info!.firstWhere((food) => food.id == event.sportInfo.id));
+        state.sportSimpleEvent!.info!.remove(state.sportSimpleEvent!.info![itemIndex]);
+        state.sportSimpleEvent!.info!.add(event.sportInfo);
+      } else {
+        state.sportSimpleEvent?.info?.add(event.sportInfo);
+      }
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
+
     on<UpdateEventDateSportUpdateEvent>((event, emit) {
       state.sportSimpleEvent?.eventDate = event.dateTime.millisecondsSinceEpoch;
 

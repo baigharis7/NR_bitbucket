@@ -218,7 +218,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           .map(
             (micronutrient) =>
             NutrientsModel(
-              quantityConsumed: getQuantityConsumedSoFar(micronutrient),
+              quantityConsumed: getQuantityConsumedSoFar(micronutrient) + getQuantitySupplementsSoFar(micronutrient),
               nutrientInfoMaster: getNutrientInfo(micronutrient),
               fractionToFill: getFractionToFillMicros(micronutrient),
               unit: getUnitForMicronutrient(micronutrient),
@@ -231,7 +231,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           .map(
             (micronutrient) =>
             NutrientsModel(
-              quantityConsumed: getQuantityConsumedSoFar(micronutrient),
+              quantityConsumed: getQuantityConsumedSoFar(micronutrient) + getQuantitySupplementsSoFar(micronutrient),
               nutrientInfoMaster: getNutrientInfo(micronutrient),
               fractionToFill: getFractionToFillMicros(micronutrient),
               unit: getUnitForMicronutrient(micronutrient),
@@ -261,7 +261,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       final allMicronutrients = state.profile?.userRdas?.userRdas
           .orEmpty()
           .map((nutrient) => NutrientsModel(
-        quantityConsumed: getQuantityConsumedSoFar(nutrient.name),
+        quantityConsumed: getQuantityConsumedSoFar(nutrient.name) + getQuantitySupplementsSoFar(nutrient.name),
         nutrientInfoMaster: getNutrientInfo(nutrient.name),
         fractionToFill: 0.0,
         unit: getUnitForMicronutrient(nutrient.name),
@@ -567,9 +567,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         // if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
         //   rda = (state.profile?.sex == SexType.male) ? 220: 190;
         // }
-        // if (userRda.name == Constants.TRYPTOPHAN) {
-        //   rda = (state.profile?.physicalCharacteristics?.weight ?? 0) * Constants.TRYPTOPHAN_MG_PER_KG;
-        // }
+        if (userRda.name == Constants.TRYPTOPHAN) {
+          rda = (state.profile?.physicalCharacteristics?.weight ?? 0) * rda;
+        }
         break loop;
       }
     }
@@ -661,6 +661,22 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     }
 
     return double.parse((nutrientQuantitySoFar).toStringAsFixed(2));
+  }
+
+  double getQuantitySupplementsSoFar(String micronutrient) {
+    double supplementQuantitySoFar = 0.0;
+    for (var supplement in state.supplementEvents!) {
+      for (var supplementItem in supplement.info!) {
+        final supplementInfo = state.supplementsInfoMaster?.data.firstWhere((element) => supplementItem.id == element.id);
+        if (supplementInfo?.computerName == micronutrient) {
+          supplementQuantitySoFar = supplementQuantitySoFar + supplementItem.amount;
+        }
+      }
+
+      return double.parse((supplementQuantitySoFar).toStringAsFixed(2));
+    }
+
+    return double.parse((supplementQuantitySoFar).toStringAsFixed(2));
   }
 
   double calculateTodaySugar(int totalSugarRequired) {

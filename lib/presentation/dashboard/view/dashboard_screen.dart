@@ -343,8 +343,8 @@ class _DashboardScreen extends State<DashboardScreen>
                         MealTimeWidget(
                           name: AppLocalizations.of(context)!.supplements,
                           svg: 'assets/images/supplement.png',
-                          onItemClick: () => Navigator.pushNamed(context, SupplementsDetailScreen.routeName),
-                          onClick: () => Navigator.pushNamed(context, SupplementsScreen.routeName),
+                          onItemClick: () => Navigator.pushNamed(context, SupplementsDetailScreen.routeName).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                          onClick: () => Navigator.pushNamed(context, SupplementsScreen.routeName).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                         ),
                         DashTitleWidget(title: AppLocalizations.of(context)!.physical_activity, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
                         MealTimeWidget(

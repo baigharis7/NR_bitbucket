@@ -43,8 +43,8 @@ class SupplementsDetailBloc extends Bloc<SupplementsDetailEvent, SupplementsDeta
       state.userProfile = await getProfileInteractor.execute();
       state.supplementsInfo = await getMasterFileInteractor.execute(MasterFilesType.supplementsInfo);
       state.supplementEvents = await getDaySupplementEventsInteractor.execute(dateTime: event.eventDate);
-      state.supplemntCreatines = state.supplementEvents.where((item) => item.info?.length == 1 && item.info?[0].id == Constants.CREATINE).toList();
-      state.supplemntCollagens = state.supplementEvents.where((item) => item.info?.length == 1 && item.info?[0].id == Constants.COLLAGEN).toList();
+      // state.supplemntCreatines = state.supplementEvents.where((item) => item.info?.length == 1 && item.info?[0].id == Constants.CREATINE).toList();
+      // state.supplemntCollagens = state.supplementEvents.where((item) => item.info?.length == 1 && item.info?[0].id == Constants.COLLAGEN).toList();
 
       state.totalAmountCreatine = state.supplementEvents
           .expand((event) => event.info!)
@@ -57,7 +57,7 @@ class SupplementsDetailBloc extends Bloc<SupplementsDetailEvent, SupplementsDeta
           .fold<int>(0, (sum, info) => sum + (info.amount));
 
 
-      state.supplementEvents.removeWhere((item) => item.info?.length == 1 && (item.info?[0].id == Constants.CREATINE || item.info?[0].id == Constants.COLLAGEN));
+      // state.supplementEvents.removeWhere((item) => item.info?.length == 1 && (item.info?[0].id == Constants.CREATINE || item.info?[0].id == Constants.COLLAGEN));
 
       emit(state.copyWith(isLoading: false));
     });

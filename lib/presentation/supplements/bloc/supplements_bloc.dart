@@ -69,7 +69,8 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
-    on<GetSupplementFromNavAction>((event, emit) {
+    on<GetSupplementFromNavAction>((event, emit) async {
+      state.supplementsInfo = await getMasterFileInteractor.execute(MasterFilesType.supplementsInfo);
       state.supplementObj = event.supplementSimple;
       state.isEdit = true;
       emit(state.copyWith(isLoading: false));

@@ -11,6 +11,12 @@ class AddSportFromNavSportUpdateEvent extends SportUpdateEvent {
   AddSportFromNavSportUpdateEvent({required this.sportEvent});
 }
 
+class AddSportSportUpdateEvent extends SportUpdateEvent {
+  final AddSportFavInfo sportInfo;
+
+  AddSportSportUpdateEvent({required this.sportInfo});
+}
+
 class UpdateEventDateSportUpdateEvent extends SportUpdateEvent {
   final DateTime dateTime;
 

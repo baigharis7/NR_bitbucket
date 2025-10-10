@@ -118,7 +118,7 @@ class _SportUpdateScreenState extends State<SportUpdateScreen> {
                           final sportId = eventsHelper.getSportIdByName(sportName, state.sportsInfo!, currentLanguage);
                           final sportInfo = sportUpdateBloc.findSportById(sportId);
                           final info = AddSportFavInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null, timeStart: DateTime.now().millisecondsSinceEpoch);
-                          // bloc.add(AddSportEventAction(info));
+                          sportUpdateBloc.add(AddSportSportUpdateEvent(sportInfo: info));
                         },
                       ),
                       const SizedBox(height: Dimens.height12),

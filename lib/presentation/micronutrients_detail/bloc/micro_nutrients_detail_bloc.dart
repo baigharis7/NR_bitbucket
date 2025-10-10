@@ -42,6 +42,9 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
       state.weeklyFoodEvents = a;
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       state.profile = await getProfileInteractor.execute();
+      if (state.profile?.physicalCharacteristics?.unit == 2) {
+        state.profile?.physicalCharacteristics?.weight = (state.profile?.physicalCharacteristics?.weight ?? 0) / 2.20462;
+      }
 
       state.foodEvents = await getFoodEventsOfTodayInteractor.execute();
 
@@ -163,6 +166,9 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
     loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
       if (userRda.name == micronutrient) {
         rda = userRda.rda;
+        if (userRda.name == Constants.TRYPTOPHAN) {
+          rda = (state.profile?.physicalCharacteristics?.weight ?? 0) * rda;
+        }
         break loop;
       }
     }
