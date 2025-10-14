@@ -197,14 +197,14 @@ SportsInfoMaster mapToSportsInfoMaster(SportsInfoEntity sportsInfoEntity) {
 }
 
 UnitsInfoEntity mapToUnitsInfoEntity(UnitsInfoResponse unitsInfoResponse) {
-  List<UnitInfoEntity> data = unitsInfoResponse.data.map((item) => UnitInfoEntity(id: item.id, en: item.en, es: item.es)).toList();
+  List<UnitInfoEntity> data = unitsInfoResponse.data.map((item) => UnitInfoEntity(id: item.id, en: item.en, es: item.es, enPlural: item.enPlural, esPlural: item.esPlural)).toList();
   return UnitsInfoEntity(id: MasterFilesType.unitsInfo.index, v: unitsInfoResponse.v, data: data);
 }
 
 UnitsInfoMaster mapToUnitsInfoMaster(UnitsInfoEntity unitsInfoEntity) {
-  List<UnitInfoMaster> unitsInfoMaster = unitsInfoEntity.data.map((item) => UnitInfoMaster(id: item.id, en: item.en, es: item.es)).toList();
+  List<UnitInfoMaster> unitsInfoMaster = unitsInfoEntity.data.map((item) => UnitInfoMaster(id: item.id, en: item.en, es: item.es, enPlural: item.enPlural, esPlural: item.esPlural)).toList();
   unitsInfoMaster.add(UnitInfoMaster(id: -1, en: 'select', es: 'seleccionar'));
-  unitsInfoMaster.add(UnitInfoMaster(id: -2, en: 'grams', es: 'gramos'));
+  unitsInfoMaster.add(UnitInfoMaster(id: -2, en: 'gram', es: 'gramo', enPlural: 'grams', esPlural: 'gramos'));
   return UnitsInfoMaster(unitsInfoMaster: unitsInfoMaster);
 }
 

@@ -15,7 +15,7 @@ SupplementFavorite _$SupplementFavoriteFromJson(Map<String, dynamic> json) =>
           .map((e) =>
           SupplementFavoriteNutrient.fromJson(e as Map<String, dynamic>))
           .toList(),
-      name: json['name'] as String, // 👈 if you keep it int, change to `as int`
+      name: json['name'] as String?,
     );
 
 Map<String, dynamic> _$SupplementFavoriteToJson(SupplementFavorite instance) =>

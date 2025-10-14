@@ -6,6 +6,7 @@ part of 'routines_tab_bloc.dart';
 class RoutinesTabState {
   bool isLoading;
   ErrorTypes? onError;
+  UnitsInfoMaster? unitsInfoMaster;
   List<FoodRoutineEvent>? mealRoutines;
   FoodsAndDrinksNamesMaster? foodNames;
   List<SportRoutineCompleted>? sportRoutines;
@@ -16,6 +17,7 @@ class RoutinesTabState {
   RoutinesTabState({
     required this.isLoading,
     this.onError,
+    this.unitsInfoMaster,
     this.mealRoutines,
     this.foodNames,
     this.sportRoutines,
@@ -27,6 +29,7 @@ class RoutinesTabState {
   RoutinesTabState copyWith({
     required bool isLoading,
     ErrorTypes? onError,
+    UnitsInfoMaster? unitsInfoMaster,
     List<FoodRoutineEvent>? mealRoutines,
     FoodsAndDrinksNamesMaster? foodNames,
     List<SportRoutineCompleted>? sportRoutines,
@@ -37,6 +40,7 @@ class RoutinesTabState {
     return RoutinesTabState(
       isLoading: isLoading,
       onError: onError ?? this.onError,
+      unitsInfoMaster: unitsInfoMaster ?? this.unitsInfoMaster,
       mealRoutines: mealRoutines ?? this.mealRoutines,
       foodNames: foodNames ?? this.foodNames,
       sportRoutines: sportRoutines ?? this.sportRoutines,

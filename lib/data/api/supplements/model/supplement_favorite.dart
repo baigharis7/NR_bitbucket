@@ -8,9 +8,9 @@ class SupplementFavorite {
   int eventId;
   int eventDate;
   List<SupplementFavoriteNutrient> data;
-  String name;
+  String? name;
 
-  SupplementFavorite({required this.userId, required this.eventId, required this.eventDate, required this.data, required this.name});
+  SupplementFavorite({required this.userId, required this.eventId, required this.eventDate, required this.data, this.name});
 
   factory SupplementFavorite.fromJson(Map<String, dynamic> json) => _$SupplementFavoriteFromJson(json);
   Map<String, dynamic> toJson() => _$SupplementFavoriteToJson(this);

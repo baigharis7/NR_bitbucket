@@ -71,7 +71,7 @@ class _MealRoutinesTabState extends State<MealRoutinesTab> {
                   onCancel: () => Navigator.pop(context),
                   onConfirm: () => routinesTabsBloc.add(DeleteFoodRoutineActionRoutinesTabEvent(foodRoutineEvent: item)),
                 ),
-                subtitle: '--- ---- ---',);
+                subtitle: '${item.ingredients![0].qty} ${NutritionUtils.unitOfFoods(state.unitsInfoMaster?.unitsInfoMaster, item.ingredients.orEmpty(), context)}.',);
             },
           );
         },

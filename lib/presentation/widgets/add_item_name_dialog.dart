@@ -31,6 +31,7 @@ class AddItemNameDialog extends StatefulWidget {
   final Function(int?)? onMealTieChange;
   final List<int>? daysOfWeek;
   final int? mealTime;
+  final String? eventName;
   const AddItemNameDialog({super.key,
     required this.title,
     required this.onNameChange,
@@ -44,6 +45,7 @@ class AddItemNameDialog extends StatefulWidget {
     this.daysOfWeek,
     this.onChangeCreateRoutine,
     this.mealTime,
+    this.eventName,
   });
 
   @override
@@ -65,6 +67,7 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
     _isCreateRoutine = widget.isCreateRoutine ?? false;
     _mealTime = widget.mealTime ?? 0;
     _daysOfWeek = widget.daysOfWeek ?? [];
+    _itemNameController.text = widget.eventName.orEmpty();
     super.initState();
   }
 

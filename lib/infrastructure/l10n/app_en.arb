@@ -203,7 +203,7 @@
     "remove_supplement_event_error" : "There was an error in removing supplement event. Try again later.",
     "upload_supplement_favorite_event_error" : "There was an error in Uploading favorite supplement event. Try again later.",
     "save_supplement_favorite_event_error" : "There was an error in saving favorite supplement event. Try again later.",
-    "upload_supplement_routine_error" : "There was an error in saving supplement routine event. Try again later.",
+    "upload_supplement_routine_error" : "There was an error in uploading supplement routine event. Try again later.",
     "save_supplement_routine_error" : "There was an error in saving supplement routine event. Try again later.",
     "delete_supplement_routine_error" : "There was an error in deleting supplement routine. Try again later.",
     "remove_supplement_routine_error" : "There was an error in removing supplement routine. Try again later.",

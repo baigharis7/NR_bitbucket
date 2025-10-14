@@ -61,7 +61,7 @@ class _PhysicalActivityTabState extends State<PhysicalActivityTab> {
               color: AppColors.floralWhite,
               leadingTap: () {},
               trailingTap: () => favoritesTabsBloc.add(DeleteFavoriteSportFavoritesTabsEvent(sportFavorite: favSport, onFinish: () => _showConfirmationDialog(context: context))),
-              subtitle: '--- ---- ---',),
+              subtitle: '${favSport.info![0].minutes} ${AppLocalizations.of(context)!.minutes} - ${NutritionUtils.activityIntensityById(favSport.info![0].intensity.orZero(), context)}.',),
             ),
           ],
         ),

@@ -204,7 +204,7 @@
     "save_liquid_event_error" : "There was an error in saving liquid event. Try again later.",
     "upload_supplement_favorite_event_error" : "Se produjo un error al subir el evento de suplemento favorito. Inténtalo de nuevo más tarde.",
     "save_supplement_favorite_event_error" : "Se produjo un error al guardar el evento de suplemento favorito. Inténtalo de nuevo más tarde.",
-    "upload_supplement_routine_error" : "Se produjo un error al guardar el evento de rutina suplementaria. Inténtalo de nuevo más tarde.",
+    "upload_supplement_routine_error" : "Se produjo un error al cargar el evento de rutina de suplementos. Inténtalo de nuevo más tarde.",
     "save_supplement_routine_error" : "Se produjo un error al guardar el evento de rutina suplementaria. Inténtalo de nuevo más tarde.",
     "delete_supplement_routine_error" : "Se produjo un error al eliminar la rutina de suplementos. Inténtalo de nuevo más tarde.",
     "remove_supplement_routine_error" : "Se produjo un error al eliminar la rutina de suplementos. Inténtalo de nuevo más tarde.",

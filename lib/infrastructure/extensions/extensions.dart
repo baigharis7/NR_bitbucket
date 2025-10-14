@@ -330,6 +330,25 @@ extension LanguageSelector<T> on T {
   }
 }
 
+extension LanguageSelecto<T> on T {
+  String pluralized(BuildContext context) {
+    if (this is Translatable) {
+      String language = Localizations.localeOf(context).languageCode;
+      if (this is UnitInfoMaster) {
+        if (language == 'es') {
+          return (this as UnitInfoMaster).esPlural.orEmpty();
+        } else {
+          return (this as UnitInfoMaster).enPlural.orEmpty();
+        }
+      } else {
+        return '';
+      }
+    } else {
+      return '';
+    }
+  }
+}
+
 extension LanguageSelectorr<T> on T {
   String translateDescription(BuildContext context) {
     if (this is Translatable) {

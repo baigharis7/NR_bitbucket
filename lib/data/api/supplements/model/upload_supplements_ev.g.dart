@@ -14,6 +14,7 @@ UploadSupplementsEv _$UploadSupplementsEvFromJson(Map<String, dynamic> json) =>
       info: (json['info'] as List<dynamic>)
           .map((e) => UploadSupplementInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
+      name: json['userId'] as String?,
     );
 
 Map<String, dynamic> _$UploadSupplementsEvToJson(
@@ -23,6 +24,7 @@ Map<String, dynamic> _$UploadSupplementsEvToJson(
       'eventId': instance.eventId,
       'eventDate': instance.eventDate,
       'info': instance.info.map((e) => e.toJson()).toList(),
+      'name': instance.name,
     };
 
 UploadSupplementInfo _$UploadSupplementInfoFromJson(Map<String, dynamic> json) =>

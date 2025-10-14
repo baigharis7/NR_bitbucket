@@ -157,7 +157,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                             return ItemInfoCard(
                               onItemTap: () /*=> Navigator.pushNamed(context, MealTimeItemScreen.routeName)*/ {},
                               title: itemName,
-                              subtitle: '${food.eventKcals.orZero()} kcal. ${food.foodInfo![0].eventInfo?.qty.orZero().toInt()} ${NutritionUtils.findUnitName(state.unitsInfoMaster?.unitsInfoMaster, food.foodInfo, context)}.',
+                              subtitle: '${food.eventKcals.orZero()} kcal. ${food.foodInfo![0].eventInfo?.qty.orZero().toInt()} ${NutritionUtils.findUnitName(state.unitsInfoMaster?.unitsInfoMaster, [food.foodInfo.orEmpty()[0]], context)}.',
                               trailingSrc: 'assets/images/delete_icon.png',
                               beforeTrailingSrc: 'assets/icon/edit_icon.png',
                               beforeTrailingTap: () => Navigator.pushNamed(context, ItemUpdateScreen.routeName, arguments: food).then((value) => bloc.add(InitialMealTimeDetailsEventState(dateTime: state.selectedDateTime))),

@@ -8,8 +8,9 @@ class UploadSupplementsEv {
   int eventId;
   int eventDate;
   List<UploadSupplementInfo> info;
+  String? name;
 
-  UploadSupplementsEv({required this.userId, required this.eventId, required this.eventDate, required this.info});
+  UploadSupplementsEv({required this.userId, required this.eventId, required this.eventDate, required this.info, this.name});
 
   factory UploadSupplementsEv.fromJson(Map<String, dynamic> json) => _$UploadSupplementsEvFromJson(json);
   Map<String, dynamic> toJson() => _$UploadSupplementsEvToJson(this);

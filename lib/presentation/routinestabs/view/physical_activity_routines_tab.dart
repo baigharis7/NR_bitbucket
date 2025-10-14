@@ -67,7 +67,7 @@ class _PhysicalActivityRoutinesTabState extends State<PhysicalActivityRoutinesTa
                     onCancel: () => Navigator.pop(context),
                     onConfirm: () => routinesTabsBloc.add(DeleteSportRoutineAction(sportRoutineCompleted: item)),
                 ),
-                subtitle: '--- ---- ---',);
+                subtitle: '${item.info![0].minutes} ${AppLocalizations.of(context)!.minutes} - ${NutritionUtils.activityIntensityById(item.info![0].intensity!.toInt(), context)}.',);
             },
           );
         },

@@ -19,6 +19,7 @@ import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../domain/models/masterfiles/food_names_master.dart';
 import '../../../domain/models/masterfiles/sports_info_master.dart';
 import '../../../domain/models/masterfiles/supplements_info_master.dart';
+import '../../../domain/models/masterfiles/units_info_master.dart';
 import '../../../domain/models/supplements/supplement_simple.dart';
 import '../../../infrastructure/errors/error_types.dart';
 
@@ -59,6 +60,7 @@ class FavoritesTabsBloc extends Bloc<FavoritesTabsEvent, FavoritesTabsState> {
     on<InitializeFavoritesTabsEvent>((event, emit) async {
       state.favFoods = await getFoodFavoritesInteractor.execute();
       state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
+      state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
       state.sportsInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
       state.supplementsInfo = await getMasterFileInteractor.execute(MasterFilesType.supplementsInfo);
       state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames ?? []);

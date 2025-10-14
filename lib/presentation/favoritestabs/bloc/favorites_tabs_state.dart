@@ -12,6 +12,7 @@ class FavoritesTabsState {
   SportsInfoMaster? sportsInfo;
   SupplementsInfoMaster? supplementsInfo;
   List<SupplementSimple>? favSupplements;
+  UnitsInfoMaster? unitsInfoMaster;
 
   FavoritesTabsState({
     required this.isLoading,
@@ -22,6 +23,7 @@ class FavoritesTabsState {
     this.sportsInfo,
     this.supplementsInfo,
     this.favSupplements,
+    this.unitsInfoMaster,
   });
 
   FavoritesTabsState copyWith({
@@ -33,6 +35,7 @@ class FavoritesTabsState {
     SportsInfoMaster? sportsInfo,
     SupplementsInfoMaster? supplementsInfo,
     List<SupplementSimple>? favSupplements,
+    UnitsInfoMaster? unitsInfoMaster,
   }) {
     return FavoritesTabsState(
       isLoading: isLoading,
@@ -43,6 +46,7 @@ class FavoritesTabsState {
       sportsInfo: sportsInfo ?? this.sportsInfo,
       supplementsInfo: supplementsInfo ?? this.supplementsInfo,
       favSupplements: favSupplements ?? this.favSupplements,
+      unitsInfoMaster: unitsInfoMaster ?? this.unitsInfoMaster,
     );
   }
 }

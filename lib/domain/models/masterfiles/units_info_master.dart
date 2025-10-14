@@ -18,9 +18,11 @@ class UnitInfoMaster extends Translatable {
   int id;
   String en;
   String es;
+  String? enPlural;
+  String? esPlural;
 
-  UnitInfoMaster({required this.id, required this.en, required this.es});
-  UnitInfoMaster.empty({this.id = 0, this.en = '', this.es = ''});
+  UnitInfoMaster({required this.id, required this.en, required this.es, this.enPlural, this.esPlural});
+  UnitInfoMaster.empty({this.id = 0, this.en = '', this.es = '', this.enPlural = '', this.esPlural = ''});
 
   factory UnitInfoMaster.fromJson(Map<String, dynamic> json) => _$UnitInfoMasterFromJson(json);
   Map<String, dynamic> toJson() => _$UnitInfoMasterToJson(this);

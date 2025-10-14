@@ -29,6 +29,7 @@ UploadSupplementsEv mapToUploadSupplementsEv(SupplementSimple supplementSimple) 
       eventId: supplementSimple.eventId!,
       eventDate: supplementSimple.eventDate!,
       info: supplementSimple.info.orEmpty().map((e) => UploadSupplementInfo(id: e.id, amount: e.amount, unit: e.unit)).toList(),
+      name: supplementSimple.name.orEmpty(),
     );
 
 SupplementEventsEntity mapToSupplementEventsEntity(UploadSupplementsEv uploadSupplementsEv) =>
@@ -54,6 +55,7 @@ SupplementEventsEntity mapToSupplementEventEntityFromSupplementSimple(Supplement
       eventId: supplementSimple.eventId!,
       eventDate: supplementSimple.eventDate!,
       info: supplementSimple.info.orEmpty().map((e) => SupplementEventsInfoEntity(id: e.id, amount: e.amount.toString(), unit: e.unit)).toList(),
+      name: supplementSimple.name,
     );
 
 SupplementFavorite mapToSupplementFavoriteFromSupplement(SupplementSimple supplement) =>
@@ -62,7 +64,7 @@ SupplementFavorite mapToSupplementFavoriteFromSupplement(SupplementSimple supple
         eventId: supplement.eventId!,
         eventDate: supplement.eventDate!,
         data: supplement.info.orEmpty().map((e) => SupplementFavoriteNutrient(id: e.id, amount: e.amount, unit: e.unit)).toList(),
-        name: supplement.name.orEmpty(),
+        name: supplement.name,
     );
 
 SupplementEventsEntity mapToSupplementEventEntityFromFavorite(SupplementFavorite supplementFavorite) =>
@@ -80,6 +82,7 @@ UploadSupplementRoutine mapToSupplementRoutineFromSupplement(SupplementSimple su
         eventId: supplement.eventId!,
         eventDate: supplement.eventDate!,
         info: supplement.info.orEmpty().map((e) => UploadSupplementRoutineInfo(id: e.id, amount: e.amount, unit: e.unit)).toList(),
+        name: supplement.name,
         time: supplement.scheduleTime!,
         daysOfWeek: supplement.daysOfWeek.orEmpty(),
         timeZone: supplement.timeZone.orEmpty(),

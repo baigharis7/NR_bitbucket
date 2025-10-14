@@ -22,6 +22,7 @@ import '../../../domain/models/foodroutine/food_routine_event.dart';
 import '../../../domain/models/masterfiles/food_names_master.dart';
 import '../../../domain/models/masterfiles/sports_info_master.dart';
 import '../../../domain/models/masterfiles/supplements_info_master.dart';
+import '../../../domain/models/masterfiles/units_info_master.dart';
 import '../../../domain/models/routines/sport_routine_completed.dart';
 import '../../../domain/models/supplements/supplement_simple.dart';
 import '../../../infrastructure/errors/error_types.dart';
@@ -53,6 +54,7 @@ class RoutinesTabBloc extends Bloc<RoutinesTabEvent, RoutinesTabState> {
     required this.removeSupplementRoutineInteractor,
   }) : super(RoutinesTabState(isLoading: false)) {
     on<InitializeRoutinesTabEvent>((event, emit) async {
+      state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
       final foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
       state.foodNames = foodNames;
       state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames.orEmpty().toList() ?? []);

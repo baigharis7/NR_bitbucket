@@ -90,6 +90,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
   }
 
   Future<void> showRoutineTimeDialog({
+    required Function(String) onNameChange,
     required Function onTimeChanged,
     required Function(int) onChangeWeekDays,
     required Function(bool) onFavoriteChange,
@@ -98,17 +99,20 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
     required TimeOfDay? scheduleTime,
     required bool? isFavorite,
     required bool? isCreateRoutine,
+    required String? name,
 }) async {
     await showDialog(
       context: context,
       barrierDismissible: true,
       builder: (ctx) => ItemRoutineWidget(
+        onNameChange: (name) => onNameChange.call(name),
         onTimeChange: (pickedTime) => onTimeChanged.call(pickedTime),
         onChangeWeekDays: (weekDay) => onChangeWeekDays.call(weekDay),
         daysOfWeek: daysOfWeek,
         scheduleTime: scheduleTime,
         isFavorite: isFavorite,
         isCreateRoutine: isCreateRoutine,
+        name: name,
         onFavoriteChange: (value) => onFavoriteChange.call(value),
         onChangeCreateRoutine: (value) => onChangeCreateRoutine.call(value),
       ),
@@ -233,6 +237,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
                                     tileColor: AppColors.floralWhite,
                                     onTap: () => showRoutineTimeDialog(
+                                      onNameChange: (name) => bloc.add(SetEventSportNameAction(sportEventName: name)),
                                         onTimeChanged: (time) => bloc.add(UpdateTimeOfDaySportEventAction(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
                                       onChangeWeekDays: (weekDay) => bloc.add(UpdateDaysOfWeekSportEventAction(weekDay: weekDay)),
                                       onFavoriteChange: (value) => bloc.add(UpdateIsFavoriteSportEventsActions(isFavorite: value)),
@@ -241,6 +246,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                       scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.sportSimpleEvent?.scheduleTime),
                                       isFavorite: state.sportSimpleEvent?.isFavorite,
                                       isCreateRoutine: state.sportSimpleEvent?.isCreateRoutine,
+                                      name: state.sportSimpleEvent?.title,
                                     ),
                                     title: Text(AppLocalizations.of(context)!.add_more_options),
                                     trailing: const Icon(Icons.add_circle, color: Colors.black),
@@ -258,7 +264,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                 color: state.sportFavoriteEvent == favSport ? AppColors.butter : AppColors.floralWhite,
                                 leadingTap: () => bloc.add(DeleteFavSportSportEventsAction(sportFavorite: favSport, onFinish: () => _showConfirmationDialog(context: context, onDismiss: () {}))),
                                 trailingTap: () => bloc.add(AddSportFavoriteFromFavoriteEvent(sportFavorite: favSport)),
-                                subtitle: '--- ---- ---',),
+                                subtitle: '${favSport.info![0].minutes} ${AppLocalizations.of(context)!.minutes} - ${NutritionUtils.activityIntensityById(favSport.info![0].intensity.orZero(), context)}.',),
                               ),
                             ],),
                           ],
@@ -277,9 +283,29 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                           } else {
                             // FocusScope.of(context).unfocus();
                             // _sportFocusInputController.unfocus();
-                            bloc.add(FinishSportEventActions(onFinish: () => _showConfirmationDialog(context: context, onDismiss: () {
-                              Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate);
-                            })));
+                            if (state.sportSimpleEvent!.info.orEmpty().length > 1 && (state.sportSimpleEvent?.title.isEmptyOrNull() == true)) {
+                              showRoutineTimeDialog(
+                                onNameChange: (name) => bloc.add(SetEventSportNameAction(sportEventName: name)),
+                                onTimeChanged: (time) => bloc.add(UpdateTimeOfDaySportEventAction(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
+                                onChangeWeekDays: (weekDay) => bloc.add(UpdateDaysOfWeekSportEventAction(weekDay: weekDay)),
+                                onFavoriteChange: (value) => bloc.add(UpdateIsFavoriteSportEventsActions(isFavorite: value)),
+                                onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineSportEventsActions(isCreateRoutine: value)),
+                                daysOfWeek: state.sportSimpleEvent?.daysOfWeek,
+                                scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.sportSimpleEvent?.scheduleTime),
+                                isFavorite: state.sportSimpleEvent?.isFavorite,
+                                isCreateRoutine: state.sportSimpleEvent?.isCreateRoutine,
+                                name: state.sportSimpleEvent?.title,
+                              );
+                            } else if (state.sportSimpleEvent!.info.orEmpty().length == 1 && (state.sportSimpleEvent?.title.isEmptyOrNull() == true)) {
+                              final name = NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: [state.sportSimpleEvent?.info.orEmpty()[0]], context: context);
+                              bloc.add(SetEventSportNameAction(sportEventName: name));
+                            }
+
+                            if (state.sportSimpleEvent!.title.isNotEmptyOrNull()) {
+                              bloc.add(FinishSportEventActions(onFinish: () => _showConfirmationDialog(context: context, onDismiss: () {
+                                Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate);
+                              })));
+                            }
                           }
                       },),
                     ),

@@ -246,7 +246,27 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                   const SizedBox(height: Dimens.height32),
                   if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) GeneralButton(
                     onTap: () {
-                      supplementsBloc.add(SavingEventSupplementsAction());
+                      if (state.supplementObj!.info.orEmpty().length > 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
+                        showRoutineTimeDialog(
+                          onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
+                          onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
+                          onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
+                          onFavoriteChange: (value) => supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: value)),
+                          onChangeCreateRoutine: (value) => supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: value)),
+                          name: state.supplementObj?.name,
+                          daysOfWeek: state.supplementObj?.daysOfWeek,
+                          scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
+                          isFavorite: state.supplementObj?.isFavorite,
+                          isCreateRoutine: state.supplementObj?.isRoutine,
+                        );
+                      } else if (state.supplementObj!.info.orEmpty().length == 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
+                        final name = NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], state.supplementObj?.info.orEmpty()[0].id ?? -1).translate(context);
+                        supplementsBloc.add(UpdateNameSupplementsEvent(name: name));
+                      }
+
+                      if (state.supplementObj!.name.isNotEmptyOrNull()) {
+                        supplementsBloc.add(SavingEventSupplementsAction());
+                      }
                     },
                   ),
                 ],

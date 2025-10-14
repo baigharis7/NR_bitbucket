@@ -18,8 +18,10 @@ class UnitInfoResponse {
   int id;
   String en;
   String es;
+  String? enPlural;
+  String? esPlural;
 
-  UnitInfoResponse({required this.id, required this.en, required this.es});
+  UnitInfoResponse({required this.id, required this.en, required this.es, this.enPlural, this.esPlural});
 
   factory UnitInfoResponse.fromJson(Map<String, dynamic> json) => _$UnitInfoResponseFromJson(json);
   Map<String, dynamic> toJson() => _$UnitInfoResponseToJson(this);

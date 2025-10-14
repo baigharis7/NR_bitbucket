@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodroutine/food_routine_event.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
@@ -9,6 +10,7 @@ import '../../domain/models/favorites/food/food_favorite.dart';
 import '../../domain/models/masterfiles/sports_info_master.dart';
 import '../../domain/models/masterfiles/supplements_info_master.dart';
 import '../../domain/models/masterfiles/units_info_master.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class NutritionUtils {
   final GetMasterFileInteractor getMasterFileInteractor;
@@ -79,9 +81,56 @@ class NutritionUtils {
           break foodIUnitInfoMasterLoop;
         }
       }
-      buffer.write(unitName.translate(context!));
+      final unit = ingredients![i].eventInfo!.qty.orZero() > 1 ? unitName.pluralized(context!) : unitName.translate(context!);
+      buffer.write(unit);
       // Add separator only if not the last item
       if (i < ingredients.orEmpty().length - 1) {
+        buffer.write(' - ');
+      }
+    }
+    return buffer.toString();
+  }
+
+  static String findUnitNameFavFood(List<UnitInfoMaster>? unitsInfoMaster,
+      List<FoodInFavorite>? ingredients, BuildContext? context) {
+    final buffer = StringBuffer();
+
+    for (int i = 0; i < ingredients.orEmpty().length; i++) {
+      var unitName = UnitInfoMaster.empty();
+      foodIUnitInfoMasterLoop:
+      for (UnitInfoMaster unitInfoMaster in unitsInfoMaster.orEmpty()) {
+        if (unitInfoMaster.id == ingredients![i].unit) {
+          unitName = unitInfoMaster;
+          break foodIUnitInfoMasterLoop;
+        }
+      }
+      final unit = ingredients![i].qty.orZero() > 1 ? unitName.pluralized(context!) : unitName.translate(context!);
+      buffer.write(unit);
+      // Add separator only if not the last item
+      if (i < ingredients.orEmpty().length - 1) {
+        buffer.write(' - ');
+      }
+    }
+    return buffer.toString();
+  }
+
+  static String unitOfFoods(List<UnitInfoMaster>? unitsInfoMaster,
+      List<FoodRoutineInEvent>? data, BuildContext? context) {
+    final buffer = StringBuffer();
+
+    for (int i = 0; i < data.orEmpty().length; i++) {
+      var unitName = UnitInfoMaster.empty();
+      foodIUnitInfoMasterLoop:
+      for (UnitInfoMaster unitInfoMaster in unitsInfoMaster.orEmpty()) {
+        if (unitInfoMaster.id == data![i].unit) {
+          unitName = unitInfoMaster;
+          break foodIUnitInfoMasterLoop;
+        }
+      }
+      final unit = data![i].qty.orZero() > 1 ? unitName.pluralized(context!) : unitName.translate(context!);
+      buffer.write(unit);
+      // Add separator only if not the last item
+      if (i < data.orEmpty().length - 1) {
         buffer.write(' - ');
       }
     }
@@ -126,6 +175,16 @@ class NutritionUtils {
       }
     }
     return sportChosen.mets;
+  }
+
+  static String activityIntensityById(int id, BuildContext context) {
+    if (id == 0) {
+      return AppLocalizations.of(context)!.low;
+    } else if (id == 1) {
+      return AppLocalizations.of(context)!.medium;
+    } else {
+      return AppLocalizations.of(context)!.high;
+    }
   }
 
   static SupplementInfoMaster findSupplementByName(List<SupplementInfoMaster> supplements, String name, BuildContext context) {

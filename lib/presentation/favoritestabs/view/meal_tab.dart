@@ -42,7 +42,7 @@ class _MealTabState extends State<MealTab> {
           color: AppColors.floralWhite,
           leadingTap: () {},
           trailingTap: () { favoritesTabsBloc.add(RemoveFavoriteFoodFavoritesTabsEvent(foodFavorite: favFood)); },
-          subtitle: '--- ---- ---',),
+          subtitle: '${favFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, [favFood.ingredients[0]], context)}.',),
         ),
       ],
         ),
