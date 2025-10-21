@@ -1,12 +1,16 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:nutrenaissance_flutter/data/api/foodevents/model/upload_food_event.dart';
 import 'package:nutrenaissance_flutter/data/api/liquidevents/model/upload_liquid_event.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/model/supplement_favorite.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_routine.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplements_ev.dart';
 import 'package:nutrenaissance_flutter/domain/models/analysis/subjective/subjective_analysis_result.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/liquid/liquid_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodroutine/food_routine_event.dart';
 import 'package:nutrenaissance_flutter/domain/models/recipes/upload_recipe_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
@@ -19,6 +23,7 @@ part 'events_synchronization_response.g.dart';
 @JsonSerializable(explicitToJson: true)
 class EventsSynchronizationResponse {
   List<UploadFoodEvent> foodEvents;
+  List<FoodRoutineEvent> foodRoutines;
   List<SportEventComplete> sportEvents;
   List<SportRoutineCompleted> sportRoutines;
   List<UploadLiquidEvent> liquidEvents;
@@ -32,9 +37,13 @@ class EventsSynchronizationResponse {
   List<UploadFeces> urineEvents;
   List<UploadSupplementEvent> creatineEvents;
   List<UploadSupplementEvent> collagenEvents;
+  List<UploadSupplementsEv> supplementEvents;
+  List<SupplementFavorite> supplementFavorites;
+  List<UploadSupplementRoutine> supplementRoutines;
 
   EventsSynchronizationResponse({
     required this.foodEvents,
+    required this.foodRoutines,
     required this.sportEvents,
     required this.sportRoutines,
     required this.liquidEvents,
@@ -48,6 +57,9 @@ class EventsSynchronizationResponse {
     required this.urineEvents,
     required this.creatineEvents,
     required this.collagenEvents,
+    required this.supplementEvents,
+    required this.supplementFavorites,
+    required this.supplementRoutines,
   });
 
   factory EventsSynchronizationResponse.fromJson(Map<String, dynamic> json) => _$EventsSynchronizationResponseFromJson(json);

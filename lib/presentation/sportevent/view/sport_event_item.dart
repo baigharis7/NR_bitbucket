@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_file
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_picker_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
@@ -12,16 +13,17 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../domain/models/favorites/sport/sport_favorite.dart';
+import '../../../infrastructure/utils/nutrition_utils.dart';
 
 class SportEventItem extends StatefulWidget {
-  final int? sportIntensities;
+  final List<SportInfoMaster> allSportsInfo;
   final AddSportFavInfo sport;
   final Function removeSport;
   final Function(AddSportFavInfo) editMinutes;
   final Function(AddSportFavInfo) editIntensity;
   const SportEventItem({
     Key? key,
-    required this.sportIntensities,
+    required this.allSportsInfo,
     required this.sport,
     required this.removeSport,
     required this.editMinutes,
@@ -63,12 +65,12 @@ class _SportEventItem extends State<SportEventItem> {
   @override
   Widget build(BuildContext context) {
     final sportInfo = widget.sport;
-      _sportIntensities = widget.sportIntensities;
-      _sportName = widget.sport.translate(context);
-    if (widget.sport.minutes != null && _durationTextController.text == '') {
+      _sportIntensities = NutritionUtils.findSportIntensities(names: widget.allSportsInfo, id: sportInfo.id);
+      _sportName = NutritionUtils.findSportName(names: widget.allSportsInfo, ingredients: [sportInfo], context: context);
+    // if (widget.sport.minutes != null && _durationTextController.text == '') {
       _duration = widget.sport.minutes;
-      _durationTextController.text = _duration.toString();
-    }
+      _durationTextController.text = !_duration.isNull() ? _duration.toString() : '';
+    // }
 
     if (widget.sport.intensity != null) _intensity = widget.sport.intensity;
     _error = widget.sport.minutes == null || widget.sport.intensity == null;
@@ -90,10 +92,7 @@ class _SportEventItem extends State<SportEventItem> {
                   _sportName.orEmpty(),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: Dimens.fontSizeLarge,
-                  ),
+                  style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),
                 ),
               ),
               // InkWell(onTap: () { /*assets/images/favorite_icon.png*/ }, child: Image.asset('assets/icon/un_favorite_outlined.png', height: Dimens.heightXSmall)),

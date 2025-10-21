@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
@@ -38,11 +39,7 @@ class _TextCheckboxBoxState extends State<TextCheckboxBox> {
                 child: Text(
                   widget.title,
                   overflow: widget.overflow ?? TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: Dimens.fontSize15,
-                    color: AppColors.yellowishGreen,
-                  ),
+                  style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15, color: AppColors.yellowishGreen),
                 ),
               ),
               Checkbox(

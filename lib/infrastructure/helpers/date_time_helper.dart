@@ -218,5 +218,9 @@ class DateTimeHelper {
     return '$hour:$minute'; // e.g., 21:05
   }
 
+  static String formatMonthYear(DateTime date) {
+    return DateFormat('MMM yy').format(date);
+  }
+
 
 }

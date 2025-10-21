@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/presentation/recipes/discover/discover_ta
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 
 import '../../../../infrastructure/errors/error_resolver.dart';
+import '../../../../infrastructure/helpers/app_text_styles.dart';
 import '../../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../../infrastructure/utils/dimens.dart';
 import '../../../common/view/loading_screen.dart';
@@ -101,7 +102,7 @@ class _RecipesTabsHolderState extends State<RecipesTabsHolder>
                     height: 106, width: 242,
                   ),
                   const SizedBox(height: Dimens.height70, width: double.infinity),
-                  Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin_60), child: Text(AppLocalizations.of(context)!.slow_cooking, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeXXLarge, color: Colors.white, letterSpacing: 0.2,),)),
+                  Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin_60), child: Text(AppLocalizations.of(context)!.slow_cooking, textAlign: TextAlign.center, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeXXLarge, letterSpacing: 0.2),)),
                 ],)),
                 bottomNavigationBar: const CustomBottomNaviBarWidget(
                   activePosition: Constants.RECIPES,),

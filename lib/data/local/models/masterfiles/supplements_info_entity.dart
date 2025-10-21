@@ -1,0 +1,32 @@
+import 'package:hive/hive.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/hive_type_ids.dart';
+
+part 'supplements_info_entity.g.dart';
+
+@JsonSerializable(explicitToJson: true)
+@HiveType(typeId: HiveTypeIds.supplementsInfoEntity)
+class SupplementsInfoEntity {
+  @HiveField(0) int v;
+  @HiveField(1) List<SupplementInfoEntity> data;
+
+  SupplementsInfoEntity({required this.v, required this.data});
+
+  factory SupplementsInfoEntity.fromJson(Map<String, dynamic> json) => _$SupplementsInfoEntityFromJson(json);
+  Map<String, dynamic> toJson() => _$SupplementsInfoEntityToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+@HiveType(typeId: HiveTypeIds.supplementInfoEntity)
+class SupplementInfoEntity {
+  @HiveField(0) int id;
+  @HiveField(1) String es;
+  @HiveField(2) String en;
+  @HiveField(3) String unit;
+  @HiveField(4) String? computerName;
+
+  SupplementInfoEntity({required this.id, required this.es, required this.en, required this.unit, this.computerName});
+
+  factory SupplementInfoEntity.fromJson(Map<String, dynamic> json) => _$SupplementInfoEntityFromJson(json);
+  Map<String, dynamic> toJson() => _$SupplementInfoEntityToJson(this);
+}

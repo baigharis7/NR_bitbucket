@@ -398,8 +398,10 @@ SportRoutineCompleted mapAddFavSportToSportRoutineCompleted(AddSportFavorite add
         info: addSportFavorite.info.orEmpty().map((e) => Info(id: e.id, minutes: e.minutes, intensity: e.intensity)).toList(),
         comment: addSportFavorite.comment,
         sportName: addSportFavorite.title,
+        isRoutine: addSportFavorite.isCreateRoutine,
         scheduleTime: addSportFavorite.scheduleTime,
         daysOfWeek: addSportFavorite.daysOfWeek,
+        timeZone: addSportFavorite.timeZone,
     );
 }
 
@@ -416,15 +418,34 @@ FoodRoutineEntity mapToFoodRoutineEntity(FoodRoutineEvent foodRoutineEvent) {
       dish: foodRoutineEvent.dish,
       isRoutine: foodRoutineEvent.isRoutine,
       daysOfWeek: foodRoutineEvent.daysOfWeek,
+      schedule: foodRoutineEvent.time,
       drinks: [],
   );
 }
 
+FoodRoutineEvent mapFoodRoutineEntityToEvent(FoodRoutineEntity foodRoutineEntity) {
+    return FoodRoutineEvent(
+        userId: foodRoutineEntity.userId,
+        eventId: foodRoutineEntity.eventId,
+        eventDate: foodRoutineEntity.eventDate,
+        mealType: foodRoutineEntity.mealType,
+        ingredients: foodRoutineEntity.ingredients.orEmpty().map((foodEntity) => FoodRoutineInEvent(id: foodEntity.id, qty: foodEntity.qty, unit: foodEntity.unit, conversionFactor: foodEntity.conversionFactor, cookingMethod: foodEntity.cookingMethod, usedOil: foodEntity.usedOil, unitsEquivalences: foodEntity.unitsEquivalences)).toList(),
+        drinks: [],
+        dish: foodRoutineEntity.dish,
+        foodName: foodRoutineEntity.foodName,
+        isRoutine: foodRoutineEntity.isRoutine,
+        time: foodRoutineEntity.schedule,
+        daysOfWeek: foodRoutineEntity.daysOfWeek,
+        timeZone: foodRoutineEntity.timeZone,
+        comment: foodRoutineEntity.comment,
+    );
+}
+
 FoodEventSimple mapToFoodEventSimpleFromFoodFavorite(FoodFavorite foodFavorite) {
   return FoodEventSimple(
-      userId: '',
-      eventDate: foodFavorite.eventDate,
-      eventId: foodFavorite.eventDate,
+      userId: foodFavorite.userId!,
+      eventDate: foodFavorite.eventDate!,
+      eventId: foodFavorite.eventId,
       foodName: foodFavorite.title,
       mealType: foodFavorite.mealTime,
       dish: foodFavorite.dish,
@@ -435,9 +456,9 @@ FoodEventSimple mapToFoodEventSimpleFromFoodFavorite(FoodFavorite foodFavorite) 
 
 FoodRoutineEvent mapToFoodRoutineEventFromFoodFavorite(FoodFavorite foodFavorite) {
   return FoodRoutineEvent(
-      userId: '',
-      eventId: foodFavorite.eventDate,
-      eventDate: foodFavorite.eventDate,
+      userId: foodFavorite.userId!,
+      eventId: foodFavorite.eventId,
+      eventDate: foodFavorite.eventDate!,
       foodName: foodFavorite.title,
       mealType: foodFavorite.mealTime,
       dish: foodFavorite.dish,

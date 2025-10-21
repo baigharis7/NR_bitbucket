@@ -12,13 +12,16 @@ EventsSynchronizationResponse _$EventsSynchronizationResponseFromJson(
       foodEvents: (json['foodEvents'] as List<dynamic>)
           .map((e) => UploadFoodEvent.fromJson(e as Map<String, dynamic>))
           .toList(),
+      foodRoutines: (json['foodRoutines'] as List<dynamic>)
+          .map((e) => FoodRoutineEvent.fromJson(e as Map<String, dynamic>))
+          .toList(),
       sportEvents: (json['sportEvents'] as List<dynamic>)
           .map((e) => SportEventComplete.fromJson(e as Map<String, dynamic>))
           .toList(),
-      sportRoutines: [],
-          // sportRoutines: (json['sportRoutines'] as List<dynamic>)
-          // .map((e) => SportRoutineCompleted.fromJson(e as Map<String, dynamic>))
-          // .toList(),
+      // sportRoutines: [],
+          sportRoutines: (json['sportRoutines'] as List<dynamic>)
+          .map((e) => SportRoutineCompleted.fromJson(e as Map<String, dynamic>))
+          .toList(),
       liquidEvents: (json['liquidEvents'] as List<dynamic>)
           .map((e) => UploadLiquidEvent.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -53,6 +56,15 @@ EventsSynchronizationResponse _$EventsSynchronizationResponseFromJson(
       collagenEvents: (json['collagenEvents'] as List<dynamic>)
           .map((e) => UploadSupplementEvent.fromJson(e as Map<String, dynamic>))
           .toList(),
+      supplementEvents: (json['supplementEvents'] as List<dynamic>)
+          .map((e) => UploadSupplementsEv.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      supplementFavorites: (json['supplementFavorites'] as List<dynamic>)
+          .map((e) => SupplementFavorite.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      supplementRoutines: (json['supplementRoutines'] as List<dynamic>)
+          .map((e) => UploadSupplementRoutine.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$EventsSynchronizationResponseToJson(
@@ -75,4 +87,7 @@ Map<String, dynamic> _$EventsSynchronizationResponseToJson(
       'urineEvents': instance.urineEvents.map((e) => e.toJson()).toList(),
       'creatineEvents': instance.creatineEvents.map((e) => e.toJson()).toList(),
       'collagenEvents': instance.collagenEvents.map((e) => e.toJson()).toList(),
+      'supplementEvents': instance.supplementEvents.map((e) => e.toJson()).toList(),
+      'supplementFavorites': instance.supplementFavorites.map((e) => e.toJson()).toList(),
+      'supplementRoutines': instance.supplementRoutines.map((e) => e.toJson()).toList(),
     };

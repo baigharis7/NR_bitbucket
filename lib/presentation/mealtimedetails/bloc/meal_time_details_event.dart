@@ -15,6 +15,12 @@ class UpdateFoodArgumentsModelEventState extends MealTimeDetailsEvent {
   UpdateFoodArgumentsModelEventState({required this.foodArgumentsModel});
 }
 
+class UpdateDateTimeMealTimeDetailsEvent extends MealTimeDetailsEvent {
+  final DateTime dateTime;
+
+  UpdateDateTimeMealTimeDetailsEvent({required this.dateTime});
+}
+
 class DeleteFoodMealTimeDetailsEventAction extends MealTimeDetailsEvent {
   final FoodEventComplete foodEventComplete;
   final Function onFinish;

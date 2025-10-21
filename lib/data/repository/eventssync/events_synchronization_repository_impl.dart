@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:nutrenaissance_flutter/data/api/eventssync/events_sync_api.dart';
 import 'package:nutrenaissance_flutter/data/api/eventssync/model/events_synchronization_response.dart';
 import 'package:nutrenaissance_flutter/domain/repository/eventssync/events_synchronization_repository.dart';
@@ -41,6 +42,10 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
         /*allEventsIds.urineEvents.map((e) => e.toString()).toList()*/ [],
         /*allEventsIds.creatineEvents.map((e) => e.toString()).toList()*/ [],
         /*allEventsIds.collagenEvents.map((e) => e.toString()).toList()*/ [],
+        [],
+        /*allEventsIds.supplementEvents.map((e) => e.toString()).toList()*/ [],
+        /*allEventsIds.supplementFavorites.map((e) => e.toString()).toList()*/ [],
+        /*allEventsIds.supplementRoutines.map((e) => e.toString()).toList()*/ [],
       );
       final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
       return await _saveSynchronizedEvents(eventsSyncResponse).then((value) => value);
@@ -55,6 +60,13 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
         await localStorageRepository.saveFoodEvent(mapToFoodEventEntity(foodEvent), false);
       }
     }
+
+    if (eventsSynchronizationResponse.foodRoutines.isNotEmpty) {
+      for (var foodRoutine in eventsSynchronizationResponse.foodRoutines) {
+        await localStorageRepository.saveFoodRoutine(mapToFoodRoutineEntity(foodRoutine), isEdit: false);
+      }
+    }
+
     if (eventsSynchronizationResponse.sportEvents.isNotEmpty) {
       for (var sportEvent in eventsSynchronizationResponse.sportEvents) {
         await localStorageRepository.saveSportEvent(mapToSportEventEntity(sportEvent), false);
@@ -120,6 +132,24 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
     if (eventsSynchronizationResponse.collagenEvents.isNotEmpty) {
       for (var uploadCollagenEvent in eventsSynchronizationResponse.collagenEvents) {
         await localStorageRepository.saveCollagenEvent(mapToSupplementEventEntity(uploadCollagenEvent));
+      }
+    }
+
+    if (eventsSynchronizationResponse.supplementEvents.isNotEmpty) {
+      for (var supplementEvent in eventsSynchronizationResponse.supplementEvents) {
+        await localStorageRepository.saveSupplementEvent(mapToSupplementEventsEntity(supplementEvent));
+      }
+    }
+
+    if (eventsSynchronizationResponse.supplementFavorites.isNotEmpty) {
+      for (var supplementFavorite in eventsSynchronizationResponse.supplementFavorites) {
+        await localStorageRepository.saveSupplementFavorite(mapToSupplementEventEntityFromFavorite(supplementFavorite));
+      }
+    }
+
+    if (eventsSynchronizationResponse.supplementRoutines.isNotEmpty) {
+      for (var supplementRoutine in eventsSynchronizationResponse.supplementRoutines) {
+        await localStorageRepository.saveSupplementRoutine(mapToSupplementEventEntityFromRoutine(supplementRoutine));
       }
     }
 

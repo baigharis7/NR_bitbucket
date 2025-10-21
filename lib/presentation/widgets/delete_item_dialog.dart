@@ -19,7 +19,7 @@ class DeleteItemDialog extends StatelessWidget {
         margin: const EdgeInsets.all(Dimens.marginNormal),
         child: Column(children: [
           Container(margin: const EdgeInsets.only(bottom: Dimens.marginXXXLarge), alignment: Alignment.centerRight, child: InkWell(onTap: () => onCancel.call(), child: const Icon(Icons.cancel_outlined))),
-          Text(titleText ?? AppLocalizations.of(context)!.remove_item),
+          Text(titleText ?? AppLocalizations.of(context)!.remove_item('')),
           SizedBox(
             height: Dimens.heightNormal,
             child: Row(children: [

@@ -114,11 +114,11 @@ class _FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
                       ),
                       FavoritesCluster(
                         clusterTitle: '${AppLocalizationsHelper.instance.translate('breakfast')}s',
-                        items: bloc.getFavoritesSummary(Breakfast()).map((favorite) => favorite.title).toList(),
+                        items: /*bloc.getFavoritesSummary(Breakfast()).map((favorite) => favorite.title).toList()*/ [],
                         onEdit: (index) => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: bloc.getFavoritesSummary(Breakfast())[index]).then((value) => bloc.add(InitializeState())),
                         onFavorite: (index) => showUndoFavoriteDialog(
                           context: context,
-                          foodTitle: bloc.getFavoritesSummary(Breakfast())[index].title,
+                          foodTitle: bloc.getFavoritesSummary(Breakfast())[index].title ?? '',
                           onUndoFavorite: () => bloc.add(
                             RemoveFavoriteAction(
                               foodFavorite: bloc.getFavoritesSummary(Breakfast())[index],
@@ -130,11 +130,11 @@ class _FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
                       ),
                       FavoritesCluster(
                         clusterTitle: '${AppLocalizationsHelper.instance.translate('lunch')}s',
-                        items: bloc.getFavoritesSummary(Lunch()).map((favorite) => favorite.title).toList(),
+                        items: /*bloc.getFavoritesSummary(Lunch()).map((favorite) => favorite.title).toList()*/ [],
                         onEdit: (index) => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: bloc.getFavoritesSummary(Lunch())[index]).then((value) => bloc.add(InitializeState())),
                         onFavorite: (index) => showUndoFavoriteDialog(
                           context: context,
-                          foodTitle: bloc.getFavoritesSummary(Lunch())[index].title,
+                          foodTitle: bloc.getFavoritesSummary(Lunch())[index].title ?? '',
                           onUndoFavorite: () => bloc.add(
                             RemoveFavoriteAction(
                               foodFavorite: bloc.getFavoritesSummary(Lunch())[index],
@@ -146,11 +146,11 @@ class _FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
                       ),
                       FavoritesCluster(
                         clusterTitle: '${AppLocalizationsHelper.instance.translate('dinner')}s',
-                        items: bloc.getFavoritesSummary(Dinner()).map((favorite) => favorite.title).toList(),
+                        items: /*bloc.getFavoritesSummary(Dinner()).map((favorite) => favorite.title).toList()*/ [],
                         onEdit: (index) => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: bloc.getFavoritesSummary(Dinner())[index]).then((value) => bloc.add(InitializeState())),
                         onFavorite: (index) => showUndoFavoriteDialog(
                           context: context,
-                          foodTitle: bloc.getFavoritesSummary(Dinner())[index].title,
+                          foodTitle: bloc.getFavoritesSummary(Dinner())[index].title ?? '',
                           onUndoFavorite: () => bloc.add(
                             RemoveFavoriteAction(
                               foodFavorite: bloc.getFavoritesSummary(Dinner())[index],
@@ -161,11 +161,11 @@ class _FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
                         onSeeMore: () => Navigator.pushNamed(context, FavoriteFoodsClusterScreen.routeName, arguments: Dinner()),),
                       FavoritesCluster(
                         clusterTitle: '${AppLocalizationsHelper.instance.translate('snack')}s',
-                        items: bloc.getFavoritesSummary(Snack()).map((favorite) => favorite.title).toList(),
+                        items: /*bloc.getFavoritesSummary(Snack()).map((favorite) => favorite.title).toList()*/ [],
                         onEdit: (index) => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: bloc.getFavoritesSummary(Snack())[index]).then((value) => bloc.add(InitializeState())),
                         onFavorite: (index) => showUndoFavoriteDialog(
                           context: context,
-                          foodTitle: bloc.getFavoritesSummary(Snack())[index].title,
+                          foodTitle: bloc.getFavoritesSummary(Snack())[index].title ?? '',
                           onUndoFavorite: () => bloc.add(
                             RemoveFavoriteAction(
                               foodFavorite: bloc.getFavoritesSummary(Snack())[index],

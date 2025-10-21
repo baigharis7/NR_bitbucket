@@ -52,6 +52,10 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.uploading_food_routine_event_error;
     case ErrorTypes.saveFoodRoutineEventError:
       return stringResolver.save_food_routine_event_error;
+    case ErrorTypes.deleteSportRoutineError:
+      return stringResolver.delete_sport_routine_error;
+    case ErrorTypes.removeSportRoutineError:
+      return stringResolver.remove_sport_routine_error;
     case ErrorTypes.retrieveFoodEventsError:
       return stringResolver.retrieve_food_events_error;
     case ErrorTypes.locallySavingSportEventError:
@@ -84,6 +88,10 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.delete_favorite_error;
     case ErrorTypes.removeFoodFavoriteError:
       return stringResolver.remove_favorite_error;
+    case ErrorTypes.deleteFoodRoutineError:
+      return stringResolver.delete_food_routine_error;
+    case ErrorTypes.removerFoodRoutineError:
+      return stringResolver.remove_food_routine_error;
     case ErrorTypes.saveSportFavoriteError:
       return stringResolver.save_favorite_error;
     case ErrorTypes.uploadSportFavoriteError:
@@ -114,6 +122,8 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.email_sent_error;
     case ErrorTypes.confirmationCodeError:
       return stringResolver.incorrect_confirmation_code;
+    case ErrorTypes.locallySavingSportRoutineError:
+      return stringResolver.locally_saving_sport_routine_error;
     case ErrorTypes.uploadingSportRoutineError:
       return stringResolver.uploading_sport_routine_error;
     case ErrorTypes.deleteFoodEventError:
@@ -142,6 +152,26 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.upload_liquid_event_error;
     case ErrorTypes.saveLiquidEventError:
       return stringResolver.save_liquid_event_error;
+    case ErrorTypes.uploadSupplementEventError:
+      return stringResolver.upload_supplement_event_error;
+    case ErrorTypes.saveSupplementEventError:
+      return stringResolver.save_supplement_event_error;
+    case ErrorTypes.deleteSupplementEventError:
+      return stringResolver.delete_supplement_event_error;
+    case ErrorTypes.removeSupplementEventError:
+      return stringResolver.remove_supplement_event_error;
+    case ErrorTypes.uploadSupplementFavoriteError:
+      return stringResolver.upload_supplement_favorite_event_error;
+    case ErrorTypes.saveSupplementFavoriteError:
+      return stringResolver.save_supplement_favorite_event_error;
+    case ErrorTypes.uploadSupplementRoutineError:
+      return stringResolver.upload_supplement_routine_error;
+    case ErrorTypes.saveSupplementRoutineError:
+      return stringResolver.save_supplement_routine_error;
+    case ErrorTypes.deleteSupplementRoutineError:
+      return stringResolver.delete_supplement_routine_error;
+    case ErrorTypes.removeSupplementRoutineError:
+      return stringResolver.remove_supplement_routine_error;
   }
 }
 

@@ -25,6 +25,8 @@ UnitInfoResponse _$UnitInfoResponseFromJson(Map<String, dynamic> json) =>
       id: json['id'] as int,
       en: json['en'] as String,
       es: json['es'] as String,
+      enPlural: json['en_plural'] as String?,
+      esPlural:  json['es_plural'] as String?,
     );
 
 Map<String, dynamic> _$UnitInfoResponseToJson(UnitInfoResponse instance) =>
@@ -32,4 +34,6 @@ Map<String, dynamic> _$UnitInfoResponseToJson(UnitInfoResponse instance) =>
       'id': instance.id,
       'en': instance.en,
       'es': instance.es,
+      'en_plural': instance.enPlural,
+      'es_plural': instance.esPlural,
     };

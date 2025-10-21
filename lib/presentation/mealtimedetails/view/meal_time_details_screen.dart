@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
+import 'package:nutrenaissance_flutter/presentation/itemupdate/view/item_update_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/mealtimedetails/bloc/meal_time_details_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/mealtimeitem/view/meal_time_item_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/item_info_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -17,6 +19,8 @@ import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../foodevent/view/add_food_event_screen.dart';
+import '../../widgets/date_picker_bar.dart';
+import '../../widgets/remove_item_widget.dart';
 
 class MealTimeDetailScreen extends StatefulWidget {
   static const routeName = '/meal_time_details_screen';
@@ -65,20 +69,35 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
     super.initState();
   }
 
+
+  // TODO: Remove Item from db
+  void _showRemoveDialog({required String description, required VoidCallback onCancel, required VoidCallback onConfirm}) {
+    final mediaQuerySize = MediaQuery.of(context).size;
+
+    showDialog(
+      context: context,
+      builder: (context) => RemoveItemWidget(
+        description: description,
+        onConfirm: onConfirm,
+        onCancel: onCancel,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: bloc,
       child: BlocConsumer<MealTimeDetailsBloc, MealTimeDetailsState>(
         listener: (ctx, state) {
-          if (state.isLoading) {
-            LoadingScreen.instance().show(
-              context: ctx,
-              text: AppLocalizations.of(ctx)!.recal_nutrients,
-            );
-          } else {
-            LoadingScreen.instance().hide();
-          }
+          // if (state.isLoading) {
+          //   LoadingScreen.instance().show(
+          //     context: ctx,
+          //     text: AppLocalizations.of(ctx)!.recal_nutrients,
+          //   );
+          // } else {
+          //   LoadingScreen.instance().hide();
+          // }
           if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
         },
         builder: (context, state) {
@@ -106,9 +125,13 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                 backgroundColor: Colors.transparent,
                 body: SafeArea(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingLarge),
+                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingLarge),
                       child: Column(
                         children: [
+                          DatePickerBar(selectedDateTime: state.selectedDateTime, onChangeDate: (dateTime) {
+                            bloc.add(UpdateDateTimeMealTimeDetailsEvent(dateTime: dateTime));
+                          },),
+                          const SizedBox(height: Dimens.height12),
                           HeaderAddItemCardSection(
                             onBackTap: () => Navigator.pop(context),
                             title: state.mealTime?.name.orEmpty(),
@@ -129,16 +152,27 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                               ],),
                             ]),
                           ),
-                          ...state.foodEvents.orEmpty().map((food) => ItemInfoCard(
-                            title: NutritionUtils.findFoodsName(context: context, foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: food.foodInfo),
-                            subtitle: '${food.eventKcals.orZero()} kcal. ${food.foodInfo![0].eventInfo?.qty.orZero().toInt()} ${NutritionUtils.findUnitName(state.unitsInfoMaster?.unitsInfoMaster, food.foodInfo, context)}.',
-                            trailingSrc: 'assets/images/delete_icon.png',
-                            trailingTap: () => bloc.add(DeleteFoodMealTimeDetailsEventAction(foodEventComplete: food, onFinish: () {})),
-                          ),),
+                          ...state.foodEvents.orEmpty().map((food) {
+                            final itemName = NutritionUtils.findFoodsName(context: context, foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: food.foodInfo);
+                            return ItemInfoCard(
+                              onItemTap: () /*=> Navigator.pushNamed(context, MealTimeItemScreen.routeName)*/ {},
+                              title: itemName,
+                              subtitle: '${food.eventKcals.orZero()} kcal. ${food.foodInfo![0].eventInfo?.qty.orZero().toInt()} ${NutritionUtils.findUnitName(state.unitsInfoMaster?.unitsInfoMaster, [food.foodInfo.orEmpty()[0]], context)}.',
+                              trailingSrc: 'assets/images/delete_icon.png',
+                              beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                              beforeTrailingTap: () => Navigator.pushNamed(context, ItemUpdateScreen.routeName, arguments: food).then((value) => bloc.add(InitialMealTimeDetailsEventState(dateTime: state.selectedDateTime))),
+                              // trailingTap: () => bloc.add(DeleteFoodMealTimeDetailsEventAction(foodEventComplete: food, onFinish: () {})),
+                              trailingTap: () => _showRemoveDialog(
+                                description: AppLocalizations.of(context)!.remove_item(itemName),
+                                onCancel: () => Navigator.pop(context),
+                                onConfirm: () => bloc.add(DeleteFoodMealTimeDetailsEventAction(foodEventComplete: food, onFinish: () {})),
+                              ),
+                            );
+                          },),
                           Container(
                             margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                             child: ListTile(
-                              onTap: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: state.mealTime!, selectedDateTime: state.selectedDateTime!)).then((value) => bloc.add(InitialMealTimeDetailsEventState())),
+                              onTap: () => Navigator.popAndPushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: state.mealTime!, selectedDateTime: state.selectedDateTime!)).then((value) => bloc.add(InitialMealTimeDetailsEventState())),
                               leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
                               title: Text(
                                 AppLocalizations.of(context)!.add_food,
@@ -180,7 +214,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                         ],
                       ),
                     )),
-              )
+              ),
             ],
           );
         },

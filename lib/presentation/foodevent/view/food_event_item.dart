@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/simple_item_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
@@ -17,9 +18,10 @@ import 'package:nutrenaissance_flutter/presentation/widgets/box_type_radio_text_
 import 'package:nutrenaissance_flutter/presentation/widgets/radio_button_with_text.dart';
 
 import '../../../data/api/masterfiles/model/oil_types_response.dart';
+import '../../../domain/models/favorites/food/food_favorite.dart';
 
 class FoodEventItem extends StatefulWidget {
-  final FoodInEvent foodInEvent;
+  final FoodInFavorite foodInEvent;
   final String foodGroup;
   final CookingMethodsMaster cookingMethodsMaster;
   final OilTypesResponse? oilTypes;
@@ -29,11 +31,11 @@ class FoodEventItem extends StatefulWidget {
   final UnitsFoodsMaster unitsFoodsMaster;
   final String options;
   final Function onRemove;
-  final Function(FoodInEvent) onQtyChange;
-  final Function(FoodInEvent) onUnitChange;
-  final Function(FoodInEvent) onCookingMethodChange;
-  final Function(FoodInEvent) onConversionFactorChange;
-  final Function(FoodInEvent) onOilUsedChange;
+  final Function(FoodInFavorite) onQtyChange;
+  final Function(FoodInFavorite) onUnitChange;
+  final Function(FoodInFavorite) onCookingMethodChange;
+  final Function(FoodInFavorite) onConversionFactorChange;
+  final Function(FoodInFavorite) onOilUsedChange;
 
   const FoodEventItem({
     Key? key,
@@ -111,7 +113,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
 
   @override
   Widget build(BuildContext context) {
-    FoodInEvent ingredient = FoodInEvent(
+    FoodInFavorite ingredient = FoodInFavorite(
       id: widget.foodInEvent.id,
       qty: widget.foodInEvent.qty,
       unit: widget.foodInEvent.unit,
@@ -159,7 +161,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                     Expanded(
                       child: Text(
                         widget.options,
-                        style: const TextStyle(color: AppColors.yellowishGreen,fontSize: Dimens.fontSizeLarge, fontWeight: FontWeight.w400),
+                        style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),
                       ),
                     ),
                     InkWell(
@@ -230,6 +232,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                                     .map<DropdownMenuItem<String>>(
                                       (item) => DropdownMenuItem(
                                         value: item.name,
+                                        alignment: Alignment.center,
                                         child: SizedBox(
                                           child: Text(
                                             item.name,
@@ -276,7 +279,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
               //   ),
               // ),
               const SizedBox(width: Dimens.widthXXXXSmall),
-              Text(AppLocalizations.of(context)!.conversion_factor, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeMedium)),
+              Text(AppLocalizations.of(context)!.conversion_factor, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal)),
               Row(
                 children: [
                   Switch.adaptive(value: ingredient.conversionFactor == 1, onChanged: (isChecked) {

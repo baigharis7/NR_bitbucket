@@ -24,6 +24,8 @@ UnitInfoMaster _$UnitInfoMasterFromJson(Map<String, dynamic> json) =>
       id: json['id'] as int,
       en: json['en'] as String,
       es: json['es'] as String,
+      enPlural: json['enPlural'] as String?,
+      esPlural: json['esPlural'] as String?,
     );
 
 Map<String, dynamic> _$UnitInfoMasterToJson(UnitInfoMaster instance) =>
@@ -31,4 +33,6 @@ Map<String, dynamic> _$UnitInfoMasterToJson(UnitInfoMaster instance) =>
       'id': instance.id,
       'en': instance.en,
       'es': instance.es,
+      'enPlural': instance.enPlural,
+      'esPlural': instance.esPlural,
     };

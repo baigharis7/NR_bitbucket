@@ -1,7 +1,12 @@
 import 'package:chuck_interceptor/chuck.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/model/supplement_favorite.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_routine.dart';
+import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplements_ev.dart';
+import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simple.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/http/api_helper.dart';
 
 import '../../../infrastructure/environment/environment.dart';
@@ -26,6 +31,57 @@ class SupplementApi extends ApiHelper {
           '${Environment().config!.distributionPath}/collagen',
         ),
         uploadSupplementCollagenEvent,
+      );
+
+  Future<Map<String, dynamic>> uploadSupplementEvent(UploadSupplementsEv uploadSupplementsEv) =>
+      post(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/supplements',
+        ),
+        uploadSupplementsEv,
+      );
+
+  Future<Map<String, dynamic>> deleteSupplementEvent(SupplementSimple supplementEvent) =>
+      delete(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/supplements',
+        ),
+        {
+          'userId': supplementEvent.userId,
+          'eventId': supplementEvent.eventId,
+        },
+      );
+
+  Future<Map<String, dynamic>> uploadSupplementFavorite(SupplementFavorite supplementFavorite) =>
+      post(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/favorites/supplement',
+        ),
+        supplementFavorite,
+      );
+
+  Future<Map<String, dynamic>> uploadSupplementRoutine(UploadSupplementRoutine uploadSupplementRoutine) =>
+      post(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/supplement-routines',
+        ),
+        uploadSupplementRoutine,
+      );
+
+  Future<Map<String, dynamic>> deleteSupplementRoutine(SupplementSimple supplement) =>
+      delete(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/supplement-routines',
+        ),
+        {
+          'userId': supplement.userId,
+          'eventId': supplement.eventId,
+        },
       );
 
 }

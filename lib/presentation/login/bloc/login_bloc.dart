@@ -517,6 +517,7 @@ class LoginBloc extends BaseBloc<LoginActions, LoginState> {
           await getMasterFilesVersionInteractor.execute(MasterFilesType.sportsInfo),
           await getMasterFilesVersionInteractor.execute(MasterFilesType.unitsInfo),
           await getMasterFilesVersionInteractor.execute(MasterFilesType.unitsFoods),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.supplementsInfo),
           await getMasterFilesVersionInteractor.execute(MasterFilesType.subjectiveAnalysis),
         ),
         onSuccess: (MasterFilesResponse masterFilesResponse) async => await _onSuccessManageMasterFiles(masterFilesResponse, onFinish, removeLoading),

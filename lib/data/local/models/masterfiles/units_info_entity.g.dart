@@ -60,19 +60,25 @@ class UnitInfoEntityAdapter extends TypeAdapter<UnitInfoEntity> {
       id: fields[0] as int,
       en: fields[1] as String,
       es: fields[2] as String,
+      enPlural: fields[3] as String?,
+      esPlural: fields[4] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UnitInfoEntity obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.en)
       ..writeByte(2)
-      ..write(obj.es);
+      ..write(obj.es)
+      ..writeByte(3)
+      ..write(obj.enPlural)
+      ..writeByte(4)
+      ..write(obj.esPlural);
   }
 
   @override
@@ -111,6 +117,8 @@ UnitInfoEntity _$UnitInfoEntityFromJson(Map<String, dynamic> json) =>
       id: json['id'] as int,
       en: json['en'] as String,
       es: json['es'] as String,
+      enPlural: json['enPlural'] as String?,
+      esPlural: json['esPlural'] as String?,
     );
 
 Map<String, dynamic> _$UnitInfoEntityToJson(UnitInfoEntity instance) =>
@@ -118,4 +126,6 @@ Map<String, dynamic> _$UnitInfoEntityToJson(UnitInfoEntity instance) =>
       'id': instance.id,
       'en': instance.en,
       'es': instance.es,
+      'enPlural': instance.enPlural,
+      'esPlural': instance.esPlural,
     };

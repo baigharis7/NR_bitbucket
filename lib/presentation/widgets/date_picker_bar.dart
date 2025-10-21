@@ -8,10 +8,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dashboard_calendar_widget.dart';
 
 class DatePickerBar extends StatefulWidget {
-  final DateTime? selectedDateTime;
+  DateTime selectedDateTime;
   final Function(DateTime) onChangeDate;
-  const DatePickerBar({super.key, this.selectedDateTime, required this.onChangeDate});
-
+  DatePickerBar({super.key, DateTime? selectedDateTime, required this.onChangeDate}) : selectedDateTime = selectedDateTime ?? DateTime.now();
   @override
   _DatePickerBarState createState() => _DatePickerBarState();
 }
@@ -55,7 +54,7 @@ class _DatePickerBarState extends State<DatePickerBar> {
   void _goToPreviousDay() {
     // setState(() {
     //   selectedDate = selectedDate.subtract(Duration(days: 1));
-      widget.onChangeDate.call(widget.selectedDateTime!.subtract(const Duration(days: 1)));
+      widget.onChangeDate.call(widget.selectedDateTime.subtract(const Duration(days: 1)));
     // });
   }
 
@@ -63,16 +62,16 @@ class _DatePickerBarState extends State<DatePickerBar> {
     if (!isToday) {
       // setState(() {
         // selectedDate = selectedDate.add(Duration(days: 1));
-        widget.onChangeDate.call(widget.selectedDateTime!.add(const Duration(days: 1)));
+        widget.onChangeDate.call(widget.selectedDateTime.add(const Duration(days: 1)));
       // });
     }
   }
 
   bool get isToday {
     final now = DateTime.now();
-    return widget.selectedDateTime?.year == now.year &&
-        widget.selectedDateTime?.month == now.month &&
-        widget.selectedDateTime?.day == now.day;
+    return widget.selectedDateTime.year == now.year &&
+        widget.selectedDateTime.month == now.month &&
+        widget.selectedDateTime.day == now.day;
   }
 
 

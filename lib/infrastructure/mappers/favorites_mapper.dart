@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorit
 import 'package:nutrenaissance_flutter/domain/models/favorites/liquid/liquid_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodroutine/food_routine_event.dart';
 import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_completed.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
@@ -20,6 +21,7 @@ FoodFavorite mapToFoodFavoriteFromEntity(FoodFavoriteEntity foodFavoriteEntity) 
   return FoodFavorite(
     title: foodFavoriteEntity.title,
     eventDate: foodFavoriteEntity.eventDate,
+    eventId: foodFavoriteEntity.eventId,
     ingredients: foodFavoriteEntity.ingredients.map((ingredient) => FoodInFavorite(id: ingredient.id, name_en: ingredient.name_en.orEmpty(), name_es: ingredient.name_es.orEmpty(), qty: ingredient.qty, unit: ingredient.unit, conversionFactor: ingredient.conversionFactor, cookingMethod: ingredient.cookingMethod, usedOil: ingredient.usedOil, unitsEquivalences: ingredient.unitsEquivalences)).toList(),
     drinks: foodFavoriteEntity.drinks.map((drink) => FoodInFavorite(id: drink.id, name_en: drink.name_en.orEmpty(), name_es: drink.name_es.orEmpty(), qty: drink.qty, unit: drink.unit, cookingMethod: drink.cookingMethod, unitsEquivalences: drink.unitsEquivalences)).toList(),
     mealTime: foodFavoriteEntity.mealTime,
@@ -27,6 +29,10 @@ FoodFavorite mapToFoodFavoriteFromEntity(FoodFavoriteEntity foodFavoriteEntity) 
     dish: foodFavoriteEntity.dish,
     isRoutine: foodFavoriteEntity.isRoutine,
     daysOfWeek: foodFavoriteEntity.daysOfWeek,
+    isFavorite: foodFavoriteEntity.isFavorite,
+    userId: foodFavoriteEntity.userId,
+    time: foodFavoriteEntity.time,
+    timeZone: foodFavoriteEntity.timeZone,
   );
 }
 
@@ -45,14 +51,19 @@ List<FoodInFavorite> mapToFoodFavoriteList(List<FoodInfo> foodInfoList) {
 
 FoodFavoriteEntity mapToFoodFavoriteEntity(FoodFavorite foodFavorite) {
   return FoodFavoriteEntity(
-    title: foodFavorite.title,
-    eventDate: foodFavorite.eventDate,
+    userId: foodFavorite.userId,
+    title: foodFavorite.title.orEmpty(),
+    eventDate: foodFavorite.eventDate.orZero(),
+    eventId: foodFavorite.eventId,
     ingredients: foodFavorite.ingredients.map((ingredient) => FoodInFavoriteEntity(id: ingredient.id, name_en: ingredient.name_en.orEmpty(), name_es: ingredient.name_es.orEmpty(), qty: ingredient.qty, unit: ingredient.unit, conversionFactor: ingredient.conversionFactor, cookingMethod: ingredient.cookingMethod, usedOil: ingredient.usedOil, unitsEquivalences: ingredient.unitsEquivalences)).toList(),
     drinks: foodFavorite.drinks.map((drink) => FoodInFavoriteEntity(id: drink.id, name_en: drink.name_en.orEmpty(), name_es: drink.name_es.orEmpty(), qty: drink.qty, unit: drink.unit, cookingMethod: drink.cookingMethod, unitsEquivalences: drink.unitsEquivalences)).toList(),
-    mealTime: foodFavorite.mealTime,
+    mealTime: foodFavorite.mealTime.orZero(),
     comment: foodFavorite.comment,
     dish: foodFavorite.dish,
     isRoutine: foodFavorite.isRoutine,
+    isFavorite: foodFavorite.isFavorite,
+    time: foodFavorite.time,
+    timeZone: foodFavorite.timeZone,
     daysOfWeek: foodFavorite.daysOfWeek,
   );
 }
@@ -60,11 +71,11 @@ FoodFavoriteEntity mapToFoodFavoriteEntity(FoodFavorite foodFavorite) {
 UploadFoodFavorite mapToUploadFoodFavorite(FoodFavorite foodFavorite, String userId,) {
   return UploadFoodFavorite(
     userId: userId,
-    eventDate:foodFavorite.eventDate,
-    title: foodFavorite.title,
+    eventDate:foodFavorite.eventDate.orZero(),
+    title: foodFavorite.title.orEmpty(),
     ingredients: foodFavorite.ingredients.map((ingredient) => UploadFoodInFavorite(id: ingredient.id, name_en: ingredient.name_en.orEmpty(), name_es: ingredient.name_es.orEmpty(), qty: ingredient.qty, unit: ingredient.unit, conversionFactor: ingredient.conversionFactor, cookingMethod: ingredient.cookingMethod, usedOil: ingredient.usedOil, unitsEquivalences: ingredient.unitsEquivalences)).toList(),
     drinks: foodFavorite.drinks.map((drink) => UploadFoodInFavorite(id: drink.id, name_en: drink.name_en.orEmpty(), name_es: drink.name_es.orEmpty(), qty: drink.qty, unit: drink.unit, cookingMethod: drink.cookingMethod, unitsEquivalences: drink.unitsEquivalences)).toList(),
-    mealTime: foodFavorite.mealTime,
+    mealTime: foodFavorite.mealTime.orZero(),
     comment: foodFavorite.comment,
     dish: foodFavorite.dish,
     isRoutine: foodFavorite.isRoutine,
@@ -88,10 +99,15 @@ SportFavorite mapToSportFavorite(SportEventComplete sportEventComplete) {
 AddSportFavorite mapToSportFavoriteFromRoutine(SportRoutineCompleted sportRoutineCompleted) {
   return AddSportFavorite(
     userId: sportRoutineCompleted.userId,
-    eventDate: sportRoutineCompleted.eventId,
+    eventId: sportRoutineCompleted.eventId,
+    eventDate: sportRoutineCompleted.eventDate,
     title: sportRoutineCompleted.sportName,
     info: sportRoutineCompleted.info?.map((e) => AddSportFavInfo(id: e.id?.toInt(), name_en: e.nameEn, name_es: e.nameEs, minutes: e.minutes?.toInt(), timeStart: e.timeStart?.toInt(), intensity: e.intensity?.toInt())).toList(),
     comment: sportRoutineCompleted.comment,
+    scheduleTime: sportRoutineCompleted.scheduleTime,
+    daysOfWeek: sportRoutineCompleted.daysOfWeek,
+    timeZone: sportRoutineCompleted.timeZone,
+    isCreateRoutine: true,
   );
 }
 
@@ -112,22 +128,33 @@ UploadSportFavorite mapToUploadSportFavorite(SportFavorite sportFavorite, String
 
 SportFavoriteEntity mapToSportFavoriteEntity(AddSportFavorite sportFavorite) {
   return SportFavoriteEntity(
+    eventId: sportFavorite.eventId,
     eventDate: sportFavorite.eventDate ?? -1,
     userId: sportFavorite.userId.toString(),
     comment: sportFavorite.comment,
     title: sportFavorite.title,
     info: sportFavorite.info?.map((item) => SportFavoriteInfoEntity(id: item.id, intensity: item.intensity, minutes: item.minutes, timeStart: item.timeStart, name_en: item.name_en, name_es: item.name_es)).toList(),
+    isFavorite: sportFavorite.isFavorite,
+    isCreateRoutine: sportFavorite.isCreateRoutine,
+    scheduleTime: sportFavorite.scheduleTime,
+    daysOfWeek: sportFavorite.daysOfWeek,
+    timeZone: sportFavorite.timeZone,
   );
 }
 
 AddSportFavorite mapToSportFavoriteFromEntity(SportFavoriteEntity sportFavoriteEntity) {
-  final dateTimeHelper = DateTimeHelper();
   return AddSportFavorite(
     userId: sportFavoriteEntity.userId,
+    eventId: sportFavoriteEntity.eventId,
     eventDate: sportFavoriteEntity.eventDate,
     comment: sportFavoriteEntity.comment,
     title: sportFavoriteEntity.title,
     info: sportFavoriteEntity.info?.map((sportItem) => AddSportFavInfo(id: sportItem.id, minutes: sportItem.minutes, intensity: sportItem.intensity, timeStart: sportItem.timeStart, name_en: sportItem.name_en, name_es: sportItem.name_es)).toList(),
+    isFavorite: sportFavoriteEntity.isFavorite,
+    isCreateRoutine: sportFavoriteEntity.isCreateRoutine,
+    scheduleTime: sportFavoriteEntity.scheduleTime,
+    daysOfWeek: sportFavoriteEntity.daysOfWeek,
+    timeZone: sportFavoriteEntity.scheduleTime,
   );
 }
 
@@ -177,11 +204,38 @@ UploadLiquidFavorite mapToUploadLiquidFavorite(LiquidFavorite liquidFavorite, St
 }
 
 FoodFavorite mapToFoodFavoriteFromFoodEvent(FoodEventComplete foodEventComplete) {
-  return FoodFavorite(title: foodEventComplete.foodName ?? '',
+  return FoodFavorite(
+    title: foodEventComplete.foodName ?? '',
+      userId: foodEventComplete.userId,
+      eventId: foodEventComplete.eventId,
       eventDate: foodEventComplete.eventDate ?? -1,
-      ingredients: foodEventComplete.foodInfo!.map((e) => FoodInFavorite(id: e.id!, name_en: e.name_en!, name_es: e.name_es!, qty: e.eventInfo!.qty!.toInt(), unit: e.eventInfo!.unit!, cookingMethod: e.eventInfo!.cookingMethod!)).toList(),
+      ingredients: foodEventComplete.foodInfo!.map((e) => FoodInFavorite(id: e.id!, name_en: e.name_en!, name_es: e.name_es!, qty: e.eventInfo!.qty!.toInt(), unit: e.eventInfo!.unit!, usedOil: e.eventInfo!.usedOil, conversionFactor: e.eventInfo!.conversionFactor, cookingMethod: e.eventInfo!.cookingMethod!,)).toList(),
       drinks: [],
       mealTime: foodEventComplete.mealType ?? -1,
+    dish: foodEventComplete.dish,
+    comment: foodEventComplete.comment,
+  );
+}
+
+FoodInFavorite mapToFoodInFavortie(FoodInfo e) {
+  return FoodInFavorite(id: e.id!, name_en: e.name_en!, name_es: e.name_es!, qty: e.eventInfo!.qty!.toInt(), unit: e.eventInfo!.unit!, cookingMethod: e.eventInfo!.cookingMethod!);
+}
+
+FoodFavorite mapToFoodFavoriteFromRoutine(FoodRoutineEvent foodRoutineEvent) {
+  return FoodFavorite(
+    userId: foodRoutineEvent.userId,
+      eventId: foodRoutineEvent.eventId,
+      eventDate: foodRoutineEvent.eventDate,
+      ingredients: foodRoutineEvent.ingredients.orEmpty().map((routineIngredient) => FoodInFavorite(id: routineIngredient.id, qty: routineIngredient.qty, unit: routineIngredient.unit, conversionFactor: routineIngredient.conversionFactor, cookingMethod: routineIngredient.cookingMethod, usedOil: routineIngredient.usedOil, unitsEquivalences: routineIngredient.unitsEquivalences)).toList(),
+      drinks: [],
+      mealTime: foodRoutineEvent.mealType,
+    title: foodRoutineEvent.foodName,
+    comment: foodRoutineEvent.comment,
+    time: foodRoutineEvent.time,
+    daysOfWeek: foodRoutineEvent.daysOfWeek,
+    timeZone: foodRoutineEvent.timeZone,
+    dish: foodRoutineEvent.dish,
+    isRoutine: true,
   );
 }
 
@@ -189,6 +243,7 @@ AddSportFavorite mapToSportFavoriteFromEventComplete(
     SportEventComplete sportEventComplete) {
   return AddSportFavorite(
     userId: sportEventComplete.userId,
+    eventId: sportEventComplete.eventId,
     eventDate: sportEventComplete.eventDate,
     comment: sportEventComplete.comment,
     title: sportEventComplete.sportName,

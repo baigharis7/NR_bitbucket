@@ -14,6 +14,7 @@ import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 
+import '../../../infrastructure/helpers/app_text_styles.dart';
 import '../../../infrastructure/utils/constants.dart';
 
 class AversionsScreen extends StatefulWidget {
@@ -109,10 +110,7 @@ class _AversionsScreenState extends State<AversionsScreen> {
                                     child: Text(
                                       foodGroup.name,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: Dimens.fontSizeSmall,
-                                      ),
+                                      style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeSmall, color: Colors.black),
                                     ),
                                   ),
                                 ),
@@ -125,7 +123,7 @@ class _AversionsScreenState extends State<AversionsScreen> {
                       if (state.profile!.foodAversions!.isNotEmpty) Container(
                         alignment: Alignment.centerLeft,
                         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
-                        child: Text(AppLocalizations.of(context)!.foods_selection, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeSmall, color: Colors.white)),
+                        child: Text(AppLocalizations.of(context)!.foods_selection, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeSmall,)),
                       ),
                       ...state.profile!.foodAversions!.map((foodId) => Container(
                         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
@@ -142,6 +140,7 @@ class _AversionsScreenState extends State<AversionsScreen> {
                                   child: Text(
                                     bloc.findFoodNameFromFoodId(foodId).translate(context),
                                     overflow: TextOverflow.ellipsis,
+                                    style: AppTextStyles.merriWeather.copyWith(color: Colors.black),
                                   ),
                                 ),
                                 Expanded(

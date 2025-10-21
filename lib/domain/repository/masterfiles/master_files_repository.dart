@@ -18,6 +18,7 @@ abstract class MasterFilesRepository {
       int sportsInfoVersion,
       int unitsInfoVersion,
       int unitsFoodsVersion,
+      int supplementsInfoVersion,
       int subjectiveAnalysisVersion,
   );
   Future<void> saveMasterFile(dynamic masterFileResponse, MasterFilesType masterFilesType);

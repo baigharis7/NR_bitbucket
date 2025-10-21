@@ -33,22 +33,22 @@ class FavoritesRepositoryImpl extends FavoritesRepository {
 
   @override
   Future<bool> uploadFoodFavorite(FoodFavorite foodFavorite) async {
-    final uploadFoodFavorite = mapToUploadFoodFavorite(
-      foodFavorite,
-      await localStorageRepository.getProfile().then((value) => value!.userId.orEmpty()),
-    );
+    // final uploadFoodFavorite = mapToUploadFoodFavorite(
+    //   foodFavorite,
+    //   await localStorageRepository.getProfile().then((value) => value!.userId.orEmpty()),
+    // );
     try {
-      await favoritesApi.uploadFoodFavorite(uploadFoodFavorite);
+      await favoritesApi.uploadFoodFavorite(foodFavorite);
       return true;
     } catch (_) {
-      return false;
+      rethrow;
     }
   }
 
   @override
-  Future<bool> deleteFavoriteFoodFromCloud(String userId, int eventDate) async {
+  Future<bool> deleteFavoriteFoodFromCloud(String userId, int eventId) async {
     try {
-      await favoritesApi.deleteFoodFavorite(userId, eventDate);
+      await favoritesApi.deleteFoodFavorite(userId, eventId);
       return true;
     } catch (error) {
       return false;
@@ -85,12 +85,12 @@ class FavoritesRepositoryImpl extends FavoritesRepository {
   }
 
   @override
-  Future<bool> deleteSportFavoriteFromCloud(String userId, int eventDate) async {
+  Future<bool> deleteSportFavoriteFromCloud(String userId, int eventId) async {
     try {
-      await favoritesApi.deleteSportFavorite(userId, eventDate);
+      await favoritesApi.deleteSportFavorite(userId, eventId);
       return true;
     } catch (error) {
-      return false;
+      rethrow;
     }
   }
 

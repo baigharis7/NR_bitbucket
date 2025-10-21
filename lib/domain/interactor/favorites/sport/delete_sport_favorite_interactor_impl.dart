@@ -7,6 +7,6 @@ class DeleteSportFavoriteInteractorImpl extends DeleteSportFavoriteInteractor{
   DeleteSportFavoriteInteractorImpl({required this.favoritesRepository});
 
   @override
-  Future<bool> execute(String userId, int eventDate) async => await favoritesRepository.deleteSportFavoriteFromCloud(userId, eventDate);
+  Future<bool> execute(String userId, int eventId) async => await favoritesRepository.deleteSportFavoriteFromCloud(userId, eventId);
 
 }

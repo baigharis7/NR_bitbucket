@@ -22,6 +22,7 @@ class MasterFilesApi extends ApiHelper {
       int sportsInfoVersion,
       int unitsInfoVersion,
       int unitsFoodsVersion,
+      int supplementsInfoVersion,
       int subjectiveAnalysisVersion,
   ) {
     return get(
@@ -41,6 +42,7 @@ class MasterFilesApi extends ApiHelper {
           sportsInfo: sportsInfoVersion.toString(),
           unitsInfo: unitsInfoVersion.toString(),
           unitsFoods: unitsFoodsVersion.toString(),
+          supplementsInfo: supplementsInfoVersion.toString(),
           subjectiveAnalysis: subjectiveAnalysisVersion.toString(),
         },
       ),

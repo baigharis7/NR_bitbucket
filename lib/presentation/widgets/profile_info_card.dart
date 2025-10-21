@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
@@ -36,12 +37,12 @@ class ProfileInfoCard extends StatelessWidget {
                 children: [
                   Text(
                     userProfile?.commonName ?? '',
-                    style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeXLarge, color: Colors.white),
+                    style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeXLarge),
                   ),
                   const SizedBox(height: Dimens.height5),
                   Text(
                     '${userProfile?.sex?.index == SexType.male.index ? AppLocalizations.of(context)!.male : AppLocalizations.of(context)!.female}. ${NutritionUtils.millisecondsToYears(userProfile?.birthDate ?? 0)} ${AppLocalizations.of(context)!.years_old}',
-                    style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15, color: Colors.white),
+                    style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15),
                   ),
                 ],
               ),
@@ -67,7 +68,7 @@ class ProfileInfoCard extends StatelessWidget {
               children: [
                 Text(
                   AppLocalizations.of(context)!.update_data,
-                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: Dimens.fontSizeSmall, color: Colors.white, decoration: TextDecoration.underline),
+                  style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeSmall, decoration: TextDecoration.underline),
                 ),
                 const SizedBox(width: Dimens.width5),
                 const Icon(Icons.arrow_forward_ios, size: Dimens.fontSizeSmall, color: Colors.white),
@@ -92,12 +93,12 @@ class _MetricItem extends StatelessWidget {
       children: [
         Text(
           !value.isNull() ? value!.toInt() > 0 ? value!.toInt().toString() : '-' : value.toString(),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeSmall),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeLarge),
         ),
         const SizedBox(height: Dimens.height5),
         Text(
           label,
-          style: const TextStyle(fontWeight: FontWeight.w400, color: Colors.white60, fontSize: Dimens.fontSizeXSmall),
+          style: const TextStyle(fontWeight: FontWeight.w400, color: Colors.white60, fontSize: Dimens.fontSizeSmall),
         ),
       ],
     );

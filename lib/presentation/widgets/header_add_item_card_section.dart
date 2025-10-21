@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/items_search_view_builder_widget.dart';
 
 import '../../infrastructure/helpers/remove_diac.dart';
@@ -76,11 +77,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
           if (widget.image.isNull()) const SizedBox(height: Dimens.height12),
           Text(
             widget.title ?? '',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize21,),
           ),
           if (widget.onItemSelect != null) const SizedBox(height: 16),
           if (widget.onItemSelect != null) Autocomplete<String>(
@@ -92,36 +89,41 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
                 ) {
               _foodInputController = textEditingController;
               _focusInputController = focusNode;
-              return TextField(
-                style: const TextStyle(color: Colors.white),
-                showCursor: false,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  hintText: AppLocalizations.of(context)!.write_here_hint,
-                  hintStyle: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeNormal, fontWeight: FontWeight.w400),
-                  focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                  suffixIcon: IconButton(
-                    icon: textEditingController.text != ''
-                        ? const Icon(
-                      Icons.highlight_remove,
-                      color: Colors.white,
-                      size: 20,
-                    )
-                        : Container(),
-                    onPressed: () => setState(() {
-                      textEditingController.text = '';
-                    }),
+              return StatefulBuilder(builder: (context, setInnerState) {
+                focusNode.addListener(() { setInnerState(() {}); });
+                return TextField(
+                  style: const TextStyle(color: Colors.white),
+                  cursorColor: Colors.white,
+                  cursorWidth: Dimens.width1,
+                  decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    hintText: focusNode.hasFocus
+                        ? null : AppLocalizations.of(context)!.write_here_hint,
+                    hintStyle: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeNormal, fontWeight: FontWeight.w400),
+                    focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                    suffixIcon: IconButton(
+                      icon: textEditingController.text != ''
+                          ? const Icon(
+                        Icons.highlight_remove,
+                        color: Colors.white,
+                        size: 20,
+                      )
+                          : Container(),
+                      onPressed: () => setState(() {
+                        textEditingController.text = '';
+                      }),
+                    ),
                   ),
-                ),
-                controller: textEditingController,
-                buildCounter: (context, {required currentLength, required isFocused, maxLength}) => _foodInputController.text.isNotEmptyOrNull() && _foodInputController.text.length > 2 ? Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal), child: Text('$filteredListLength: ' '${filteredListLength > 1 ? AppLocalizations.of(context)!.items_found : AppLocalizations.of(context)!.item_found}', style: const TextStyle(color: Colors.white),)) : Container(),
-                focusNode: focusNode,
-                onChanged: (value) {
-                  setState(() {
-                    textEditingController;
-                  });
-                },
-              );
+                  controller: textEditingController,
+                  buildCounter: (context, {required currentLength, required isFocused, maxLength}) => _foodInputController.text.isNotEmptyOrNull() && _foodInputController.text.length > 2 ? Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal), child: Text('$filteredListLength: ' '${filteredListLength > 1 ? AppLocalizations.of(context)!.items_found : AppLocalizations.of(context)!.item_found}', style: const TextStyle(color: Colors.white),)) : Container(),
+                  focusNode: focusNode,
+                  onChanged: (value) {
+                    setState(() {
+                      textEditingController;
+                    });
+                  },
+                );
+              },);
             },
             optionsBuilder: (TextEditingValue textEditingValue) {
               if (textEditingValue.text == '' || textEditingValue.text.length < 3) return const Iterable<String>.empty();

@@ -42,10 +42,13 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
       state.weeklyFoodEvents = a;
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       state.profile = await getProfileInteractor.execute();
+      if (state.profile?.physicalCharacteristics?.unit == 2) {
+        state.profile?.physicalCharacteristics?.weight = (state.profile?.physicalCharacteristics?.weight ?? 0) / 2.20462;
+      }
 
       state.foodEvents = await getFoodEventsOfTodayInteractor.execute();
 
-      state.temporaryMicronutrients = state.profile?.temporaryMicronutrients.orEmpty()
+      state.microNutrients = state.profile?.userAll.orEmpty()
           .map(
             (micronutrient) =>
             NutrientsModel(
@@ -58,12 +61,25 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
             ),
       ).toList();
 
-      state.micronutrientsWeekly = state.profile?.micronutrients.orEmpty()
+      state.temporaryMicronutrients = state.profile?.temporaryAll.orEmpty()
+          .map(
+            (micronutrient) =>
+            NutrientsModel(
+              quantityConsumed: getQuantityConsumedSoFar(micronutrient),
+              nutrientInfoMaster: getNutrientInfo(micronutrient),
+              fractionToFill: 0.0,
+              unit: getUnitForMicronutrient(micronutrient),
+              rda: getNutrientRda(micronutrient),
+              upperLimit: getNutrientUpperLimit(micronutrient),
+            ),
+      ).toList();
+
+      state.micronutrientsWeekly = state.profile?.userAll.orEmpty()
           .map(
               (micronutrient) => getDataByWeekly(micronutrient),
       ).toList();
 
-      state.temporaryMicronutrientsWeekly = state.profile?.temporaryMicronutrients.orEmpty()
+      state.temporaryMicronutrientsWeekly = state.profile?.temporaryAll.orEmpty()
           .map(
             (micronutrient) => getDataByWeekly(micronutrient),
       ).toList();
@@ -103,7 +119,7 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
     },);
 
     on<LoadMicroNutrientsDetails>((event, emit) {
-      state.microNutrients = event.micronutrientsList;
+      // state.microNutrients = event.micronutrientsList;
 
       emit(state.copyWith(isLoading: false));
     });
@@ -150,6 +166,12 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
     loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
       if (userRda.name == micronutrient) {
         rda = userRda.rda;
+        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
+          rda = (state.profile?.sex == SexType.male) ? 220: 190;
+        }
+        if (userRda.name == Constants.TRYPTOPHAN) {
+          rda = (state.profile?.physicalCharacteristics?.weight ?? 0) * rda;
+        }
         break loop;
       }
     }

@@ -4,6 +4,8 @@ import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_m
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import '../../domain/models/favorites/food/meal_time.dart';
+import '../../infrastructure/helpers/app_text_styles.dart';
+import '../../infrastructure/utils/dimens.dart';
 import '../foodevent/view/add_food_event_screen.dart';
 import '../mealtimedetails/view/meal_time_details_screen.dart';
 import 'dash_title_widget.dart';
@@ -19,7 +21,7 @@ class MealTimeSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      DashTitleWidget(title: AppLocalizations.of(context)!.feeding),
+      DashTitleWidget(title: AppLocalizations.of(context)!.feeding, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
       ...MealTime.getAllMealTimes().map((meal) => MealTimeWidget(name: meal.name.orEmpty(), svg: 'assets/images/meal_time_${meal.id.orZero()}.png', onItemClick: () => Navigator.pushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: meal, selectedDateTime: selectedDateTime)).then((value) => then?.call()), onClick: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: meal, selectedDateTime: selectedDateTime)).then((value) => then?.call()), desc: getFoodNames(foodEvents, meal.id) + ' / $totalKcal kcal.',)),
     ],);
   }

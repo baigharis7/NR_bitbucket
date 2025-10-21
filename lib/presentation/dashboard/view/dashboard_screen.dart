@@ -17,6 +17,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/methods_helper.dar
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/barcodescanning/view/bar_code_scanning_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/floating_menu_controller.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -24,6 +25,8 @@ import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_act
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
 import 'package:nutrenaissance_flutter/presentation/energy_balance_detail/view/energy_balance_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/favorites_tab_holder.dart';
+import 'package:nutrenaissance_flutter/presentation/fecesurinedetails/view/feces_urine_tabs.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/view/liquid_summary_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
@@ -32,7 +35,10 @@ import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/m
 import 'package:nutrenaissance_flutter/presentation/nutrients_detail/view/weekly_all_nutrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/sportitems/view/sport_items_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/supplementsdetail/view/supplements_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/NutritionProgressWidget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/card_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
@@ -53,6 +59,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/water_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/week_calendar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_rda_nutrients_dashboard_widget.dart';
 
+import '../../../infrastructure/helpers/app_text_styles.dart';
 import '../../../infrastructure/utils/constants.dart';
 import '../../../infrastructure/utils/string_utils.dart';
 import '../../fecesurine/view/feces_urine_tab_holder.dart';
@@ -127,8 +134,9 @@ class _DashboardScreen extends State<DashboardScreen>
     final List<Map<String, dynamic>> menuItems = [
       ...MealTime.getAllMealTimes().map((e) => {'label': e.name, 'id': e.id, 'icon': 'assets/images/meal_time_${e.id.orZero()}.png', 'onTap': () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: e, selectedDateTime: selectedDateTime ?? DateTime.now()))}),
       // {'label': 'Actividad física', 'icon': Icons.fitness_center},
-      {'label': AppLocalizations.of(context)!.faeces_urine, 'icon': 'assets/images/feces_urine.png', 'onTap': () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName)},
+      {'label': AppLocalizations.of(context)!.physical_activity, 'icon': 'assets/images/sport.png', 'onTap': () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime)},
       {'label': AppLocalizations.of(context)!.supplements, 'icon': 'assets/images/supplement.png', 'onTap': () {}},
+      {'label': AppLocalizations.of(context)!.faeces_urine, 'icon': 'assets/images/feces_urine.png', 'onTap': () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName)},
     ];
 
     return menuItems;
@@ -211,34 +219,27 @@ class _DashboardScreen extends State<DashboardScreen>
                   children: [
                     Text(
                       AppLocalizations.of(context)!.hi + ' ',
-                      style: const TextStyle(
-                        fontSize: Dimens.fontSizeXXLarge,
-                        color: Colors.white,
-                      ),
+                      style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize21),
                     ),
                     Text(
                       (state.profile?.commonName ?? '') + '.',
-                      style: const TextStyle(
-                        fontSize: Dimens.fontSizeXXLarge,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize21),
                     ),
                   ],
                 ),
                 backgroundColor: Colors.transparent,
                 actions: [
-                  IconButton(
-                    alignment: Alignment.centerRight,
-                    visualDensity: VisualDensity.compact,
-                    onPressed: () => Navigator.pushNamed(context, BarCodeScanningScreen.routeName),
-                    icon: Image.asset(
-                      'assets/icon/scanner_icon.png',
-                      color: Colors.white,
-                      height: Dimens.height18,
-                      width: Dimens.height18,
-                    ),
-                  ),
+                  // IconButton(
+                  //   alignment: Alignment.centerRight,
+                  //   visualDensity: VisualDensity.compact,
+                  //   onPressed: () => Navigator.pushNamed(context, BarCodeScanningScreen.routeName),
+                  //   icon: Image.asset(
+                  //     'assets/icon/scanner_icon.png',
+                  //     color: Colors.white,
+                  //     height: Dimens.height18,
+                  //     width: Dimens.height18,
+                  //   ),
+                  // ),
                   IconButton(
                     alignment: Alignment.centerLeft,
                     visualDensity: VisualDensity.compact,
@@ -272,7 +273,7 @@ class _DashboardScreen extends State<DashboardScreen>
                           bloc.add(InitializeState(dateTime: date,));
                         }, selectedDateTime: selectedDateTime, callGetAllEvents: (day) => bloc.getEventsForDay(day)),
                         const SizedBox(height: Dimens.heightXSmall),
-                        SizedBox(height: Dimens.height320, child: NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(),)),
+                        SizedBox(height: Dimens.height350, child: NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(), selectedDate: selectedDateTime,)),
                         // if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
                         //     title: AppLocalizations.of(context)!.menstruation,
                         //     currentState: state.isMenstruation ?? false,
@@ -339,11 +340,38 @@ class _DashboardScreen extends State<DashboardScreen>
                         //   isEmpty: false,
                         //   screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                         // ),
-                        MealTimeWidget(name: AppLocalizations.of(context)!.supplements, svg: 'assets/images/supplement.png', onClick: () {},),
-                        DashTitleWidget(title: AppLocalizations.of(context)!.physical_activity),
-                        MealTimeWidget(name: AppLocalizations.of(context)!.physical_activity, onClick: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), iconColor: Colors.black, backgroundColor: AppColors.floralWhite, svg: 'assets/images/sport.png'),
-                        DashTitleWidget(title: AppLocalizations.of(context)!.depositions),
-                        MealTimeWidget(name: AppLocalizations.of(context)!.faeces_urine, svg: 'assets/images/feces_urine.png', onClick: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))), iconColor: Colors.black, backgroundColor: Colors.transparent, backgroundImage: 'assets/images/feces_urine_background.png'),
+                        MealTimeWidget(
+                          name: AppLocalizations.of(context)!.supplements,
+                          svg: 'assets/images/supplement.png',
+                          onItemClick: () => Navigator.pushNamed(context, SupplementsDetailScreen.routeName).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                          onClick: () => Navigator.pushNamed(context, SupplementsScreen.routeName).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                        ),
+                        DashTitleWidget(title: AppLocalizations.of(context)!.physical_activity, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
+                        MealTimeWidget(
+                            name: AppLocalizations.of(context)!.physical_activity,
+                            onItemClick: () => Navigator.pushNamed(context, SportItemsScreen.routeName),
+                            onClick: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                            iconColor: Colors.black, backgroundColor: AppColors.floralWhite, svg: 'assets/images/sport.png',
+                          ),
+                        DashTitleWidget(title: AppLocalizations.of(context)!.depositions, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
+                        MealTimeWidget(
+                            name: AppLocalizations.of(context)!.faeces_urine,
+                            svg: 'assets/images/feces_urine.png',
+                            onItemClick: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                            onClick: () => Navigator.pushNamed(context, FecesUrineTabs.routeName,).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                            iconColor: Colors.black,
+                            backgroundColor: Colors.transparent,
+                            backgroundImage: 'assets/images/feces_urine_background.png',
+                        ),
+                        // ListTile(
+                        //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border11),),
+                        //   tileColor: AppColors.floralWhite,
+                        //   onTap: () {
+                        //     Navigator.pushNamed(context, FavoritesTabHolder.routeName);
+                        //   },
+                        //   leading: Image.asset('assets/images/favorite_icon.png',color: Colors.white, height: 21, width: 21),
+                        //   title: Text(AppLocalizations.of(context)!.favorites, style: const TextStyle(color: Colors.white)),
+                        // ),
                         const SizedBox(height: Dimens.height60),
                         // WaterWidget(),
                         // SizedBox(

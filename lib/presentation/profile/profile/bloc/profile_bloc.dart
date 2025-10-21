@@ -326,7 +326,9 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         userProfileResponse = await uploadProfileInteractor.execute(profile);
         if (userProfileResponse.uploadSuccess) {
           profile.micronutrients = userProfileResponse.micronutrients;
+          profile.userAll = userProfileResponse.userAll;
           profile.temporaryMicronutrients = userProfileResponse.temporaryMicronutrients;
+          profile.temporaryAll = userProfileResponse.temporaryAll;
           profile.userRdas = UserRdas(
             userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul, upperLimit: userRda.upperLimit)).toList(),
           );
@@ -394,7 +396,9 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
         userProfileResponse = await uploadProfileInteractor.execute(profile);
         if (userProfileResponse.uploadSuccess) {
           profile.micronutrients = userProfileResponse.micronutrients;
+          profile.userAll = userProfileResponse.userAll;
           profile.temporaryMicronutrients = userProfileResponse.temporaryMicronutrients;
+          profile.temporaryAll = userProfileResponse.temporaryAll;
           profile.userRdas = UserRdas(
             userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul, upperLimit: userRda.upperLimit)).toList(),
           );
@@ -642,7 +646,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     }
     if (state.profile!.commonName.isNull()) {
       error = '''$error 
-      ${AppLocalizations.of(context)!.name}
+      ${AppLocalizations.of(context)!.username}
       ''';
     }
     if (state.profile!.sex.isNull()) {

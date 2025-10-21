@@ -2,7 +2,9 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -46,10 +48,7 @@ class SugarIntakeWidget extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
+            style: AppTextStyles.merriWeather.copyWith(color: Colors.black),
           ),
           const SizedBox(height: 10),
           CircularPercentIndicator(
@@ -62,18 +61,12 @@ class SugarIntakeWidget extends StatelessWidget {
                 Text(
                   '${consumed.orZero().toInt()}',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25,
-                  ),
+                  style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize20, color: AppColors.yellowishGreen),
                 ),
                 Text(
                   '${AppLocalizations.of(context)!.from} ${total.orZero().toInt()} g',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10,
-                  ),
+                  style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSizeXSmall, color: AppColors.yellowishGreen),
                 ),
               ],
             ),

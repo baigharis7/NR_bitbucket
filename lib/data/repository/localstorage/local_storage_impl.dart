@@ -18,6 +18,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_analysis_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/supplements_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/modelsappearence/models_appearance_entity.dart';
@@ -26,6 +27,7 @@ import 'package:nutrenaissance_flutter/data/local/models/recipes/recipe_favorite
 import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/supplements/supplement_events_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/supplements/upload_supplement_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/watervents/water_event_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/analysis/subjective/subjective_analysis_result.dart';
@@ -71,6 +73,10 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _sportRoutinesBox;
   Box? _unitsInfoBox;
   Box? _unitsFoodsBox;
+  Box? _supplementsInfoBox;
+  Box? _supplementEventsBox;
+  Box? _supplementFavoritesBox;
+  Box? _supplementRoutinesBox;
   Box? _subjectiveAnalysisBox;
   Box? _favoriteFoodsBox;
   Box? _favoriteSportsBox;
@@ -116,6 +122,8 @@ class LocalStorageImpl extends LocalStorageRepository {
         return openBox(_unitsInfoBox, unitsInfoBoxName);
       case MasterFilesType.unitsFoods:
         return openBox(_unitsFoodsBox, unitsFoodsBoxName);
+      case MasterFilesType.supplementsInfo:
+        return openBox(_supplementsInfoBox, supplementsInfoBoxName);
       case MasterFilesType.subjectiveAnalysis:
         return openBox(_subjectiveAnalysisBox, subjectiveAnalysisBoxName);
     }
@@ -125,6 +133,9 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> _openFoodFavoritesBox() async => openBox(_favoriteFoodsBox, FoodFavoriteEntity.boxName);
   Future<Box> _openSportFavoritesBox() async => openBox(_favoriteSportsBox, SportFavoriteEntity.boxName);
   Future<Box> _openLiquidFavoritesBox() async => openBox(_favoriteLiquidsBox, LiquidFavoriteEntity.boxName);
+  Future<Box> _openSupplementEventsBox() async => openBox(_supplementEventsBox, SupplementEventsEntity.boxName);
+  Future<Box> _openSupplementFavoritesBox() async => openBox(_supplementFavoritesBox, SupplementEventsEntity.boxNameFavorites);
+  Future<Box> _openSupplementRoutinesBox() async => openBox(_supplementRoutinesBox, SupplementEventsEntity.boxNameRoutines);
   Future<Box> _openExplainingCardsBox() async => openBox(_explainingCardsBox, ExplainingCardEntity.boxName);
   Future<Box> _openSubjectiveAnalysisResultsBox() async => openBox(_subjectiveAnalysisResultsBox, SubjectiveAnalysisResultEntity.boxName);
   Future<Box> _openUserStepsInfoBox() async => openBox(_userStepsInfoBox, StepsEntity.boxName);
@@ -146,6 +157,9 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> get _getFoodFavoritesBox async => await _openFoodFavoritesBox();
   Future<Box> get _getSportFavoritesBox async => await _openSportFavoritesBox();
   Future<Box> get _getLiquidFavoritesBox async => await _openLiquidFavoritesBox();
+  Future<Box> get _getSupplementEventsBox async => await _openSupplementEventsBox();
+  Future<Box> get _getSupplementFavoritesBox async => await _openSupplementFavoritesBox();
+  Future<Box> get _getSupplementRoutinesBox async => await _openSupplementRoutinesBox();
   Future<Box> get _getExplainingCardsBox async => await _openExplainingCardsBox();
   Future<Box> get _getSubjectiveAnalysisResultsBox async => await _openSubjectiveAnalysisResultsBox();
   Future<Box> get _getUserStepsInfoBox async => await _openUserStepsInfoBox();
@@ -456,7 +470,7 @@ class LocalStorageImpl extends LocalStorageRepository {
           if (isEdit != null && isEdit) {
             final foodFavoritesMap = box.toMap();
             foodFavoritesMap.forEach((key, value) {
-              if ((value as FoodFavoriteEntity).eventDate == foodFavoriteEntity.eventDate) {
+              if ((value as FoodFavoriteEntity).eventId == foodFavoriteEntity.eventId) {
                 box.put(key, foodFavoriteEntity);
               }
             });
@@ -481,7 +495,7 @@ class LocalStorageImpl extends LocalStorageRepository {
         _getFoodFavoritesBox.then((box) {
           final favoritesMap = box.toMap();
           favoritesMap.forEach((key, value){
-            if ((value as FoodFavoriteEntity).eventDate == foodFavorite.eventDate) {
+            if ((value as FoodFavoriteEntity).eventId == foodFavorite.eventId) {
               box.delete(key);
             }
           });
@@ -511,7 +525,7 @@ class LocalStorageImpl extends LocalStorageRepository {
           if (isEdit) {
             final sportFavoritesMap = box.toMap();
             sportFavoritesMap.forEach((key, value) {
-              if ((value as SportFavoriteEntity).eventDate == sportFavoriteEntity.eventDate) {
+              if ((value as SportFavoriteEntity).eventId == sportFavoriteEntity.eventId) {
                 box.put(key, sportFavoriteEntity);
               }
             });
@@ -547,7 +561,7 @@ class LocalStorageImpl extends LocalStorageRepository {
           final favoritesMap = box.toMap();
           dynamic desiredKey;
           favoritesMap.forEach((key, value){
-            if ((value as SportFavoriteEntity).eventDate == sportFavorite.eventDate) {
+            if ((value as SportFavoriteEntity).eventId == sportFavorite.eventId) {
               desiredKey = key;
             }
           });
@@ -647,6 +661,10 @@ class LocalStorageImpl extends LocalStorageRepository {
     final foodEvents = <int>[];
     foodEventsMap.forEach((key, value) => foodEvents.add((value as FoodEventEntity).eventDate!));
 
+    final foodRoutinesMap = await _getFoodRoutinesBox.then((box) => box.toMap());
+    final foodRoutines = <int>[];
+    foodRoutinesMap.forEach((key, value) => foodRoutines.add((value as FoodRoutineEntity).eventId!));
+
     final sportEventsMap = await _getSportEventsBox.then((box) => box.toMap());
     final sportEvents = <int>[];
     sportEventsMap.forEach((key, value) => sportEvents.add((value as SportEventEntity).eventDate));
@@ -699,8 +717,21 @@ class LocalStorageImpl extends LocalStorageRepository {
     final collagenEvents = <int>[];
     collagenEventsMap.forEach((key, value) => collagenEvents.add((value as UploadSupplementEventEntity).eventId!));
 
+    final supplementEventsMap = await _getSupplementEventsBox.then((box) => box.toMap());
+    final supplementEvents = <int>[];
+    supplementEventsMap.forEach((key, value) => supplementEvents.add((value as SupplementEventsEntity).eventId));
+
+    final supplementFavoritesMap = await _getSupplementFavoritesBox.then((box) => box.toMap());
+    final supplementFavorites = <int>[];
+    supplementFavoritesMap.forEach((key, value) => supplementFavorites.add((value as SupplementEventsEntity).eventId));
+
+    final supplementRoutinesMap = await _getSupplementRoutinesBox.then((box) => box.toMap());
+    final supplementRoutines = <int>[];
+    supplementRoutinesMap.forEach((key, value) => supplementRoutines.add((value as SupplementEventsEntity).eventId));
+
     return EventsSynchronizationRequest(
       foodEvents: foodEvents,
+      foodRoutines: foodRoutines,
       sportEvents: sportEvents,
       sportRoutines: sportRoutines,
       liquidEvents: liquidEvents,
@@ -714,6 +745,9 @@ class LocalStorageImpl extends LocalStorageRepository {
       urineEvents: urineEvents,
       creatineEvents: creatineEvents,
       collagenEvents: collagenEvents,
+      supplementEvents: supplementEvents,
+      supplementFavorites: supplementFavorites,
+      supplementRoutines: supplementRoutines,
     );
   }
 
@@ -728,6 +762,9 @@ class LocalStorageImpl extends LocalStorageRepository {
     await _clearBox(_getFoodFavoritesBox);
     await _clearBox(_getSportFavoritesBox);
     await _clearBox(_getLiquidFavoritesBox);
+    await _clearBox(_getSupplementEventsBox);
+    await _clearBox(_getSupplementFavoritesBox);
+    await _clearBox(_getSupplementRoutinesBox);
     await _clearBox(_getSubjectiveAnalysisResultsBox);
     await _clearBox(_getRecipeFavoritesBox);
     await _clearBox(_getFecesEventsBox);
@@ -1027,25 +1064,85 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<List> getFecesEventsByDate({DateTime? dateTime, int? prevDays}) async {
+  Future<List> getFecesEventsByDate({DateTime? dateTime, DateTime? endDate, int? days}) async {
     List list = await _getFecesEventsBox.then((box) {
       return box.values.toList();
     });
 
-    final midnightTime = prevDays.isNull() ? DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime) : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(DateTimeHelper.getDateDaysAgo(daysAgo: prevDays));
-    if (prevDays.isNull()) return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == midnightTime).toList();
-    return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) >= midnightTime).toList();
+    // Case 1: Days provided (highest priority)
+    if (days != null) {
+      final end = dateTime ?? DateTime.now();
+      final start = end.subtract(Duration(days: days - 1));
+
+      final startMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(start);
+      final endMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(end);
+
+      return list.where((element) {
+        final eventMidnight = DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId);
+        return eventMidnight >= startMidnight && eventMidnight <= endMidnight;
+      }).toList();
+    }
+
+    // Case 2: No days → fall back to date filters
+    if (dateTime != null && endDate != null) {
+      final startMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+      final endMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(endDate);
+
+      return list.where((element) {
+        final eventMidnight = DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId);
+        return eventMidnight >= startMidnight && eventMidnight <= endMidnight;
+      }).toList();
+    }
+
+    if (dateTime != null) {
+      final midnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+      return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == midnight).toList();
+    }
+
+    // Default → today
+    final todayMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(DateTime.now());
+    return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == todayMidnight).toList();
   }
 
   @override
-  Future<List> getUrineEventsByDate({DateTime? dateTime, int? prevDays}) async {
+  Future<List> getUrineEventsByDate({DateTime? dateTime, DateTime? endDate, int? days}) async {
     List list = await _getUrineEventsBox.then((box) {
       return box.values.toList();
     });
 
-    final midnightTime = prevDays.isNull() ? DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime) : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(DateTimeHelper.getDateDaysAgo(daysAgo: prevDays));
-    if (prevDays.isNull()) return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == midnightTime).toList();
-    return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) >= midnightTime).toList();
+    // Case 1: Days provided (highest priority)
+    if (days != null) {
+      final end = dateTime ?? DateTime.now();
+      final start = end.subtract(Duration(days: days - 1));
+
+      final startMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(start);
+      final endMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(end);
+
+      return list.where((element) {
+        final eventMidnight = DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId);
+        return eventMidnight >= startMidnight && eventMidnight <= endMidnight;
+      }).toList();
+    }
+
+    // Case 2: No days → fall back to date filters
+    if (dateTime != null && endDate != null) {
+      final startMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+      final endMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(endDate);
+
+      return list.where((element) {
+        final eventMidnight = DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId);
+        return eventMidnight >= startMidnight && eventMidnight <= endMidnight;
+      }).toList();
+    }
+
+    if (dateTime != null) {
+      final midnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+      return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == midnight).toList();
+    }
+
+    // Default → today
+    final todayMidnight = DateTimeHelper.calculateMidNightMillisecondsFromDateTime(DateTime.now());
+    return list.where((element) => DateTimeHelper.calculateMidNightMillisecondsFromInt(element.eventId) == todayMidnight).toList();
   }
 
   @override
@@ -1212,8 +1309,157 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
+  Future<void> saveSupplementEvent(SupplementEventsEntity supplementEventsEntity, {bool isEdit = false}) async {
+    try {
+      await supplementEventsEntity.save();
+    } catch (error) {
+      try {
+        _getSupplementEventsBox.then((box) {
+          if (isEdit) {
+            final supplementEventsMap = box.toMap();
+            supplementEventsMap.forEach((key, value) {
+              if ((value as SupplementEventsEntity).eventId == supplementEventsEntity.eventId) {
+                box.put(key, supplementEventsEntity);
+              }
+            });
+          } else {
+            box.add(supplementEventsEntity);
+          }
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<List> getSupplementEventsDay({DateTime? dateTime}) async {
+    List supplementsEvents = await _getSupplementEventsBox.then((box) {
+      return box.values.toList();
+    },);
+
+    final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+    return supplementsEvents.where((event) => DateTimeHelper.calculateMidNightMillisecondsFromInt(event.eventDate) == midnightTime).toList();
+  }
+
+  @override
+  Future<void> removeSupplementEvent(SupplementEventsEntity supplementEventsEntity) async {
+    try {
+      await supplementEventsEntity.delete();
+    } catch (error) {
+      try {
+        _getSupplementEventsBox.then((box) {
+          final supplementEventsMap = box.toMap();
+          dynamic desiredKey;
+          supplementEventsMap.forEach((key, value) {
+            if ((value as SupplementEventsEntity).eventId == supplementEventsEntity.eventId) {
+              desiredKey = key;
+            }
+          });
+          box.delete(desiredKey);
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<void> saveSupplementFavorite(SupplementEventsEntity supplementEventsEntity, {bool isEdit = false}) async {
+    try {
+      await supplementEventsEntity.save();
+    } catch (error) {
+      try {
+        _getSupplementFavoritesBox.then((box) {
+          if (isEdit) {
+            final supplementEventsMap = box.toMap();
+            supplementEventsMap.forEach((key, value) {
+              if ((value as SupplementEventsEntity).eventId == supplementEventsEntity.eventId) {
+                box.put(key, supplementEventsEntity);
+              }
+            });
+          } else {
+            box.add(supplementEventsEntity);
+          }
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<List> getSupplementFavorites({DateTime? dateTime}) async {
+    List supplementsFavorites = await _getSupplementFavoritesBox.then((box) {
+      return box.values.toList();
+    },);
+
+    // final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+    // return supplementsFavorites.where((event) => DateTimeHelper.calculateMidNightMillisecondsFromInt(event.eventDate) == midnightTime).toList();
+    return supplementsFavorites;
+  }
+
+  @override
+  Future<void> saveSupplementRoutine(SupplementEventsEntity supplementRoutineEntity, {bool isEdit = false}) async {
+    try {
+      await supplementRoutineEntity.save();
+    } catch (error) {
+      try {
+        _getSupplementRoutinesBox.then((box) {
+          if (isEdit) {
+            final supplementRoutinesMap = box.toMap();
+            supplementRoutinesMap.forEach((key, value) {
+              if ((value as SupplementEventsEntity).eventId == supplementRoutineEntity.eventId) {
+                box.put(key, supplementRoutineEntity);
+              }
+            });
+          } else {
+            box.add(supplementRoutineEntity);
+          }
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<List> getSupplementRoutines() async {
+    List supplementRoutines = await _getSupplementRoutinesBox.then((box) {
+      return box.values.toList();
+    },);
+
+    // final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
+    // return supplementsFavorites.where((event) => DateTimeHelper.calculateMidNightMillisecondsFromInt(event.eventDate) == midnightTime).toList();
+    return supplementRoutines;
+  }
+
+  @override
+  Future<void> removeSupplementRoutine(SupplementEventsEntity supplementEntity) async {
+    try {
+      await supplementEntity.delete();
+    } catch (error) {
+      try {
+        _getSupplementRoutinesBox.then((box) {
+          final supplementRoutinesMap = box.toMap();
+          dynamic desiredKey;
+          supplementRoutinesMap.forEach((key, value) {
+            if ((value as SupplementEventsEntity).eventId == supplementEntity.eventId) {
+              desiredKey = key;
+            }
+          });
+          box.delete(desiredKey);
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
   Future<bool> eraseDBEventsData() async {
     await _clearBox(_getFoodEventsBox);
+    await _clearBox(_getFoodRoutinesBox);
     await _clearBox(_getLiquidEventsBox);
     await _clearBox(_getWaterEventsBox);
     await _clearBox(_getSportEventsBox);
@@ -1221,6 +1467,9 @@ class LocalStorageImpl extends LocalStorageRepository {
     await _clearBox(_getFoodFavoritesBox);
     await _clearBox(_getSportFavoritesBox);
     await _clearBox(_getLiquidFavoritesBox);
+    await _clearBox(_getSupplementEventsBox);
+    await _clearBox(_getSupplementFavoritesBox);
+    await _clearBox(_getSupplementRoutinesBox);
     await _clearBox(_getSubjectiveAnalysisResultsBox);
     await _clearBox(_getRecipeFavoritesBox);
     await _clearBox(_getFecesEventsBox);
@@ -1269,7 +1518,7 @@ class LocalStorageImpl extends LocalStorageRepository {
           if (isEdit) {
             final spoRoutinesMap = box.toMap();
             spoRoutinesMap.forEach((key, value) {
-              if ((value as SportRoutineEntity).eventId == foodRoutineEntity.eventId) {
+              if ((value as FoodRoutineEntity).eventId == foodRoutineEntity.eventId) {
                 box.put(key, foodRoutineEntity);
               }
             });
@@ -1278,6 +1527,37 @@ class LocalStorageImpl extends LocalStorageRepository {
           }
         },);
       } catch(error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<List> getFoodRoutine() async {
+    List foodRoutines = await _getFoodRoutinesBox.then((box) {
+      return box.values.toList();
+    },);
+
+    return foodRoutines;
+  }
+
+  @override
+  Future<void> removeFoodRoutine(FoodRoutineEntity foodRoutineEntity) async {
+    try {
+      await foodRoutineEntity.delete();
+    } catch (error) {
+      try {
+        _getFoodRoutinesBox.then((box) {
+          final foodRoutineMap = box.toMap();
+          dynamic desiredKey;
+          foodRoutineMap.forEach((key, value) {
+            if ((value as FoodRoutineEntity).eventId == foodRoutineEntity.eventId) {
+              desiredKey = key;
+            }
+          });
+          box.delete(desiredKey);
+        },);
+      } catch (error) {
         rethrow;
       }
     }

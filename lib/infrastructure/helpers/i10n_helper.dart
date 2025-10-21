@@ -117,7 +117,7 @@ class AppLocalizationsHelper {
       'arteriosclerosis': 'Arterioesclerosis',
       'type_1_diabetes': 'Diabetes tipo 1',
       'type_2_diabetes': 'Diabetes tipo 2',
-      'high_sugar_level': 'Glucosa/Azúcar Elevada',
+      'high_sugar_level': 'Glucosa/Azúcar elevado',
       'high_cholesterol': 'Colesterol alto',
       'high_triglycerides': 'Triglicéridos altos',
       'other_diseases': 'Otras enfermedades',

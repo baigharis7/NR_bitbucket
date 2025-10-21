@@ -23,8 +23,10 @@ class UnitInfoEntity {
   @HiveField(0) int id;
   @HiveField(1) String en;
   @HiveField(2) String es;
+  @HiveField(3) String? enPlural;
+  @HiveField(4) String? esPlural;
 
-  UnitInfoEntity({required this.id, required this.en, required this.es});
+  UnitInfoEntity({required this.id, required this.en, required this.es, required this.enPlural, required this.esPlural});
 
   factory UnitInfoEntity.fromJson(Map<String, dynamic> json) => _$UnitInfoEntityFromJson(json);
   Map<String, dynamic> toJson() => _$UnitInfoEntityToJson(this);

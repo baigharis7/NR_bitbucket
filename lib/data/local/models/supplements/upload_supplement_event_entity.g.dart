@@ -55,8 +55,8 @@ UploadSupplementEventEntity _$UploadSupplementEventEntityFromJson(
         Map<String, dynamic> json) =>
     UploadSupplementEventEntity(
       userId: json['userId'] as String?,
-      eventId: json['eventId'] as int?,
-      value: json['value'] as int?,
+      eventId: (json['eventId'] as num?)?.toInt(),
+      value: (json['value'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$UploadSupplementEventEntityToJson(

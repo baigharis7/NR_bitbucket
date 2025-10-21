@@ -59,6 +59,8 @@ class Constants {
   static const PERCENTAGE_100 = 100;
   static const PERCENTAGE_110 = 110;
   static const PERCENTAGE_115 = 115;
+  static const CREATINE = 80;
+  static const COLLAGEN = 81;
 
   //Navigation id's
   static const DASHBOARD = 0;

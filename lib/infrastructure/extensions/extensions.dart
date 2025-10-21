@@ -18,6 +18,7 @@ import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_compl
 import '../../data/api/masterfiles/model/conversion_factors_response.dart';
 import '../../data/api/masterfiles/model/oil_types_response.dart';
 import '../../domain/models/favorites/sport/add_sport_favorite.dart';
+import '../../domain/models/masterfiles/supplements_info_master.dart';
 import '../../domain/models/profile/height_weight_units.dart';
 import '../lists/SupplementInfo.dart';
 
@@ -235,6 +236,12 @@ extension LanguageSelector<T> on T {
         } else {
           return (this as UnitInfoMaster).en.orEmpty();
         }
+      } else if (this is SupplementInfoMaster) {
+        if (language == 'es') {
+          return (this as SupplementInfoMaster).es;
+        } else {
+          return (this as SupplementInfoMaster).en;
+        }
       } else if (this is RecommendationGroup) {
         if (language == 'es') {
           return (this as RecommendationGroup).es.orEmpty();
@@ -315,6 +322,25 @@ extension LanguageSelector<T> on T {
         }
       }
       else {
+        return '';
+      }
+    } else {
+      return '';
+    }
+  }
+}
+
+extension LanguageSelecto<T> on T {
+  String pluralized(BuildContext context) {
+    if (this is Translatable) {
+      String language = Localizations.localeOf(context).languageCode;
+      if (this is UnitInfoMaster) {
+        if (language == 'es') {
+          return (this as UnitInfoMaster).esPlural.orEmpty();
+        } else {
+          return (this as UnitInfoMaster).enPlural.orEmpty();
+        }
+      } else {
         return '';
       }
     } else {

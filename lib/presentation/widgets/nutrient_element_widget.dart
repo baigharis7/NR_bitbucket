@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/ani_nutri_progress_bar_widget.dart';
+import '../../infrastructure/helpers/app_text_styles.dart';
 import '../../infrastructure/utils/dimens.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -18,8 +19,8 @@ class NutrientElementWidget extends StatelessWidget {
     return Column(
       children: [
         AnimatedNutrientProgressBarWidget(percent: progress, title: label.toUpperCase(), width: Dimens.widthNormal, height: Dimens.height12, color: progressColor,),
-        Text('${current.toInt()}', style: const TextStyle(fontSize: Dimens.fontSizeXXLarge, fontWeight: FontWeight.bold, color: Colors.white),),
-        Text('${AppLocalizations.of(context)!.from} ${goal.toInt()}$unit', style: const TextStyle(color: Colors.white70),),
+        Text('${current.toInt()}', style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeXXLarge),),
+        Text('${AppLocalizations.of(context)!.from} ${goal.toInt()}$unit', style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w500, fontSize: Dimens.fontSize11, color: Colors.white70),),
       ],
     );
   }

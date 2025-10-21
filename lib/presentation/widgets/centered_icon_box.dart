@@ -28,7 +28,7 @@ class _CenteredIconBox extends State<CenteredIconBox> {
 
     return Container(
       decoration: BoxDecoration(
-        color: widget.isSelected ? widget.colorSelected : AppColors.yellowishGreen,
+        color: widget.isSelected ? widget.colorSelected : AppColors.floralWhite,
         shape: BoxShape.rectangle,
         borderRadius: const BorderRadius.all(Radius.circular(Dimens.border18)),
       ),
@@ -42,7 +42,7 @@ class _CenteredIconBox extends State<CenteredIconBox> {
           child: Icon(
             widget.icon,
             size: 29,
-            color: widget.isSelected ? Colors.black : Colors.white,
+            color: widget.isSelected ? Colors.white : Colors.black,
           ),
         ),
       ),

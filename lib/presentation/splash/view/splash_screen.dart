@@ -7,6 +7,8 @@ import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart
 import 'package:nutrenaissance_flutter/presentation/splash/provider/splash_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../infrastructure/helpers/app_text_styles.dart';
+
 class SplashScreen extends StatelessWidget {
   static const routeName = '/splash_screen';
 
@@ -62,7 +64,7 @@ class SplashScreen extends StatelessWidget {
                   height: 106, width: 242,
                 ),
                 const SizedBox(height: Dimens.heightSmall),
-                Text(AppLocalizations.of(context)!.welcome + ' :)', style: const TextStyle(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeXXLarge, color: Colors.white),),
+                Text(AppLocalizations.of(context)!.welcome + ' :)', style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w400, fontSize: Dimens.fontSizeXXLarge),),
               ],
             ),
           ),

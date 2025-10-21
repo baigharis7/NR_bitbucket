@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.9+96
+version: 1.0.9+105
 
 environment:
   sdk: ">=3.0.3 <4.0.0"
@@ -58,6 +58,7 @@ dependencies:
   percent_indicator: ^4.2.2
   mobile_scanner: ^4.0.1
   flutter_timezone: ^1.0.1
+  flutter_html: ^3.0.0-beta.2
 
 dev_dependencies:
   flutter_test:
@@ -136,6 +137,16 @@ flutter:
       fonts:
         - asset: assets/fonts/montserrat-regular.ttf
         - asset: assets/fonts/montserrat-bold.ttf
+          weight: 700
+    - family: MerriWeather
+      fonts:
+        - asset: assets/fonts/merriweather-regular.ttf
+        - asset: assets/fonts/merriweather-bold.ttf
+          weight: 700
+    - family: RadioCanadaBig
+      fonts:
+        - asset: assets/fonts/radiocanadabig-regular.ttf
+        - asset: assets/fonts/radiocanadabig-bold.ttf
           weight: 700
 
 flutter_launcher_icons:

@@ -4,8 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_actions.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/routine_days_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.dart';
@@ -29,6 +31,7 @@ class AddItemNameDialog extends StatefulWidget {
   final Function(int?)? onMealTieChange;
   final List<int>? daysOfWeek;
   final int? mealTime;
+  final String? eventName;
   const AddItemNameDialog({super.key,
     required this.title,
     required this.onNameChange,
@@ -42,6 +45,7 @@ class AddItemNameDialog extends StatefulWidget {
     this.daysOfWeek,
     this.onChangeCreateRoutine,
     this.mealTime,
+    this.eventName,
   });
 
   @override
@@ -63,6 +67,7 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
     _isCreateRoutine = widget.isCreateRoutine ?? false;
     _mealTime = widget.mealTime ?? 0;
     _daysOfWeek = widget.daysOfWeek ?? [];
+    _itemNameController.text = widget.eventName.orEmpty();
     super.initState();
   }
 
@@ -94,11 +99,7 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       widget.title,
-                      style: const TextStyle(
-                        color: AppColors.yellowishGreen,
-                        fontSize: Dimens.fontSize17,
-                        fontWeight: FontWeight.w400,
-                      ),
+                      style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),
                     ),
                   ),
                   Container(
@@ -181,10 +182,9 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
             ),
           ),
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-            child: SaveButton(
-              text: AppLocalizations.of(context)!.save,
-              onPressed: () {
+            margin: const EdgeInsets.all(Dimens.marginNormal),
+            child: GeneralButton(
+              onTap: () {
                 // if (_itemNameController.text == '') {
                 //   ToastHelper().showToast(text: AppLocalizations.of(context)!.favorite_name_required);
                 // } else {

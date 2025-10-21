@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/data/api/masterfiles/model/oil_types_resp
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/recommendation_groups_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/sports_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/subjective_analysis_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/supplements_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/units_foods_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/units_info_response.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_entity.dart';
@@ -23,6 +24,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/oil_types_e
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_analysis_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/supplements_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
@@ -33,6 +35,7 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/objectives_info
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/recommendation_groups_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/subjective_analysis_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/supplements_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
@@ -75,6 +78,9 @@ dynamic mapToMasterFileEntity(dynamic masterFileResponse, MasterFilesType master
 
     case MasterFilesType.unitsFoods:
       return mapToUnitsFoodsEntity(masterFileResponse as UnitsFoodsResponse);
+
+    case MasterFilesType.supplementsInfo:
+      return mapToSupplementsInfoEntity(masterFileResponse as SupplementsInfoResponse);
 
     case MasterFilesType.subjectiveAnalysis:
       return mapToSubjectiveAnalysisListMaster(masterFileResponse as SubjectiveAnalysisListResponse);
@@ -191,14 +197,14 @@ SportsInfoMaster mapToSportsInfoMaster(SportsInfoEntity sportsInfoEntity) {
 }
 
 UnitsInfoEntity mapToUnitsInfoEntity(UnitsInfoResponse unitsInfoResponse) {
-  List<UnitInfoEntity> data = unitsInfoResponse.data.map((item) => UnitInfoEntity(id: item.id, en: item.en, es: item.es)).toList();
+  List<UnitInfoEntity> data = unitsInfoResponse.data.map((item) => UnitInfoEntity(id: item.id, en: item.en, es: item.es, enPlural: item.enPlural, esPlural: item.esPlural)).toList();
   return UnitsInfoEntity(id: MasterFilesType.unitsInfo.index, v: unitsInfoResponse.v, data: data);
 }
 
 UnitsInfoMaster mapToUnitsInfoMaster(UnitsInfoEntity unitsInfoEntity) {
-  List<UnitInfoMaster> unitsInfoMaster = unitsInfoEntity.data.map((item) => UnitInfoMaster(id: item.id, en: item.en, es: item.es)).toList();
+  List<UnitInfoMaster> unitsInfoMaster = unitsInfoEntity.data.map((item) => UnitInfoMaster(id: item.id, en: item.en, es: item.es, enPlural: item.enPlural, esPlural: item.esPlural)).toList();
   unitsInfoMaster.add(UnitInfoMaster(id: -1, en: 'select', es: 'seleccionar'));
-  unitsInfoMaster.add(UnitInfoMaster(id: -2, en: 'grams', es: 'gramos'));
+  unitsInfoMaster.add(UnitInfoMaster(id: -2, en: 'gram', es: 'gramo', enPlural: 'grams', esPlural: 'gramos'));
   return UnitsInfoMaster(unitsInfoMaster: unitsInfoMaster);
 }
 
@@ -210,6 +216,16 @@ UnitsFoodsEntity mapToUnitsFoodsEntity(UnitsFoodsResponse unitsFoodsResponse) {
 UnitsFoodsMaster mapToUnitsFoodsMaster(UnitsFoodsEntity unitsFoodsEntity) {
   List<UnitFoodMaster> unitsFoodsMaster = unitsFoodsEntity.data.map((item) => UnitFoodMaster(id: item.id, units: item.units)).toList();
   return UnitsFoodsMaster(unitsFoodsMaster: unitsFoodsMaster);
+}
+
+SupplementsInfoEntity mapToSupplementsInfoEntity(SupplementsInfoResponse supplementsInfoResponse) {
+  List<SupplementInfoEntity> data = supplementsInfoResponse.data.map((element) => SupplementInfoEntity(id: element.id, es: element.es, en: element.en, unit: element.unit, computerName: element.computerName)).toList();
+  return SupplementsInfoEntity(v: supplementsInfoResponse.v, data: data);
+}
+
+SupplementsInfoMaster mapToSupplementsInfoMaster(SupplementsInfoEntity supplementsInfoEntity) {
+  List<SupplementInfoMaster> data = supplementsInfoEntity.data.map((element) => SupplementInfoMaster(id: element.id, es: element.es, en: element.en, unit: element.unit, computerName: element.computerName)).toList();
+  return SupplementsInfoMaster(v: supplementsInfoEntity.v, data: data);
 }
 
 SubjectiveAnalysisListMaster mapToSubjectiveAnalysisMaster(SubjectiveAnalysisListEntity subjectiveAnalysisListEntity) {

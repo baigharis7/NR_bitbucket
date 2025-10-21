@@ -26,13 +26,18 @@ class FoodFavoriteEntityAdapter extends TypeAdapter<FoodFavoriteEntity> {
       dish: fields[6] as bool?,
       isRoutine: fields[7] as bool?,
       daysOfWeek: (fields[8] as List?)?.map((e) => e as int).toList(),
+      eventId: fields[9] as int?,
+      isFavorite: fields[10] as bool?,
+      userId: fields[11] as String?,
+      time: fields[12] as String?,
+      timeZone: fields[13] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, FoodFavoriteEntity obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.ingredients)
       ..writeByte(1)
@@ -50,7 +55,17 @@ class FoodFavoriteEntityAdapter extends TypeAdapter<FoodFavoriteEntity> {
       ..writeByte(7)
       ..write(obj.isRoutine)
       ..writeByte(8)
-      ..write(obj.daysOfWeek);
+      ..write(obj.daysOfWeek)
+      ..writeByte(9)
+      ..write(obj.eventId)
+      ..writeByte(10)
+      ..write(obj.isFavorite)
+      ..writeByte(11)
+      ..write(obj.userId)
+      ..writeByte(12)
+      ..write(obj.time)
+      ..writeByte(13)
+      ..write(obj.timeZone);
   }
 
   @override
@@ -141,6 +156,11 @@ FoodFavoriteEntity _$FoodFavoriteEntityFromJson(Map<String, dynamic> json) =>
       dish: json['dish'] as bool?,
       isRoutine: json['isRoutine'] as bool?,
       daysOfWeek: json['daysOfWeek'] as List<int>?,
+      eventId: json['eventId'] as int?,
+      isFavorite: json['isFavorite'] as bool?,
+      userId: json['userId'] as String?,
+      time: json['time'] as String?,
+      timeZone: json['timeZone'] as String?,
     );
 
 Map<String, dynamic> _$FoodFavoriteEntityToJson(FoodFavoriteEntity instance) =>
@@ -154,6 +174,11 @@ Map<String, dynamic> _$FoodFavoriteEntityToJson(FoodFavoriteEntity instance) =>
       'dish': instance.dish,
       'isRoutine': instance.isRoutine,
       'daysOfWeek': instance.daysOfWeek,
+      'eventId': instance.eventId,
+      'userId': instance.userId,
+      'isFavorite': instance.isFavorite,
+      'time': instance.time,
+      'timeZone': instance.timeZone,
     };
 
 FoodInFavoriteEntity _$FoodInFavoriteEntityFromJson(

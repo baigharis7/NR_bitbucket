@@ -11,6 +11,7 @@ enum MasterFilesType {
   sportsInfo,
   unitsInfo,
   unitsFoods,
+  supplementsInfo,
   subjectiveAnalysis,
 }
 
@@ -26,6 +27,7 @@ const recommendationGroupsBoxName = 'recommendationGroupsBoxName';
 const sportsInfoBoxName = 'sportsInfoBoxName';
 const unitsInfoBoxName = 'unitsInfoBoxName';
 const unitsFoodsBoxName = 'unitsFoodsBoxName';
+const supplementsInfoBoxName = 'supplementsInfoBoxName';
 const subjectiveAnalysisBoxName = 'subjectiveAnalysisBoxName';
 
 const cookingMethods = 'cookingMethods';
@@ -40,4 +42,5 @@ const recommendationGroups = 'recommendationGroups';
 const sportsInfo = 'sportsInfo';
 const unitsInfo = 'unitsInfo';
 const unitsFoods = 'unitsFoods';
+const supplementsInfo = 'supplementsInfo';
 const subjectiveAnalysis = 'subjectiveAnalysis';

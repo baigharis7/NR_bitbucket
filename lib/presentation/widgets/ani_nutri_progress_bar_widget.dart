@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
+import '../../infrastructure/helpers/app_text_styles.dart';
 import '../../infrastructure/utils/app_color.dart';
 
 class AnimatedNutrientProgressBarWidget extends StatelessWidget {
@@ -35,7 +36,7 @@ class AnimatedNutrientProgressBarWidget extends StatelessWidget {
           ),
           child: TweenAnimationBuilder<double>(
             tween: Tween(begin: 0, end: progressFromPercent),
-            duration: const Duration(milliseconds: 500),
+            duration: const Duration(microseconds: 0),
             builder: (context, value, child) => Container(
               width: value,
               height: height ?? Dimens.height15,
@@ -49,7 +50,7 @@ class AnimatedNutrientProgressBarWidget extends StatelessWidget {
           margin: const EdgeInsets.symmetric(vertical: Dimens.marginXSmall),
           child: Text(
             title ?? '',
-            style: const TextStyle(fontSize: Dimens.fontSizeSmall, fontWeight: FontWeight.bold, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis
+            style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeSmall), maxLines: 1, overflow: TextOverflow.ellipsis
           ),
         ),
       ],),

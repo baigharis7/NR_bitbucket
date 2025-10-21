@@ -81,7 +81,7 @@ class _LiquidDetailWidgetState extends State<LiquidDetailWidget> {
                         Text(
                           '${widget.quantityTaken} L',
                           style: const TextStyle(
-                            fontSize: Dimens.fontSizeXLarge,
+                            fontSize: Dimens.fontSizeLarge,
                           ),
                         ),
                         Text(

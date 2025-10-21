@@ -32,9 +32,9 @@ class FecesUrineRepositoryImpl extends FecesUrineRepository {
   }
 
   @override
-  Future<List<UploadFeces>> getFecesEventsByDate({DateTime? dateTime, int? prevDays}) async {
+  Future<List<UploadFeces>> getFecesEventsByDate({DateTime? dateTime, DateTime? endDate, int? days}) async {
     try {
-      final result = await localStorageRepository.getFecesEventsByDate(dateTime: dateTime, prevDays: prevDays);
+      final result = await localStorageRepository.getFecesEventsByDate(dateTime: dateTime, endDate: endDate, days: days);
       return result.map((e) => mapToUploadFeces(e as UploadFecesEventEntity)).toList();
     } catch (error) {
       rethrow;
@@ -42,9 +42,9 @@ class FecesUrineRepositoryImpl extends FecesUrineRepository {
   }
 
   @override
-  Future<List<UploadFeces>> getUrineEventsByDate({DateTime? dateTime, int? prevDays}) async {
+  Future<List<UploadFeces>> getUrineEventsByDate({DateTime? dateTime, DateTime? endDate, int? days}) async {
     try {
-      final result = await localStorageRepository.getUrineEventsByDate(dateTime: dateTime, prevDays: prevDays);
+      final result = await localStorageRepository.getUrineEventsByDate(dateTime: dateTime, endDate: endDate, days: days,);
       return result.map((e) => mapToUploadFeces(e as UploadFecesEventEntity)).toList();
     } catch (error) {
       rethrow;

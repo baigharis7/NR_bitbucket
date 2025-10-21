@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/vertical_nutrient_widget.dart';
@@ -24,7 +25,7 @@ class MicroNutrientsSection extends StatelessWidget {
       children: [
         Container(
           margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
-            child: DashTitleWidget(title: AppLocalizations.of(context)!.micronutrientss, onInfoClick: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: micronutrients))),
+            child: DashTitleWidget(title: AppLocalizations.of(context)!.micronutrientss, onInfoClick: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: micronutrients), style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20),)),
         Container(
           width: double.infinity,
           margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
@@ -41,7 +42,7 @@ class MicroNutrientsSection extends StatelessWidget {
               // const SizedBox(width: Dimens.width18),
               if (temporaryMicronutrients.isNotEmpty) NutrientsSection(nutrients: temporaryMicronutrients, titleColor: AppColors.redOxide, title: AppLocalizations.of(context)!.temporary_objectives, image: 'assets/images/hour_glass.png'),
               // const SizedBox(width: Dimens.width18),
-              if (filteredNutrientsLess15RDA.isNotEmpty) NutrientsSection(nutrients: filteredNutrientsLess15RDA.where((element) => element.nutrientInfoMaster.translateDescription(context).isNotEmptyOrNull()).toList(), titleColor: AppColors.tigerOrange, title: AppLocalizations.of(context)!.deficiency_micronutrients, image: 'assets/icon/deficiency_nutrients_icon.png'),
+              if (filteredNutrientsLess15RDA.isNotEmpty) NutrientsSection(nutrients: filteredNutrientsLess15RDA.where((element) => element.nutrientInfoMaster.translateDescription(context).isNotEmptyOrNull()).take(Constants.DASHBOARD_LIST_SIZE).toList(), titleColor: AppColors.tigerOrange, title: AppLocalizations.of(context)!.micros_keep_eye_on, image: 'assets/icon/deficiency_nutrients_icon.png'),
             ],),
           ),
         ),

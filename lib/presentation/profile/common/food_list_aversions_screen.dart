@@ -13,6 +13,7 @@ import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_state.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/text_checkbox_box.dart';
 
+import '../../../infrastructure/helpers/app_text_styles.dart';
 import '../../../infrastructure/utils/app_color.dart';
 
 class FoodListAversionsScreen extends StatefulWidget {
@@ -87,16 +88,12 @@ class _FoodListAversionsScreenState extends State<FoodListAversionsScreen> {
                       children: [
                         Text(
                           AppLocalizations.of(context)!.diet,
-                          style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen),
+                          style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen),
                         ),
                         const SizedBox(height: Dimens.height12),
                         Text(
                           AppLocalizations.of(context)!.diet_desc,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: Dimens.fontSizeSmall,
-                            color: AppColors.yellowishGreen,
-                          ),
+                          style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeSmall, color: AppColors.yellowishGreen),
                         ),
                         const SizedBox(height: Dimens.height12),
                         ...foodGroup.foodsList.map((food) => TextCheckboxBox(

@@ -14,6 +14,12 @@ class SportFavoriteEntity extends HiveObject {
   @HiveField(2) String? title;
   @HiveField(3) String? comment;
   @HiveField(4) List<SportFavoriteInfoEntity>? info;
+  @HiveField(5) int? eventId;
+  @HiveField(6) String? scheduleTime;
+  @HiveField(7) List<int>? daysOfWeek;
+  @HiveField(8) bool? isFavorite;
+  @HiveField(9) bool? isCreateRoutine;
+  @HiveField(10) String? timeZone;
 
   SportFavoriteEntity({
     required this.userId,
@@ -21,6 +27,12 @@ class SportFavoriteEntity extends HiveObject {
     required this.title,
     required this.comment,
     required this.info,
+    this.eventId,
+    this.scheduleTime,
+    this.daysOfWeek,
+    this.isFavorite,
+    this.isCreateRoutine,
+    this.timeZone,
   });
 
   factory SportFavoriteEntity.fromJson(Map<String, dynamic> json) => _$SportFavoriteEntityFromJson(json);

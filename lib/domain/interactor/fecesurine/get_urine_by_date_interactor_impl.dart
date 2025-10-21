@@ -7,6 +7,6 @@ class GetUrineByDateInteractorImpl extends GetUrineByDateInteractor {
 
   GetUrineByDateInteractorImpl({required this.fecesUrineRepository});
   @override
-  Future<List<UploadFeces>> execute({DateTime? dateTime, int? prevDays}) => fecesUrineRepository.getUrineEventsByDate(dateTime: dateTime, prevDays: prevDays);
+  Future<List<UploadFeces>> execute({DateTime? dateTime, DateTime? endDate, int? days}) => fecesUrineRepository.getUrineEventsByDate(dateTime: dateTime, endDate: endDate, days: days);
 
 }

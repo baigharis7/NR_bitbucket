@@ -45,6 +45,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/oil_types_e
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/recommendation_groups_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/subjective_analysis_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/supplements_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/modelsappearence/models_appearance_entity.dart';
@@ -52,6 +53,7 @@ import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_en
 import 'package:nutrenaissance_flutter/data/local/models/recipes/recipe_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/supplements/supplement_events_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/supplements/upload_supplement_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/watervents/water_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/advices/advices_repository_impl.dart';
@@ -143,6 +145,12 @@ import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_ev
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/delete_food_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/delete_food_routine_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/get_food_routines_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/get_food_routines_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/remove_food_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/remove_food_routine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/save_food_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/save_food_routine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/upload_food_routine_interactor.dart';
@@ -234,18 +242,39 @@ import 'package:nutrenaissance_flutter/domain/interactor/steps/save_steps_intera
 import 'package:nutrenaissance_flutter/domain/interactor/steps/save_steps_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_routine_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_day_supplement_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_day_supplement_events_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_favorites_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_routines_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_collagen_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_collagen_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_creatine_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_creatine_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_collagen_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_collagen_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_creatine_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_creatine_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_favorite_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_routine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_collagen_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_collagen_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_creatine_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_creatine_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_favorite_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_routine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/save_water_event_interactor.dart';
@@ -281,6 +310,7 @@ import 'package:nutrenaissance_flutter/infrastructure/environment/environment.da
 import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/barcodedetail/view/bar_code_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/barcodescanning/view/bar_code_scanning_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/calendar/bloc/calendar_bloc.dart';
@@ -308,10 +338,13 @@ import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/sport_f
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/create_new_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/favorite_sports_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/favoritestabs/bloc/favorites_tabs_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/favorites_tab_holder.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/bloc/feces_urine_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces/view/feces_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/feces_urine_tab_holder.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/view/urine/view/urine_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/fecesurinedetails/view/feces_urine_tabs.dart';
 import 'package:nutrenaissance_flutter/presentation/fiber_detail/bloc/fiber_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/fiber_detail/view/fiber_detail_Screen.dart';
 import 'package:nutrenaissance_flutter/presentation/food/bloc/food_bloc.dart';
@@ -320,6 +353,8 @@ import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_even
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/forgottenpassword/bloc/forgotten_password_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/forgottenpassword/view/fogotten_password_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/itemupdate/bloc/item_update_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/itemupdate/view/item_update_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_food_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_liquid_bloc.dart';
@@ -337,6 +372,7 @@ import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/bloc/m
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/view/macro_nutrients_detail.dart';
 import 'package:nutrenaissance_flutter/presentation/mealtimedetails/bloc/meal_time_details_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/mealtimedetails/view/meal_time_details_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/mealtimeitem/view/meal_time_item_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/bloc/micro_nutrients_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/micronutrientsweekly/bloc/micro_nutrients_weekly_bloc.dart';
@@ -361,11 +397,27 @@ import 'package:nutrenaissance_flutter/presentation/resetpassword/bloc/reset_pas
 import 'package:nutrenaissance_flutter/presentation/resetpassword/view/reset_password_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/routines/bloc/routines_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/routines/view/routines_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/routinestabs/bloc/routines_tab_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/routinestabs/view/routines_tab_holder.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/sportitems/bloc/sport_items_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/sportitems/view/sport_items_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/sportupdate/bloc/sport_update_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/sportupdate/view/sport_update_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/bloc/sugar_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/view/sugar_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/supplements/bloc/supplements_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/supplementsdetail/bloc/supplements_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/supplementsdetail/view/supplements_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/updatemeal/bloc/update_meal_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/updatemeal/view/update_meal_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/updatesport/bloc/update_sport_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/updatesport/view/update_sport_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/updatesupplement/bloc/update_supplement_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/updatesupplement/view/update_supplement_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/waterevent/bloc/water_event_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/bloc/weekly_dashboard_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/view/weekly_dashboard_detail_screen.dart';
@@ -384,6 +436,11 @@ import 'domain/interactor/masterfiles/get_master_file_version_interactor_impl.da
 import 'domain/interactor/masterfiles/manage_master_files_interactor_impl.dart';
 import 'domain/interactor/profile/get_user_objectives_interactor.dart';
 import 'domain/interactor/profile/get_user_objectives_interactor_impl.dart';
+import 'domain/interactor/supplements/get_supplement_favorites_interactor_impl.dart';
+import 'domain/interactor/supplements/get_supplement_routines_interactor.dart';
+import 'domain/interactor/supplements/remove_supplement_routine_interactor.dart';
+import 'domain/interactor/supplements/remove_supplement_routine_interactor_impl.dart';
+import 'domain/interactor/supplements/save_supplement_routine_interactor.dart';
 import 'presentation/profile/common/aversions_screen.dart';
 import 'presentation/profile/common/health_questions_screen.dart';
 import 'presentation/recommendations/common/view/recommendations_tabs_holder.dart';
@@ -401,7 +458,7 @@ import 'package:chuck_interceptor/chuck.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
-  const String environmentName = String.fromEnvironment(Environment.DEV, defaultValue: Environment.DEV);
+  const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
   // await AndroidAlarmManager.initialize();
@@ -432,6 +489,9 @@ void main() async {
   final FoodRoutinesRepository foodRoutinesRepository = FoodRoutinesRepositoryImpl(foodRoutinesApi: foodRoutinesApi, localStorageRepository: localStorageRepository);
   final UploadFoodRoutineInteractor uploadFoodRoutineInteractor = UploadFoodRoutineInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
   final SaveFoodRoutineInteractor saveFoodRoutineInteractor = SaveFoodRoutineInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
+  final GetFoodRoutinesInteractor getFoodRoutinesInteractor = GetFoodRoutinesInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
+  final RemoveFoodRoutineInteractor removeFoodRoutineInteractor = RemoveFoodRoutineInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
+  final DeleteFoodRoutineInteractor deleteFoodRoutineInteractor = DeleteFoodRoutineInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
   final RecommendationsApi recommendationsApi = RecommendationsApi(prefsRepository, authenticationService, chuck);
   final RecommendationsRepository recommendationsRepository = RecommendationsRepositoryImpl(recommendationsApi: recommendationsApi);
   final GetRecommendationInteractor getRecommendationInteractor = GetRecommendationInteractorImpl(recommendationsRepository: recommendationsRepository);
@@ -555,6 +615,21 @@ void main() async {
   final ModelsAppearanceRepository modelsAppearanceRepository = ModelsAppearanceRepositoryImpl(localStorageRepository: localStorageRepository);
   final ShowModelAppearanceInteractor showModelAppearanceInteractor = ShowModelAppearanceInteractorImpl(modelsAppearanceRepository: modelsAppearanceRepository);
   final SaveModelAppearanceInteractor saveModelAppearanceInteractor = SaveModelAppearanceInteractorImpl(modelsAppearanceRepository: modelsAppearanceRepository);
+  final UploadSupplementEventInteractor uploadSupplementEventInteractor = UploadSupplementEventInteractorImpl(supplementsRepository: supplementsRepository);
+  final GetDaySupplementEventsInteractor getDaySupplementEventsInteractor = GetDaySupplementEventsInteractorImpl(supplementsRepository: supplementsRepository);
+  final SaveSupplementEventInteractor saveSupplementEventInteractor = SaveSupplementInteractorImpl(supplementsRepository: supplementsRepository);
+  final DeleteSupplementEventInteractor deleteSupplementEventInteractor = DeleteSupplementEventInteractorImpl(supplementsRepository: supplementsRepository);
+  final RemoveSupplementEventInteractor removeSupplementEventInteractor = RemoveSupplementEventInteractorImpl(supplementsRepository: supplementsRepository);
+  final UploadSupplementFavoriteInteractor uploadSupplementFavoriteInteractor = UploadSupplementFavoriteInteractorImpl(supplementsRepository: supplementsRepository);
+  final SaveSupplementFavoriteInteractor saveSupplementFavoriteInteractor = SaveSupplementFavoriteInteractorImpl(supplementsRepository: supplementsRepository);
+  final GetSupplementFavoritesInteractor getSupplementFavoritesInteractor = GetSupplementFavoritesInteractorImpl(supplementsRepository: supplementsRepository);
+  final UploadSupplementRoutineInteractor uploadSupplementRoutineInteractor = UploadSupplementRoutineInteractorImpl(supplementsRepository: supplementsRepository);
+  final SaveSupplementRoutineInteractor saveSupplementRoutineInteractor = SaveSupplementRoutineInteractorImpl(supplementsRepository: supplementsRepository);
+  final GetSupplementRoutinesInteractor getSupplementRoutinesInteractor = GetSupplementRoutinesIntractorImpl(supplementsRepository: supplementsRepository);
+  final DeleteSupplementRoutineInteractor deleteSupplementRoutineInteractor = DeleteSupplementRoutineInteractorImpl(supplementsRepository: supplementsRepository);
+  final RemoveSupplementRoutineInteractor removeSupplementRoutineInteractor = RemoveSupplementRoutineInteractorImpl(supplementsRepository: supplementsRepository);
+
+  await NutritionUtils(getMasterFileInteractor: getMasterFileInteractor).init();
 
   final dashboardBloc = DashboardBloc(
     getAdviceInteractor: getAdviceInteractor,
@@ -597,6 +672,8 @@ void main() async {
     chuck: chuck,
     showModelAppearanceInteractor: showModelAppearanceInteractor,
     saveModelAppearanceInteractor: saveModelAppearanceInteractor,
+    getTodaySportsInteractor: getTodaySportsInteractor,
+    getDaySupplementEventsInteractor: getDaySupplementEventsInteractor,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(
@@ -693,6 +770,10 @@ void main() async {
     getWeekSportsInteractor: getWeekSportsInteractor,
     uploadRoutineInteractor: uploadRoutineInteractor,
     saveRoutineInteractor: saveRoutineInteractor,
+    uploadSportFavoriteInteractor: uploadSportFavoriteInteractor,
+    saveSportFavoriteInteractor: saveSportFavoriteInteractor,
+    deleteSportFavoriteInteractor: deleteSportFavoriteInteractor,
+    removeSportFavoriteInteractor: removeSportFavoriteInteractor,
   );
 
   final liquidEventBloc = LiquidEventBloc(
@@ -914,6 +995,97 @@ void main() async {
     removeFoodEventInteractor: removeFoodEventInteractor,
   );
 
+  final favoritesTabsBloc = FavoritesTabsBloc(
+    getFoodFavoritesInteractor: getFoodFavoritesInteractor,
+    deleteFoodFavoriteInteractor: deleteFoodFavoriteInteractor,
+    removeFoodFavoriteFromLocalInteractor: removeFoodFavoriteFromLocalInteractor,
+    getUserIdInteractor: getUserIdInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
+    getSportFavoritesInteractor: getSportFavoritesInteractor,
+    getSupplementFavoritesInteractor: getSupplementFavoritesInteractor,
+    deleteSportFavoriteInteractor: deleteSportFavoriteInteractor,
+    removeSportFavoriteInteractor: removeSportFavoriteInteractor,
+  );
+
+
+  final routinesTabBloc = RoutinesTabBloc(
+    getFoodRoutinesInteractor: getFoodRoutinesInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
+    getRoutinesInteractor: getRoutinesInteractor,
+    getSupplementRoutinesInteractor: getSupplementRoutinesInteractor,
+    removeFoodRoutineInteractor: removeFoodRoutineInteractor,
+    deleteFoodRoutineInteractor: deleteFoodRoutineInteractor,
+    deleteSportRoutineInteractor: deleteSportRoutineInteractor,
+    removeSportRoutineInteractor: removeSportRoutineInteractor,
+    deleteSupplementRoutineInteractor: deleteSupplementRoutineInteractor,
+    removeSupplementRoutineInteractor: removeSupplementRoutineInteractor,
+  );
+
+  final sportItemsBloc = SportItemsBloc(
+    getMasterFileInteractor: getMasterFileInteractor,
+    getTodaySportsInteractor: getTodaySportsInteractor,
+    deleteSportEventInteractor: deleteSportEventInteractor,
+    removeSportEventInteractor: removeSportEventInteractor,
+  );
+
+  final itemUpdateBloc = ItemUpdateBloc(
+      getMasterFileInteractor: getMasterFileInteractor,
+    uploadFoodEventInteractor: uploadFoodEventInteractor,
+    saveFoodEventInteractor: saveFoodEventInteractor,
+  );
+
+  final sportUpdateBloc = SportUpdateBloc(
+      getMasterFileInteractor: getMasterFileInteractor,
+    uploadSportEventsInteractor: uploadSportEventsInteractor,
+    saveSportEventInteractor: saveSportEventInteractor,
+  );
+
+  final supplementsBloc = SupplementsBloc(
+    getProfileInteractor: getProfileInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
+    uploadSupplementEventInteractor: uploadSupplementEventInteractor,
+    saveSupplementEventInteractor: saveSupplementEventInteractor,
+    uploadSupplementFavoriteInteractor: uploadSupplementFavoriteInteractor,
+    saveSupplementFavoriteInteractor: saveSupplementFavoriteInteractor,
+    getSupplementFavoritesInteractor: getSupplementFavoritesInteractor,
+    uploadSupplementRoutineInteractor: uploadSupplementRoutineInteractor,
+    saveSupplementRoutineInteractor: saveSupplementRoutineInteractor,
+    getUserIdInteractor: getUserIdInteractor,
+  );
+
+  final supplementsDetailBloc = SupplementsDetailBloc(
+    getDaySupplementEventsInteractor: getDaySupplementEventsInteractor,
+    deleteSupplementEventInteractor: deleteSupplementEventInteractor,
+    removeSupplementEventInteractor: removeSupplementEventInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
+    getProfileInteractor: getProfileInteractor,
+  );
+
+  final updateSupplementBloc = UpdateSupplementBloc(
+      getMasterFileInteractor: getMasterFileInteractor,
+      uploadSupplementFavoriteInteractor: uploadSupplementFavoriteInteractor,
+      saveSupplementFavoriteInteractor: saveSupplementFavoriteInteractor,
+      uploadSupplementRoutineInteractor: uploadSupplementRoutineInteractor,
+      saveSupplementRoutineInteractor: saveSupplementRoutineInteractor,
+      getUserIdInteractor: getUserIdInteractor,
+  );
+
+  final updateMealBloc = UpdateMealBloc(
+    uploadFoodFavoriteInteractor: uploadFoodFavoriteInteractor,
+      saveFoodFavoriteInteractor: saveFoodFavoriteInteractor,
+      uploadFoodRoutineInteractor: uploadFoodRoutineInteractor,
+      saveFoodRoutineInteractor: saveFoodRoutineInteractor,
+      getMasterFileInteractor: getMasterFileInteractor,
+  );
+
+  final updateSportBloc = UpdateSportBloc(
+    getMasterFileInteractor: getMasterFileInteractor,
+    uploadSportFavoriteInteractor: uploadSportFavoriteInteractor,
+    saveSportFavoriteInteractor: saveSportFavoriteInteractor,
+    uploadRoutineInteractor: uploadRoutineInteractor,
+    saveRoutineInteractor: saveRoutineInteractor,
+  );
+
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
 
   runApp(
@@ -961,6 +1133,16 @@ void main() async {
         BlocProvider<RecipeDetailBloc>(create: (context) => recipeDetailBloc,),
         BlocProvider<MicroNutrientsWeeklyBloc>(create: (context) => microNutrientsWeeklyBloc,),
         BlocProvider<MealTimeDetailsBloc>(create: (context) => mealTimeDetailsBloc,),
+        BlocProvider<FavoritesTabsBloc>(create: (context) => favoritesTabsBloc,),
+        BlocProvider<RoutinesTabBloc>(create: (context) => routinesTabBloc,),
+        BlocProvider<SportItemsBloc>(create: (context) => sportItemsBloc,),
+        BlocProvider<ItemUpdateBloc>(create: (context) => itemUpdateBloc,),
+        BlocProvider<SportUpdateBloc>(create: (context) => sportUpdateBloc,),
+        BlocProvider<SupplementsBloc>(create: (context) => supplementsBloc,),
+        BlocProvider<SupplementsDetailBloc>(create: (context) => supplementsDetailBloc,),
+        BlocProvider<UpdateSupplementBloc>(create: (context) => updateSupplementBloc,),
+        BlocProvider<UpdateMealBloc>(create: (context) => updateMealBloc,),
+        BlocProvider<UpdateSportBloc>(create: (context) => updateSportBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -1053,6 +1235,18 @@ void main() async {
           MealTimeDetailScreen.routeName:(_) => const MealTimeDetailScreen(),
           BarCodeScanningScreen.routeName:(_) => const BarCodeScanningScreen(),
           BarcodeDetailScreen.routeName:(_) => const BarcodeDetailScreen(),
+          MealTimeItemScreen.routeName:(_) => const MealTimeItemScreen(),
+          FavoritesTabHolder.routeName:(_) => const FavoritesTabHolder(),
+          RoutinesTabHolder.routeName:(_) => const RoutinesTabHolder(),
+          SportItemsScreen.routeName:(_) => const SportItemsScreen(),
+          FecesUrineTabs.routeName:(_) => const FecesUrineTabs(),
+          ItemUpdateScreen.routeName:(_) => const ItemUpdateScreen(),
+          SportUpdateScreen.routeName:(_) => const SportUpdateScreen(),
+          SupplementsScreen.routeName:(_) => const SupplementsScreen(),
+          SupplementsDetailScreen.routeName:(_) => const SupplementsDetailScreen(),
+          UpdateSupplementScreen.routeName:(_) => const UpdateSupplementScreen(),
+          UpdateMealScreen.routeName:(_) => const UpdateMealScreen(),
+          UpdateSportScreen.routeName:(_) => const UpdateSportScreen(),
         },
       ),
     ),
@@ -1138,4 +1332,8 @@ void initLocalStorage() async {
   Hive.registerAdapter(ConversionInfoEntityAdapter());
   Hive.registerAdapter(FoodRoutineEntityAdapter());
   Hive.registerAdapter(FoodRoutineInEntityAdapter());
+  Hive.registerAdapter(SupplementsInfoEntityAdapter());
+  Hive.registerAdapter(SupplementInfoEntityAdapter());
+  Hive.registerAdapter(SupplementEventsEntityAdapter());
+  Hive.registerAdapter(SupplementEventsInfoEntityAdapter());
 }

@@ -5,22 +5,28 @@ part 'food_favorite.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class FoodFavorite {
-  String title;
-  int eventDate;
+  String? userId;
+  int? eventId;
+  int? eventDate;
   List<FoodInFavorite> ingredients = [];
   List<FoodInFavorite> drinks = [];
+  String? title;
   String? comment;
-  int mealTime;
+  int? mealTime;
   bool? dish;
   bool? isRoutine;
   List<int>? daysOfWeek;
   String? time;
   String? timeZone;
+  bool? isFavorite;
+
   FoodFavorite({
-    required this.title,
-    required this.eventDate,
+    this.userId,
+    this.eventId,
+    this.eventDate,
     required this.ingredients,
     required this.drinks,
+    this.title,
     this.comment,
     required this.mealTime,
     this.dish,
@@ -28,7 +34,15 @@ class FoodFavorite {
     this.daysOfWeek,
     this.time,
     this.timeZone,
+    this.isFavorite,
   });
+
+  FoodFavorite.empty({int? eventData, int? mealTime})
+      : ingredients = [],
+        eventDate = eventData,
+        daysOfWeek = [],
+        mealTime = mealTime ?? 0,
+        drinks = [];
 
   factory FoodFavorite.fromJson(Map<String, dynamic> json) => _$FoodFavoriteFromJson(json);
   Map<String, dynamic> toJson() => _$FoodFavoriteToJson(this);
@@ -37,8 +51,8 @@ class FoodFavorite {
 @JsonSerializable(explicitToJson: true)
 class FoodInFavorite extends Translatable {
   int id;
-  String name_en;
-  String name_es;
+  String? name_en;
+  String? name_es;
   int qty;
   int unit;
   int? conversionFactor;
@@ -48,8 +62,8 @@ class FoodInFavorite extends Translatable {
 
   FoodInFavorite({
     required this.id,
-    required this.name_en,
-    required this.name_es,
+    this.name_en,
+    this.name_es,
     required this.qty,
     required this.unit,
     this.conversionFactor,

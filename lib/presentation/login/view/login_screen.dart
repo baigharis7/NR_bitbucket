@@ -23,6 +23,8 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.dart';
 import 'package:provider/provider.dart';
 
+import '../../../infrastructure/helpers/app_text_styles.dart';
+
 class LoginScreen extends StatefulWidget {
   static const routeName = '/login_screen';
 
@@ -148,43 +150,28 @@ class _LoginScreenState extends State<LoginScreen>
                         maxLength: 6,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Dimens.paddingXLarge,
-                        vertical: Dimens.paddingSmall,
-                      ),
-                      child: RoundedCustomButton(
-                        buttonText: AppLocalizations.of(context)!.accept,
-                        onPressed: () {
-                          if (_mfaController.text.isNotEmpty) sendVerificationCode.call(_mfaController.text);
-                          _mfaController.text = '';
-                          Navigator.pop(context);
-                        },
-                      ),
+                    RoundedCustomButton(
+                      verticalMargin: Dimens.marginSmall,
+                      horizontalMargin: Dimens.marginLarge,
+                      buttonText: AppLocalizations.of(context)!.accept,
+                      onPressed: () {
+                        if (_mfaController.text.isNotEmpty) sendVerificationCode.call(_mfaController.text);
+                        _mfaController.text = '';
+                        Navigator.pop(context);
+                      },
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Dimens.paddingXLarge,
-                        vertical: Dimens.paddingSmall,
-                      ),
-                      child: RoundedCustomButton(
-                        buttonText: AppLocalizations.of(context)!.resend_verification_code,
-                        onPressed: () => resendVerificationCode.call(),
-                      ),
+                    RoundedCustomButton(
+                      verticalMargin: Dimens.marginSmall,
+                      horizontalMargin: Dimens.marginLarge,
+                      buttonText: AppLocalizations.of(context)!.resend_verification_code,
+                      onPressed: () => resendVerificationCode.call(),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Dimens.paddingXLarge,
-                        vertical: Dimens.paddingSmall,
-                      ),
-                      child: RoundedCustomButton(
-                        buttonText: AppLocalizations.of(context)!.cancel,
-                        onPressed: () => _showExitConfirmationDialog(context),
-                      ),
+                    RoundedCustomButton(
+                      verticalMargin: Dimens.marginSmall,
+                      horizontalMargin: Dimens.marginLarge,
+                      buttonText: AppLocalizations.of(context)!.cancel,
+                      onPressed: () => _showExitConfirmationDialog(context),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: Dimens.paddingLarge),
-                    )
                   ],
                 ),
               ],
@@ -370,18 +357,13 @@ class _LoginScreenState extends State<LoginScreen>
                           if (model.isLogin) Container(
                             margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
                             child: Text(AppLocalizations.of(context)!.joy_of_science,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: Dimens.fontSize34,
-                              color: Colors.white,
-                              height: 1.4,
-                            ), textAlign: TextAlign.center,),
+                            style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize34,), textAlign: TextAlign.center,),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 20,top: 50),
                             child: TextFormField(
                               cursorColor: Colors.white,
-                              style: const TextStyle(color: Colors.white),
+                              style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
                               decoration: InputDecoration(
                                 focusColor: Colors.white,
                                 enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
@@ -393,8 +375,8 @@ class _LoginScreenState extends State<LoginScreen>
                                     'assets/icon/icon_user.png',
                                   ),
                                 ),
-                                hintStyle: const TextStyle(color: Colors.white),
-                                hintText: /*model.isLogin ? AppLocalizations.of(context)!.email : */AppLocalizations.of(context)!.name,
+                                hintStyle: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
+                                hintText: model.isLogin ? AppLocalizations.of(context)!.email : AppLocalizations.of(context)!.username,
                                 errorMaxLines: 3,
                               ),
                               controller: _usernameController,
@@ -419,7 +401,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   padding: const EdgeInsets.only(bottom: 20),
                                   child: TextFormField(
                                     cursorColor: Colors.white,
-                                    style: const TextStyle(color: Colors.white),
+                                    style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
                                     decoration: InputDecoration(
                                       focusColor: Colors.white,
                                       enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
@@ -433,7 +415,7 @@ class _LoginScreenState extends State<LoginScreen>
                                           fit: BoxFit.contain,
                                         ),
                                       ),
-                                      hintStyle: const TextStyle(color: Colors.white),
+                                      hintStyle: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
                                       hintText:
                                       AppLocalizations.of(context)!.email,
                                       errorMaxLines: 3,
@@ -449,7 +431,7 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                           TextFormField(
                             cursorColor: Colors.white,
-                            style: const TextStyle(color: Colors.white),
+                            style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
                             decoration: InputDecoration(
                               focusColor: Colors.white,
                               enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
@@ -461,7 +443,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   'assets/icon/icon_password.png',
                                 ),
                               ),
-                              hintStyle: const TextStyle(color: Colors.white),
+                              hintStyle: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
                               hintText: AppLocalizations.of(context)!.password_hint,
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -494,7 +476,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     padding: const EdgeInsets.symmetric(vertical: 20),
                                     child: TextFormField(
                                       cursorColor: Colors.white,
-                                      style: const TextStyle(color: Colors.white),
+                                      style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
                                       decoration: InputDecoration(
                                         focusColor: Colors.white,
                                         enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
@@ -506,7 +488,7 @@ class _LoginScreenState extends State<LoginScreen>
                                             'assets/icon/icon_password.png',
                                           ),
                                         ),
-                                        hintStyle: const TextStyle(color: Colors.white),
+                                        hintStyle: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
                                         hintText: AppLocalizations.of(context)!.repeat_password,
                                         suffixIcon: IconButton(
                                           icon: Icon(
@@ -535,7 +517,7 @@ class _LoginScreenState extends State<LoginScreen>
                               Expanded(
                                 child: InkWell(onTap: () async {
                                   Navigator.pushNamed(context, PrivacyPolicy.routeName).then((value) => model.setPrivacyPolicyChecked(value as bool));
-                                }, child: Text(AppLocalizations.of(context)!.privacy_policy, textAlign: TextAlign.start, style: const TextStyle(fontSize: Dimens.fontSizeNormal, color: Colors.white),)),
+                                }, child: Text(AppLocalizations.of(context)!.privacy_policy, textAlign: TextAlign.start, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,fontSize: Dimens.fontSizeSmall),)),
                               ),
                             ],
                           )),
@@ -603,11 +585,7 @@ class _LoginScreenState extends State<LoginScreen>
                               AppLocalizations.of(context)!
                                   .forgotten_password,
                               textAlign: TextAlign.start,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: Dimens.fontSizeMedium,
-                                decoration: TextDecoration.underline,
-                                color: Colors.white,),
+                              style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline,),
                             ),
                             onTap: () => Navigator.pushNamed(context, ForgottenPasswordScreen.routeName),
                           ),
@@ -622,10 +600,10 @@ class _LoginScreenState extends State<LoginScreen>
                                 model.changeLoginMode(() { _controller!.forward(); });
                               },
                               child: RichText(text: TextSpan(
-                                text: model.isLogin ? AppLocalizations.of(context)!.dont_have_account : AppLocalizations.of(context)!.already_have_account,
-                                style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeMedium,),
+                                text: (model.isLogin ? AppLocalizations.of(context)!.dont_have_account : AppLocalizations.of(context)!.already_have_account)  + '  ',
+                                style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeMedium),
                                 children: <TextSpan>[
-                                  TextSpan(text: model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),),
+                                  TextSpan(text: model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline),),
                                 ],
                               ),),
                             ),

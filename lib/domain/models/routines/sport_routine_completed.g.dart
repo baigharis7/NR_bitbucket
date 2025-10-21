@@ -18,8 +18,11 @@ SportRoutineCompleted _$SportRoutineCompletedFromJson(
       comment: json['comment'] as String?,
       sportName: json['sportName'] as String?,
       scheduleTime: json['scheduleTime'] as String,
-      daysOfWeek: json['daysOfWeek'] as List<int>?,
+      daysOfWeek: (json['daysOfWeek'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
       timeZone: json['timeZone'] as String?,
+      isRoutine: json['isRoutine'] as bool?,
     );
 
 Map<String, dynamic> _$SportRoutineCompletedToJson(
@@ -34,6 +37,7 @@ Map<String, dynamic> _$SportRoutineCompletedToJson(
       'scheduleTime': instance.scheduleTime,
       'daysOfWeek': instance.daysOfWeek,
       'timeZone': instance.timeZone,
+      'isRoutine': instance.isRoutine,
     };
 
 Info _$InfoFromJson(Map<String, dynamic> json) => Info(

@@ -1,8 +1,13 @@
 import 'dart:ffi';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/favorites_tab_holder.dart';
+import 'package:nutrenaissance_flutter/presentation/routinestabs/view/routines_tab_holder.dart';
 
 class FloatingMenuOverlay extends StatefulWidget {
   final VoidCallback onClose;
@@ -87,7 +92,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
                   ),
-                  child: Text(label, style: const TextStyle(fontSize: Dimens.fontSizeMedium)),
+                  child: Text(label, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black)),
                 ),
                 Container(
                   padding: const EdgeInsets.all(Dimens.padding6),
@@ -127,7 +132,8 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
             color: Colors.transparent,
             child: GestureDetector(
               onTap: _closeMenu,
-              child: Stack(alignment: Alignment.bottomRight,
+              child: Stack(
+                alignment: Alignment.bottomRight,
                 children: [
                   // Background blur with fade
                   Opacity(
@@ -140,14 +146,69 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
 
                   // Menu items
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge, vertical: Dimens.margin156),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: List.generate(widget.menuItems.length, (i) {
-                        final item = widget.menuItems[i];
-                        return buildMenuItem(item['label'], item['icon'], item['onTap'], widget.menuItems.length - i);
-                      }),
+                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge, vertical: Dimens.margin156),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(Dimens.padding4),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          SlideTransition(
+                            position: Tween<Offset>(
+                              begin: Offset(0, 0.2 * (7 + 1)),
+                              end: Offset.zero,
+                            ).animate(CurvedAnimation(
+                              parent: _fadeController,
+                              curve: const Interval(0.0, 1.0, curve: Curves.easeOut),
+                            )),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: AppColors.yellowishGreen,
+                                      borderRadius: BorderRadius.circular(Dimens.border50),
+                                    ),
+                                    child: ListTile(
+                                      onTap: () { _closeMenu(); Navigator.pushNamed(context, RoutinesTabHolder.routeName); },
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border50)),
+                                      visualDensity: VisualDensity.compact,
+                                      horizontalTitleGap: Dimens.zero,
+                                      tileColor: Colors.black,
+                                      leading: Image.asset('assets/icon/routine_icon.png', width: 22, height: 22, color: Colors.white),
+                                      title: Text(AppLocalizations.of(context)!.routines, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.white),),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: Dimens.width12),
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: AppColors.yellowishGreen,
+                                      borderRadius: BorderRadius.circular(Dimens.border50),
+                                    ),
+                                    child: ListTile(
+                                      onTap: () { _closeMenu(); Navigator.pushNamed(context, FavoritesTabHolder.routeName);},
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border50)),
+                                      visualDensity: VisualDensity.compact,
+                                      horizontalTitleGap: Dimens.zero,
+                                      tileColor: Colors.black,
+                                        leading: Image.asset('assets/images/favorite_icon.png', width: 22, height: 22, color: Colors.white),
+                                        title: Text(AppLocalizations.of(context)!.favorites, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.white),),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: Dimens.height32),
+                          ...List.generate(widget.menuItems.length, (i) {
+                            final item = widget.menuItems[i];
+                            return buildMenuItem(item['label'], item['icon'], item['onTap'], widget.menuItems.length - i);
+                          }),
+                          const SizedBox(height: Dimens.height32),
+                        ],
+                      ),
                     ),
                   ),
                 ],

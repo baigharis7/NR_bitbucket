@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 
 import '../../infrastructure/utils/dimens.dart';
 
@@ -15,8 +16,8 @@ class IngestedSpentWidget extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       SvgPicture.asset(svg,),
       const SizedBox(height: Dimens.height12),
-      Text(value.toString(), style: const TextStyle(fontSize: Dimens.fontSizeXXLarge, color: Colors.white, fontWeight: FontWeight.bold)),
-      Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: Dimens.fontSizeSmall, color: Colors.white)),
+      Text(value.toString(), style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSizeXXLarge)),
+      Text(title.toUpperCase(), textAlign: TextAlign.center, style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSize11)),
     ],);
   }
 

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/popup_menu_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
@@ -187,7 +188,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                 children: [
                                   Text(
                                     AppLocalizations.of(context)!.other_temp_needs,
-                                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal, color: AppColors.redOxide, decoration: TextDecoration.underline),
+                                    style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal, decoration: TextDecoration.underline, color: AppColors.redOxide,),
                                   ),
                                   const SizedBox(width: Dimens.width5),
                                   const Icon(Icons.arrow_forward_ios, size: 12, color: AppColors.redOxide),
@@ -201,15 +202,15 @@ class _ProfileScreen extends State<ProfileScreen> {
                               horizontalTitleGap: - 10,
                               leading: Image.asset('assets/images/goal_objectives.png', height: 18, width: 18),
                               title: Text(AppLocalizations.of(context)!.objectives, style: const TextStyle(
-                                  color: AppColors.peacockBlue, fontWeight: FontWeight.w900, fontSize: Dimens.fontSize15,),),
+                                  color: AppColors.peacockBlue, fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeLarge,),),
                             ),
                             ...?state.filteredObjectives?.map((e) => Container(
                               width: double.infinity,
-                                padding: const EdgeInsets.symmetric(vertical: Dimens.paddingSmall),
+                                padding: const EdgeInsets.all(Dimens.paddingSmall),
                                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
                                 alignment: Alignment.center,
-                                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(Dimens.border16)),
-                                child: Text(e.translate(context), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeSmall, color: AppColors.peacockBlue,), maxLines: 1, overflow: TextOverflow.ellipsis,))),
+                                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(Dimens.border50)),
+                                child: Text(e.translate(context).toUpperCase(), style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeSmall, color: AppColors.peacockBlue), maxLines: 1, overflow: TextOverflow.ellipsis,))),
                            const SizedBox(height: Dimens.height32),
                             InkWell(
                               onTap: () => _showObjectivesBottomModalSheet(context: context, onSaveChanges: () => bloc.add(SaveChangesAction()),),
@@ -217,7 +218,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                 children: [
                                   Text(
                                     AppLocalizations.of(context)!.update_goals,
-                                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal, color: AppColors.peacockBlue, decoration: TextDecoration.underline),
+                                    style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal, color: AppColors.peacockBlue, decoration: TextDecoration.underline, decorationColor: AppColors.peacockBlue),
                                   ),
                                   const SizedBox(width: Dimens.width5),
                                   const Icon(Icons.arrow_forward_ios, size: 12, color: AppColors.peacockBlue),
@@ -239,11 +240,11 @@ class _ProfileScreen extends State<ProfileScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                          Text(AppLocalizations.of(context)!.imp_info, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen)),
+                          Text(AppLocalizations.of(context)!.imp_info, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen)),
                               Column(children: [
                                 ListTile(
                                   onTap: () => Navigator.pushNamed(context, HealthQuestionsScreen.routeName).then((value) { if (value.toString() != Constants.BACK) bloc.add(SaveChangesAction()); }),
-                                  title: Text(AppLocalizations.of(context)!.medical_history, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15, color: AppColors.yellowishGreen)),
+                                  title: Text(AppLocalizations.of(context)!.medical_history, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15, color: AppColors.yellowishGreen)),
                                   trailing: const Icon(Icons.arrow_forward_ios, size: 12, color: AppColors.yellowishGreen),
                                 ),
                                 AnimatedNutrientProgressBarWidget(percent: bloc.getMedicalSituationFillPercentage() * 100, height: Dimens.height5, color: Colors.white, backgroundColor: AppColors.yellowishGreen50),
@@ -251,7 +252,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                               Column(children: [
                                 ListTile(
                                   onTap: () => Navigator.pushNamed(context, DietQuestionsScreen.routeName).then((value) { if (value.toString() != Constants.BACK) bloc.add(SaveChangesAction()); }),
-                                  title: Text(AppLocalizations.of(context)!.diet, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15, color: AppColors.yellowishGreen)),
+                                  title: Text(AppLocalizations.of(context)!.diet, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15, color: AppColors.yellowishGreen)),
                                   trailing: const Icon(Icons.arrow_forward_ios, size: 12, color: AppColors.yellowishGreen),
                                 ),
                                 AnimatedNutrientProgressBarWidget(percent: bloc.getDietPercentageFill() * 100, height: Dimens.height5, color: Colors.white, backgroundColor: AppColors.yellowishGreen50),
@@ -261,7 +262,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                   onTap: () => Navigator.pushNamed(context, PhysicalActivityScreen.routeName).then((value) {
                                     if (value.toString() != Constants.BACK) bloc.add(SaveChangesAction());
                                   }),
-                                  title: Text(AppLocalizations.of(context)!.physical_activity, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15, color: AppColors.yellowishGreen)),
+                                  title: Text(AppLocalizations.of(context)!.physical_activity, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15, color: AppColors.yellowishGreen)),
                                   trailing: const Icon(Icons.arrow_forward_ios, size: 12, color: AppColors.yellowishGreen),
                                 ),
                                 AnimatedNutrientProgressBarWidget(percent: bloc.getPhysicalCharacteristicsFillPercentage() * 100, height: Dimens.height5, color: Colors.white, backgroundColor: AppColors.yellowishGreen50),

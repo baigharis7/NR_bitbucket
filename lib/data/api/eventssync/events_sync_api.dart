@@ -11,6 +11,7 @@ class EventsSyncApi extends ApiHelper {
   Future<Map<String, dynamic>> sendEventsIds(
     String userId,
     List<String> foodEvents,
+    List<String> foodRoutines,
     List<String> sportEvents,
     List<String> sportRoutines,
     List<String> liquidEvents,
@@ -24,6 +25,9 @@ class EventsSyncApi extends ApiHelper {
     List<String> urineEvents,
     List<String> creatineEvents,
     List<String> collagenEvents,
+    List<String> supplementEvents,
+    List<String> supplementFavorites,
+    List<String> supplementRoutines,
   ) {
     return post(
       Uri.https(
@@ -33,6 +37,7 @@ class EventsSyncApi extends ApiHelper {
       {
         'userId' : userId,
         'foodEvents': foodEvents,
+        'foodRoutines': foodRoutines,
         'sportEvents': sportEvents,
         'sportRoutines': sportRoutines,
         'liquidEvents': liquidEvents,
@@ -46,6 +51,9 @@ class EventsSyncApi extends ApiHelper {
         'urineEvents': urineEvents,
         'creatineEvents': creatineEvents,
         'collagenEvents': collagenEvents,
+        'supplementEvents': supplementEvents,
+        'supplementFavorites': supplementFavorites,
+        'supplementRoutines': supplementRoutines,
       },
     );
   }

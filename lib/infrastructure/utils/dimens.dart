@@ -9,6 +9,7 @@ class Dimens {
   static const paddingLarge = 16.0;
   static const padding20 = 20.0;
   static const paddingXLarge = 24.0;
+  static const padding30 = 30.0;
   static const paddingXXLarge = 40.0;
   static const paddingXXXLarge = 60.0;
   static const padding4Large = 80.0;
@@ -41,6 +42,7 @@ class Dimens {
 
   // Font sizes
   static const fontSize5 = 5.0;
+  static const fontSize8 = 8.0;
   static const fontSizeXSmall = 10.0;
   static const fontSize11 = 11.0;
   static const fontSizeSmall = 12.0;
@@ -82,6 +84,7 @@ class Dimens {
   static const height15 = 15.0;
   static const height18 = 18.0;
   static const heightXSmall = 20.0;
+  static const height25 = 25.0;
   static const height27 = 27.0;
   static const height30 = 30.0;
   static const height32 = 32.0;
@@ -96,10 +99,13 @@ class Dimens {
   static const height90 = 90.0;
   static const heightNormal = 100.0;
   static const heightMedium = 150.0;
+  static const height170 = 170.0;
   static const heightLarge = 200.0;
+  static const height_220 = 220.0;
   static const heightXLarge = 250.0;
   static const heightXXLarge = 300.0;
   static const height320 = 320.0;
+  static const height350 = 350.0;
 
   // Widths
   static const width1 = 1.0;
