@@ -195,7 +195,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
         final uploadSupplementFavorite = mapToSupplementFavoriteFromSupplement(state.supplementObj!);
         await uploadSupplementFavoriteInteractor.execute(uploadSupplementFavorite);
         try {
-          await saveSupplementFavoriteInteractor.execute(uploadSupplementFavorite);
+          await saveSupplementFavoriteInteractor.execute(uploadSupplementFavorite, state.isEdit ?? false);
           state.supplementFavorites = await getSupplementFavoritesInteractor.execute();
           _clearData();
           emit(state.copyWith(isLoading: false));
@@ -217,7 +217,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
         final uploadSupplementRoutine = mapToSupplementRoutineFromSupplement(state.supplementObj!);
         await uploadSupplementRoutineInteractor.execute(uploadSupplementRoutine);
         try {
-          await saveSupplementRoutineInteractor.execute(uploadSupplementRoutine);
+          await saveSupplementRoutineInteractor.execute(uploadSupplementRoutine, false);
           _clearData();
           emit(state.copyWith(isLoading: false));
         } catch(_) {

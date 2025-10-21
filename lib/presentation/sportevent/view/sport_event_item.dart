@@ -67,10 +67,10 @@ class _SportEventItem extends State<SportEventItem> {
     final sportInfo = widget.sport;
       _sportIntensities = NutritionUtils.findSportIntensities(names: widget.allSportsInfo, id: sportInfo.id);
       _sportName = NutritionUtils.findSportName(names: widget.allSportsInfo, ingredients: [sportInfo], context: context);
-    if (widget.sport.minutes != null && _durationTextController.text == '') {
+    // if (widget.sport.minutes != null && _durationTextController.text == '') {
       _duration = widget.sport.minutes;
-      _durationTextController.text = _duration.toString();
-    }
+      _durationTextController.text = !_duration.isNull() ? _duration.toString() : '';
+    // }
 
     if (widget.sport.intensity != null) _intensity = widget.sport.intensity;
     _error = widget.sport.minutes == null || widget.sport.intensity == null;

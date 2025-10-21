@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/updatesport/view/update_sport_screen.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
@@ -54,14 +55,17 @@ class _PhysicalActivityTabState extends State<PhysicalActivityTab> {
           children: [
             ...state.favSports.orEmpty().map((favSport) => ItemInfoCard(
               onItemTap: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: favSport),
-              title: NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: favSport.info, context: context),
+              title: favSport.title ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: favSport.info, context: context),
               leadingSrc: 'assets/images/favorite_icon.png',
               // leadingSrc: 'assets/images/sport.png',
               trailingSrc: 'assets/images/delete_icon.png',
               color: AppColors.floralWhite,
               leadingTap: () {},
               trailingTap: () => favoritesTabsBloc.add(DeleteFavoriteSportFavoritesTabsEvent(sportFavorite: favSport, onFinish: () => _showConfirmationDialog(context: context))),
-              subtitle: '${favSport.info![0].minutes} ${AppLocalizations.of(context)!.minutes} - ${NutritionUtils.activityIntensityById(favSport.info![0].intensity.orZero(), context)}.',),
+              subtitle: '${favSport.info![0].minutes} ${AppLocalizations.of(context)!.minutes} - ${NutritionUtils.activityIntensityById(favSport.info![0].intensity.orZero(), context)}.',
+              beforeTrailingSrc: 'assets/icon/edit_icon.png',
+              beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSportScreen.routeName, arguments: favSport).then((value) => favoritesTabsBloc.add(InitializeFavoritesTabsEvent())),
+            ),
             ),
           ],
         ),

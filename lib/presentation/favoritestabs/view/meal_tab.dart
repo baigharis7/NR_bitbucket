@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/updatemeal/view/update_meal_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/item_info_card.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
@@ -35,14 +36,17 @@ class _MealTabState extends State<MealTab> {
         builder: (context, state) => Column(
       children: [
         ...state.favFoods.orEmpty().map((favFood) => ItemInfoCard(
-          onItemTap: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: favFood),
+          onItemTap: () => favFood.title ?? Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: favFood),
           title: NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: favFood.ingredients, context: context),
           leadingSrc: 'assets/images/favorite_icon.png',
           trailingSrc: 'assets/images/delete_icon.png',
           color: AppColors.floralWhite,
           leadingTap: () {},
           trailingTap: () { favoritesTabsBloc.add(RemoveFavoriteFoodFavoritesTabsEvent(foodFavorite: favFood)); },
-          subtitle: '${favFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, [favFood.ingredients[0]], context)}.',),
+          subtitle: '${favFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, [favFood.ingredients[0]], context)}.',
+          beforeTrailingSrc: 'assets/icon/edit_icon.png',
+          beforeTrailingTap: () => Navigator.pushNamed(context, UpdateMealScreen.routeName, arguments: favFood).then((value) => favoritesTabsBloc.add(InitializeFavoritesTabsEvent())),
+        ),
         ),
       ],
         ),

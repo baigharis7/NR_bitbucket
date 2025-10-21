@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/presentation/updatesport/view/update_sport_screen.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';
@@ -56,7 +58,7 @@ class _PhysicalActivityRoutinesTabState extends State<PhysicalActivityRoutinesTa
               final itemName = NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: item.info, context: context);
               return ItemInfoCard(
                 onItemTap: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: item).then((value) => routinesTabsBloc.add(InitializeRoutinesTabEvent())),
-                title: itemName,
+                title: item.sportName ?? itemName,
                 leadingSrc: 'assets/icon/routine_icon.png',
                 leadingIconSize: Dimens.height27,
                 trailingSrc: 'assets/images/delete_icon.png',
@@ -67,7 +69,10 @@ class _PhysicalActivityRoutinesTabState extends State<PhysicalActivityRoutinesTa
                     onCancel: () => Navigator.pop(context),
                     onConfirm: () => routinesTabsBloc.add(DeleteSportRoutineAction(sportRoutineCompleted: item)),
                 ),
-                subtitle: '${item.info![0].minutes} ${AppLocalizations.of(context)!.minutes} - ${NutritionUtils.activityIntensityById(item.info![0].intensity!.toInt(), context)}.',);
+                subtitle: '${item.info![0].minutes} ${AppLocalizations.of(context)!.minutes} - ${NutritionUtils.activityIntensityById(item.info![0].intensity!.toInt(), context)}.',
+                beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSportScreen.routeName, arguments: mapToSportFavoriteFromRoutine(item)).then((value) => routinesTabsBloc.add(InitializeRoutinesTabEvent())),
+              );
             },
           );
         },

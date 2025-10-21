@@ -564,9 +564,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     loop:for (UserRda userRda in state.profile?.userRdas?.userRdas ?? []) {
       if (userRda.name == micronutrient) {
         rda = userRda.rda;
-        // if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
-        //   rda = (state.profile?.sex == SexType.male) ? 220: 190;
-        // }
+        if (userRda.name == Constants.VITAMIN_C && state.profile?.objectives?.contains(Constants.IMPROVE_SPORT_PERFORMANCE) == true) {
+          rda = (state.profile?.sex == SexType.male) ? 220: 190;
+        }
         if (userRda.name == Constants.TRYPTOPHAN) {
           rda = (state.profile?.physicalCharacteristics?.weight ?? 0) * rda;
         }

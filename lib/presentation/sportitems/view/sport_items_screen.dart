@@ -140,7 +140,7 @@ class SportItemsScreen extends StatelessWidget {
                                   final activity = state.sportEvents![index];
                                   final itemName = NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: activity.info, context: context);
                                   return ItemInfoCard(
-                                    title: itemName,
+                                    title: activity.sportName ?? itemName,
                                     subtitle: '${activity.info![0].minutes} min. -${activity.eventKcals} kcal.',
                                     trailingSrc: 'assets/images/delete_icon.png',
                                     beforeTrailingSrc: 'assets/icon/edit_icon.png',

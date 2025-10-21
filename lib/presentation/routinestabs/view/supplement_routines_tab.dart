@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/updatesupplement/view/update_supplement_screen.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';
@@ -26,14 +28,17 @@ class SupplementRoutinesTab extends StatelessWidget {
               final supplementRoutine = state.supplementRoutines.orEmpty()[index];
               return ItemInfoCard(
                 onItemTap: () {},
-                title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementRoutine.info![0].id ?? -1).translate(context),
+                title: supplementRoutine.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementRoutine.info![0].id ?? -1).translate(context),
                 leadingSrc: 'assets/icon/routine_icon.png',
                 leadingIconSize: Dimens.height27,
                 trailingSrc: 'assets/images/delete_icon.png',
                 color: AppColors.floralWhite,
                 leadingTap: () {},
                 trailingTap: () => routinesTabsBloc.add(DeleteSupplementRoutineRoutinesTabEvent(supplement: supplementRoutine)),
-                subtitle: '${supplementRoutine.info![0].amount.toString()} ${supplementRoutine.info![0].unit}',);
+                subtitle: '${supplementRoutine.info![0].amount.toString()} ${supplementRoutine.info![0].unit}',
+                beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: supplementRoutine).then((value) => routinesTabsBloc.add(InitializeRoutinesTabEvent())),
+              );
             },
           );
         },

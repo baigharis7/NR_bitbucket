@@ -258,7 +258,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                               const SizedBox(height: Dimens.height12),
                               DashTitleWidget(title: AppLocalizations.of(context)!.favorites + ' - ' + AppLocalizations.of(context)!.physical_activity),
                               ...state.favSports.orEmpty().map((favSport) => ItemInfoCard(
-                                title: NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: favSport.info, context: context),
+                                title: favSport.title ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: favSport.info, context: context),
                                 leadingSrc: 'assets/images/favorite_icon.png',
                                 trailingSrc: 'assets/icon/add_icon.png',
                                 color: state.sportFavoriteEvent == favSport ? AppColors.butter : AppColors.floralWhite,

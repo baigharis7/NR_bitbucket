@@ -107,6 +107,7 @@ AddSportFavorite mapToSportFavoriteFromRoutine(SportRoutineCompleted sportRoutin
     scheduleTime: sportRoutineCompleted.scheduleTime,
     daysOfWeek: sportRoutineCompleted.daysOfWeek,
     timeZone: sportRoutineCompleted.timeZone,
+    isCreateRoutine: true,
   );
 }
 
@@ -234,6 +235,7 @@ FoodFavorite mapToFoodFavoriteFromRoutine(FoodRoutineEvent foodRoutineEvent) {
     daysOfWeek: foodRoutineEvent.daysOfWeek,
     timeZone: foodRoutineEvent.timeZone,
     dish: foodRoutineEvent.dish,
+    isRoutine: true,
   );
 }
 

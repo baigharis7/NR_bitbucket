@@ -375,6 +375,7 @@
     "add_favorite" : "Añadir favorito",
     "make_favorite" : "Hacer favorito",
     "save_as_favorite" : "Guardar como favorito",
+    "category" : "Categoría",
     "schedule" : "Horario",
     "food_name" : "Nombre de la comida",
     "spor_name" : "nombre del deporte",

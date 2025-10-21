@@ -24,7 +24,7 @@ abstract class SupplementsRepository {
   Future<void> saveSupplementFavorite(SupplementFavorite supplementFavorite, bool isEdit);
   Future<List<SupplementSimple>> getSupplementFavorite();
   Future<void> uploadSupplementRoutine(UploadSupplementRoutine uploadSupplementRoutine);
-  Future<void> saveSupplementRoutine(UploadSupplementRoutine supplementRoutine,);
+  Future<void> saveSupplementRoutine(UploadSupplementRoutine supplementRoutine, bool isEdit);
   Future<List<SupplementSimple>> getSupplementRoutines();
   Future<void> deleteSupplementRoutine(SupplementSimple supplement);
   Future<void> removeSupplementRoutine(SupplementSimple supplement);

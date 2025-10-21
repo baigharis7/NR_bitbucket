@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/updatesupplement/view/update_supplement_screen.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
@@ -57,12 +59,14 @@ class _SupplementsTabState extends State<SupplementsTab> {
           itemBuilder: (context, index) {
             final supplementFavorite = state.favSupplements?.orEmpty()[index];
             return ItemInfoCard(
-              title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite?.info![0].id ?? -1).translate(context),
+              title: supplementFavorite?.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite?.info![0].id ?? -1).translate(context),
               trailingSrc: 'assets/images/delete_icon.png',
               trailingTap: () {},
               subtitle: '${supplementFavorite?.info![0].amount.toString()} ${supplementFavorite?.info![0].unit}',
               leadingSrc: 'assets/images/favorite_icon.png',
               leadingTap: () {},
+              beforeTrailingSrc: 'assets/icon/edit_icon.png',
+              beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: supplementFavorite).then((value) => favoritesTabsBloc.add(InitializeFavoritesTabsEvent())),
             );
           },
         ),

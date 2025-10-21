@@ -8,5 +8,5 @@ class SaveSupplementFavoriteInteractorImpl extends SaveSupplementFavoriteInterac
   SaveSupplementFavoriteInteractorImpl({required this.supplementsRepository});
 
   @override
-  Future<void> execute(SupplementFavorite supplementFavorite) => supplementsRepository.saveSupplementFavorite(supplementFavorite, false);
+  Future<void> execute(SupplementFavorite supplementFavorite, bool isEdit) => supplementsRepository.saveSupplementFavorite(supplementFavorite, isEdit);
 }

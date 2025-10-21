@@ -412,6 +412,12 @@ import 'package:nutrenaissance_flutter/presentation/supplements/bloc/supplements
 import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/supplementsdetail/bloc/supplements_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/supplementsdetail/view/supplements_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/updatemeal/bloc/update_meal_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/updatemeal/view/update_meal_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/updatesport/bloc/update_sport_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/updatesport/view/update_sport_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/updatesupplement/bloc/update_supplement_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/updatesupplement/view/update_supplement_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/waterevent/bloc/water_event_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/bloc/weekly_dashboard_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/view/weekly_dashboard_detail_screen.dart';
@@ -1055,6 +1061,31 @@ void main() async {
     getProfileInteractor: getProfileInteractor,
   );
 
+  final updateSupplementBloc = UpdateSupplementBloc(
+      getMasterFileInteractor: getMasterFileInteractor,
+      uploadSupplementFavoriteInteractor: uploadSupplementFavoriteInteractor,
+      saveSupplementFavoriteInteractor: saveSupplementFavoriteInteractor,
+      uploadSupplementRoutineInteractor: uploadSupplementRoutineInteractor,
+      saveSupplementRoutineInteractor: saveSupplementRoutineInteractor,
+      getUserIdInteractor: getUserIdInteractor,
+  );
+
+  final updateMealBloc = UpdateMealBloc(
+    uploadFoodFavoriteInteractor: uploadFoodFavoriteInteractor,
+      saveFoodFavoriteInteractor: saveFoodFavoriteInteractor,
+      uploadFoodRoutineInteractor: uploadFoodRoutineInteractor,
+      saveFoodRoutineInteractor: saveFoodRoutineInteractor,
+      getMasterFileInteractor: getMasterFileInteractor,
+  );
+
+  final updateSportBloc = UpdateSportBloc(
+    getMasterFileInteractor: getMasterFileInteractor,
+    uploadSportFavoriteInteractor: uploadSportFavoriteInteractor,
+    saveSportFavoriteInteractor: saveSportFavoriteInteractor,
+    uploadRoutineInteractor: uploadRoutineInteractor,
+    saveRoutineInteractor: saveRoutineInteractor,
+  );
+
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
 
   runApp(
@@ -1109,6 +1140,9 @@ void main() async {
         BlocProvider<SportUpdateBloc>(create: (context) => sportUpdateBloc,),
         BlocProvider<SupplementsBloc>(create: (context) => supplementsBloc,),
         BlocProvider<SupplementsDetailBloc>(create: (context) => supplementsDetailBloc,),
+        BlocProvider<UpdateSupplementBloc>(create: (context) => updateSupplementBloc,),
+        BlocProvider<UpdateMealBloc>(create: (context) => updateMealBloc,),
+        BlocProvider<UpdateSportBloc>(create: (context) => updateSportBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -1210,6 +1244,9 @@ void main() async {
           SportUpdateScreen.routeName:(_) => const SportUpdateScreen(),
           SupplementsScreen.routeName:(_) => const SupplementsScreen(),
           SupplementsDetailScreen.routeName:(_) => const SupplementsDetailScreen(),
+          UpdateSupplementScreen.routeName:(_) => const UpdateSupplementScreen(),
+          UpdateMealScreen.routeName:(_) => const UpdateMealScreen(),
+          UpdateSportScreen.routeName:(_) => const UpdateSportScreen(),
         },
       ),
     ),

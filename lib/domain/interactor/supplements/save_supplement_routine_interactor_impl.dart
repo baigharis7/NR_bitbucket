@@ -8,6 +8,6 @@ class SaveSupplementRoutineInteractorImpl extends SaveSupplementRoutineInteracto
   SaveSupplementRoutineInteractorImpl({required this.supplementsRepository});
 
   @override
-  Future<void> execute(UploadSupplementRoutine supplementRoutine) => supplementsRepository.saveSupplementRoutine(supplementRoutine);
+  Future<void> execute(UploadSupplementRoutine supplementRoutine, bool isEdit) => supplementsRepository.saveSupplementRoutine(supplementRoutine, isEdit);
   
 }

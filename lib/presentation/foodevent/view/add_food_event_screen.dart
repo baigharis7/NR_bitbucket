@@ -297,7 +297,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                             const SizedBox(height: Dimens.height12),
                             DashTitleWidget(title: AppLocalizations.of(context)!.favorites + ' - ' + MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime).name.orEmpty()),
                             ...state.foodFavorites.orEmpty().map((favFood) => ItemInfoCard(
-                              title: NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: favFood.ingredients, context: context),
+                              title: favFood.title ?? NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: favFood.ingredients, context: context),
                               leadingSrc: 'assets/images/favorite_icon.png',
                               trailingSrc: 'assets/icon/add_icon.png',
                               color: state.foodsFromFavorite == favFood ? AppColors.butter : AppColors.floralWhite,

@@ -171,9 +171,9 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
   }
 
   @override
-  Future<void> saveSupplementRoutine(UploadSupplementRoutine supplementRoutine) async {
+  Future<void> saveSupplementRoutine(UploadSupplementRoutine supplementRoutine, bool isEdit) async {
     try {
-      await localStorageRepository.saveSupplementRoutine(mapToSupplementEventEntityFromRoutine(supplementRoutine));
+      await localStorageRepository.saveSupplementRoutine(mapToSupplementEventEntityFromRoutine(supplementRoutine), isEdit: isEdit);
     } catch(_) {
       rethrow;
     }

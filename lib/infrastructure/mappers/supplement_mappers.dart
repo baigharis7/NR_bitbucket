@@ -47,6 +47,7 @@ SupplementSimple mapToSupplementSimple(SupplementEventsEntity supplementEventsEn
       eventDate: supplementEventsEntity.eventDate,
       info: supplementEventsEntity.info.map((e) => NutriInfo(id: e.id, unit: e.unit, amount: int.parse(e.amount))).toList(),
       name: supplementEventsEntity.name,
+      isFavorite: true,
     );
 
 SupplementEventsEntity mapToSupplementEventEntityFromSupplementSimple(SupplementSimple supplementSimple) =>

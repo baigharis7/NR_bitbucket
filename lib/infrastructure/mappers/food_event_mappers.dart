@@ -418,6 +418,7 @@ FoodRoutineEntity mapToFoodRoutineEntity(FoodRoutineEvent foodRoutineEvent) {
       dish: foodRoutineEvent.dish,
       isRoutine: foodRoutineEvent.isRoutine,
       daysOfWeek: foodRoutineEvent.daysOfWeek,
+      schedule: foodRoutineEvent.time,
       drinks: [],
   );
 }
