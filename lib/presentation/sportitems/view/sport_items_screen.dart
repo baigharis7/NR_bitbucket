@@ -32,7 +32,7 @@ class SportItemsScreen extends StatelessWidget {
 
     final widgetBinding = WidgetsBinding.instance;
     widgetBinding.addPostFrameCallback((timeStamp) {
-      final args = ModalRoute.of(context)!.settings.arguments as DateTime;
+      final args = ModalRoute.of(context)!.settings.arguments;
       if (args != null) {
         if (args is DateTime) {
           bloc.add(UpdateDatetimeSportItemsEvents(dateTime: args));
@@ -95,7 +95,7 @@ class SportItemsScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: Dimens.height12),
                           HeaderAddItemCardSection(
-                            title: AppLocalizations.of(context)!.physical_activity,
+                            title: '${AppLocalizations.of(context)!.physical_activity} ${AppLocalizations.of(context)!.summary}',
                             image: 'assets/images/sport.png',
                             onBackTap: () => Navigator.pop(context),
                             child: SizedBox(

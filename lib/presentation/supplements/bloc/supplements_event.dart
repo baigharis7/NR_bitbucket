@@ -71,16 +71,33 @@ class UpdateDaysOfWeekSupplementsEvent extends SupplementsEvent {
   UpdateDaysOfWeekSupplementsEvent({required this.weekDay});
 }
 
-class SavingEventSupplementsAction extends SupplementsEvent {}
+class SavingEventSupplementsAction extends SupplementsEvent {
+  final Function onFinish;
 
-class FinishEventSupplementsAction extends SupplementsEvent{}
+  SavingEventSupplementsAction({required this.onFinish});
+}
 
-class FinishSupplementFavorite extends SupplementsEvent {}
+class FinishEventSupplementsAction extends SupplementsEvent{
+  final Function onFinish;
 
-class FinishSupplementRoutineSupplementsEvent extends SupplementsEvent {}
+  FinishEventSupplementsAction({required this.onFinish});
+}
+
+class FinishSupplementFavorite extends SupplementsEvent {
+  final Function onFinish;
+
+  FinishSupplementFavorite({required this.onFinish});
+}
+
+class FinishSupplementRoutineSupplementsEvent extends SupplementsEvent {
+  final Function onFinish;
+
+  FinishSupplementRoutineSupplementsEvent({required this.onFinish});
+}
 
 class FinishSupplementFavoriteSupplementsEvent extends SupplementsEvent {
   final SupplementSimple supplement;
+  final Function onFinish;
 
-  FinishSupplementFavoriteSupplementsEvent({required this.supplement});
+  FinishSupplementFavoriteSupplementsEvent({required this.supplement, required this.onFinish});
 }

@@ -6,18 +6,15 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/itemupdate/view/item_update_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/mealtimedetails/bloc/meal_time_details_bloc.dart';
-import 'package:nutrenaissance_flutter/presentation/mealtimeitem/view/meal_time_item_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/item_info_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrient_row.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_border_box.dart';
-import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../domain/models/foodevents/food_arguments_model.dart';
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
-import '../../common/view/loading_screen.dart';
 import '../../foodevent/view/add_food_event_screen.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/remove_item_widget.dart';
@@ -134,7 +131,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                           const SizedBox(height: Dimens.height12),
                           HeaderAddItemCardSection(
                             onBackTap: () => Navigator.pop(context),
-                            title: state.mealTime?.name.orEmpty(),
+                            title: '${state.mealTime?.name.orEmpty()} ${AppLocalizations.of(context)!.summary}',
                             image: 'assets/images/meal_time_${state.mealTime?.id ?? 0}.png',
                             child: Column(children: [
                               Text('${NutritionUtils.calculateKcal(foodEvents: state.foodEvents.orEmpty())} Kcal', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize28, color: Colors.white),),
@@ -153,7 +150,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                             ]),
                           ),
                           ...state.foodEvents.orEmpty().map((food) {
-                            final itemName = NutritionUtils.findFoodsName(context: context, foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: food.foodInfo);
+                            final itemName = food.foodName ?? NutritionUtils.findFoodsName(context: context, foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: food.foodInfo);
                             return ItemInfoCard(
                               onItemTap: () /*=> Navigator.pushNamed(context, MealTimeItemScreen.routeName)*/ {},
                               title: itemName,

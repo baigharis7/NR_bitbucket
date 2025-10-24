@@ -1457,6 +1457,28 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
+  Future<void> removeSupplementFavorite(SupplementEventsEntity supplementEntity) async {
+    try {
+      await supplementEntity.delete();
+    } catch (error) {
+      try {
+        _getSupplementFavoritesBox.then((box) {
+          final supplementFavoritesMap = box.toMap();
+          dynamic desiredKey;
+          supplementFavoritesMap.forEach((key, value) {
+            if ((value as SupplementEventsEntity).eventId == supplementEntity.eventId) {
+              desiredKey = key;
+            }
+          });
+          box.delete(desiredKey);
+        },);
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
+
+  @override
   Future<bool> eraseDBEventsData() async {
     await _clearBox(_getFoodEventsBox);
     await _clearBox(_getFoodRoutinesBox);

@@ -96,6 +96,7 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<void> saveSupplementRoutine(SupplementEventsEntity supplementRoutineEntity, {bool isEdit = false});
   Future<List> getSupplementRoutines();
   Future<void> removeSupplementRoutine(SupplementEventsEntity supplementEntity);
+  Future<void> removeSupplementFavorite(SupplementEventsEntity supplementEntity);
   Future<UploadSupplementEventEntity?> getCreatineTodayEvent({DateTime? dateTime});
   Future<UploadSupplementEventEntity?> getCollagenTodayEvent({DateTime? dateTime});
   Future<List> getAllCreatineEvents();

@@ -55,10 +55,10 @@ class _PhysicalActivityRoutinesTabState extends State<PhysicalActivityRoutinesTa
             itemCount: state.sportRoutines.orEmpty().length,
             itemBuilder: (context, index) {
               final item = state.sportRoutines.orEmpty()[index];
-              final itemName = NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: item.info, context: context);
+              final itemName = item.sportName ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: item.info, context: context);
               return ItemInfoCard(
                 onItemTap: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: item).then((value) => routinesTabsBloc.add(InitializeRoutinesTabEvent())),
-                title: item.sportName ?? itemName,
+                title: itemName,
                 leadingSrc: 'assets/icon/routine_icon.png',
                 leadingIconSize: Dimens.height27,
                 trailingSrc: 'assets/images/delete_icon.png',

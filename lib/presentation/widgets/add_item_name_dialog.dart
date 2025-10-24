@@ -150,11 +150,7 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
                       underline: Container(),
                       icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
                       value: _mealTime,
-                      onChanged: (int? mealType) {
-                        _mealTime = mealType ?? 0;
-                        setState(() {});
-                        widget.onMealTieChange?.call(mealType);
-                      },
+                      onChanged: null,
                       items: MealTime.getAllMealTimes()
                           .map<DropdownMenuItem<int>>(
                             (item) => DropdownMenuItem(

@@ -12,6 +12,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.d
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/supplements/bloc/supplements_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/supplementsdetail/view/supplements_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/supplement_item_widget.dart';
 
@@ -19,7 +20,9 @@ import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';
+import '../../common/view/confirmation_dialog.dart';
 import '../../common/view/loading_screen.dart';
+import '../../widgets/dash_title_widget.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/item_info_card.dart';
@@ -55,6 +58,21 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
     });
 
     super.initState();
+  }
+
+  void _showConfirmationDialog(BuildContext context, Function onDismiss) {
+    Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
+    final mediaQuerySize = MediaQuery.of(context).size;
+
+    showDialog(context: context, builder: (ctx) => Container(
+      height: mediaQuerySize.height,
+      width: mediaQuerySize.width,
+      color: const Color.fromARGB(148, 104, 96, 96),
+      child: ConfirmationDialog(message: AppLocalizations.of(context)!.supplement_event_successfully_saved),
+    ),).then((value) {
+      onDismiss.call();
+    }
+    );
   }
 
   Future<void> showRoutineTimeDialog({
@@ -132,142 +150,181 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
               backgroundColor: Colors.transparent,
               body: SafeArea(
                   child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: Dimens.paddingSmall,
-                    vertical: Dimens.paddingLarge,
-                ),
                 child: Column(children: [
-                  DatePickerBar(
-                    selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.supplementObj?.eventDate),
-                    onChangeDate: (dateTime) => supplementsBloc.add(UpdateDateSupplementsAction(dateTime: dateTime)),
-                  ),
-                  const SizedBox(height: Dimens.height12),
-                  HeaderAddItemCardSection(
-                    onBackTap: () => Navigator.pop(context),
-                    title: state.screenTitle ?? (AppLocalizations.of(context)!.add + ' ' + AppLocalizations.of(context)!.supplement),
-                    image: 'assets/images/supplement.png',
-                    items: state.supplementsInfo?.data.map((element) => element.translate(context)).toList(),
-                    onItemSelect: (supplementName, focus) {
-                      focus.unfocus();
-                      final supplement = NutritionUtils.findSupplementByName(state.supplementsInfo?.data ?? [], supplementName, context);
-                      supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: supplement.id, unit: supplement.unit, amount: 0)));
-                    },
-                  ),
-                  if ((state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) && state.supplementObj?.info?.orEmpty().isEmpty == true) const SizedBox(height: Dimens.height12),
-                  if ((state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) && state.supplementObj?.info?.orEmpty().isEmpty == true) Container(
-                    padding: const EdgeInsets.all(Dimens.paddingSmall),
-                    decoration: BoxDecoration(
-                      color: AppColors.white70Percent,
-                      borderRadius: BorderRadius.circular(Dimens.border11),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                    child: Column(
+                      children: [
+                        DatePickerBar(
+                          selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.supplementObj?.eventDate),
+                          onChangeDate: (dateTime) => supplementsBloc.add(UpdateDateSupplementsAction(dateTime: dateTime)),
+                        ),
+                        const SizedBox(height: Dimens.height12),
+                        HeaderAddItemCardSection(
+                          onBackTap: () => Navigator.pop(context),
+                          title: state.screenTitle ?? (AppLocalizations.of(context)!.add + ' ' + AppLocalizations.of(context)!.supplement),
+                          image: 'assets/images/supplement.png',
+                          items: state.supplementsInfo?.data.map((element) => element.translate(context)).toList(),
+                          onItemSelect: (supplementName, focus) {
+                            // focus.unfocus();
+                            final supplement = NutritionUtils.findSupplementByName(state.supplementsInfo?.data ?? [], supplementName, context);
+                            supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: supplement.id, unit: supplement.unit, amount: 0)));
+                          },
+                        ),
+                      ],
                     ),
+                  ),
+                  if ((state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) && state.supplementObj?.info?.orEmpty().isEmpty == true) Container(
+                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
                     child: Column(children: [
-                      ListTile(
-                        leading: Image.asset('assets/images/goal_objectives.png', height: Dimens.height32),
-                        visualDensity: VisualDensity.compact,
-                        title: Text(AppLocalizations.of(context)!.related_objectives,
-                          style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSize17, color: AppColors.peacockBlue),),
-                        trailing: Image.asset('assets/images/info.png', height: Dimens.heightXSmall, color: AppColors.peacockBlue),
-                      ),
-                      if (state.userProfile?.objectives?.contains(Constants.REDUCE_RISK_OF_INJURY) ?? false) ItemInfoCard(
-                        title: AppLocalizations.of(context)!.creatine,
-                        leadingIconSize: Dimens.height25,
-                        trailingSrc: 'assets/icon/add_icon.png',
-                        trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(supplement: SupplementSimple(info: [NutriInfo(id: Constants.CREATINE, unit: 'mg', amount: (0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt())]))),
-                        subtitle: '${(0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt()} mg',
-                        leadingSrc: 'assets/images/goal_objectives.png',
-                        leadingTap: () {},
-                      ),
-                      if (state.userProfile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) ItemInfoCard(
-                        title: AppLocalizations.of(context)!.collagen,
-                        leadingIconSize: Dimens.height25,
-                        trailingSrc: 'assets/icon/add_icon.png',
-                        trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(supplement: SupplementSimple(info: [NutriInfo(id: Constants.COLLAGEN, unit: 'mg', amount: 10)]))),
-                        subtitle: '10 mg',
-                        leadingSrc: 'assets/images/goal_objectives.png',
-                        leadingTap: () {},
+                      const SizedBox(height: Dimens.height12),
+                      Container(
+                        padding: const EdgeInsets.all(Dimens.paddingSmall),
+                        decoration: BoxDecoration(
+                          color: AppColors.white70Percent,
+                          borderRadius: BorderRadius.circular(Dimens.border11),
+                        ),
+                        child: Column(children: [
+                          ListTile(
+                            leading: Image.asset('assets/images/goal_objectives.png', height: Dimens.height32),
+                            visualDensity: VisualDensity.compact,
+                            title: Text(AppLocalizations.of(context)!.related_objectives,
+                              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSize17, color: AppColors.peacockBlue),),
+                            trailing: Image.asset('assets/images/info.png', height: Dimens.heightXSmall, color: AppColors.peacockBlue),
+                          ),
+                          if (state.userProfile?.objectives?.contains(Constants.REDUCE_RISK_OF_INJURY) ?? false) ItemInfoCard(
+                            title: AppLocalizations.of(context)!.creatine,
+                            leadingIconSize: Dimens.height25,
+                            trailingSrc: 'assets/icon/add_icon.png',
+                            trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
+                                supplement: SupplementSimple(info: [NutriInfo(id: Constants.CREATINE, unit: 'mg', amount: (0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt())]),
+                                onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate)),
+                            )),
+                            subtitle: '${(0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt()} mg',
+                            leadingSrc: 'assets/images/goal_objectives.png',
+                            leadingTap: () {},
+                            beforeTrailingSrc: 'assets/icon/routine_icon.png',
+                            beforeTrailingTap: () {
+                              supplementsBloc.state.supplementObj?.isRoutine = true;
+                              supplementsBloc.add(AddSupplementInfoSupplementsAction(
+                                  nutriInfo: NutriInfo(id: Constants.CREATINE, unit: 'mg', amount: (0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt()),
+                              ));
+                            },
+                          ),
+                          if (state.userProfile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) ItemInfoCard(
+                            title: AppLocalizations.of(context)!.collagen,
+                            leadingIconSize: Dimens.height25,
+                            trailingSrc: 'assets/icon/add_icon.png',
+                            trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
+                                supplement: SupplementSimple(info: [NutriInfo(id: Constants.COLLAGEN, unit: 'mg', amount: 10)]),
+                                onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate)),
+                            )),
+                            subtitle: '10 mg',
+                            leadingSrc: 'assets/images/goal_objectives.png',
+                            leadingTap: () {},
+                            beforeTrailingSrc: 'assets/icon/routine_icon.png',
+                            beforeTrailingTap: () {
+                              supplementsBloc.state.supplementObj?.isRoutine = true;
+                              supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: Constants.COLLAGEN, unit: 'mg', amount: 10)));
+                            },
+                          ),
+                        ],),
                       ),
                     ],),
                   ),
-                  const SizedBox(height: Dimens.height12),
-                  if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) ListView.builder(
-                    shrinkWrap: true,
-                    primary: false,
-                    itemCount: state.supplementObj?.info?.orEmpty().length,
-                    itemBuilder: (context, index) {
-                      final nutriInfo = state.supplementObj?.info.orEmpty()[index];
-                      return SupplementItemWidget(
-                        title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
-                        amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
-                        units: nutriInfo != null ? [nutriInfo.unit] : [],
-                        unit: nutriInfo?.unit,
-                        onChangeAmount: (amount) {
-                          nutriInfo?.amount = amount.isEmpty ? 0 : int.parse(amount);
-                          supplementsBloc.add(UpdateAmountSupplementsAction(nutriInfo: nutriInfo!));
-                        },
-                        onRemoveItem: () => supplementsBloc.add(RemoveSupplementInfoSupplementsAction(nutriInfo: nutriInfo!)),
-                      );
-                    },
-                  ),
-                  if (state.supplementObj?.info?.orEmpty().isEmpty == true && state.supplementFavorites.orEmpty().isNotEmpty == true) ListView.builder(
-                    shrinkWrap: true,
-                    primary: false,
-                    itemCount: state.supplementFavorites?.length,
-                    itemBuilder: (context, index) {
-                      final supplementFavorite = state.supplementFavorites.orEmpty()[index];
-                      return ItemInfoCard(
-                        title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite.info![0].id ?? -1).translate(context),
-                        trailingSrc: 'assets/icon/add_icon.png',
-                        trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(supplement: supplementFavorite)),
-                        subtitle: '${supplementFavorite.info![0].amount.toString()} ${supplementFavorite.info![0].unit}',
-                        leadingSrc: 'assets/images/favorite_icon.png',
-                        leadingTap: () {},
-                      );
-                    },
-                  ),
-                  const SizedBox(height: Dimens.height32),
-                  if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) ListTile(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
-                    tileColor: AppColors.floralWhite,
-                    onTap: () => showRoutineTimeDialog(
-                      onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
-                      onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
-                      onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
-                      onFavoriteChange: (value) => supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: value)),
-                      onChangeCreateRoutine: (value) => supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: value)),
-                      name: state.supplementObj?.name,
-                      daysOfWeek: state.supplementObj?.daysOfWeek,
-                      scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
-                      isFavorite: state.supplementObj?.isFavorite,
-                      isCreateRoutine: state.supplementObj?.isRoutine,
-                    ),
-                    title: Text(AppLocalizations.of(context)!.add_more_options),
-                    trailing: const Icon(Icons.add_circle, color: Colors.black),
-                  ),
-                  const SizedBox(height: Dimens.height32),
-                  if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) GeneralButton(
-                    onTap: () {
-                      if (state.supplementObj!.info.orEmpty().length > 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
-                        showRoutineTimeDialog(
-                          onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
-                          onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
-                          onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
-                          onFavoriteChange: (value) => supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: value)),
-                          onChangeCreateRoutine: (value) => supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: value)),
-                          name: state.supplementObj?.name,
-                          daysOfWeek: state.supplementObj?.daysOfWeek,
-                          scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
-                          isFavorite: state.supplementObj?.isFavorite,
-                          isCreateRoutine: state.supplementObj?.isRoutine,
+                  if (state.supplementObj?.info?.orEmpty().isEmpty == true && state.supplementFavorites.orEmpty().isNotEmpty == true) Column(children: [
+                    const SizedBox(height: Dimens.height12),
+                    DashTitleWidget(title: '${AppLocalizations.of(context)!.favorites} - ${AppLocalizations.of(context)!.supplement}'),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      primary: false,
+                      itemCount: state.supplementFavorites?.length,
+                      itemBuilder: (context, index) {
+                        final supplementFavorite = state.supplementFavorites.orEmpty()[index];
+                        return ItemInfoCard(
+                          title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite.info![0].id ?? -1).translate(context),
+                          trailingSrc: 'assets/icon/add_icon.png',
+                          trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
+                              supplement: supplementFavorite,
+                              onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate)),
+                          )),
+                          subtitle: '${supplementFavorite.info![0].amount.toString()} ${supplementFavorite.info![0].unit}',
+                          leadingSrc: 'assets/images/favorite_icon.png',
+                          leadingTap: () {},
                         );
-                      } else if (state.supplementObj!.info.orEmpty().length == 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
-                        final name = NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], state.supplementObj?.info.orEmpty()[0].id ?? -1).translate(context);
-                        supplementsBloc.add(UpdateNameSupplementsEvent(name: name));
-                      }
+                      },
+                    ),
+                  ],),
+                  if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) Container(
+                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                    child: Column(
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          primary: false,
+                          itemCount: state.supplementObj?.info?.orEmpty().length,
+                          itemBuilder: (context, index) {
+                            final nutriInfo = state.supplementObj?.info.orEmpty()[index];
+                            return SupplementItemWidget(
+                              title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
+                              amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
+                              units: nutriInfo != null ? [nutriInfo.unit] : [],
+                              unit: nutriInfo?.unit,
+                              onChangeAmount: (amount) {
+                                nutriInfo?.amount = amount.isEmpty ? 0 : int.parse(amount);
+                                supplementsBloc.add(UpdateAmountSupplementsAction(nutriInfo: nutriInfo!));
+                              },
+                              onRemoveItem: () => supplementsBloc.add(RemoveSupplementInfoSupplementsAction(nutriInfo: nutriInfo!)),
+                            );
+                          },
+                        ),
+                        if (state.isEdit != true) const SizedBox(height: Dimens.height32),
+                        if (state.isEdit != true) ListTile(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
+                          tileColor: AppColors.floralWhite,
+                          onTap: () => showRoutineTimeDialog(
+                            onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
+                            onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
+                            onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
+                            onFavoriteChange: (value) => supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: value)),
+                            onChangeCreateRoutine: (value) => supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: value)),
+                            name: state.supplementObj?.name,
+                            daysOfWeek: state.supplementObj?.daysOfWeek,
+                            scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
+                            isFavorite: state.supplementObj?.isFavorite,
+                            isCreateRoutine: state.supplementObj?.isRoutine,
+                          ),
+                          title: Text(AppLocalizations.of(context)!.add_more_options),
+                          trailing: const Icon(Icons.add_circle, color: Colors.black),
+                        ),
+                        const SizedBox(height: Dimens.height32),
+                        GeneralButton(
+                          onTap: () {
+                            if (state.supplementObj!.info.orEmpty().length > 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
+                              showRoutineTimeDialog(
+                                onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
+                                onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
+                                onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
+                                onFavoriteChange: (value) => supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: value)),
+                                onChangeCreateRoutine: (value) => supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: value)),
+                                name: state.supplementObj?.name,
+                                daysOfWeek: state.supplementObj?.daysOfWeek,
+                                scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
+                                isFavorite: state.supplementObj?.isFavorite,
+                                isCreateRoutine: state.supplementObj?.isRoutine,
+                              );
+                            } else if (state.supplementObj!.info.orEmpty().length == 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
+                              final name = NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], state.supplementObj?.info.orEmpty()[0].id ?? -1).translate(context);
+                              supplementsBloc.add(UpdateNameSupplementsEvent(name: name));
+                            }
 
-                      if (state.supplementObj!.name.isNotEmptyOrNull()) {
-                        supplementsBloc.add(SavingEventSupplementsAction());
-                      }
-                    },
+                            if (state.supplementObj!.name.isNotEmptyOrNull()) {
+                              supplementsBloc.add(SavingEventSupplementsAction(onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate))));
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ],
                 ),

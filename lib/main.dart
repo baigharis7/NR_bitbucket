@@ -244,6 +244,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_inte
 import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_favorite_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_routine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_day_supplement_events_interactor.dart';
@@ -256,6 +258,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_c
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_creatine_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_favorite_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_collagen_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_collagen_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_creatine_event_interactor.dart';
@@ -628,6 +632,8 @@ void main() async {
   final GetSupplementRoutinesInteractor getSupplementRoutinesInteractor = GetSupplementRoutinesIntractorImpl(supplementsRepository: supplementsRepository);
   final DeleteSupplementRoutineInteractor deleteSupplementRoutineInteractor = DeleteSupplementRoutineInteractorImpl(supplementsRepository: supplementsRepository);
   final RemoveSupplementRoutineInteractor removeSupplementRoutineInteractor = RemoveSupplementRoutineInteractorImpl(supplementsRepository: supplementsRepository);
+  final DeleteSupplementFavoriteInteractor deleteSupplementFavoriteInteractor = DeleteSupplementFavoriteInteractorImpl(supplementsRepository: supplementsRepository);
+  final RemoveSupplementFavoriteInteractor removeSupplementFavoriteInteractor = RemoveSupplementFavoriteInteractorImpl(supplementsRepository: supplementsRepository);
 
   await NutritionUtils(getMasterFileInteractor: getMasterFileInteractor).init();
 
@@ -1005,6 +1011,8 @@ void main() async {
     getSupplementFavoritesInteractor: getSupplementFavoritesInteractor,
     deleteSportFavoriteInteractor: deleteSportFavoriteInteractor,
     removeSportFavoriteInteractor: removeSportFavoriteInteractor,
+    deleteSupplementFavoriteInteractor: deleteSupplementFavoriteInteractor,
+    removeSupplementFavoriteInteractor: removeSupplementFavoriteInteractor,
   );
 
 

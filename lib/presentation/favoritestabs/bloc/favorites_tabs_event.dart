@@ -13,7 +13,12 @@ class RemoveFavoriteFoodFavoritesTabsEvent extends FavoritesTabsEvent {
 
 class DeleteFavoriteSportFavoritesTabsEvent extends FavoritesTabsEvent {
   AddSportFavorite sportFavorite;
-  Function onFinish;
 
-  DeleteFavoriteSportFavoritesTabsEvent({required this.sportFavorite, required this.onFinish});
+  DeleteFavoriteSportFavoritesTabsEvent({required this.sportFavorite,});
+}
+
+class DeleteSupplementFavoriteFavoritesTabsEvent extends FavoritesTabsEvent {
+  final SupplementSimple supplementSimple;
+
+  DeleteSupplementFavoriteFavoritesTabsEvent({required this.supplementSimple});
 }

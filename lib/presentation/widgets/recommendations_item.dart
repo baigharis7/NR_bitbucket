@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/square_checkbox.dart';
@@ -48,7 +49,7 @@ class _RecommendationsItemState extends State<RecommendationsItem> {
                 child: Text(
                   widget.foodItemMaster.translate(context),
                   overflow: TextOverflow.clip,
-                  style: TextStyle(color: widget.checkBoxColor ?? Colors.black),
+                  style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, color: widget.checkBoxColor ?? Colors.black),
                 ),
               ),
               /*if (widget.alternativeUsualHealthyFoods.orEmpty().isNotEmpty) */Expanded(
@@ -84,6 +85,8 @@ class _RecommendationsItemState extends State<RecommendationsItem> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     SquareCheckbox(
+                      height: Dimens.height25,
+                      width: Dimens.width25,
                       color: widget.checkBoxColor ?? AppColors.mountainMeadow,
                       isChecked: widget.isChecked,
                       onChanged: () => widget.onAdd.call(),

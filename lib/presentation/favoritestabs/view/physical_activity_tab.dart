@@ -10,6 +10,7 @@ import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../common/view/confirmation_dialog.dart';
 import '../../widgets/item_info_card.dart';
+import '../../widgets/remove_item_widget.dart';
 import '../bloc/favorites_tabs_bloc.dart';
 
 class PhysicalActivityTab extends StatefulWidget {
@@ -28,21 +29,19 @@ class _PhysicalActivityTabState extends State<PhysicalActivityTab> {
     super.initState();
   }
 
-  void _showConfirmationDialog({required BuildContext context}) {
-    Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
+
+  // TODO: Remove Item from db
+  void _showRemoveDialog({required String description, required VoidCallback onCancel, required VoidCallback onConfirm}) {
     final mediaQuerySize = MediaQuery.of(context).size;
 
     showDialog(
       context: context,
-      builder: (ctx) => Container(
-        height: mediaQuerySize.height,
-        width: mediaQuerySize.width,
-        color: const Color.fromARGB(148, 104, 96, 96),
-        child: ConfirmationDialog(
-          message: AppLocalizations.of(context)!.sport_event_successfully_saved,
-        ),
+      builder: (context) => RemoveItemWidget(
+        description: description,
+        onConfirm: onConfirm,
+        onCancel: onCancel,
       ),
-    ).then((value) {});
+    );
   }
 
   @override
@@ -51,23 +50,29 @@ class _PhysicalActivityTabState extends State<PhysicalActivityTab> {
       value: favoritesTabsBloc,
       child: BlocConsumer<FavoritesTabsBloc, FavoritesTabsState>(
         listener: (context, state) {},
-        builder: (context, state) => Column(
-          children: [
-            ...state.favSports.orEmpty().map((favSport) => ItemInfoCard(
+        builder: (context, state) => ListView.builder(
+          itemCount: state.favSports?.length ?? 0,
+          itemBuilder: (context, index) {
+            final favSport = state.favSports.orEmpty()[index];
+            final itemName = favSport.title ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: favSport.info, context: context);
+            return ItemInfoCard(
               onItemTap: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: favSport),
-              title: favSport.title ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: favSport.info, context: context),
+              title: itemName,
               leadingSrc: 'assets/images/favorite_icon.png',
               // leadingSrc: 'assets/images/sport.png',
               trailingSrc: 'assets/images/delete_icon.png',
               color: AppColors.floralWhite,
               leadingTap: () {},
-              trailingTap: () => favoritesTabsBloc.add(DeleteFavoriteSportFavoritesTabsEvent(sportFavorite: favSport, onFinish: () => _showConfirmationDialog(context: context))),
+              trailingTap: () => _showRemoveDialog(
+                  description: AppLocalizations.of(context)!.remove_item(itemName),
+                  onCancel: () => Navigator.pop(context),
+                  onConfirm: () => favoritesTabsBloc.add(DeleteFavoriteSportFavoritesTabsEvent(sportFavorite: favSport,)),
+              ),
               subtitle: '${favSport.info![0].minutes} ${AppLocalizations.of(context)!.minutes} - ${NutritionUtils.activityIntensityById(favSport.info![0].intensity.orZero(), context)}.',
               beforeTrailingSrc: 'assets/icon/edit_icon.png',
               beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSportScreen.routeName, arguments: favSport).then((value) => favoritesTabsBloc.add(InitializeFavoritesTabsEvent())),
-            ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

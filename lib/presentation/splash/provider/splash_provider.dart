@@ -1,5 +1,6 @@
 import 'package:chuck_interceptor/chuck.dart';
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_repository_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor.dart';
@@ -84,6 +85,10 @@ class SplashProvider extends ChangeNotifier {
     final userId = getUserIdInteractor.execute();
     if (userId.isNotEmpty) {
       try {
+        // final getMasterFileVersionCookingMethods = await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethods);
+        // final getMasterFileVersionNutrientsInfo = await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo);
+        // final getMasterFile = await manageMasterFilesInteractor.execute(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+        // state.isUpdatedDataNeeded = getMasterFileVersionCookingMethods != getMasterFile.cookingMethodsResponse?.v || getMasterFileVersionNutrientsInfo != getMasterFile.nutrientsInfoResponse?.v;
         await eraseDBLocalEventsInteractor.execute();
         await synchronizeEventsInteractor.execute(getUserIdInteractor.execute());
       } catch(_) {}

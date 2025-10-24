@@ -289,17 +289,13 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           totalFiberConsumed: calculateTodayConsumedFiber(),
         requiredFiber: Constants.FIBER_TOTAL_REQUIRED,
       );
-      state.todayCreatineSupplement = SupplementInfo('Creatine', 'Creatina', todayCreatine, userRdaforSupplement());
-      state.todayCollagenSupplement = SupplementInfo('Collagen peptides', 'Péptidos de colágeno', todayCollagen, 10);
-      state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.dashboard.index);
-      // emit(state.copyWith(isLoading: false, onError: null,),);
 
-      final getMasterFileVersionCookingMethods = await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethods);
-      final getMasterFileVersionNutrientsInfo = await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo);
-      final getMasterFile = await manageMasterFilesInteractor.execute(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
-      state.isUpdatedDataNeeded = getMasterFileVersionCookingMethods != getMasterFile.cookingMethodsResponse?.v || getMasterFileVersionNutrientsInfo != getMasterFile.nutrientsInfoResponse?.v;
-      final routines = await getRoutinesInteractor.execute();
-      state.foundedRoutineRemainingHours = getFoundedRoutineTime(routines);
+      // final getMasterFileVersionCookingMethods = await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethods);
+      // final getMasterFileVersionNutrientsInfo = await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo);
+      // final getMasterFile = await manageMasterFilesInteractor.execute(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+      // state.isUpdatedDataNeeded = getMasterFileVersionCookingMethods != getMasterFile.cookingMethodsResponse?.v || getMasterFileVersionNutrientsInfo != getMasterFile.nutrientsInfoResponse?.v;
+      // final routines = await getRoutinesInteractor.execute();
+      // state.foundedRoutineRemainingHours = getFoundedRoutineTime(routines);
       }
       catch(error) {
         Fluttertoast.showToast(msg: '$error', toastLength: Toast.LENGTH_LONG, backgroundColor: AppColors.errorRed, textColor: Colors.white);
@@ -665,15 +661,13 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   double getQuantitySupplementsSoFar(String micronutrient) {
     double supplementQuantitySoFar = 0.0;
-    for (var supplement in state.supplementEvents!) {
-      for (var supplementItem in supplement.info!) {
+    for (var supplement in state.supplementEvents.orEmpty()) {
+      for (var supplementItem in supplement.info.orEmpty()) {
         final supplementInfo = state.supplementsInfoMaster?.data.firstWhere((element) => supplementItem.id == element.id);
         if (supplementInfo?.computerName == micronutrient) {
           supplementQuantitySoFar = supplementQuantitySoFar + supplementItem.amount;
         }
       }
-
-      return double.parse((supplementQuantitySoFar).toStringAsFixed(2));
     }
 
     return double.parse((supplementQuantitySoFar).toStringAsFixed(2));

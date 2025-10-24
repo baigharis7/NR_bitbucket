@@ -155,7 +155,7 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
   Future<List<SupplementSimple>> getSupplementFavorite() async {
     try {
       final List events = await localStorageRepository.getSupplementFavorites();
-      return events.map((event) => mapToSupplementSimple(event as SupplementEventsEntity)).toList();
+      return events.map((event) => mapToSupplementSimpleFavorite(event as SupplementEventsEntity)).toList();
     } catch(_) {
       rethrow;
     }
@@ -202,6 +202,24 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
   Future<void> removeSupplementRoutine(SupplementSimple supplement) async {
     try {
       await localStorageRepository.removeSupplementRoutine(mapToSupplementEventEntityFromSupplementSimple(supplement));
+    } catch(_) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteSupplementFavorite(SupplementSimple supplement) async {
+    try {
+      await supplementApi.deleteSupplementFavorite(supplement);
+    } catch(_) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> removeSupplementFavorite(SupplementSimple supplement) async {
+    try {
+      await localStorageRepository.removeSupplementFavorite(mapToSupplementEventEntityFromSupplement(supplement));
     } catch(_) {
       rethrow;
     }

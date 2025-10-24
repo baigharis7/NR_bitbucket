@@ -28,4 +28,6 @@ abstract class SupplementsRepository {
   Future<List<SupplementSimple>> getSupplementRoutines();
   Future<void> deleteSupplementRoutine(SupplementSimple supplement);
   Future<void> removeSupplementRoutine(SupplementSimple supplement);
+  Future<void> deleteSupplementFavorite(SupplementSimple supplement);
+  Future<void> removeSupplementFavorite(SupplementSimple supplement);
 }

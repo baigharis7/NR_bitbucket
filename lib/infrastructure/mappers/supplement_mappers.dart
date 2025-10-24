@@ -47,6 +47,15 @@ SupplementSimple mapToSupplementSimple(SupplementEventsEntity supplementEventsEn
       eventDate: supplementEventsEntity.eventDate,
       info: supplementEventsEntity.info.map((e) => NutriInfo(id: e.id, unit: e.unit, amount: int.parse(e.amount))).toList(),
       name: supplementEventsEntity.name,
+    );
+
+SupplementSimple mapToSupplementSimpleFavorite(SupplementEventsEntity supplementEventsEntity) =>
+    SupplementSimple(
+      userId: supplementEventsEntity.userId,
+      eventId: supplementEventsEntity.eventId,
+      eventDate: supplementEventsEntity.eventDate,
+      info: supplementEventsEntity.info.map((e) => NutriInfo(id: e.id, unit: e.unit, amount: int.parse(e.amount))).toList(),
+      name: supplementEventsEntity.name,
       isFavorite: true,
     );
 
@@ -75,6 +84,15 @@ SupplementEventsEntity mapToSupplementEventEntityFromFavorite(SupplementFavorite
       eventDate: supplementFavorite.eventDate,
       info: supplementFavorite.data.map((e) => SupplementEventsInfoEntity(id: e.id, amount: e.amount.toString(), unit: e.unit)).toList(),
       name: supplementFavorite.name,
+    );
+
+SupplementEventsEntity mapToSupplementEventEntityFromSupplement(SupplementSimple supplementSimple) =>
+    SupplementEventsEntity(
+      userId: supplementSimple.userId!,
+      eventId: supplementSimple.eventId!,
+      eventDate: supplementSimple.eventDate!,
+      info: supplementSimple.info.orEmpty().map((e) => SupplementEventsInfoEntity(id: e.id, amount: e.amount.toString(), unit: e.unit)).toList(),
+      name: supplementSimple.name,
     );
 
 UploadSupplementRoutine mapToSupplementRoutineFromSupplement(SupplementSimple supplement) =>

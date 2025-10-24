@@ -26,7 +26,7 @@ class HeaderAddItemCardSection extends StatefulWidget {
 class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
   TextEditingController _foodInputController = TextEditingController();
   late Object? arguments;
-  late FocusNode _focusInputController;
+  FocusNode _focusInputController = FocusNode();
   int filteredListLength = 0;
   @override
   Widget build(BuildContext context) {

@@ -103,7 +103,12 @@ class _FecesUrineTabsState extends State<FecesUrineTabs> with SingleTickerProvid
                       fecesUrineBloc.add(UpdateCalendarDateFecesUrineEventAction(dateTime: dateTime,));
                     },),
                     const SizedBox(height: Dimens.height12),
-                    HeaderAddItemCardSection(title: AppLocalizations.of(context)!.faeces_urine, onBackTap: () => Navigator.pop(context), image: 'assets/images/feces_urine.png', backgroundImage: 'assets/images/feces_urine_background.png'),
+                    HeaderAddItemCardSection(
+                        title: '${AppLocalizations.of(context)!.add} ${AppLocalizations.of(context)!.faeces_urine}',
+                        onBackTap: () => Navigator.pop(context),
+                        image: 'assets/images/feces_urine.png',
+                        backgroundImage: 'assets/images/feces_urine_background.png',
+                    ),
                     const SizedBox(height: Dimens.height12),
                     TabBar(
                       controller: _tabController,

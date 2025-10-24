@@ -84,4 +84,16 @@ class SupplementApi extends ApiHelper {
         },
       );
 
+  Future<Map<String, dynamic>> deleteSupplementFavorite(SupplementSimple supplementFavorite) =>
+      delete(
+        Uri.https(
+          Environment().config!.baseUrl,
+          '${Environment().config!.distributionPath}/favorites/supplement',
+        ),
+        {
+          'userId': supplementFavorite.userId,
+          'eventId': supplementFavorite.eventId,
+        },
+      );
+
 }

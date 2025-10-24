@@ -11,6 +11,7 @@ import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../common/view/confirmation_dialog.dart';
 import '../../widgets/item_info_card.dart';
+import '../../widgets/remove_item_widget.dart';
 import '../bloc/favorites_tabs_bloc.dart';
 
 class SupplementsTab extends StatefulWidget {
@@ -29,21 +30,19 @@ class _SupplementsTabState extends State<SupplementsTab> {
     super.initState();
   }
 
-  void _showConfirmationDialog({required BuildContext context}) {
-    Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
+
+  // TODO: Remove Item from db
+  void _showRemoveDialog({required String description, required VoidCallback onCancel, required VoidCallback onConfirm}) {
     final mediaQuerySize = MediaQuery.of(context).size;
 
     showDialog(
       context: context,
-      builder: (ctx) => Container(
-        height: mediaQuerySize.height,
-        width: mediaQuerySize.width,
-        color: const Color.fromARGB(148, 104, 96, 96),
-        child: ConfirmationDialog(
-          message: AppLocalizations.of(context)!.sport_event_successfully_saved,
-        ),
+      builder: (context) => RemoveItemWidget(
+        description: description,
+        onConfirm: onConfirm,
+        onCancel: onCancel,
       ),
-    ).then((value) {});
+    );
   }
 
   @override
@@ -58,10 +57,15 @@ class _SupplementsTabState extends State<SupplementsTab> {
           itemCount: state.favSupplements?.length,
           itemBuilder: (context, index) {
             final supplementFavorite = state.favSupplements?.orEmpty()[index];
+            final itemName = supplementFavorite?.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite?.info![0].id ?? -1).translate(context);
             return ItemInfoCard(
-              title: supplementFavorite?.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite?.info![0].id ?? -1).translate(context),
+              title: itemName,
               trailingSrc: 'assets/images/delete_icon.png',
-              trailingTap: () {},
+              trailingTap: () => _showRemoveDialog(
+                  description: AppLocalizations.of(context)!.remove_item(itemName),
+                  onCancel: () => Navigator.pop(context),
+                  onConfirm: () => favoritesTabsBloc.add(DeleteSupplementFavoriteFavoritesTabsEvent(supplementSimple: supplementFavorite!)),
+              ),
               subtitle: '${supplementFavorite?.info![0].amount.toString()} ${supplementFavorite?.info![0].unit}',
               leadingSrc: 'assets/images/favorite_icon.png',
               leadingTap: () {},

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
@@ -17,21 +18,25 @@ class FoodListItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
       padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-      decoration: BoxDecoration(
-        color: AppColors.floralWhite,
-        borderRadius: BorderRadius.circular(Dimens.border11),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
-          Text(
-            foodName,
-            overflow: TextOverflow.clip,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeNormal, color: AppColors.yellowishGreen),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                foodName,
+                overflow: TextOverflow.clip,
+                style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize13, color: AppColors.yellowishGreen),
+              ),
+              IconButton(
+                onPressed: () => onDelete.call(),
+                icon: Image.asset('assets/images/delete_icon.png', height: Dimens.heightXSmall),
+              ),
+            ],
           ),
-          IconButton(
-            onPressed: () => onDelete.call(),
-            icon: const Icon(Icons.delete, color: AppColors.yellowishGreen),
+          const Divider(
+            color: AppColors.yellowishGreen,
+            thickness: 1,
           ),
         ],
       ),

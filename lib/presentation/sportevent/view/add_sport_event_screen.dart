@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -263,7 +264,15 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                 trailingSrc: 'assets/icon/add_icon.png',
                                 color: state.sportFavoriteEvent == favSport ? AppColors.butter : AppColors.floralWhite,
                                 leadingTap: () => bloc.add(DeleteFavSportSportEventsAction(sportFavorite: favSport, onFinish: () => _showConfirmationDialog(context: context, onDismiss: () {}))),
-                                trailingTap: () => bloc.add(AddSportFavoriteFromFavoriteEvent(sportFavorite: favSport)),
+                                trailingTap: () {
+                                  final sportEventSimple = mapToSportEventSimpleFromAddFavoriteSport(favSport);
+                                  sportEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
+                                  sportEventSimple.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
+                                  bloc.add(FinishSportEventAction(
+                                      sportEventSimple: sportEventSimple,
+                                      onFinish: () => _showConfirmationDialog(context: context, onDismiss: () => Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate)),
+                                  ));
+                                },
                                 subtitle: '${favSport.info![0].minutes} ${AppLocalizations.of(context)!.minutes} - ${NutritionUtils.activityIntensityById(favSport.info![0].intensity.orZero(), context)}.',),
                               ),
                             ],),
@@ -271,7 +280,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                         ),
                       ),
                     ),
-                    Container(
+                    if (state.sportSimpleEvent?.info?.orEmpty().isNotEmpty == true) Container(
                       margin: const EdgeInsets.all(Dimens.marginLarge),
                       child: GeneralButton(onTap: () {
                           if (bloc.validateSportList() ?? true) return;

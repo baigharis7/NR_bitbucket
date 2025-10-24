@@ -77,14 +77,17 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
       )),
       child: Opacity(
         opacity: _opacityAnimation.value,
-        child: InkWell(
-          onTap: () { _closeMenu(); onTap.call();},
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: Dimens.margin6,),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Container(
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: Dimens.margin6,),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              InkWell(
+                onTap: () {
+                  _closeMenu();
+                  onTap.call();
+                },
+                child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
                   padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingNormal),
                   decoration: BoxDecoration(
@@ -94,7 +97,13 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                   ),
                   child: Text(label, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black)),
                 ),
-                Container(
+              ),
+              InkWell(
+                onTap: () {
+                  _closeMenu();
+                  onTap.call();
+                },
+                child: Container(
                   padding: const EdgeInsets.all(Dimens.padding6),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -103,8 +112,8 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                   ),
                   child: Image.asset(icon, width: 40, height: 40,),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -193,7 +202,12 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                                       visualDensity: VisualDensity.compact,
                                       horizontalTitleGap: Dimens.zero,
                                       tileColor: Colors.black,
-                                        leading: Image.asset('assets/images/favorite_icon.png', width: 22, height: 22, color: Colors.white),
+                                        leading: InkWell(
+                                          onTap: () {
+
+                                          },
+                                            child: Image.asset('assets/images/favorite_icon.png', width: 22, height: 22, color: Colors.white),
+                                        ),
                                         title: Text(AppLocalizations.of(context)!.favorites, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.white),),
                                     ),
                                   ),

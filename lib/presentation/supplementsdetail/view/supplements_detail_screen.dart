@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/supplementsdetail/bloc/supplements_detail_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -20,6 +21,7 @@ import '../../common/view/loading_screen.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../widgets/remove_item_widget.dart';
 
 class SupplementsDetailScreen extends StatefulWidget {
   static const routeName = '/supplements_detail_screen';
@@ -38,7 +40,33 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
     supplementsDetailBloc = BlocProvider.of<SupplementsDetailBloc>(context);
     supplementsDetailBloc.add(InitializeSupplementsDetailEvent(eventDate: DateTime.now()));
 
+    final widgetsBinding = WidgetsBinding.instance;
+    widgetsBinding.addPostFrameCallback((callback) {
+      if (ModalRoute.of(context)?.settings.arguments != null) {
+        var infoReceived = ModalRoute.of(context)?.settings.arguments;
+        if (infoReceived != null) {
+          if (infoReceived is int) {
+            supplementsDetailBloc.add(InitializeSupplementsDetailEvent(eventDate: DateTimeHelper.dateTimeFromMilliseconds(infoReceived)));
+          }
+        }
+      }
+    });
+
     super.initState();
+  }
+
+  // TODO: Remove Item from db
+  void _showRemoveDialog({required String description, required VoidCallback onCancel, required VoidCallback onConfirm}) {
+    final mediaQuerySize = MediaQuery.of(context).size;
+
+    showDialog(
+      context: context,
+      builder: (context) => RemoveItemWidget(
+        description: description,
+        onConfirm: onConfirm,
+        onCancel: onCancel,
+      ),
+    );
   }
 
   @override
@@ -98,7 +126,7 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
                     const SizedBox(height: Dimens.height12),
                     HeaderAddItemCardSection(
                       onBackTap: () => Navigator.pop(context),
-                      title: AppLocalizations.of(context)!.supplements,
+                      title: '${AppLocalizations.of(context)!.supplements} ${AppLocalizations.of(context)!.summary}',
                       image: 'assets/images/supplement.png',
                     ),
                     if (state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) const SizedBox(height: Dimens.height12),
@@ -143,11 +171,16 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
                       itemCount: state.supplementEvents.length,
                       itemBuilder: (context, index) {
                         final supplement = state.supplementEvents[index];
+                        final itemName = supplement.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplement.info.orEmpty()[0].id).translate(context);
                         return ItemInfoCard(
-                            title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplement.info.orEmpty()[0].id).translate(context),
+                            title: itemName,
                           trailingSrc: 'assets/images/delete_icon.png',
                           subtitle: supplement.info.orEmpty()[0].amount.toString() + ' ' +supplement.info.orEmpty()[0].unit,
-                          trailingTap: () => supplementsDetailBloc.add(DeleteSupplementEventAction(supplement: supplement)),
+                          trailingTap: () => _showRemoveDialog(
+                              description: AppLocalizations.of(context)!.remove_item(itemName),
+                              onCancel: () => Navigator.pop(context),
+                              onConfirm: () => supplementsDetailBloc.add(DeleteSupplementEventAction(supplement: supplement)),
+                          ),
                             beforeTrailingSrc: 'assets/icon/edit_icon.png',
                             beforeTrailingTap: () => Navigator.popAndPushNamed(context, SupplementsScreen.routeName, arguments: supplement),
                         );

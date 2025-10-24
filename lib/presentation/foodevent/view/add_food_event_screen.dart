@@ -106,6 +106,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
         onChangeWeekDays: (weekDay) {},
         daysOfWeek: daysOfWeek,
         eventName: eventName,
+        mealTime: mealTime,
       ),
     );
   }
@@ -202,7 +203,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                           child: HeaderAddItemCardSection(
-                            title: MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name,
+                            title: '${AppLocalizations.of(context)!.add} ${MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name}',
                             image: 'assets/images/meal_time_${state.foodEvent?.mealTime}.png',
                             onBackTap: () => Navigator.pop(context),
                             items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),
@@ -302,12 +303,18 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               trailingSrc: 'assets/icon/add_icon.png',
                               color: state.foodsFromFavorite == favFood ? AppColors.butter : AppColors.floralWhite,
                               leadingTap: () => bloc.add(RemoveFavoriteFoodAddFoodEventAction(foodFavorite: favFood, onFinish: () {})),
-                              trailingTap: () { bloc.add(AddFoodFromFavouriteEventAction(foodFavorite: favFood)); },
+                              trailingTap: () {
+                                favFood.eventId = DateTime.now().millisecondsSinceEpoch;
+                                favFood.eventDate = bloc.state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+                                bloc.add(FinishAddFoodEventAction(
+                                  foodEventSimple: mapToFoodEventSimpleFromFoodFavorite(favFood),
+                                  onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)))));
+                                },
                               subtitle: '${favFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, favFood.ingredients, context)}.',),
                             ),
                           ]),
 
-                          if (state.foodEvent!.ingredients.orEmpty().isNotEmpty || state.foodFavorites.orEmpty().isNotEmpty) Container(
+                          if (state.foodEvent!.ingredients.orEmpty().isNotEmpty) Container(
                             margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                             child: GeneralButton(onTap: () {
                               if(state.foodEvent!.ingredients.isEmpty) {

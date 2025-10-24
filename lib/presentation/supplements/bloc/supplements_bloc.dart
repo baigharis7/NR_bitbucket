@@ -157,12 +157,12 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
       if (state.supplementObj?.info.orEmpty().isEmpty == true) return;
 
       if (state.supplementObj?.isFavorite == true) {
-        add(FinishSupplementFavorite());
+        add(FinishSupplementFavorite(onFinish: () {}));
       } else if (state.supplementObj?.isRoutine == true) {
         if (state.supplementObj?.daysOfWeek?.isEmpty == true || state.supplementObj?.scheduleTime.isEmptyOrNull() == true) return;
-        add(FinishSupplementRoutineSupplementsEvent());
+        add(FinishSupplementRoutineSupplementsEvent(onFinish: () {}));
       } else {
-        add(FinishEventSupplementsAction());
+        add(FinishEventSupplementsAction(onFinish: event.onFinish));
       }
     });
 
@@ -178,6 +178,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
           await saveSupplementEventInteractor.execute(state.supplementObj!, state.isEdit ?? false);
           _clearData();
           emit(state.copyWith(isLoading: false));
+          event.onFinish.call();
         } catch(_) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementEventError));
         }
@@ -199,6 +200,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
           state.supplementFavorites = await getSupplementFavoritesInteractor.execute();
           _clearData();
           emit(state.copyWith(isLoading: false));
+          event.onFinish.call();
         } catch(_) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveSupplementFavoriteError));
         }
@@ -220,6 +222,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
           await saveSupplementRoutineInteractor.execute(uploadSupplementRoutine, false);
           _clearData();
           emit(state.copyWith(isLoading: false));
+          event.onFinish.call();
         } catch(_) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveSupplementRoutineError));
         }
@@ -240,6 +243,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
           await saveSupplementEventInteractor.execute(event.supplement, false);
           _clearData();
           emit(state.copyWith(isLoading: false));
+          event.onFinish.call();
         } catch(_) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementEventError));
         }
