@@ -149,7 +149,7 @@ class _ItemUpdateScreenState extends State<ItemUpdateScreen> {
                         foodGroup: foodGroup.orEmpty(),
                         cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
                         cookingMethodsMaster: state.cookingMethodsMaster!,
-                        onRemove: () => itemUpdateBloc.add(RemoveFoodItemUpdateEvent(foodInEvent: foodInEvent)),
+                        onRemove: () => itemUpdateBloc.add(RemoveFoodItemUpdateEvent(foodInEvent: foodInEvent, isGoBack: () => Navigator.pop(context))),
                         onQtyChange: (changedFood) => itemUpdateBloc.add(UpdateQuantityItemUpdateEvent(foodInEvent: changedFood)),
                         onUnitChange: (changedFood) => itemUpdateBloc.add(UpdateUnitItemUpdateEvent(foodInEvent: changedFood)),
                         onCookingMethodChange: (changedFood) => itemUpdateBloc.add(UpdateCookingMethodItemUpdateEvent(foodInEvent: changedFood)),

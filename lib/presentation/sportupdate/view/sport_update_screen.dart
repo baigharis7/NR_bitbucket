@@ -132,7 +132,7 @@ class _SportUpdateScreenState extends State<SportUpdateScreen> {
                           return SportEventItem(
                             allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
                             sport: sport!,
-                            removeSport: () => sportUpdateBloc.add(RemoveSportSportUpdateEvent(sportInfo: sport)),
+                            removeSport: () => sportUpdateBloc.add(RemoveSportSportUpdateEvent(sportInfo: sport, isGoBack: () => Navigator.pop(context))),
                             editMinutes: (updatedSport) => sportUpdateBloc.add(SetMinutesSportUpdateEvent(sportInfo: updatedSport)),
                             editIntensity: (updatedSport) => sportUpdateBloc.add(SetIntensitySportUpdateEvent(sportInfo: updatedSport)),
                           );

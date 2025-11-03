@@ -17,6 +17,7 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
+import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements_screen.dart';
 
 import '../../../domain/interactor/profile/get_profile_interactor.dart';
 import '../../../domain/models/profile/user_profile_model.dart';
@@ -102,7 +103,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
         final itemIndex = state.supplementObj!.info!.indexOf(state.supplementObj!.info!.firstWhere((nutriInfo) => nutriInfo.id == event.nutriInfo.id));
         state.supplementObj!.info!.remove(state.supplementObj!.info![itemIndex]);
       }
-
+      if (state.supplementObj?.info?.isEmpty == true && state.isEdit == true) event.isGoBack.call();
       emit(state.copyWith(isLoading: false,));
     });
 

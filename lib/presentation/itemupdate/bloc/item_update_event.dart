@@ -25,8 +25,9 @@ class AddFoodItemUpdateEvent extends ItemUpdateEvent {
 
 class RemoveFoodItemUpdateEvent extends ItemUpdateEvent {
   final FoodInFavorite foodInEvent;
+  final Function isGoBack;
 
-  RemoveFoodItemUpdateEvent({required this.foodInEvent});
+  RemoveFoodItemUpdateEvent({required this.foodInEvent, required this.isGoBack});
 }
 
 class UpdateQuantityItemUpdateEvent extends ItemUpdateEvent {

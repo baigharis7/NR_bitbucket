@@ -68,6 +68,7 @@ class SportUpdateBloc extends Bloc<SportUpdateEvent, SportUpdateState> {
         final itemIndex = state.sportSimpleEvent!.info!.indexOf(state.sportSimpleEvent!.info!.firstWhere((food) => food.id == event.sportInfo.id));
         state.sportSimpleEvent!.info!.remove(state.sportSimpleEvent!.info![itemIndex]);
       }
+      if (state.sportSimpleEvent?.info?.isEmpty == true) event.isGoBack.call();
 
       emit(state.copyWith(isLoading: false, onError: null));
     });

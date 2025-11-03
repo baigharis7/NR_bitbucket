@@ -121,7 +121,7 @@ class WaterIntakeWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${totalConsumedLiters.toStringAsFixed(2)} l.',
+                    '${totalConsumedLiters.toStringAsFixed(2)} L.',
                     style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeXLarge),
                   ),
                   Text(

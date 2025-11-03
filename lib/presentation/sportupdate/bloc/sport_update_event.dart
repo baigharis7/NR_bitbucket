@@ -25,8 +25,9 @@ class UpdateEventDateSportUpdateEvent extends SportUpdateEvent {
 
 class RemoveSportSportUpdateEvent extends SportUpdateEvent {
   AddSportFavInfo sportInfo;
+  Function isGoBack;
 
-  RemoveSportSportUpdateEvent({required this.sportInfo});
+  RemoveSportSportUpdateEvent({required this.sportInfo, required this.isGoBack});
 }
 
 class SetIntensitySportUpdateEvent extends SportUpdateEvent {

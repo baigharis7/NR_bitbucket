@@ -185,7 +185,7 @@ class LocalStorageImpl extends LocalStorageRepository {
           if (isEdit) {
             final foodEventsMap = box.toMap();
             foodEventsMap.forEach((key, value) {
-              if ((value as FoodEventEntity).eventDate == foodEventEntity.eventDate) {
+              if ((value as FoodEventEntity).eventId == foodEventEntity.eventId) {
                 box.put(key, foodEventEntity);
               }
             });
@@ -296,7 +296,7 @@ class LocalStorageImpl extends LocalStorageRepository {
           if (isEdit) {
             final sportEventsMap = box.toMap();
             sportEventsMap.forEach((key, value) {
-              if ((value as SportEventEntity).eventDate == sportEventEntity.eventDate) {
+              if ((value as SportEventEntity).eventId == sportEventEntity.eventId) {
                 box.put(key, sportEventEntity);
               }
             });
@@ -817,7 +817,7 @@ class LocalStorageImpl extends LocalStorageRepository {
             final foodEventsMap = box.toMap();
             dynamic desiredKey;
             foodEventsMap.forEach((key, value) {
-              if ((value as FoodEventEntity).eventDate == foodEventEntity.eventDate) {
+              if ((value as FoodEventEntity).eventId == foodEventEntity.eventId) {
                 desiredKey = key;
               }
             });

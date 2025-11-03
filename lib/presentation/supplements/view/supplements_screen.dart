@@ -274,7 +274,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                 nutriInfo?.amount = amount.isEmpty ? 0 : int.parse(amount);
                                 supplementsBloc.add(UpdateAmountSupplementsAction(nutriInfo: nutriInfo!));
                               },
-                              onRemoveItem: () => supplementsBloc.add(RemoveSupplementInfoSupplementsAction(nutriInfo: nutriInfo!)),
+                              onRemoveItem: () => supplementsBloc.add(RemoveSupplementInfoSupplementsAction(nutriInfo: nutriInfo!, isGoBack: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName))),
                             );
                           },
                         ),
@@ -319,7 +319,19 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                             }
 
                             if (state.supplementObj!.name.isNotEmptyOrNull()) {
-                              supplementsBloc.add(SavingEventSupplementsAction(onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate))));
+                              if (state.supplementObj?.info.orEmpty().isEmpty == true) return;
+
+                              if (state.supplementObj?.isFavorite == true) {
+                                supplementsBloc.add(FinishSupplementFavorite(onFinish: () => _showConfirmationDialog(context, () {})));
+                              } else if (state.supplementObj?.isRoutine == true) {
+                                if (state.supplementObj?.daysOfWeek?.isEmpty == true || state.supplementObj?.scheduleTime.isEmptyOrNull() == true) return;
+                                supplementsBloc.add(FinishSupplementRoutineSupplementsEvent(onFinish: () => _showConfirmationDialog(context, () {})));
+                              } else {
+                                supplementsBloc.add(FinishEventSupplementsAction(
+                                    onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate)),
+                                ));
+                              }
+                              // supplementsBloc.add(SavingEventSupplementsAction(onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate))));
                             }
                           },
                         ),

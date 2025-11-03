@@ -138,9 +138,9 @@ class SportItemsScreen extends StatelessWidget {
                                 itemCount: state.sportEvents?.length ?? 0,
                                 itemBuilder: (context, index) {
                                   final activity = state.sportEvents![index];
-                                  final itemName = NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: activity.info, context: context);
+                                  final itemName = activity.sportName ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: activity.info, context: context);
                                   return ItemInfoCard(
-                                    title: activity.sportName ?? itemName,
+                                    title: itemName,
                                     subtitle: '${activity.info![0].minutes} min. -${activity.eventKcals} kcal.',
                                     trailingSrc: 'assets/images/delete_icon.png',
                                     beforeTrailingSrc: 'assets/icon/edit_icon.png',

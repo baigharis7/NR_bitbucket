@@ -31,8 +31,9 @@ class AddSupplementInfoSupplementsAction extends SupplementsEvent{
 
 class RemoveSupplementInfoSupplementsAction extends SupplementsEvent {
   NutriInfo nutriInfo;
+  Function isGoBack;
 
-  RemoveSupplementInfoSupplementsAction({required this.nutriInfo});
+  RemoveSupplementInfoSupplementsAction({required this.nutriInfo, required this.isGoBack});
 }
 
 class UpdateAmountSupplementsAction extends SupplementsEvent {

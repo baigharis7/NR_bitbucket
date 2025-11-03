@@ -82,6 +82,8 @@ class ItemUpdateBloc extends Bloc<ItemUpdateEvent, ItemUpdateState> {
         state.foodEvent!.ingredients.remove(state.foodEvent!.ingredients[itemIndex]);
       }
 
+      if (state.foodEvent?.ingredients.isEmpty == true) event.isGoBack.call();
+
       emit(state.copyWith(isLoading: false,));
     });
 

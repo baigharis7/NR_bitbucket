@@ -66,32 +66,32 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
                   child: Html(
                     data: AppLocalizations.of(context)!.privacy_html,
                     style: {
-                    "h2": Style(
+                    'h2': Style(
                     color: Colors.blue.shade600,
                     fontWeight: FontWeight.bold,
                     fontSize: FontSize(20),
                     margin: Margins.only(bottom: 10),
                   ),
-                    "h3": Style(
+                    'h3': Style(
                       color: Colors.blue.shade600,
                       fontWeight: FontWeight.w500,
                       fontSize: FontSize(18),
                       margin: Margins.only(top: 16, bottom: 8),
                     ),
-                    "p": Style(
+                    'p': Style(
                       color: Colors.white,
                       margin: Margins.only(bottom: 10),
                     ),
-                    "ul": Style(
+                    'ul': Style(
                       color: Colors.white,
                       margin: Margins.only(left: 16, bottom: 10),
                     ),
-                    "li": Style(
+                    'li': Style(
                       color: Colors.white,
                       padding: HtmlPaddings.symmetric(vertical: 6),
                     ),
-                    "b": Style(fontWeight: FontWeight.w600),
-                    "a": Style(color: Colors.blue, textDecoration: TextDecoration.underline),
+                    'b': Style(fontWeight: FontWeight.w600),
+                    'a': Style(color: Colors.blue, textDecoration: TextDecoration.underline),
                   },),
                 ),
               ),
