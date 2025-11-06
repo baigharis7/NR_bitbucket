@@ -57,7 +57,7 @@ class SupplementRoutinesTab extends StatelessWidget {
                     onCancel: () => Navigator.pop(context),
                     onConfirm: () => routinesTabsBloc.add(DeleteSupplementRoutineRoutinesTabEvent(supplement: supplementRoutine)),
                 ),
-                subtitle: '${supplementRoutine.info![0].amount.toString()} ${supplementRoutine.info![0].unit}',
+                subtitle: supplementRoutine.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${supplementRoutine.info![0].amount.toString()} ${supplementRoutine.info![0].unit}.',
                 beforeTrailingSrc: 'assets/icon/edit_icon.png',
                 beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: supplementRoutine).then((value) => routinesTabsBloc.add(InitializeRoutinesTabEvent())),
               );

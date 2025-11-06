@@ -115,7 +115,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
                     ),
                   ),
                   controller: textEditingController,
-                  buildCounter: (context, {required currentLength, required isFocused, maxLength}) => _foodInputController.text.isNotEmptyOrNull() && _foodInputController.text.length > 2 ? Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal), child: Text('$filteredListLength: ' '${filteredListLength > 1 ? AppLocalizations.of(context)!.items_found : AppLocalizations.of(context)!.item_found}', style: const TextStyle(color: Colors.white),)) : Container(),
+                  buildCounter: (context, {required currentLength, required isFocused, maxLength}) => _foodInputController.text.isNotEmptyOrNull() ? Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal), child: Text('$filteredListLength: ' '${filteredListLength > 1 ? AppLocalizations.of(context)!.items_found : AppLocalizations.of(context)!.item_found}', style: const TextStyle(color: Colors.white),)) : Container(),
                   focusNode: focusNode,
                   onChanged: (value) {
                     setState(() {
@@ -126,7 +126,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
               },);
             },
             optionsBuilder: (TextEditingValue textEditingValue) {
-              if (textEditingValue.text == '' || textEditingValue.text.length < 3) return const Iterable<String>.empty();
+              if (textEditingValue.text.isEmptyOrNull()) return widget.items.orEmpty();
               final filteredList =  widget.items.orEmpty()
                   .where((String option) => removeDiacritics(option).toLowerCase().contains(removeDiacritics(textEditingValue.text.toLowerCase())));
               filteredListLength = filteredList.length;

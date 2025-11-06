@@ -68,7 +68,7 @@ class _MealRoutinesTabState extends State<MealRoutinesTab> {
                   onCancel: () => Navigator.pop(context),
                   onConfirm: () => routinesTabsBloc.add(DeleteFoodRoutineActionRoutinesTabEvent(foodRoutineEvent: item)),
                 ),
-                subtitle: '${item.ingredients![0].qty} ${NutritionUtils.unitOfFoods(state.unitsInfoMaster?.unitsInfoMaster, item.ingredients.orEmpty(), context)}.',
+                subtitle: item.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${item.ingredients![0].qty} ${NutritionUtils.unitOfFoods(state.unitsInfoMaster?.unitsInfoMaster, item.ingredients.orEmpty(), context)}.',
                 beforeTrailingSrc: 'assets/icon/edit_icon.png',
                 beforeTrailingTap: () => Navigator.pushNamed(context, UpdateMealScreen.routeName, arguments: mapToFoodFavoriteFromRoutine(item)).then((value) => routinesTabsBloc.add(InitializeRoutinesTabEvent())),
               );

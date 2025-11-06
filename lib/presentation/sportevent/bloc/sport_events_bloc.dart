@@ -205,6 +205,8 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       emit(state.copyWith(isLoading: true, onError: null));
 
         try {
+          event.sportEventSimple.userId = getUserIdInteractor.execute();
+
           final sportEventComplete = await uploadSportsEventInteractor.execute(event.sportEventSimple);
           try {
             await saveSportEventInteractor.execute(sportEventComplete, false);
@@ -226,6 +228,9 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       emit(state.copyWith(isLoading: true, onError: null));
 
         try {
+          event.sportRoutineCompleted.userId = getUserIdInteractor.execute();
+          event.sportRoutineCompleted.timeZone = await DateTimeHelper.getDeviceIANATimeZone();
+
           final sportEventComplete = await uploadRoutineInteractor.execute(event.sportRoutineCompleted);
           try {
             await saveRoutineInteractor.execute(event.sportRoutineCompleted, state.isEdit ?? false);
@@ -247,9 +252,12 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       emit(state.copyWith(isLoading: true, onError: null));
 
       try {
+        event.sportFavorite.userId = getUserIdInteractor.execute();
+
         final uploadResult = await uploadSportFavoriteInteractor.execute(event.sportFavorite);
         if (uploadResult) {
           await saveSportFavoriteInteractor.execute(event.sportFavorite, state.isEdit ?? false);
+          state.favSports = await getSportFavoritesInteractor.execute();
 
           _clearFields();
           event.onFinish.call();

@@ -69,7 +69,7 @@ class _PhysicalActivityRoutinesTabState extends State<PhysicalActivityRoutinesTa
                     onCancel: () => Navigator.pop(context),
                     onConfirm: () => routinesTabsBloc.add(DeleteSportRoutineAction(sportRoutineCompleted: item)),
                 ),
-                subtitle: '${item.info![0].minutes} ${AppLocalizations.of(context)!.minutes} - ${NutritionUtils.activityIntensityById(item.info![0].intensity!.toInt(), context)}.',
+                subtitle: item.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.duration}: ${item.info![0].minutes} min. - ${AppLocalizations.of(context)!.intensity}: ${NutritionUtils.activityIntensityById(item.info![0].intensity?.toInt() ?? 0, context)}.',
                 beforeTrailingSrc: 'assets/icon/edit_icon.png',
                 beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSportScreen.routeName, arguments: mapToSportFavoriteFromRoutine(item)).then((value) => routinesTabsBloc.add(InitializeRoutinesTabEvent())),
               );

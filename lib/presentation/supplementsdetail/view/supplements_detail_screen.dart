@@ -175,7 +175,7 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
                         return ItemInfoCard(
                             title: itemName,
                           trailingSrc: 'assets/images/delete_icon.png',
-                          subtitle: supplement.info.orEmpty()[0].amount.toString() + ' ' +supplement.info.orEmpty()[0].unit,
+                          subtitle: supplement.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${supplement.info![0].amount.toString()} ${supplement.info![0].unit}.',
                           trailingTap: () => _showRemoveDialog(
                               description: AppLocalizations.of(context)!.remove_item(itemName),
                               onCancel: () => Navigator.pop(context),

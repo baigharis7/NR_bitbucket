@@ -10,6 +10,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 import '../../../../../infrastructure/errors/error_resolver.dart';
 import '../../../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../../../infrastructure/utils/dimens.dart';
+import '../../../../common/view/confirmation_dialog.dart';
 import '../../../../common/view/loading_screen.dart';
 import '../../../../widgets/radio_title_desc_image.dart';
 import '../../../bloc/feces_urine_bloc.dart';
@@ -32,6 +33,22 @@ class _FecesScreenState extends State<FecesScreen> {
     fecesUrineBloc = BlocProvider.of<FecesUrineBloc>(context);
     fecesUrineBloc.add(InitializationFecesEventAction());
     super.initState();
+  }
+
+  // TODO: si esto permanece se puede convertir en un widget en un momento.
+  void _showConfirmationDialog({String? message, required BuildContext context, Function? onDismiss}) {
+    Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
+    final mediaQuerySize = MediaQuery.of(context).size;
+
+    showDialog(context: context, builder: (ctx) => Container(
+      height: mediaQuerySize.height,
+      width: mediaQuerySize.width,
+      color: const Color.fromARGB(148, 104, 96, 96),
+      child: ConfirmationDialog(message: message ?? AppLocalizations.of(context)!.feces_event_successfully_saved),
+    ),).then((value) {
+      onDismiss?.call();
+    }
+    );
   }
 
   @override
@@ -75,7 +92,13 @@ class _FecesScreenState extends State<FecesScreen> {
               margin: const EdgeInsets.all(Dimens.marginNormal),
               child: GeneralButton(
                 title: AppLocalizations.of(context)!.save,
-                onTap: () => fecesUrineBloc.add(UploadFecesEventAction(onFinish: () => Navigator.popAndPushNamed(context, FecesUrineTabHolder.routeName, arguments: state.calendarDateTime))),
+                onTap: () => fecesUrineBloc.add(UploadFecesEventAction(
+                    onFinish: () => _showConfirmationDialog(
+                      message: AppLocalizations.of(context)!.feces_event_successfully_saved,
+                      context: context,
+                      onDismiss: () => Navigator.popAndPushNamed(context, FecesUrineTabHolder.routeName, arguments: state.calendarDateTime),
+                    ),
+                ),),
               ),
             ),
           ),

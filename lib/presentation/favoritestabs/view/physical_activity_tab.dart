@@ -68,7 +68,7 @@ class _PhysicalActivityTabState extends State<PhysicalActivityTab> {
                   onCancel: () => Navigator.pop(context),
                   onConfirm: () => favoritesTabsBloc.add(DeleteFavoriteSportFavoritesTabsEvent(sportFavorite: favSport,)),
               ),
-              subtitle: '${favSport.info![0].minutes} ${AppLocalizations.of(context)!.minutes} - ${NutritionUtils.activityIntensityById(favSport.info![0].intensity.orZero(), context)}.',
+              subtitle: favSport.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.duration}: ${favSport.info![0].minutes} min. - ${AppLocalizations.of(context)!.intensity}: ${NutritionUtils.activityIntensityById(favSport.info![0].intensity.orZero(), context)}.',
               beforeTrailingSrc: 'assets/icon/edit_icon.png',
               beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSportScreen.routeName, arguments: favSport).then((value) => favoritesTabsBloc.add(InitializeFavoritesTabsEvent())),
             );

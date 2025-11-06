@@ -66,7 +66,7 @@ class _MealTabState extends State<MealTab> {
                 onCancel: () => Navigator.pop(context),
                 onConfirm: () => favoritesTabsBloc.add(RemoveFavoriteFoodFavoritesTabsEvent(foodFavorite: favFood)),
               ),
-              subtitle: '${favFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, [favFood.ingredients[0]], context)}.',
+              subtitle: favFood.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${favFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, favFood.ingredients, context)}.',
               beforeTrailingSrc: 'assets/icon/edit_icon.png',
               beforeTrailingTap: () => Navigator.pushNamed(context, UpdateMealScreen.routeName, arguments: favFood).then((value) => favoritesTabsBloc.add(InitializeFavoritesTabsEvent())),
             );

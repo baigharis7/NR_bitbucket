@@ -62,7 +62,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                 child: Row(
                   children: [
                     if (!widget.selectedDate.isNull()) Text(
-                      DateTimeHelper.formatMonthYear(widget.selectedDate!),
+                      DateTimeHelper.formatMonthYear(widget.selectedDate!).toUpperCase(),
                       style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w700,),
                     ),
                     const Spacer(),
@@ -111,7 +111,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                                 'kcal\n' +
                                     AppLocalizations.of(context)!.from +
                                     ' ${widget.energyModel!.totalKcal} kcal.'.toUpperCase(),
-                                style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSizeXSmall),
+                                style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSizeSmall,),
                                 textAlign: TextAlign.center,
                               ),
                             ],

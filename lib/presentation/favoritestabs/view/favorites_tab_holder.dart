@@ -69,7 +69,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
           if (state.isLoading) {
             LoadingScreen.instance().show(
               context: ctx,
-              text: AppLocalizations.of(ctx)!.recal_nutrients,
+              text: AppLocalizations.of(ctx)!.loading,
             );
           } else {
             LoadingScreen.instance().hide();

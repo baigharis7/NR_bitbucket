@@ -264,20 +264,11 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     on<FinishFoodAsFavoriteEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
 
-      // final foodFavorite = FoodFavorite(
-      //     title: 'Dummy Food name',
-      //     eventDate: state.eventDate ?? DateTime.now().millisecondsSinceEpoch,
-      //     ingredients: state.foodsInEvent.orEmpty().map((food) => FoodInFavorite(id: food.id, name_en: '', name_es: '', qty: food.qty, unit: food.unit, cookingMethod: food.cookingMethod)).toList(),
-      //     drinks: [],
-      //     mealTime: state.mealType.orZero(),
-      //   isRoutine: state.isCreateRoutine,
-      //   daysOfWeek: state.daysOfWeek,
-      //   time: DateFormat.Hm().format(DateTime.now().add(Duration(minutes: 10))),
-      //   comment: state.comment,
-      //   dish: state.isCreateDish,
-      //   timeZone: await DateTimeHelper.getDeviceIANATimeZone(),
-      // );
       try {
+        event.foodFavorite.userId = getUserIdInteractor.execute();
+        event.foodFavorite.eventId = event.foodFavorite.eventId ?? DateTime.now().millisecondsSinceEpoch;
+        event.foodFavorite.eventDate = event.foodFavorite.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+
         final uploadFoodAsFavorite = await uploadFoodFavoriteInteractor.execute(event.foodFavorite);
         try {
           final saveFoodsAsFavorite = await saveFoodFavoriteInteractor.execute(event.foodFavorite, state.isEdit!);
@@ -285,6 +276,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
           state.foodFavorites = state.foodFavorites.orEmpty().where((foodFav) => foodFav.mealTime == state.foodEvent?.mealTime).toList();
           _clearFields();
           emit(state.copyWith(isLoading: false, onError: null,));
+          event.onFinish.call();
         } catch (_) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadFoodFavoriteError));
         }
@@ -331,7 +323,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       state.foodEvent?.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
 
       state.foodEvent?.timeZone = await DateTimeHelper.getDeviceIANATimeZone();
-      state.foodEvent?.time = state.foodEvent?.time ?? DateFormat.Hm().format(DateTime.now().add(Duration(minutes: 10)));
+      state.foodEvent?.time = state.foodEvent?.time ?? DateFormat.Hm().format(DateTime.now().add(const Duration(minutes: 10)));
       if (state.foodEvent?.isFavorite ?? false) {
         add(FinishFoodAsFavoriteEventAction(foodFavorite: state.foodEvent!, onFinish: event.onFinish));
       }
@@ -348,6 +340,10 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: true, onError: null));
 
       try {
+        event.foodEventSimple.userId = getUserIdInteractor.execute();
+        event.foodEventSimple.eventId = state.foodEvent?.eventId ?? DateTime.now().millisecondsSinceEpoch;
+        event.foodEventSimple.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+
         final uploadFoodEvent = await uploadFoodEventInteractor.execute(event.foodEventSimple);
         if (uploadFoodEvent.uploadSuccess) {
           try {
@@ -371,6 +367,13 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: true, onError: null));
 
       try {
+        event.foodRoutineEvent.userId = getUserIdInteractor.execute();
+        event.foodRoutineEvent.eventId = state.foodEvent?.eventId ?? DateTime.now().millisecondsSinceEpoch;
+        event.foodRoutineEvent.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+
+        event.foodRoutineEvent.timeZone = await DateTimeHelper.getDeviceIANATimeZone();
+        event.foodRoutineEvent.time = state.foodEvent?.time ?? DateFormat.Hm().format(DateTime.now().add(const Duration(minutes: 10)));
+
         final uploadedRoutine = await uploadFoodRoutineInteractor.execute(event.foodRoutineEvent);
         if (uploadedRoutine) {
           try {

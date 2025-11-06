@@ -58,7 +58,7 @@ class ProfileInfoCard extends StatelessWidget {
               Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6), color: AppColors.butter59, height: 50, width: 2),
               _MetricItem(value: userProfile?.physicalCharacteristics?.bodyFat, label: 'IGC'),
               Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6), color: AppColors.butter59, height: 50, width: 2),
-              _MetricItem(value: userProfile?.physicalCharacteristics?.waistMeasurement, label: AppLocalizations.of(context)!.waist),
+              _MetricItem(value: null, label: AppLocalizations.of(context)!.waist),
             ],
           ),
           const SizedBox(height: Dimens.heightXSmall),
@@ -92,7 +92,7 @@ class _MetricItem extends StatelessWidget {
     return Column(
       children: [
         Text(
-          !value.isNull() ? value!.toInt() > 0 ? value!.toInt().toString() : '-' : value.toString(),
+          !value.isNull() ? value!.toInt() > 0 ? value!.toInt().toString() : '-' : '-',
           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeLarge),
         ),
         const SizedBox(height: Dimens.height5),

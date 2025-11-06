@@ -22,6 +22,7 @@ import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/confirmation_dialog.dart';
 import '../../common/view/loading_screen.dart';
+import '../../updatesupplement/view/update_supplement_screen.dart';
 import '../../widgets/dash_title_widget.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
@@ -60,7 +61,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
     super.initState();
   }
 
-  void _showConfirmationDialog(BuildContext context, Function onDismiss) {
+  void _showConfirmationDialog({String? message, required BuildContext context, required Function onDismiss}) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
     final mediaQuerySize = MediaQuery.of(context).size;
 
@@ -68,7 +69,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
       height: mediaQuerySize.height,
       width: mediaQuerySize.width,
       color: const Color.fromARGB(148, 104, 96, 96),
-      child: ConfirmationDialog(message: AppLocalizations.of(context)!.supplement_event_successfully_saved),
+      child: ConfirmationDialog(message: message ?? AppLocalizations.of(context)!.supplement_event_successfully_saved),
     ),).then((value) {
       onDismiss.call();
     }
@@ -198,8 +199,11 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                             trailingSrc: 'assets/icon/add_icon.png',
                             trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
                                 supplement: SupplementSimple(info: [NutriInfo(id: Constants.CREATINE, unit: 'mg', amount: (0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt())]),
-                                onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate)),
-                            )),
+                                onFinish: () => _showConfirmationDialog(
+                                  message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
+                                  context: context,
+                                  onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
+                                ),),),
                             subtitle: '${(0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt()} mg',
                             leadingSrc: 'assets/images/goal_objectives.png',
                             leadingTap: () {},
@@ -208,7 +212,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                               supplementsBloc.state.supplementObj?.isRoutine = true;
                               supplementsBloc.add(AddSupplementInfoSupplementsAction(
                                   nutriInfo: NutriInfo(id: Constants.CREATINE, unit: 'mg', amount: (0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt()),
-                              ));
+                              ),);
                             },
                           ),
                           if (state.userProfile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) ItemInfoCard(
@@ -217,8 +221,11 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                             trailingSrc: 'assets/icon/add_icon.png',
                             trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
                                 supplement: SupplementSimple(info: [NutriInfo(id: Constants.COLLAGEN, unit: 'mg', amount: 10)]),
-                                onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate)),
-                            )),
+                                onFinish: () => _showConfirmationDialog(
+                                    message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
+                                    context: context,
+                                    onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
+                                ),),),
                             subtitle: '10 mg',
                             leadingSrc: 'assets/images/goal_objectives.png',
                             leadingTap: () {},
@@ -241,16 +248,22 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                       itemCount: state.supplementFavorites?.length,
                       itemBuilder: (context, index) {
                         final supplementFavorite = state.supplementFavorites.orEmpty()[index];
+                        final itemName = supplementFavorite.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite.info![0].id ?? -1).translate(context);
                         return ItemInfoCard(
-                          title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite.info![0].id ?? -1).translate(context),
+                          title: itemName,
                           trailingSrc: 'assets/icon/add_icon.png',
                           trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
                               supplement: supplementFavorite,
-                              onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate)),
-                          )),
-                          subtitle: '${supplementFavorite.info![0].amount.toString()} ${supplementFavorite.info![0].unit}',
+                              onFinish: () => _showConfirmationDialog(
+                                message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
+                                  context: context,
+                                  onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
+                              ),),),
+                          subtitle: supplementFavorite.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${supplementFavorite.info![0].amount.toString()} ${supplementFavorite.info![0].unit}.',
                           leadingSrc: 'assets/images/favorite_icon.png',
                           leadingTap: () {},
+                          beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                          beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: supplementFavorite).then((value) => supplementsBloc.add(InitializationSupplementsAction())),
                         );
                       },
                     ),
@@ -300,6 +313,12 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                         const SizedBox(height: Dimens.height32),
                         GeneralButton(
                           onTap: () {
+                            if (state.supplementObj!.info.orEmpty().length == 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
+                              final name = NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], state.supplementObj?.info.orEmpty()[0].id ?? -1).translate(context);
+                              state.supplementObj?.name = name;
+                              // supplementsBloc.add(UpdateNameSupplementsEvent(name: name));
+                            }
+
                             if (state.supplementObj!.info.orEmpty().length > 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
                               showRoutineTimeDialog(
                                 onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
@@ -313,23 +332,31 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                 isFavorite: state.supplementObj?.isFavorite,
                                 isCreateRoutine: state.supplementObj?.isRoutine,
                               );
-                            } else if (state.supplementObj!.info.orEmpty().length == 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
-                              final name = NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], state.supplementObj?.info.orEmpty()[0].id ?? -1).translate(context);
-                              supplementsBloc.add(UpdateNameSupplementsEvent(name: name));
                             }
 
                             if (state.supplementObj!.name.isNotEmptyOrNull()) {
                               if (state.supplementObj?.info.orEmpty().isEmpty == true) return;
 
                               if (state.supplementObj?.isFavorite == true) {
-                                supplementsBloc.add(FinishSupplementFavorite(onFinish: () => _showConfirmationDialog(context, () {})));
+                                supplementsBloc.add(FinishSupplementFavorite(onFinish: () => _showConfirmationDialog(
+                                  message: AppLocalizations.of(context)!.supplement_favorite_successfully_saved,
+                                  context: context,
+                                  onDismiss: () {},
+                                ),),);
                               } else if (state.supplementObj?.isRoutine == true) {
                                 if (state.supplementObj?.daysOfWeek?.isEmpty == true || state.supplementObj?.scheduleTime.isEmptyOrNull() == true) return;
-                                supplementsBloc.add(FinishSupplementRoutineSupplementsEvent(onFinish: () => _showConfirmationDialog(context, () {})));
+                                supplementsBloc.add(FinishSupplementRoutineSupplementsEvent(onFinish: () => _showConfirmationDialog(
+                                  message: AppLocalizations.of(context)!.supplement_routine_successfully_saved,
+                                  context: context,
+                                  onDismiss: () {},
+                                ),),);
                               } else {
                                 supplementsBloc.add(FinishEventSupplementsAction(
-                                    onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate)),
-                                ));
+                                    onFinish: () => _showConfirmationDialog(
+                                      message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
+                                      context: context,
+                                      onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
+                                    ),),);
                               }
                               // supplementsBloc.add(SavingEventSupplementsAction(onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate))));
                             }

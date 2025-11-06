@@ -40,6 +40,7 @@ import '../../../infrastructure/helpers/remove_diac.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/mappers/food_event_mappers.dart';
 import '../../mealtimedetails/view/meal_time_details_screen.dart';
+import '../../updatemeal/view/update_meal_screen.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
 import '../../widgets/item_info_card.dart';
 // import 'package:remove_diacritic/remove_diacritic.dart';
@@ -63,7 +64,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
 
 
   // TODO: si esto permanece se puede convertir en un widget en un momento.
-  void _showConfirmationDialog(BuildContext context, Function onDismiss) {
+  void _showConfirmationDialog({String? message, required BuildContext context, Function? onDismiss}) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
     final mediaQuerySize = MediaQuery.of(context).size;
 
@@ -71,9 +72,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
       height: mediaQuerySize.height,
       width: mediaQuerySize.width,
       color: const Color.fromARGB(148, 104, 96, 96),
-      child: ConfirmationDialog(message: AppLocalizations.of(context)!.food_event_successfully_saved),
+      child: ConfirmationDialog(message: message ?? AppLocalizations.of(context)!.food_event_successfully_saved),
     ),).then((value) {
-      onDismiss.call();
+      onDismiss?.call();
     }
     );
   }
@@ -308,22 +309,39 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                 favFood.eventDate = bloc.state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
                                 bloc.add(FinishAddFoodEventAction(
                                   foodEventSimple: mapToFoodEventSimpleFromFoodFavorite(favFood),
-                                  onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)))));
+                                  onFinish: () => _showConfirmationDialog(
+                                      message: AppLocalizations.of(context)!.food_event_successfully_saved,
+                                      context: context,
+                                      onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
+                                  ),),
+                                );
                                 },
-                              subtitle: '${favFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, favFood.ingredients, context)}.',),
+                              subtitle: favFood.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${favFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, favFood.ingredients, context)}.',
+                              beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                              beforeTrailingTap: () => Navigator.pushNamed(context, UpdateMealScreen.routeName, arguments: favFood).then((value) => bloc.add(InitializeStateAction())),
                             ),
-                          ]),
+                            ),
+                          ],),
 
                           if (state.foodEvent!.ingredients.orEmpty().isNotEmpty) Container(
                             margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                             child: GeneralButton(onTap: () {
                               if(state.foodEvent!.ingredients.isEmpty) {
                                 if (!state.foodsFromFavorite.isNull()) {
-                                  bloc.add(FinishFoodFavouriteEventAction(onFinish: () => _showConfirmationDialog(context, () {}),),);
+                                  bloc.add(FinishFoodFavouriteEventAction(onFinish: () => _showConfirmationDialog(
+                                      context: context,
+                                      onDismiss: () {},
+                                  ),),);
                                 }
                               }
                               else {
                                 if (bloc.validateList() ?? true) return;
+
+                                if (state.foodEvent!.ingredients.orEmpty().length == 1 && (state.foodEvent?.title.isEmptyOrNull() == true)) {
+                                  final foodName = NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: [state.foodEvent?.ingredients.orEmpty()[0]], context: context);
+                                  // bloc.add(AddFoodNameEventAction(foodName: foodName,),);
+                                  state.foodEvent?.title = foodName;
+                                }
 
                                 if (state.foodEvent!.ingredients.orEmpty().length > 1 && (state.foodEvent?.title.isEmptyOrNull() == true)) {
                                   showAddFoodNameDialog(
@@ -339,17 +357,41 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                     onMealTieChange: (mealTime) => bloc.add(AddFoodMealTypeEventAction(mealType: mealTime)),
                                     onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineEventAction()),
                                   );
-                                } else if (state.foodEvent!.ingredients.orEmpty().length == 1 && (state.foodEvent?.title.isEmptyOrNull() == true)) {
-                                  final foodName = NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: [state.foodEvent?.ingredients.orEmpty()[0]], context: context);
-                                  bloc.add(AddFoodNameEventAction(foodName: foodName,),);
                                 }
 
                                 if (state.foodEvent!.title.isNotEmptyOrNull()) {
                                 //   bloc.add(FinishFoodAsFavoriteEventAction(onFinish: () => _showConfirmationDialog(context)));
                                 // } else {
-                                  bloc.add(FinishFoodEventAddFoodEventActions(onFinish: () => _showConfirmationDialog(context, () {
-                                    Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!));
-                                  })));
+                                //   bloc.add(FinishFoodEventAddFoodEventActions(onFinish: () => _showConfirmationDialog(context, () {
+                                //     Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!));
+                                //   })));
+
+                                  if (state.foodEvent?.isFavorite ?? false) {
+                                    bloc.add(FinishFoodAsFavoriteEventAction(foodFavorite: state.foodEvent!, onFinish: () => _showConfirmationDialog(
+                                      message: AppLocalizations.of(context)!.food_favorite_successfully_saved,
+                                        context: context,
+                                        onDismiss: () {},
+                                    ),),);
+                                  }
+                                  else if (state.foodEvent?.isRoutine == true && state.foodEvent?.daysOfWeek?.isNotEmpty == true) {
+                                    state.foodEvent?.userId = '';
+                                    state.foodEvent?.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+                                    final foodEventRoutine = mapToFoodRoutineEventFromFoodFavorite(state.foodEvent!);
+                                    bloc.add(FinishAddFoodRoutineEventAction(foodRoutineEvent: foodEventRoutine, onFinish: () => _showConfirmationDialog(
+                                      message: AppLocalizations.of(context)!.food_routine_successfully_saved,
+                                        context: context,
+                                        onDismiss: () {},
+                                    ),),);
+                                  } else {
+                                    state.foodEvent?.userId = '';
+                                    state.foodEvent?.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+                                    final foodEventSimple = mapToFoodEventSimpleFromFoodFavorite(state.foodEvent!);
+                                    bloc.add(FinishAddFoodEventAction(foodEventSimple: foodEventSimple, onFinish: () => _showConfirmationDialog(
+                                      message: AppLocalizations.of(context)!.food_event_successfully_saved,
+                                        context: context,
+                                        onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
+                                    ),),);
+                                  }
                                 }
                                 // bloc.add(FinishFoodWithoutCreateDishEventAction(context: context, onFinish: () => _showConfirmationDialog(context)));
                               }

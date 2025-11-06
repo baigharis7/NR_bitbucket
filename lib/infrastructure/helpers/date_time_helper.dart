@@ -219,7 +219,7 @@ class DateTimeHelper {
   }
 
   static String formatMonthYear(DateTime date) {
-    return DateFormat('MMM yy').format(date);
+    return DateFormat('MMM yyyy').format(date);
   }
 
 

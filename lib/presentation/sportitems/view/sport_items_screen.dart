@@ -141,7 +141,7 @@ class SportItemsScreen extends StatelessWidget {
                                   final itemName = activity.sportName ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: activity.info, context: context);
                                   return ItemInfoCard(
                                     title: itemName,
-                                    subtitle: '${activity.info![0].minutes} min. -${activity.eventKcals} kcal.',
+                                    subtitle: '${AppLocalizations.of(context)!.energy}: -${activity.eventKcals} kcal. - ${(activity.info?.length ?? 0) > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : "${AppLocalizations.of(context)!.duration}: ${activity.info![0].minutes} min."}',
                                     trailingSrc: 'assets/images/delete_icon.png',
                                     beforeTrailingSrc: 'assets/icon/edit_icon.png',
                                     beforeTrailingTap: () => Navigator.pushNamed(context, SportUpdateScreen.routeName, arguments: activity).then((value) => bloc.add(UpdateDatetimeSportItemsEvents(dateTime: state.dateTime ?? DateTime.now()))),

@@ -436,16 +436,15 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       );
 
       try {
-        final uploadSuccess = await uploadWaterEventInteractor.execute(waterEventMaster);
-        if (uploadSuccess) {
-          try {
-            saveWaterEventInteractor.execute(waterEventMaster);
-            state.waterEvents = await getWaterEventsTodayInteractor.execute();
-            // event.onFinish.call();
-            emit(state.copyWith(isLoading: false, onError: null));
-          } catch (error) {
-            emit(state.copyWith(isLoading: false, onError: ErrorTypes.locallySavingWaterEventError));
-          }
+        await saveWaterEventInteractor.execute(waterEventMaster);
+        state.waterEvents = await getWaterEventsTodayInteractor.execute();
+        emit(state.copyWith(isLoading: false, onError: null));
+        try {
+          await uploadWaterEventInteractor.execute(waterEventMaster);
+          // event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null));
+        } catch (error) {
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.locallySavingWaterEventError));
         }
       } catch (error) {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingWaterEventError));

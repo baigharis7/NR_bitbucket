@@ -90,7 +90,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
           // if (state.isLoading) {
           //   LoadingScreen.instance().show(
           //     context: ctx,
-          //     text: AppLocalizations.of(ctx)!.recal_nutrients,
+          //     text: AppLocalizations.of(ctx)!.loading,
           //   );
           // } else {
           //   LoadingScreen.instance().hide();
@@ -154,7 +154,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                             return ItemInfoCard(
                               onItemTap: () /*=> Navigator.pushNamed(context, MealTimeItemScreen.routeName)*/ {},
                               title: itemName,
-                              subtitle: '${food.eventKcals.orZero()} kcal. ${food.foodInfo![0].eventInfo?.qty.orZero().toInt()} ${NutritionUtils.findUnitName(state.unitsInfoMaster?.unitsInfoMaster, [food.foodInfo.orEmpty()[0]], context)}.',
+                              subtitle: '${AppLocalizations.of(context)!.energy}: ${food.eventKcals.orZero()} kcal. - ${food.foodInfo.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : "${AppLocalizations.of(context)!.amount}: ${food.foodInfo![0].eventInfo?.qty.orZero().toInt()} ${NutritionUtils.findUnitName(state.unitsInfoMaster?.unitsInfoMaster, [food.foodInfo.orEmpty()[0]], context)}"}.',
                               trailingSrc: 'assets/images/delete_icon.png',
                               beforeTrailingSrc: 'assets/icon/edit_icon.png',
                               beforeTrailingTap: () => Navigator.pushNamed(context, ItemUpdateScreen.routeName, arguments: food).then((value) => bloc.add(InitialMealTimeDetailsEventState(dateTime: state.selectedDateTime))),

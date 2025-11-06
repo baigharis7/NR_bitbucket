@@ -10,6 +10,7 @@ import '../../../../../domain/models/profile/feces.dart';
 import '../../../../../infrastructure/errors/error_resolver.dart';
 import '../../../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../../../infrastructure/utils/dimens.dart';
+import '../../../../common/view/confirmation_dialog.dart';
 import '../../../../common/view/loading_screen.dart';
 import '../../../../widgets/general_button.dart';
 import '../../../../widgets/radio_title_desc_image.dart';
@@ -34,6 +35,22 @@ class _UrineScreenState extends State<UrineScreen> {
     fecesUrineBloc = BlocProvider.of<FecesUrineBloc>(context);
     fecesUrineBloc.add(InitializationUrineEventAction());
     super.initState();
+  }
+
+  // TODO: si esto permanece se puede convertir en un widget en un momento.
+  void _showConfirmationDialog({String? message, required BuildContext context, Function? onDismiss}) {
+    Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
+    final mediaQuerySize = MediaQuery.of(context).size;
+
+    showDialog(context: context, builder: (ctx) => Container(
+      height: mediaQuerySize.height,
+      width: mediaQuerySize.width,
+      color: const Color.fromARGB(148, 104, 96, 96),
+      child: ConfirmationDialog(message: message ?? AppLocalizations.of(context)!.urine_event_successfully_saved),
+    ),).then((value) {
+      onDismiss?.call();
+    }
+    );
   }
 
   @override
@@ -77,7 +94,11 @@ class _UrineScreenState extends State<UrineScreen> {
             margin: const EdgeInsets.all(Dimens.marginNormal),
             child: GeneralButton(
               title: AppLocalizations.of(context)!.save,
-              onTap: () => fecesUrineBloc.add(UploadUrineEventAction(onFinish: () => Navigator.popAndPushNamed(context, FecesUrineTabHolder.routeName, arguments: 1))),
+              onTap: () => fecesUrineBloc.add(UploadUrineEventAction(onFinish: () => _showConfirmationDialog(
+                message: AppLocalizations.of(context)!.urine_event_successfully_saved,
+                context: context,
+                onDismiss: () => Navigator.popAndPushNamed(context, FecesUrineTabHolder.routeName, arguments: 1),
+              ),),),
             ),
           ),
         ),

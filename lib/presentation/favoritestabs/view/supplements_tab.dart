@@ -54,19 +54,19 @@ class _SupplementsTabState extends State<SupplementsTab> {
         builder: (context, state) => ListView.builder(
           shrinkWrap: true,
           primary: false,
-          itemCount: state.favSupplements?.length,
+          itemCount: state.favSupplements?.length ?? 0,
           itemBuilder: (context, index) {
-            final supplementFavorite = state.favSupplements?.orEmpty()[index];
-            final itemName = supplementFavorite?.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite?.info![0].id ?? -1).translate(context);
+            final supplementFavorite = state.favSupplements.orEmpty()[index];
+            final itemName = supplementFavorite.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite.info![0].id ?? -1).translate(context);
             return ItemInfoCard(
               title: itemName,
               trailingSrc: 'assets/images/delete_icon.png',
               trailingTap: () => _showRemoveDialog(
                   description: AppLocalizations.of(context)!.remove_item(itemName),
                   onCancel: () => Navigator.pop(context),
-                  onConfirm: () => favoritesTabsBloc.add(DeleteSupplementFavoriteFavoritesTabsEvent(supplementSimple: supplementFavorite!)),
+                  onConfirm: () => favoritesTabsBloc.add(DeleteSupplementFavoriteFavoritesTabsEvent(supplementSimple: supplementFavorite)),
               ),
-              subtitle: '${supplementFavorite?.info![0].amount.toString()} ${supplementFavorite?.info![0].unit}',
+              subtitle: supplementFavorite.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${supplementFavorite.info![0].amount.toString()} ${supplementFavorite.info![0].unit}.',
               leadingSrc: 'assets/images/favorite_icon.png',
               leadingTap: () {},
               beforeTrailingSrc: 'assets/icon/edit_icon.png',

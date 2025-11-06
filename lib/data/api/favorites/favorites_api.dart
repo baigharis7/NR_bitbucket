@@ -30,7 +30,7 @@ class FavoritesApi extends ApiHelper {
         ),
         {
           'userId': userId,
-          'eventId': eventId
+          'eventId': eventId,
         },
       );
 
