@@ -31,8 +31,9 @@ class UpdateIngredientsUpdateMealEvent extends UpdateMealEvent {
 
 class RemoveIngredientUpdateMealEvent extends UpdateMealEvent {
   final FoodInFavorite ingredient;
+  final Function isGoBack;
 
-  RemoveIngredientUpdateMealEvent({required this.ingredient});
+  RemoveIngredientUpdateMealEvent({required this.ingredient, required this.isGoBack});
 }
 
 class UpdateIngredientAmountUpdateMealEvent extends UpdateMealEvent {

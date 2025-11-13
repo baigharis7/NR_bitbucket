@@ -155,6 +155,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         try {
           await removeFecesEventInteractor.execute(event.uploadFeces);
           state.facesDayEvents = await getFaecesByDateInteractor.execute(dateTime: state.calendarDateTime);
+          add(InitializationFecesEventAction());
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
         } catch (_) {
@@ -172,6 +173,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         try {
           await removeUrineEventInteractor.execute(event.uploadFeces);
           state.urineDayEvents = await getUrineByDateInteractor.execute(dateTime: state.calendarDateTime);
+          add(InitializationUrineEventAction());
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
         } catch (_) {

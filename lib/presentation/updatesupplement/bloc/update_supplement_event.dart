@@ -19,8 +19,9 @@ class AddSupplementInfoUpdateSupplementEvent extends UpdateSupplementEvent {
 
 class RemoveSupplementInfoUpdateSupplementEvent extends UpdateSupplementEvent {
   final NutriInfo nutriInfo;
+  final Function isGoBack;
 
-  RemoveSupplementInfoUpdateSupplementEvent({required this.nutriInfo});
+  RemoveSupplementInfoUpdateSupplementEvent({required this.nutriInfo, required this.isGoBack});
 }
 
 class UpdateNameSupplementUpdateSupplementEvent extends UpdateSupplementEvent {

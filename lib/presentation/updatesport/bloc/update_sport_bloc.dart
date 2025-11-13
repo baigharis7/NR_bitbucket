@@ -68,6 +68,8 @@ class UpdateSportBloc extends Bloc<UpdateSportEvent, UpdateSportState> {
         state.sportSimple!.info!.remove(state.sportSimple!.info![itemIndex]);
       }
 
+      if (state.sportSimple?.info?.isEmpty == true) event.isGoBack.call();
+
       emit(state.copyWith(isLoading: false, onError: null));
     });
 

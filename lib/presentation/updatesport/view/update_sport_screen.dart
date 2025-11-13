@@ -80,60 +80,64 @@ class UpdateSportScreen extends StatelessWidget {
               ),
             ),
 
-            Scaffold(
-              backgroundColor: Colors.transparent,
-              body: SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingLarge),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: Dimens.height12),
-                      HeaderAddItemCardSection(
-                        title: '${AppLocalizations.of(context)!.update} ${AppLocalizations.of(context)!.physical_activity}',
-                        onBackTap: () => Navigator.pop(context),
-                        image: 'assets/images/sport.png',
-                        items: state.sportsInfo?.sportsInfoMaster.map((sport) => sport.translate(context)).toList() ?? [],
-                        onItemSelect: (sportName, focus) {
-                          // _sportFocusInputController = focus;
-                          final sportIntensities = eventsHelper.getChosenSportIntensities(sportName, state.sportsInfo!, currentLanguage);
-                          final sportId = eventsHelper.getSportIdByName(sportName, state.sportsInfo!, currentLanguage);
-                          final sportInfo = updateSportBloc.findSportById(sportId);
-                          final info = AddSportFavInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null, timeStart: DateTime.now().millisecondsSinceEpoch);
-                          updateSportBloc.add(UpdateSportItemUpdateSportEvent(sportInfo: info));
-                        },
-                      ),
-                      const SizedBox(height: Dimens.height12,),
-                      if (state.sportSimple?.info?.isNotEmpty == true) const SizedBox(height: Dimens.height12),
-                      if (state.sportSimple?.info?.isNotEmpty == true) EventOptionsWidget(
-                        name: state.sportSimple?.title,
-                        onUpdateName: (name) => updateSportBloc.add(UpdateSportNameUpdateSportEvent(name: name)),
-                        scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.sportSimple?.scheduleTime),
-                        onUpdateTime: state.sportSimple?.isCreateRoutine == true ? (scheduleTime) => updateSportBloc.add(UpdateSportScheduleTimeUpdateSportEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))) : null,
-                        daysOfWeek: state.sportSimple?.daysOfWeek,
-                        onUpdateDayOfWeek: state.sportSimple?.isCreateRoutine == true ? (dayOfWeek) => updateSportBloc.add(UpdateSportDayOfWeekUpdateSportEvent(dayOfWeek: dayOfWeek)) : null,
+            GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              behavior: HitTestBehavior.opaque,
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                body: SafeArea(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingLarge),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: Dimens.height12),
+                        HeaderAddItemCardSection(
+                          title: '${AppLocalizations.of(context)!.update} ${AppLocalizations.of(context)!.physical_activity}',
+                          onBackTap: () => Navigator.pop(context),
+                          image: 'assets/images/sport.png',
+                          items: state.sportsInfo?.sportsInfoMaster.map((sport) => sport.translate(context)).toList() ?? [],
+                          onItemSelect: (sportName, focus) {
+                            // _sportFocusInputController = focus;
+                            final sportIntensities = eventsHelper.getChosenSportIntensities(sportName, state.sportsInfo!, currentLanguage);
+                            final sportId = eventsHelper.getSportIdByName(sportName, state.sportsInfo!, currentLanguage);
+                            final sportInfo = updateSportBloc.findSportById(sportId);
+                            final info = AddSportFavInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null, timeStart: DateTime.now().millisecondsSinceEpoch);
+                            updateSportBloc.add(UpdateSportItemUpdateSportEvent(sportInfo: info));
+                          },
                         ),
-                      const SizedBox(height: Dimens.height12,),
-                      if (state.sportSimple?.info?.isNotEmpty == true) ListView.builder(
-                        primary: false,
-                        shrinkWrap: true,
-                        itemCount: state.sportSimple?.info?.length ?? 0,
-                        itemBuilder: (context, index) {
-                          final item = state.sportSimple!.info![index];
-                          return SportEventItem(
-                            allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
-                            sport: item,
-                            removeSport: () => updateSportBloc.add(RemoveSportItemUpdateSportEvent(sportInfo: item)),
-                            editMinutes: (sportInfo) => updateSportBloc.add(UpdateSportItemMinutesUpdateSportEvent(sportInfo: sportInfo)),
-                            editIntensity: (sportInfo) => updateSportBloc.add(UpdateSportItemIntensityUpdateSportEvent(sportInfo: sportInfo)),
-                          );
-                      },),
-                      const SizedBox(height: Dimens.height32,),
-                      if (state.sportSimple?.info?.isNotEmpty == true) GeneralButton(onTap: () {
-                        if (state.sportSimple?.title.isNotEmptyOrNull() == true) {
-                          updateSportBloc.add(SaveUpdateSportUpdateSportEvent(onFinish: () => Navigator.pop(context)));
-                        }
-                      },),
-                    ],
+                        const SizedBox(height: Dimens.height12,),
+                        if (state.sportSimple?.info?.isNotEmpty == true) const SizedBox(height: Dimens.height12),
+                        if (state.sportSimple?.info?.isNotEmpty == true) EventOptionsWidget(
+                          name: state.sportSimple?.title,
+                          onUpdateName: (name) => updateSportBloc.add(UpdateSportNameUpdateSportEvent(name: name)),
+                          scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.sportSimple?.scheduleTime),
+                          onUpdateTime: state.sportSimple?.isCreateRoutine == true ? (scheduleTime) => updateSportBloc.add(UpdateSportScheduleTimeUpdateSportEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))) : null,
+                          daysOfWeek: state.sportSimple?.daysOfWeek,
+                          onUpdateDayOfWeek: state.sportSimple?.isCreateRoutine == true ? (dayOfWeek) => updateSportBloc.add(UpdateSportDayOfWeekUpdateSportEvent(dayOfWeek: dayOfWeek)) : null,
+                          ),
+                        const SizedBox(height: Dimens.height12,),
+                        if (state.sportSimple?.info?.isNotEmpty == true) ListView.builder(
+                          primary: false,
+                          shrinkWrap: true,
+                          itemCount: state.sportSimple?.info?.length ?? 0,
+                          itemBuilder: (context, index) {
+                            final item = state.sportSimple!.info![index];
+                            return SportEventItem(
+                              allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
+                              sport: item,
+                              removeSport: () => updateSportBloc.add(RemoveSportItemUpdateSportEvent(sportInfo: item, isGoBack: () => Navigator.pop(context))),
+                              editMinutes: (sportInfo) => updateSportBloc.add(UpdateSportItemMinutesUpdateSportEvent(sportInfo: sportInfo)),
+                              editIntensity: (sportInfo) => updateSportBloc.add(UpdateSportItemIntensityUpdateSportEvent(sportInfo: sportInfo)),
+                            );
+                        },),
+                        const SizedBox(height: Dimens.height32,),
+                        if (state.sportSimple?.info?.isNotEmpty == true) GeneralButton(onTap: () {
+                          if (state.sportSimple?.title.isNotEmptyOrNull() == true) {
+                            updateSportBloc.add(SaveUpdateSportUpdateSportEvent(onFinish: () => Navigator.pop(context)));
+                          }
+                        },),
+                      ],
+                    ),
                   ),
                 ),
               ),

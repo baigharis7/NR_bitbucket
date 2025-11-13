@@ -147,180 +147,161 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
               ),
             ),
 
-            Scaffold(
-              backgroundColor: Colors.transparent,
-              body: SafeArea(
-                  child: SingleChildScrollView(
-                child: Column(children: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                    child: Column(
-                      children: [
-                        DatePickerBar(
-                          selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.supplementObj?.eventDate),
-                          onChangeDate: (dateTime) => supplementsBloc.add(UpdateDateSupplementsAction(dateTime: dateTime)),
-                        ),
-                        const SizedBox(height: Dimens.height12),
-                        HeaderAddItemCardSection(
-                          onBackTap: () => Navigator.pop(context),
-                          title: state.screenTitle ?? (AppLocalizations.of(context)!.add + ' ' + AppLocalizations.of(context)!.supplement),
-                          image: 'assets/images/supplement.png',
-                          items: state.supplementsInfo?.data.map((element) => element.translate(context)).toList(),
-                          onItemSelect: (supplementName, focus) {
-                            // focus.unfocus();
-                            final supplement = NutritionUtils.findSupplementByName(state.supplementsInfo?.data ?? [], supplementName, context);
-                            supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: supplement.id, unit: supplement.unit, amount: 0)));
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  if ((state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) && state.supplementObj?.info?.orEmpty().isEmpty == true) Container(
-                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                    child: Column(children: [
-                      const SizedBox(height: Dimens.height12),
-                      Container(
-                        padding: const EdgeInsets.all(Dimens.paddingSmall),
-                        decoration: BoxDecoration(
-                          color: AppColors.white70Percent,
-                          borderRadius: BorderRadius.circular(Dimens.border11),
-                        ),
-                        child: Column(children: [
-                          ListTile(
-                            leading: Image.asset('assets/images/goal_objectives.png', height: Dimens.height32),
-                            visualDensity: VisualDensity.compact,
-                            title: Text(AppLocalizations.of(context)!.related_objectives,
-                              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSize17, color: AppColors.peacockBlue),),
-                            trailing: Image.asset('assets/images/info.png', height: Dimens.heightXSmall, color: AppColors.peacockBlue),
+            GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              behavior: HitTestBehavior.opaque,
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                body: SafeArea(
+                    child: SingleChildScrollView(
+                  child: Column(children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                      child: Column(
+                        children: [
+                          DatePickerBar(
+                            selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.supplementObj?.eventDate),
+                            onChangeDate: (dateTime) => supplementsBloc.add(UpdateDateSupplementsAction(dateTime: dateTime)),
                           ),
-                          if (state.userProfile?.objectives?.contains(Constants.REDUCE_RISK_OF_INJURY) ?? false) ItemInfoCard(
-                            title: AppLocalizations.of(context)!.creatine,
-                            leadingIconSize: Dimens.height25,
-                            trailingSrc: 'assets/icon/add_icon.png',
-                            trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
-                                supplement: SupplementSimple(info: [NutriInfo(id: Constants.CREATINE, unit: 'mg', amount: (0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt())]),
-                                onFinish: () => _showConfirmationDialog(
-                                  message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
-                                  context: context,
-                                  onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
-                                ),),),
-                            subtitle: '${(0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt()} mg',
-                            leadingSrc: 'assets/images/goal_objectives.png',
-                            leadingTap: () {},
-                            beforeTrailingSrc: 'assets/icon/routine_icon.png',
-                            beforeTrailingTap: () {
-                              supplementsBloc.state.supplementObj?.isRoutine = true;
-                              supplementsBloc.add(AddSupplementInfoSupplementsAction(
-                                  nutriInfo: NutriInfo(id: Constants.CREATINE, unit: 'mg', amount: (0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt()),
-                              ),);
+                          const SizedBox(height: Dimens.height12),
+                          HeaderAddItemCardSection(
+                            onBackTap: () => Navigator.pop(context),
+                            title: state.screenTitle ?? (AppLocalizations.of(context)!.add + ' ' + AppLocalizations.of(context)!.supplement),
+                            image: 'assets/images/supplement.png',
+                            items: state.supplementsInfo?.data.map((element) => element.translate(context)).toList(),
+                            onItemSelect: (supplementName, focus) {
+                              // focus.unfocus();
+                              final supplement = NutritionUtils.findSupplementByName(state.supplementsInfo?.data ?? [], supplementName, context);
+                              supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: supplement.id, unit: supplement.unit, amount: 0)));
                             },
                           ),
-                          if (state.userProfile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) ItemInfoCard(
-                            title: AppLocalizations.of(context)!.collagen,
-                            leadingIconSize: Dimens.height25,
-                            trailingSrc: 'assets/icon/add_icon.png',
-                            trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
-                                supplement: SupplementSimple(info: [NutriInfo(id: Constants.COLLAGEN, unit: 'mg', amount: 10)]),
-                                onFinish: () => _showConfirmationDialog(
+                        ],
+                      ),
+                    ),
+                    if ((state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) && state.supplementObj?.info?.orEmpty().isEmpty == true) Container(
+                      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                      child: Column(children: [
+                        const SizedBox(height: Dimens.height12),
+                        Container(
+                          padding: const EdgeInsets.all(Dimens.paddingSmall),
+                          decoration: BoxDecoration(
+                            color: AppColors.white70Percent,
+                            borderRadius: BorderRadius.circular(Dimens.border11),
+                          ),
+                          child: Column(children: [
+                            ListTile(
+                              leading: Image.asset('assets/images/goal_objectives.png', height: Dimens.height32),
+                              visualDensity: VisualDensity.compact,
+                              title: Text(AppLocalizations.of(context)!.related_objectives,
+                                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSize17, color: AppColors.peacockBlue),),
+                              trailing: Image.asset('assets/images/info.png', height: Dimens.heightXSmall, color: AppColors.peacockBlue),
+                            ),
+                            if (state.userProfile?.objectives?.contains(Constants.REDUCE_RISK_OF_INJURY) ?? false) ItemInfoCard(
+                              title: AppLocalizations.of(context)!.creatine,
+                              leadingIconSize: Dimens.height25,
+                              trailingSrc: 'assets/icon/add_icon.png',
+                              trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
+                                  supplement: SupplementSimple(info: [NutriInfo(id: Constants.CREATINE, unit: 'mg', amount: (0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt())]),
+                                  onFinish: () => _showConfirmationDialog(
                                     message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
                                     context: context,
                                     onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
+                                  ),),),
+                              subtitle: '${(0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt()} mg',
+                              leadingSrc: 'assets/images/goal_objectives.png',
+                              leadingTap: () {},
+                              beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                              beforeTrailingTap: () {
+                                // supplementsBloc.state.supplementObj?.isRoutine = true;
+                                supplementsBloc.add(AddSupplementInfoSupplementsAction(
+                                    nutriInfo: NutriInfo(id: Constants.CREATINE, unit: 'mg', amount: (0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt()),
+                                ),);
+                              },
+                            ),
+                            if (state.userProfile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) ItemInfoCard(
+                              title: AppLocalizations.of(context)!.collagen,
+                              leadingIconSize: Dimens.height25,
+                              trailingSrc: 'assets/icon/add_icon.png',
+                              trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
+                                  supplement: SupplementSimple(info: [NutriInfo(id: Constants.COLLAGEN, unit: 'mg', amount: 10)]),
+                                  onFinish: () => _showConfirmationDialog(
+                                      message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
+                                      context: context,
+                                      onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
+                                  ),),),
+                              subtitle: '10 mg',
+                              leadingSrc: 'assets/images/goal_objectives.png',
+                              leadingTap: () {},
+                              beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                              beforeTrailingTap: () {
+                                // supplementsBloc.state.supplementObj?.isRoutine = true;
+                                supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: Constants.COLLAGEN, unit: 'mg', amount: 10)));
+                              },
+                            ),
+                          ],),
+                        ),
+                      ],),
+                    ),
+                    if (state.supplementObj?.info?.orEmpty().isEmpty == true && state.supplementFavorites.orEmpty().isNotEmpty == true) Column(children: [
+                      const SizedBox(height: Dimens.height12),
+                      DashTitleWidget(title: '${AppLocalizations.of(context)!.favorites} - ${AppLocalizations.of(context)!.supplement}'),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        primary: false,
+                        itemCount: state.supplementFavorites?.length,
+                        itemBuilder: (context, index) {
+                          final supplementFavorite = state.supplementFavorites.orEmpty()[index];
+                          final itemName = supplementFavorite.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite.info![0].id ?? -1).translate(context);
+                          return ItemInfoCard(
+                            title: itemName,
+                            trailingSrc: 'assets/icon/add_icon.png',
+                            trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
+                                supplement: supplementFavorite,
+                                onFinish: () => _showConfirmationDialog(
+                                  message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
+                                    context: context,
+                                    onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
                                 ),),),
-                            subtitle: '10 mg',
-                            leadingSrc: 'assets/images/goal_objectives.png',
+                            subtitle: supplementFavorite.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${supplementFavorite.info![0].amount.toString()} ${supplementFavorite.info![0].unit}.',
+                            leadingSrc: 'assets/images/favorite_icon.png',
                             leadingTap: () {},
-                            beforeTrailingSrc: 'assets/icon/routine_icon.png',
-                            beforeTrailingTap: () {
-                              supplementsBloc.state.supplementObj?.isRoutine = true;
-                              supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: Constants.COLLAGEN, unit: 'mg', amount: 10)));
-                            },
-                          ),
-                        ],),
+                            beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                            beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: supplementFavorite).then((value) => supplementsBloc.add(InitializationSupplementsAction())),
+                          );
+                        },
                       ),
                     ],),
-                  ),
-                  if (state.supplementObj?.info?.orEmpty().isEmpty == true && state.supplementFavorites.orEmpty().isNotEmpty == true) Column(children: [
-                    const SizedBox(height: Dimens.height12),
-                    DashTitleWidget(title: '${AppLocalizations.of(context)!.favorites} - ${AppLocalizations.of(context)!.supplement}'),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      primary: false,
-                      itemCount: state.supplementFavorites?.length,
-                      itemBuilder: (context, index) {
-                        final supplementFavorite = state.supplementFavorites.orEmpty()[index];
-                        final itemName = supplementFavorite.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite.info![0].id ?? -1).translate(context);
-                        return ItemInfoCard(
-                          title: itemName,
-                          trailingSrc: 'assets/icon/add_icon.png',
-                          trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
-                              supplement: supplementFavorite,
-                              onFinish: () => _showConfirmationDialog(
-                                message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
-                                  context: context,
-                                  onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
-                              ),),),
-                          subtitle: supplementFavorite.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${supplementFavorite.info![0].amount.toString()} ${supplementFavorite.info![0].unit}.',
-                          leadingSrc: 'assets/images/favorite_icon.png',
-                          leadingTap: () {},
-                          beforeTrailingSrc: 'assets/icon/edit_icon.png',
-                          beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: supplementFavorite).then((value) => supplementsBloc.add(InitializationSupplementsAction())),
-                        );
-                      },
-                    ),
-                  ],),
-                  if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) Container(
-                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                    child: Column(
-                      children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          primary: false,
-                          itemCount: state.supplementObj?.info?.orEmpty().length,
-                          itemBuilder: (context, index) {
-                            final nutriInfo = state.supplementObj?.info.orEmpty()[index];
-                            return SupplementItemWidget(
-                              title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
-                              amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
-                              units: nutriInfo != null ? [nutriInfo.unit] : [],
-                              unit: nutriInfo?.unit,
-                              onChangeAmount: (amount) {
-                                nutriInfo?.amount = amount.isEmpty ? 0 : int.parse(amount);
-                                supplementsBloc.add(UpdateAmountSupplementsAction(nutriInfo: nutriInfo!));
-                              },
-                              onRemoveItem: () => supplementsBloc.add(RemoveSupplementInfoSupplementsAction(nutriInfo: nutriInfo!, isGoBack: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName))),
-                            );
-                          },
-                        ),
-                        if (state.isEdit != true) const SizedBox(height: Dimens.height32),
-                        if (state.isEdit != true) ListTile(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
-                          tileColor: AppColors.floralWhite,
-                          onTap: () => showRoutineTimeDialog(
-                            onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
-                            onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
-                            onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
-                            onFavoriteChange: (value) => supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: value)),
-                            onChangeCreateRoutine: (value) => supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: value)),
-                            name: state.supplementObj?.name,
-                            daysOfWeek: state.supplementObj?.daysOfWeek,
-                            scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
-                            isFavorite: state.supplementObj?.isFavorite,
-                            isCreateRoutine: state.supplementObj?.isRoutine,
+                    if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) Container(
+                      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListView.builder(
+                            shrinkWrap: true,
+                            primary: false,
+                            itemCount: state.supplementObj?.info?.orEmpty().length,
+                            itemBuilder: (context, index) {
+                              final nutriInfo = state.supplementObj?.info.orEmpty()[index];
+                              return SupplementItemWidget(
+                                title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
+                                amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
+                                units: nutriInfo != null ? [nutriInfo.unit] : [],
+                                unit: nutriInfo?.unit,
+                                onChangeAmount: (amount) {
+                                  nutriInfo?.amount = amount.isEmpty ? 0 : int.parse(amount);
+                                  supplementsBloc.add(UpdateAmountSupplementsAction(nutriInfo: nutriInfo!));
+                                },
+                                onRemoveItem: () => supplementsBloc.add(RemoveSupplementInfoSupplementsAction(nutriInfo: nutriInfo!, isGoBack: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName))),
+                              );
+                            },
                           ),
-                          title: Text(AppLocalizations.of(context)!.add_more_options),
-                          trailing: const Icon(Icons.add_circle, color: Colors.black),
-                        ),
-                        const SizedBox(height: Dimens.height32),
-                        GeneralButton(
-                          onTap: () {
-                            if (state.supplementObj!.info.orEmpty().length == 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
-                              final name = NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], state.supplementObj?.info.orEmpty()[0].id ?? -1).translate(context);
-                              state.supplementObj?.name = name;
-                              // supplementsBloc.add(UpdateNameSupplementsEvent(name: name));
-                            }
-
-                            if (state.supplementObj!.info.orEmpty().length > 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
-                              showRoutineTimeDialog(
+                          if (state.isEdit != true) const SizedBox(height: Dimens.height32),
+                          if (state.isEdit != true) SizedBox(
+                            width: Dimens.widthLarge,
+                            child: ListTile(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
+                              tileColor: AppColors.floralWhite,
+                              onTap: () => showRoutineTimeDialog(
                                 onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
                                 onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
                                 onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
@@ -331,43 +312,70 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                 scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
                                 isFavorite: state.supplementObj?.isFavorite,
                                 isCreateRoutine: state.supplementObj?.isRoutine,
-                              );
-                            }
-
-                            if (state.supplementObj!.name.isNotEmptyOrNull()) {
-                              if (state.supplementObj?.info.orEmpty().isEmpty == true) return;
-
-                              if (state.supplementObj?.isFavorite == true) {
-                                supplementsBloc.add(FinishSupplementFavorite(onFinish: () => _showConfirmationDialog(
-                                  message: AppLocalizations.of(context)!.supplement_favorite_successfully_saved,
-                                  context: context,
-                                  onDismiss: () {},
-                                ),),);
-                              } else if (state.supplementObj?.isRoutine == true) {
-                                if (state.supplementObj?.daysOfWeek?.isEmpty == true || state.supplementObj?.scheduleTime.isEmptyOrNull() == true) return;
-                                supplementsBloc.add(FinishSupplementRoutineSupplementsEvent(onFinish: () => _showConfirmationDialog(
-                                  message: AppLocalizations.of(context)!.supplement_routine_successfully_saved,
-                                  context: context,
-                                  onDismiss: () {},
-                                ),),);
-                              } else {
-                                supplementsBloc.add(FinishEventSupplementsAction(
-                                    onFinish: () => _showConfirmationDialog(
-                                      message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
-                                      context: context,
-                                      onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
-                                    ),),);
+                              ),
+                              title: Text(AppLocalizations.of(context)!.add_more_options),
+                              trailing: const Icon(Icons.radio_button_checked, color: AppColors.yellowishGreen),
+                            ),
+                          ),
+                          const SizedBox(height: Dimens.height32),
+                          GeneralButton(
+                            onTap: () {
+                              if (state.supplementObj!.info.orEmpty().length == 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
+                                final name = NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], state.supplementObj?.info.orEmpty()[0].id ?? -1).translate(context);
+                                state.supplementObj?.name = name;
+                                // supplementsBloc.add(UpdateNameSupplementsEvent(name: name));
                               }
-                              // supplementsBloc.add(SavingEventSupplementsAction(onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate))));
-                            }
-                          },
-                        ),
-                      ],
+
+                              if (state.supplementObj!.info.orEmpty().length > 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
+                                showRoutineTimeDialog(
+                                  onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
+                                  onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
+                                  onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
+                                  onFavoriteChange: (value) => supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: value)),
+                                  onChangeCreateRoutine: (value) => supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: value)),
+                                  name: state.supplementObj?.name,
+                                  daysOfWeek: state.supplementObj?.daysOfWeek,
+                                  scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
+                                  isFavorite: state.supplementObj?.isFavorite,
+                                  isCreateRoutine: state.supplementObj?.isRoutine,
+                                );
+                              }
+
+                              if (state.supplementObj!.name.isNotEmptyOrNull()) {
+                                if (state.supplementObj?.info.orEmpty().isEmpty == true) return;
+
+                                if (state.supplementObj?.isFavorite == true) {
+                                  supplementsBloc.add(FinishSupplementFavorite(onFinish: () => _showConfirmationDialog(
+                                    message: AppLocalizations.of(context)!.supplement_favorite_successfully_saved,
+                                    context: context,
+                                    onDismiss: () {},
+                                  ),),);
+                                } else if (state.supplementObj?.isRoutine == true) {
+                                  if (state.supplementObj?.daysOfWeek?.isEmpty == true || state.supplementObj?.scheduleTime.isEmptyOrNull() == true) return;
+                                  supplementsBloc.add(FinishSupplementRoutineSupplementsEvent(onFinish: () => _showConfirmationDialog(
+                                    message: AppLocalizations.of(context)!.supplement_routine_successfully_saved,
+                                    context: context,
+                                    onDismiss: () {},
+                                  ),),);
+                                } else {
+                                  supplementsBloc.add(FinishEventSupplementsAction(
+                                      onFinish: () => _showConfirmationDialog(
+                                        message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
+                                        context: context,
+                                        onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
+                                      ),),);
+                                }
+                                // supplementsBloc.add(SavingEventSupplementsAction(onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate))));
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                     ),
+                  ],
                   ),
-                ],
                 ),
-              ),
+                ),
               ),
             ),
           ],

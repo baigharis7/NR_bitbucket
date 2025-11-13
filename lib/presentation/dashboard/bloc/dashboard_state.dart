@@ -136,7 +136,7 @@ class DashboardState {
   }) {
     return DashboardState(
       isLoading: isLoading,
-      onError: onError ?? this.onError,
+      onError: onError,
       foodEvents: foodEvents ?? this.foodEvents,
       todayLiquidEvents: todayLiquidEvents ?? this.todayLiquidEvents,
       nutrientsInfoMaster: nutrientsInfoMaster ?? this.nutrientsInfoMaster,

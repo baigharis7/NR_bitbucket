@@ -90,64 +90,68 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
               ),
             ),
 
-            Scaffold(
-              backgroundColor: Colors.transparent,
-              body: SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Dimens.paddingSmall,
-                    vertical: Dimens.paddingLarge,
-                  ),
-                  child: Column(children: [
-                    HeaderAddItemCardSection(
-                      onBackTap: () => Navigator.pop(context),
-                      title: AppLocalizations.of(context)!.update + ' ' + AppLocalizations.of(context)!.supplement,
-                      image: 'assets/images/supplement.png',
-                      items: state.supplementsInfo?.data.map((element) => element.translate(context)).toList(),
-                      onItemSelect: (supplementName, focus) {
-                        focus.unfocus();
-                        final supplement = NutritionUtils.findSupplementByName(state.supplementsInfo?.data ?? [], supplementName, context);
-                        updateSupplementBloc.add(AddSupplementInfoUpdateSupplementEvent(nutriInfo: NutriInfo(id: supplement.id, unit: supplement.unit, amount: 0)));
-                      },
+            GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              behavior: HitTestBehavior.opaque,
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                body: SafeArea(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Dimens.paddingSmall,
+                      vertical: Dimens.paddingLarge,
                     ),
-                    if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) const SizedBox(height: Dimens.height12),
-                    if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) EventOptionsWidget(
-                      name: state.supplementObj?.name,
-                      onUpdateName: (name) => updateSupplementBloc.add(UpdateNameSupplementUpdateSupplementEvent(name: name)),
-                      daysOfWeek: (state.supplementObj?.isRoutine == true) ? state.supplementObj?.daysOfWeek.orEmpty() : null,
-                      onUpdateDayOfWeek: (state.supplementObj?.isRoutine == true) ? (weekDay) => updateSupplementBloc.add(UpdateDaysOfWeekSupplementUpdateSupplementEvent(weekDay: weekDay)) : null,
-                      scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
-                      onUpdateTime: (state.supplementObj?.isRoutine == true) ? (scheduleTime) => updateSupplementBloc.add(UpdateTimeOfDaySupplementUpdateSupplementEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))): null,
+                    child: Column(children: [
+                      HeaderAddItemCardSection(
+                        onBackTap: () => Navigator.pop(context),
+                        title: AppLocalizations.of(context)!.update + ' ' + AppLocalizations.of(context)!.supplement,
+                        image: 'assets/images/supplement.png',
+                        items: state.supplementsInfo?.data.map((element) => element.translate(context)).toList(),
+                        onItemSelect: (supplementName, focus) {
+                          focus.unfocus();
+                          final supplement = NutritionUtils.findSupplementByName(state.supplementsInfo?.data ?? [], supplementName, context);
+                          updateSupplementBloc.add(AddSupplementInfoUpdateSupplementEvent(nutriInfo: NutriInfo(id: supplement.id, unit: supplement.unit, amount: 0)));
+                        },
+                      ),
+                      if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) const SizedBox(height: Dimens.height12),
+                      if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) EventOptionsWidget(
+                        name: state.supplementObj?.name,
+                        onUpdateName: (name) => updateSupplementBloc.add(UpdateNameSupplementUpdateSupplementEvent(name: name)),
+                        daysOfWeek: (state.supplementObj?.isRoutine == true) ? state.supplementObj?.daysOfWeek.orEmpty() : null,
+                        onUpdateDayOfWeek: (state.supplementObj?.isRoutine == true) ? (weekDay) => updateSupplementBloc.add(UpdateDaysOfWeekSupplementUpdateSupplementEvent(weekDay: weekDay)) : null,
+                        scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
+                        onUpdateTime: (state.supplementObj?.isRoutine == true) ? (scheduleTime) => updateSupplementBloc.add(UpdateTimeOfDaySupplementUpdateSupplementEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))): null,
+                      ),
+                      const SizedBox(height: Dimens.height12),
+                      if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) ListView.builder(
+                        shrinkWrap: true,
+                        primary: false,
+                        itemCount: state.supplementObj?.info?.orEmpty().length,
+                        itemBuilder: (context, index) {
+                          final nutriInfo = state.supplementObj?.info.orEmpty()[index];
+                          return SupplementItemWidget(
+                            title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
+                            amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
+                            units: nutriInfo != null ? [nutriInfo.unit] : [],
+                            unit: nutriInfo?.unit,
+                            onChangeAmount: (amount) {
+                              nutriInfo?.amount = amount.isEmpty ? 0 : int.parse(amount);
+                              updateSupplementBloc.add(UpdateAmountSupplementInfoUpdateSupplementEvent(nutriInfo: nutriInfo!));
+                            },
+                            onRemoveItem: () => updateSupplementBloc.add(RemoveSupplementInfoUpdateSupplementEvent(nutriInfo: nutriInfo!, isGoBack: () => Navigator.pop(context))),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: Dimens.height32),
+                      if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) GeneralButton(
+                        onTap: () {
+                          if (state.supplementObj!.name.isNotEmptyOrNull()) {
+                            updateSupplementBloc.add(SavingUpdateSupplement(onFinish: () => Navigator.pop(context)));
+                          }
+                        },
+                      ),
+                    ],
                     ),
-                    const SizedBox(height: Dimens.height12),
-                    if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) ListView.builder(
-                      shrinkWrap: true,
-                      primary: false,
-                      itemCount: state.supplementObj?.info?.orEmpty().length,
-                      itemBuilder: (context, index) {
-                        final nutriInfo = state.supplementObj?.info.orEmpty()[index];
-                        return SupplementItemWidget(
-                          title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
-                          amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
-                          units: nutriInfo != null ? [nutriInfo.unit] : [],
-                          unit: nutriInfo?.unit,
-                          onChangeAmount: (amount) {
-                            nutriInfo?.amount = amount.isEmpty ? 0 : int.parse(amount);
-                            updateSupplementBloc.add(UpdateAmountSupplementInfoUpdateSupplementEvent(nutriInfo: nutriInfo!));
-                          },
-                          onRemoveItem: () => updateSupplementBloc.add(RemoveSupplementInfoUpdateSupplementEvent(nutriInfo: nutriInfo!)),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: Dimens.height32),
-                    if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) GeneralButton(
-                      onTap: () {
-                        if (state.supplementObj!.name.isNotEmptyOrNull()) {
-                          updateSupplementBloc.add(SavingUpdateSupplement(onFinish: () => Navigator.pop(context)));
-                        }
-                      },
-                    ),
-                  ],
                   ),
                 ),
               ),

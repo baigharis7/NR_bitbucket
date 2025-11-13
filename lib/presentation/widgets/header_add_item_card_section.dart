@@ -138,6 +138,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
             onSelected: (option) {
               widget.onItemSelect?.call(option, _focusInputController);
               _foodInputController.text = '';
+              _focusInputController.unfocus();
             },
           ),
           if (widget.child != null) widget.child!,

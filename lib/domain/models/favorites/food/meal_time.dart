@@ -7,8 +7,9 @@ part 'meal_time.g.dart';
 class MealTime {
   int? id;
   String? name;
+  String? time;
 
-  MealTime({this.id, this.name});
+  MealTime({this.id, this.name, this.time});
 
   static List<MealTime> getAllMealTimes() {
     return [
@@ -24,18 +25,18 @@ class MealTime {
 }
 
 class Breakfast extends MealTime {
-  Breakfast() : super(id: 0, name: AppLocalizationsHelper.instance.translate('breakfast'));
+  Breakfast() : super(id: 0, name: AppLocalizationsHelper.instance.translate('breakfast'), time: '08:30');
 }
 
 class Lunch extends MealTime {
-  Lunch() : super(id: 1, name: AppLocalizationsHelper.instance.translate('lunch'));
+  Lunch() : super(id: 1, name: AppLocalizationsHelper.instance.translate('lunch'), time: '12:00');
 }
 
 class Dinner extends MealTime {
-  Dinner() : super(id: 2, name: AppLocalizationsHelper.instance.translate('dinner'));
+  Dinner() : super(id: 2, name: AppLocalizationsHelper.instance.translate('dinner'), time: '20:00');
 }
 
 class Snack extends MealTime {
-  Snack() : super(id: 3, name: AppLocalizationsHelper.instance.translate('snack'));
+  Snack() : super(id: 3, name: AppLocalizationsHelper.instance.translate('snack'), time: '');
 }
 

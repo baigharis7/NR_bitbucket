@@ -72,6 +72,8 @@ class UpdateSupplementBloc
         state.supplementObj!.info!.remove(state.supplementObj!.info![itemIndex]);
       }
 
+      if (state.supplementObj?.info?.isEmpty == true) event.isGoBack.call();
+
       emit(state.copyWith(isLoading: false,));
     });
 

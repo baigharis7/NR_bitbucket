@@ -59,6 +59,8 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
   late bool _isCreateRoutine;
   late int _mealTime;
   late List<int> _daysOfWeek;
+  late TimeOfDay _selectedTime;
+  late MealTime? _mealTimeObj;
 
   @override
   void initState() {
@@ -68,7 +70,28 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
     _mealTime = widget.mealTime ?? 0;
     _daysOfWeek = widget.daysOfWeek ?? [];
     _itemNameController.text = widget.eventName.orEmpty();
+    _selectedTime = TimeOfDay.now();
+    _mealTimeObj = MealTime.getAllMealTimes().firstWhere((element) => element.id == _mealTime);
     super.initState();
+  }
+
+  void _pickTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), //  enables 24-hour picker UI
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      // widget.onTimeChange.call(picked);
+      setState(() {
+        _selectedTime = picked;
+      });
+    }
   }
 
   @override
@@ -88,13 +111,6 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Container(
-                  //   alignment: Alignment.centerRight,
-                  //   child: IconButton(
-                  //     onPressed: () => widget.onCancel.call(),
-                  //     icon: const Icon(Icons.clear,),
-                  //   ),
-                  // ),
                   Container(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -162,6 +178,21 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
                         ),
                       )
                           .toList(),
+                    ),
+                  ),
+                  if (_mealTimeObj?.time?.isEmpty == true && _isCreateRoutine) const SizedBox(height: Dimens.height12,),
+                  if (_mealTimeObj?.time?.isEmpty == true && _isCreateRoutine) InkWell(
+                    onTap: _pickTime,
+                    child: Container(
+                      padding: const EdgeInsets.all(Dimens.padding10,),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(Dimens.border11),
+                      ),
+                      child: Text(
+                        _selectedTime.format(context),
+                        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),
+                      ),
                     ),
                   ),
                   if (_isCreateRoutine) const SizedBox(height: Dimens.height12,),

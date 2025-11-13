@@ -88,70 +88,74 @@ class UpdateMealScreen extends StatelessWidget {
               ),
 
               // Foreground content for the user interaction
-              Scaffold(
-                backgroundColor: Colors.transparent,
-                body: SafeArea(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(vertical: Dimens.paddingLarge, horizontal: Dimens.paddingSmall),
-                    child: Column(
-                      children: [
-                        HeaderAddItemCardSection(
-                          title: '${AppLocalizations.of(context)!.update} ${MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name}',
-                          image: 'assets/images/meal_time_${state.foodEvent?.mealTime}.png',
-                          onBackTap: () => Navigator.pop(context),
-                          items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),
-                          onItemSelect: (option, focus) {
-                            // _focusInputController = focus;
-                            final food = eventHelper.findFoodByFoodName(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                            updateMealBloc.add(UpdateIngredientsUpdateMealEvent(ingredient: food!));
-                          },
-                        ),
-                        const SizedBox(height: Dimens.height25,),
-                        if (state.foodEvent?.ingredients.isNotEmpty == true) EventOptionsWidget(
-                          name: state.foodEvent?.title,
-                          onUpdateName: (name) => updateMealBloc.add(UpdateNameUpdateMealEvent(name: name)),
-                          mealTime: state.foodEvent?.mealTime,
-                          onUpdateMealTime: (mealTime) => updateMealBloc.add(UpdateMealTimeUpdateMealEvent(mealTime: mealTime)),
-                          daysOfWeek: state.foodEvent?.isRoutine == true ? state.foodEvent?.daysOfWeek : null,
-                          onUpdateDayOfWeek: state.foodEvent?.isRoutine == true ? (dayOfWeek) {} : null,
-                        ),
-                        if (state.foodEvent?.ingredients.isNotEmpty == true) ListView.builder(
-                          shrinkWrap: true,
-                            primary: false,
-                            itemCount: state.foodEvent?.ingredients.length ?? 0,
-                            itemBuilder: (context, index) {
-                              final ingredient = state.foodEvent!.ingredients[index];
-                              final option = eventHelper.findFoodNameFromId(ingredient.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                              final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                              return FoodEventItem(
-                                options: option,
-                                unitsFoodsMaster: state.unitsFoodsMaster ?? UnitsFoodsMaster(unitsFoodsMaster: []),
-                                unitsInfoMaster: state.unitsInfoMaster ?? UnitsInfoMaster(unitsInfoMaster: []),
-                                oilTypes: state.oilTypes,
-                                conversionFactors: state.conversionFactors,
-                                foodInEvent: ingredient,
-                                foodGroup: foodGroup.orEmpty(),
-                                cookingMethodsInfoMaster: state.cookingMethodsInfoMaster ?? CookingMethodsInfoMaster(cookingMethodsInfo: []),
-                                cookingMethodsMaster: state.cookingMethodsMaster ?? CookingMethodsMaster(cookingMethods: []),
-                                onRemove: () => updateMealBloc.add(RemoveIngredientUpdateMealEvent(ingredient: ingredient)),
-                                onQtyChange: (ingredient) => updateMealBloc.add(UpdateIngredientAmountUpdateMealEvent(ingredient: ingredient)),
-                                onUnitChange: (ingredient) => updateMealBloc.add(UpdateIngredientUnitUpdateMealEvent(ingredient: ingredient)),
-                                onCookingMethodChange: (ingredient) => updateMealBloc.add(UpdateIngredientCookingMethodUpdateMealEvent(ingredient: ingredient)),
-                                onConversionFactorChange: (ingredient) => updateMealBloc.add(UpdateIngredientPreparationUpdateMealEvent(ingredient: ingredient)),
-                                onOilUsedChange: (ingredient) => updateMealBloc.add(UpdateIngredientOilUpdateMealEvent(ingredient: ingredient)),
-                              );
+              GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                behavior: HitTestBehavior.opaque,
+                child: Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: SafeArea(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(vertical: Dimens.paddingLarge, horizontal: Dimens.paddingSmall),
+                      child: Column(
+                        children: [
+                          HeaderAddItemCardSection(
+                            title: '${AppLocalizations.of(context)!.update} ${MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name}',
+                            image: 'assets/images/meal_time_${state.foodEvent?.mealTime}.png',
+                            onBackTap: () => Navigator.pop(context),
+                            items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),
+                            onItemSelect: (option, focus) {
+                              // _focusInputController = focus;
+                              final food = eventHelper.findFoodByFoodName(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                              updateMealBloc.add(UpdateIngredientsUpdateMealEvent(ingredient: food!));
                             },
-                        ),
-                        if (state.foodEvent?.ingredients.isNotEmpty == true) Container(
-                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                          child: GeneralButton(onTap: () {
-                            if (state.foodEvent?.title.isNotEmptyOrNull() == true) {
-                              updateMealBloc.add(SaveUpdateMealUpdateMealEvent(onFinish: () => Navigator.pop(context)));
-                            }
-                          },
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: Dimens.height25,),
+                          if (state.foodEvent?.ingredients.isNotEmpty == true) EventOptionsWidget(
+                            name: state.foodEvent?.title,
+                            onUpdateName: (name) => updateMealBloc.add(UpdateNameUpdateMealEvent(name: name)),
+                            mealTime: state.foodEvent?.mealTime,
+                            onUpdateMealTime: (mealTime) => updateMealBloc.add(UpdateMealTimeUpdateMealEvent(mealTime: mealTime)),
+                            daysOfWeek: state.foodEvent?.isRoutine == true ? state.foodEvent?.daysOfWeek : null,
+                            onUpdateDayOfWeek: state.foodEvent?.isRoutine == true ? (dayOfWeek) {} : null,
+                          ),
+                          if (state.foodEvent?.ingredients.isNotEmpty == true) ListView.builder(
+                            shrinkWrap: true,
+                              primary: false,
+                              itemCount: state.foodEvent?.ingredients.length ?? 0,
+                              itemBuilder: (context, index) {
+                                final ingredient = state.foodEvent!.ingredients[index];
+                                final option = eventHelper.findFoodNameFromId(ingredient.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                                final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                                return FoodEventItem(
+                                  options: option,
+                                  unitsFoodsMaster: state.unitsFoodsMaster ?? UnitsFoodsMaster(unitsFoodsMaster: []),
+                                  unitsInfoMaster: state.unitsInfoMaster ?? UnitsInfoMaster(unitsInfoMaster: []),
+                                  oilTypes: state.oilTypes,
+                                  conversionFactors: state.conversionFactors,
+                                  foodInEvent: ingredient,
+                                  foodGroup: foodGroup.orEmpty(),
+                                  cookingMethodsInfoMaster: state.cookingMethodsInfoMaster ?? CookingMethodsInfoMaster(cookingMethodsInfo: []),
+                                  cookingMethodsMaster: state.cookingMethodsMaster ?? CookingMethodsMaster(cookingMethods: []),
+                                  onRemove: () => updateMealBloc.add(RemoveIngredientUpdateMealEvent(ingredient: ingredient, isGoBack: () => Navigator.pop(context))),
+                                  onQtyChange: (ingredient) => updateMealBloc.add(UpdateIngredientAmountUpdateMealEvent(ingredient: ingredient)),
+                                  onUnitChange: (ingredient) => updateMealBloc.add(UpdateIngredientUnitUpdateMealEvent(ingredient: ingredient)),
+                                  onCookingMethodChange: (ingredient) => updateMealBloc.add(UpdateIngredientCookingMethodUpdateMealEvent(ingredient: ingredient)),
+                                  onConversionFactorChange: (ingredient) => updateMealBloc.add(UpdateIngredientPreparationUpdateMealEvent(ingredient: ingredient)),
+                                  onOilUsedChange: (ingredient) => updateMealBloc.add(UpdateIngredientOilUpdateMealEvent(ingredient: ingredient)),
+                                );
+                              },
+                          ),
+                          if (state.foodEvent?.ingredients.isNotEmpty == true) Container(
+                            margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+                            child: GeneralButton(onTap: () {
+                              if (state.foodEvent?.title.isNotEmptyOrNull() == true) {
+                                updateMealBloc.add(SaveUpdateMealUpdateMealEvent(onFinish: () => Navigator.pop(context)));
+                              }
+                            },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

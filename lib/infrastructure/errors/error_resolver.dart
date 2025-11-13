@@ -79,7 +79,7 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
     case ErrorTypes.locallySavingWaterEventError:
       return stringResolver.error_saving_event;
     case ErrorTypes.uploadingWaterEventError:
-      return stringResolver.error_uploading_event;
+      return stringResolver.upload_water_event_error;
     case ErrorTypes.saveFoodFavoriteError:
       return stringResolver.error_uploading_favorite;
     case ErrorTypes.uploadFoodFavoriteError:

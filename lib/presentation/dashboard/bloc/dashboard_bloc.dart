@@ -444,10 +444,13 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
           // event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
         } catch (error) {
-          emit(state.copyWith(isLoading: false, onError: ErrorTypes.locallySavingWaterEventError));
+          waterEventMaster.qty = (-(waterEventMaster.qty)!);
+          await saveWaterEventInteractor.execute(waterEventMaster);
+          state.waterEvents = await getWaterEventsTodayInteractor.execute();
+          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingWaterEventError));
         }
       } catch (error) {
-        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingWaterEventError));
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.locallySavingWaterEventError));
       }
     });
 
