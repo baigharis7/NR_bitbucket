@@ -68,6 +68,7 @@ import '../../fiber_detail/view/fiber_detail_Screen.dart';
 import '../../login/view/login_screen.dart';
 import '../../widgets/NutrientDetailWidget.dart';
 import '../../widgets/ani_nutri_progress_bar_widget.dart';
+import '../../widgets/custom_bottom_nav.dart';
 import '../../widgets/dash_title_widget.dart';
 import '../../widgets/data_bottom_sheet_widget.dart';
 import 'package:sprintf/sprintf.dart';
@@ -335,7 +336,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                 consumed: state.sugarAndFiberModel?.totalSugarConsumed,
                                 total: state.sugarAndFiberModel?.requiredSugar,
                                 linearGradient: MethodsHelper.getSugarLinearGradient(consumed: state.sugarAndFiberModel?.totalSugarConsumed, total: state.sugarAndFiberModel?.requiredSugar)),
-                            SugarIntakeWidget(title: AppLocalizations.of(context)!.fiber, backgroundImage: 'assets/images/fiber_background.png', consumed: state.sugarAndFiberModel?.totalFiberConsumed, total: state.sugarAndFiberModel?.requiredFiber, color: MethodsHelper.getAverageInPercentage(consumed: state.sugarAndFiberModel?.totalFiberConsumed, total: state.sugarAndFiberModel?.requiredFiber) < 70 ? AppColors.mountainMeadow : AppColors.red),
+                            SugarIntakeWidget(title: AppLocalizations.of(context)!.fiber, backgroundImage: 'assets/images/fiber_background.png', consumed: state.sugarAndFiberModel?.totalFiberConsumed, total: state.sugarAndFiberModel?.requiredFiber, color: MethodsHelper.getAverageInPercentage(consumed: state.sugarAndFiberModel?.totalFiberConsumed, total: state.sugarAndFiberModel?.requiredFiber) < 180 ? AppColors.lightGreen : AppColors.red),
                           ],
                         ),
                       ),

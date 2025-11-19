@@ -31,6 +31,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/swith_with_function_
 
 import '../../../../data/api/profile/model/upload_user_profile.dart';
 import '../../../dashboard/bloc/dashboard_actions.dart';
+import '../../../settings/view/settings_screen.dart';
 import '../../../widgets/custom_bottom_app_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -120,27 +121,30 @@ class _ProfileScreen extends State<ProfileScreen> {
                     ],
                   ),
                   actions: [
-                    PopupMenuHelper().createPopupMenuWith(
-                      model: [
-                        PopupMenuItemModel(
-                          value: 0,
-                          title: AppLocalizations.of(context)!.log_out,
-                          onPressed: () => bloc.add(PerformLogOutAction(goToLogin: () => Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false,))),
-                        ),
-                        PopupMenuItemModel(
-                          value: 1,
-                          title: AppLocalizations.of(context)!.data_and_privacy,
-                          onPressed: () => {},
-                        ),
-                        PopupMenuItemModel(
-                          value: 2,
-                          title: AppLocalizations.of(context)!.help,
-                          onPressed: () => {},
-                        ),
-                      ],
-                      buttonImage: Image.asset('assets/icon/profile_icon.png', height: 29, width: 29, color: Colors.white),
-
-                    )
+                    IconButton(
+                      onPressed: () => Navigator.pushNamed(context, SettingsScreen.routeName),
+                      icon:const Icon(Icons.settings, size: 29, color: Colors.white),
+                    ),
+                    // PopupMenuHelper().createPopupMenuWith(
+                    //   model: [
+                    //     PopupMenuItemModel(
+                    //       value: 0,
+                    //       title: AppLocalizations.of(context)!.log_out,
+                    //       onPressed: () => bloc.add(PerformLogOutAction(goToLogin: () => Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false,))),
+                    //     ),
+                    //     PopupMenuItemModel(
+                    //       value: 1,
+                    //       title: AppLocalizations.of(context)!.data_and_privacy,
+                    //       onPressed: () => {},
+                    //     ),
+                    //     PopupMenuItemModel(
+                    //       value: 2,
+                    //       title: AppLocalizations.of(context)!.help,
+                    //       onPressed: () => {},
+                    //     ),
+                    //   ],
+                    //   buttonImage: Image.asset('assets/icon/profile_icon.png', height: 29, width: 29, color: Colors.white),
+                    // ),
                   ],
                 ),
                 body: SingleChildScrollView(

@@ -383,6 +383,7 @@ import 'package:nutrenaissance_flutter/presentation/micronutrientsweekly/bloc/mi
 import 'package:nutrenaissance_flutter/presentation/micronutrientsweekly/view/micro_nutrients_weekly_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/nutrients_detail/bloc/weekly_all_nutrients_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/nutrients_detail/view/weekly_all_nutrients_detail_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/privacy/view/policy_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/privacypolicy/privacy_policy.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/diet_questions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/food_list_aversions_screen.dart';
@@ -403,6 +404,8 @@ import 'package:nutrenaissance_flutter/presentation/routines/bloc/routines_bloc.
 import 'package:nutrenaissance_flutter/presentation/routines/view/routines_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/routinestabs/bloc/routines_tab_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/routinestabs/view/routines_tab_holder.dart';
+import 'package:nutrenaissance_flutter/presentation/settings/bloc/settings_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/settings/view/settings_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
@@ -1094,6 +1097,12 @@ void main() async {
     saveRoutineInteractor: saveRoutineInteractor,
   );
 
+  final settingsBloc = SettingsBloc(
+      signOutInteractor: signOutInteractor,
+      eraseDatabaseInteractor: eraseDatabaseInteractor,
+      sharedPreferences: sharedPreferences,
+  );
+
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
 
   runApp(
@@ -1151,6 +1160,7 @@ void main() async {
         BlocProvider<UpdateSupplementBloc>(create: (context) => updateSupplementBloc,),
         BlocProvider<UpdateMealBloc>(create: (context) => updateMealBloc,),
         BlocProvider<UpdateSportBloc>(create: (context) => updateSportBloc,),
+        BlocProvider<SettingsBloc>(create: (context) => settingsBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -1255,6 +1265,8 @@ void main() async {
           UpdateSupplementScreen.routeName:(_) => const UpdateSupplementScreen(),
           UpdateMealScreen.routeName:(_) => const UpdateMealScreen(),
           UpdateSportScreen.routeName:(_) => const UpdateSportScreen(),
+          SettingsScreen.routeName:(_) => const SettingsScreen(),
+          PolicyScreen.routeName:(_) => const PolicyScreen(),
         },
       ),
     ),

@@ -91,6 +91,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
     required Function(bool) onFavoriteChange,
     required Function(bool) onChangeCreateRoutine,
     required Function(int) onMealTieChange,
+    required int ingredientLength,
   }) async {
     await showDialog(
       context: context,
@@ -108,6 +109,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
         daysOfWeek: daysOfWeek,
         eventName: eventName,
         mealTime: mealTime,
+        itemsLength: ingredientLength,
       ),
     );
   }
@@ -263,6 +265,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                         onFavoriteChange: (value) => bloc.add(UpdateIsFavoriteEventAction()),
                                         onMealTieChange: (mealTime) => bloc.add(AddFoodMealTypeEventAction(mealType: mealTime)),
                                         onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineEventAction()),
+                                        ingredientLength: state.foodEvent?.ingredients.length ?? 0,
                                       ),
                                     ))
                                   ],),
@@ -362,6 +365,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                       onFavoriteChange: (value) => bloc.add(UpdateIsFavoriteEventAction()),
                                       onMealTieChange: (mealTime) => bloc.add(AddFoodMealTypeEventAction(mealType: mealTime)),
                                       onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineEventAction()),
+                                      ingredientLength: state.foodEvent?.ingredients.length ?? 0,
                                     );
                                   }
 

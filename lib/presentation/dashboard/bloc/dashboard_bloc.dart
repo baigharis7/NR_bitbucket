@@ -201,7 +201,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       final caloriesConsumed = await getDayCaloriesInteractor.execute(dateTime: event.dateTime);
       final todayCreatine = await getTodayCreatineEventInteractor.execute(dateTime: event.dateTime);
       final todayCollagen = await getTodayCollagenEventInteractor.execute(dateTime: event.dateTime);
-      var totalSugarRequired = (state.userKcal.orZero()~/100*5)~/4;
+      var totalSugarRequired = (state.userKcal.orZero()*0.05)~/4;
 
       state.foodEvents = await getFoodEventsOfTodayInteractor.execute(dateTime: event.dateTime);
       state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute(dateTime: event.dateTime);

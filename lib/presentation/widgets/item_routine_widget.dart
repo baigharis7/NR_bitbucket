@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
@@ -23,7 +24,8 @@ class ItemRoutineWidget extends StatefulWidget {
   final bool? isCreateRoutine;
   final Function(bool)? onFavoriteChange;
   final Function(bool)? onChangeCreateRoutine;
-  const ItemRoutineWidget({super.key, this.onNameChange, required this.onTimeChange, required this.onChangeWeekDays, this.name, required this.daysOfWeek, required this.scheduleTime, this.isFavorite, this.isCreateRoutine, this.onFavoriteChange, this.onChangeCreateRoutine});
+  final int itemsLength;
+  const ItemRoutineWidget({super.key, this.onNameChange, required this.onTimeChange, required this.onChangeWeekDays, this.name, required this.daysOfWeek, required this.scheduleTime, this.isFavorite, this.isCreateRoutine, this.onFavoriteChange, this.onChangeCreateRoutine, this.itemsLength = 0});
 
   @override
   State<ItemRoutineWidget> createState() => _ItemRoutineWidgetState();
@@ -99,7 +101,7 @@ class _ItemRoutineWidgetState extends State<ItemRoutineWidget> {
                         alignment: Alignment.centerLeft,
                         child: TextField(
                           decoration: InputDecoration(
-                            hintText: AppLocalizations.of(context)!.write_here_hint,
+                            hintText: AppLocalizations.of(context)!.provide_name,
                           ),
                           controller: _itemNameController,
                           onChanged: (eventName) => widget.onNameChange?.call(eventName),
@@ -163,8 +165,18 @@ class _ItemRoutineWidgetState extends State<ItemRoutineWidget> {
         ),
         const SizedBox(height: Dimens.height32),
         GeneralButton(
-          title: AppLocalizations.of(context)!.save,
+          title: AppLocalizations.of(context)!.ok,
           onTap: () {
+            if (widget.itemsLength > 1 && _itemNameController.text.isEmptyOrNull()) {
+              ToastHelper().showToast(text: AppLocalizations.of(context)!.provide_name);
+              return;
+            }
+
+            if (_isCreateRoutine && _daysOfWeek.isEmpty) {
+              ToastHelper().showToast(text: AppLocalizations.of(context)!.routine_time_day_error);
+              return;
+            }
+
             Navigator.pop(context);
           },
         ),

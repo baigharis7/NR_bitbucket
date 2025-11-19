@@ -840,7 +840,7 @@ class LocalStorageImpl extends LocalStorageRepository {
           final sportEventsMap = box.toMap();
           dynamic desiredKey;
           sportEventsMap.forEach((key, value) {
-            if ((value as SportEventEntity).eventDate == sportEventEntity.eventDate) {
+            if ((value as SportEventEntity).eventId == sportEventEntity.eventId) {
               desiredKey = key;
             }
           });

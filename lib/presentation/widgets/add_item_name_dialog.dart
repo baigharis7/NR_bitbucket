@@ -6,6 +6,7 @@ import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.da
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
@@ -32,6 +33,7 @@ class AddItemNameDialog extends StatefulWidget {
   final List<int>? daysOfWeek;
   final int? mealTime;
   final String? eventName;
+  final int itemsLength;
   const AddItemNameDialog({super.key,
     required this.title,
     required this.onNameChange,
@@ -46,6 +48,7 @@ class AddItemNameDialog extends StatefulWidget {
     this.onChangeCreateRoutine,
     this.mealTime,
     this.eventName,
+    this.itemsLength = 0,
   });
 
   @override
@@ -122,7 +125,7 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
                     alignment: Alignment.centerLeft,
                     child: TextField(
                       decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context)!.write_here_hint,
+                        hintText: AppLocalizations.of(context)!.provide_name,
                       ),
                       controller: _itemNameController,
                       onChanged: (foodName) => widget.onNameChange.call(foodName),
@@ -211,12 +214,18 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
           Container(
             margin: const EdgeInsets.all(Dimens.marginNormal),
             child: GeneralButton(
+              title: AppLocalizations.of(context)!.ok,
               onTap: () {
-                // if (_itemNameController.text == '') {
-                //   ToastHelper().showToast(text: AppLocalizations.of(context)!.favorite_name_required);
-                // } else {
+                if (_isCreateRoutine && _daysOfWeek.isEmpty) {
+                  // showErrorSnackBar(context, AppLocalizations.of(context)!.routine_time_day_error);
+                  ToastHelper().showToast(text: AppLocalizations.of(context)!.routine_time_day_error);
+                  return;
+                }
+                if (widget.itemsLength > 1 && _itemNameController.text.isEmptyOrNull()) {
+                  ToastHelper().showToast(text: AppLocalizations.of(context)!.provide_name);
+                  return;
+                }
                 widget.onSave.call();
-                // }
               },
             ),
           ),

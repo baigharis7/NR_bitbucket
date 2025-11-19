@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simp
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/supplements/bloc/supplements_bloc.dart';
@@ -87,6 +88,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
     required TimeOfDay? scheduleTime,
     required bool? isFavorite,
     required bool? isCreateRoutine,
+    required int itemsLength,
   }) async {
     await showDialog(
       context: context,
@@ -102,6 +104,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
         isCreateRoutine: isCreateRoutine,
         onFavoriteChange: (value) => onFavoriteChange.call(value),
         onChangeCreateRoutine: (value) => onChangeCreateRoutine.call(value),
+        itemsLength: itemsLength,
       ),
     ).then((_) {});
   }
@@ -212,7 +215,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                               leadingTap: () {},
                               beforeTrailingSrc: 'assets/icon/edit_icon.png',
                               beforeTrailingTap: () {
-                                // supplementsBloc.state.supplementObj?.isRoutine = true;
+                                supplementsBloc.state.supplementObj?.isRoutine = true;
                                 supplementsBloc.add(AddSupplementInfoSupplementsAction(
                                     nutriInfo: NutriInfo(id: Constants.CREATINE, unit: 'mg', amount: (0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt()),
                                 ),);
@@ -234,7 +237,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                               leadingTap: () {},
                               beforeTrailingSrc: 'assets/icon/edit_icon.png',
                               beforeTrailingTap: () {
-                                // supplementsBloc.state.supplementObj?.isRoutine = true;
+                                supplementsBloc.state.supplementObj?.isRoutine = true;
                                 supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: Constants.COLLAGEN, unit: 'mg', amount: 10)));
                               },
                             ),
@@ -312,6 +315,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                 scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
                                 isFavorite: state.supplementObj?.isFavorite,
                                 isCreateRoutine: state.supplementObj?.isRoutine,
+                                itemsLength: state.supplementObj?.info?.length ?? 0,
                               ),
                               title: Text(AppLocalizations.of(context)!.add_more_options),
                               trailing: const Icon(Icons.radio_button_checked, color: AppColors.yellowishGreen),
@@ -338,6 +342,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                   scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
                                   isFavorite: state.supplementObj?.isFavorite,
                                   isCreateRoutine: state.supplementObj?.isRoutine,
+                                  itemsLength: state.supplementObj?.info?.length ?? 0,
                                 );
                               }
 
@@ -351,7 +356,10 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                     onDismiss: () {},
                                   ),),);
                                 } else if (state.supplementObj?.isRoutine == true) {
-                                  if (state.supplementObj?.daysOfWeek?.isEmpty == true || state.supplementObj?.scheduleTime.isEmptyOrNull() == true) return;
+                                  if (state.supplementObj?.daysOfWeek?.isEmpty == true || state.supplementObj?.scheduleTime.isEmptyOrNull() == true) {
+                                    ToastHelper().showToast(text: AppLocalizations.of(context)!.routine_time_day_error);
+                                    return;
+                                  }
                                   supplementsBloc.add(FinishSupplementRoutineSupplementsEvent(onFinish: () => _showConfirmationDialog(
                                     message: AppLocalizations.of(context)!.supplement_routine_successfully_saved,
                                     context: context,

@@ -58,7 +58,7 @@ class ProfileInfoCard extends StatelessWidget {
               Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6), color: AppColors.butter59, height: 50, width: 2),
               _MetricItem(value: userProfile?.physicalCharacteristics?.bodyFat, label: 'IGC'),
               Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6), color: AppColors.butter59, height: 50, width: 2),
-              _MetricItem(value: null, label: AppLocalizations.of(context)!.waist),
+              _MetricItem(value: userProfile?.physicalCharacteristics?.waistMeasurement, label: AppLocalizations.of(context)!.waist),
             ],
           ),
           const SizedBox(height: Dimens.heightXSmall),

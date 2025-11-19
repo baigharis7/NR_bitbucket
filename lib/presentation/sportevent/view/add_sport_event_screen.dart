@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
@@ -87,6 +88,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
             onNameChange.call(sportEventName),
         onSave: () => onFinish.call(),
         onCancel: () => Navigator.pop(context),
+        itemsLength: 0,
       ),
     ).then((_) => Navigator.pop(context));
   }
@@ -102,6 +104,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
     required bool? isFavorite,
     required bool? isCreateRoutine,
     required String? name,
+    required int itemsLength,
 }) async {
     await showDialog(
       context: context,
@@ -117,6 +120,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
         name: name,
         onFavoriteChange: (value) => onFavoriteChange.call(value),
         onChangeCreateRoutine: (value) => onChangeCreateRoutine.call(value),
+        itemsLength: itemsLength,
       ),
     ).then((_) {});
   }
@@ -255,6 +259,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                           isFavorite: state.sportSimpleEvent?.isFavorite,
                                           isCreateRoutine: state.sportSimpleEvent?.isCreateRoutine,
                                           name: state.sportSimpleEvent?.title,
+                                          itemsLength: state.sportSimpleEvent?.info?.length ?? 0,
                                         ),
                                         title: Text(AppLocalizations.of(context)!.add_more_options),
                                         trailing: const Icon(Icons.radio_button_checked, color: AppColors.yellowishGreen),
@@ -322,6 +327,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                   isFavorite: state.sportSimpleEvent?.isFavorite,
                                   isCreateRoutine: state.sportSimpleEvent?.isCreateRoutine,
                                   name: state.sportSimpleEvent?.title,
+                                  itemsLength: state.sportSimpleEvent?.info?.length ?? 0,
                                 );
                               }
 
@@ -339,7 +345,11 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                       onDismiss: () {},
                                   ),),);
                                 }
-                                else if (state.sportSimpleEvent?.isCreateRoutine == true && state.sportSimpleEvent!.daysOfWeek.orEmpty().isNotEmpty && state.sportSimpleEvent!.scheduleTime.orEmpty().isNotEmpty) {
+                                else if (state.sportSimpleEvent?.isCreateRoutine == true) {
+                                  if (state.sportSimpleEvent!.daysOfWeek.orEmpty().isEmpty && state.sportSimpleEvent!.scheduleTime.orEmpty().isEmpty) {
+                                    ToastHelper().showToast(text: AppLocalizations.of(context)!.routine_time_day_error, backgroundColor: Colors.red, textColor: Colors.white);
+                                    return;
+                                  }
                                   state.sportSimpleEvent?.eventId = state.sportSimpleEvent?.eventId ?? DateTime.now().millisecondsSinceEpoch;
                                   state.sportSimpleEvent?.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
 

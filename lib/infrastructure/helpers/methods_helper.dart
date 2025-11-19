@@ -14,7 +14,7 @@ class MethodsHelper {
 
   static LinearGradient getSugarLinearGradient({double? consumed, double? total}) {
     double percent = getAverageInPercentage(consumed: consumed, total: total);
-    final linearGradient = LinearGradient(colors: (percent > Constants.PERCENTAGE_50 && percent <= Constants.PERCENTAGE_100) ? [AppColors.mustardYellow, AppColors.red] : (percent > Constants.PERCENTAGE_100) ? [AppColors.red, AppColors.red] : [AppColors.mustardYellow, AppColors.mustardYellow], begin: Alignment.topCenter, end: Alignment.bottomCenter, stops: const [0.0, 0.8,]);
+    final linearGradient = LinearGradient(colors: (percent > Constants.PERCENTAGE_100 && percent <= 200) ? [AppColors.mustardYellow, AppColors.red] : (percent > 200) ? [AppColors.red, AppColors.red] : [AppColors.mustardYellow, AppColors.mustardYellow], begin: Alignment.topCenter, end: Alignment.bottomCenter, stops: const [0.0, 0.8,]);
     return linearGradient;
   }
 
