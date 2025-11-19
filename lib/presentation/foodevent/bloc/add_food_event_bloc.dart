@@ -242,6 +242,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: true, onError: null));
       state.foodEvent?.mealTime = event.foodArgumentsModel.mealTime.id;
       state.foodEvent?.eventDate = event.foodArgumentsModel.selectedDateTime.millisecondsSinceEpoch;
+      state.foodEvent?.time = event.foodArgumentsModel.mealTime.time;
       emit(state.copyWith(isLoading: false,));
     },);
 
