@@ -67,16 +67,19 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
   @override
   Future<bool> fetchEvents(String userId, String categoryType, {bool fullSync = false}) async {
     try {
-      // Get IDs for incremental sync if not fullSync
-      final idsToSkip = fullSync
-          ? <String>[]
-          : await localStorageRepository.getAllEventIdsByType(categoryType)
-                .then((list) => list.map((e) => e.toString()).toList());
+      final allEventsIds = await localStorageRepository.getAllEventIds();
+
+      // Get the list for the selected category
+      final idsToSync = fullSync
+          ? <String>[] // full sync: empty list
+          : _getListByCategory(allEventsIds, categoryType)
+              .map((e) => e.toString())
+              .toList();
 
       final response = await eventsSyncApi.syncCategory(
         userId.orEmpty(),
         categoryType,
-        idsToSkip, // Only the specified category
+        idsToSync,
       );
 
       final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
@@ -86,7 +89,50 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
     }
   }
 
-
+  /// Helper to get the list from EventsSynchronizationRequest by category name
+  List<int> _getListByCategory(
+      EventsSynchronizationRequest allEventsIds, String category) {
+    switch (category) {
+      case 'foodEvents':
+        return allEventsIds.foodEvents;
+      case 'foodRoutines':
+        return allEventsIds.foodRoutines;
+      case 'sportEvents':
+        return allEventsIds.sportEvents;
+      case 'sportRoutines':
+        return allEventsIds.sportRoutines;
+      case 'liquidEvents':
+        return allEventsIds.liquidEvents;
+      case 'waterEvents':
+        return allEventsIds.waterEvents;
+      case 'foodFavorites':
+        return allEventsIds.foodFavorites;
+      case 'sportFavorites':
+        return allEventsIds.sportFavorites;
+      case 'liquidFavorites':
+        return allEventsIds.liquidFavorites;
+      case 'subjectiveAnalysis':
+        return allEventsIds.subjectiveAnalysis;
+      case 'recipeFavorites':
+        return allEventsIds.recipeFavorites;
+      case 'fecesEvents':
+        return allEventsIds.fecesEvents;
+      case 'urineEvents':
+        return allEventsIds.urineEvents;
+      case 'creatineEvents':
+        return allEventsIds.creatineEvents;
+      case 'collagenEvents':
+        return allEventsIds.collagenEvents;
+      case 'supplementEvents':
+        return allEventsIds.supplementEvents;
+      case 'supplementFavorites':
+        return allEventsIds.supplementFavorites;
+      case 'supplementRoutines':
+        return allEventsIds.supplementRoutines;
+      default:
+        throw ArgumentError('Invalid category type: $category');
+    }
+  }
 
   /// Helper to generate empty payload for full sync
   Map<String, List<String>> _emptyEventsPayload() {
