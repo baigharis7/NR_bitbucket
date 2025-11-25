@@ -10,27 +10,32 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
 import '../../../domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
+import '../../../domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
 import '../../../domain/interactor/masterfiles/get_master_file_interactor.dart';
 import '../../../domain/interactor/profile/get_profile_interactor.dart';
 import '../../../domain/models/dashboard/nutrients_model.dart';
 import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
+import '../../../domain/models/liquidevents/liquid_event_complete.dart';
 import '../../../domain/models/masterfiles/food_names_master.dart';
 import '../../../domain/models/masterfiles/nutrients_info_master.dart';
 import '../../../domain/models/profile/user_profile_model.dart';
 import '../../../infrastructure/errors/error_types.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 part 'meal_time_details_event.dart';
 part 'meal_time_details_state.dart';
 
 class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsState> {
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
+  final GetTodayLiquidEventsInteractor getLiquidEventsOfTodayInteractor;
   final GetProfileInteractor getProfileInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final DeleteFoodEventInteractor deleteFoodEventInteractor;
   final RemoveFoodEventInteractor removeFoodEventInteractor;
   MealTimeDetailsBloc({
     required this.getFoodEventsOfTodayInteractor,
+    required this.getLiquidEventsOfTodayInteractor,
     required this.getProfileInteractor,
     required this.getMasterFileInteractor,
     required this.deleteFoodEventInteractor,
@@ -41,7 +46,10 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
       final a = await getFoodEventsOfTodayInteractor.execute(dateTime: state.selectedDateTime);
       state.foodEvents = a;
       state.foodEvents = state.foodEvents.orEmpty().where((foodEvent) => foodEvent.mealType == state.mealTime?.id.orZero()).toList();
+      state.liquidEvents = await getLiquidEventsOfTodayInteractor.execute(dateTime: state.selectedDateTime);
       state.profile = await getProfileInteractor.execute();
+      state.profile?.kcal = getUserKcalSelectiveObjectives(state.profile?.kcal ?? 0);
+      var totalSugarRequired = ((state.profile?.kcal ?? 0)*0.05)~/4;
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       final foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
       state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
@@ -73,6 +81,22 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
               upperLimit: 0,
             ),
       ).toList();
+
+      state.fiberSugar = [NutrientsModel(
+        quantityConsumed: calculateTodayConsumedSugar(totalSugarRequired),
+        nutrientInfoMaster: getNutrientInfo('addedSugar'),
+        fractionToFill: 0,
+        unit: 'g',
+        rda: totalSugarRequired,
+        upperLimit: 0,
+      ), NutrientsModel(
+        quantityConsumed: calculateTodayFiber(),
+        nutrientInfoMaster: getNutrientInfo('fiber'),
+        fractionToFill: 0,
+        unit: 'g',
+        rda: Constants.FIBER_TOTAL_REQUIRED,
+        upperLimit: 0,
+      ),];
 
       emit(state.copyWith(isLoading: false));
     });
@@ -175,4 +199,50 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
   }
 
   int getKcalPerGram(String macro) => macro == 'fatTotal' ? 9 : 4;
+
+  int getUserKcalSelectiveObjectives(int userKcal) {
+    int changedKcal = userKcal;
+
+    if (state.profile?.objectives?.contains(50) ?? false) {
+      changedKcal = changedKcal + changedKcal~/100*15;
+    }
+    if (state.profile?.objectives?.contains(51) ?? false) {
+      changedKcal = changedKcal - changedKcal~/100*20;
+    }
+
+    return changedKcal;
+  }
+
+
+  double calculateTodayConsumedSugar(int totalSugarRequired) {
+    double sugarConsumedToday = 0.0;
+    for(var foodEvent in state.foodEvents!) {
+      for (var food in foodEvent.foodInfo!) {
+        if (food.freeSugar.orEmpty() == Constants.FREE_SUGAR) {
+          sugarConsumedToday = sugarConsumedToday + (food.params?.sugarsTotal ?? 0.0);
+        }
+      }
+    }
+
+    for(var liquidEvent in state.liquidEvents!) {
+      for (var liquid in liquidEvent.foodInfo!) {
+        if (liquid.freeSugar.orEmpty() == Constants.FREE_SUGAR) {
+          sugarConsumedToday = sugarConsumedToday + (liquid.params?.sugarsTotal ?? 0.0);
+        }
+      }
+    }
+
+    return double.parse(sugarConsumedToday.toStringAsFixed(2));
+  }
+
+  double calculateTodayFiber() {
+    double fiberConsumedToday = 0.0;
+    for(var foodEvent in state.foodEvents!) {
+      for (var food in foodEvent.foodInfo!) {
+        fiberConsumedToday = fiberConsumedToday + (food.params?.fiber ?? 0.0);
+      }
+    }
+
+    return double.parse(fiberConsumedToday.toStringAsFixed(2));
+  }
 }

@@ -44,60 +44,53 @@ class _VerticalNutrientWidgetState extends State<VerticalNutrientWidget> {
                 selectedNutrient = null;
               });
             },
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: Dimens.margin6),
-              height: 84,
+            child: Tooltip(
+              onTriggered: () {
+                setState(() {
+                  selectedNutrient = getNutrientName(widget.nutrient.nutrientInfoMaster.translate(context)).toUpperCase();
+                  selectedValue = widget.nutrient.quantityConsumed;
+                  // infoOffset = details.globalPosition;
+                });
+              },
+              message: '$selectedNutrient: ${selectedValue?.toStringAsFixed(1)} ${widget.nutrient.unit}'/*"Hi Handsome Boy, you're doing development"*/,
+              preferBelow: false,
+              decoration: BoxDecoration(
+                color: Colors.black,        // background
+                borderRadius: BorderRadius.circular(8),
+              ),
               child: Stack(
-                alignment: Alignment.center,
                 clipBehavior: Clip.none,
+                alignment: Alignment.center,
                 children: [
                   Container(
                     width: 31,
                     height: 84,
+                    margin: const EdgeInsets.symmetric(vertical: Dimens.margin6),
+                    alignment: Alignment.bottomCenter,
                     clipBehavior: Clip.hardEdge,
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       color: AppColors.black,
                     ),
-                    child: Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        TweenAnimationBuilder<double>(
-                          tween: Tween<double>(begin: 0, end: widget.nutrient.quantityConsumed),
-                          duration: const Duration(seconds: 5),
-                          builder: (context, value, child) {
-                            return Container(
-                              width: 30,
-                              height: (widget.nutrient.quantityConsumed / widget.nutrient.rda) * 84,
-                              // alignment: Alignment.bottomCenter,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(colors: colors, begin: Alignment.bottomCenter, end: Alignment.topCenter,),
-                                // gradient: LinearGradient(colors: [AppColors.algaeGreen, AppColors.mediumGreen], begin: Alignment.bottomCenter, end: Alignment.topCenter,),
-                                // gradient: LinearGradient(colors: [AppColors.rose, AppColors.persianRed], begin: Alignment.bottomCenter, end: Alignment.topCenter,),
-                                // color: AppColors.peacockBlue,
-                                borderRadius: const BorderRadius.all(Radius.circular(10)),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween<double>(begin: 0, end: widget.nutrient.quantityConsumed),
+                      duration: const Duration(seconds: 5),
+                      builder: (context, value, child) {
+                        return Container(
+                          width: 30,
+                          height: (widget.nutrient.quantityConsumed / widget.nutrient.rda) * 84,
+                          // alignment: Alignment.bottomCenter,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(colors: colors, begin: Alignment.bottomCenter, end: Alignment.topCenter,),
+                            // gradient: LinearGradient(colors: [AppColors.algaeGreen, AppColors.mediumGreen], begin: Alignment.bottomCenter, end: Alignment.topCenter,),
+                            // gradient: LinearGradient(colors: [AppColors.rose, AppColors.persianRed], begin: Alignment.bottomCenter, end: Alignment.topCenter,),
+                            // color: AppColors.peacockBlue,
+                            borderRadius: const BorderRadius.all(Radius.circular(10)),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  if (selectedNutrient != null && infoOffset != null)
-                    Positioned(
-                      top: Dimens.zero,
-                      child: Container(
-                        padding: const EdgeInsets.all(Dimens.paddingSmall),
-                        decoration: BoxDecoration(
-                          color: Colors.black87,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          '$selectedNutrient: ${selectedValue!.toStringAsFixed(1)} ${widget.nutrient.unit}',
-                          style: const TextStyle(color: Colors.white,),
-                        ),
-                      ),
-                    ),
                 ],
               ),
             ),
