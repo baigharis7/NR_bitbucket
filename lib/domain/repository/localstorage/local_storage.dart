@@ -66,7 +66,7 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<void> saveExplainingCardInteraction(int explainingCardId);
   Future<bool> isNecessaryToShowExplainingCard(int explainingCardId);
   Future<EventsSynchronizationRequest> getAllEventIds();
-  Future<EventsSynchronizationRequest> getAllEventIdsByType(String categoryType);
+  Future<List<int>> getAllEventIdsByType(String categoryType);
   Future<bool> eraseDatabaseInformation();
   Future<bool> saveSubjectiveAnalysis(SubjectiveAnalysisResult subjectiveAnalysis);
   Future<void> saveSteps(StepsEntity stepsEntity);

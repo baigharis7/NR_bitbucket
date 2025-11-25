@@ -752,6 +752,104 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
+  Future<List<int>> getAllEventIdsByType(String categoryType) async {
+    switch (categoryType) {
+      case 'foodEvents':
+        final map = await _getFoodEventsBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as FoodEventEntity).eventDate!)
+            .toList();
+      case 'foodRoutines':
+        final map = await _getFoodRoutinesBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as FoodRoutineEntity).eventId!)
+            .toList();
+      case 'sportEvents':
+        final map = await _getSportEventsBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as SportEventEntity).eventDate)
+            .toList();
+      case 'sportRoutines':
+        final map = await _getSportRoutinesBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as SportRoutineEntity).eventId!)
+            .toList();
+      case 'liquidEvents':
+        final map = await _getLiquidEventsBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as LiquidEventEntity).eventDate!)
+            .toList();
+      case 'waterEvents':
+        final map = await _getWaterEventsBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as WaterEventEntity).eventDate!)
+            .toList();
+      case 'foodFavorites':
+        final map = await _getFoodFavoritesBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as FoodFavoriteEntity).eventDate)
+            .toList();
+      case 'sportFavorites':
+        final map = await _getSportFavoritesBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as SportFavoriteEntity).eventDate)
+            .toList();
+      case 'liquidFavorites':
+        final map = await _getLiquidFavoritesBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as LiquidFavoriteEntity).eventDate)
+            .toList();
+      case 'subjectiveAnalysis':
+        final map = await _getSubjectiveAnalysisResultsBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as SubjectiveAnalysisResultEntity).eventDate)
+            .toList();
+      case 'recipeFavorites':
+        final map = await _getRecipeFavoritesBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as RecipeFavoriteEntity).eventDate!)
+            .toList();
+      case 'fecesEvents':
+        final map = await _getFecesEventsBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as UploadFecesEventEntity).eventId)
+            .toList();
+      case 'urineEvents':
+        final map = await _getUrineEventsBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as UploadFecesEventEntity).eventId)
+            .toList();
+      case 'creatineEvents':
+        final map = await _getCreatineEventsBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as UploadSupplementEventEntity).eventId!)
+            .toList();
+      case 'collagenEvents':
+        final map = await _getCollagenEventsBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as UploadSupplementEventEntity).eventId!)
+            .toList();
+      case 'supplementEvents':
+        final map = await _getSupplementEventsBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as SupplementEventsEntity).eventId)
+            .toList();
+      case 'supplementFavorites':
+        final map = await _getSupplementFavoritesBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as SupplementEventsEntity).eventId)
+            .toList();
+      case 'supplementRoutines':
+        final map = await _getSupplementRoutinesBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as SupplementEventsEntity).eventId)
+            .toList();
+      default:
+        throw ArgumentError('Invalid category type: $categoryType');
+    }
+  }
+
+  @override
   Future<bool> eraseDatabaseInformation() async {
     await _clearBox(_getProfileBox);
     await _clearBox(_getFoodEventsBox);

@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:nutrenaissance_flutter/data/api/eventssync/events_sync_api.dart';
+import 'package:nutrenaissance_flutter/data/api/eventssync/model/events_synchronization_request.dart';
 import 'package:nutrenaissance_flutter/data/api/eventssync/model/events_synchronization_response.dart';
 import 'package:nutrenaissance_flutter/domain/repository/eventssync/events_synchronization_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
@@ -67,14 +67,12 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
   @override
   Future<bool> fetchEvents(String userId, String categoryType, {bool fullSync = false}) async {
     try {
-      final allEventsIds = await localStorageRepository.getAllEventIds();
+      final eventsIds = await localStorageRepository.getAllEventIdsByType(categoryType);
 
       // Get the list for the selected category
       final idsToSkip = fullSync
           ? <String>[] // full sync: empty list
-          : _getListByCategory(allEventsIds, categoryType)
-              .map((e) => e.toString())
-              .toList();
+          : eventsIds.map((e) => e.toString()).toList();
 
       final response = await eventsSyncApi.syncCategory(
         userId.orEmpty(),
@@ -86,51 +84,6 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
       return await _saveSynchronizedEvents(eventsSyncResponse);
     } catch (error) {
       rethrow;
-    }
-  }
-
-  /// Helper to get the list from EventsSynchronizationRequest by category name
-  List<int> _getListByCategory(
-      EventsSynchronizationRequest allEventsIds, String category) {
-    switch (category) {
-      case 'foodEvents':
-        return allEventsIds.foodEvents;
-      case 'foodRoutines':
-        return allEventsIds.foodRoutines;
-      case 'sportEvents':
-        return allEventsIds.sportEvents;
-      case 'sportRoutines':
-        return allEventsIds.sportRoutines;
-      case 'liquidEvents':
-        return allEventsIds.liquidEvents;
-      case 'waterEvents':
-        return allEventsIds.waterEvents;
-      case 'foodFavorites':
-        return allEventsIds.foodFavorites;
-      case 'sportFavorites':
-        return allEventsIds.sportFavorites;
-      case 'liquidFavorites':
-        return allEventsIds.liquidFavorites;
-      case 'subjectiveAnalysis':
-        return allEventsIds.subjectiveAnalysis;
-      case 'recipeFavorites':
-        return allEventsIds.recipeFavorites;
-      case 'fecesEvents':
-        return allEventsIds.fecesEvents;
-      case 'urineEvents':
-        return allEventsIds.urineEvents;
-      case 'creatineEvents':
-        return allEventsIds.creatineEvents;
-      case 'collagenEvents':
-        return allEventsIds.collagenEvents;
-      case 'supplementEvents':
-        return allEventsIds.supplementEvents;
-      case 'supplementFavorites':
-        return allEventsIds.supplementFavorites;
-      case 'supplementRoutines':
-        return allEventsIds.supplementRoutines;
-      default:
-        throw ArgumentError('Invalid category type: $category');
     }
   }
 
