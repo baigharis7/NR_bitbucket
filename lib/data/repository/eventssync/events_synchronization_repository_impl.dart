@@ -22,36 +22,101 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
     required this.eventsSyncApi,
   });
 
+  /// List of all categories
+  static const List<String> _categories = [
+    'foodEvents',
+    'foodRoutines',
+    'sportEvents',
+    'sportRoutines',
+    'liquidEvents',
+    'waterEvents',
+    'foodFavorites',
+    'sportFavorites',
+    'liquidFavorites',
+    'subjectiveAnalysis',
+    'recipeFavorites',
+    'fecesEvents',
+    'urineEvents',
+    'creatineEvents',
+    'collagenEvents',
+    'supplementEvents',
+    'supplementFavorites',
+    'supplementRoutines',
+  ];
+
+
   @override
-  Future<bool> synchronizeEvents(String userId) async {
-    final allEventsIds = await localStorageRepository.getAllEventIds();
+  Future<bool> synchronizeEvents(String userId, {bool fullSync = false}) async {
     try {
-      final response = await eventsSyncApi.sendEventsIds(
+      final idsToSkip = fullSync
+          ? _emptyEventsPayload()
+          : await _buildEventsPayloadFromLocal();
+
+      final response = await eventsSyncApi.syncAllData(
         userId.orEmpty(),
-        /*allEventsIds.foodEvents.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.sportEvents.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.sportRoutines.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.liquidEvents.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.waterEvents.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.foodFavorites.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.sportFavorites.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.liquidFavorites.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.subjectiveAnalysis.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.recipeFavorites.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.fecesEvents.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.urineEvents.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.creatineEvents.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.collagenEvents.map((e) => e.toString()).toList()*/ [],
-        [],
-        /*allEventsIds.supplementEvents.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.supplementFavorites.map((e) => e.toString()).toList()*/ [],
-        /*allEventsIds.supplementRoutines.map((e) => e.toString()).toList()*/ [],
+        idsToSkip,
       );
+
       final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
-      return await _saveSynchronizedEvents(eventsSyncResponse).then((value) => value);
+      return await _saveSynchronizedEvents(eventsSyncResponse);
     } catch (error) {
       rethrow;
     }
+  }
+
+  @override
+  Future<bool> fetchEvents(String userId, String categoryType, {bool fullSync = false}) async {
+    try {
+      // Get IDs for incremental sync if not fullSync
+      final idsToSkip = fullSync
+          ? <String>[]
+          : await localStorageRepository.getAllEventIdsByType(categoryType)
+                .then((list) => list.map((e) => e.toString()).toList());
+
+      final response = await eventsSyncApi.syncCategory(
+        userId.orEmpty(),
+        categoryType,
+        idsToSkip, // Only the specified category
+      );
+
+      final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
+      return await _saveSynchronizedEvents(eventsSyncResponse);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+
+
+  /// Helper to generate empty payload for full sync
+  Map<String, List<String>> _emptyEventsPayload() {
+    return {for (var category in _categories) category: []};
+  }
+
+  /// Helper to build payload from local storage
+  Future<Map<String, List<String>>> _buildEventsPayloadFromLocal() async {
+    final allEventsIds = await localStorageRepository.getAllEventIds();
+
+    return {
+      'foodEvents': allEventsIds.foodEvents.map((e) => e.toString()).toList(),
+      'foodRoutines': allEventsIds.foodRoutines.map((e) => e.toString()).toList(),
+      'sportEvents': allEventsIds.sportEvents.map((e) => e.toString()).toList(),
+      'sportRoutines': allEventsIds.sportRoutines.map((e) => e.toString()).toList(),
+      'liquidEvents': allEventsIds.liquidEvents.map((e) => e.toString()).toList(),
+      'waterEvents': allEventsIds.waterEvents.map((e) => e.toString()).toList(),
+      'foodFavorites': allEventsIds.foodFavorites.map((e) => e.toString()).toList(),
+      'sportFavorites': allEventsIds.sportFavorites.map((e) => e.toString()).toList(),
+      'liquidFavorites': allEventsIds.liquidFavorites.map((e) => e.toString()).toList(),
+      'subjectiveAnalysis': allEventsIds.subjectiveAnalysis.map((e) => e.toString()).toList(),
+      'recipeFavorites': allEventsIds.recipeFavorites.map((e) => e.toString()).toList(),
+      'fecesEvents': allEventsIds.fecesEvents.map((e) => e.toString()).toList(),
+      'urineEvents': allEventsIds.urineEvents.map((e) => e.toString()).toList(),
+      'creatineEvents': allEventsIds.creatineEvents.map((e) => e.toString()).toList(),
+      'collagenEvents': allEventsIds.collagenEvents.map((e) => e.toString()).toList(),
+      'supplementEvents': allEventsIds.supplementEvents.map((e) => e.toString()).toList(),
+      'supplementFavorites': allEventsIds.supplementFavorites.map((e) => e.toString()).toList(),
+      'supplementRoutines': allEventsIds.supplementRoutines.map((e) => e.toString()).toList(),
+    };
   }
 
   Future<bool> _saveSynchronizedEvents(EventsSynchronizationResponse eventsSynchronizationResponse) async {
