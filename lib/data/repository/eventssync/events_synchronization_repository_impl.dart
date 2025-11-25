@@ -70,7 +70,7 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
       final allEventsIds = await localStorageRepository.getAllEventIds();
 
       // Get the list for the selected category
-      final idsToSync = fullSync
+      final idsToSkip = fullSync
           ? <String>[] // full sync: empty list
           : _getListByCategory(allEventsIds, categoryType)
               .map((e) => e.toString())
@@ -79,7 +79,7 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
       final response = await eventsSyncApi.syncCategory(
         userId.orEmpty(),
         categoryType,
-        idsToSync,
+        idsToSkip,
       );
 
       final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
