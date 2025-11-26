@@ -1,3 +1,3 @@
 abstract class SynchronizeEventsInteractor {
-  Future<void> execute(String userId);
+  Future<void> execute(String userId, {required bool fullSync});
 }

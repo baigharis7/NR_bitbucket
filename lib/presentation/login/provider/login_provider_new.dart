@@ -437,7 +437,7 @@ class LoginProviderNew extends BaseProvider {
   }
 
   Future<void> _synchronizeEvents(String userId) async {
-    await synchronizeEventsInteractor!.execute(userId);
+    await synchronizeEventsInteractor!.execute(userId, fullSync: true);
   }
 
   void notConfirmedUserAsksForNewVerificationCode(Function showMfaDialog) {

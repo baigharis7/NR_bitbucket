@@ -46,7 +46,7 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
 
 
   @override
-  Future<bool> synchronizeEvents(String userId, {bool fullSync = false}) async {
+  Future<bool> synchronizeEvents(String userId, {required bool fullSync}) async {
     try {
       final idsToSkip = fullSync
           ? _emptyEventsPayload()
@@ -65,7 +65,7 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
   }
 
   @override
-  Future<bool> fetchEvents(String userId, String categoryType, {bool fullSync = false}) async {
+  Future<bool> fetchEvents(String userId, String categoryType, {required bool fullSync}) async {
     try {
       final eventsIds = await localStorageRepository.getAllEventIdsByType(categoryType);
 

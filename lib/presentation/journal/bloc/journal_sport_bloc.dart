@@ -72,7 +72,7 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
   ) {
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
-      try { await eraseDBLocalEventsInteractor.execute(); await synchronizeEventsInteractor.execute(getUserIdInteractor.execute()); } catch (_) {}
+      // try { await eraseDBLocalEventsInteractor.execute(); await synchronizeEventsInteractor.execute(getUserIdInteractor.execute()); } catch (_) {}
       state.sportsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
       state.userKcal = await getUserKcalInteractor.execute();
       state.todaySportEvents = await getTodaySportsInteractor.execute();

@@ -659,7 +659,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<EventsSynchronizationRequest> getAllEventIds() async {
     final foodEventsMap = await _getFoodEventsBox.then((box) => box.toMap());
     final foodEvents = <int>[];
-    foodEventsMap.forEach((key, value) => foodEvents.add((value as FoodEventEntity).eventDate!));
+    foodEventsMap.forEach((key, value) => foodEvents.add((value as FoodEventEntity).eventId!));
 
     final foodRoutinesMap = await _getFoodRoutinesBox.then((box) => box.toMap());
     final foodRoutines = <int>[];
@@ -667,7 +667,7 @@ class LocalStorageImpl extends LocalStorageRepository {
 
     final sportEventsMap = await _getSportEventsBox.then((box) => box.toMap());
     final sportEvents = <int>[];
-    sportEventsMap.forEach((key, value) => sportEvents.add((value as SportEventEntity).eventDate));
+    sportEventsMap.forEach((key, value) => sportEvents.add((value as SportEventEntity).eventId));
 
     final sportRoutinesMap = await _getSportRoutinesBox.then((box) => box.toMap());
     final sportRoutines = <int>[];
@@ -679,15 +679,15 @@ class LocalStorageImpl extends LocalStorageRepository {
 
     final waterEventsMap = await _getWaterEventsBox.then((box) => box.toMap());
     final waterEvents = <int>[];
-    waterEventsMap.forEach((key, value) => waterEvents.add((value as WaterEventEntity).eventDate!));
+    waterEventsMap.forEach((key, value) => waterEvents.add((value as WaterEventEntity).eventId!));
 
     final foodFavoritesMap = await _getFoodFavoritesBox.then((box) => box.toMap());
     final foodFavorites = <int>[];
-    foodFavoritesMap.forEach((key, value) => foodFavorites.add((value as FoodFavoriteEntity).eventDate));
+    foodFavoritesMap.forEach((key, value) => foodFavorites.add((value as FoodFavoriteEntity).eventId!));
 
     final sportFavoritesMap = await _getSportFavoritesBox.then((box) => box.toMap());
     final sportFavorites = <int>[];
-    sportFavoritesMap.forEach((key, value) => sportFavorites.add((value as SportFavoriteEntity).eventDate));
+    sportFavoritesMap.forEach((key, value) => sportFavorites.add((value as SportFavoriteEntity).eventId!));
 
     final liquidFavoritesMap = await _getLiquidFavoritesBox.then((box) => box.toMap());
     final liquidFavorites = <int>[];
@@ -757,7 +757,7 @@ class LocalStorageImpl extends LocalStorageRepository {
       case 'foodEvents':
         final map = await _getFoodEventsBox.then((box) => box.toMap());
         return map.values
-            .map((e) => (e as FoodEventEntity).eventDate!)
+            .map((e) => (e as FoodEventEntity).eventId!)
             .toList();
       case 'foodRoutines':
         final map = await _getFoodRoutinesBox.then((box) => box.toMap());
@@ -767,7 +767,7 @@ class LocalStorageImpl extends LocalStorageRepository {
       case 'sportEvents':
         final map = await _getSportEventsBox.then((box) => box.toMap());
         return map.values
-            .map((e) => (e as SportEventEntity).eventDate)
+            .map((e) => (e as SportEventEntity).eventId)
             .toList();
       case 'sportRoutines':
         final map = await _getSportRoutinesBox.then((box) => box.toMap());
@@ -782,17 +782,17 @@ class LocalStorageImpl extends LocalStorageRepository {
       case 'waterEvents':
         final map = await _getWaterEventsBox.then((box) => box.toMap());
         return map.values
-            .map((e) => (e as WaterEventEntity).eventDate!)
+            .map((e) => (e as WaterEventEntity).eventId!)
             .toList();
       case 'foodFavorites':
         final map = await _getFoodFavoritesBox.then((box) => box.toMap());
         return map.values
-            .map((e) => (e as FoodFavoriteEntity).eventDate)
+            .map((e) => (e as FoodFavoriteEntity).eventId!)
             .toList();
       case 'sportFavorites':
         final map = await _getSportFavoritesBox.then((box) => box.toMap());
         return map.values
-            .map((e) => (e as SportFavoriteEntity).eventDate)
+            .map((e) => (e as SportFavoriteEntity).eventId!)
             .toList();
       case 'liquidFavorites':
         final map = await _getLiquidFavoritesBox.then((box) => box.toMap());

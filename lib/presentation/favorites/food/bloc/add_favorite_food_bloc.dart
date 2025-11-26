@@ -151,7 +151,7 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
       final foodEvent = FoodEventSimple(
           userId: getUserIdInteractor.execute(),
           eventDate: event.foodEventComplete.eventDate ?? DateTime.now().millisecondsSinceEpoch,
-          eventId: event.foodEventComplete.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+          eventId: event.foodEventComplete.eventId ?? DateTime.now().millisecondsSinceEpoch,
           foodName: event.foodEventComplete.foodName ?? '',
           comment: state.comment,
         dish: state.dish,

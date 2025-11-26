@@ -40,7 +40,7 @@ class EventsSyncApi extends ApiHelper {
     return post(
       Uri.https(
         Environment().config!.baseUrl,
-        '${Environment().config!.distributionPath}/events-sync',
+        '${Environment().config!.distributionPath}/events-sync-test',
       ),
       {
         'userId': userId,

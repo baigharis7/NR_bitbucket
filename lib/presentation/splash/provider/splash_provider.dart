@@ -89,8 +89,8 @@ class SplashProvider extends ChangeNotifier {
         // final getMasterFileVersionNutrientsInfo = await getMasterFilesVersionInteractor.execute(MasterFilesType.nutrientsInfo);
         // final getMasterFile = await manageMasterFilesInteractor.execute(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
         // state.isUpdatedDataNeeded = getMasterFileVersionCookingMethods != getMasterFile.cookingMethodsResponse?.v || getMasterFileVersionNutrientsInfo != getMasterFile.nutrientsInfoResponse?.v;
-        await eraseDBLocalEventsInteractor.execute();
-        await synchronizeEventsInteractor.execute(getUserIdInteractor.execute());
+        // await eraseDBLocalEventsInteractor.execute();
+        await synchronizeEventsInteractor.execute(getUserIdInteractor.execute(), fullSync: false); // Doing partial sync
       } catch(_) {}
       await doAccordingToToken(toLogin, toDashboard, profile);
     } else {
