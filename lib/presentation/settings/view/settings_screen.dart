@@ -114,9 +114,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize19 * fontScale, color: AppColors.yellowishGreen),
                           ),
                           const SizedBox(height: Dimens.height12),
-                          _menuTile(AppLocalizations.of(context)!.legal_advise),
+                          // _menuTile(AppLocalizations.of(context)!.legal_advise),
                           _menuTile(AppLocalizations.of(context)!.privacy_polic, onTap: () => Navigator.pushNamed(context, PolicyScreen.routeName),),
-                          _menuTile(AppLocalizations.of(context)!.cookies_policy),
+                          // _menuTile(AppLocalizations.of(context)!.cookies_policy, onTap: () => Navigator.pushNamed(context, PolicyScreen.routeName),),
                           SizedBox(height: height * 0.08),
                           Center(
                             child: Column(

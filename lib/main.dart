@@ -1002,6 +1002,7 @@ void main() async {
   final mealTimeDetailsBloc = MealTimeDetailsBloc(
     getUserIdInteractor: getUserIdInteractor,
     getFoodEventsOfTodayInteractor: getFoodEventsOfTodayInteractor,
+    getLiquidEventsOfTodayInteractor: getTodayLiquidEventsInteractor,
     getProfileInteractor: getProfileInteractor,
     getMasterFileInteractor: getMasterFileInteractor,
     deleteFoodEventInteractor: deleteFoodEventInteractor,

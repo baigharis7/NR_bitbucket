@@ -182,9 +182,9 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                ...nutrients.map((n) => Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),child: Column(
+                                ...state.fiberSugar.orEmpty().map((n) => Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),child: Column(
                                   children: [
-                                    NutrientRow(label: n["label"]!, value: n["value"]!),
+                                    NutrientRow(label: n.nutrientInfoMaster.translate(context), value: '${n.quantityConsumed} ${n.unit}'),
                                   ],
                                 ))),
                                 const SizedBox(height: 20),
@@ -201,7 +201,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                                   margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
                                   child: Column(
                                     children: [
-                                      NutrientRow(label: nutrient.nutrientInfoMaster.translate(context), value: '${nutrient.quantityConsumed.toInt()} ${nutrient.unit}'),
+                                      NutrientRow(label: nutrient.nutrientInfoMaster.translate(context), value: '${nutrient.quantityConsumed} ${nutrient.unit}'),
                                     ],
                                   ),
                                 )),

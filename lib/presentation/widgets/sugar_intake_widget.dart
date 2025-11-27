@@ -59,9 +59,9 @@ class SugarIntakeWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '${consumed.orZero().toInt()}',
+                  '${consumed.orZero()}',
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize20, color: AppColors.yellowishGreen),
+                  style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),
                 ),
                 Text(
                   '${AppLocalizations.of(context)!.from} ${total.orZero().toInt()} g',
