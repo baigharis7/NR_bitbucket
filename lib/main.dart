@@ -86,6 +86,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_events
 import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_events_sorted_by_date_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/eventssync/synchronize_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/eventssync/synchronize_events_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/eventssync/update_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/eventssync/update_events_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
@@ -637,6 +639,7 @@ void main() async {
   final RemoveSupplementRoutineInteractor removeSupplementRoutineInteractor = RemoveSupplementRoutineInteractorImpl(supplementsRepository: supplementsRepository);
   final DeleteSupplementFavoriteInteractor deleteSupplementFavoriteInteractor = DeleteSupplementFavoriteInteractorImpl(supplementsRepository: supplementsRepository);
   final RemoveSupplementFavoriteInteractor removeSupplementFavoriteInteractor = RemoveSupplementFavoriteInteractorImpl(supplementsRepository: supplementsRepository);
+  final UpdateEventsInteractor updateEventsInteractor = UpdateEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
 
   await NutritionUtils(getMasterFileInteractor: getMasterFileInteractor).init();
 
@@ -997,11 +1000,13 @@ void main() async {
   final microNutrientsWeeklyBloc = MicroNutrientsWeeklyBloc();
 
   final mealTimeDetailsBloc = MealTimeDetailsBloc(
+    getUserIdInteractor: getUserIdInteractor,
     getFoodEventsOfTodayInteractor: getFoodEventsOfTodayInteractor,
     getProfileInteractor: getProfileInteractor,
     getMasterFileInteractor: getMasterFileInteractor,
     deleteFoodEventInteractor: deleteFoodEventInteractor,
     removeFoodEventInteractor: removeFoodEventInteractor,
+    updateEventsInteractor: updateEventsInteractor,
   );
 
   final favoritesTabsBloc = FavoritesTabsBloc(
@@ -1033,10 +1038,12 @@ void main() async {
   );
 
   final sportItemsBloc = SportItemsBloc(
+    getUserIdInteractor: getUserIdInteractor,
     getMasterFileInteractor: getMasterFileInteractor,
     getTodaySportsInteractor: getTodaySportsInteractor,
     deleteSportEventInteractor: deleteSportEventInteractor,
     removeSportEventInteractor: removeSportEventInteractor,
+    updateEventsInteractor: updateEventsInteractor,
   );
 
   final itemUpdateBloc = ItemUpdateBloc(
@@ -1070,6 +1077,7 @@ void main() async {
     removeSupplementEventInteractor: removeSupplementEventInteractor,
     getMasterFileInteractor: getMasterFileInteractor,
     getProfileInteractor: getProfileInteractor,
+    updateEventsInteractor: updateEventsInteractor,
   );
 
   final updateSupplementBloc = UpdateSupplementBloc(

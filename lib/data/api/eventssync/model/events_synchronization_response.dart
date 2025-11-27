@@ -14,6 +14,7 @@ import 'package:nutrenaissance_flutter/domain/models/foodroutine/food_routine_ev
 import 'package:nutrenaissance_flutter/domain/models/recipes/upload_recipe_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 import '../../../../domain/models/routines/sport_routine_completed.dart';
 import '../../fecesurine/models/upload_feces.dart';

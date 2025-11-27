@@ -9,6 +9,8 @@ class InitializeSupplementsDetailEvent extends SupplementsDetailEvent {
   InitializeSupplementsDetailEvent({this.eventDate});
 }
 
+class SummaryInitializeSupplementsDetailEvent extends SupplementsDetailEvent {}
+
 class UpdateEventsDateSupplementsDetailEvent extends SupplementsDetailEvent {
   final DateTime dateTime;
 

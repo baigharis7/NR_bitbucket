@@ -9,6 +9,8 @@ class InitialMealTimeDetailsEventState extends MealTimeDetailsEvent {
   InitialMealTimeDetailsEventState({this.dateTime});
 }
 
+class SummaryInitializationMealTimeDetailsEventState extends MealTimeDetailsEvent {}
+
 class UpdateFoodArgumentsModelEventState extends MealTimeDetailsEvent {
   final FoodArgumentsModel foodArgumentsModel;
 

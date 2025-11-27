@@ -4,11 +4,13 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
+import '../../../domain/interactor/eventssync/update_events_interactor.dart';
 import '../../../domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
 import '../../../domain/interactor/masterfiles/get_master_file_interactor.dart';
 import '../../../domain/interactor/profile/get_profile_interactor.dart';
@@ -24,29 +26,44 @@ part 'meal_time_details_event.dart';
 part 'meal_time_details_state.dart';
 
 class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsState> {
+  final GetUserIdInteractor getUserIdInteractor;
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
   final GetProfileInteractor getProfileInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final DeleteFoodEventInteractor deleteFoodEventInteractor;
   final RemoveFoodEventInteractor removeFoodEventInteractor;
+  final UpdateEventsInteractor updateEventsInteractor;
+
   MealTimeDetailsBloc({
+    required this.getUserIdInteractor,
     required this.getFoodEventsOfTodayInteractor,
     required this.getProfileInteractor,
     required this.getMasterFileInteractor,
     required this.deleteFoodEventInteractor,
     required this.removeFoodEventInteractor,
+    required this.updateEventsInteractor,
 }) : super(MealTimeDetailsState(isLoading: false)) {
     on<InitialMealTimeDetailsEventState>((event, emit) async {
       emit(state.copyWith(isLoading: true));
-      final a = await getFoodEventsOfTodayInteractor.execute(dateTime: state.selectedDateTime);
-      state.foodEvents = a;
-      state.foodEvents = state.foodEvents.orEmpty().where((foodEvent) => foodEvent.mealType == state.mealTime?.id.orZero()).toList();
+
       state.profile = await getProfileInteractor.execute();
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
       final foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
       state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
       state.foodNames = foodNames;
       state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames.orEmpty().toList() ?? []);
+      add(SummaryInitializationMealTimeDetailsEventState());
+      emit(state.copyWith(isLoading: false));
+
+      updateEventsInteractor.execute(userId: getUserIdInteractor.execute(), categoryType: 'foodEvents', fullSync: false);
+      add(SummaryInitializationMealTimeDetailsEventState());
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<SummaryInitializationMealTimeDetailsEventState>((event, emit) async {
+      final a = await getFoodEventsOfTodayInteractor.execute(dateTime: state.selectedDateTime);
+      state.foodEvents = a;
+      state.foodEvents = state.foodEvents.orEmpty().where((foodEvent) => foodEvent.mealType == state.mealTime?.id.orZero()).toList();
 
       state.micronutrients = state.profile?.micronutrients.orEmpty()
           .map(
@@ -73,8 +90,6 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
               upperLimit: 0,
             ),
       ).toList();
-
-      emit(state.copyWith(isLoading: false));
     });
 
     on<UpdateFoodArgumentsModelEventState>((event, emit) {

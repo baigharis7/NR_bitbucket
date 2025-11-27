@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/eventssync/update_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_sport_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/remove_sport_event_interactor.dart';
 
@@ -14,25 +16,32 @@ part 'sport_items_event.dart';
 part 'sport_items_state.dart';
 
 class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
+  final GetUserIdInteractor getUserIdInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetTodaySportsInteractor getTodaySportsInteractor;
   final DeleteSportEventInteractor deleteSportEventInteractor;
   final RemoveSportEventInteractor removeSportEventInteractor;
+  final UpdateEventsInteractor updateEventsInteractor;
 
   SportItemsBloc({
+    required this.getUserIdInteractor,
     required this.getMasterFileInteractor,
     required this.getTodaySportsInteractor,
     required this.deleteSportEventInteractor,
     required this.removeSportEventInteractor,
+    required this.updateEventsInteractor,
   }) : super(SportItemsState(isLoading: false)) {
     on<SportItemsInitialization>((event, emit) async {
       state.sportsInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
       state.sportEvents = await getTodaySportsInteractor.execute();
       emit(state.copyWith(isLoading: false));
+
+      await updateEventsInteractor.execute(userId: getUserIdInteractor.execute(), categoryType: 'sportEvents', fullSync: false);
+      state.sportEvents = await getTodaySportsInteractor.execute();
+      emit(state.copyWith(isLoading: false));
     });
 
     on<UpdateDatetimeSportItemsEvents>((event, emit) async {
-      await Future.delayed(const Duration(seconds: 1));
       state.dateTime = event.dateTime;
       state.sportEvents = await getTodaySportsInteractor.execute(dateTime: event.dateTime);
 
