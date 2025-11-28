@@ -114,7 +114,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
         upperLimit: 0,
       ),];
 
-      emit(state.copyWith(isLoading: false));
+      // emit(state.copyWith(isLoading: false));
     });
 
     on<UpdateFoodArgumentsModelEventState>((event, emit) {

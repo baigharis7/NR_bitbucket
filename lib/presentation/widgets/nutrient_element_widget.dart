@@ -19,7 +19,7 @@ class NutrientElementWidget extends StatelessWidget {
     return Column(
       children: [
         AnimatedNutrientProgressBarWidget(percent: progress, title: label.toUpperCase(), width: Dimens.widthNormal, height: Dimens.height12, color: progressColor,),
-        Text('${current.toInt()}', style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeXXLarge),),
+        Text('${current.ceil()}', style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeXXLarge),),
         Text('${AppLocalizations.of(context)!.from} ${goal.toInt()}$unit', style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w500, fontSize: Dimens.fontSize11, color: Colors.white70),),
       ],
     );

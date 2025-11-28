@@ -86,7 +86,8 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         state.foodNames = foodNames;
         state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames.orEmpty().toList() ?? []);
       }
-      state.oilTypes = await getMasterFileInteractor.execute(MasterFilesType.oilTypes);
+      final foodOils = await getMasterFileInteractor.execute(MasterFilesType.oilTypes);
+      state.oilTypes = foodOils;
       state.conversionFactors = await getMasterFileInteractor.execute(MasterFilesType.conversionFactors);
       if (state.cookingMethodsInfoMaster!.cookingMethodsInfo!.isEmpty) {
         final a = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
@@ -166,7 +167,10 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: true, onError: null));
       if (state.foodEvent!.ingredients.map((food) => food.id).contains((event.foodInEvent).id)) {
         final itemIndex = state.foodEvent!.ingredients.indexOf(state.foodEvent!.ingredients.firstWhere((food) => food.id == event.foodInEvent.id));
-        state.foodEvent!.ingredients[itemIndex].conversionFactor = event.foodInEvent.conversionFactor;
+        final item = state.foodEvent!.ingredients[itemIndex];
+        item.conversionFactor = event.foodInEvent.conversionFactor;
+        item.cookingMethod = -1;
+        item.usedOil = 0;
       }
 
       emit(state.copyWith(isLoading: false));

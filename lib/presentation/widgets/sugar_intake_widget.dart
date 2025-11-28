@@ -59,7 +59,7 @@ class SugarIntakeWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '${consumed.orZero()}',
+                  '${consumed.orZero().ceil()}',
                   textAlign: TextAlign.center,
                   style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),
                 ),
@@ -74,6 +74,7 @@ class SugarIntakeWidget extends StatelessWidget {
             backgroundColor: Colors.grey.shade500,
             progressColor: color,
             linearGradient: linearGradient,
+            rotateLinearGradient: true,
           ),
         ],
       ),

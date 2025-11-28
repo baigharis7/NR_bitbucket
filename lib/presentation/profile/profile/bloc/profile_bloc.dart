@@ -282,7 +282,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
       if (state.profile!.sex == SexType.female) {
         femaleCharacteristics = FemaleCharacteristics(
           menstruation: Menstruation(
-            regularity: state.profile?.femaleCharacteristics?.menstruation?.regularity ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
+            regularity: state.profile?.femaleCharacteristics?.menstruation?.regularity,
             // TODO: estos dos pueden ir a null si regularity es irregular.
             daysOfCycle: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile?.femaleCharacteristics?.menstruation?.daysOfCycle ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
             lastStartDate: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.lastStartDate,),);
@@ -351,10 +351,10 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     on<FinishProfileAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
       FemaleCharacteristics? femaleCharacteristics;
-      if (state.profile!.sex == SexType.female) {
+      if (state.profile!.sex == SexType.female && state.profile?.femaleCharacteristics?.menstruation?.regularity != null) {
         femaleCharacteristics = FemaleCharacteristics(
           menstruation: Menstruation(
-            regularity: state.profile?.femaleCharacteristics?.menstruation?.regularity ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
+            regularity: state.profile?.femaleCharacteristics?.menstruation?.regularity,
             daysOfCycle: state.profile!.femaleCharacteristics!.menstruation!.regularity != MenstruationRegularity.regular.index ? null : state.profile?.femaleCharacteristics?.menstruation?.daysOfCycle ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
             lastStartDate: state.profile!.femaleCharacteristics!.menstruation!.regularity != MenstruationRegularity.regular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.lastStartDate,
           ),
