@@ -34,6 +34,8 @@ class AddItemNameDialog extends StatefulWidget {
   final int? mealTime;
   final String? eventName;
   final int itemsLength;
+  final Function(TimeOfDay)? onChangeScheduleTime;
+  final TimeOfDay? scheduleTime;
   const AddItemNameDialog({super.key,
     required this.title,
     required this.onNameChange,
@@ -49,6 +51,8 @@ class AddItemNameDialog extends StatefulWidget {
     this.mealTime,
     this.eventName,
     this.itemsLength = 0,
+    this.onChangeScheduleTime,
+    this.scheduleTime,
   });
 
   @override
@@ -73,7 +77,7 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
     _mealTime = widget.mealTime ?? 0;
     _daysOfWeek = widget.daysOfWeek ?? [];
     _itemNameController.text = widget.eventName.orEmpty();
-    _selectedTime = TimeOfDay.now();
+    _selectedTime = widget.scheduleTime ?? TimeOfDay.now();
     _mealTimeObj = MealTime.getAllMealTimes().firstWhere((element) => element.id == _mealTime);
     super.initState();
   }
@@ -90,7 +94,7 @@ class _AddItemNameDialogState extends State<AddItemNameDialog> {
       },
     );
     if (picked != null) {
-      // widget.onTimeChange.call(picked);
+      widget.onChangeScheduleTime?.call(picked);
       setState(() {
         _selectedTime = picked;
       });

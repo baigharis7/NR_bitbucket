@@ -214,6 +214,12 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: false, onError: null));
     },);
 
+    on<UpdateScheduleTimeAddFoodEventActions>((event, emit) {
+      state.foodEvent?.time = event.scheduleTime;
+
+      emit(state.copyWith(isLoading: false));
+    });
+
     on<AddFoodMealTypeEventAction>((event, emit) {
       state.foodEvent?.mealTime = event.mealType;
       emit(state.copyWith(isLoading: false, onError: null,));
@@ -377,7 +383,10 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         event.foodRoutineEvent.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
 
         event.foodRoutineEvent.timeZone = await DateTimeHelper.getDeviceIANATimeZone();
-        event.foodRoutineEvent.time = state.foodEvent?.time ?? DateFormat.Hm().format(DateTime.now().add(const Duration(minutes: 10)));
+        if (event.foodRoutineEvent.time.isEmptyOrNull() == true) {
+          event.foodRoutineEvent.time = DateFormat.Hm().format(DateTime.now().add(const Duration(minutes: 10)));
+        }
+        // event.foodRoutineEvent.time = state.foodEvent?.time ?? DateFormat.Hm().format(DateTime.now().add(const Duration(minutes: 10)));
 
         final uploadedRoutine = await uploadFoodRoutineInteractor.execute(event.foodRoutineEvent);
         if (uploadedRoutine) {

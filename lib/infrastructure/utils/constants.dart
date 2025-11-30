@@ -61,6 +61,7 @@ class Constants {
   static const PERCENTAGE_115 = 115;
   static const CREATINE = 80;
   static const COLLAGEN = 81;
+  static const WHATSAPP_CHAT_CONTACT = '+34610731220';
 
   //Navigation id's
   static const DASHBOARD = 0;

@@ -29,11 +29,11 @@ class Breakfast extends MealTime {
 }
 
 class Lunch extends MealTime {
-  Lunch() : super(id: 1, name: AppLocalizationsHelper.instance.translate('lunch'), time: '01:30');
+  Lunch() : super(id: 1, name: AppLocalizationsHelper.instance.translate('lunch'), time: '13:30');
 }
 
 class Dinner extends MealTime {
-  Dinner() : super(id: 2, name: AppLocalizationsHelper.instance.translate('dinner'), time: '08:30');
+  Dinner() : super(id: 2, name: AppLocalizationsHelper.instance.translate('dinner'), time: '20:30');
 }
 
 class Snack extends MealTime {

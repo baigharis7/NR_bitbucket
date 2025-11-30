@@ -205,7 +205,7 @@ class DateTimeHelper {
   }
 
   static TimeOfDay timeOfDayFrom24HrString(String? timeString) {
-    if(timeString.isNull()) return TimeOfDay.now();
+    if(timeString.isEmptyOrNull()) return TimeOfDay.now();
     final parts = timeString!.split(':');
     final hour = int.parse(parts[0]);
     final minute = int.parse(parts[1]);

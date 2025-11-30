@@ -157,10 +157,12 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                               style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
                               decoration: InputDecoration(
                                 errorMaxLines: 2,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+                              // contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
                                 hintStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
                               enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
-                                hintText: state.profile!.birthDate == null ? AppLocalizations.of(ctx)!.birthday_question : DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.birthDate!)),),
+                                hintText: state.profile!.birthDate == null ? AppLocalizations.of(ctx)!.birthday_question : DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.birthDate!)),
+                                prefixIcon: const Icon(Icons.calendar_month, color: Colors.white),
+                              ),
                               validator: (value) => state.profile?.birthDate?.isNull() ?? true ? AppLocalizations.of(context)!.must_complete_field : null,),
                             const SizedBox(height: Dimens.height32),
                             Column(crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,19 +275,22 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       const SizedBox(height: Dimens.height12),
                                       Text(AppLocalizations.of(context)!.last_period_question, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),),
                                       TextFormField(
+                                        onTap: () {
+                                          DatePickerHelper
+                                              .presentDatePicker(
+                                            context: context,
+                                            saveDate: (pickedDate) {
+                                              context.read<ProfileBloc>().add(SetLastPeriodDateAction(date: pickedDate,),);
+                                            },
+                                          );
+                                        },
+                                        readOnly: true,
                                         decoration: InputDecoration(
                                           hintText: state.profile!.femaleCharacteristics!.menstruation!.lastStartDate != null ? DateFormat('yyyy/MM/dd').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.femaleCharacteristics!.menstruation!.lastStartDate!,),) : '',
-                                          border: InputBorder.none,
+                                          // border: InputBorder.none,
+                                          enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
                                           hintStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
-                                          prefixIcon: IconButton(onPressed: () {
-                                            DatePickerHelper
-                                                .presentDatePicker(
-                                              context: context,
-                                              saveDate: (pickedDate) {
-                                                context.read<ProfileBloc>().add(SetLastPeriodDateAction(date: pickedDate,),);
-                                              },
-                                            );
-                                          }, icon: const Icon(Icons.calendar_month, color: Colors.white),),
+                                          prefixIcon: const Icon(Icons.calendar_month, color: Colors.white),
                                           errorMaxLines: 2,
                                         ),
                                         validator: (value) => state.profile!.femaleCharacteristics?.menstruation?.lastStartDate.isNull() ?? true ? AppLocalizations.of(context)!.must_complete_field : null,

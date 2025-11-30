@@ -1,18 +1,43 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
 
-class PolicyScreen extends StatelessWidget {
+class PolicyScreen extends StatefulWidget {
   static const routeName = '/policy_screen';
   const PolicyScreen({super.key});
 
   @override
+  State<PolicyScreen> createState() => _PolicyScreenState();
+}
+
+class _PolicyScreenState extends State<PolicyScreen> {
+  String _htmlContent = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPrivacyPolicy();
+  }
+
+  Future<void> _loadPrivacyPolicy() async {
+    String language = Localizations.localeOf(context).languageCode;
+    final fileName = language == 'es' ? 'assets/html/es_privacy.html'  : 'assets/html/en_privacy.html';
+    final content = await rootBundle.loadString(fileName);
+    setState(() {
+      _htmlContent = content;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _loadPrivacyPolicy();
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
@@ -56,7 +81,7 @@ class PolicyScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: Dimens.height15),
                     Html(
-                      data: AppLocalizations.of(context)!.privacy_html,
+                      data: _htmlContent,
                       style: {
                         'h2': Style(
                           color: AppColors.yellowishGreen,

@@ -52,7 +52,8 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
       emit(state.copyWith(isLoading: true));
       state.profile = await getProfileInteractor.execute();
       state.profile?.kcal = getUserKcalSelectiveObjectives(state.profile?.kcal ?? 0);
-      state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
+      final foodNutrientsInfo = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
+      state.nutrientsInfoMaster = foodNutrientsInfo;
       final foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
       state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
       state.foodNames = foodNames;

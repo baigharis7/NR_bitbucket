@@ -83,11 +83,13 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
     required BuildContext context,
     required Function onFinish,
     required Function(String) onNameChange,
+    required Function(TimeOfDay) onTimeChange,
     bool? isFavorite,
     bool? isCreateRoutine,
     int? mealTime,
     List<int>? daysOfWeek,
     String? eventName,
+    TimeOfDay? scheduleTime,
     required Function(bool) onFavoriteChange,
     required Function(bool) onChangeCreateRoutine,
     required Function(int) onMealTieChange,
@@ -110,6 +112,8 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
         eventName: eventName,
         mealTime: mealTime,
         itemsLength: ingredientLength,
+        onChangeScheduleTime: (scheduleTime) => onTimeChange.call(scheduleTime),
+        scheduleTime: scheduleTime,
       ),
     );
   }
@@ -266,6 +270,8 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                         onMealTieChange: (mealTime) => bloc.add(AddFoodMealTypeEventAction(mealType: mealTime)),
                                         onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineEventAction()),
                                         ingredientLength: state.foodEvent?.ingredients.length ?? 0,
+                                        onTimeChange: (scheduleTime) => bloc.add(UpdateScheduleTimeAddFoodEventActions(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
+                                        scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.foodEvent?.time),
                                       ),
                                     ))
                                   ],),
@@ -366,6 +372,8 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                       onMealTieChange: (mealTime) => bloc.add(AddFoodMealTypeEventAction(mealType: mealTime)),
                                       onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineEventAction()),
                                       ingredientLength: state.foodEvent?.ingredients.length ?? 0,
+                                      onTimeChange: (scheduleTime) => bloc.add(UpdateScheduleTimeAddFoodEventActions(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
+                                      scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.foodEvent?.time),
                                     );
                                   }
 

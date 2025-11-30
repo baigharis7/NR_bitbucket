@@ -90,6 +90,12 @@ class AddFoodNameEventAction extends AddFoodEventActions {
   AddFoodNameEventAction({required this.foodName});
 }
 
+class UpdateScheduleTimeAddFoodEventActions extends AddFoodEventActions {
+  final String scheduleTime;
+
+  UpdateScheduleTimeAddFoodEventActions({required this.scheduleTime});
+}
+
 class AddFoodArgumentModelEventAction extends AddFoodEventActions {
   FoodArgumentsModel foodArgumentsModel;
 

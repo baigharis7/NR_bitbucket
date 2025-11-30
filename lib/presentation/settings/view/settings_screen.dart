@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/privacy/view/policy_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/settings/bloc/settings_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
@@ -27,6 +29,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final settingsBloc = BlocProvider.of<SettingsBloc>(context);
     final ScrollController _scrollController = ScrollController();
+
+    Future<void> openWhatsApp(String phone, String message) async {
+      final encodedMessage = Uri.encodeComponent(message);
+      final url = Uri.parse('https://wa.me/$phone?text=$encodedMessage');
+
+      if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+        throw Exception('Could not launch WhatsApp');
+      }
+    }
 
 
     final height = MediaQuery.of(context).size.height;
@@ -107,7 +118,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize19 * fontScale, color: AppColors.yellowishGreen),
                           ),
                           const SizedBox(height: Dimens.height12),
-                          _menuTile(AppLocalizations.of(context)!.whatsapp_contact),
+                          _menuTile(AppLocalizations.of(context)!.whatsapp_contact, onTap: () {
+                            openWhatsApp(
+                              Constants.WHATSAPP_CHAT_CONTACT,      // Phone number with country code
+                              AppLocalizations.of(context)!.whatsapp_chat_text,
+                            );
+                          },),
                           _menuTile(AppLocalizations.of(context)!.feedback_form),
                           SizedBox(height: height * 0.03),
                           Text(AppLocalizations.of(context)!.legal_text,
