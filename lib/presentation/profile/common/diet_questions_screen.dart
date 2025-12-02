@@ -34,10 +34,21 @@ class DietQuestionsScreen extends StatefulWidget {
 }
 
 class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
+  late ProfileBloc bloc;
+
+  @override
+  void initState() {
+    bloc = BlocProvider.of<ProfileBloc>(context);
+    super.initState();
+  }
+
+  void onBack() {
+    bloc.add(InitializeStateFromProfileAction());
+    Navigator.pop(context, Constants.BACK);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<ProfileBloc>(context);
 
     void _showDietTypesDialog({
       required BuildContext context,
@@ -193,122 +204,128 @@ class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
           }
         },
         builder: (BuildContext ctx, ProfileState state) {
-          return Stack(
-            children: [
-              // Background image or gradient
-              Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/background.png'), // Your image
-                    fit: BoxFit.cover,
+          return WillPopScope(
+            onWillPop: () {
+              onBack();
+              return Future.value(true);
+            },
+            child: Stack(
+              children: [
+                // Background image or gradient
+                Container(
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/background.png'), // Your image
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
 
-              // Blur effect
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                child: Container(
-                  color: Colors.black.withOpacity(0), // Needed to activate the blur
+                // Blur effect
+                BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                  child: Container(
+                    color: Colors.black.withOpacity(0), // Needed to activate the blur
+                  ),
                 ),
-              ),
 
-              Scaffold(
-                backgroundColor: Colors.transparent,
-                body: SafeArea(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(Dimens.padding20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                        onPressed: () => Navigator.pop(context, Constants.BACK),
-                        icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 24,),
+                Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: SafeArea(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(Dimens.padding20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: IconButton(
+                          onPressed: () => onBack(),
+                          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 24,),
+                        ),
                       ),
-                    ),
-                    Image.asset(
-                      'assets/images/logo_name_white.png',
-                      width: Dimens.width242,
-                    ),
-                    const SizedBox(height: Dimens.heightSmall),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(Dimens.paddingXLarge),
-                      decoration: BoxDecoration(color: AppColors.white85Percent, borderRadius: BorderRadius.circular(Dimens.border18)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            AppLocalizations.of(ctx)!.diet,
-                            style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen),
+                      Image.asset(
+                        'assets/images/logo_name_white.png',
+                        width: Dimens.width242,
+                      ),
+                      const SizedBox(height: Dimens.heightSmall),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(Dimens.paddingXLarge),
+                        decoration: BoxDecoration(color: AppColors.white85Percent, borderRadius: BorderRadius.circular(Dimens.border18)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(ctx)!.diet,
+                              style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen),
+                            ),
+                            const SizedBox(height: Dimens.height12),
+                            Text(
+                              AppLocalizations.of(ctx)!.diet_specification,
+                              style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeSmall, color: AppColors.yellowishGreen),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: Dimens.heightXSmall),
+                      Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(Dimens.border18),
+                            color: AppColors.floralWhite, // Optional
                           ),
-                          const SizedBox(height: Dimens.height12),
-                          Text(
-                            AppLocalizations.of(ctx)!.diet_specification,
-                            style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeSmall, color: AppColors.yellowishGreen),
+                        child: ListTile(
+                        onTap: () => _showDietTypesDialog(
+                          context: ctx,
+                          onClick: (id) => ctx.read<ProfileBloc>().add(SetDietTypeAction(dietType: id),),
+                          stopShowingVegetarianDiets: () => bloc.add(StopShowingVegetarianDiets()),
+                        ),
+                        title: Text(AppLocalizations.of(ctx)!.diet_type, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black),),
+                        trailing: const Icon(Icons.add_circle, size: 26, color: Colors.black),
+                        ),
+                      ),
+                      const SizedBox(height: Dimens.heightXSmall),
+                      Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(Dimens.border18),
+                            color: AppColors.floralWhite, // Optional
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: Dimens.heightXSmall),
-                    Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(Dimens.border18),
-                          color: AppColors.floralWhite, // Optional
+                        child: ListTile(
+                        onTap: () => _showAllergensDialog(ctx, (id) => ctx.read<ProfileBloc>().add(AddAllergenAction(allergenId: id)),),
+                        title: Text(AppLocalizations.of(ctx)!.allergens, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black),),
+                        trailing: const Icon(Icons.add_circle, size: 26, color: Colors.black),
                         ),
-                      child: ListTile(
-                      onTap: () => _showDietTypesDialog(
-                        context: ctx,
-                        onClick: (id) => ctx.read<ProfileBloc>().add(SetDietTypeAction(dietType: id),),
-                        stopShowingVegetarianDiets: () => bloc.add(StopShowingVegetarianDiets()),
                       ),
-                      title: Text(AppLocalizations.of(ctx)!.diet_type, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black),),
-                      trailing: const Icon(Icons.add_circle, size: 26, color: Colors.black),
-                      ),
-                    ),
-                    const SizedBox(height: Dimens.heightXSmall),
-                    Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(Dimens.border18),
-                          color: AppColors.floralWhite, // Optional
+                      const SizedBox(height: Dimens.heightXSmall),
+                      Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(Dimens.border18),
+                            color: AppColors.floralWhite, // Optional
+                          ),
+                        child: ListTile(
+                        onTap: () => _showIntolerancesDialog(ctx, (id) => ctx.read<ProfileBloc>().add(AddIntolerancesAction(intoleranceId: id)),),
+                        title: Text(AppLocalizations.of(ctx)!.intolerances, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black),),
+                        trailing: const Icon(Icons.add_circle, size: 26, color: Colors.black),
                         ),
-                      child: ListTile(
-                      onTap: () => _showAllergensDialog(ctx, (id) => ctx.read<ProfileBloc>().add(AddAllergenAction(allergenId: id)),),
-                      title: Text(AppLocalizations.of(ctx)!.allergens, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black),),
-                      trailing: const Icon(Icons.add_circle, size: 26, color: Colors.black),
                       ),
-                    ),
-                    const SizedBox(height: Dimens.heightXSmall),
-                    Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(Dimens.border18),
-                          color: AppColors.floralWhite, // Optional
+                      const SizedBox(height: Dimens.heightXSmall),
+                      Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(Dimens.border18),
+                            color: AppColors.floralWhite, // Optional
+                          ),
+                        child: ListTile(
+                        onTap: () => Navigator.pushNamed(context, AversionsScreen.routeName),
+                        title: Text(AppLocalizations.of(ctx)!.aversions, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black),),
+                        trailing: const Icon(Icons.add_circle, size: 26, color: Colors.black),
                         ),
-                      child: ListTile(
-                      onTap: () => _showIntolerancesDialog(ctx, (id) => ctx.read<ProfileBloc>().add(AddIntolerancesAction(intoleranceId: id)),),
-                      title: Text(AppLocalizations.of(ctx)!.intolerances, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black),),
-                      trailing: const Icon(Icons.add_circle, size: 26, color: Colors.black),
                       ),
-                    ),
-                    const SizedBox(height: Dimens.heightXSmall),
-                    Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(Dimens.border18),
-                          color: AppColors.floralWhite, // Optional
-                        ),
-                      child: ListTile(
-                      onTap: () => Navigator.pushNamed(context, AversionsScreen.routeName),
-                      title: Text(AppLocalizations.of(ctx)!.aversions, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black),),
-                      trailing: const Icon(Icons.add_circle, size: 26, color: Colors.black),
-                      ),
-                    ),
-                  ],
-                ),
-              ),),),
-          ],);
+                    ],
+                  ),
+                ),),),
+            ],),
+          );
         },
       ),
     );

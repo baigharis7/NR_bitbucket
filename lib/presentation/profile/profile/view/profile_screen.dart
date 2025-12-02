@@ -247,7 +247,11 @@ class _ProfileScreen extends State<ProfileScreen> {
                           Text(AppLocalizations.of(context)!.imp_info, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen)),
                               Column(children: [
                                 ListTile(
-                                  onTap: () => Navigator.pushNamed(context, HealthQuestionsScreen.routeName).then((value) { if (value.toString() != Constants.BACK) bloc.add(SaveChangesAction()); }),
+                                  onTap: () => Navigator.pushNamed(context, HealthQuestionsScreen.routeName).then((value) { if (value.toString() != Constants.BACK) {
+                                    bloc.add(InitializeStateFromProfileAction());
+                                  } else {
+                                    bloc.add(SaveChangesAction());
+                                  } }),
                                   title: Text(AppLocalizations.of(context)!.medical_history, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15, color: AppColors.yellowishGreen)),
                                   trailing: const Icon(Icons.arrow_forward_ios, size: 12, color: AppColors.yellowishGreen),
                                 ),

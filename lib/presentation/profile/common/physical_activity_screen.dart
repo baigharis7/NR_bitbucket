@@ -27,9 +27,21 @@ class PhysicalActivityScreen extends StatefulWidget {
 }
 
 class _PhysicalActivityScreen extends State<PhysicalActivityScreen> {
+  late ProfileBloc bloc;
+
+  @override
+  void initState() {
+    bloc = BlocProvider.of<ProfileBloc>(context);
+    super.initState();
+  }
+
+  void onBack() {
+    bloc.add(InitializeStateFromProfileAction());
+    Navigator.pop(context, Constants.BACK);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<ProfileBloc>(context);
 
     return BlocProvider.value(
       value: bloc,
@@ -45,73 +57,79 @@ class _PhysicalActivityScreen extends State<PhysicalActivityScreen> {
           }
         },
         builder: (BuildContext ctx, ProfileState state) {
-          return Stack(
-            children: [
-              // Background image or gradient
-              Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/background.png'), // Your image
-                    fit: BoxFit.cover,
+          return WillPopScope(
+            onWillPop: () {
+              onBack();
+              return Future.value(true);
+            },
+            child: Stack(
+              children: [
+                // Background image or gradient
+                Container(
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/background.png'), // Your image
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
 
-              // Blur effect
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                child: Container(
-                  color: Colors.black.withOpacity(0), // Needed to activate the blur
+                // Blur effect
+                BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                  child: Container(
+                    color: Colors.black.withOpacity(0), // Needed to activate the blur
+                  ),
                 ),
-              ),
 
-              Scaffold(
-                backgroundColor: Colors.transparent,
-                body: SafeArea(child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(Dimens.padding20),
-                child: Column(
-                  children: [
-                    Container(alignment: AlignmentDirectional.centerStart, child: IconButton(onPressed: () => Navigator.pop(context, Constants.BACK), icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white,))),
-                    Image.asset(
-                      'assets/images/logo_name_white.png',
-                      width: Dimens.width242,
-                    ),
-                    const SizedBox(height: Dimens.heightSmall),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingXXLarge),
-                      decoration: BoxDecoration(
-                        color: AppColors.white85Percent,
-                        borderRadius: BorderRadius.circular(Dimens.border18),),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                        Text(
-                          AppLocalizations.of(context)!.physical_activity,
-                          style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen),
-                        ),
-                        const SizedBox(height: Dimens.height12),
-                        Text(
-                          AppLocalizations.of(context)!.activity_type,
-                          style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeSmall, color: AppColors.yellowishGreen),
-                        ),
-                        const SizedBox(height: Dimens.height12),
-                        ...state.activityTypes!.map((activityType) {
-                          return TextRadioButtonExpansible(
-                            title: activityType.typeName.orEmpty(),
-                            explanation: activityType.explanation.orEmpty(),
-                            isSelected: state.profile!.occupationActivityFactor == activityType.physicalActivityFactor,
-                            onPressed: () => bloc.add(SetActivityTypeAction(activityType: activityType.physicalActivityFactor!)),
-                          );
-                        }),
-                      ],),
-                    ),
-                    const SizedBox(height: Dimens.height32),
-                    GeneralButton(title: AppLocalizations.of(context)!.save, onTap: () => Navigator.pop(context)),
-                  ],
+                Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: SafeArea(child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(Dimens.padding20),
+                  child: Column(
+                    children: [
+                      Container(alignment: AlignmentDirectional.centerStart, child: IconButton(onPressed: () => onBack(), icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white,))),
+                      Image.asset(
+                        'assets/images/logo_name_white.png',
+                        width: Dimens.width242,
+                      ),
+                      const SizedBox(height: Dimens.heightSmall),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingXXLarge),
+                        decoration: BoxDecoration(
+                          color: AppColors.white85Percent,
+                          borderRadius: BorderRadius.circular(Dimens.border18),),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                          Text(
+                            AppLocalizations.of(context)!.physical_activity,
+                            style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen),
+                          ),
+                          const SizedBox(height: Dimens.height12),
+                          Text(
+                            AppLocalizations.of(context)!.activity_type,
+                            style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeSmall, color: AppColors.yellowishGreen),
+                          ),
+                          const SizedBox(height: Dimens.height12),
+                          ...state.activityTypes!.map((activityType) {
+                            return TextRadioButtonExpansible(
+                              title: activityType.typeName.orEmpty(),
+                              explanation: activityType.explanation.orEmpty(),
+                              isSelected: state.profile!.occupationActivityFactor == activityType.physicalActivityFactor,
+                              onPressed: () => bloc.add(SetActivityTypeAction(activityType: activityType.physicalActivityFactor!)),
+                            );
+                          }),
+                        ],),
+                      ),
+                      const SizedBox(height: Dimens.height32),
+                      GeneralButton(title: AppLocalizations.of(context)!.save, onTap: () => Navigator.pop(context)),
+                    ],
+                  ),
                 ),
-              ),
-                ),),
-            ],
+                  ),),
+              ],
+            ),
           );
         },
       ),

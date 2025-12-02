@@ -235,7 +235,7 @@ class MenstruationAdapter extends TypeAdapter<Menstruation> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Menstruation(
-      regularity: fields[0] as int,
+      regularity: fields[0] as int?,
       daysOfCycle: fields[1] as int?,
       lastStartDate: fields[2] as int?,
     );

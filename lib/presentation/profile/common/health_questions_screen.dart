@@ -27,10 +27,21 @@ class HealthQuestionsScreen extends StatefulWidget {
 }
 
 class _HealthQuestionsScreen extends State<HealthQuestionsScreen> {
+  late ProfileBloc bloc;
+
+  @override
+  void initState() {
+    bloc = BlocProvider.of<ProfileBloc>(context);
+    super.initState();
+  }
+
+  void onBack() {
+    bloc.add(InitializeStateFromProfileAction());
+    Navigator.pop(context, Constants.BACK);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<ProfileBloc>(context);
 
     return BlocProvider.value(
       value: bloc,
@@ -46,79 +57,85 @@ class _HealthQuestionsScreen extends State<HealthQuestionsScreen> {
           }
         },
         builder: (ctx, state) {
-          return Stack(children: [
-            // Background image or gradient
-            Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/background.png'), // Your image
-                  fit: BoxFit.cover,
+          return WillPopScope(
+            onWillPop: () {
+              onBack();
+              return Future.value(true);
+            },
+            child: Stack(children: [
+              // Background image or gradient
+              Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/background.png'), // Your image
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
 
-            // Blur effect
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-              child: Container(
-                color: Colors.black.withOpacity(0), // Needed to activate the blur
+              // Blur effect
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                child: Container(
+                  color: Colors.black.withOpacity(0), // Needed to activate the blur
+                ),
               ),
-            ),
 
 
-            Scaffold(
-              backgroundColor: Colors.transparent,
-              body: SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(Dimens.padding20),
-                child: Column(
-                  children: [
-                    Container(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: IconButton(
-                        onPressed: () => Navigator.pop(context, Constants.BACK),
-                        icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 25,),
-                      ),
-                    ),
-                    Image.asset(
-                      'assets/images/logo_name_white.png',
-                      width: Dimens.width242,
-                    ),
-                    const SizedBox(height: Dimens.heightSmall),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingXXLarge),
-                      decoration: BoxDecoration(
-                        color: AppColors.white85Percent,
-                        borderRadius: BorderRadius.circular(Dimens.border18),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                        Text(
-                          AppLocalizations.of(ctx)!.medical_history,
-                          style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen),
+              Scaffold(
+                backgroundColor: Colors.transparent,
+                body: SafeArea(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(Dimens.padding20),
+                  child: Column(
+                    children: [
+                      Container(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: IconButton(
+                          onPressed: () => onBack(),
+                          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 25,),
                         ),
-                        const SizedBox(height: Dimens.height12),
-                        ...state.commonDiseases.orEmpty().map((commonDisease) {
-                          return TextCheckboxBox(
-                            title: commonDisease.name.orEmpty(),
-                            checkboxValue: state.profile!.medicalSituation!
-                                .commonDiseases!.contains(commonDisease.id),
-                            onChangedCheckbox: () =>
-                                bloc.add(ManageCommonDiseaseAction(commonDiseaseId: commonDisease.id!)),
-                            overflow: TextOverflow.clip,
-                          );
-                        }).toList(),
-                      ],),
-                    ),
-                    const SizedBox(height: Dimens.height32),
-                    GeneralButton(title: AppLocalizations.of(context)!.save, onTap: () => Navigator.pop(context),),
-                  ],
+                      ),
+                      Image.asset(
+                        'assets/images/logo_name_white.png',
+                        width: Dimens.width242,
+                      ),
+                      const SizedBox(height: Dimens.heightSmall),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingXXLarge),
+                        decoration: BoxDecoration(
+                          color: AppColors.white85Percent,
+                          borderRadius: BorderRadius.circular(Dimens.border18),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                          Text(
+                            AppLocalizations.of(ctx)!.medical_history,
+                            style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen),
+                          ),
+                          const SizedBox(height: Dimens.height12),
+                          ...state.commonDiseases.orEmpty().map((commonDisease) {
+                            return TextCheckboxBox(
+                              title: commonDisease.name.orEmpty(),
+                              checkboxValue: state.profile!.medicalSituation!
+                                  .commonDiseases!.contains(commonDisease.id),
+                              onChangedCheckbox: () =>
+                                  bloc.add(ManageCommonDiseaseAction(commonDiseaseId: commonDisease.id!)),
+                              overflow: TextOverflow.clip,
+                            );
+                          }).toList(),
+                        ],),
+                      ),
+                      const SizedBox(height: Dimens.height32),
+                      GeneralButton(title: AppLocalizations.of(context)!.save, onTap: () => Navigator.pop(context),),
+                    ],
+                  ),
+                ),
                 ),
               ),
-              ),
-            ),
-          ],);
+            ],),
+          );
         },
       ),
     );

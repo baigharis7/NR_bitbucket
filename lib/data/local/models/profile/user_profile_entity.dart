@@ -92,7 +92,7 @@ class FemaleCharacteristics{
 
 @HiveType(typeId: HiveTypeIds.menstruation)
 class Menstruation {
-  @HiveField(0) int regularity;
+  @HiveField(0) int? regularity;
   @HiveField(1) int? daysOfCycle;
   @HiveField(2) int? lastStartDate;
 

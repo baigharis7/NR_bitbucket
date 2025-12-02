@@ -98,7 +98,7 @@ class FemaleCharacteristics{
 
 @JsonSerializable(explicitToJson: true)
 class Menstruation {
-  int regularity;
+  int? regularity;
   int? daysOfCycle;
   int? lastStartDate;
 

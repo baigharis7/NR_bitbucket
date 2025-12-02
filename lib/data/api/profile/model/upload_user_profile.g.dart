@@ -133,7 +133,7 @@ Map<String, dynamic> _$FemaleCharacteristicsToJson(
     };
 
 Menstruation _$MenstruationFromJson(Map<String, dynamic> json) => Menstruation(
-      regularity: (json['regularity'] as num).toInt(),
+      regularity: (json['regularity'] as num?)?.toInt(),
       daysOfCycle: (json['daysOfCycle'] as num?)?.toInt(),
       lastStartDate: (json['lastStartDate'] as num?)?.toInt(),
     );

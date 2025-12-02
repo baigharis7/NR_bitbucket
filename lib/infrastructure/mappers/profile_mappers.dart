@@ -16,9 +16,9 @@ upload.UploadUserProfile mapToUploadUserProfileModel(domain.UserProfileModel use
 
   final upload.FemaleCharacteristics? femaleCharacteristics = userProfileModel.sex!.index == upload.SexType.male.index
       ? null
-      : upload.FemaleCharacteristics(
+      : userProfileModel.femaleCharacteristics == null ? null : upload.FemaleCharacteristics(
       menstruation: upload.Menstruation(
-      regularity: userProfileModel.femaleCharacteristics?.menstruation?.regularity ?? 0,
+      regularity: userProfileModel.femaleCharacteristics?.menstruation?.regularity,
       daysOfCycle: userProfileModel.femaleCharacteristics?.menstruation?.regularity == 0
           ? userProfileModel.femaleCharacteristics?.menstruation?.daysOfCycle
           : null,
@@ -130,7 +130,7 @@ domain.UserProfileModel mapToUserProfileModelFromProfileEntity(entity.UserProfil
 
   final domain.FemaleCharacteristics? femaleCharacteristics = profileEntity.sex == 0
       ? null
-      : domain.FemaleCharacteristics(
+      : profileEntity.femaleCharacteristics == null ? null : domain.FemaleCharacteristics(
       menstruation: domain.Menstruation(
         regularity: profileEntity.femaleCharacteristics!.menstruation!.regularity,
         daysOfCycle: profileEntity.femaleCharacteristics!.menstruation!.regularity == 0
