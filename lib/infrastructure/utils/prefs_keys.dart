@@ -1,3 +1,13 @@
 enum PrefsKeys {
-username, email, accessToken, idToken, refreshToken, sub, isUserSignedIn
+  username,
+  email,
+  accessToken,
+  idToken,
+  refreshToken,
+  sub,
+  isUserSignedIn,
+  synchronizeEvents,
+  foodEvents,
+  sportEvents,
+  supplementEvents,
 }

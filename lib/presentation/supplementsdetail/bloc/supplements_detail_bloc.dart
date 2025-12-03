@@ -11,6 +11,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supp
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
 import '../../../domain/interactor/eventssync/update_events_interactor.dart';
 import '../../../domain/interactor/supplements/get_day_supplement_events_interactor.dart';
@@ -52,7 +53,7 @@ class SupplementsDetailBloc extends Bloc<SupplementsDetailEvent, SupplementsDeta
       add(SummaryInitializeSupplementsDetailEvent());
       emit(state.copyWith(isLoading: false));
 
-      await updateEventsInteractor.execute(userId: state.userProfile?.userId ?? '', categoryType: 'supplementEvents', fullSync: false);
+      await updateEventsInteractor.execute(userId: state.userProfile?.userId ?? '', categoryType: PrefsKeys.supplementEvents, fullSync: false);
       add(SummaryInitializeSupplementsDetailEvent());
       emit(state.copyWith(isLoading: false));
     });

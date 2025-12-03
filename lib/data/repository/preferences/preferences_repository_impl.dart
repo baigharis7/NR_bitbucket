@@ -66,4 +66,16 @@ class PreferencesRepositoryImpl extends PreferencesRepository {
   @override
   Future<void> setUserSignedIn(bool isSignedIn) async => prefs.setBool(PrefsKeys.isUserSignedIn, isSignedIn);
 
+  @override
+  Future<void> saveLastFetchTime(PrefsKeys categoryType, DateTime time) async {
+    await prefs.setInt(categoryType, time.millisecondsSinceEpoch);
+  }
+
+  @override
+  Future<DateTime?> getLastFetchTime(PrefsKeys categoryType) async {
+    final millis = prefs.getInt(categoryType);
+    if (millis == 0) return null;
+    return DateTime.fromMillisecondsSinceEpoch(millis);
+  }
+
 }

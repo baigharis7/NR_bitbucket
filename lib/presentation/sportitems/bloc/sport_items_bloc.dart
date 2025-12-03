@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_sport_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/remove_sport_event_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
 import '../../../domain/interactor/sportevents/get_today_sports_interactor.dart';
@@ -36,7 +37,7 @@ class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
       state.sportEvents = await getTodaySportsInteractor.execute();
       emit(state.copyWith(isLoading: false));
 
-      await updateEventsInteractor.execute(userId: getUserIdInteractor.execute(), categoryType: 'sportEvents', fullSync: false);
+      await updateEventsInteractor.execute(userId: getUserIdInteractor.execute(), categoryType: PrefsKeys.sportEvents, fullSync: false);
       state.sportEvents = await getTodaySportsInteractor.execute();
       emit(state.copyWith(isLoading: false));
     });

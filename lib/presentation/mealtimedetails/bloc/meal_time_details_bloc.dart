@@ -7,7 +7,9 @@ import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
 import '../../../domain/interactor/eventssync/update_events_interactor.dart';
@@ -37,6 +39,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
   final DeleteFoodEventInteractor deleteFoodEventInteractor;
   final RemoveFoodEventInteractor removeFoodEventInteractor;
   final UpdateEventsInteractor updateEventsInteractor;
+  final PreferencesRepository preferencesRepository;
 
   MealTimeDetailsBloc({
     required this.getUserIdInteractor,
@@ -47,6 +50,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
     required this.deleteFoodEventInteractor,
     required this.removeFoodEventInteractor,
     required this.updateEventsInteractor,
+    required this.preferencesRepository,
 }) : super(MealTimeDetailsState(isLoading: false)) {
     on<InitialMealTimeDetailsEventState>((event, emit) async {
       emit(state.copyWith(isLoading: true));
@@ -61,9 +65,17 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
       add(SummaryInitializationMealTimeDetailsEventState());
       emit(state.copyWith(isLoading: false));
 
-      updateEventsInteractor.execute(userId: getUserIdInteractor.execute(), categoryType: 'foodEvents', fullSync: false);
-      add(SummaryInitializationMealTimeDetailsEventState());
-      emit(state.copyWith(isLoading: false));
+      // final lastTime = await preferencesRepository.getLastFetchTime(PrefsKeys.foodEvents);
+      // final syncTime = await preferencesRepository.getLastFetchTime(PrefsKeys.synchronizeEvents);
+      // final shouldCall = _shouldCallAPI(lastTime, syncTime, const Duration(minutes: 15));
+      final shouldRefresh = await updateEventsInteractor.execute(userId: getUserIdInteractor.execute(), categoryType: PrefsKeys.foodEvents, fullSync: false);
+      if (shouldRefresh) {
+
+        // await preferencesRepository.saveLastFetchTime(PrefsKeys.foodEvents, DateTime.now());
+
+        add(SummaryInitializationMealTimeDetailsEventState());
+        emit(state.copyWith(isLoading: false));
+      }
     });
 
     on<SummaryInitializationMealTimeDetailsEventState>((event, emit) async {
@@ -261,5 +273,15 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
     }
 
     return double.parse(fiberConsumedToday.toStringAsFixed(2));
+  }
+
+
+
+  bool _shouldCallAPI(DateTime? lastTime, DateTime? syncTime, Duration threshold) {
+    if (lastTime == null || syncTime == null) return true; // first run
+    final now = DateTime.now();
+    bool isExpired1 = now.isAfter(lastTime.add(threshold));
+    bool isExpired2 = now.isAfter(syncTime.add(threshold));
+    return isExpired1 && isExpired2;
   }
 }

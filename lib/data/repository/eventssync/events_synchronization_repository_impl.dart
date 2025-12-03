@@ -3,11 +3,13 @@ import 'package:nutrenaissance_flutter/data/api/eventssync/model/events_synchron
 import 'package:nutrenaissance_flutter/data/api/eventssync/model/events_synchronization_response.dart';
 import 'package:nutrenaissance_flutter/domain/repository/eventssync/events_synchronization_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
+import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/liquid_event_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/recipes_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/sport_event_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
 import '../../../infrastructure/mappers/feces_urine_mappers.dart';
 import '../../../infrastructure/mappers/sport_routine_mappers.dart';
@@ -16,10 +18,12 @@ import '../../../infrastructure/mappers/supplement_mappers.dart';
 class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRequestRepository {
   final LocalStorageRepository localStorageRepository;
   final EventsSyncApi eventsSyncApi;
+  final PreferencesRepository preferencesRepository;
 
   EventsSynchronizationRequestRepositoryImpl({
     required this.localStorageRepository,
     required this.eventsSyncApi,
+    required this.preferencesRepository,
   });
 
   /// List of all categories
@@ -48,6 +52,9 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
   @override
   Future<bool> synchronizeEvents(String userId, {required bool fullSync}) async {
     try {
+      final syncTime = await preferencesRepository.getLastFetchTime(PrefsKeys.synchronizeEvents);
+      if (!_isExpired(syncTime, const Duration(minutes: 15))) return false;
+
       final idsToSkip = fullSync
           ? _emptyEventsPayload()
           : await _buildEventsPayloadFromLocal();
@@ -58,6 +65,7 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
       );
 
       final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
+      await preferencesRepository.saveLastFetchTime(PrefsKeys.synchronizeEvents, DateTime.now());
       return await _saveSynchronizedEvents(eventsSyncResponse);
     } catch (error) {
       rethrow;
@@ -65,9 +73,14 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
   }
 
   @override
-  Future<bool> fetchEvents(String userId, String categoryType, {required bool fullSync}) async {
+  Future<bool> fetchEvents(String userId, PrefsKeys categoryType, {required bool fullSync}) async {
     try {
-      final eventsIds = await localStorageRepository.getAllEventIdsByType(categoryType);
+      final lastEventTime = await preferencesRepository.getLastFetchTime(categoryType);
+      final syncTime = await preferencesRepository.getLastFetchTime(PrefsKeys.synchronizeEvents);
+      final shouldCall = _shouldCallAPI(lastEventTime, syncTime, const Duration(minutes: 15));
+      if (!shouldCall) return false;
+
+      final eventsIds = await localStorageRepository.getAllEventIdsByType(categoryType.name);
 
       // Get the list for the selected category
       final idsToSkip = fullSync
@@ -76,11 +89,12 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
 
       final response = await eventsSyncApi.syncCategory(
         userId.orEmpty(),
-        categoryType,
+        categoryType.name,
         idsToSkip,
       );
 
       final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
+      await preferencesRepository.saveLastFetchTime(categoryType, DateTime.now());
       return await _saveSynchronizedEvents(eventsSyncResponse);
     } catch (error) {
       rethrow;
@@ -218,6 +232,16 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
     }
 
     return true;
+  }
+
+  bool _shouldCallAPI(DateTime? lastTime, DateTime? syncTime, Duration threshold) {
+    return _isExpired(lastTime, threshold) && _isExpired(syncTime, threshold);
+  }
+
+  bool _isExpired(DateTime? time, Duration threshold) {
+    if (time == null) return true;
+    final now = DateTime.now();
+    return now.isAfter(time.add(threshold));
   }
 
 }

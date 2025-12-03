@@ -30,6 +30,7 @@ import '../../../domain/repository/preferences/preferences.dart';
 import '../../../domain/repository/preferences/preferences_repository.dart';
 import '../../../domain/repository/profile/profile_repository.dart';
 import '../../../infrastructure/authentication/cognito_authentication_service.dart';
+import '../../../infrastructure/utils/prefs_keys.dart';
 
 class SplashProvider extends ChangeNotifier {
   GetIdTokenInteractor? getIdTokenInteractor;
@@ -65,7 +66,7 @@ class SplashProvider extends ChangeNotifier {
     getProfileInteractor = GetProfileInteractorImpl(profileRepository: profileRepository);
     eraseDBLocalEventsInteractor = EraseDBLocalEventsInteractorImpl(localStorageRepository: localStorageRepository);
     eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService, chuck);
-    eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
+    eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi, preferencesRepository: prefsRepository);
     synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
     getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
 
@@ -78,10 +79,10 @@ class SplashProvider extends ChangeNotifier {
         ),
     );
     idToken = getIdTokenInteractor!.execute();
-    nextScreen(toLogin, toDashboard, profile);
+    nextScreen(toLogin, toDashboard, profile, prefsRepository);
   }
 
-  void nextScreen(Function toLogin, Function toDashboard, UserProfileModel? profile) async {
+  void nextScreen(Function toLogin, Function toDashboard, UserProfileModel? profile, PreferencesRepository preferencesRepository) async {
     final userId = getUserIdInteractor.execute();
     if (userId.isNotEmpty) {
       try {
@@ -91,6 +92,7 @@ class SplashProvider extends ChangeNotifier {
         // state.isUpdatedDataNeeded = getMasterFileVersionCookingMethods != getMasterFile.cookingMethodsResponse?.v || getMasterFileVersionNutrientsInfo != getMasterFile.nutrientsInfoResponse?.v;
         // await eraseDBLocalEventsInteractor.execute();
         await synchronizeEventsInteractor.execute(getUserIdInteractor.execute(), fullSync: false); // Doing partial sync
+        // await preferencesRepository.saveLastFetchTime(PrefsKeys.synchronizeEvents, DateTime.now());
       } catch(_) {}
       await doAccordingToToken(toLogin, toDashboard, profile);
     } else {
