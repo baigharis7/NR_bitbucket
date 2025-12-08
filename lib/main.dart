@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -450,12 +452,14 @@ import 'domain/interactor/supplements/get_supplement_routines_interactor.dart';
 import 'domain/interactor/supplements/remove_supplement_routine_interactor.dart';
 import 'domain/interactor/supplements/remove_supplement_routine_interactor_impl.dart';
 import 'domain/interactor/supplements/save_supplement_routine_interactor.dart';
+import 'firebase_options.dart';
 import 'presentation/profile/common/aversions_screen.dart';
 import 'presentation/profile/common/health_questions_screen.dart';
 import 'presentation/recommendations/common/view/recommendations_tabs_holder.dart';
 import 'presentation/waterevent/view/add_water_event_screen.dart';
 
 import 'package:chuck_interceptor/chuck.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 // @pragma('vm:entry-point')
 // void printHello() {
@@ -473,6 +477,17 @@ void main() async {
   // await AndroidAlarmManager.initialize();
 
   initLocalStorage();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
+  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
   final authenticationService = await CognitoAuthenticationService.init();
   final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();

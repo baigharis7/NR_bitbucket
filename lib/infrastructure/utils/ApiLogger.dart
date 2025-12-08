@@ -37,12 +37,12 @@ class ApiLogger {
   }
 
   static Future<void> logRequest(String url, String method, {String? body}) async {
-    String log = '[$method] $url\nBody: $body\nTimestamp: ${DateTime.now()}\n\n';
+    String log = '[$method]\n $url\nBody: $body\nTimestamp: ${DateTime.now()}\n\n';
     await _writeLog(log);
   }
 
   static Future<void> logResponse(String url, int statusCode, String response) async {
-    String log = '[Response] $url\nStatus: $statusCode\nResponse: $response\nTimestamp: ${DateTime.now()}\n\n';
+    String log = '[Response]\n $url\nStatus: $statusCode\nResponse: $response\nTimestamp: ${DateTime.now()}\n\n';
     await _writeLog(log);
   }
 

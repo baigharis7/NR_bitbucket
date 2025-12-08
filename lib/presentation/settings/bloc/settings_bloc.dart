@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../domain/interactor/login/erase_database_interactor.dart';
 import '../../../domain/interactor/profile/sign_out_interactor.dart';
 import '../../../infrastructure/errors/error_types.dart';
+import '../../../infrastructure/utils/ApiLogger.dart';
 
 part 'settings_event.dart';
 part 'settings_state.dart';
@@ -23,14 +24,14 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 }) : super(SettingsState(isLoading: false)) {
     on<SettingsInitialization>((event, emit) {});
 
-    on<SettingsLogOut>((event, emit) {
+    on<SettingsLogOut>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null, ));
       try {
-        signOutInteractor.execute();
-        event.goToLogin.call();
-        eraseDatabaseInteractor.execute();
-        sharedPreferences.clear();
+        final signOutResult = await signOutInteractor.execute();
+        final clearProfileResult = await eraseDatabaseInteractor.execute();
+        final clearShared = await sharedPreferences.clear();
         emit(state.copyWith(isLoading: false, onError: null, ));
+        event.goToLogin.call();
       } catch (errorSignOut) {
         state.onError = ErrorTypes.signOutError;
         emit(state.copyWith(isLoading: false, onError: null, ));
