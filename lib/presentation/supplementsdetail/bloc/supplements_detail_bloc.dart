@@ -53,9 +53,12 @@ class SupplementsDetailBloc extends Bloc<SupplementsDetailEvent, SupplementsDeta
       add(SummaryInitializeSupplementsDetailEvent());
       emit(state.copyWith(isLoading: false));
 
-      await updateEventsInteractor.execute(userId: state.userProfile?.userId ?? '', categoryType: PrefsKeys.supplementEvents, fullSync: false);
-      add(SummaryInitializeSupplementsDetailEvent());
-      emit(state.copyWith(isLoading: false));
+      final shouldRefresh = await updateEventsInteractor.execute(userId: state.userProfile?.userId ?? '', categoryType: PrefsKeys.supplementEvents, fullSync: false);
+      if (shouldRefresh) {
+        add(SummaryInitializeSupplementsDetailEvent());
+        emit(state.copyWith(isLoading: false));
+      }
+
     });
 
     on<SummaryInitializeSupplementsDetailEvent>((event, emit) async {

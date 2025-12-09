@@ -65,14 +65,8 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
       add(SummaryInitializationMealTimeDetailsEventState());
       emit(state.copyWith(isLoading: false));
 
-      // final lastTime = await preferencesRepository.getLastFetchTime(PrefsKeys.foodEvents);
-      // final syncTime = await preferencesRepository.getLastFetchTime(PrefsKeys.synchronizeEvents);
-      // final shouldCall = _shouldCallAPI(lastTime, syncTime, const Duration(minutes: 15));
       final shouldRefresh = await updateEventsInteractor.execute(userId: getUserIdInteractor.execute(), categoryType: PrefsKeys.foodEvents, fullSync: false);
       if (shouldRefresh) {
-
-        // await preferencesRepository.saveLastFetchTime(PrefsKeys.foodEvents, DateTime.now());
-
         add(SummaryInitializationMealTimeDetailsEventState());
         emit(state.copyWith(isLoading: false));
       }

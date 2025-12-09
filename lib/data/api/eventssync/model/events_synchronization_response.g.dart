@@ -10,60 +10,60 @@ EventsSynchronizationResponse _$EventsSynchronizationResponseFromJson(
         Map<String, dynamic> json) =>
     EventsSynchronizationResponse(
       foodEvents: (json['foodEvents'] as List<dynamic>?)
-          .orEmpty().map((e) => UploadFoodEvent.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => UploadFoodEvent.fromJson(e as Map<String, dynamic>))
           .toList(),
       foodRoutines: (json['foodRoutines'] as List<dynamic>?)
-          .orEmpty().map((e) => FoodRoutineEvent.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => FoodRoutineEvent.fromJson(e as Map<String, dynamic>))
           .toList(),
       sportEvents: (json['sportEvents'] as List<dynamic>?)
-          .orEmpty().map((e) => SportEventComplete.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => SportEventComplete.fromJson(e as Map<String, dynamic>))
           .toList(),
       // sportRoutines: [],
           sportRoutines: (json['sportRoutines'] as List<dynamic>?)
-          .orEmpty().map((e) => SportRoutineCompleted.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => SportRoutineCompleted.fromJson(e as Map<String, dynamic>))
           .toList(),
       liquidEvents: (json['liquidEvents'] as List<dynamic>?)
-          .orEmpty().map((e) => UploadLiquidEvent.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => UploadLiquidEvent.fromJson(e as Map<String, dynamic>))
           .toList(),
       waterEvents: (json['waterEvents'] as List<dynamic>?)
-          .orEmpty().map((e) => WaterEventMaster.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => WaterEventMaster.fromJson(e as Map<String, dynamic>))
           .toList(),
       foodFavorites: (json['foodFavorites'] as List<dynamic>?)
-          .orEmpty().map((e) => FoodFavorite.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => FoodFavorite.fromJson(e as Map<String, dynamic>))
           .toList(),
       sportFavorites: (json['sportFavorites'] as List<dynamic>?)
-          .orEmpty().map((e) => AddSportFavorite.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => AddSportFavorite.fromJson(e as Map<String, dynamic>))
           .toList(),
       liquidFavorites: (json['liquidFavorites'] as List<dynamic>?)
-          .orEmpty().map((e) => LiquidFavorite.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => LiquidFavorite.fromJson(e as Map<String, dynamic>))
           .toList(),
       subjectiveAnalysis: (json['subjectiveAnalysis'] as List<dynamic>?)
-          .orEmpty().map((e) =>
+          .orEmpty().safeMap((e) =>
               SubjectiveAnalysisResult.fromJson(e as Map<String, dynamic>))
           .toList(),
       recipeFavorites: (json['recipeFavorites'] as List<dynamic>?)
-          .orEmpty().map((e) => UploadRecipeFavorite.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => UploadRecipeFavorite.fromJson(e as Map<String, dynamic>))
           .toList(),
       fecesEvents: (json['fecesEvents'] as List<dynamic>?)
-          .orEmpty().map((e) => UploadFeces.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => UploadFeces.fromJson(e as Map<String, dynamic>))
           .toList(),
       urineEvents: (json['urineEvents'] as List<dynamic>?)
-          .orEmpty().map((e) => UploadFeces.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => UploadFeces.fromJson(e as Map<String, dynamic>))
           .toList(),
       creatineEvents: (json['creatineEvents'] as List<dynamic>?)
-          .orEmpty().map((e) => UploadSupplementEvent.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => UploadSupplementEvent.fromJson(e as Map<String, dynamic>))
           .toList(),
       collagenEvents: (json['collagenEvents'] as List<dynamic>?)
-          .orEmpty().map((e) => UploadSupplementEvent.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => UploadSupplementEvent.fromJson(e as Map<String, dynamic>))
           .toList(),
       supplementEvents: (json['supplementEvents'] as List<dynamic>?)
-          .orEmpty().map((e) => UploadSupplementsEv.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => UploadSupplementsEv.fromJson(e as Map<String, dynamic>))
           .toList(),
       supplementFavorites: (json['supplementFavorites'] as List<dynamic>?)
-          .orEmpty().map((e) => SupplementFavorite.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => SupplementFavorite.fromJson(e as Map<String, dynamic>))
           .toList(),
       supplementRoutines: (json['supplementRoutines'] as List<dynamic>?)
-          .orEmpty().map((e) => UploadSupplementRoutine.fromJson(e as Map<String, dynamic>))
+          .orEmpty().safeMap((e) => UploadSupplementRoutine.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 

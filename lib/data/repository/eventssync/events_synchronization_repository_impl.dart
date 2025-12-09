@@ -53,7 +53,7 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
   Future<bool> synchronizeEvents(String userId, {required bool fullSync}) async {
     try {
       final syncTime = await preferencesRepository.getLastFetchTime(PrefsKeys.synchronizeEvents);
-      if (!_isExpired(syncTime, const Duration(minutes: 15))) return false;
+      if (!_isExpired(syncTime, const Duration(minutes: 10))) return false;
 
       final idsToSkip = fullSync
           ? _emptyEventsPayload()
@@ -77,7 +77,7 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
     try {
       final lastEventTime = await preferencesRepository.getLastFetchTime(categoryType);
       final syncTime = await preferencesRepository.getLastFetchTime(PrefsKeys.synchronizeEvents);
-      final shouldCall = _shouldCallAPI(lastEventTime, syncTime, const Duration(minutes: 15));
+      final shouldCall = _shouldCallAPI(lastEventTime, syncTime, const Duration(minutes: 10));
       if (!shouldCall) return false;
 
       final eventsIds = await localStorageRepository.getAllEventIdsByType(categoryType.name);

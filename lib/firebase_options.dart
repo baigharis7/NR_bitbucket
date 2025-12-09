@@ -41,48 +41,48 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAU_R3ExwpGbUoF8v9h78KyhdMP87feWJM',
-    appId: '1:635068193654:web:8e8d7b35e283b33ed6b857',
-    messagingSenderId: '635068193654',
-    projectId: 'nn-flutter',
-    authDomain: 'nn-flutter.firebaseapp.com',
-    storageBucket: 'nn-flutter.firebasestorage.app',
-    measurementId: 'G-TJVJFSCCWG',
+    apiKey: 'AIzaSyCsW2uyCLRdQfTLM_S1gp08p-TEzuatSag',
+    appId: '1:881238327460:web:1f51c39472387d96f9a631',
+    messagingSenderId: '881238327460',
+    projectId: 'nutrenaissance-aab71',
+    authDomain: 'nutrenaissance-aab71.firebaseapp.com',
+    storageBucket: 'nutrenaissance-aab71.firebasestorage.app',
+    measurementId: 'G-DHNH06V5Z6',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBFuy-kFaQEdO-Lxq4V-mva3jaqwlh3GEU',
-    appId: '1:635068193654:android:272f9ab143904a24d6b857',
-    messagingSenderId: '635068193654',
-    projectId: 'nn-flutter',
-    storageBucket: 'nn-flutter.firebasestorage.app',
+    apiKey: 'AIzaSyDJk13NdHmnbx1ETiUEm9hd_6iNJB9VxBs',
+    appId: '1:881238327460:android:42ab14be8c00e510f9a631',
+    messagingSenderId: '881238327460',
+    projectId: 'nutrenaissance-aab71',
+    storageBucket: 'nutrenaissance-aab71.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCD41HeOPuFSlmWUy3klJShQdL3TiOVVps',
-    appId: '1:635068193654:ios:20a1ef628c9f96ffd6b857',
-    messagingSenderId: '635068193654',
-    projectId: 'nn-flutter',
-    storageBucket: 'nn-flutter.firebasestorage.app',
+    apiKey: 'AIzaSyDB_cbkwugGitsaF1MREpK8EiL0_430mVg',
+    appId: '1:881238327460:ios:71eff9f522861dc7f9a631',
+    messagingSenderId: '881238327460',
+    projectId: 'nutrenaissance-aab71',
+    storageBucket: 'nutrenaissance-aab71.firebasestorage.app',
     iosBundleId: 'com.nutrenaissance.app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCD41HeOPuFSlmWUy3klJShQdL3TiOVVps',
-    appId: '1:635068193654:ios:00a9c8bf542f4b5fd6b857',
-    messagingSenderId: '635068193654',
-    projectId: 'nn-flutter',
-    storageBucket: 'nn-flutter.firebasestorage.app',
+    apiKey: 'AIzaSyDB_cbkwugGitsaF1MREpK8EiL0_430mVg',
+    appId: '1:881238327460:ios:e9114da8a638a5bbf9a631',
+    messagingSenderId: '881238327460',
+    projectId: 'nutrenaissance-aab71',
+    storageBucket: 'nutrenaissance-aab71.firebasestorage.app',
     iosBundleId: 'com.example.nutrenaissanceFlutter',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAU_R3ExwpGbUoF8v9h78KyhdMP87feWJM',
-    appId: '1:635068193654:web:fe2a466781ce955fd6b857',
-    messagingSenderId: '635068193654',
-    projectId: 'nn-flutter',
-    authDomain: 'nn-flutter.firebaseapp.com',
-    storageBucket: 'nn-flutter.firebasestorage.app',
-    measurementId: 'G-J07B47X7H1',
+    apiKey: 'AIzaSyCsW2uyCLRdQfTLM_S1gp08p-TEzuatSag',
+    appId: '1:881238327460:web:9a62fcafa24c40d7f9a631',
+    messagingSenderId: '881238327460',
+    projectId: 'nutrenaissance-aab71',
+    authDomain: 'nutrenaissance-aab71.firebaseapp.com',
+    storageBucket: 'nutrenaissance-aab71.firebasestorage.app',
+    measurementId: 'G-Z33RMCJ83J',
   );
 }

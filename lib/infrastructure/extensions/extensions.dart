@@ -122,6 +122,20 @@ extension NullableListExtensions<T> on List<T>? {
 
 }
 
+extension SafeMap<T> on List {
+  List<R> safeMap<R>(R Function(dynamic e) mapper) {
+    final result = <R>[];
+    for (var item in this) {
+      try {
+        result.add(mapper(item));
+      } catch (_) {
+
+      }
+    }
+    return result;
+  }
+}
+
 extension PrefsKeysExtensions on PrefsKeys {
   String getKey() => name.orEmpty();
 }
