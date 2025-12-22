@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -7,8 +9,10 @@ import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.d
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_state.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/text_checkbox_box.dart';
+import '../../../infrastructure/utils/app_color.dart';
 import '../../widgets/text_radio_button.dart';
 import '../../widgets/text_radio_button_expansible.dart';
 import 'general_questions_screen.dart';
@@ -76,132 +80,121 @@ class _ObjectivesScreenState extends State<ObjectivesScreen> {
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<ProfileBloc>(context);
 
-    return SafeArea(
-        child: BlocProvider.value(
+    return BlocProvider.value(
       value: bloc,
-      child: Scaffold(
-        // appBar: AppBar(
-        //     backgroundColor: Colors.white,
-        //     foregroundColor: Colors.black,
-        //     leading: IconButton(
-        //       onPressed: () {
-        //         Navigator.pop(context);
-        //       },
-        //       icon: const Icon(Icons.arrow_back_ios, size: 24),
-        //     )),
-        body: BlocConsumer<ProfileBloc, ProfileState>(
-          listener: (ctx, state) {
-            if (state.isLoading) {
-              LoadingScreen.instance().show(
-                context: ctx,
-                text: AppLocalizations.of(ctx)!.loading,
-              );
-            } else {
-              LoadingScreen.instance().hide();
-            }
-          },
-          builder: (ctx, state) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: Dimens.marginLarge,
-                          vertical: Dimens.marginLarge,),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Center(
-                            child: Image.asset(
-                              'assets/icon/app_icon.png',
-                              height: 59,
-                              width: 59,
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.center,
-                            margin: const EdgeInsets.only(
-                              bottom: Dimens.marginXLarge,
-                            ),
-                            child: Text(
-                              AppLocalizations.of(ctx)!.objectives,
-                              style: const TextStyle(
-                                fontSize: Dimens.fontSizeXXLarge,
-                              ),
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
-                                  child: Text(AppLocalizations.of(context)!.metabolic_objectives, style: const TextStyle(
-                                    fontSize: Dimens.fontSizeNormal,
-                                    fontWeight: FontWeight.bold,
-                                  ),)),
-                              ...state.objectivesInfoMaster!.metabolicObjectives.map((objective) =>
-                                  TextCheckboxBox(
-                                    title: objective.translate(context),
-                                    checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
-                                    onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
-                                    overflow: TextOverflow.clip,
-                                  ),
-                              ).toList(),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
-                                  child: Text(AppLocalizations.of(context)!.body_composition_objectives, style: const TextStyle(
-                                    fontSize: Dimens.fontSizeNormal,
-                                    fontWeight: FontWeight.bold,
-                                  ),)),
-                              ...state.objectivesInfoMaster!.bodyCompositionObjectives.map((objective) =>
-                                  TextRadioButton(
-                                    title: objective.translate(context),
-                                    isSelected: state.profile!.objectives.orEmpty().contains(objective.id),
-                                    onPressed: () => bloc.add(AddRadioObjectiveToListAction(id: objective.id)),
-                                  ),
-                              ).toList(),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall, vertical: Dimens.marginSmall),
-                                  child: Text(AppLocalizations.of(context)!.other_objectives, style: const TextStyle(
-                                    fontSize: Dimens.fontSizeNormal,
-                                    fontWeight: FontWeight.bold,
-                                  ),)),
-                              ...state.objectivesInfoMaster!.objectives.map((objective) =>
-                                  TextCheckboxBox(
-                                    title: objective.translate(context),
-                                    checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
-                                    onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
-                                    overflow: TextOverflow.clip,
-                                  ),
-                              ).toList(),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+      child: BlocConsumer<ProfileBloc, ProfileState>(
+      listener: (ctx, state) {
+        if (state.isLoading) {
+          LoadingScreen.instance().show(
+            context: ctx,
+            text: AppLocalizations.of(ctx)!.loading,
+          );
+        } else {
+          LoadingScreen.instance().hide();
+        }
+      },
+      builder: (ctx, state) {
+        return Stack(
+          children: [
+            // Background image or gradient
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/background.png'), // Your image
+                  fit: BoxFit.cover,
                 ),
-                Card(
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),),
-                  child: Container(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 20,),
-                      child: RoundedCustomButton(
-                        onPressed: () {
+              ),
+            ),
+
+            // Blur effect
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                color: Colors.black.withOpacity(0), // Needed to activate the blur
+              ),
+            ),
+
+            // Foreground content for the user interaction
+
+            Scaffold(
+              backgroundColor: Colors.transparent,
+              body: SafeArea(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: Dimens.height32),
+                      Image.asset(
+                        'assets/images/logo_name_white.png',
+                        width: 200,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(height: Dimens.height32),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(Dimens.padding4),
+                          decoration: BoxDecoration(
+                            color: AppColors.floralWhite,
+                              borderRadius: BorderRadius.circular(Dimens.border11),
+                          ),
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.symmetric(horizontal: Dimens.padding20, vertical: Dimens.padding4),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ListTile(
+                                  titleAlignment: ListTileTitleAlignment.top,
+                                  leading: Image.asset('assets/images/goal_objectives.png', height: 35, width: 35),
+                                    horizontalTitleGap: Dimens.zero,
+                                    contentPadding: EdgeInsets.zero,
+                                    title: Text(AppLocalizations.of(context)!.goals,
+                                      style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeXXLarge, color: AppColors.peacockBlue),
+                                    ),
+                                ),
+                                const SizedBox(height: Dimens.height12),
+                                Text(AppLocalizations.of(context)!.metabolic_objectives,
+                                  style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeLarge, color: AppColors.peacockBlue),
+                                ),
+                                ...state.objectivesInfoMaster!.metabolicObjectives.map((objective) =>
+                                    TextCheckboxBox(
+                                      title: objective.translate(context),
+                                      checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
+                                      onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
+                                      overflow: TextOverflow.clip,
+                                    ),
+                                ).toList(),
+                                const SizedBox(height: Dimens.height32),
+                                Text(AppLocalizations.of(context)!.body_composition_objectives,
+                                  style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeLarge, color: AppColors.peacockBlue),
+                                ),
+                                ...state.objectivesInfoMaster!.bodyCompositionObjectives.map((objective) =>
+                                    TextRadioButtonExpansible(
+                                      explanation: '',
+                                      title: objective.translate(context),
+                                      isSelected: state.profile!.objectives.orEmpty().contains(objective.id),
+                                      onPressed: () => bloc.add(AddRadioObjectiveToListAction(id: objective.id)),
+                                    ),
+                                ).toList(),
+                                const SizedBox(height: Dimens.height32),
+                                Text(AppLocalizations.of(context)!.other_objectives,
+                                  style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeLarge, color: AppColors.peacockBlue),
+                                ),
+                                ...state.objectivesInfoMaster!.objectives.map((objective) =>
+                                    TextCheckboxBox(
+                                      title: objective.translate(context),
+                                      checkboxValue: state.profile!.objectives.orEmpty().contains(objective.id),
+                                      onChangedCheckbox: () => bloc.add(AddObjectiveToListAction(id: objective.id)),
+                                      overflow: TextOverflow.clip,
+                                    ),
+                                ).toList(),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: Dimens.height32),
+                      GeneralButton(
+                        onTap: () {
                           if (state.profile!.objectives!.isNotEmpty) {
                             // bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, GeneralQuestionsScreen.routeName)));
                             Navigator.popAndPushNamed(
@@ -210,14 +203,17 @@ class _ObjectivesScreenState extends State<ObjectivesScreen> {
                             showObjectivesErrorDialog(context);
                           }
                         },
-                      ),),
+                      ),
+                      const SizedBox(height: Dimens.height32),
+                    ],
+                  ),
                 ),
-              ],
-            );
-          },
-        ),
-        // bottomNavigationBar: ,
-      ),
-    ),);
+              ),
+            ),
+          ],
+        );
+      },
+    ),
+    );
   }
 }

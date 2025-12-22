@@ -79,7 +79,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
       state.liquidEvents = await getLiquidEventsOfTodayInteractor.execute(dateTime: state.selectedDateTime);
       var totalSugarRequired = ((state.profile?.kcal ?? 0)*0.05)~/4;
 
-      state.micronutrients = state.profile?.micronutrients.orEmpty()
+      state.micronutrients = state.profile?.userAll.orEmpty()
           .map(
             (micronutrient) =>
             NutrientsModel(

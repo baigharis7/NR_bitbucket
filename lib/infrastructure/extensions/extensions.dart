@@ -21,6 +21,8 @@ import '../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../domain/models/masterfiles/supplements_info_master.dart';
 import '../../domain/models/profile/height_weight_units.dart';
 import '../lists/SupplementInfo.dart';
+import '../utils/ApiLogger.dart';
+import '../utils/crashlytics_service.dart';
 
 extension NullableStringExtensions on String? {
   bool isNotEmptyOrNull() {
@@ -128,8 +130,17 @@ extension SafeMap<T> on List {
     for (var item in this) {
       try {
         result.add(mapper(item));
-      } catch (_) {
-
+      } catch (error, st) {
+        CrashlyticsService.record(
+          error,
+          st,
+          context: {
+            'action': 'Updating data sync',
+            'screen': 'Extension method',
+            'event data': error.toString(),
+          },
+        );
+        ApiLogger.logRequest('Updating data sync', 'Extension Page', body: error.toString());
       }
     }
     return result;

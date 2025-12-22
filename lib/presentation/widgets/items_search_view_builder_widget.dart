@@ -30,7 +30,6 @@ class ItemsSearchViewBuilder extends StatelessWidget {
                 maxHeight: Dimens.height170,
               ),
               child: Scrollbar(
-                thumbVisibility: true,
                 trackVisibility: true,
                 thickness: 6,
                 radius: const Radius.circular(Dimens.border11),

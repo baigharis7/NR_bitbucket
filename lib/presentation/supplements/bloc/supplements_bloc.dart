@@ -24,6 +24,7 @@ import '../../../domain/models/profile/user_profile_model.dart';
 import '../../../domain/models/supplements/supplement_simple.dart';
 import '../../../infrastructure/helpers/date_time_helper.dart';
 import '../../../infrastructure/mappers/supplement_mappers.dart';
+import '../../../infrastructure/utils/crashlytics_service.dart';
 
 part 'supplements_event.dart';
 
@@ -180,11 +181,29 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
           _clearData();
           emit(state.copyWith(isLoading: false));
           event.onFinish.call();
-        } catch(_) {
+        } catch(error, st) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementEventError));
+          CrashlyticsService.record(
+            error,
+            st,
+            context: {
+              'action': 'Supplement logging local',
+              'screen': 'Add Supplement',
+              'event data': state.supplementObj.toString(),
+            },
+          );
         }
-      } catch(_) {
+      } catch(error, st) {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementEventError));
+        CrashlyticsService.record(
+          error,
+          st,
+          context: {
+            'action': 'Supplement logging',
+            'screen': 'Add Supplement',
+            'event data': state.supplementObj.toString(),
+          },
+        );
       }
     });
 
@@ -202,11 +221,29 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
           _clearData();
           emit(state.copyWith(isLoading: false));
           event.onFinish.call();
-        } catch(_) {
+        } catch(error, st) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveSupplementFavoriteError));
+          CrashlyticsService.record(
+            error,
+            st,
+            context: {
+              'action': 'Supplement favorite logging local',
+              'screen': 'Add Supplement',
+              'event data': state.supplementObj.toString(),
+            },
+          );
         }
-      } catch(_) {
+      } catch(error, st) {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementFavoriteError));
+        CrashlyticsService.record(
+          error,
+          st,
+          context: {
+            'action': 'Supplement favorite logging',
+            'screen': 'Add Supplement',
+            'event data': state.supplementObj.toString(),
+          },
+        );
       }
     });
 
@@ -224,11 +261,29 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
           _clearData();
           emit(state.copyWith(isLoading: false));
           event.onFinish.call();
-        } catch(_) {
+        } catch(error, st) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveSupplementRoutineError));
+          CrashlyticsService.record(
+            error,
+            st,
+            context: {
+              'action': 'Supplement routine logging local',
+              'screen': 'Add Supplement',
+              'event data': state.supplementObj.toString(),
+            },
+          );
         }
-      } catch(_) {
+      } catch(error, st) {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementRoutineError));
+        CrashlyticsService.record(
+          error,
+          st,
+          context: {
+            'action': 'Supplement routine logging',
+            'screen': 'Add Supplement',
+            'event data': state.supplementObj.toString(),
+          },
+        );
       }
     });
 

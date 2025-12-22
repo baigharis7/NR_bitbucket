@@ -1,5 +1,9 @@
 import 'dart:ffi';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/delete_food_favorite_interactor.dart';
@@ -28,6 +32,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.d
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_state.dart';
@@ -288,11 +293,29 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
           _clearFields();
           emit(state.copyWith(isLoading: false, onError: null,));
           event.onFinish.call();
-        } catch (_) {
+        } catch (error, st) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadFoodFavoriteError));
+          CrashlyticsService.record(
+            error,
+            st,
+            context: {
+              'action': 'Food favorite logging local',
+              'screen': 'Add Food',
+              'event data': event.foodFavorite.toJson().toString(),
+            },
+          );
         }
-      } catch (_){
+      } catch (error, st){
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveFoodFavoriteError));
+        CrashlyticsService.record(
+          error,
+          st,
+          context: {
+            'action': 'Food favorite logging',
+            'screen': 'Add Food',
+            'event data': event.foodFavorite.toJson().toString(),
+          },
+        );
       }
     });
 
@@ -363,13 +386,31 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
             _clearFields();
             emit(state.copyWith(isLoading: false,));
             event.onFinish.call();
-          } catch (error) {
+          } catch (error, st) {
+            CrashlyticsService.record(
+              error,
+              st,
+              context: {
+                'action': 'Food logging local',
+                'screen': 'Add Food',
+                'event data': event.foodEventSimple.toJson().toString(),
+              },
+            );
             emit(state.copyWith(isLoading: false, onError: ErrorTypes.locallySavingFoodEventError));
           }
         } else {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingFoodEventError));
         }
-      } catch (error) {
+      } catch (error, st) {
+        CrashlyticsService.record(
+          error,
+          st,
+          context: {
+            'action': 'Food logging',
+            'screen': 'Add Food',
+            'event data': event.foodEventSimple.toJson().toString(),
+          },
+        );
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingFoodEventError));
       }
     });
@@ -396,15 +437,33 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
             _clearFields();
             emit(state.copyWith(isLoading: false, onError: null,));
             event.onFinish.call();
-          } catch (_) {
+          } catch (error, st) {
             emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveFoodRoutineEventError));
+            CrashlyticsService.record(
+              error,
+              st,
+              context: {
+                'action': 'Food routine logging local',
+                'screen': 'Add Food',
+                'event data': event.foodRoutineEvent.toJson().toString(),
+              },
+            );
           }
 
         } else {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingFoodRoutineEventError));
         }
-      } catch (_) {
+      } catch (error, st) {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingFoodRoutineEventError));
+        CrashlyticsService.record(
+          error,
+          st,
+          context: {
+            'action': 'Food routine logging',
+            'screen': 'Add Food',
+            'event data': event.foodRoutineEvent.toJson().toString(),
+          },
+        );
       }
     });
 

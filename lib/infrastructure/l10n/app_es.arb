@@ -328,6 +328,7 @@
     "female" : "Mujer",
     "years_old" : "años",
     "update_goals" : "Actualizar objetivos",
+    "goals" : "Objetivos",
     "imp_info" : "Información importante",
     "update_desc" : "Para realizar un seguimiento correcto y poder cumplir con tus objetivos",
     "workout_dialog_title" : "En %s horas entrenas",

@@ -328,6 +328,7 @@
     "years_old" : "years old",
     "imp_info" : "Important information",
     "update_goals" : "Update goals",
+    "goals" : "Goals",
     "update_desc" : "To track correctly and be able to meet your goals",
     "workout_dialog_title" : "Your Workout starts in %s hours!",
     "after_workout_dialog_title" : "After the Workout",

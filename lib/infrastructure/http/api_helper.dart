@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:chuck_interceptor/chuck.dart';
 import 'package:chuck_interceptor/core/chuck_http_extensions.dart';
 import 'package:flutter/foundation.dart';
@@ -44,7 +45,8 @@ abstract class ApiHelper {
         rethrow;
       }
     } else {
-      throw (response);
+      final errorMessage = 'status: ${response.statusCode}\nbody:${response.body}\nheaders: ${response.headers}\n';
+      throw HttpException(errorMessage, uri: response.request?.url);
     }
   }
 
@@ -77,7 +79,8 @@ abstract class ApiHelper {
         rethrow;
       }
     } else {
-      throw (response);
+      final errorMessage = 'status: ${response.statusCode}\nbody:${response.body}\nheaders: ${response.headers}\n';
+      throw HttpException(errorMessage, uri: response.request?.url);
     }
   }
 
@@ -109,7 +112,8 @@ abstract class ApiHelper {
         rethrow;
       }
     } else {
-      throw response;
+      final errorMessage = 'status: ${response.statusCode}\nbody:${response.body}\nheaders: ${response.headers}\n';
+      throw HttpException(errorMessage, uri: response.request?.url);
     }
   }
 
@@ -142,7 +146,8 @@ abstract class ApiHelper {
         rethrow;
       }
     } else {
-      throw response;
+      final errorMessage = 'status: ${response.statusCode}\nbody:${response.body}\nheaders: ${response.headers}\n';
+      throw HttpException(errorMessage, uri: response.request?.url);
     }
   }
 

@@ -29,6 +29,7 @@ import '../../../domain/interactor/favorites/sport/upload_sport_favorite_interac
 import '../../../domain/interactor/routines/save_routine_interactor.dart';
 import '../../../domain/interactor/routines/upload_routine_interactor.dart';
 import '../../../domain/models/sportevents/sport_event_complete.dart';
+import '../../../infrastructure/utils/crashlytics_service.dart';
 
 class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
   final GetUserIdInteractor getUserIdInteractor;
@@ -214,13 +215,31 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
             _clearFields();
             event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null));
-          } catch (error) {
+          } catch (error, st) {
             state.onError = ErrorTypes.locallySavingSportEventError;
             emit(state.copyWith(isLoading: false, onError: state.onError,));
+            CrashlyticsService.record(
+              error,
+              st,
+              context: {
+                'action': 'Sport logging local',
+                'screen': 'Add Sport',
+                'event data': event.sportEventSimple.toJson().toString(),
+              },
+            );
           }
-        } catch (error) {
+        } catch (error, st) {
           state.onError = ErrorTypes.uploadingSportEventError;
           emit(state.copyWith(isLoading: false, onError: state.onError,));
+          CrashlyticsService.record(
+            error,
+            st,
+            context: {
+              'action': 'Sport logging',
+              'screen': 'Add Sport',
+              'event data': event.sportEventSimple.toJson().toString(),
+            },
+          );
         }
       });
 
@@ -238,13 +257,31 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
             _clearFields();
             event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null));
-          } catch (error) {
+          } catch (error, st) {
             state.onError = ErrorTypes.locallySavingSportRoutineError;
             emit(state.copyWith(isLoading: false, onError: state.onError,));
+            CrashlyticsService.record(
+              error,
+              st,
+              context: {
+                'action': 'Sport routine logging local',
+                'screen': 'Add Sport',
+                'event data': event.sportRoutineCompleted.toJson().toString(),
+              },
+            );
           }
-        } catch (error) {
+        } catch (error, st) {
           state.onError = ErrorTypes.uploadingSportRoutineError;
           emit(state.copyWith(isLoading: false, onError: state.onError,));
+          CrashlyticsService.record(
+            error,
+            st,
+            context: {
+              'action': 'Sport routine logging',
+              'screen': 'Add Sport',
+              'event data': event.sportRoutineCompleted.toJson().toString(),
+            },
+          );
         }
       });
 
@@ -265,8 +302,17 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
         } else {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveSportFavoriteError));
         }
-      } catch (error) {
+      } catch (error, st) {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSportFavoriteError));
+        CrashlyticsService.record(
+          error,
+          st,
+          context: {
+            'action': 'Sport favorite logging',
+            'screen': 'Add Sport',
+            'event data': event.sportFavorite.toJson().toString(),
+          },
+        );
       }
     });
 
