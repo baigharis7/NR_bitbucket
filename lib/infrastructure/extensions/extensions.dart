@@ -21,7 +21,6 @@ import '../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../domain/models/masterfiles/supplements_info_master.dart';
 import '../../domain/models/profile/height_weight_units.dart';
 import '../lists/SupplementInfo.dart';
-import '../utils/ApiLogger.dart';
 import '../utils/crashlytics_service.dart';
 
 extension NullableStringExtensions on String? {
@@ -140,7 +139,6 @@ extension SafeMap<T> on List {
             'event data': error.toString(),
           },
         );
-        ApiLogger.logRequest('Updating data sync', 'Extension Page', body: error.toString());
       }
     }
     return result;

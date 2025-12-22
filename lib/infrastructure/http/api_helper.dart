@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/ApiLogger.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/token_utils.dart';
 
 abstract class ApiHelper {

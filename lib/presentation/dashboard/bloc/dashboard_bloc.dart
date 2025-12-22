@@ -5,7 +5,6 @@ import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_m
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_day_supplement_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/modelsappearance/models_appearance_refs.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/ApiLogger.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:fluttertoast/fluttertoast.dart';

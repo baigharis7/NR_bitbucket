@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../domain/interactor/login/erase_database_interactor.dart';
 import '../../../domain/interactor/profile/sign_out_interactor.dart';
 import '../../../infrastructure/errors/error_types.dart';
-import '../../../infrastructure/utils/ApiLogger.dart';
 
 part 'settings_event.dart';
 part 'settings_state.dart';
