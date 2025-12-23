@@ -609,25 +609,25 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                               onTap: () => Navigator.pushNamed(context, ForgottenPasswordScreen.routeName),
                             ),
-                            Container(
-                              margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
-                              child: InkWell(
-                                onTap: () {
-                                  _usernameController.clear();
-                                  _emailController.clear();
-                                  _passwordController.clear();
-                                  _repeatPasswordController.clear();
-                                  model.changeLoginMode(() { _controller!.forward(); });
-                                },
-                                child: RichText(text: TextSpan(
-                                  text: (model.isLogin ? AppLocalizations.of(context)!.dont_have_account : AppLocalizations.of(context)!.already_have_account)  + '  ',
-                                  style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeMedium),
-                                  children: <TextSpan>[
-                                    TextSpan(text: model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline),),
-                                  ],
-                                ),),
-                              ),
-                            ),
+                            // Container(
+                            //   margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
+                            //   child: InkWell(
+                            //     onTap: () {
+                            //       _usernameController.clear();
+                            //       _emailController.clear();
+                            //       _passwordController.clear();
+                            //       _repeatPasswordController.clear();
+                            //       model.changeLoginMode(() { _controller!.forward(); });
+                            //     },
+                            //     child: RichText(text: TextSpan(
+                            //       text: (model.isLogin ? AppLocalizations.of(context)!.dont_have_account : AppLocalizations.of(context)!.already_have_account)  + '  ',
+                            //       style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeMedium),
+                            //       children: <TextSpan>[
+                            //         TextSpan(text: model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline),),
+                            //       ],
+                            //     ),),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
