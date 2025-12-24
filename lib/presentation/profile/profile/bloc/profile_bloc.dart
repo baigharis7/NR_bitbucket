@@ -227,7 +227,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
 
     on<SetPeriodRegularityAction>((event, emit) {
       emit(state.copyWith(isLoading: false, onError: null),);
-      // state.profile!.femaleCharacteristics ??= FemaleCharacteristics(menstruation: Menstruation());
+      state.profile!.femaleCharacteristics ??= FemaleCharacteristics(menstruation: Menstruation());
       state.profile!.femaleCharacteristics!.menstruation!.regularity =
           event.periodRegularity;
       emit(state.copyWith(

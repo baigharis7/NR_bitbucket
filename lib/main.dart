@@ -388,6 +388,7 @@ import 'package:nutrenaissance_flutter/presentation/privacypolicy/privacy_policy
 import 'package:nutrenaissance_flutter/presentation/profile/common/diet_questions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/food_list_aversions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/general_questions_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/profile/common/objectives_profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/objectives_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/physical_activity_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_bloc.dart';
@@ -1288,6 +1289,7 @@ void main() async {
           UpdateSportScreen.routeName:(_) => const UpdateSportScreen(),
           SettingsScreen.routeName:(_) => const SettingsScreen(),
           PolicyScreen.routeName:(_) => const PolicyScreen(),
+          ObjectivesProfileScreen.routeName: (_) => const ObjectivesProfileScreen(),
         },
       ),
     ),

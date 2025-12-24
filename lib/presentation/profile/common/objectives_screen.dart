@@ -10,10 +10,8 @@ import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_state.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/text_checkbox_box.dart';
 import '../../../infrastructure/utils/app_color.dart';
-import '../../widgets/text_radio_button.dart';
 import '../../widgets/text_radio_button_expansible.dart';
 import 'general_questions_screen.dart';
 

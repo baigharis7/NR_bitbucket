@@ -4,35 +4,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/popup_menu_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
-import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/diet_questions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/general_questions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/health_questions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/objectives_dialog.dart';
+import 'package:nutrenaissance_flutter/presentation/profile/common/objectives_profile_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/profile/common/objectives_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/physical_activity_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_state.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/ani_nutri_progress_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/profile_info_card.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/profile_option_with_graphic_and_add.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/swith_with_function_widget.dart';
 
 import '../../../../data/api/profile/model/upload_user_profile.dart';
-import '../../../dashboard/bloc/dashboard_actions.dart';
 import '../../../settings/view/settings_screen.dart';
-import '../../../widgets/custom_bottom_app_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const routeName = '/profile';
@@ -217,7 +213,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                 child: Text(e.translate(context).toUpperCase(), style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeSmall, color: AppColors.peacockBlue), maxLines: 1, overflow: TextOverflow.ellipsis,))),
                            const SizedBox(height: Dimens.height32),
                             InkWell(
-                              onTap: () => _showObjectivesBottomModalSheet(context: context, onSaveChanges: () => bloc.add(SaveChangesAction()),),
+                              onTap: () => Navigator.pushNamed(context, ObjectivesProfileScreen.routeName,).then((value) => null),
                               child: Row(
                                 children: [
                                   Text(

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart' as upload;
 import 'package:nutrenaissance_flutter/data/api/profile/model/user_profile_response.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
@@ -33,7 +35,8 @@ class ProfileRepositoryImpl extends ProfileRepository {
     if (profileEntity.isNull()) {
       return null;
     } else {
-      return mapToUserProfileModelFromProfileEntity(profileEntity!);
+      final profile = mapToUserProfileModelFromProfileEntity(profileEntity!);
+      return UserProfileModel.fromJson(jsonDecode(jsonEncode(profile.toJson())));
     }
   }
 
