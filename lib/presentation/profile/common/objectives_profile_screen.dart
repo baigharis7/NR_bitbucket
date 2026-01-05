@@ -195,6 +195,7 @@ class ObjectivesProfileScreen extends StatelessWidget {
                           onTap: () {
                             if (state.profile!.objectives!.isNotEmpty) {
                               bloc.add(SaveChangesAction());
+                              onBack();
                             } else {
                               showObjectivesErrorDialog(context);
                             }
