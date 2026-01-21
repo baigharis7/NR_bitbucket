@@ -23,16 +23,16 @@ class SportRoutineEntityAdapter extends TypeAdapter<SportRoutineEntity> {
       sportName: fields[3] as String?,
       scheduleTime: fields[4] as String?,
       info: (fields[5] as List?)?.cast<SportRoutineInfoEntity>(),
-      eventDate: fields[6] as int?,
-      daysOfWeek: fields[7] as List<int>?,
-      timeZone: fields[8] as String?,
+      daysOfWeek: fields[6] as List<int>?,
+      timeZone: fields[7] as String?,
+      eventDate: fields[8] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SportRoutineEntity obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -46,11 +46,11 @@ class SportRoutineEntityAdapter extends TypeAdapter<SportRoutineEntity> {
       ..writeByte(5)
       ..write(obj.info)
       ..writeByte(6)
-      ..write(obj.eventDate)
-      ..writeByte(7)
       ..write(obj.daysOfWeek)
+      ..writeByte(7)
+      ..write(obj.timeZone)
       ..writeByte(8)
-      ..write(obj.scheduleTime);
+      ..write(obj.eventDate);
   }
 
   @override
@@ -77,11 +77,11 @@ class SportRoutineInfoEntityAdapter
     };
     return SportRoutineInfoEntity(
       id: fields[0] as num?,
-      nameEs: fields[1] as String?,
-      nameEn: fields[2] as String?,
-      minutes: fields[3] as num?,
+      nameEn: fields[1] as String?,
+      nameEs: fields[2] as String?,
+      timeStart: fields[3] as num?,
       intensity: fields[4] as num?,
-      timeStart: fields[5] as num?,
+      minutes: fields[5] as num?,
     );
   }
 

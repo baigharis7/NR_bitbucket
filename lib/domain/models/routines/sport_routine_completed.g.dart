@@ -17,7 +17,7 @@ SportRoutineCompleted _$SportRoutineCompletedFromJson(
               .toList(),
       comment: json['comment'] as String?,
       sportName: json['sportName'] as String?,
-      scheduleTime: json['scheduleTime'] as String,
+      scheduleTime: json['scheduleTime'] as String?,
       daysOfWeek: (json['daysOfWeek'] as List<dynamic>?)
           ?.map((e) => (e as num).toInt())
           .toList(),

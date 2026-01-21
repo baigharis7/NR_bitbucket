@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
-import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
@@ -22,7 +20,6 @@ import 'package:nutrenaissance_flutter/presentation/welcome/welcome_screen.dart'
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_button_1.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/generic_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../../infrastructure/helpers/app_text_styles.dart';
@@ -609,25 +606,25 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                               onTap: () => Navigator.pushNamed(context, ForgottenPasswordScreen.routeName),
                             ),
-                            // Container(
-                            //   margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
-                            //   child: InkWell(
-                            //     onTap: () {
-                            //       _usernameController.clear();
-                            //       _emailController.clear();
-                            //       _passwordController.clear();
-                            //       _repeatPasswordController.clear();
-                            //       model.changeLoginMode(() { _controller!.forward(); });
-                            //     },
-                            //     child: RichText(text: TextSpan(
-                            //       text: (model.isLogin ? AppLocalizations.of(context)!.dont_have_account : AppLocalizations.of(context)!.already_have_account)  + '  ',
-                            //       style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeMedium),
-                            //       children: <TextSpan>[
-                            //         TextSpan(text: model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline),),
-                            //       ],
-                            //     ),),
-                            //   ),
-                            // ),
+                            Container(
+                              margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
+                              child: InkWell(
+                                onTap: () {
+                                  _usernameController.clear();
+                                  _emailController.clear();
+                                  _passwordController.clear();
+                                  _repeatPasswordController.clear();
+                                  model.changeLoginMode(() { _controller!.forward(); });
+                                },
+                                child: RichText(text: TextSpan(
+                                  text: (model.isLogin ? AppLocalizations.of(context)!.dont_have_account : AppLocalizations.of(context)!.already_have_account)  + '  ',
+                                  style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeMedium),
+                                  children: <TextSpan>[
+                                    TextSpan(text: model.isLogin ? AppLocalizations.of(context)!.register : AppLocalizations.of(context)!.login, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline),),
+                                  ],
+                                ),),
+                              ),
+                            ),
                           ],
                         ),
                       ),
