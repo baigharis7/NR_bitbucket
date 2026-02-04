@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_arguments_model.dart';
 
 import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../domain/models/routines/sport_routine_completed.dart';
@@ -16,6 +17,12 @@ class UpdateCalendarDateSportEventAction extends SportEventsActions {
   final DateTime? calendarDate;
 
   UpdateCalendarDateSportEventAction({required this.calendarDate});
+}
+
+class AddSportArgumentModelEventAction extends SportEventsActions {
+  final SportArgumentsModel sportArgumentsModel;
+
+  AddSportArgumentModelEventAction({required this.sportArgumentsModel});
 }
 
 class AddSportEventAction extends SportEventsActions {

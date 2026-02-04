@@ -12,8 +12,14 @@ import 'package:nutrenaissance_flutter/presentation/routinestabs/view/routines_t
 class FloatingMenuOverlay extends StatefulWidget {
   final VoidCallback onClose;
   final List<Map<String, dynamic>> menuItems;
+  final bool showFavoritesRoutinesButtons;
 
-  const FloatingMenuOverlay({super.key, required this.onClose, required this.menuItems});
+  const FloatingMenuOverlay({
+    super.key,
+    required this.onClose,
+    required this.menuItems,
+    this.showFavoritesRoutinesButtons = true,
+  });
 
   @override
   State<FloatingMenuOverlay> createState() => _FloatingMenuOverlayState();
@@ -162,7 +168,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          SlideTransition(
+                          if (widget.showFavoritesRoutinesButtons) SlideTransition(
                             position: Tween<Offset>(
                               begin: Offset(0, 0.2 * (7 + 1)),
                               end: Offset.zero,
@@ -215,7 +221,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                               ],
                             ),
                           ),
-                          const SizedBox(height: Dimens.height32),
+                          if (widget.showFavoritesRoutinesButtons) const SizedBox(height: Dimens.height32),
                           ...List.generate(widget.menuItems.length, (i) {
                             final item = widget.menuItems[i];
                             return buildMenuItem(item['label'], item['icon'], item['onTap'], widget.menuItems.length - i);

@@ -23,6 +23,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.d
 
 import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../domain/models/routines/sport_routine_completed.dart';
+import '../../../domain/models/sportevents/sport_arguments_model.dart';
 import '../../../domain/models/sportevents/sport_event_complete.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
 import '../../../infrastructure/helpers/remove_diac.dart';
@@ -136,7 +137,9 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
       if (ModalRoute.of(context)?.settings.arguments != null) {
         final infoReceived = ModalRoute.of(context)!.settings.arguments;
         if (infoReceived != null) {
-          if (infoReceived is DateTime?) {
+          if (infoReceived is SportArgumentsModel) {
+            bloc.add(AddSportArgumentModelEventAction(sportArgumentsModel: infoReceived));
+          } else if (infoReceived is DateTime?) {
             bloc.add(UpdateCalendarDateSportEventAction(calendarDate: infoReceived as DateTime));
           } else if (infoReceived is AddSportFavorite) {
             bloc.add(UpdateSportFromFavoriteTabSportEventsActions(addSportFavorite: infoReceived));

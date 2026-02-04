@@ -84,6 +84,17 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
+    on<AddSportArgumentModelEventAction>((event, emit) {
+      state.calendarDate = event.sportArgumentsModel.selectedDateTime;
+      if (event.sportArgumentsModel.preSelectFavorite) {
+        state.sportSimpleEvent?.isFavorite = true;
+      }
+      if (event.sportArgumentsModel.preSelectRoutine) {
+        state.sportSimpleEvent?.isCreateRoutine = true;
+      }
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
+
     on<AddSportEventAction>((event, emit) {
       emit(state.copyWith(isLoading: true, onError: null));
       final listOfIds = state.sportSimpleEvent?.info.orEmpty().map((e) => e.id).toList();

@@ -252,6 +252,12 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       state.foodEvent?.mealTime = event.foodArgumentsModel.mealTime.id;
       state.foodEvent?.eventDate = event.foodArgumentsModel.selectedDateTime.millisecondsSinceEpoch;
       state.foodEvent?.time = event.foodArgumentsModel.mealTime.time;
+      if (event.foodArgumentsModel.preSelectFavorite) {
+        state.foodEvent?.isFavorite = true;
+      }
+      if (event.foodArgumentsModel.preSelectRoutine) {
+        state.foodEvent?.isRoutine = true;
+      }
       emit(state.copyWith(isLoading: false,));
     },);
 
