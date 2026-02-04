@@ -530,7 +530,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,fontSize: Dimens.fontSizeNormal),
                                     children: <TextSpan>[
                                       TextSpan(
-                                        text: 'View Policy', style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal, decoration: TextDecoration.underline),
+                                        text: AppLocalizations.of(context)!.view_policy, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal, decoration: TextDecoration.underline),
                                         recognizer: _tapRecognizer..onTap = () => Navigator.pushNamed(context, PrivacyPolicy.routeName).then((value) => model.setPrivacyPolicyChecked(value as bool)),
                                       ),
                                     ],
@@ -569,34 +569,6 @@ class _LoginScreenState extends State<LoginScreen>
                                 },
                               ),
                             ),
-                            // RoundedCustomButton(
-                            //   enableButton: model.isLogin ? true : model.isPrivacyPolicyChecked,
-                            //   buttonText: model.isLogin
-                            //       ? AppLocalizations.of(context)!.login
-                            //       : AppLocalizations.of(context)!.register,
-                            //   onPressed: () {
-                            //     if (_formKey.currentState!.validate()) {
-                            //       model.submitData(
-                            //         username: _usernameController.text.trim().orEmpty(),
-                            //         email: _emailController.text.orEmpty(),
-                            //         password: _passwordController.text.orEmpty(),
-                            //         repeatPassword: _repeatPasswordController.text.orEmpty(),
-                            //         action: model.isLogin
-                            //             ? () => Navigator.of(context).popAndPushNamed(DashboardScreen.routeName)
-                            //             : () => _showMFADialog(
-                            //           context: context,
-                            //           sendVerificationCode: (confirmationCode) => model.sendVerificationCode(
-                            //             confirmationCode: confirmationCode,
-                            //             action: () => Navigator.of(context).popAndPushNamed(WelcomeScreen.routeName, result: true,),
-                            //             alreadyExistsAlias: () => Navigator.pop(context),
-                            //           ),
-                            //           resendVerificationCode: () => model.resendVerificationCode(),
-                            //         ),
-                            //         goToRegistry: () => Navigator.of(context).popAndPushNamed(WelcomeScreen.routeName),
-                            //       );
-                            //     }
-                            //   },
-                            // ),
                             if (model.isLogin) InkWell(
                               child: Text(
                                 AppLocalizations.of(context)!
