@@ -85,6 +85,7 @@ enum ErrorTypes {
 
 enum FormErrorTypes {
   usernameEmptyOrNullError,
+  usernameContainsSpacesError,
   emailFormatError,
   invalidPasswordError,
   emptyPasswordError,

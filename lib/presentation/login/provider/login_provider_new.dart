@@ -628,43 +628,44 @@ class LoginProviderNew extends BaseProvider {
   }
 
   FormErrorTypes? validateUsername(String? username) {
-    if (username == null || username.isEmpty || username.contains(' ')) {
+    if (isLogin) {
+      return null;
+    }
+    if (username == null || username.isEmpty) {
       return FormErrorTypes.usernameEmptyOrNullError;
+    }
+    if (username.contains(' ')) {
+      return FormErrorTypes.usernameContainsSpacesError;
     }
     return null;
   }
 
   FormErrorTypes? validateEmail(String? value) {
-    if (!isLogin) {
-      if (isEmail(value)) {
-        return null;
-      } else {
-        return FormErrorTypes.emailFormatError;
-      }
-    } else {
+    if (isLogin) {
       return null;
     }
+    if (value == null || value.isEmpty) {
+      return FormErrorTypes.emailFormatError;
+    }
+    if (!isEmail(value)) {
+      return FormErrorTypes.emailFormatError;
+    }
+    return null;
   }
 
-  FormErrorTypes? validatePassword(String? value) => validatePasswordOrNull(isLogin , value);
+  FormErrorTypes? validatePassword(String? value) => validatePasswordOrNull(isLogin, value);
+
   FormErrorTypes? validateRepeatPassword(String? value, String password) {
     if (isLogin) {
       return null;
-    } else {
-      if (value.isEmptyOrNull()) {
-        return FormErrorTypes.emptyRepeatPassword;
-      } else {
-        if (validatePasswordOrNull(!isLogin, password) == null) {
-          if (value != password) {
-            return FormErrorTypes.repeatPasswordError;
-          } else {
-            return null;
-          }
-        } else {
-          return null;
-        }
-      }
     }
+    if (value.isEmptyOrNull()) {
+      return FormErrorTypes.emptyRepeatPassword;
+    }
+    if (password.isNotEmpty && value != password) {
+      return FormErrorTypes.repeatPasswordError;
+    }
+    return null;
   }
 
 }
