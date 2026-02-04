@@ -32,9 +32,6 @@ class WeekWidget extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Container(
-          width: Dimens.widthSmall,
-          height: Dimens.width80,
-          margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6),
           decoration: BoxDecoration( // Replace with your background
             borderRadius: BorderRadius.circular(Dimens.border18),
             border: Border.all(color: Colors.white, width: Dimens.width1),
