@@ -9,7 +9,9 @@ import '../../../domain/models/dashboard/nutrients_weekly_model.dart';
 import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../../infrastructure/utils/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../widgets/weekly_nutrient_graphic.dart';
@@ -60,6 +62,7 @@ class _MicroNutrientsWeeklyScreenState extends State<MicroNutrientsWeeklyScreen>
           }
       }, builder: (context, state) {
         return Scaffold(
+            bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
             body: Stack(
               children: [
                 // Background image or gradient

@@ -8,8 +8,10 @@ import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/nutrient_row.dart';
 import '../../widgets/rounded_border_box.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 class MealTimeItemScreen extends StatefulWidget {
   static const routeName = '/meal_time_item_screen';
@@ -60,6 +62,7 @@ class _MealTimeItemScreenState extends State<MealTimeItemScreen> {
 
         Scaffold(
           backgroundColor: Colors.transparent,
+          bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(Dimens.paddingNormal),

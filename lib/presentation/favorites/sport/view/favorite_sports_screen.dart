@@ -12,9 +12,11 @@ import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/sport_f
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/sport_favorites_state.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/create_new_sport_favorite_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/event_list_item.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 
 class FavoriteSportsScreen extends StatefulWidget {
   static const routeName = '/favorite_sports';
@@ -75,6 +77,7 @@ class _FavoriteSportsScreenState extends State<FavoriteSportsScreen> {
           builder: (ctx, state) {
             return Scaffold(
               backgroundColor: Colors.grey[200],
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
               appBar: AppBar(
                 backgroundColor: Colors.transparent,
                 elevation: 0,

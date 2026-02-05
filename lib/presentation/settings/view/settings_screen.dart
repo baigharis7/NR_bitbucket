@@ -14,6 +14,7 @@ import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../common/view/loading_screen.dart';
 import '../../login/view/login_screen.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const routeName = '/settings_screen';
@@ -71,6 +72,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           Scaffold(
             backgroundColor: Colors.transparent,
+            bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
             body: SafeArea(
               child: Container(
                 width: width,

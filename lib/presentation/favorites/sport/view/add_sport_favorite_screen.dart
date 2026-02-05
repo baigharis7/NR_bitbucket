@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -19,6 +20,7 @@ import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/create_
 
 import '../../../../domain/models/sportevents/sport_event_complete.dart';
 import '../../../sportevent/view/add_sport_event_screen.dart';
+import '../../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../common/undo_favorite_dialog.dart';
 import '../../food/view/create_new_food_favorite_screen.dart';
 
@@ -132,6 +134,7 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
           },
           builder: (ctx, state) {
             return Scaffold(
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
               body: Column(
                 children: [
                   Expanded(

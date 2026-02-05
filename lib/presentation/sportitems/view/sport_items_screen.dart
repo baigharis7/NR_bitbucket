@@ -16,8 +16,10 @@ import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../widgets/date_picker_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/item_info_card.dart';
 import '../../widgets/remove_item_widget.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 class SportItemsScreen extends StatelessWidget {
   static const routeName = '/sport_items_screen';
@@ -80,6 +82,7 @@ class SportItemsScreen extends StatelessWidget {
 
               Scaffold(
                 backgroundColor: Colors.transparent,
+                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                 body: SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.all(Dimens.padding10),

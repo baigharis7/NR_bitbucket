@@ -8,6 +8,8 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.da
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
+import '../../../infrastructure/utils/constants.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 
 class PolicyScreen extends StatefulWidget {
   static const routeName = '/policy_screen';
@@ -54,6 +56,7 @@ class _PolicyScreenState extends State<PolicyScreen> {
 
       Scaffold(
         backgroundColor: Colors.transparent,
+        bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
         body: SafeArea(
           child: Container(
             width: width,

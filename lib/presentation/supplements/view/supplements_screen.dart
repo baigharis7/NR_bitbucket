@@ -28,6 +28,7 @@ import '../../widgets/dash_title_widget.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/item_info_card.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/item_routine_widget.dart';
 
 class SupplementsScreen extends StatefulWidget {
@@ -155,6 +156,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
               behavior: HitTestBehavior.opaque,
               child: Scaffold(
                 backgroundColor: Colors.transparent,
+                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                 body: SafeArea(
                     child: SingleChildScrollView(
                   child: Column(children: [

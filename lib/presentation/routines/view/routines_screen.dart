@@ -13,6 +13,8 @@ import '../../../infrastructure/mappers/favorites_mapper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../favorites/common/undo_favorite_dialog.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 class RoutinesScreen extends StatefulWidget {
   static const routeName = 'routines_screen';
@@ -68,6 +70,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
           if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
         },
         builder: (context, state) => Scaffold(
+          bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(

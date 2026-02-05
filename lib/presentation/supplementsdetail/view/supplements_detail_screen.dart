@@ -19,6 +19,7 @@ import '../../../infrastructure/utils/dimens.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../common/view/loading_screen.dart';
 import '../../widgets/date_picker_bar.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/remove_item_widget.dart';
@@ -112,6 +113,7 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
 
             Scaffold(
               backgroundColor: Colors.transparent,
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
               body: SafeArea(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(

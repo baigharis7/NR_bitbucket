@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/add_food_dialog.dart';
@@ -42,6 +43,7 @@ import '../../../infrastructure/mappers/food_event_mappers.dart';
 import '../../mealtimedetails/view/meal_time_details_screen.dart';
 import '../../updatemeal/view/update_meal_screen.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/item_info_card.dart';
 // import 'package:remove_diacritic/remove_diacritic.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
@@ -197,6 +199,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                 behavior: HitTestBehavior.opaque,
                 child: Scaffold(
                   backgroundColor: Colors.transparent,
+                  bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                   body: SafeArea(
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(vertical: Dimens.paddingLarge),

@@ -16,7 +16,9 @@ import 'package:nutrenaissance_flutter/presentation/favorites/food/bloc/favorite
 import 'package:nutrenaissance_flutter/presentation/favorites/food/view/add_food_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/view/create_new_food_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/food/view/favorite_foods_cluster_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/favorites_cluster.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 
 class FavoriteFoodsScreen extends StatefulWidget {
   static const routeName = '/favorite_foods';
@@ -73,6 +75,7 @@ class _FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
           },
           builder:  (ctx, state) {
             return Scaffold(
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
               appBar: AppBar(
                 backgroundColor: Colors.transparent,
                 elevation: 0,

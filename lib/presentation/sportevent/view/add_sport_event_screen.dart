@@ -10,6 +10,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.d
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -37,6 +38,7 @@ import '../../widgets/dash_title_widget.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/food_actions_widget.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/item_info_card.dart';
 import '../../widgets/item_routine_widget.dart';
 
@@ -200,6 +202,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
               behavior: HitTestBehavior.opaque,
               child: Scaffold(
                 backgroundColor: Colors.transparent,
+                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                 body: SafeArea(
                   child: Column(
                     children: [

@@ -16,8 +16,10 @@ import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../sportevent/view/sport_event_item.dart';
 import '../../widgets/event_options_widget.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 class UpdateSportScreen extends StatelessWidget {
   static const routeName = '/update_sport_screen';
@@ -85,6 +87,7 @@ class UpdateSportScreen extends StatelessWidget {
               behavior: HitTestBehavior.opaque,
               child: Scaffold(
                 backgroundColor: Colors.transparent,
+                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                 body: SafeArea(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingLarge),

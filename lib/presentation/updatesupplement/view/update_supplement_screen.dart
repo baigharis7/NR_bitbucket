@@ -14,11 +14,13 @@ import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../common/view/loading_screen.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/event_options_widget.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/item_routine_widget.dart';
 import '../../widgets/supplement_item_widget.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 class UpdateSupplementScreen extends StatefulWidget {
   static const routeName = '/update_supplement_screen';
@@ -95,6 +97,7 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
               behavior: HitTestBehavior.opaque,
               child: Scaffold(
                 backgroundColor: Colors.transparent,
+                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                 body: SafeArea(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(

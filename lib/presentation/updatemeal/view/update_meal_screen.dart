@@ -17,10 +17,12 @@ import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
+import '../../../infrastructure/utils/constants.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../foodevent/view/food_event_item.dart';
 import '../../widgets/general_button.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/header_add_item_card_section.dart';
 
 class UpdateMealScreen extends StatelessWidget {
@@ -93,6 +95,7 @@ class UpdateMealScreen extends StatelessWidget {
                 behavior: HitTestBehavior.opaque,
                 child: Scaffold(
                   backgroundColor: Colors.transparent,
+                  bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                   body: SafeArea(
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(vertical: Dimens.paddingLarge, horizontal: Dimens.paddingSmall),

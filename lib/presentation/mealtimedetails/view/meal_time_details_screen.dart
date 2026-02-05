@@ -16,8 +16,10 @@ import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../foodevent/view/add_food_event_screen.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/remove_item_widget.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 class MealTimeDetailScreen extends StatefulWidget {
   static const routeName = '/meal_time_details_screen';
@@ -120,6 +122,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
 
               Scaffold(
                 backgroundColor: Colors.transparent,
+                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                 body: SafeArea(
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingLarge),

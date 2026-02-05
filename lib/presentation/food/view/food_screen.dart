@@ -6,6 +6,8 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/food/bloc/food_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 
 class FoodScreen extends StatefulWidget {
   static const routeName = '/food_screen';
@@ -33,6 +35,7 @@ class _FoodScreenState extends State<FoodScreen> {
       value: bloc,
       child: SafeArea(
         child: Scaffold(
+          bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
           body: BlocConsumer<FoodBloc, FoodEventState> (listener: (context, state) {
 
           },builder: (context, state) {

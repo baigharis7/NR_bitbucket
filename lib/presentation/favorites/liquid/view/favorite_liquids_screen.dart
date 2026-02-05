@@ -13,7 +13,9 @@ import 'package:nutrenaissance_flutter/presentation/favorites/liquid/bloc/favori
 import 'package:nutrenaissance_flutter/presentation/favorites/liquid/bloc/favorite_liquids_state.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/liquid/view/create_new_liquid_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/liquid/view/favorite_liquids_cluster_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/favorites_cluster.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 
 class FavoriteLiquidsScreen extends StatefulWidget {
   static const routeName = '/favorite_liquids';
@@ -71,6 +73,7 @@ class _FavoriteLiquidsScreenState extends State<FavoriteLiquidsScreen> {
           },
           builder:  (ctx, state) {
             return Scaffold(
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
               appBar: AppBar(
                 backgroundColor: Colors.white,
                 titleSpacing: Dimens.marginNormal,

@@ -10,8 +10,10 @@ import '../../../infrastructure/utils/dimens.dart';
 import '../../fecesurine/bloc/feces_urine_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 class FecesUrineTabs extends StatefulWidget {
   static const routeName = '/feces_urine_tabs';
@@ -95,6 +97,7 @@ class _FecesUrineTabsState extends State<FecesUrineTabs> with SingleTickerProvid
 
             Scaffold(
               backgroundColor: Colors.transparent,
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
               body: SafeArea(child: Container(
                 margin: const EdgeInsets.all(Dimens.marginSmall),
                 child: Column(

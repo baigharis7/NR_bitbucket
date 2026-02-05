@@ -19,8 +19,10 @@ import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card
 import '../../../infrastructure/helpers/app_text_styles.dart';
 import '../../../infrastructure/helpers/date_time_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/rounded_custom_button.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 class FecesUrineTabHolder extends StatefulWidget {
   static const routeName = '/feces_urine_tab';
@@ -107,6 +109,7 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
 
             Scaffold(
               backgroundColor: Colors.transparent,
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
               body: SafeArea(child: Container(
                 margin: const EdgeInsets.all(Dimens.marginSmall),
                 child: Column(

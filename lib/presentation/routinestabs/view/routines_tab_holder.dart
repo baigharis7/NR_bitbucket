@@ -22,7 +22,9 @@ import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 class RoutinesTabHolder extends StatefulWidget {
   static const routeName = '/routines_tab_holder';
@@ -146,6 +148,7 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
 
             Scaffold(
               backgroundColor: Colors.transparent,
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
               floatingActionButton: FloatingActionButton(
                 onPressed: _onFabPressed,
                 backgroundColor: Colors.transparent,
