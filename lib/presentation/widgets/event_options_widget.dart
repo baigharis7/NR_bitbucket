@@ -191,6 +191,16 @@ class _EventOptionsWidgetState extends State<EventOptionsWidget> {
             _daysOfWeek.contains(dayNumber) ? _daysOfWeek.remove(dayNumber) : _daysOfWeek.add(dayNumber);
             setState(() {});
             // widget.onChangeWeekDays?.call(dayNumber);
+          }, onBulkDaySelect: (days) {
+            final allSelected = days.every((d) => _daysOfWeek.contains(d));
+            if (allSelected) {
+              _daysOfWeek.removeWhere((d) => days.contains(d));
+            } else {
+              for (final d in days) {
+                if (!_daysOfWeek.contains(d)) _daysOfWeek.add(d);
+              }
+            }
+            setState(() {});
           },),
         ],
       ),

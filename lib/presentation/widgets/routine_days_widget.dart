@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
@@ -10,7 +11,8 @@ class RoutineDaysWidget extends StatefulWidget {
   final String? title;
   final List<int>? daysOfWeek;
   final Function(DateTime) onDaySelect;
-  const RoutineDaysWidget({super.key, this.title, required this.onDaySelect, this.daysOfWeek});
+  final Function(List<int>)? onBulkDaySelect;
+  const RoutineDaysWidget({super.key, this.title, required this.onDaySelect, this.daysOfWeek, this.onBulkDaySelect});
 
   @override
   State<RoutineDaysWidget> createState() => _RoutineDaysWidgetState();
@@ -83,7 +85,48 @@ class _RoutineDaysWidgetState extends State<RoutineDaysWidget> {
             );
           }).toList(),
         ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            _buildQuickSelectButton(
+              label: AppLocalizations.of(context)!.weekdays,
+              days: const [1, 2, 3, 4, 5],
+            ),
+            const SizedBox(width: 8),
+            _buildQuickSelectButton(
+              label: AppLocalizations.of(context)!.weekend,
+              days: const [6, 7],
+            ),
+          ],
+        ),
       ],
+    );
+  }
+
+  Widget _buildQuickSelectButton({required String label, required List<int> days}) {
+    final selectedDays = widget.daysOfWeek.orEmpty();
+    final allSelected = days.every((d) => selectedDays.contains(d));
+
+    return GestureDetector(
+      onTap: () => widget.onBulkDaySelect?.call(days),
+      child: Container(
+        height: Dimens.height32,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: allSelected ? AppColors.yellowishGreen : Colors.white,
+          borderRadius: BorderRadius.circular(Dimens.border50),
+          border: Border.all(color: allSelected ? AppColors.yellowishGreen : AppColors.cloudyGrey),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: allSelected ? Colors.white : AppColors.yellowishGreen,
+            fontWeight: FontWeight.w500,
+            fontSize: Dimens.fontSizeNormal,
+          ),
+        ),
+      ),
     );
   }
 }
