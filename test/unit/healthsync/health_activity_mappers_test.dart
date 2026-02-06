@@ -1,0 +1,270 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/health_activity.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_metadata.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/health_activity_mappers.dart';
+
+void main() {
+  late SportsInfoEntity testSportsInfo;
+  late HealthActivity testActivity;
+
+  setUp(() {
+    testSportsInfo = SportsInfoEntity(
+      id: 1,
+      v: 1,
+      data: [
+        SportInfoEntity(id: 1, en: 'Running', es: 'Correr', mets: 8),
+        SportInfoEntity(id: 2, en: 'Walking', es: 'Caminar', mets: 3),
+      ],
+    );
+
+    testActivity = HealthActivity(
+      healthPlatformId: 'test_platform_id_123',
+      activityType: 'RUNNING',
+      startTime: DateTime(2024, 1, 15, 10, 0),
+      endTime: DateTime(2024, 1, 15, 11, 0),
+      durationMinutes: 60,
+      caloriesBurned: 500,
+      distance: 10000, // 10 km in meters
+      avgHeartRate: 150,
+      sourceName: 'Apple Health',
+      sourceType: 'apple_health',
+    );
+  });
+
+  group('mapHealthActivityToSportEventSimple', () {
+    test('creates SportEventSimple with correct basic properties', () {
+      final result = mapHealthActivityToSportEventSimple(
+        activity: testActivity,
+        userId: 'user123',
+        sportId: 1,
+        sportsInfo: testSportsInfo,
+      );
+
+      expect(result.userId, 'user123');
+      expect(result.eventDate, testActivity.startTime.millisecondsSinceEpoch);
+      expect(result.sportName, 'Running');
+      expect(result.source, 'apple_health');
+    });
+
+    test('creates SportEventSimple with correct sport info', () {
+      final result = mapHealthActivityToSportEventSimple(
+        activity: testActivity,
+        userId: 'user123',
+        sportId: 1,
+        sportsInfo: testSportsInfo,
+      );
+
+      expect(result.info, isNotEmpty);
+      expect(result.info!.length, 1);
+
+      final info = result.info!.first;
+      expect(info.id, 1);
+      expect(info.name_en, 'Running');
+      expect(info.name_es, 'Correr');
+      expect(info.minutes, 60);
+      expect(info.distance, 10000);
+      expect(info.avgHeartRate, 150);
+    });
+
+    test('infers high intensity from high heart rate', () {
+      final highIntensityActivity = HealthActivity(
+        healthPlatformId: 'test_id',
+        activityType: 'RUNNING',
+        startTime: DateTime(2024, 1, 15, 10, 0),
+        endTime: DateTime(2024, 1, 15, 11, 0),
+        durationMinutes: 60,
+        caloriesBurned: 500,
+        distance: 10000,
+        avgHeartRate: 170, // High heart rate
+        sourceName: 'Apple Health',
+        sourceType: 'apple_health',
+      );
+
+      final result = mapHealthActivityToSportEventSimple(
+        activity: highIntensityActivity,
+        userId: 'user123',
+        sportId: 1,
+        sportsInfo: testSportsInfo,
+      );
+
+      expect(result.info!.first.intensity, 2); // High intensity
+    });
+
+    test('infers low intensity from low heart rate', () {
+      final lowIntensityActivity = HealthActivity(
+        healthPlatformId: 'test_id',
+        activityType: 'WALKING',
+        startTime: DateTime(2024, 1, 15, 10, 0),
+        endTime: DateTime(2024, 1, 15, 11, 0),
+        durationMinutes: 60,
+        caloriesBurned: 200,
+        distance: 5000,
+        avgHeartRate: 80, // Low heart rate
+        sourceName: 'Apple Health',
+        sourceType: 'apple_health',
+      );
+
+      final result = mapHealthActivityToSportEventSimple(
+        activity: lowIntensityActivity,
+        userId: 'user123',
+        sportId: 2,
+        sportsInfo: testSportsInfo,
+      );
+
+      expect(result.info!.first.intensity, 0); // Low intensity
+    });
+
+    test('uses activity type as fallback when sport not found', () {
+      final unknownSportActivity = HealthActivity(
+        healthPlatformId: 'test_id',
+        activityType: 'UNKNOWN_SPORT',
+        startTime: DateTime(2024, 1, 15, 10, 0),
+        endTime: DateTime(2024, 1, 15, 11, 0),
+        durationMinutes: 60,
+        caloriesBurned: 300,
+        distance: null,
+        avgHeartRate: null,
+        sourceName: 'Apple Health',
+        sourceType: 'apple_health',
+      );
+
+      final result = mapHealthActivityToSportEventSimple(
+        activity: unknownSportActivity,
+        userId: 'user123',
+        sportId: 999, // Non-existent sport ID
+        sportsInfo: testSportsInfo,
+      );
+
+      expect(result.sportName, 'UNKNOWN_SPORT');
+    });
+  });
+
+  group('mapHealthActivityToSportEventComplete', () {
+    test('creates SportEventComplete with correct properties', () {
+      final result = mapHealthActivityToSportEventComplete(
+        activity: testActivity,
+        userId: 'user123',
+        eventId: 42,
+        sportId: 1,
+        sportsInfo: testSportsInfo,
+        eventKcals: 500,
+      );
+
+      expect(result.userId, 'user123');
+      expect(result.eventId, 42);
+      expect(result.eventDate, testActivity.startTime.millisecondsSinceEpoch);
+      expect(result.sportName, 'Running');
+      expect(result.source, 'apple_health');
+      expect(result.eventKcals, 500);
+    });
+
+    test('creates SportEventComplete with correct sport event info', () {
+      final result = mapHealthActivityToSportEventComplete(
+        activity: testActivity,
+        userId: 'user123',
+        eventId: 42,
+        sportId: 1,
+        sportsInfo: testSportsInfo,
+        eventKcals: 500,
+      );
+
+      expect(result.info, isNotEmpty);
+      expect(result.info!.length, 1);
+
+      final info = result.info!.first;
+      expect(info.id, 1);
+      expect(info.name_en, 'Running');
+      expect(info.name_es, 'Correr');
+      expect(info.minutes, 60);
+      expect(info.distance, 10000);
+      expect(info.avgHeartRate, 150);
+      expect(info.kcal, 500);
+      expect(info.timeStart, testActivity.startTime.millisecondsSinceEpoch);
+    });
+
+    test('handles null distance and heart rate', () {
+      final activityWithNulls = HealthActivity(
+        healthPlatformId: 'test_id',
+        activityType: 'RUNNING',
+        startTime: DateTime(2024, 1, 15, 10, 0),
+        endTime: DateTime(2024, 1, 15, 11, 0),
+        durationMinutes: 60,
+        caloriesBurned: 500,
+        distance: null,
+        avgHeartRate: null,
+        sourceName: 'Apple Health',
+        sourceType: 'apple_health',
+      );
+
+      final result = mapHealthActivityToSportEventComplete(
+        activity: activityWithNulls,
+        userId: 'user123',
+        eventId: 42,
+        sportId: 1,
+        sportsInfo: testSportsInfo,
+        eventKcals: 500,
+      );
+
+      final info = result.info!.first;
+      expect(info.distance, null);
+      expect(info.avgHeartRate, null);
+    });
+  });
+
+  group('HealthSyncMetadata mapping', () {
+    test('mapToHealthSyncMetadataEntity converts correctly', () {
+      final metadata = HealthSyncMetadata(
+        healthPlatformId: 'platform_123',
+        sportEventId: 42,
+        syncedAt: DateTime(2024, 1, 15, 12, 30),
+        sourceType: 'apple_health',
+      );
+
+      final entity = mapToHealthSyncMetadataEntity(metadata);
+
+      expect(entity.healthPlatformId, 'platform_123');
+      expect(entity.sportEventId, 42);
+      expect(entity.syncedAt, DateTime(2024, 1, 15, 12, 30).millisecondsSinceEpoch);
+      expect(entity.sourceType, 'apple_health');
+    });
+
+    test('mapToHealthSyncMetadata converts entity back correctly', () {
+      final metadata = HealthSyncMetadata(
+        healthPlatformId: 'platform_456',
+        sportEventId: 99,
+        syncedAt: DateTime(2024, 2, 20, 15, 45),
+        sourceType: 'health_connect',
+      );
+
+      final entity = mapToHealthSyncMetadataEntity(metadata);
+      final result = mapToHealthSyncMetadata(entity);
+
+      expect(result.healthPlatformId, 'platform_456');
+      expect(result.sportEventId, 99);
+      expect(result.syncedAt, DateTime(2024, 2, 20, 15, 45));
+      expect(result.sourceType, 'health_connect');
+    });
+
+    test('round-trip preserves all data', () {
+      final original = HealthSyncMetadata(
+        healthPlatformId: 'round_trip_test',
+        sportEventId: 123,
+        syncedAt: DateTime(2024, 3, 10, 8, 0, 30),
+        sourceType: 'apple_health',
+      );
+
+      final entity = mapToHealthSyncMetadataEntity(original);
+      final result = mapToHealthSyncMetadata(entity);
+
+      expect(result.healthPlatformId, original.healthPlatformId);
+      expect(result.sportEventId, original.sportEventId);
+      // Note: milliseconds precision is preserved
+      expect(
+        result.syncedAt.millisecondsSinceEpoch,
+        original.syncedAt.millisecondsSinceEpoch,
+      );
+      expect(result.sourceType, original.sourceType);
+    });
+  });
+}
