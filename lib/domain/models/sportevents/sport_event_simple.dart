@@ -11,12 +11,14 @@ class SportEventSimple {
   List<SportInfo>? info;
   String? comment;
   String? sportName;
+  String? source; // 'manual', 'apple_health', 'health_connect'
 
-  SportEventSimple({this.userId, this.eventId, this.eventDate, this.info, this.comment, this.sportName});
+  SportEventSimple({this.userId, this.eventId, this.eventDate, this.info, this.comment, this.sportName, this.source});
   SportEventSimple.empty() {
     userId = null;
     eventId = null;
     info = <SportInfo>[];
+    source = null;
   }
 
   factory SportEventSimple.fromJson(Map<String, dynamic> json) => _$SportEventSimpleFromJson(json);
@@ -31,6 +33,8 @@ class SportInfo extends Translatable {
   int? timeStart;
   int? intensity;
   int? minutes;
+  double? distance; // in meters
+  int? avgHeartRate; // in bpm
 
   SportInfo({
     this.id,
@@ -39,6 +43,8 @@ class SportInfo extends Translatable {
     this.timeStart,
     this.intensity,
     this.minutes,
+    this.distance,
+    this.avgHeartRate,
   });
   SportInfo.empty() {
     id = null;
@@ -47,6 +53,8 @@ class SportInfo extends Translatable {
     timeStart = null;
     intensity = null;
     minutes = null;
+    distance = null;
+    avgHeartRate = null;
   }
 
   factory SportInfo.fromJson(Map<String, dynamic> json) => _$SportInfoFromJson(json);

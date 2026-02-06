@@ -14,6 +14,7 @@ class SportEventComplete {
   String? sportName;
   List<SportEventInfo>? info;
   int? eventKcals;
+  String? source; // 'manual', 'apple_health', 'health_connect'
 
   SportEventComplete({
     required this.userId,
@@ -23,6 +24,7 @@ class SportEventComplete {
     this.sportName,
     required this.info,
     this.eventKcals,
+    this.source,
   });
 
   factory SportEventComplete.fromJson(Map<String, dynamic> json) => _$SportEventCompleteFromJson(json);
@@ -39,6 +41,8 @@ class SportEventInfo extends Translatable {
   int minutes;
   int? timeStart;
   int? kcal;
+  double? distance; // in meters
+  int? avgHeartRate; // in bpm
 
   SportEventInfo({
     required this.id,
@@ -48,6 +52,8 @@ class SportEventInfo extends Translatable {
     required this.minutes,
     this.timeStart,
     this.kcal,
+    this.distance,
+    this.avgHeartRate,
   });
 
   factory SportEventInfo.fromJson(Map<String, dynamic> json) => _$SportEventInfoFromJson(json);

@@ -16,6 +16,7 @@ class SportEventEntity extends HiveObject {
   @HiveField(4) List<SportEventInfoEntity>? info;
   @HiveField(5) int? eventKcals;
   @HiveField(6) int eventId;
+  @HiveField(7) String? source; // 'manual', 'apple_health', 'health_connect'
 
   SportEventEntity({
     required this.userId,
@@ -25,6 +26,7 @@ class SportEventEntity extends HiveObject {
     required this.info,
     this.eventKcals,
     required this.eventId,
+    this.source,
   });
 
   factory SportEventEntity.fromJson(Map<String, dynamic> json) => _$SportEventEntityFromJson(json);
@@ -41,6 +43,8 @@ class SportEventInfoEntity {
   @HiveField(4) int? kcal;
   @HiveField(5) String? name_en;
   @HiveField(6) String? name_es;
+  @HiveField(7) double? distance; // in meters
+  @HiveField(8) int? avgHeartRate; // in bpm
 
   SportEventInfoEntity({
     required this.id,
@@ -50,6 +54,8 @@ class SportEventInfoEntity {
     this.kcal,
     this.name_en,
     this.name_es,
+    this.distance,
+    this.avgHeartRate,
   });
 
   factory SportEventInfoEntity.fromJson(Map<String, dynamic> json) => _$SportEventInfoEntityFromJson(json);

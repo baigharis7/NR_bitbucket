@@ -10,4 +10,6 @@ enum PrefsKeys {
   foodEvents,
   sportEvents,
   supplementEvents,
+  healthSyncEnabled,
+  lastHealthSyncTime,
 }

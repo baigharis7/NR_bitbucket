@@ -11,6 +11,7 @@ SportEventComplete mapToSportEventCompleteFromResponse(response.SportEventRespon
     comment: sportEventResponse.comment,
     sportName: sportEventResponse.sportName,
     eventKcals: sportEventResponse.eventKcal,
+    source: sportEventResponse.source,
     info: sportEventResponse.info?.map((sportEventResponse) => SportEventInfo(
       id: sportEventResponse.id,
       name_en: sportEventResponse.name_en,
@@ -19,6 +20,8 @@ SportEventComplete mapToSportEventCompleteFromResponse(response.SportEventRespon
       minutes: sportEventResponse.minutes,
       timeStart: sportEventResponse.timeStart,
       intensity: sportEventResponse.intensity,
+      distance: sportEventResponse.distance,
+      avgHeartRate: sportEventResponse.avgHeartRate,
     ),).toList(),
   );
 
@@ -33,6 +36,7 @@ SportEventEntity mapToSportEventEntity(SportEventComplete sportEventComplete) {
     comment: sportEventComplete.comment,
     sportName: sportEventComplete.sportName,
     eventKcals: sportEventComplete.eventKcals,
+    source: sportEventComplete.source,
     info: sportEventComplete.info?.map((sportEventComplete) => SportEventInfoEntity(
       id: sportEventComplete.id,
       name_en: sportEventComplete.name_en,
@@ -41,6 +45,8 @@ SportEventEntity mapToSportEventEntity(SportEventComplete sportEventComplete) {
       minutes: sportEventComplete.minutes,
       timeStart: sportEventComplete.timeStart,
       kcal: sportEventComplete.kcal,
+      distance: sportEventComplete.distance,
+      avgHeartRate: sportEventComplete.avgHeartRate,
     ),).toList(),
   );
 
@@ -54,6 +60,7 @@ SportEventComplete mapToSportEventComplete(SportEventEntity entity) {
     eventDate: entity.eventDate,
     comment: entity.comment,
     sportName: entity.sportName,
+    source: entity.source,
     info: entity.info?.map((entity) => SportEventInfo(
       id: entity.id,
       name_en: entity.name_en.orEmpty(),
@@ -62,6 +69,8 @@ SportEventComplete mapToSportEventComplete(SportEventEntity entity) {
       minutes: entity.minutes,
       timeStart: entity.timeStart,
       kcal: entity.kcal,
+      distance: entity.distance,
+      avgHeartRate: entity.avgHeartRate,
     ),).toList(),
     eventKcals: entity.eventKcals,
   );

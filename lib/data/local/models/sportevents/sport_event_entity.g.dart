@@ -24,13 +24,14 @@ class SportEventEntityAdapter extends TypeAdapter<SportEventEntity> {
       info: (fields[4] as List?)?.cast<SportEventInfoEntity>(),
       eventKcals: fields[5] as int?,
       eventId: fields[6] as int,
+      source: fields[7] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SportEventEntity obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class SportEventEntityAdapter extends TypeAdapter<SportEventEntity> {
       ..writeByte(5)
       ..write(obj.eventKcals)
       ..writeByte(6)
-      ..write(obj.eventId);
+      ..write(obj.eventId)
+      ..writeByte(7)
+      ..write(obj.source);
   }
 
   @override
@@ -76,13 +79,15 @@ class SportEventInfoEntityAdapter extends TypeAdapter<SportEventInfoEntity> {
       kcal: fields[4] as int?,
       name_en: fields[5] as String?,
       name_es: fields[6] as String?,
+      distance: fields[7] as double?,
+      avgHeartRate: fields[8] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SportEventInfoEntity obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -96,7 +101,11 @@ class SportEventInfoEntityAdapter extends TypeAdapter<SportEventInfoEntity> {
       ..writeByte(5)
       ..write(obj.name_en)
       ..writeByte(6)
-      ..write(obj.name_es);
+      ..write(obj.name_es)
+      ..writeByte(7)
+      ..write(obj.distance)
+      ..writeByte(8)
+      ..write(obj.avgHeartRate);
   }
 
   @override
@@ -125,6 +134,7 @@ SportEventEntity _$SportEventEntityFromJson(Map<String, dynamic> json) =>
           .toList(),
       eventKcals: (json['eventKcals'] as num?)?.toInt(),
       eventId: (json['eventId'] as num).toInt(),
+      source: json['source'] as String?,
     );
 
 Map<String, dynamic> _$SportEventEntityToJson(SportEventEntity instance) =>
@@ -136,6 +146,7 @@ Map<String, dynamic> _$SportEventEntityToJson(SportEventEntity instance) =>
       'info': instance.info?.map((e) => e.toJson()).toList(),
       'eventKcals': instance.eventKcals,
       'eventId': instance.eventId,
+      'source': instance.source,
     };
 
 SportEventInfoEntity _$SportEventInfoEntityFromJson(
@@ -148,6 +159,8 @@ SportEventInfoEntity _$SportEventInfoEntityFromJson(
       kcal: (json['kcal'] as num?)?.toInt(),
       name_en: json['name_en'] as String?,
       name_es: json['name_es'] as String?,
+      distance: (json['distance'] as num?)?.toDouble(),
+      avgHeartRate: (json['avgHeartRate'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$SportEventInfoEntityToJson(
@@ -160,4 +173,6 @@ Map<String, dynamic> _$SportEventInfoEntityToJson(
       'kcal': instance.kcal,
       'name_en': instance.name_en,
       'name_es': instance.name_es,
+      'distance': instance.distance,
+      'avgHeartRate': instance.avgHeartRate,
     };

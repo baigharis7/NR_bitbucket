@@ -16,6 +16,7 @@ SportEventSimple _$SportEventSimpleFromJson(Map<String, dynamic> json) =>
           .toList(),
       comment: json['comment'] as String?,
       sportName: json['sportName'] as String?,
+      source: json['source'] as String?,
     );
 
 Map<String, dynamic> _$SportEventSimpleToJson(SportEventSimple instance) =>
@@ -26,6 +27,7 @@ Map<String, dynamic> _$SportEventSimpleToJson(SportEventSimple instance) =>
       'info': instance.info?.map((e) => e.toJson()).toList(),
       'comment': instance.comment,
       'sportName': instance.sportName,
+      'source': instance.source,
     };
 
 SportInfo _$SportInfoFromJson(Map<String, dynamic> json) => SportInfo(
@@ -35,6 +37,8 @@ SportInfo _$SportInfoFromJson(Map<String, dynamic> json) => SportInfo(
       timeStart: (json['timeStart'] as num?)?.toInt(),
       intensity: (json['intensity'] as num?)?.toInt(),
       minutes: (json['minutes'] as num?)?.toInt(),
+      distance: (json['distance'] as num?)?.toDouble(),
+      avgHeartRate: (json['avgHeartRate'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$SportInfoToJson(SportInfo instance) => <String, dynamic>{
@@ -44,4 +48,6 @@ Map<String, dynamic> _$SportInfoToJson(SportInfo instance) => <String, dynamic>{
       'timeStart': instance.timeStart,
       'intensity': instance.intensity,
       'minutes': instance.minutes,
+      'distance': instance.distance,
+      'avgHeartRate': instance.avgHeartRate,
     };

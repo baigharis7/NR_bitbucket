@@ -11,6 +11,7 @@ class SportEventResponse {
   String? sportName;
   List<SportEventInfoResponse>? info;
   int? eventKcal;
+  String? source; // 'manual', 'apple_health', 'health_connect'
 
   SportEventResponse({
     required this.userId,
@@ -20,6 +21,7 @@ class SportEventResponse {
     this.sportName,
     required this.info,
     this.eventKcal,
+    this.source,
   });
 
   factory SportEventResponse.fromJson(Map<String, dynamic> json) => _$SportEventResponseFromJson(json);
@@ -35,6 +37,8 @@ class SportEventInfoResponse {
   int minutes;
   int? timeStart;
   int? kcal;
+  double? distance; // in meters
+  int? avgHeartRate; // in bpm
 
   SportEventInfoResponse({
     required this.id,
@@ -44,6 +48,8 @@ class SportEventInfoResponse {
     required this.minutes,
     this.timeStart,
     this.kcal,
+    this.distance,
+    this.avgHeartRate,
   });
 
   factory SportEventInfoResponse.fromJson(Map<String, dynamic> json) => _$SportEventInfoResponseFromJson(json);

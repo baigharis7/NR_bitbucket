@@ -18,6 +18,7 @@ SportEventResponse _$SportEventResponseFromJson(Map<String, dynamic> json) =>
               (e) => SportEventInfoResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
       eventKcal: (json['eventKcal'] as num?)?.toInt(),
+      source: json['source'] as String?,
     );
 
 Map<String, dynamic> _$SportEventResponseToJson(SportEventResponse instance) =>
@@ -29,6 +30,7 @@ Map<String, dynamic> _$SportEventResponseToJson(SportEventResponse instance) =>
       'sportName': instance.sportName,
       'info': instance.info?.map((e) => e.toJson()).toList(),
       'eventKcal': instance.eventKcal,
+      'source': instance.source,
     };
 
 SportEventInfoResponse _$SportEventInfoResponseFromJson(
@@ -41,6 +43,8 @@ SportEventInfoResponse _$SportEventInfoResponseFromJson(
       minutes: (json['minutes'] as num).toInt(),
       timeStart: (json['timeStart'] as num?)?.toInt(),
       kcal: (json['kcal'] as num?)?.toInt(),
+      distance: (json['distance'] as num?)?.toDouble(),
+      avgHeartRate: (json['avgHeartRate'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$SportEventInfoResponseToJson(
@@ -53,4 +57,6 @@ Map<String, dynamic> _$SportEventInfoResponseToJson(
       'minutes': instance.minutes,
       'timeStart': instance.timeStart,
       'kcal': instance.kcal,
+      'distance': instance.distance,
+      'avgHeartRate': instance.avgHeartRate,
     };
