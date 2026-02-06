@@ -1,24 +1,61 @@
-# nutrenaissance_flutter
+# NutRenaissance Flutter
 
-A new Flutter project.
+[![Build Status](https://img.shields.io/bitbucket/pipelines/Asdgvarela/nutrenaissance_flutter/master?style=flat-square)](https://bitbucket.org/Asdgvarela/nutrenaissance_flutter/pipelines)
+
+A nutrition and wellness tracking Flutter application.
+
+## Prerequisites
+
+- Flutter SDK (stable channel)
+- Dart SDK
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+```bash
+# Install dependencies
+flutter pub get
 
-A few resources to get you started if this is your first Flutter project:
+# Run the app
+flutter run
+```
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Testing
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+# Run all tests
+flutter test
 
-For help getting started with flavors managing & for apk build
-[online documentation for flavors](https://medium.com/flutter-community/flavoring-flutter-applications-android-ios-ea39d3155346), here is detail about flavoring & its commands,
-publish Flutter application on Android and iOS platforms for development(dev) and production (prod) environments.
+# Run tests with coverage
+flutter test --coverage
 
-For help getting started with release
-[online documentation for release(.aab)](https://docs.flutter.dev/deployment/android?gclid=CjwKCAjwysipBhBXEiwApJOcu7JropdisFLEauYKHzCZJTvpUK_G4c4KC6O_f3BrLQMzr-y0YKIeLhoCGygQAvD_BwE&gclsrc=aw.ds), here is detail about release,
-when you’re ready to prepare a release version of your app, for example to publish to the Google Play Store, this page can help. Before publishing, you might want to put some finishing touches on your app. 
+# View coverage report (requires lcov)
+genhtml coverage/lcov.info -o coverage/html
+open coverage/html/index.html
+```
+
+## Code Quality
+
+```bash
+# Static analysis
+flutter analyze
+```
+
+## Build
+
+```bash
+# Android APK
+flutter build apk
+
+# Android App Bundle
+flutter build appbundle
+
+# iOS (macOS only)
+flutter build ios
+```
+
+## CI/CD
+
+Bitbucket Pipelines runs automatically on every push and pull request:
+- Static analysis (`flutter analyze`)
+- All unit and widget tests
+- Code coverage reporting
