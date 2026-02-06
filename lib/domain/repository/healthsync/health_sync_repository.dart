@@ -49,4 +49,8 @@ abstract class HealthSyncRepository {
 
   /// Update the last sync timestamp.
   Future<void> setLastSyncTime(DateTime time);
+
+  /// Install Health Connect app (Android only).
+  /// Opens the Play Store to install Health Connect.
+  Future<void> installHealthConnect();
 }

@@ -1,4 +1,5 @@
 import 'package:nutrenaissance_flutter/data/api/eventssync/model/events_synchronization_request.dart';
+import 'package:nutrenaissance_flutter/data/local/models/healthsync/health_sync_metadata_entity.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
 import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
 import 'package:nutrenaissance_flutter/data/local/models/fecesurine/upload_feces_event_entity.dart';
@@ -111,4 +112,9 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<void> saveFoodRoutine(FoodRoutineEntity foodRoutineEntity, {bool isEdit = false});
   Future<List> getFoodRoutine();
   Future<void> removeFoodRoutine(FoodRoutineEntity foodRoutineEntity);
+
+  // Health Sync Metadata
+  Future<void> saveHealthSyncMetadata(HealthSyncMetadataEntity metadata);
+  Future<List<HealthSyncMetadataEntity>> getHealthSyncMetadata();
+  Future<bool> isHealthActivitySynced(String healthPlatformId);
 }

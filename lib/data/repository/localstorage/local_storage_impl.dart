@@ -6,6 +6,7 @@ import 'package:nutrenaissance_flutter/data/local/models/favorites/food/food_fav
 import 'package:nutrenaissance_flutter/data/local/models/favorites/liquid/liquid_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/favorites/sport/sport_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/fecesurine/upload_feces_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/healthsync/health_sync_metadata_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodroutines/food_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_event_entity.dart';
@@ -92,6 +93,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _collagenEventsBox;
   Box? _modelAppearanceBox;
   Box? _cookingMethodsOilsInfoBox;
+  Box? _healthSyncMetadataBox;
 
   Future<Box> _openProfileBox() async => openBox(_profileBox, UserProfileEntity.boxName);
   Future<Box> _openFoodEventsBox() async => openBox(_foodEventsBox, FoodEventEntity.boxName);
@@ -1728,6 +1730,33 @@ class LocalStorageImpl extends LocalStorageRepository {
         rethrow;
       }
     }
+  }
+
+  // Health Sync Metadata
+
+  Future<Box> _openHealthSyncMetadataBox() async =>
+      openBox(_healthSyncMetadataBox, HealthSyncMetadataEntity.boxName);
+
+  @override
+  Future<void> saveHealthSyncMetadata(HealthSyncMetadataEntity metadata) async {
+    try {
+      final box = await _openHealthSyncMetadataBox();
+      await box.put(metadata.healthPlatformId, metadata);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<HealthSyncMetadataEntity>> getHealthSyncMetadata() async {
+    final box = await _openHealthSyncMetadataBox();
+    return box.values.cast<HealthSyncMetadataEntity>().toList();
+  }
+
+  @override
+  Future<bool> isHealthActivitySynced(String healthPlatformId) async {
+    final box = await _openHealthSyncMetadataBox();
+    return box.containsKey(healthPlatformId);
   }
 
 }
