@@ -550,6 +550,36 @@
     "search_activity_hint": "Type to search for an activity",
     "search_supplement_hint": "Type to search for a supplement",
     "search_drink_hint": "Type to search for a drink",
-    "new_day_message": "It's a new day! Go back to see today's data."
+    "new_day_message": "It's a new day! Go back to see today's data.",
+    "health_sync_settings": "Health App Sync",
+    "health_sync_title": "Sync with your health apps",
+    "health_sync_description": "Connect Apple Health or Health Connect to automatically import your workouts, steps, and active calories.",
+    "health_sync_connect": "Connect Now",
+    "health_sync_skip": "Skip for now",
+    "health_sync_enable": "Enable health data sync",
+    "health_sync_last_sync": "Last synced: {time}",
+    "@health_sync_last_sync": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "health_sync_now": "Sync Now",
+    "health_sync_syncing": "Syncing...",
+    "health_sync_success": "Health data synced successfully",
+    "health_sync_error": "Failed to sync health data",
+    "health_sync_no_permission": "Health data access not granted",
+    "health_sync_not_available": "Health data sync is not available on this device",
+    "health_sync_source_apple": "Apple Health",
+    "health_sync_source_health_connect": "Health Connect",
+    "health_sync_activities_imported": "{count} activities imported",
+    "@health_sync_activities_imported": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    }
 
 }

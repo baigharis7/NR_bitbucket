@@ -1,1 +1,5 @@
-{}
+{
+  "es": [
+    "new_day_message"
+  ]
+}

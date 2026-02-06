@@ -552,7 +552,35 @@
     "search_activity_hint": "Escribe para buscar una actividad",
     "search_supplement_hint": "Escribe para buscar un suplemento",
     "search_drink_hint": "Escribe para buscar una bebida",
-    "new_day_message": "¡Es un nuevo día! Vuelve para ver los datos de hoy."
-
+    "health_sync_settings": "Sincronización de salud",
+    "health_sync_title": "Sincroniza con tus apps de salud",
+    "health_sync_description": "Conecta Apple Health o Health Connect para importar automáticamente tus entrenamientos, pasos y calorías activas.",
+    "health_sync_connect": "Conectar ahora",
+    "health_sync_skip": "Omitir por ahora",
+    "health_sync_enable": "Habilitar sincronización de datos de salud",
+    "health_sync_last_sync": "Última sincronización: {time}",
+    "@health_sync_last_sync": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "health_sync_now": "Sincronizar ahora",
+    "health_sync_syncing": "Sincronizando...",
+    "health_sync_success": "Datos de salud sincronizados correctamente",
+    "health_sync_error": "Error al sincronizar datos de salud",
+    "health_sync_no_permission": "Acceso a datos de salud no concedido",
+    "health_sync_not_available": "La sincronización de datos de salud no está disponible en este dispositivo",
+    "health_sync_source_apple": "Apple Health",
+    "health_sync_source_health_connect": "Health Connect",
+    "health_sync_activities_imported": "{count} actividades importadas",
+    "@health_sync_activities_imported": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    }
 
 }
