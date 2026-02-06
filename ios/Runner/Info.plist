@@ -59,5 +59,9 @@
 		<string>en</string>
 		<string>es</string>
 	</array>
+	<key>NSHealthShareUsageDescription</key>
+	<string>NutreNaissance needs access to your health data to sync your workouts, steps, and active energy data.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>NutreNaissance needs write access to log your nutrition and activity data to Apple Health.</string>
 </dict>
 </plist>

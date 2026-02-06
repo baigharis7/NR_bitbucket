@@ -693,6 +693,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
+  health:
+    dependency: "direct main"
+    description:
+      name: health
+      sha256: "885104e4cdd1b6db5a04f85304cfb16d50bd1729124c0da11464f1d4c85b9d1c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.0.1"
   hive:
     dependency: "direct main"
     description:
@@ -1022,7 +1030,7 @@ packages:
     source: hosted
     version: "4.2.5"
   permission_handler:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: permission_handler
       sha256: "284a66179cabdf942f838543e10413246f06424d960c92ba95c84439154fcac8"
@@ -1626,6 +1634,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.2"
+  workmanager:
+    dependency: "direct main"
+    description:
+      name: workmanager
+      sha256: ed13530cccd28c5c9959ad42d657cd0666274ca74c56dea0ca183ddd527d3a00
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.2"
   xdg_directories:
     dependency: transitive
     description:
@@ -1651,5 +1667,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.1.0 <4.0.0"
+  dart: ">=3.1.2 <4.0.0"
   flutter: ">=3.13.1"
