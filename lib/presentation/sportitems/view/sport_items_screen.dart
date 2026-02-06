@@ -159,13 +159,43 @@ class _SportItemsScreenState extends State<SportItemsScreen> with MidnightToastM
                                       itemBuilder: (context, index) {
                                         final activity = state.sportEvents![index];
                                         final itemName = activity.sportName ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: activity.info, context: context);
+
+                                        // Check if this is a synced activity
+                                        final isSyncedActivity = activity.source != null && activity.source != 'manual';
+                                        final sourceLabel = activity.source == 'apple_health'
+                                            ? AppLocalizations.of(context)!.health_sync_source_apple
+                                            : activity.source == 'health_connect'
+                                                ? AppLocalizations.of(context)!.health_sync_source_health_connect
+                                                : null;
+
+                                        // Build subtitle with extra info for synced activities
+                                        String subtitle = '${AppLocalizations.of(context)!.energy}: -${activity.eventKcals} kcal. - ${(activity.info?.length ?? 0) > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : "${AppLocalizations.of(context)!.duration}: ${activity.info![0].minutes} min."}';
+
+                                        // Add distance and heart rate for synced activities if available
+                                        if (isSyncedActivity && activity.info != null && activity.info!.isNotEmpty) {
+                                          final info = activity.info![0];
+                                          if (info.distance != null && info.distance! > 0) {
+                                            final distanceKm = (info.distance! / 1000).toStringAsFixed(1);
+                                            subtitle += ' - ${distanceKm} km';
+                                          }
+                                          if (info.avgHeartRate != null) {
+                                            subtitle += ' - ${info.avgHeartRate} bpm';
+                                          }
+                                        }
+
+                                        // Prepend source label for synced activities
+                                        if (sourceLabel != null) {
+                                          subtitle = '$sourceLabel - $subtitle';
+                                        }
+
                                         return ItemInfoCard(
                                           title: itemName,
-                                          subtitle: '${AppLocalizations.of(context)!.energy}: -${activity.eventKcals} kcal. - ${(activity.info?.length ?? 0) > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : "${AppLocalizations.of(context)!.duration}: ${activity.info![0].minutes} min."}',
-                                          trailingSrc: 'assets/images/delete_icon.png',
-                                          beforeTrailingSrc: 'assets/icon/edit_icon.png',
-                                          beforeTrailingTap: () => Navigator.pushNamed(context, SportUpdateScreen.routeName, arguments: activity).then((value) => bloc.add(UpdateDatetimeSportItemsEvents(dateTime: state.dateTime ?? DateTime.now()))),
-                                          trailingTap: () => _showRemoveDialog(
+                                          subtitle: subtitle,
+                                          leadingSrc: isSyncedActivity ? 'assets/icon/sport_icon.png' : null,
+                                          trailingSrc: isSyncedActivity ? null : 'assets/images/delete_icon.png',
+                                          beforeTrailingSrc: isSyncedActivity ? null : 'assets/icon/edit_icon.png',
+                                          beforeTrailingTap: isSyncedActivity ? null : () => Navigator.pushNamed(context, SportUpdateScreen.routeName, arguments: activity).then((value) => bloc.add(UpdateDatetimeSportItemsEvents(dateTime: state.dateTime ?? DateTime.now()))),
+                                          trailingTap: isSyncedActivity ? null : () => _showRemoveDialog(
                                             description: AppLocalizations.of(context)!.remove_item(itemName),
                                             onCancel: () => Navigator.pop(context),
                                             onConfirm: () => bloc.add(DeleteSportItemSportItemsEvents(sportEventComplete: activity)),

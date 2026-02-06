@@ -13,6 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../common/view/loading_screen.dart';
+import '../../healthsync/view/health_sync_settings_screen.dart';
 import '../../login/view/login_screen.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
 
@@ -115,6 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           const Divider(color: AppColors.yellowishGreen, thickness: 1,),
                           SizedBox(height: height * 0.03),
                           _menuTile(AppLocalizations.of(context)!.log_out, onTap: () => settingsBloc.add(SettingsLogOut(goToLogin: () => Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false,))),),
+                          _menuTile(AppLocalizations.of(context)!.health_sync_settings, onTap: () => Navigator.pushNamed(context, HealthSyncSettingsScreen.routeName),),
                           SizedBox(height: height * 0.03),
                           Text(AppLocalizations.of(context)!.feedback_support,
                             style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize19 * fontScale, color: AppColors.yellowishGreen),
