@@ -86,6 +86,9 @@ import 'package:nutrenaissance_flutter/data/repository/recipes/recipes_repositor
 import 'package:nutrenaissance_flutter/data/repository/recommendations/recommendations_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/routines/routines_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/sportevents/sport_events_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/repository/healthsync/health_sync_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/local/models/healthsync/health_sync_metadata_entity.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/health_sync_background_service.dart';
 import 'package:nutrenaissance_flutter/data/repository/steps/steps_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/supplements/supplements_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/waterevents/water_event_repository_impl.dart';
@@ -304,6 +307,14 @@ import 'package:nutrenaissance_flutter/domain/interactor/waterevents/save_water_
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/save_water_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/upload_water_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/upload_water_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/healthsync/check_health_sync_status_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/healthsync/check_health_sync_status_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/healthsync/request_health_permissions_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/healthsync/request_health_permissions_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/healthsync/sync_health_activities_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/healthsync/sync_health_activities_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/healthsync/toggle_health_sync_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/healthsync/toggle_health_sync_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
 import 'package:nutrenaissance_flutter/domain/models/recipes/upload_recipe_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/repository/advices/advices_repository.dart';
@@ -426,6 +437,9 @@ import 'package:nutrenaissance_flutter/presentation/routinestabs/bloc/routines_t
 import 'package:nutrenaissance_flutter/presentation/routinestabs/view/routines_tab_holder.dart';
 import 'package:nutrenaissance_flutter/presentation/settings/bloc/settings_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/settings/view/settings_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/healthsync/bloc/health_sync_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/healthsync/view/health_sync_onboarding_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/healthsync/view/health_sync_settings_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/view/splash_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
@@ -1180,6 +1194,47 @@ void main() async {
       fcmApi: fcmApi,
   );
 
+  // Health Sync
+  final healthSyncRepository = HealthSyncRepositoryImpl(
+    localStorageRepository: localStorageRepository,
+    preferencesRepository: prefsRepository,
+  );
+
+  final checkHealthSyncStatusInteractor = CheckHealthSyncStatusInteractorImpl(
+    healthSyncRepository: healthSyncRepository,
+  );
+
+  final requestHealthPermissionsInteractor = RequestHealthPermissionsInteractorImpl(
+    healthSyncRepository: healthSyncRepository,
+  );
+
+  final toggleHealthSyncInteractor = ToggleHealthSyncInteractorImpl(
+    healthSyncRepository: healthSyncRepository,
+  );
+
+  final syncHealthActivitiesInteractor = SyncHealthActivitiesInteractorImpl(
+    healthSyncRepository: healthSyncRepository,
+    localStorageRepository: localStorageRepository,
+    preferencesRepository: prefsRepository,
+    uploadSportEventsInteractor: uploadSportEventsInteractor,
+    saveSportEventInteractor: saveSportEventInteractor,
+  );
+
+  final healthSyncBloc = HealthSyncBloc(
+    healthSyncRepository: healthSyncRepository,
+    checkHealthSyncStatusInteractor: checkHealthSyncStatusInteractor,
+    requestHealthPermissionsInteractor: requestHealthPermissionsInteractor,
+    toggleHealthSyncInteractor: toggleHealthSyncInteractor,
+    syncHealthActivitiesInteractor: syncHealthActivitiesInteractor,
+  );
+
+  // Initialize WorkManager for background health sync (non-blocking)
+  HealthSyncBackgroundService.initialize().catchError((e) {
+    // Silently ignore WorkManager initialization errors -
+    // background sync is optional and app should still work without it
+    debugPrint('WorkManager initialization failed: $e');
+  });
+
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
 
   runApp(
@@ -1238,6 +1293,7 @@ void main() async {
         BlocProvider<UpdateMealBloc>(create: (context) => updateMealBloc,),
         BlocProvider<UpdateSportBloc>(create: (context) => updateSportBloc,),
         BlocProvider<SettingsBloc>(create: (context) => settingsBloc,),
+        BlocProvider<HealthSyncBloc>(create: (context) => healthSyncBloc,),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -1345,6 +1401,8 @@ void main() async {
           SettingsScreen.routeName:(_) => const SettingsScreen(),
           PolicyScreen.routeName:(_) => const PolicyScreen(),
           ObjectivesProfileScreen.routeName: (_) => const ObjectivesProfileScreen(),
+          HealthSyncOnboardingScreen.routeName:(_) => const HealthSyncOnboardingScreen(),
+          HealthSyncSettingsScreen.routeName:(_) => const HealthSyncSettingsScreen(),
         },
       ),
     ),
@@ -1507,4 +1565,5 @@ void initLocalStorage() async {
   Hive.registerAdapter(CookingMethodsOilsInfoEntityAdapter());
   Hive.registerAdapter(CookingMethodOilInfoEntityAdapter());
   Hive.registerAdapter(SyncQueueEntryAdapter());
+  Hive.registerAdapter(HealthSyncMetadataEntityAdapter());
 }
