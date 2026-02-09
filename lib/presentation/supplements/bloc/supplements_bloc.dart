@@ -218,6 +218,27 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
         try {
           await saveSupplementFavoriteInteractor.execute(uploadSupplementFavorite, state.isEdit ?? false);
           state.supplementFavorites = await getSupplementFavoritesInteractor.execute();
+
+          // Also log the item as an event
+          try {
+            final supplementForEvent = state.supplementObj!;
+            final eventId = DateTime.now().millisecondsSinceEpoch;
+            supplementForEvent.eventId = eventId;
+            final uploadSupplements = mapToUploadSupplementsEv(supplementForEvent);
+            await uploadSupplementEventInteractor.execute(uploadSupplements);
+            await saveSupplementEventInteractor.execute(supplementForEvent, false);
+          } catch (error, st) {
+            CrashlyticsService.record(
+              error,
+              st,
+              context: {
+                'action': 'Supplement event logging alongside favorite',
+                'screen': 'Add Supplement',
+                'event data': state.supplementObj.toString(),
+              },
+            );
+          }
+
           _clearData();
           emit(state.copyWith(isLoading: false));
           event.onFinish.call();
@@ -258,6 +279,27 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
         await uploadSupplementRoutineInteractor.execute(uploadSupplementRoutine);
         try {
           await saveSupplementRoutineInteractor.execute(uploadSupplementRoutine, false);
+
+          // Also log the item as an event
+          try {
+            final supplementForEvent = state.supplementObj!;
+            final eventId = DateTime.now().millisecondsSinceEpoch;
+            supplementForEvent.eventId = eventId;
+            final uploadSupplements = mapToUploadSupplementsEv(supplementForEvent);
+            await uploadSupplementEventInteractor.execute(uploadSupplements);
+            await saveSupplementEventInteractor.execute(supplementForEvent, false);
+          } catch (error, st) {
+            CrashlyticsService.record(
+              error,
+              st,
+              context: {
+                'action': 'Supplement event logging alongside routine',
+                'screen': 'Add Supplement',
+                'event data': state.supplementObj.toString(),
+              },
+            );
+          }
+
           _clearData();
           emit(state.copyWith(isLoading: false));
           event.onFinish.call();

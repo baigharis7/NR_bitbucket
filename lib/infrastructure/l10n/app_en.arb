@@ -295,6 +295,7 @@
     "save" : "Save",
     "ok" : "Ok",
     "no_foods_in_event" : "You need to enter foods",
+    "and" : "AND",
     "food_event_successfully_saved" : "Your food has been successfully saved!",
     "food_routine_successfully_saved" : "Your food routine has been successfully saved!",
     "food_favorite_successfully_saved" : "Your food favorite has been successfully saved!",

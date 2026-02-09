@@ -346,9 +346,9 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                   state.sportSimpleEvent?.eventId = state.sportSimpleEvent?.eventId ?? DateTime.now().millisecondsSinceEpoch;
                                   state.sportSimpleEvent?.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
                                   bloc.add(FinishSportFavouriteAddSportAction(sportFavorite: state.sportSimpleEvent!, onFinish: () => _showConfirmationDialog(
-                                    message: AppLocalizations.of(context)!.sport_favorite_successfully_saved,
+                                    message: '${AppLocalizations.of(context)!.sport_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.sport_favorite_successfully_saved}',
                                       context: context,
-                                      onDismiss: () {},
+                                      onDismiss: () => Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate),
                                   ),),);
                                 }
                                 else if (state.sportSimpleEvent?.isCreateRoutine == true) {
@@ -361,9 +361,9 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
 
                                   final sportRoutineCompleted = mapAddFavSportToSportRoutineCompleted(state.sportSimpleEvent!);
                                   bloc.add(FinishSportRoutineAddSportAction(sportRoutineCompleted: sportRoutineCompleted, onFinish: () => _showConfirmationDialog(
-                                    message: AppLocalizations.of(context)!.sport_routine_successfully_saved,
+                                    message: '${AppLocalizations.of(context)!.sport_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.sport_routine_successfully_saved}',
                                       context: context,
-                                      onDismiss: () {},
+                                      onDismiss: () => Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate),
                                   ),),);
                                 } else {
                                   state.sportSimpleEvent?.eventId = state.sportSimpleEvent?.eventId ?? DateTime.now().millisecondsSinceEpoch;

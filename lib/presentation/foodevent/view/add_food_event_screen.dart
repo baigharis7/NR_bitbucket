@@ -389,9 +389,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
 
                                     if (state.foodEvent?.isFavorite ?? false) {
                                       bloc.add(FinishFoodAsFavoriteEventAction(foodFavorite: state.foodEvent!, onFinish: () => _showConfirmationDialog(
-                                        message: AppLocalizations.of(context)!.food_favorite_successfully_saved,
+                                        message: '${AppLocalizations.of(context)!.food_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.food_favorite_successfully_saved}',
                                           context: context,
-                                          onDismiss: () {},
+                                          onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
                                       ),),);
                                     }
                                     else if (state.foodEvent?.isRoutine == true && state.foodEvent?.daysOfWeek?.isNotEmpty == true) {
@@ -399,9 +399,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                       state.foodEvent?.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
                                       final foodEventRoutine = mapToFoodRoutineEventFromFoodFavorite(state.foodEvent!);
                                       bloc.add(FinishAddFoodRoutineEventAction(foodRoutineEvent: foodEventRoutine, onFinish: () => _showConfirmationDialog(
-                                        message: AppLocalizations.of(context)!.food_routine_successfully_saved,
+                                        message: '${AppLocalizations.of(context)!.food_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.food_routine_successfully_saved}',
                                           context: context,
-                                          onDismiss: () {},
+                                          onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
                                       ),),);
                                     } else {
                                       state.foodEvent?.userId = '';

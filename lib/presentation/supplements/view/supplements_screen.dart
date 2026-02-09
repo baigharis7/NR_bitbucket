@@ -353,9 +353,9 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
 
                                 if (state.supplementObj?.isFavorite == true) {
                                   supplementsBloc.add(FinishSupplementFavorite(onFinish: () => _showConfirmationDialog(
-                                    message: AppLocalizations.of(context)!.supplement_favorite_successfully_saved,
+                                    message: '${AppLocalizations.of(context)!.supplement_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.supplement_favorite_successfully_saved}',
                                     context: context,
-                                    onDismiss: () {},
+                                    onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
                                   ),),);
                                 } else if (state.supplementObj?.isRoutine == true) {
                                   if (state.supplementObj?.daysOfWeek?.isEmpty == true || state.supplementObj?.scheduleTime.isEmptyOrNull() == true) {
@@ -363,9 +363,9 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                     return;
                                   }
                                   supplementsBloc.add(FinishSupplementRoutineSupplementsEvent(onFinish: () => _showConfirmationDialog(
-                                    message: AppLocalizations.of(context)!.supplement_routine_successfully_saved,
+                                    message: '${AppLocalizations.of(context)!.supplement_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.supplement_routine_successfully_saved}',
                                     context: context,
-                                    onDismiss: () {},
+                                    onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
                                   ),),);
                                 } else {
                                   supplementsBloc.add(FinishEventSupplementsAction(
