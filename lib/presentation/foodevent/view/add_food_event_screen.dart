@@ -20,6 +20,7 @@ import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_even
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_event_item.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/add_item_name_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/dash_title_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/event_options_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/date_picker_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/food_actions_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/food_event_foods_cluster.dart';
@@ -233,6 +234,43 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                             if (state.foodEvent!.ingredients.orEmpty().isNotEmpty) Container(
                               margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                if (state.foodEvent?.isRoutine == true)
+                                  EventOptionsWidget(
+                                    name: state.foodEvent?.title,
+                                    onUpdateName: (name) => bloc.add(AddFoodNameEventAction(foodName: name)),
+                                    mealTime: state.foodEvent?.mealTime,
+                                    onUpdateMealTime: (mealTime) => bloc.add(AddFoodMealTypeEventAction(mealType: mealTime)),
+                                    scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.foodEvent?.time),
+                                    onUpdateTime: (scheduleTime) => bloc.add(UpdateScheduleTimeAddFoodEventActions(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
+                                    daysOfWeek: state.foodEvent?.daysOfWeek,
+                                    onUpdateDayOfWeek: (dayOfWeek) {},
+                                  )
+                                else
+                                  SizedBox(
+                                    width: Dimens.widthLarge,
+                                    child: Row(children: [
+                                      Expanded(child: FoodActionsWidget(
+                                        title: AppLocalizations.of(context)!.add_more_options,
+                                        rightSideWidget: const Icon(Icons.radio_button_checked, color: AppColors.yellowishGreen),
+                                        onTap: () => showAddFoodNameDialog(
+                                          context: context,
+                                          isFavorite: state.foodEvent?.isFavorite,
+                                          isCreateRoutine: state.foodEvent!.isRoutine,
+                                          mealTime: state.foodEvent?.mealTime,
+                                          daysOfWeek: state.foodEvent?.daysOfWeek,
+                                          eventName: state.foodEvent?.title,
+                                          onFinish: () => Navigator.pop(context),
+                                          onNameChange: (foodName) => bloc.add(AddFoodNameEventAction(foodName: foodName,),),
+                                          onFavoriteChange: (value) => bloc.add(UpdateIsFavoriteEventAction()),
+                                          onMealTieChange: (mealTime) => bloc.add(AddFoodMealTypeEventAction(mealType: mealTime)),
+                                          onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineEventAction()),
+                                          ingredientLength: state.foodEvent?.ingredients.length ?? 0,
+                                          onTimeChange: (scheduleTime) => bloc.add(UpdateScheduleTimeAddFoodEventActions(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
+                                          scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.foodEvent?.time),
+                                        ),
+                                      ))
+                                    ],),
+                                  ),
                                 ...state.foodEvent!.ingredients.orEmpty().map((foodInEvent) {
                                   final option = eventHelper.findFoodNameFromId(foodInEvent.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                                   final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
@@ -254,31 +292,6 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                     onOilUsedChange: (changedFood) => bloc.add(UpdateOilUsedEventAction(foodInEvent: changedFood)),
                                   );
                                 }).toList(),
-                                SizedBox(
-                                  width: Dimens.widthLarge,
-                                  child: Row(children: [
-                                    Expanded(child: FoodActionsWidget(
-                                      title: AppLocalizations.of(context)!.add_more_options,
-                                      rightSideWidget: const Icon(Icons.radio_button_checked, color: AppColors.yellowishGreen),
-                                      onTap: () => showAddFoodNameDialog(
-                                        context: context,
-                                        isFavorite: state.foodEvent?.isFavorite,
-                                        isCreateRoutine: state.foodEvent!.isRoutine,
-                                        mealTime: state.foodEvent?.mealTime,
-                                        daysOfWeek: state.foodEvent?.daysOfWeek,
-                                        eventName: state.foodEvent?.title,
-                                        onFinish: () => Navigator.pop(context),
-                                        onNameChange: (foodName) => bloc.add(AddFoodNameEventAction(foodName: foodName,),),
-                                        onFavoriteChange: (value) => bloc.add(UpdateIsFavoriteEventAction()),
-                                        onMealTieChange: (mealTime) => bloc.add(AddFoodMealTypeEventAction(mealType: mealTime)),
-                                        onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineEventAction()),
-                                        ingredientLength: state.foodEvent?.ingredients.length ?? 0,
-                                        onTimeChange: (scheduleTime) => bloc.add(UpdateScheduleTimeAddFoodEventActions(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
-                                        scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.foodEvent?.time),
-                                      ),
-                                    ))
-                                  ],),
-                                ),
                                 // Row(children: [
                                 //   Expanded(child: FoodActionsWidget(
                                 //     title: AppLocalizations.of(context)!.add_more,

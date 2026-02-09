@@ -87,7 +87,11 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
         );
         break;
       case 2: // Supplements tab - direct navigation
-        Navigator.pushNamed(context, SupplementsScreen.routeName);
+        Navigator.pushNamed(
+          context,
+          SupplementsScreen.routeName,
+          arguments: {'preSelectRoutine': true},
+        );
         break;
     }
   }

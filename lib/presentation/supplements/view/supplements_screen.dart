@@ -25,6 +25,7 @@ import '../../common/view/confirmation_dialog.dart';
 import '../../common/view/loading_screen.dart';
 import '../../updatesupplement/view/update_supplement_screen.dart';
 import '../../widgets/dash_title_widget.dart';
+import '../../widgets/event_options_widget.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/item_info_card.dart';
@@ -56,6 +57,8 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
           // supplementsBloc.state.screenTitle = AppLocalizations.of(context)!.update + ' ' + AppLocalizations.of(context)!.supplement;
           supplementsBloc.add(UpdateScreenTitle(screenTitle: AppLocalizations.of(context)!.update + ' ' + AppLocalizations.of(context)!.supplement));
           supplementsBloc.add(GetSupplementFromNavAction(supplementSimple: arguments));
+        } else if (arguments is Map && arguments['preSelectRoutine'] == true) {
+          supplementsBloc.state.supplementObj?.isRoutine = true;
         }
       }
     });
@@ -281,6 +284,38 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          if (state.isEdit != true && state.supplementObj?.isRoutine == true)
+                            EventOptionsWidget(
+                              name: state.supplementObj?.name,
+                              onUpdateName: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
+                              scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
+                              onUpdateTime: (scheduleTime) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
+                              daysOfWeek: state.supplementObj?.daysOfWeek,
+                              onUpdateDayOfWeek: (dayOfWeek) {},
+                            )
+                          else if (state.isEdit != true)
+                            SizedBox(
+                              width: Dimens.widthLarge,
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
+                                tileColor: AppColors.floralWhite,
+                                onTap: () => showRoutineTimeDialog(
+                                  onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
+                                  onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
+                                  onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
+                                  onFavoriteChange: (value) => supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: value)),
+                                  onChangeCreateRoutine: (value) => supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: value)),
+                                  name: state.supplementObj?.name,
+                                  daysOfWeek: state.supplementObj?.daysOfWeek,
+                                  scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
+                                  isFavorite: state.supplementObj?.isFavorite,
+                                  isCreateRoutine: state.supplementObj?.isRoutine,
+                                  itemsLength: state.supplementObj?.info?.length ?? 0,
+                                ),
+                                title: Text(AppLocalizations.of(context)!.add_more_options),
+                                trailing: const Icon(Icons.radio_button_checked, color: AppColors.yellowishGreen),
+                              ),
+                            ),
                           ListView.builder(
                             shrinkWrap: true,
                             primary: false,
@@ -299,29 +334,6 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                 onRemoveItem: () => supplementsBloc.add(RemoveSupplementInfoSupplementsAction(nutriInfo: nutriInfo!, isGoBack: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName))),
                               );
                             },
-                          ),
-                          if (state.isEdit != true) const SizedBox(height: Dimens.height32),
-                          if (state.isEdit != true) SizedBox(
-                            width: Dimens.widthLarge,
-                            child: ListTile(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
-                              tileColor: AppColors.floralWhite,
-                              onTap: () => showRoutineTimeDialog(
-                                onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
-                                onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
-                                onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
-                                onFavoriteChange: (value) => supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: value)),
-                                onChangeCreateRoutine: (value) => supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: value)),
-                                name: state.supplementObj?.name,
-                                daysOfWeek: state.supplementObj?.daysOfWeek,
-                                scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
-                                isFavorite: state.supplementObj?.isFavorite,
-                                isCreateRoutine: state.supplementObj?.isRoutine,
-                                itemsLength: state.supplementObj?.info?.length ?? 0,
-                              ),
-                              title: Text(AppLocalizations.of(context)!.add_more_options),
-                              trailing: const Icon(Icons.radio_button_checked, color: AppColors.yellowishGreen),
-                            ),
                           ),
                           const SizedBox(height: Dimens.height32),
                           GeneralButton(

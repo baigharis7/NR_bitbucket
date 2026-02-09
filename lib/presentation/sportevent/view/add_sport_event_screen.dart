@@ -35,6 +35,7 @@ import '../../updatesport/view/update_sport_screen.dart';
 import '../../widgets/add_item_name_dialog.dart';
 import '../../widgets/box_type_radio_text_widget.dart';
 import '../../widgets/dash_title_widget.dart';
+import '../../widgets/event_options_widget.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/food_actions_widget.dart';
 import '../../widgets/header_add_item_card_section.dart';
@@ -241,6 +242,38 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    if (state.sportSimpleEvent?.isCreateRoutine == true)
+                                      EventOptionsWidget(
+                                        name: state.sportSimpleEvent?.title,
+                                        onUpdateName: (name) => bloc.add(SetEventSportNameAction(sportEventName: name)),
+                                        scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.sportSimpleEvent?.scheduleTime),
+                                        onUpdateTime: (scheduleTime) => bloc.add(UpdateTimeOfDaySportEventAction(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
+                                        daysOfWeek: state.sportSimpleEvent?.daysOfWeek,
+                                        onUpdateDayOfWeek: (dayOfWeek) {},
+                                      )
+                                    else
+                                      SizedBox(
+                                        width: Dimens.widthLarge,
+                                        child: ListTile(
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
+                                          tileColor: AppColors.floralWhite,
+                                          onTap: () => showRoutineTimeDialog(
+                                            onNameChange: (name) => bloc.add(SetEventSportNameAction(sportEventName: name)),
+                                              onTimeChanged: (time) => bloc.add(UpdateTimeOfDaySportEventAction(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
+                                            onChangeWeekDays: (weekDay) => bloc.add(UpdateDaysOfWeekSportEventAction(weekDay: weekDay)),
+                                            onFavoriteChange: (value) => bloc.add(UpdateIsFavoriteSportEventsActions(isFavorite: value)),
+                                            onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineSportEventsActions(isCreateRoutine: value)),
+                                            daysOfWeek: state.sportSimpleEvent?.daysOfWeek,
+                                            scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.sportSimpleEvent?.scheduleTime),
+                                            isFavorite: state.sportSimpleEvent?.isFavorite,
+                                            isCreateRoutine: state.sportSimpleEvent?.isCreateRoutine,
+                                            name: state.sportSimpleEvent?.title,
+                                            itemsLength: state.sportSimpleEvent?.info?.length ?? 0,
+                                          ),
+                                          title: Text(AppLocalizations.of(context)!.add_more_options),
+                                          trailing: const Icon(Icons.radio_button_checked, color: AppColors.yellowishGreen),
+                                        ),
+                                      ),
                                       ...?state.sportSimpleEvent?.info?.orEmpty().map((sport) => SportEventItem(
                                         allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
                                           sport: sport,
@@ -249,28 +282,6 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                           editIntensity: (updatedSport) => bloc.add(SetIntensityAction(sportInfo: updatedSport)),
                                         ),
                                       ),
-                                    SizedBox(
-                                      width: Dimens.widthLarge,
-                                      child: ListTile(
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
-                                        tileColor: AppColors.floralWhite,
-                                        onTap: () => showRoutineTimeDialog(
-                                          onNameChange: (name) => bloc.add(SetEventSportNameAction(sportEventName: name)),
-                                            onTimeChanged: (time) => bloc.add(UpdateTimeOfDaySportEventAction(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
-                                          onChangeWeekDays: (weekDay) => bloc.add(UpdateDaysOfWeekSportEventAction(weekDay: weekDay)),
-                                          onFavoriteChange: (value) => bloc.add(UpdateIsFavoriteSportEventsActions(isFavorite: value)),
-                                          onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineSportEventsActions(isCreateRoutine: value)),
-                                          daysOfWeek: state.sportSimpleEvent?.daysOfWeek,
-                                          scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.sportSimpleEvent?.scheduleTime),
-                                          isFavorite: state.sportSimpleEvent?.isFavorite,
-                                          isCreateRoutine: state.sportSimpleEvent?.isCreateRoutine,
-                                          name: state.sportSimpleEvent?.title,
-                                          itemsLength: state.sportSimpleEvent?.info?.length ?? 0,
-                                        ),
-                                        title: Text(AppLocalizations.of(context)!.add_more_options),
-                                        trailing: const Icon(Icons.radio_button_checked, color: AppColors.yellowishGreen),
-                                      ),
-                                    ),
                                   ],
                                 ),
                               ),
