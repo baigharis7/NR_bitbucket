@@ -74,6 +74,8 @@ Thumbs.db
 build/
 
 # Android related
+*.jks
+*.keystore
 **/android/**/gradle-wrapper.jar
 **/android/.gradle
 **/android/captures/

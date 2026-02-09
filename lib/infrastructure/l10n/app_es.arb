@@ -572,6 +572,7 @@
     "health_sync_error": "Error al sincronizar datos de salud",
     "health_sync_no_permission": "Acceso a datos de salud no concedido",
     "health_sync_not_available": "La sincronización de datos de salud no está disponible en este dispositivo",
+    "health_sync_data_types": "Tipos de datos sincronizados",
     "health_sync_source_apple": "Apple Health",
     "health_sync_source_health_connect": "Health Connect",
     "health_sync_activities_imported": "{count} actividades importadas",
