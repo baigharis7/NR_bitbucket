@@ -82,7 +82,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
               // DashTitleWidget(onInfoClick: () => Navigator.pushNamed(context, EnergyBalanceDetailScreen.routeName, arguments: widget.energyModel),),
               Container(
                 margin: const EdgeInsets.symmetric(
-                    horizontal: Dimens.marginLarge,
+                    horizontal: Dimens.marginXLarge,
                     vertical: Dimens.marginLarge),
                 child: Row(
                   children: [
@@ -101,20 +101,31 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                           animationDuration: 500,
                           lineWidth: Dimens.width18,
                           percent: percent.clamp(0.0, 1.0),
-                          center: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                  '${remaining.clamp(0, widget.energyModel!.totalKcal * 1).toInt()}',
-                                  style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSize35)),
-                              Text(
-                                'kcal\n' +
-                                    AppLocalizations.of(context)!.from +
-                                    ' ${widget.energyModel!.totalKcal} kcal.'.toUpperCase(),
-                                style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSizeSmall,),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                          center: Container(
+                            width: (Dimens.border80 - Dimens.width18) * 2,
+                            height: (Dimens.border80 - Dimens.width18) * 2,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                    '${remaining.clamp(0, widget.energyModel!.totalKcal * 1).toInt()}',
+                                    style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSize35, color: const Color(0xFF0F2021))),
+                                SizedBox(
+                                  width: (Dimens.border80 - Dimens.width18) * 2 - 16,
+                                  child: Text(
+                                    'kcal\n' +
+                                        AppLocalizations.of(context)!.from +
+                                        ' ${widget.energyModel!.totalKcal} kcal.'.toUpperCase(),
+                                    style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSizeNormal, color: const Color(0xFF0F2021)),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                           circularStrokeCap: CircularStrokeCap.round,
                           progressColor: colors,
