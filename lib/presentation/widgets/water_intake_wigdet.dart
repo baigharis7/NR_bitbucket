@@ -33,8 +33,8 @@ class WaterIntakeWidget extends StatelessWidget {
       children: [
         DashTitleWidget(title: AppLocalizations.of(context)!.hydration, onInfoClick: onInfoClick.isNull() ? null : () => onInfoClick?.call(), style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall, vertical: Dimens.marginNormal),
-          padding: const EdgeInsets.all(Dimens.paddingLarge),
+          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
+          padding: const EdgeInsets.all(Dimens.paddingNormal),
           decoration: BoxDecoration(
             color: AppColors.darkJungleGreen,
             border: Border.all(color: Colors.white, width: Dimens.width1),
@@ -43,6 +43,7 @@ class WaterIntakeWidget extends StatelessWidget {
           child: Column(
             children: [
               Wrap(
+                runSpacing: 8,
                 children: List.generate(totalGlasses, (index) {
                   bool isFilled = index < consumedGlasses;
                   return InkWell(
@@ -77,6 +78,7 @@ class WaterIntakeWidget extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
                   child: AnimatedNutrientProgressBarWidget(percent: progress * 100, height: Dimens.heightXXSmall,)),
+              const SizedBox(height: 4),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
