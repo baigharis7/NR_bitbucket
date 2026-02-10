@@ -16,6 +16,7 @@ import '../../../domain/models/masterfiles/nutrients_info_master.dart';
 import '../../../domain/models/profile/user_profile_model.dart';
 import '../../../domain/models/sportevents/sport_event_complete.dart';
 import '../../../infrastructure/helpers/date_time_helper.dart';
+import '../../../infrastructure/helpers/macro_calculation_helper.dart';
 
 part 'weekly_dashboard_detail_event.dart';
 
@@ -30,6 +31,7 @@ class WeeklyDashboardDetailBloc
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetWeekLiquidEventsInteractor getWeekLiquidEventsInteractor;
   final GetWeekSportsInteractor getWeekSportsInteractor;
+  final MacroCalculationHelper _macroHelper = const MacroCalculationHelper();
 
   WeeklyDashboardDetailBloc(
       {required this.getWeekFoodEventsInteractor,
@@ -182,13 +184,10 @@ class WeeklyDashboardDetailBloc
               nutrientConsumed + (info.params?.toJson()[macronutrient] ?? 0.0);
         }
       }
-      var tEE = state.userProfile?.kcal ?? 0;
-      if (state.userProfile?.objectives?.contains(50) ?? false) {
-        tEE = tEE + tEE ~/ 100 * 15;
-      }
-      if (state.userProfile?.objectives?.contains(51) ?? false) {
-        tEE = tEE - tEE ~/ 100 * 20;
-      }
+      var tEE = _macroHelper.getUserKcalSelectiveObjectives(
+        state.userProfile?.kcal ?? 0,
+        state.userProfile?.objectives ?? [],
+      );
       int kcalPerNutrient = tEE ~/ 100 * getPercentageByMacro(macronutrient);
       int gramsPerNutrient = kcalPerNutrient ~/ getKcalPerGram(macronutrient);
       double returnQuantity = nutrientConsumed / gramsPerNutrient;
@@ -202,26 +201,13 @@ class WeeklyDashboardDetailBloc
   }
 
   int getPercentageByMacro(String macro) {
-    var macroo = 0;
-    if (state.userProfile?.objectives?.contains(50) ?? false) {
-      macroo = macro == 'carbsAvailable' ? 40 : 30;
-    }
-    if (state.userProfile?.objectives?.contains(51) ?? false) {
-      macroo = macro == 'carbsAvailable' ? 40 : 30;
-    }
-    if (state.userProfile?.objectives?.contains(52) ?? false) {
-      macroo = macro == 'carbsAvailable'
-          ? 50
-          : macro == 'proteinSci'
-              ? 20
-              : 30;
-    } else {
-      macroo = macro == 'carbsAvailable' ? 30 : 35;
-    }
-    return macroo;
+    return _macroHelper.getPercentageByMacro(
+      macro,
+      state.userProfile?.objectives ?? [],
+    );
   }
 
-  int getKcalPerGram(String macro) => macro == 'fatTotal' ? 9 : 4;
+  int getKcalPerGram(String macro) => _macroHelper.getKcalPerGram(macro);
 
   List<Map<String, dynamic>> getWeeklyEnergyLevel() {
     List<Map<String, dynamic>> weeklyData = [];
