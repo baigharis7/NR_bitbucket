@@ -142,6 +142,16 @@ class UpdateMealBloc extends Bloc<UpdateMealEvent, UpdateMealState> {
       emit(state.copyWith(isLoading: false,));
     });
 
+    on<UpdateIsFavoriteUpdateMealEvent>((event, emit) {
+      state.foodEvent?.isFavorite = event.isFavorite;
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateIsRoutineUpdateMealEvent>((event, emit) {
+      state.foodEvent?.isRoutine = event.isRoutine;
+      emit(state.copyWith(isLoading: false));
+    });
+
     on<SaveUpdateMealUpdateMealEvent>((event, emit) {
       if (state.foodEvent?.isRoutine == true) {
         if (state.foodEvent?.daysOfWeek?.isEmpty == true) return;

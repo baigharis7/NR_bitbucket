@@ -533,7 +533,10 @@
     "water_description" : "El agua es la mejor opción para hidratarnos.\n\nTambién obtenemos agua de las infusiones, caldos, purés, verduras o frutas.",
     "minimum_water_required" : "Mínimo de líquidos requeridos",
     "minimum_water_description" : "Beber agua es esencial. Adapta la ingesta de agua recomendada en función de tu actividad física, el tipo de clima y los hábitos dietéticos.\n\nCuanta más actividad realices más agua tendrás que beber.\n\n\n",
-    "micros_keep_eye_on": "Micros a tener en cuenta"
+    "micros_keep_eye_on": "Micros a tener en cuenta",
+    "item_title": "Título",
+    "item_saved_as_favorite": "Este artículo también se guardará como favorito",
+    "combo_name_required": "Por favor proporcione un nombre para tu combo"
 
 
 }

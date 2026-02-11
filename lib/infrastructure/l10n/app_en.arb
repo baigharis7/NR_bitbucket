@@ -531,6 +531,9 @@
     "water_description" : "Water is the best option to hydrate ourselves.\n\nWe also obtain water from infusions, broths, purees, vegetables or fruits.",
     "minimum_water_required" : "Minimum liquids required",
     "minimum_water_description" : "Drinking water is essential. Adjust the water intake recommendation based on your physical activity, the climate conditions, and your dietary habits. .\n\nThe more activity you do, the more water you will have to drink.\n\n\n",
-    "micros_keep_eye_on": "Micros to keep an eye on"
+    "micros_keep_eye_on": "Micros to keep an eye on",
+    "item_title": "Title",
+    "item_saved_as_favorite": "This item will also be saved as a favorite",
+    "combo_name_required": "Please provide a name for your combo"
 
 }

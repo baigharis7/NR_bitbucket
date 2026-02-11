@@ -108,6 +108,16 @@ class UpdateSupplementBloc
       emit(state.copyWith(isLoading: false));
     });
 
+    on<UpdateIsFavoriteUpdateSupplementEvent>((event, emit) {
+      state.supplementObj?.isFavorite = event.isFavorite;
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateIsRoutineUpdateSupplementEvent>((event, emit) {
+      state.supplementObj?.isRoutine = event.isRoutine;
+      emit(state.copyWith(isLoading: false));
+    });
+
     on<SavingUpdateSupplement>((event, emit) {
       if (state.supplementObj?.isFavorite == true) {
         add(SavingUpdateSupplementFavorite(onFinish: event.onFinish));

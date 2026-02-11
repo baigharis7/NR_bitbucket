@@ -1,10 +1,10 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/presentation/updatesupplement/bloc/update_supplement_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -15,10 +15,9 @@ import '../../../infrastructure/utils/dimens.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../common/view/loading_screen.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
-import '../../widgets/event_options_widget.dart';
+import '../../widgets/item_title_card.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
-import '../../widgets/item_routine_widget.dart';
 import '../../widgets/supplement_item_widget.dart';
 import '../../../infrastructure/utils/constants.dart';
 
@@ -116,35 +115,72 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                           updateSupplementBloc.add(AddSupplementInfoUpdateSupplementEvent(nutriInfo: NutriInfo(id: supplement.id, unit: supplement.unit, amount: 0)));
                         },
                       ),
-                      if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) const SizedBox(height: Dimens.height12),
-                      if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) EventOptionsWidget(
-                        name: state.supplementObj?.name,
-                        onUpdateName: (name) => updateSupplementBloc.add(UpdateNameSupplementUpdateSupplementEvent(name: name)),
-                        daysOfWeek: (state.supplementObj?.isRoutine == true) ? state.supplementObj?.daysOfWeek.orEmpty() : null,
-                        onUpdateDayOfWeek: (state.supplementObj?.isRoutine == true) ? (weekDay) => updateSupplementBloc.add(UpdateDaysOfWeekSupplementUpdateSupplementEvent(weekDay: weekDay)) : null,
-                        scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
-                        onUpdateTime: (state.supplementObj?.isRoutine == true) ? (scheduleTime) => updateSupplementBloc.add(UpdateTimeOfDaySupplementUpdateSupplementEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))): null,
-                      ),
-                      const SizedBox(height: Dimens.height12),
-                      if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) ListView.builder(
-                        shrinkWrap: true,
-                        primary: false,
-                        itemCount: state.supplementObj?.info?.orEmpty().length,
-                        itemBuilder: (context, index) {
-                          final nutriInfo = state.supplementObj?.info.orEmpty()[index];
-                          return SupplementItemWidget(
-                            title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
-                            amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
-                            units: nutriInfo != null ? [nutriInfo.unit] : [],
-                            unit: nutriInfo?.unit,
-                            onChangeAmount: (amount) {
-                              nutriInfo?.amount = amount.isEmpty ? 0 : int.parse(amount);
-                              updateSupplementBloc.add(UpdateAmountSupplementInfoUpdateSupplementEvent(nutriInfo: nutriInfo!));
-                            },
-                            onRemoveItem: () => updateSupplementBloc.add(RemoveSupplementInfoUpdateSupplementEvent(nutriInfo: nutriInfo!, isGoBack: () => Navigator.pop(context))),
-                          );
-                        },
-                      ),
+                      if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) ...[
+                        const SizedBox(height: Dimens.height12),
+                        // Title card with favorite/routine toggles
+                        ItemTitleCard(
+                          name: state.supplementObj?.name,
+                          onUpdateName: (name) => updateSupplementBloc.add(UpdateNameSupplementUpdateSupplementEvent(name: name)),
+                          isFavorite: state.supplementObj?.isFavorite ?? false,
+                          onToggleFavorite: () {
+                            if (state.supplementObj?.isFavorite != true) {
+                              if (state.supplementObj?.isRoutine == true) updateSupplementBloc.add(UpdateIsRoutineUpdateSupplementEvent(isRoutine: false));
+                              updateSupplementBloc.add(UpdateIsFavoriteUpdateSupplementEvent(isFavorite: true));
+                            } else {
+                              updateSupplementBloc.add(UpdateIsFavoriteUpdateSupplementEvent(isFavorite: false));
+                            }
+                          },
+                          isRoutine: state.supplementObj?.isRoutine ?? false,
+                          onToggleRoutine: () {
+                            if (state.supplementObj?.isRoutine != true) {
+                              if (state.supplementObj?.isFavorite == true) updateSupplementBloc.add(UpdateIsFavoriteUpdateSupplementEvent(isFavorite: false));
+                              updateSupplementBloc.add(UpdateIsRoutineUpdateSupplementEvent(isRoutine: true));
+                            } else {
+                              updateSupplementBloc.add(UpdateIsRoutineUpdateSupplementEvent(isRoutine: false));
+                            }
+                          },
+                          itemCount: state.supplementObj!.info.orEmpty().length,
+                          scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
+                          onUpdateTime: (scheduleTime) => updateSupplementBloc.add(UpdateTimeOfDaySupplementUpdateSupplementEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
+                          daysOfWeek: state.supplementObj?.daysOfWeek.orEmpty(),
+                          onUpdateDayOfWeek: (weekDay) => updateSupplementBloc.add(UpdateDaysOfWeekSupplementUpdateSupplementEvent(weekDay: weekDay)),
+                        ),
+                        // Item cards with connector lines
+                        ...state.supplementObj!.info.orEmpty().map((nutriInfo) => Column(
+                          children: [
+                            Center(
+                              child: Container(
+                                width: 1.5,
+                                height: 20,
+                                color: Colors.grey.shade300,
+                              ),
+                            ),
+                            SupplementItemWidget(
+                              title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
+                              amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
+                              units: nutriInfo != null ? [nutriInfo.unit] : [],
+                              unit: nutriInfo?.unit,
+                              onChangeAmount: (amount) {
+                                nutriInfo?.amount = amount.isEmpty ? 0 : int.parse(amount);
+                                updateSupplementBloc.add(UpdateAmountSupplementInfoUpdateSupplementEvent(nutriInfo: nutriInfo!));
+                              },
+                              onRemoveItem: () => updateSupplementBloc.add(RemoveSupplementInfoUpdateSupplementEvent(nutriInfo: nutriInfo!, isGoBack: () => Navigator.pop(context))),
+                            ),
+                          ],
+                        )),
+                        // Add More button
+                        const SizedBox(height: Dimens.height12),
+                        Center(
+                          child: TextButton.icon(
+                            icon: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
+                            label: Text(
+                              AppLocalizations.of(context)!.add_more,
+                              style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w500),
+                            ),
+                            onPressed: () {},
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: Dimens.height32),
                       if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) GeneralButton(
                         onTap: () {

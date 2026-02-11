@@ -1,11 +1,11 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/presentation/updatesport/bloc/update_sport_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -15,7 +15,7 @@ import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../sportevent/view/sport_event_item.dart';
-import '../../widgets/event_options_widget.dart';
+import '../../widgets/item_title_card.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
@@ -108,31 +108,68 @@ class UpdateSportScreen extends StatelessWidget {
                             updateSportBloc.add(UpdateSportItemUpdateSportEvent(sportInfo: info));
                           },
                         ),
-                        const SizedBox(height: Dimens.height12,),
-                        if (state.sportSimple?.info?.isNotEmpty == true) const SizedBox(height: Dimens.height12),
-                        if (state.sportSimple?.info?.isNotEmpty == true) EventOptionsWidget(
-                          name: state.sportSimple?.title,
-                          onUpdateName: (name) => updateSportBloc.add(UpdateSportNameUpdateSportEvent(name: name)),
-                          scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.sportSimple?.scheduleTime),
-                          onUpdateTime: state.sportSimple?.isCreateRoutine == true ? (scheduleTime) => updateSportBloc.add(UpdateSportScheduleTimeUpdateSportEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))) : null,
-                          daysOfWeek: state.sportSimple?.daysOfWeek,
-                          onUpdateDayOfWeek: state.sportSimple?.isCreateRoutine == true ? (dayOfWeek) => updateSportBloc.add(UpdateSportDayOfWeekUpdateSportEvent(dayOfWeek: dayOfWeek)) : null,
+                        if (state.sportSimple?.info?.isNotEmpty == true) ...[
+                          const SizedBox(height: Dimens.height12),
+                          // Title card with favorite/routine toggles
+                          ItemTitleCard(
+                            name: state.sportSimple?.title,
+                            onUpdateName: (name) => updateSportBloc.add(UpdateSportNameUpdateSportEvent(name: name)),
+                            isFavorite: state.sportSimple?.isFavorite ?? false,
+                            onToggleFavorite: () {
+                              if (state.sportSimple?.isFavorite != true) {
+                                if (state.sportSimple?.isCreateRoutine == true) updateSportBloc.add(UpdateIsRoutineUpdateSportEvent(isRoutine: false));
+                                updateSportBloc.add(UpdateIsFavoriteUpdateSportEvent(isFavorite: true));
+                              } else {
+                                updateSportBloc.add(UpdateIsFavoriteUpdateSportEvent(isFavorite: false));
+                              }
+                            },
+                            isRoutine: state.sportSimple?.isCreateRoutine ?? false,
+                            onToggleRoutine: () {
+                              if (state.sportSimple?.isCreateRoutine != true) {
+                                if (state.sportSimple?.isFavorite == true) updateSportBloc.add(UpdateIsFavoriteUpdateSportEvent(isFavorite: false));
+                                updateSportBloc.add(UpdateIsRoutineUpdateSportEvent(isRoutine: true));
+                              } else {
+                                updateSportBloc.add(UpdateIsRoutineUpdateSportEvent(isRoutine: false));
+                              }
+                            },
+                            itemCount: state.sportSimple?.info?.length ?? 0,
+                            scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.sportSimple?.scheduleTime),
+                            onUpdateTime: (scheduleTime) => updateSportBloc.add(UpdateSportScheduleTimeUpdateSportEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
+                            daysOfWeek: state.sportSimple?.daysOfWeek,
+                            onUpdateDayOfWeek: (dayOfWeek) => updateSportBloc.add(UpdateSportDayOfWeekUpdateSportEvent(dayOfWeek: dayOfWeek)),
                           ),
-                        const SizedBox(height: Dimens.height12,),
-                        if (state.sportSimple?.info?.isNotEmpty == true) ListView.builder(
-                          primary: false,
-                          shrinkWrap: true,
-                          itemCount: state.sportSimple?.info?.length ?? 0,
-                          itemBuilder: (context, index) {
-                            final item = state.sportSimple!.info![index];
-                            return SportEventItem(
-                              allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
-                              sport: item,
-                              removeSport: () => updateSportBloc.add(RemoveSportItemUpdateSportEvent(sportInfo: item, isGoBack: () => Navigator.pop(context))),
-                              editMinutes: (sportInfo) => updateSportBloc.add(UpdateSportItemMinutesUpdateSportEvent(sportInfo: sportInfo)),
-                              editIntensity: (sportInfo) => updateSportBloc.add(UpdateSportItemIntensityUpdateSportEvent(sportInfo: sportInfo)),
-                            );
-                        },),
+                          // Item cards with connector lines
+                          ...state.sportSimple!.info!.map((item) => Column(
+                            children: [
+                              Center(
+                                child: Container(
+                                  width: 1.5,
+                                  height: 20,
+                                  color: Colors.grey.shade300,
+                                ),
+                              ),
+                              SportEventItem(
+                                allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
+                                sport: item,
+                                removeSport: () => updateSportBloc.add(RemoveSportItemUpdateSportEvent(sportInfo: item, isGoBack: () => Navigator.pop(context))),
+                                editMinutes: (sportInfo) => updateSportBloc.add(UpdateSportItemMinutesUpdateSportEvent(sportInfo: sportInfo)),
+                                editIntensity: (sportInfo) => updateSportBloc.add(UpdateSportItemIntensityUpdateSportEvent(sportInfo: sportInfo)),
+                              ),
+                            ],
+                          )),
+                          // Add More button
+                          const SizedBox(height: Dimens.height12),
+                          Center(
+                            child: TextButton.icon(
+                              icon: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
+                              label: Text(
+                                AppLocalizations.of(context)!.add_more,
+                                style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w500),
+                              ),
+                              onPressed: () {},
+                            ),
+                          ),
+                        ],
                         const SizedBox(height: Dimens.height32,),
                         if (state.sportSimple?.info?.isNotEmpty == true) GeneralButton(onTap: () {
                           if (state.sportSimple?.title.isNotEmptyOrNull() == true) {

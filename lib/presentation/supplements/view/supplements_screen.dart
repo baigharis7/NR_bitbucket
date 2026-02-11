@@ -1,36 +1,32 @@
-import 'dart:math';
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/supplements/bloc/supplements_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/supplementsdetail/view/supplements_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/item_title_card.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/supplement_item_widget.dart';
 
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
-import '../../../infrastructure/utils/app_color.dart';
-import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/confirmation_dialog.dart';
 import '../../common/view/loading_screen.dart';
 import '../../updatesupplement/view/update_supplement_screen.dart';
 import '../../widgets/dash_title_widget.dart';
-import '../../widgets/event_options_widget.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/item_info_card.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
-import '../../widgets/item_routine_widget.dart';
 
 class SupplementsScreen extends StatefulWidget {
   static const routeName = '/supplements_screen';
@@ -43,6 +39,8 @@ class SupplementsScreen extends StatefulWidget {
 
 class _SupplementsScreenState extends State<SupplementsScreen> {
   late SupplementsBloc supplementsBloc;
+  final ScrollController _scrollController = ScrollController();
+  late FocusNode _supplementFocusInputController;
 
   @override
   void initState() {
@@ -81,36 +79,10 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
     );
   }
 
-  Future<void> showRoutineTimeDialog({
-    Function? onNameChange,
-    required Function onTimeChanged,
-    required Function(int) onChangeWeekDays,
-    required Function(bool) onFavoriteChange,
-    required Function(bool) onChangeCreateRoutine,
-    String? name,
-    required List<int>? daysOfWeek,
-    required TimeOfDay? scheduleTime,
-    required bool? isFavorite,
-    required bool? isCreateRoutine,
-    required int itemsLength,
-  }) async {
-    await showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (ctx) => ItemRoutineWidget(
-        onNameChange: (name) => onNameChange?.call(name),
-        onTimeChange: (pickedTime) => onTimeChanged.call(pickedTime),
-        onChangeWeekDays: (weekDay) => onChangeWeekDays.call(weekDay),
-        name: name,
-        daysOfWeek: daysOfWeek,
-        scheduleTime: scheduleTime,
-        isFavorite: isFavorite,
-        isCreateRoutine: isCreateRoutine,
-        onFavoriteChange: (value) => onFavoriteChange.call(value),
-        onChangeCreateRoutine: (value) => onChangeCreateRoutine.call(value),
-        itemsLength: itemsLength,
-      ),
-    ).then((_) {});
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -162,6 +134,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                 bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                 body: SafeArea(
                     child: SingleChildScrollView(
+                  controller: _scrollController,
                   child: Column(children: [
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
@@ -178,9 +151,16 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                             image: 'assets/images/supplement.png',
                             items: state.supplementsInfo?.data.map((element) => element.translate(context)).toList(),
                             onItemSelect: (supplementName, focus) {
-                              // focus.unfocus();
+                              _supplementFocusInputController = focus;
                               final supplement = NutritionUtils.findSupplementByName(state.supplementsInfo?.data ?? [], supplementName, context);
                               supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: supplement.id, unit: supplement.unit, amount: 0)));
+                              // Auto-title logic
+                              final currentCount = state.supplementObj!.info.orEmpty().length;
+                              if (currentCount == 0) {
+                                supplementsBloc.add(UpdateNameSupplementsEvent(name: supplementName));
+                              } else if (currentCount == 1) {
+                                supplementsBloc.add(UpdateNameSupplementsEvent(name: ''));
+                              }
                             },
                           ),
                         ],
@@ -284,45 +264,46 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (state.isEdit != true && state.supplementObj?.isRoutine == true)
-                            EventOptionsWidget(
-                              name: state.supplementObj?.name,
-                              onUpdateName: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
-                              scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
-                              onUpdateTime: (scheduleTime) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
-                              daysOfWeek: state.supplementObj?.daysOfWeek,
-                              onUpdateDayOfWeek: (dayOfWeek) {},
-                            )
-                          else if (state.isEdit != true)
-                            SizedBox(
-                              width: Dimens.widthLarge,
-                              child: ListTile(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
-                                tileColor: AppColors.floralWhite,
-                                onTap: () => showRoutineTimeDialog(
-                                  onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
-                                  onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
-                                  onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
-                                  onFavoriteChange: (value) => supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: value)),
-                                  onChangeCreateRoutine: (value) => supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: value)),
-                                  name: state.supplementObj?.name,
-                                  daysOfWeek: state.supplementObj?.daysOfWeek,
-                                  scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
-                                  isFavorite: state.supplementObj?.isFavorite,
-                                  isCreateRoutine: state.supplementObj?.isRoutine,
-                                  itemsLength: state.supplementObj?.info?.length ?? 0,
+                          const SizedBox(height: Dimens.height12),
+                          // Title card with favorite/routine toggles
+                          ItemTitleCard(
+                            name: state.supplementObj?.name,
+                            onUpdateName: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
+                            isFavorite: state.supplementObj?.isFavorite ?? false,
+                            onToggleFavorite: () {
+                              if (state.supplementObj?.isFavorite != true) {
+                                if (state.supplementObj?.isRoutine == true) supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: false));
+                                supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: true));
+                              } else {
+                                supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: false));
+                              }
+                            },
+                            isRoutine: state.supplementObj?.isRoutine ?? false,
+                            onToggleRoutine: () {
+                              if (state.supplementObj?.isRoutine != true) {
+                                if (state.supplementObj?.isFavorite == true) supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: false));
+                                supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: true));
+                              } else {
+                                supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: false));
+                              }
+                            },
+                            itemCount: state.supplementObj!.info.orEmpty().length,
+                            scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
+                            onUpdateTime: (scheduleTime) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
+                            daysOfWeek: state.supplementObj?.daysOfWeek,
+                            onUpdateDayOfWeek: (dayOfWeek) {},
+                          ),
+                          // Item cards with connector lines
+                          ...state.supplementObj!.info.orEmpty().map((nutriInfo) => Column(
+                            children: [
+                              Center(
+                                child: Container(
+                                  width: 1.5,
+                                  height: 20,
+                                  color: Colors.grey.shade300,
                                 ),
-                                title: Text(AppLocalizations.of(context)!.add_more_options),
-                                trailing: const Icon(Icons.radio_button_checked, color: AppColors.yellowishGreen),
                               ),
-                            ),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            primary: false,
-                            itemCount: state.supplementObj?.info?.orEmpty().length,
-                            itemBuilder: (context, index) {
-                              final nutriInfo = state.supplementObj?.info.orEmpty()[index];
-                              return SupplementItemWidget(
+                              SupplementItemWidget(
                                 title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
                                 amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
                                 units: nutriInfo != null ? [nutriInfo.unit] : [],
@@ -332,32 +313,36 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                   supplementsBloc.add(UpdateAmountSupplementsAction(nutriInfo: nutriInfo!));
                                 },
                                 onRemoveItem: () => supplementsBloc.add(RemoveSupplementInfoSupplementsAction(nutriInfo: nutriInfo!, isGoBack: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName))),
-                              );
-                            },
+                              ),
+                            ],
+                          )),
+                          // Add More button
+                          const SizedBox(height: Dimens.height12),
+                          Center(
+                            child: TextButton.icon(
+                              icon: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
+                              label: Text(
+                                AppLocalizations.of(context)!.add_more,
+                                style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w500),
+                              ),
+                              onPressed: () {
+                                _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                _supplementFocusInputController.requestFocus();
+                              },
+                            ),
                           ),
                           const SizedBox(height: Dimens.height32),
                           GeneralButton(
                             onTap: () {
+                              // Auto-set title for single items
                               if (state.supplementObj!.info.orEmpty().length == 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
                                 final name = NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], state.supplementObj?.info.orEmpty()[0].id ?? -1).translate(context);
                                 state.supplementObj?.name = name;
-                                // supplementsBloc.add(UpdateNameSupplementsEvent(name: name));
                               }
 
+                              // Block save if combo has no name (inline error is shown in the title card)
                               if (state.supplementObj!.info.orEmpty().length > 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
-                                showRoutineTimeDialog(
-                                  onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
-                                  onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
-                                  onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
-                                  onFavoriteChange: (value) => supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: value)),
-                                  onChangeCreateRoutine: (value) => supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: value)),
-                                  name: state.supplementObj?.name,
-                                  daysOfWeek: state.supplementObj?.daysOfWeek,
-                                  scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
-                                  isFavorite: state.supplementObj?.isFavorite,
-                                  isCreateRoutine: state.supplementObj?.isRoutine,
-                                  itemsLength: state.supplementObj?.info?.length ?? 0,
-                                );
+                                return;
                               }
 
                               if (state.supplementObj!.name.isNotEmptyOrNull()) {
@@ -387,7 +372,6 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                         onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
                                       ),),);
                                 }
-                                // supplementsBloc.add(SavingEventSupplementsAction(onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate))));
                               }
                             },
                           ),

@@ -102,6 +102,16 @@ class UpdateSportBloc extends Bloc<UpdateSportEvent, UpdateSportState> {
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
+    on<UpdateIsFavoriteUpdateSportEvent>((event, emit) {
+      state.sportSimple?.isFavorite = event.isFavorite;
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
+
+    on<UpdateIsRoutineUpdateSportEvent>((event, emit) {
+      state.sportSimple?.isCreateRoutine = event.isRoutine;
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
+
     on<SaveUpdateSportUpdateSportEvent>((event, emit) {
       if (state.sportSimple?.isCreateRoutine == true) {
         if (state.sportSimple?.daysOfWeek?.orEmpty().isEmpty == true || state.sportSimple?.scheduleTime.isEmptyOrNull() == true) return;
