@@ -170,7 +170,7 @@ ConversionInfoEntity _$ConversionInfoEntityFromJson(
         Map<String, dynamic> json) =>
     ConversionInfoEntity(
       g: json['g'] as String,
-      v: (json['v'] as num),
+      v: json['v'] as num,
     );
 
 Map<String, dynamic> _$ConversionInfoEntityToJson(

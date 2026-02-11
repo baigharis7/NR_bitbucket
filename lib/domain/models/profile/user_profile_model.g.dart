@@ -44,12 +44,12 @@ UserProfileModel _$UserProfileModelFromJson(Map<String, dynamic> json) =>
       micronutrients: (json['micronutrients'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
-      userAll: (json['userAll'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      temporaryMicronutrients: (json['temporaryMicronutrients'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
+      userAll:
+          (json['userAll'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      temporaryMicronutrients:
+          (json['temporaryMicronutrients'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList(),
       temporaryAll: (json['temporaryAll'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
@@ -184,7 +184,7 @@ UserRda _$UserRdaFromJson(Map<String, dynamic> json) => UserRda(
       name: json['name'] as String,
       rda: json['rda'] as num,
       ul: json['ul'] as num,
-      upperLimit: json['upperLimit'] as num,
+      upperLimit: json['upperLimit'] as num?,
     );
 
 Map<String, dynamic> _$UserRdaToJson(UserRda instance) => <String, dynamic>{

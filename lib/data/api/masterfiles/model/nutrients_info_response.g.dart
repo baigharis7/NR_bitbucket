@@ -9,7 +9,7 @@ part of 'nutrients_info_response.dart';
 NutrientsInfoResponse _$NutrientsInfoResponseFromJson(
         Map<String, dynamic> json) =>
     NutrientsInfoResponse(
-      v: json['v'] as int,
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) => NutrientInfoResponse.fromJson(e as Map<String, dynamic>))
           .toList(),

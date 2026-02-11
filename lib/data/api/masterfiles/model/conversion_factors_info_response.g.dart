@@ -7,35 +7,35 @@ part of 'conversion_factors_info_response.dart';
 // **************************************************************************
 
 ConversionFactorsInfoResponse _$ConversionFactorsInfoResponseFromJson(
-    Map<String, dynamic> json) =>
+        Map<String, dynamic> json) =>
     ConversionFactorsInfoResponse(
-      v: json['v'] as int,
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) =>
-          ConversionFactorInfoResponse.fromJson(e as Map<String, dynamic>))
+              ConversionFactorInfoResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
 Map<String, dynamic> _$ConversionFactorsInfoResponseToJson(
-    ConversionFactorsInfoResponse instance) =>
+        ConversionFactorsInfoResponse instance) =>
     <String, dynamic>{
       'v': instance.v,
       'data': instance.data.map((e) => e.toJson()).toList(),
     };
 
 ConversionFactorInfoResponse _$ConversionFactorInfoResponseFromJson(
-    Map<String, dynamic> json) =>
+        Map<String, dynamic> json) =>
     ConversionFactorInfoResponse(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       value: json['value'] as String,
       list: (json['list'] as List<dynamic>)
           .map((e) =>
-          ConversionFactorResponse.fromJson(e as Map<String, dynamic>))
+              ConversionFactorResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
 Map<String, dynamic> _$ConversionFactorInfoResponseToJson(
-    ConversionFactorInfoResponse instance) =>
+        ConversionFactorInfoResponse instance) =>
     <String, dynamic>{
       'id': instance.id,
       'value': instance.value,
@@ -43,14 +43,14 @@ Map<String, dynamic> _$ConversionFactorInfoResponseToJson(
     };
 
 ConversionFactorResponse _$ConversionFactorResponseFromJson(
-    Map<String, dynamic> json) =>
+        Map<String, dynamic> json) =>
     ConversionFactorResponse(
       g: json['g'] as String,
       v: json['v'] as num,
     );
 
 Map<String, dynamic> _$ConversionFactorResponseToJson(
-    ConversionFactorResponse instance) =>
+        ConversionFactorResponse instance) =>
     <String, dynamic>{
       'g': instance.g,
       'v': instance.v,

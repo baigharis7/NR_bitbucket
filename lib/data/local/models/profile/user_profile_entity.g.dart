@@ -33,12 +33,12 @@ class UserProfileEntityAdapter extends TypeAdapter<UserProfileEntity> {
       guts: fields[13] as int?,
       objectives: (fields[14] as List).cast<int>(),
       micronutrients: (fields[15] as List?)?.cast<String>(),
+      userAll: (fields[20] as List?)?.cast<String>(),
       userRdas: fields[16] as UserRdasEntity?,
       recommededIds: (fields[17] as List?)?.cast<int>(),
-      kcal: fields[18] as int?,
       temporaryMicronutrients: (fields[19] as List?)?.cast<String>(),
-      userAll: (fields[20] as List?)?.cast<String>(),
       temporaryAll: (fields[21] as List?)?.cast<String>(),
+      kcal: fields[18] as int?,
     );
   }
 

@@ -98,8 +98,8 @@ class UnitInfoEntityAdapter extends TypeAdapter<UnitInfoEntity> {
 
 UnitsInfoEntity _$UnitsInfoEntityFromJson(Map<String, dynamic> json) =>
     UnitsInfoEntity(
-      id: json['id'] as int,
-      v: json['v'] as int,
+      id: (json['id'] as num).toInt(),
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) => UnitInfoEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -114,7 +114,7 @@ Map<String, dynamic> _$UnitsInfoEntityToJson(UnitsInfoEntity instance) =>
 
 UnitInfoEntity _$UnitInfoEntityFromJson(Map<String, dynamic> json) =>
     UnitInfoEntity(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       en: json['en'] as String,
       es: json['es'] as String,
       enPlural: json['enPlural'] as String?,

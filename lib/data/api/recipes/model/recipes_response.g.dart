@@ -28,9 +28,9 @@ RecipeResponse _$RecipeResponseFromJson(Map<String, dynamic> json) =>
       ingredients: json['ingredients'] as String,
       steps_es: json['steps_es'] as String?,
       steps_en: json['steps_en'] as String?,
-      time: json['time'] as int?,
-      difficulty: json['difficulty'] as int?,
-      servings: json['servings'] as int?,
+      time: (json['time'] as num?)?.toInt(),
+      difficulty: (json['difficulty'] as num?)?.toInt(),
+      servings: (json['servings'] as num?)?.toInt(),
       source: json['source'] as String?,
       exclusions: json['exclusions'] as String?,
     );

@@ -21,9 +21,9 @@ Map<String, dynamic> _$NutrientsObjectiveMasterToJson(
     };
 
 NutrientInfo _$NutrientInfoFromJson(Map<String, dynamic> json) => NutrientInfo(
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       name: json['name'] as String?,
-      sol: json['sol'] as int?,
+      sol: (json['sol'] as num?)?.toInt(),
       unit: json['unit'] as String?,
       convFactor: (json['convFactor'] as num?)?.toDouble(),
       male1: (json['male1'] as num?)?.toDouble(),
@@ -45,8 +45,9 @@ NutrientInfo _$NutrientInfoFromJson(Map<String, dynamic> json) => NutrientInfo(
       ulFemale2: (json['ulFemale2'] as num?)?.toDouble(),
       ulFemale3: (json['ulFemale3'] as num?)?.toDouble(),
       ulPregnancy: (json['ulPregnancy'] as num?)?.toDouble(),
-      objectives:
-          (json['objectives'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      objectives: (json['objectives'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
     );
 
 Map<String, dynamic> _$NutrientInfoToJson(NutrientInfo instance) =>

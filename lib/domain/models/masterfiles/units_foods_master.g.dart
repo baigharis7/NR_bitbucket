@@ -21,7 +21,7 @@ Map<String, dynamic> _$UnitsFoodsMasterToJson(UnitsFoodsMaster instance) =>
 
 UnitFoodMaster _$UnitFoodMasterFromJson(Map<String, dynamic> json) =>
     UnitFoodMaster(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       units: json['units'] as String,
     );
 

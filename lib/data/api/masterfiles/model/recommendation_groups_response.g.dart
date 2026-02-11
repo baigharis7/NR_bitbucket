@@ -9,7 +9,7 @@ part of 'recommendation_groups_response.dart';
 RecommendationGroupsResponse _$RecommendationGroupsResponseFromJson(
         Map<String, dynamic> json) =>
     RecommendationGroupsResponse(
-      v: json['v'] as int,
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) =>
               RecommendationGroupResponse.fromJson(e as Map<String, dynamic>))
@@ -26,10 +26,10 @@ Map<String, dynamic> _$RecommendationGroupsResponseToJson(
 RecommendationGroupResponse _$RecommendationGroupResponseFromJson(
         Map<String, dynamic> json) =>
     RecommendationGroupResponse(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       groups:
           (json['groups'] as List<dynamic>).map((e) => e as String).toList(),
-      size: json['size'] as int,
+      size: (json['size'] as num).toInt(),
       en: json['en'] as String,
       es: json['es'] as String,
     );

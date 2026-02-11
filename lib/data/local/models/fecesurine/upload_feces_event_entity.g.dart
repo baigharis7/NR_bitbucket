@@ -55,8 +55,8 @@ UploadFecesEventEntity _$UploadFecesEventEntityFromJson(
         Map<String, dynamic> json) =>
     UploadFecesEventEntity(
       userId: json['userId'] as String,
-      eventId: json['eventId'] as int,
-      fecesId: json['fecesId'] as int,
+      eventId: (json['eventId'] as num).toInt(),
+      fecesId: (json['fecesId'] as num).toInt(),
     );
 
 Map<String, dynamic> _$UploadFecesEventEntityToJson(

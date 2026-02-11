@@ -89,8 +89,8 @@ class UnitFoodEntityAdapter extends TypeAdapter<UnitFoodEntity> {
 
 UnitsFoodsEntity _$UnitsFoodsEntityFromJson(Map<String, dynamic> json) =>
     UnitsFoodsEntity(
-      id: json['id'] as int,
-      v: json['v'] as int,
+      id: (json['id'] as num).toInt(),
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) => UnitFoodEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -105,7 +105,7 @@ Map<String, dynamic> _$UnitsFoodsEntityToJson(UnitsFoodsEntity instance) =>
 
 UnitFoodEntity _$UnitFoodEntityFromJson(Map<String, dynamic> json) =>
     UnitFoodEntity(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       units: json['units'] as String,
     );
 

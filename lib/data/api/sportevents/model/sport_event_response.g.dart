@@ -9,15 +9,15 @@ part of 'sport_event_response.dart';
 SportEventResponse _$SportEventResponseFromJson(Map<String, dynamic> json) =>
     SportEventResponse(
       userId: json['userId'] as String,
-      eventId: json['eventId'] as int,
-      eventDate: json['eventDate'] as int,
+      eventId: (json['eventId'] as num).toInt(),
+      eventDate: (json['eventDate'] as num).toInt(),
       comment: json['comment'] as String?,
       sportName: json['sportName'] as String?,
       info: (json['info'] as List<dynamic>?)
           ?.map(
               (e) => SportEventInfoResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
-      eventKcal: json['eventKcals'] as int?,
+      eventKcal: (json['eventKcal'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$SportEventResponseToJson(SportEventResponse instance) =>
@@ -28,19 +28,19 @@ Map<String, dynamic> _$SportEventResponseToJson(SportEventResponse instance) =>
       'comment': instance.comment,
       'sportName': instance.sportName,
       'info': instance.info?.map((e) => e.toJson()).toList(),
-      'eventKcals': instance.eventKcal,
+      'eventKcal': instance.eventKcal,
     };
 
 SportEventInfoResponse _$SportEventInfoResponseFromJson(
         Map<String, dynamic> json) =>
     SportEventInfoResponse(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       name_en: json['name_en'] as String?,
       name_es: json['name_es'] as String?,
-      intensity: json['intensity'] as int?,
-      minutes: json['minutes'] as int,
-      timeStart: json['timeStart'] as int?,
-      kcal: json['kcal'] as int?,
+      intensity: (json['intensity'] as num?)?.toInt(),
+      minutes: (json['minutes'] as num).toInt(),
+      timeStart: (json['timeStart'] as num?)?.toInt(),
+      kcal: (json['kcal'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$SportEventInfoResponseToJson(

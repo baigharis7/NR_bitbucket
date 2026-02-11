@@ -9,16 +9,16 @@ part of 'food_event_complete.dart';
 FoodEventComplete _$FoodEventCompleteFromJson(Map<String, dynamic> json) =>
     FoodEventComplete(
       userId: json['userId'] as String?,
-      eventDate: json['eventDate'] as int?,
-      eventId: json['eventId'] as int?,
-      mealType: json['mealType'] as int?,
+      eventDate: (json['eventDate'] as num?)?.toInt(),
+      eventId: (json['eventId'] as num?)?.toInt(),
+      mealType: (json['mealType'] as num?)?.toInt(),
       foodName: json['foodName'] as String?,
       comment: json['comment'] as String?,
       foodInfo: (json['foodInfo'] as List<dynamic>?)
           ?.map((e) => FoodInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
       dish: json['dish'] as bool?,
-      eventKcals: json['eventKcals'] as int?,
+      eventKcals: (json['eventKcals'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$FoodEventCompleteToJson(FoodEventComplete instance) =>
@@ -36,10 +36,10 @@ Map<String, dynamic> _$FoodEventCompleteToJson(FoodEventComplete instance) =>
 
 FoodInfo _$FoodInfoFromJson(Map<String, dynamic> json) => FoodInfo(
       json['group'] as String?,
-      json['id'] as int?,
+      (json['id'] as num?)?.toInt(),
       json['name_en'] as String?,
       json['name_es'] as String?,
-      json['recommendable'] as int?,
+      (json['recommendable'] as num?)?.toInt(),
       json['eventInfo'] == null
           ? null
           : EventInfo.fromJson(json['eventInfo'] as Map<String, dynamic>),
@@ -48,7 +48,7 @@ FoodInfo _$FoodInfoFromJson(Map<String, dynamic> json) => FoodInfo(
           : Params.fromJson(json['params'] as Map<String, dynamic>),
       json['freeSugar'] as String?,
     )
-      ..exchangePortion = json['exchangePortion'] as int?
+      ..exchangePortion = (json['exchangePortion'] as num?)?.toInt()
       ..portionSenc = json['portionSenc'] as String?;
 
 Map<String, dynamic> _$FoodInfoToJson(FoodInfo instance) => <String, dynamic>{
@@ -65,11 +65,11 @@ Map<String, dynamic> _$FoodInfoToJson(FoodInfo instance) => <String, dynamic>{
     };
 
 EventInfo _$EventInfoFromJson(Map<String, dynamic> json) => EventInfo(
-      json['cookingMethod'] as int?,
+      (json['cookingMethod'] as num?)?.toInt(),
       (json['qty'] as num?)?.toDouble(),
-      json['unit'] as int?,
-      json['conversionFactor'] as int?,
-      json['usedOil'] as int?,
+      (json['unit'] as num?)?.toInt(),
+      (json['conversionFactor'] as num?)?.toInt(),
+      (json['usedOil'] as num?)?.toInt(),
       (json['waste'] as num?)?.toDouble(),
     );
 

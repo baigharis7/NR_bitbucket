@@ -9,7 +9,7 @@ part of 'foods_and_drinks_names_response.dart';
 FoodsAndDrinksNamesResponse _$FoodsAndDrinksNamesResponseFromJson(
         Map<String, dynamic> json) =>
     FoodsAndDrinksNamesResponse(
-      v: json['v'] as int,
+      v: (json['v'] as num).toInt(),
       data: FoodsAndDrinkListsResponse.fromJson(
           json['data'] as Map<String, dynamic>),
     );
@@ -41,7 +41,7 @@ Map<String, dynamic> _$FoodsAndDrinkListsResponseToJson(
 
 FoodItemResponse _$FoodItemResponseFromJson(Map<String, dynamic> json) =>
     FoodItemResponse(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       en: json['en'] as String,
       es: json['es'] as String,
       g: json['g'] as String,

@@ -95,8 +95,8 @@ class SportInfoEntityAdapter extends TypeAdapter<SportInfoEntity> {
 
 SportsInfoEntity _$SportsInfoEntityFromJson(Map<String, dynamic> json) =>
     SportsInfoEntity(
-      id: json['id'] as int,
-      v: json['v'] as int,
+      id: (json['id'] as num).toInt(),
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) => SportInfoEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -111,10 +111,10 @@ Map<String, dynamic> _$SportsInfoEntityToJson(SportsInfoEntity instance) =>
 
 SportInfoEntity _$SportInfoEntityFromJson(Map<String, dynamic> json) =>
     SportInfoEntity(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       en: json['en'] as String,
       es: json['es'] as String,
-      mets: json['mets'] as int,
+      mets: (json['mets'] as num).toInt(),
     );
 
 Map<String, dynamic> _$SportInfoEntityToJson(SportInfoEntity instance) =>

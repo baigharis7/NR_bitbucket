@@ -9,9 +9,9 @@ part of 'food_routine_event.dart';
 FoodRoutineEvent _$FoodRoutineEventFromJson(Map<String, dynamic> json) =>
     FoodRoutineEvent(
       userId: json['userId'] as String,
-      eventDate: json['eventDate'] as int,
-      eventId: json['eventId'] as int?,
-      mealType: json['mealType'] as int?,
+      eventDate: (json['eventDate'] as num).toInt(),
+      eventId: (json['eventId'] as num?)?.toInt(),
+      mealType: (json['mealType'] as num?)?.toInt(),
       foodName: json['foodName'] as String?,
       comment: json['comment'] as String?,
       ingredients: (json['ingredients'] as List<dynamic>?)
@@ -46,13 +46,14 @@ Map<String, dynamic> _$FoodRoutineEventToJson(FoodRoutineEvent instance) =>
       'timeZone': instance.timeZone,
     };
 
-FoodRoutineInEvent _$FoodRoutineInEventFromJson(Map<String, dynamic> json) => FoodRoutineInEvent(
-      id: json['id'] as int,
-      qty: json['qty'] as int,
-      unit: json['unit'] as int,
-      conversionFactor: json['conversionFactor'] as int?,
-      cookingMethod: json['cookingMethod'] as int,
-      usedOil: json['usedOil'] as int?,
+FoodRoutineInEvent _$FoodRoutineInEventFromJson(Map<String, dynamic> json) =>
+    FoodRoutineInEvent(
+      id: (json['id'] as num).toInt(),
+      qty: (json['qty'] as num).toInt(),
+      unit: (json['unit'] as num).toInt(),
+      conversionFactor: (json['conversionFactor'] as num?)?.toInt(),
+      cookingMethod: (json['cookingMethod'] as num).toInt(),
+      usedOil: (json['usedOil'] as num?)?.toInt(),
       unitsEquivalences: json['unitsEquivalences'] as String?,
     );
 

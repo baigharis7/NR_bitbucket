@@ -24,7 +24,7 @@ class SupplementEventsEntityAdapter
       info: (fields[3] as List).cast<SupplementEventsInfoEntity>(),
       name: fields[4] as String?,
       scheduleTime: fields[5] as String?,
-      daysOfWeek: (fields[6] as List?)?.map((e) => e as int).toList(),
+      daysOfWeek: (fields[6] as List?)?.cast<int>(),
       timeZone: fields[7] as String?,
     );
   }

@@ -10,7 +10,7 @@ UploadRecipeFavorite _$UploadRecipeFavoriteFromJson(
         Map<String, dynamic> json) =>
     UploadRecipeFavorite(
       userId: json['userId'] as String?,
-      eventDate: json['eventDate'] as int?,
+      eventDate: (json['eventDate'] as num?)?.toInt(),
       itemRecipe:
           RecipeMaster.fromJson(json['itemRecipe'] as Map<String, dynamic>),
     );

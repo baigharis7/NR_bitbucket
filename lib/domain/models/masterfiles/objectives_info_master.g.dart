@@ -33,7 +33,7 @@ Map<String, dynamic> _$ObjectivesInfoMasterToJson(
 
 ObjectiveInfoMaster _$ObjectiveInfoMasterFromJson(Map<String, dynamic> json) =>
     ObjectiveInfoMaster(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       en: json['en'] as String,
       es: json['es'] as String,
     );

@@ -9,11 +9,11 @@ part of 'upload_liquid_event.dart';
 UploadLiquidEvent _$UploadLiquidEventFromJson(Map<String, dynamic> json) =>
     UploadLiquidEvent(
       json['userId'] as String?,
-      json['eventDate'] as int?,
+      (json['eventDate'] as num?)?.toInt(),
       (json['liquidInfo'] as List<dynamic>?)
           ?.map((e) => LiquidInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['eventKcals'] as int?,
+      (json['eventKcals'] as num?)?.toInt(),
       uploadSuccess: json['uploadSuccess'] as bool? ?? false,
     );
 
@@ -31,10 +31,10 @@ LiquidInfo _$LiquidInfoFromJson(Map<String, dynamic> json) => LiquidInfo(
           ? null
           : EventInfo.fromJson(json['eventInfo'] as Map<String, dynamic>),
       json['group'] as String?,
-      json['id'] as int?,
+      (json['id'] as num?)?.toInt(),
       json['name_en'] as String?,
       json['name_es'] as String?,
-      json['recommendable'] as int?,
+      (json['recommendable'] as num?)?.toInt(),
       json['params'] == null
           ? null
           : Params.fromJson(json['params'] as Map<String, dynamic>),
@@ -54,9 +54,9 @@ Map<String, dynamic> _$LiquidInfoToJson(LiquidInfo instance) =>
     };
 
 EventInfo _$EventInfoFromJson(Map<String, dynamic> json) => EventInfo(
-      json['cookingMethod'] as int?,
+      (json['cookingMethod'] as num?)?.toInt(),
       (json['qty'] as num?)?.toDouble(),
-      json['unit'] as int?,
+      (json['unit'] as num?)?.toInt(),
       (json['waste'] as num?)?.toDouble(),
     );
 

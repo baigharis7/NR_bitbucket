@@ -9,15 +9,17 @@ part of 'add_sport_favorite.dart';
 AddSportFavorite _$AddSportFavoriteFromJson(Map<String, dynamic> json) =>
     AddSportFavorite(
       userId: json['userId'] as String?,
-      eventId: json['eventId'] as int?,
-      eventDate: json['eventDate'] as int?,
+      eventId: (json['eventId'] as num?)?.toInt(),
+      eventDate: (json['eventDate'] as num?)?.toInt(),
       comment: json['comment'] as String?,
       title: json['title'] as String?,
       info: (json['info'] as List<dynamic>?)
           ?.map((e) => AddSportFavInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
       scheduleTime: json['scheduleTime'] as String?,
-      daysOfWeek: (json['daysOfWeek'] as List?)?.map((e) => e as int).toList(),
+      daysOfWeek: (json['daysOfWeek'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
       isFavorite: json['isFavorite'] as bool?,
       isCreateRoutine: json['isCreateRoutine'] as bool?,
       timeZone: json['timeZone'] as String?,
@@ -40,12 +42,12 @@ Map<String, dynamic> _$AddSportFavoriteToJson(AddSportFavorite instance) =>
 
 AddSportFavInfo _$AddSportFavInfoFromJson(Map<String, dynamic> json) =>
     AddSportFavInfo(
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       name_en: json['name_en'] as String?,
       name_es: json['name_es'] as String?,
-      timeStart: json['timeStart'] as int?,
-      intensity: json['intensity'] as int?,
-      minutes: json['minutes'] as int?,
+      timeStart: (json['timeStart'] as num?)?.toInt(),
+      intensity: (json['intensity'] as num?)?.toInt(),
+      minutes: (json['minutes'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$AddSportFavInfoToJson(AddSportFavInfo instance) =>

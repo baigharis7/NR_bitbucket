@@ -23,7 +23,9 @@ Map<String, dynamic> _$CookingMethodsMasterToJson(
 CookingMethod _$CookingMethodFromJson(Map<String, dynamic> json) =>
     CookingMethod(
       group: json['group'] as String,
-      methods: (json['methods'] as List<dynamic>).map((e) => e as int).toList(),
+      methods: (json['methods'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
     );
 
 Map<String, dynamic> _$CookingMethodToJson(CookingMethod instance) =>

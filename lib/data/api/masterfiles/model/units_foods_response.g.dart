@@ -8,7 +8,7 @@ part of 'units_foods_response.dart';
 
 UnitsFoodsResponse _$UnitsFoodsResponseFromJson(Map<String, dynamic> json) =>
     UnitsFoodsResponse(
-      v: json['v'] as int,
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) => UnitFoodResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -22,7 +22,7 @@ Map<String, dynamic> _$UnitsFoodsResponseToJson(UnitsFoodsResponse instance) =>
 
 UnitFoodResponse _$UnitFoodResponseFromJson(Map<String, dynamic> json) =>
     UnitFoodResponse(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       units: json['units'] as String,
     );
 

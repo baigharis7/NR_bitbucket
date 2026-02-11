@@ -23,7 +23,7 @@ Map<String, dynamic> _$CookingMethodsInfoMasterToJson(
 
 CookingMethodInfo _$CookingMethodInfoFromJson(Map<String, dynamic> json) =>
     CookingMethodInfo(
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       en: json['en'] as String?,
       es: json['es'] as String?,
     );

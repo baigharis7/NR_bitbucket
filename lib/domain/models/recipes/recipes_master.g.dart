@@ -8,7 +8,9 @@ part of 'recipes_master.dart';
 
 RecipeMaster _$RecipeMasterFromJson(Map<String, dynamic> json) => RecipeMaster(
       id: (json['id'] as num).toDouble(),
-      meal: (json['meal'] as List<dynamic>).map((e) => e as int).toList(),
+      meal: (json['meal'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
       name_es: json['name_es'] as String?,
       name_en: json['name_en'] as String?,
       ingredients: (json['ingredients'] as List<dynamic>)
@@ -20,9 +22,9 @@ RecipeMaster _$RecipeMasterFromJson(Map<String, dynamic> json) => RecipeMaster(
       steps_en: json['steps_en'] == null
           ? null
           : RecipeSteps.fromJson(json['steps_en'] as Map<String, dynamic>),
-      time: json['time'] as int?,
-      difficulty: json['difficulty'] as int?,
-      servings: json['servings'] as int?,
+      time: (json['time'] as num?)?.toInt(),
+      difficulty: (json['difficulty'] as num?)?.toInt(),
+      servings: (json['servings'] as num?)?.toInt(),
       source: json['source'] as String?,
       exclusions: json['exclusions'] as String?,
     );
@@ -45,10 +47,10 @@ Map<String, dynamic> _$RecipeMasterToJson(RecipeMaster instance) =>
 
 RecipeIngredient _$RecipeIngredientFromJson(Map<String, dynamic> json) =>
     RecipeIngredient(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       qtyGrams: (json['qtyGrams'] as num).toDouble(),
       qtyUnit: (json['qtyUnit'] as num).toDouble(),
-      unit: json['unit'] as int,
+      unit: (json['unit'] as num).toInt(),
     );
 
 Map<String, dynamic> _$RecipeIngredientToJson(RecipeIngredient instance) =>

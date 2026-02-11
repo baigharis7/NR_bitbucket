@@ -23,10 +23,10 @@ Map<String, dynamic> _$RecommendationGroupsMasterToJson(
 
 RecommendationGroup _$RecommendationGroupFromJson(Map<String, dynamic> json) =>
     RecommendationGroup(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       groups:
           (json['groups'] as List<dynamic>).map((e) => e as String).toList(),
-      size: json['size'] as int,
+      size: (json['size'] as num).toInt(),
       en: json['en'] as String,
       es: json['es'] as String,
     );
