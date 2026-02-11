@@ -16,6 +16,7 @@ class UploadSupplementsEv {
   Map<String, dynamic> toJson() => _$UploadSupplementsEvToJson(this);
 }
 
+@JsonSerializable()
 class UploadSupplementInfo {
   int id;
   int amount;

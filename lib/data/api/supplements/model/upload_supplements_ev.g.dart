@@ -26,3 +26,19 @@ Map<String, dynamic> _$UploadSupplementsEvToJson(
       'info': instance.info.map((e) => e.toJson()).toList(),
       'name': instance.name,
     };
+
+UploadSupplementInfo _$UploadSupplementInfoFromJson(
+        Map<String, dynamic> json) =>
+    UploadSupplementInfo(
+      id: (json['id'] as num).toInt(),
+      amount: (json['amount'] as num).toInt(),
+      unit: json['unit'] as String,
+    );
+
+Map<String, dynamic> _$UploadSupplementInfoToJson(
+        UploadSupplementInfo instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'amount': instance.amount,
+      'unit': instance.unit,
+    };
