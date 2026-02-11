@@ -9,8 +9,8 @@ part of 'water_event_master.dart';
 WaterEventMaster _$WaterEventMasterFromJson(Map<String, dynamic> json) =>
     WaterEventMaster(
       json['userId'] as String?,
-      json['eventDate'] as int?,
-      json['eventId'] as int?,
+      (json['eventDate'] as num?)?.toInt(),
+      (json['eventId'] as num?)?.toInt(),
       (json['qty'] as num?)?.toDouble(),
     );
 

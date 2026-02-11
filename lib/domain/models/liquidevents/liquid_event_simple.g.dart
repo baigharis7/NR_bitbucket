@@ -9,7 +9,7 @@ part of 'liquid_event_simple.dart';
 LiquidEventSimple _$LiquidEventSimpleFromJson(Map<String, dynamic> json) =>
     LiquidEventSimple(
       userId: json['userId'] as String,
-      date: json['date'] as int,
+      date: (json['date'] as num).toInt(),
       drinks: (json['drinks'] as List<dynamic>?)
           ?.map((e) => LiquidInEvent.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -24,8 +24,8 @@ Map<String, dynamic> _$LiquidEventSimpleToJson(LiquidEventSimple instance) =>
 
 LiquidInEvent _$LiquidInEventFromJson(Map<String, dynamic> json) =>
     LiquidInEvent(
-      id: json['id'] as int,
-      qty: json['qty'] as int,
+      id: (json['id'] as num).toInt(),
+      qty: (json['qty'] as num).toInt(),
     );
 
 Map<String, dynamic> _$LiquidInEventToJson(LiquidInEvent instance) =>

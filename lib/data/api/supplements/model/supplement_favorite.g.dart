@@ -9,11 +9,11 @@ part of 'supplement_favorite.dart';
 SupplementFavorite _$SupplementFavoriteFromJson(Map<String, dynamic> json) =>
     SupplementFavorite(
       userId: json['userId'] as String,
-      eventId: json['eventId'] as int,
-      eventDate: json['eventDate'] as int,
+      eventId: (json['eventId'] as num).toInt(),
+      eventDate: (json['eventDate'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) =>
-          SupplementFavoriteNutrient.fromJson(e as Map<String, dynamic>))
+              SupplementFavoriteNutrient.fromJson(e as Map<String, dynamic>))
           .toList(),
       name: json['name'] as String?,
     );
@@ -27,14 +27,16 @@ Map<String, dynamic> _$SupplementFavoriteToJson(SupplementFavorite instance) =>
       'name': instance.name,
     };
 
-SupplementFavoriteNutrient _$SupplementFavoriteNutrientFromJson(Map<String, dynamic> json) =>
+SupplementFavoriteNutrient _$SupplementFavoriteNutrientFromJson(
+        Map<String, dynamic> json) =>
     SupplementFavoriteNutrient(
-      id: json['id'] as int,
-      amount: json['amount'] as int,
+      id: (json['id'] as num).toInt(),
+      amount: (json['amount'] as num).toInt(),
       unit: json['unit'] as String,
     );
 
-Map<String, dynamic> _$SupplementFavoriteNutrientToJson(SupplementFavoriteNutrient instance) =>
+Map<String, dynamic> _$SupplementFavoriteNutrientToJson(
+        SupplementFavoriteNutrient instance) =>
     <String, dynamic>{
       'id': instance.id,
       'amount': instance.amount,

@@ -1,0 +1,39 @@
+image: ghcr.io/cirruslabs/flutter:stable
+
+pipelines:
+  # Run on every push to any branch
+  default:
+    - step:
+        name: Analyze & Test
+        caches:
+          - flutter
+        script:
+          - flutter --version
+          - flutter pub get
+          - flutter analyze --fatal-infos
+          - flutter test --coverage
+          - |
+            if command -v lcov &> /dev/null; then
+              lcov --summary coverage/lcov.info
+            fi
+        artifacts:
+          - coverage/**
+
+  # Run on pull requests
+  pull-requests:
+    '**':
+      - step:
+          name: Analyze & Test
+          caches:
+            - flutter
+          script:
+            - flutter --version
+            - flutter pub get
+            - flutter analyze --fatal-infos
+            - flutter test --coverage
+          artifacts:
+            - coverage/**
+
+definitions:
+  caches:
+    flutter: /sdks/flutter

@@ -193,8 +193,8 @@ class TestQuestionEntityAdapter extends TypeAdapter<TestQuestionEntity> {
 SubjectiveAnalysisListEntity _$SubjectiveAnalysisListEntityFromJson(
         Map<String, dynamic> json) =>
     SubjectiveAnalysisListEntity(
-      id: json['id'] as int,
-      v: json['v'] as int,
+      id: (json['id'] as num).toInt(),
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) =>
               SubjectiveAnalysisEntity.fromJson(e as Map<String, dynamic>))
@@ -212,12 +212,13 @@ Map<String, dynamic> _$SubjectiveAnalysisListEntityToJson(
 SubjectiveAnalysisEntity _$SubjectiveAnalysisEntityFromJson(
         Map<String, dynamic> json) =>
     SubjectiveAnalysisEntity(
-      questionId: json['questionId'] as int,
-      questionType: json['questionType'] as int,
+      questionId: (json['questionId'] as num).toInt(),
+      questionType: (json['questionType'] as num).toInt(),
       parameter_en: json['parameter_en'] as String?,
       parameter_es: json['parameter_es'] as String?,
-      objectivesId:
-          (json['objectivesId'] as List<dynamic>).map((e) => e as int).toList(),
+      objectivesId: (json['objectivesId'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
       subjectiveAnalysisTestEntity_en:
           json['subjectiveAnalysisTestEntity_en'] == null
               ? null
@@ -266,7 +267,7 @@ Map<String, dynamic> _$SubjectiveAnalysisTestEntityToJson(
 
 TestQuestionEntity _$TestQuestionEntityFromJson(Map<String, dynamic> json) =>
     TestQuestionEntity(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       title: json['title'] as String,
       afirm: json['afirm'] as String,
       neg: json['neg'] as String,

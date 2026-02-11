@@ -9,7 +9,7 @@ part of 'objectives_info_response.dart';
 ObjectivesInfoResponse _$ObjectivesInfoResponseFromJson(
         Map<String, dynamic> json) =>
     ObjectivesInfoResponse(
-      v: json['v'] as int,
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) => ObjectiveInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -35,7 +35,7 @@ Map<String, dynamic> _$ObjectivesInfoResponseToJson(
 
 ObjectiveInfo _$ObjectiveInfoFromJson(Map<String, dynamic> json) =>
     ObjectiveInfo(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       en: json['en'] as String,
       es: json['es'] as String,
     );

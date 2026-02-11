@@ -8,7 +8,7 @@ part of 'units_info_response.dart';
 
 UnitsInfoResponse _$UnitsInfoResponseFromJson(Map<String, dynamic> json) =>
     UnitsInfoResponse(
-      v: json['v'] as int,
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) => UnitInfoResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -22,11 +22,11 @@ Map<String, dynamic> _$UnitsInfoResponseToJson(UnitsInfoResponse instance) =>
 
 UnitInfoResponse _$UnitInfoResponseFromJson(Map<String, dynamic> json) =>
     UnitInfoResponse(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       en: json['en'] as String,
       es: json['es'] as String,
-      enPlural: json['en_plural'] as String?,
-      esPlural:  json['es_plural'] as String?,
+      enPlural: json['enPlural'] as String?,
+      esPlural: json['esPlural'] as String?,
     );
 
 Map<String, dynamic> _$UnitInfoResponseToJson(UnitInfoResponse instance) =>
@@ -34,6 +34,6 @@ Map<String, dynamic> _$UnitInfoResponseToJson(UnitInfoResponse instance) =>
       'id': instance.id,
       'en': instance.en,
       'es': instance.es,
-      'en_plural': instance.enPlural,
-      'es_plural': instance.esPlural,
+      'enPlural': instance.enPlural,
+      'esPlural': instance.esPlural,
     };

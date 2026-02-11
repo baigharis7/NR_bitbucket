@@ -9,7 +9,7 @@ part of 'cooking_methods_response.dart';
 CookingMethodsResponse _$CookingMethodsResponseFromJson(
         Map<String, dynamic> json) =>
     CookingMethodsResponse(
-      v: json['v'] as int,
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) =>
               CookingMethodGroupResponse.fromJson(e as Map<String, dynamic>))
@@ -27,7 +27,7 @@ CookingMethodGroupResponse _$CookingMethodGroupResponseFromJson(
         Map<String, dynamic> json) =>
     CookingMethodGroupResponse(
       g: json['g'] as String,
-      m: (json['m'] as List<dynamic>).map((e) => e as int).toList(),
+      m: (json['m'] as List<dynamic>).map((e) => (e as num).toInt()).toList(),
     );
 
 Map<String, dynamic> _$CookingMethodGroupResponseToJson(

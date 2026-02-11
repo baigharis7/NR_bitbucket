@@ -101,8 +101,8 @@ class RecommendationGroupEntityAdapter
 RecommendationGroupsEntity _$RecommendationGroupsEntityFromJson(
         Map<String, dynamic> json) =>
     RecommendationGroupsEntity(
-      id: json['id'] as int,
-      v: json['v'] as int,
+      id: (json['id'] as num).toInt(),
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) =>
               RecommendationGroupEntity.fromJson(e as Map<String, dynamic>))
@@ -120,10 +120,10 @@ Map<String, dynamic> _$RecommendationGroupsEntityToJson(
 RecommendationGroupEntity _$RecommendationGroupEntityFromJson(
         Map<String, dynamic> json) =>
     RecommendationGroupEntity(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       groups:
           (json['groups'] as List<dynamic>).map((e) => e as String).toList(),
-      size: json['size'] as int,
+      size: (json['size'] as num).toInt(),
       en: json['en'] as String,
       es: json['es'] as String,
     );

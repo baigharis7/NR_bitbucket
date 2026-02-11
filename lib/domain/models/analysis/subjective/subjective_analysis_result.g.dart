@@ -10,7 +10,7 @@ SubjectiveAnalysisResult _$SubjectiveAnalysisResultFromJson(
         Map<String, dynamic> json) =>
     SubjectiveAnalysisResult(
       userId: json['userId'] as String,
-      eventDate: json['eventDate'] as int,
+      eventDate: (json['eventDate'] as num).toInt(),
       questionList: (json['questionList'] as List<dynamic>)
           .map((e) => SubjectiveAnalysisAnswerResult.fromJson(
               e as Map<String, dynamic>))
@@ -28,8 +28,8 @@ Map<String, dynamic> _$SubjectiveAnalysisResultToJson(
 SubjectiveAnalysisAnswerResult _$SubjectiveAnalysisAnswerResultFromJson(
         Map<String, dynamic> json) =>
     SubjectiveAnalysisAnswerResult(
-      questionId: json['questionId'] as int,
-      value: json['value'] as int?,
+      questionId: (json['questionId'] as num).toInt(),
+      value: (json['value'] as num?)?.toInt(),
       testAnswerList: (json['testAnswerList'] as List<dynamic>?)
           ?.map((e) =>
               SubjectiveAnalysisTestAnswer.fromJson(e as Map<String, dynamic>))
@@ -48,8 +48,8 @@ Map<String, dynamic> _$SubjectiveAnalysisAnswerResultToJson(
 SubjectiveAnalysisTestAnswer _$SubjectiveAnalysisTestAnswerFromJson(
         Map<String, dynamic> json) =>
     SubjectiveAnalysisTestAnswer(
-      testQuestionId: json['testQuestionId'] as int,
-      answersType: json['answersType'] as int,
+      testQuestionId: (json['testQuestionId'] as num).toInt(),
+      answersType: (json['answersType'] as num).toInt(),
     );
 
 Map<String, dynamic> _$SubjectiveAnalysisTestAnswerToJson(

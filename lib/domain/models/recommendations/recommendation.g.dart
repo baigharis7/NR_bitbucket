@@ -14,7 +14,9 @@ Recommendation _$RecommendationFromJson(Map<String, dynamic> json) =>
       userNutrients: (json['userNutrients'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
-      nutrientsInDeficit: (json['nutrientsInDeficit'] as List<dynamic>).map((e) => e as String).toList(),
+      nutrientsInDeficit: (json['nutrientsInDeficit'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
     );
 
 Map<String, dynamic> _$RecommendationToJson(Recommendation instance) =>
@@ -26,9 +28,13 @@ Map<String, dynamic> _$RecommendationToJson(Recommendation instance) =>
 
 GroupRecommendation _$GroupRecommendationFromJson(Map<String, dynamic> json) =>
     GroupRecommendation(
-      json['recGroup'] as int,
-      (json['objFoods'] as List<dynamic>).map((e) => e as int).toList(),
-      (json['deficitFoods'] as List<dynamic>).map((e) => e as int).toList(),
+      (json['recGroup'] as num).toInt(),
+      (json['objFoods'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
+      (json['deficitFoods'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
       UsualFoods.fromJson(json['usualFoods'] as Map<String, dynamic>),
     );
 
@@ -60,12 +66,12 @@ Map<String, dynamic> _$UsualFoodsToJson(UsualFoods instance) =>
 
 UsualFoodItem _$UsualFoodItemFromJson(Map<String, dynamic> json) =>
     UsualFoodItem(
-      json['foodId'] as int,
-      (json['alternativeUsualHealthyFoods'] as List<dynamic>?)
-          ?.map((e) => e as int)
+      (json['foodId'] as num).toInt(),
+      (json['alternativeUsualHealthyFood'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
           .toList(),
       (json['alternativeUsualUnhealthyFoods'] as List<dynamic>?)
-          ?.map((e) => e as int)
+          ?.map((e) => (e as num).toInt())
           .toList(),
     );
 

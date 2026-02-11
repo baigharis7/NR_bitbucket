@@ -10,11 +10,11 @@ SportRoutineCompleted _$SportRoutineCompletedFromJson(
         Map<String, dynamic> json) =>
     SportRoutineCompleted(
       userId: json['userId'] as String?,
-      eventId: json['eventId'] as int?,
-      eventDate: json['eventDate'] as int?,
+      eventId: (json['eventId'] as num?)?.toInt(),
+      eventDate: (json['eventDate'] as num?)?.toInt(),
       info: (json['info'] as List<dynamic>?)
-              ?.map((e) => Info.fromJson(e as Map<String, dynamic>))
-              .toList(),
+          ?.map((e) => Info.fromJson(e as Map<String, dynamic>))
+          .toList(),
       comment: json['comment'] as String?,
       sportName: json['sportName'] as String?,
       scheduleTime: json['scheduleTime'] as String?,
@@ -42,8 +42,8 @@ Map<String, dynamic> _$SportRoutineCompletedToJson(
 
 Info _$InfoFromJson(Map<String, dynamic> json) => Info(
       id: json['id'] as num?,
-      nameEn: json['name_en'] as String?,
-      nameEs: json['name_es'] as String?,
+      nameEn: json['nameEn'] as String?,
+      nameEs: json['nameEs'] as String?,
       timeStart: json['timeStart'] as num?,
       intensity: json['intensity'] as num?,
       minutes: json['minutes'] as num?,
@@ -51,8 +51,8 @@ Info _$InfoFromJson(Map<String, dynamic> json) => Info(
 
 Map<String, dynamic> _$InfoToJson(Info instance) => <String, dynamic>{
       'id': instance.id,
-      'name_en': instance.nameEn,
-      'name_es': instance.nameEs,
+      'nameEn': instance.nameEn,
+      'nameEs': instance.nameEs,
       'timeStart': instance.timeStart,
       'intensity': instance.intensity,
       'minutes': instance.minutes,

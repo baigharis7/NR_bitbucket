@@ -9,8 +9,8 @@ part of 'sport_event_simple.dart';
 SportEventSimple _$SportEventSimpleFromJson(Map<String, dynamic> json) =>
     SportEventSimple(
       userId: json['userId'] as String?,
-      eventId: json['eventId'] as int?,
-      eventDate: json['eventDate'] as int?,
+      eventId: (json['eventId'] as num?)?.toInt(),
+      eventDate: (json['eventDate'] as num?)?.toInt(),
       info: (json['info'] as List<dynamic>?)
           ?.map((e) => SportInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -29,12 +29,12 @@ Map<String, dynamic> _$SportEventSimpleToJson(SportEventSimple instance) =>
     };
 
 SportInfo _$SportInfoFromJson(Map<String, dynamic> json) => SportInfo(
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       name_en: json['name_en'] as String?,
       name_es: json['name_es'] as String?,
-      timeStart: json['timeStart'] as int?,
-      intensity: json['intensity'] as int?,
-      minutes: json['minutes'] as int?,
+      timeStart: (json['timeStart'] as num?)?.toInt(),
+      intensity: (json['intensity'] as num?)?.toInt(),
+      minutes: (json['minutes'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$SportInfoToJson(SportInfo instance) => <String, dynamic>{

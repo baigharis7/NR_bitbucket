@@ -21,10 +21,10 @@ Map<String, dynamic> _$SportsInfoMasterToJson(SportsInfoMaster instance) =>
 
 SportInfoMaster _$SportInfoMasterFromJson(Map<String, dynamic> json) =>
     SportInfoMaster(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       en: json['en'] as String,
       es: json['es'] as String,
-      mets: json['mets'] as int,
+      mets: (json['mets'] as num).toInt(),
     );
 
 Map<String, dynamic> _$SportInfoMasterToJson(SportInfoMaster instance) =>

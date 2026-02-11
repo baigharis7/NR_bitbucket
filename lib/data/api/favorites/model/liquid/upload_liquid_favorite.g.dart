@@ -10,7 +10,7 @@ UploadLiquidFavorite _$UploadLiquidFavoriteFromJson(
         Map<String, dynamic> json) =>
     UploadLiquidFavorite(
       userId: json['userId'] as String,
-      eventDate: json['eventDate'] as int,
+      eventDate: (json['eventDate'] as num).toInt(),
       title: json['title'] as String,
       ingredients: (json['ingredients'] as List<dynamic>)
           .map(
@@ -21,7 +21,7 @@ UploadLiquidFavorite _$UploadLiquidFavoriteFromJson(
               (e) => UploadLiquidInFavorite.fromJson(e as Map<String, dynamic>))
           .toList(),
       comment: json['comment'] as String?,
-      mealTime: json['mealTime'] as int,
+      mealTime: (json['mealTime'] as num).toInt(),
     );
 
 Map<String, dynamic> _$UploadLiquidFavoriteToJson(
@@ -39,12 +39,12 @@ Map<String, dynamic> _$UploadLiquidFavoriteToJson(
 UploadLiquidInFavorite _$UploadLiquidInFavoriteFromJson(
         Map<String, dynamic> json) =>
     UploadLiquidInFavorite(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       name_en: json['name_en'] as String?,
       name_es: json['name_es'] as String?,
-      qty: json['qty'] as int,
-      unit: json['unit'] as int,
-      cookingMethod: json['cookingMethod'] as int,
+      qty: (json['qty'] as num).toInt(),
+      unit: (json['unit'] as num).toInt(),
+      cookingMethod: (json['cookingMethod'] as num).toInt(),
       unitsEquivalences: json['unitsEquivalences'] as String?,
     );
 

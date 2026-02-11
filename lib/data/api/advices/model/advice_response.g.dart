@@ -8,12 +8,13 @@ part of 'advice_response.dart';
 
 AdviceResponse _$AdviceResponseFromJson(Map<String, dynamic> json) =>
     AdviceResponse(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       adv_es: json['adv_es'] as String,
       adv_en: json['adv_en'] as String?,
-      objective:
-          (json['objective'] as List<dynamic>).map((e) => e as int).toList(),
-      interaction: json['interaction'] as int,
+      objective: (json['objective'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
+      interaction: (json['interaction'] as num).toInt(),
     );
 
 Map<String, dynamic> _$AdviceResponseToJson(AdviceResponse instance) =>

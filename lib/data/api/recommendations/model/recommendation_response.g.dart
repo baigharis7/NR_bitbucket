@@ -24,9 +24,11 @@ Map<String, dynamic> _$RecommendationResponseToJson(
 
 GroupRecommendation _$GroupRecommendationFromJson(Map<String, dynamic> json) =>
     GroupRecommendation(
-      json['recGroup'] as int,
-      (json['foods'] as List<dynamic>).map((e) => e as int).toList(),
-      (json['usualFoods'] as List<dynamic>).map((e) => e as int).toList(),
+      (json['recGroup'] as num).toInt(),
+      (json['foods'] as List<dynamic>).map((e) => (e as num).toInt()).toList(),
+      (json['usualFoods'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
     );
 
 Map<String, dynamic> _$GroupRecommendationToJson(

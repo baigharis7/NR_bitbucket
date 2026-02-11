@@ -25,10 +25,10 @@ class FoodFavoriteEntityAdapter extends TypeAdapter<FoodFavoriteEntity> {
       eventDate: fields[5] as int,
       dish: fields[6] as bool?,
       isRoutine: fields[7] as bool?,
-      daysOfWeek: (fields[8] as List?)?.map((e) => e as int).toList(),
+      daysOfWeek: (fields[8] as List?)?.cast<int>(),
       eventId: fields[9] as int?,
-      isFavorite: fields[10] as bool?,
-      userId: fields[11] as String?,
+      userId: fields[10] as String?,
+      isFavorite: fields[11] as bool?,
       time: fields[12] as String?,
       timeZone: fields[13] as String?,
     );
@@ -59,9 +59,9 @@ class FoodFavoriteEntityAdapter extends TypeAdapter<FoodFavoriteEntity> {
       ..writeByte(9)
       ..write(obj.eventId)
       ..writeByte(10)
-      ..write(obj.isFavorite)
-      ..writeByte(11)
       ..write(obj.userId)
+      ..writeByte(11)
+      ..write(obj.isFavorite)
       ..writeByte(12)
       ..write(obj.time)
       ..writeByte(13)
@@ -150,15 +150,17 @@ FoodFavoriteEntity _$FoodFavoriteEntityFromJson(Map<String, dynamic> json) =>
           .map((e) => FoodInFavoriteEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
       comment: json['comment'] as String?,
-      mealTime: json['mealTime'] as int,
+      mealTime: (json['mealTime'] as num).toInt(),
       title: json['title'] as String,
-      eventDate: json['eventDate'] as int,
+      eventDate: (json['eventDate'] as num).toInt(),
       dish: json['dish'] as bool?,
       isRoutine: json['isRoutine'] as bool?,
-      daysOfWeek: json['daysOfWeek'] as List<int>?,
-      eventId: json['eventId'] as int?,
-      isFavorite: json['isFavorite'] as bool?,
+      daysOfWeek: (json['daysOfWeek'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
+      eventId: (json['eventId'] as num?)?.toInt(),
       userId: json['userId'] as String?,
+      isFavorite: json['isFavorite'] as bool?,
       time: json['time'] as String?,
       timeZone: json['timeZone'] as String?,
     );
@@ -184,15 +186,15 @@ Map<String, dynamic> _$FoodFavoriteEntityToJson(FoodFavoriteEntity instance) =>
 FoodInFavoriteEntity _$FoodInFavoriteEntityFromJson(
         Map<String, dynamic> json) =>
     FoodInFavoriteEntity(
-      id: json['id'] as int,
-      qty: json['qty'] as int,
-      unit: json['unit'] as int,
-      cookingMethod: json['cookingMethod'] as int,
+      id: (json['id'] as num).toInt(),
+      qty: (json['qty'] as num).toInt(),
+      unit: (json['unit'] as num).toInt(),
+      cookingMethod: (json['cookingMethod'] as num).toInt(),
       unitsEquivalences: json['unitsEquivalences'] as String?,
       name_en: json['name_en'] as String?,
       name_es: json['name_es'] as String?,
-      conversionFactor: json['conversionFactor'] as int?,
-      usedOil: json['usedOil'] as int?,
+      conversionFactor: (json['conversionFactor'] as num?)?.toInt(),
+      usedOil: (json['usedOil'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$FoodInFavoriteEntityToJson(

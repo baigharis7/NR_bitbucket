@@ -29,7 +29,7 @@ SupplementInfoMaster _$SupplementInfoMasterFromJson(
       es: json['es'] as String,
       en: json['en'] as String,
       unit: json['unit'] as String,
-      computerName: json['computer_name'] as String?,
+      computerName: json['computerName'] as String?,
     );
 
 Map<String, dynamic> _$SupplementInfoMasterToJson(
@@ -39,5 +39,5 @@ Map<String, dynamic> _$SupplementInfoMasterToJson(
       'es': instance.es,
       'en': instance.en,
       'unit': instance.unit,
-      'computer_name': instance.computerName,
+      'computerName': instance.computerName,
     };

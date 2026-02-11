@@ -124,9 +124,9 @@ LiquidFavoriteEntity _$LiquidFavoriteEntityFromJson(
               (e) => LiquidInFavoriteEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
       comment: json['comment'] as String?,
-      mealTime: json['mealTime'] as int,
+      mealTime: (json['mealTime'] as num).toInt(),
       title: json['title'] as String,
-      eventDate: json['eventDate'] as int,
+      eventDate: (json['eventDate'] as num).toInt(),
     );
 
 Map<String, dynamic> _$LiquidFavoriteEntityToJson(
@@ -143,10 +143,10 @@ Map<String, dynamic> _$LiquidFavoriteEntityToJson(
 LiquidInFavoriteEntity _$LiquidInFavoriteEntityFromJson(
         Map<String, dynamic> json) =>
     LiquidInFavoriteEntity(
-      id: json['id'] as int,
-      qty: json['qty'] as int,
-      unit: json['unit'] as int,
-      cookingMethod: json['cookingMethod'] as int,
+      id: (json['id'] as num).toInt(),
+      qty: (json['qty'] as num).toInt(),
+      unit: (json['unit'] as num).toInt(),
+      cookingMethod: (json['cookingMethod'] as num).toInt(),
       unitsEquivalences: json['unitsEquivalences'] as String?,
       name_en: json['name_en'] as String?,
       name_es: json['name_es'] as String?,

@@ -117,35 +117,35 @@ class SportEventInfoEntityAdapter extends TypeAdapter<SportEventInfoEntity> {
 SportEventEntity _$SportEventEntityFromJson(Map<String, dynamic> json) =>
     SportEventEntity(
       userId: json['userId'] as String,
-      eventId: json['eventId'] as int,
-      eventDate: json['eventDate'] as int,
+      eventDate: (json['eventDate'] as num).toInt(),
       comment: json['comment'] as String?,
       sportName: json['sportName'] as String?,
       info: (json['info'] as List<dynamic>?)
           ?.map((e) => SportEventInfoEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
-      eventKcals: json['eventKcals'] as int?,
+      eventKcals: (json['eventKcals'] as num?)?.toInt(),
+      eventId: (json['eventId'] as num).toInt(),
     );
 
 Map<String, dynamic> _$SportEventEntityToJson(SportEventEntity instance) =>
     <String, dynamic>{
       'userId': instance.userId,
-      'eventId': instance.eventId,
       'eventDate': instance.eventDate,
       'comment': instance.comment,
       'sportName': instance.sportName,
       'info': instance.info?.map((e) => e.toJson()).toList(),
       'eventKcals': instance.eventKcals,
+      'eventId': instance.eventId,
     };
 
 SportEventInfoEntity _$SportEventInfoEntityFromJson(
         Map<String, dynamic> json) =>
     SportEventInfoEntity(
-      id: json['id'] as int,
-      intensity: json['intensity'] as int?,
-      minutes: json['minutes'] as int,
-      timeStart: json['timeStart'] as int?,
-      kcal: json['kcal'] as int?,
+      id: (json['id'] as num).toInt(),
+      intensity: (json['intensity'] as num?)?.toInt(),
+      minutes: (json['minutes'] as num).toInt(),
+      timeStart: (json['timeStart'] as num?)?.toInt(),
+      kcal: (json['kcal'] as num?)?.toInt(),
       name_en: json['name_en'] as String?,
       name_es: json['name_es'] as String?,
     );

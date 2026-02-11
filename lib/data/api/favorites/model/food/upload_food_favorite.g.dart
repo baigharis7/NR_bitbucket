@@ -9,7 +9,7 @@ part of 'upload_food_favorite.dart';
 UploadFoodFavorite _$UploadFoodFavoriteFromJson(Map<String, dynamic> json) =>
     UploadFoodFavorite(
       userId: json['userId'] as String,
-      eventDate: json['eventDate'] as int,
+      eventDate: (json['eventDate'] as num).toInt(),
       title: json['title'] as String,
       ingredients: (json['ingredients'] as List<dynamic>)
           .map((e) => UploadFoodInFavorite.fromJson(e as Map<String, dynamic>))
@@ -19,9 +19,11 @@ UploadFoodFavorite _$UploadFoodFavoriteFromJson(Map<String, dynamic> json) =>
           .toList(),
       comment: json['comment'] as String?,
       dish: json['dish'] as bool?,
-      mealTime: json['mealTime'] as int,
+      mealTime: (json['mealTime'] as num).toInt(),
       isRoutine: json['isRoutine'] as bool?,
-      daysOfWeek: json['daysOfWeek'] as List<int>?,
+      daysOfWeek: (json['daysOfWeek'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
     );
 
 Map<String, dynamic> _$UploadFoodFavoriteToJson(UploadFoodFavorite instance) =>
@@ -41,14 +43,14 @@ Map<String, dynamic> _$UploadFoodFavoriteToJson(UploadFoodFavorite instance) =>
 UploadFoodInFavorite _$UploadFoodInFavoriteFromJson(
         Map<String, dynamic> json) =>
     UploadFoodInFavorite(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       name_en: json['name_en'] as String?,
       name_es: json['name_es'] as String?,
-      qty: json['qty'] as int,
-      unit: json['unit'] as int,
-      conversionFactor: json['conversionFactor'] as int?,
-      usedOil: json['usedOil'] as int?,
-      cookingMethod: json['cookingMethod'] as int,
+      qty: (json['qty'] as num).toInt(),
+      unit: (json['unit'] as num).toInt(),
+      cookingMethod: (json['cookingMethod'] as num).toInt(),
+      conversionFactor: (json['conversionFactor'] as num?)?.toInt(),
+      usedOil: (json['usedOil'] as num?)?.toInt(),
       unitsEquivalences: json['unitsEquivalences'] as String?,
     );
 
@@ -60,8 +62,8 @@ Map<String, dynamic> _$UploadFoodInFavoriteToJson(
       'name_es': instance.name_es,
       'qty': instance.qty,
       'unit': instance.unit,
-      'cookingMethod': instance.cookingMethod,
       'conversionFactor': instance.conversionFactor,
       'usedOil': instance.usedOil,
+      'cookingMethod': instance.cookingMethod,
       'unitsEquivalences': instance.unitsEquivalences,
     };

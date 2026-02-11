@@ -556,16 +556,16 @@ class ParamsAdapter extends TypeAdapter<Params> {
 FoodEventEntity _$FoodEventEntityFromJson(Map<String, dynamic> json) =>
     FoodEventEntity(
       json['userId'] as String?,
-      json['eventDate'] as int?,
-      json['eventId'] as int?,
-      json['mealType'] as int?,
+      (json['eventDate'] as num?)?.toInt(),
+      (json['eventId'] as num?)?.toInt(),
+      (json['mealType'] as num?)?.toInt(),
       json['foodName'] as String?,
       json['comment'] as String?,
       (json['foodInfo'] as List<dynamic>?)
           ?.map((e) => FoodInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
       json['dish'] as bool?,
-      json['eventKcals'] as int?,
+      (json['eventKcals'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$FoodEventEntityToJson(FoodEventEntity instance) =>
@@ -583,10 +583,10 @@ Map<String, dynamic> _$FoodEventEntityToJson(FoodEventEntity instance) =>
 
 FoodInfo _$FoodInfoFromJson(Map<String, dynamic> json) => FoodInfo(
       json['group'] as String?,
-      json['id'] as int?,
+      (json['id'] as num?)?.toInt(),
       json['name_en'] as String?,
       json['name_es'] as String?,
-      json['recommendable'] as int?,
+      (json['recommendable'] as num?)?.toInt(),
       json['eventInfo'] == null
           ? null
           : EventInfo.fromJson(json['eventInfo'] as Map<String, dynamic>),
@@ -608,11 +608,11 @@ Map<String, dynamic> _$FoodInfoToJson(FoodInfo instance) => <String, dynamic>{
     };
 
 EventInfo _$EventInfoFromJson(Map<String, dynamic> json) => EventInfo(
-      json['cookingMethod'] as int?,
+      (json['cookingMethod'] as num?)?.toInt(),
       (json['qty'] as num?)?.toDouble(),
-      json['unit'] as int?,
-      json['conversionFactor'] as int?,
-      json['usedOil'] as int?,
+      (json['unit'] as num?)?.toInt(),
+      (json['conversionFactor'] as num?)?.toInt(),
+      (json['usedOil'] as num?)?.toInt(),
       (json['waste'] as num?)?.toDouble(),
     );
 

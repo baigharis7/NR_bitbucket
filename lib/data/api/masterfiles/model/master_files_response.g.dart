@@ -18,13 +18,17 @@ MasterFilesResponse _$MasterFilesResponseFromJson(Map<String, dynamic> json) =>
               json['cookingMethodsInfoResponse'] as Map<String, dynamic>),
       oilTypesResponse: json['oilTypesResponse'] == null
           ? null
-          : OilTypesResponse.fromJson(json['oilTypesResponse'] as Map<String, dynamic>),
+          : OilTypesResponse.fromJson(
+              json['oilTypesResponse'] as Map<String, dynamic>),
       conversionFactorsResponse: json['conversionFactorsResponse'] == null
           ? null
-          : ConversionFactorsResponse.fromJson(json['conversionFactorsResponse'] as Map<String, dynamic>),
-      conversionFactorsInfoResponse: json['conversionFactorsInfoResponse'] == null
+          : ConversionFactorsResponse.fromJson(
+              json['conversionFactorsResponse'] as Map<String, dynamic>),
+      conversionFactorsInfoResponse: json['conversionFactorsInfoResponse'] ==
+              null
           ? null
-          : ConversionFactorsInfoResponse.fromJson(json['conversionFactorsInfoResponse'] as Map<String, dynamic>),
+          : ConversionFactorsInfoResponse.fromJson(
+              json['conversionFactorsInfoResponse'] as Map<String, dynamic>),
       nutrientsInfoResponse: json['nutrientsInfoResponse'] == null
           ? null
           : NutrientsInfoResponse.fromJson(
@@ -55,7 +59,8 @@ MasterFilesResponse _$MasterFilesResponseFromJson(Map<String, dynamic> json) =>
               json['unitsFoodsResponse'] as Map<String, dynamic>),
       supplementsInfoResponse: json['supplementsInfoResponse'] == null
           ? null
-          : SupplementsInfoResponse.fromJson(json['supplementsInfoResponse'] as Map<String, dynamic>),
+          : SupplementsInfoResponse.fromJson(
+              json['supplementsInfoResponse'] as Map<String, dynamic>),
       subjectiveAnalysisResponse: json['subjectiveAnalysisResponse'] == null
           ? null
           : SubjectiveAnalysisListResponse.fromJson(
@@ -68,12 +73,10 @@ Map<String, dynamic> _$MasterFilesResponseToJson(
       'cookingMethodsResponse': instance.cookingMethodsResponse?.toJson(),
       'cookingMethodsInfoResponse':
           instance.cookingMethodsInfoResponse?.toJson(),
-      'oilTypesResponse':
-      instance.oilTypesResponse?.toJson(),
-      'conversionFactorsResponse':
-      instance.conversionFactorsResponse?.toJson(),
+      'oilTypesResponse': instance.oilTypesResponse?.toJson(),
+      'conversionFactorsResponse': instance.conversionFactorsResponse?.toJson(),
       'conversionFactorsInfoResponse':
-      instance.conversionFactorsInfoResponse?.toJson(),
+          instance.conversionFactorsInfoResponse?.toJson(),
       'nutrientsInfoResponse': instance.nutrientsInfoResponse?.toJson(),
       'foodsAndDrinksNamesResponse':
           instance.foodsAndDrinksNamesResponse?.toJson(),

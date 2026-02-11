@@ -28,13 +28,15 @@ class FoodRoutineEntityAdapter extends TypeAdapter<FoodRoutineEntity> {
       dish: fields[8] as bool?,
       isRoutine: fields[9] as bool?,
       daysOfWeek: (fields[10] as List?)?.cast<int>(),
+      timeZone: fields[11] as String?,
+      schedule: fields[12] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, FoodRoutineEntity obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -58,7 +60,9 @@ class FoodRoutineEntityAdapter extends TypeAdapter<FoodRoutineEntity> {
       ..writeByte(10)
       ..write(obj.daysOfWeek)
       ..writeByte(11)
-      ..write(obj.timeZone);
+      ..write(obj.timeZone)
+      ..writeByte(12)
+      ..write(obj.schedule);
   }
 
   @override

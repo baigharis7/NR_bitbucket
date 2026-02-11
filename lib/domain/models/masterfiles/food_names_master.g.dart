@@ -41,7 +41,7 @@ Map<String, dynamic> _$FoodsAndDrinkListsMasterToJson(
 
 FoodItemMaster _$FoodItemMasterFromJson(Map<String, dynamic> json) =>
     FoodItemMaster(
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       en: json['en'] as String?,
       es: json['es'] as String?,
       group: json['group'] as String?,

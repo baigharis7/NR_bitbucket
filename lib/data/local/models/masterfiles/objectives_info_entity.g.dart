@@ -100,8 +100,8 @@ class ObjectiveInfoEntityAdapter extends TypeAdapter<ObjectiveInfoEntity> {
 ObjectivesInfoEntity _$ObjectivesInfoEntityFromJson(
         Map<String, dynamic> json) =>
     ObjectivesInfoEntity(
-      id: json['id'] as int,
-      v: json['v'] as int,
+      id: (json['id'] as num).toInt(),
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) => ObjectiveInfoEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -128,7 +128,7 @@ Map<String, dynamic> _$ObjectivesInfoEntityToJson(
 
 ObjectiveInfoEntity _$ObjectiveInfoEntityFromJson(Map<String, dynamic> json) =>
     ObjectiveInfoEntity(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       en: json['en'] as String,
       es: json['es'] as String,
     );

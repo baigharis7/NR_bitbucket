@@ -10,8 +10,8 @@ UploadSupplementEvent _$UploadSupplementEventFromJson(
         Map<String, dynamic> json) =>
     UploadSupplementEvent(
       userId: json['userId'] as String?,
-      eventId: json['eventId'] as int?,
-      value: json['value'] as int?,
+      eventId: (json['eventId'] as num?)?.toInt(),
+      value: (json['value'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$UploadSupplementEventToJson(

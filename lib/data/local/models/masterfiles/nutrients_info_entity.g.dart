@@ -110,8 +110,8 @@ class NutrientInfoEntityAdapter extends TypeAdapter<NutrientInfoEntity> {
 
 NutrientsInfoEntity _$NutrientsInfoEntityFromJson(Map<String, dynamic> json) =>
     NutrientsInfoEntity(
-      id: json['id'] as int,
-      v: json['v'] as int,
+      id: (json['id'] as num).toInt(),
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) => NutrientInfoEntity.fromJson(e as Map<String, dynamic>))
           .toList(),

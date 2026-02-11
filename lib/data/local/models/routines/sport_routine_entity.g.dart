@@ -19,13 +19,13 @@ class SportRoutineEntityAdapter extends TypeAdapter<SportRoutineEntity> {
     return SportRoutineEntity(
       userId: fields[0] as String?,
       eventId: fields[1] as int?,
+      eventDate: fields[8] as int?,
       comment: fields[2] as String?,
       sportName: fields[3] as String?,
       scheduleTime: fields[4] as String?,
       info: (fields[5] as List?)?.cast<SportRoutineInfoEntity>(),
-      daysOfWeek: fields[6] as List<int>?,
+      daysOfWeek: (fields[6] as List?)?.cast<int>(),
       timeZone: fields[7] as String?,
-      eventDate: fields[8] as int?,
     );
   }
 
@@ -121,13 +121,18 @@ class SportRoutineInfoEntityAdapter
 SportRoutineEntity _$SportRoutineEntityFromJson(Map<String, dynamic> json) =>
     SportRoutineEntity(
       userId: json['userId'] as String?,
-      eventId: json['eventId'] as int?,
-      eventDate: json['eventDate'] as int?,
+      eventId: (json['eventId'] as num?)?.toInt(),
+      eventDate: (json['eventDate'] as num?)?.toInt(),
       comment: json['comment'] as String?,
       sportName: json['sportName'] as String?,
       scheduleTime: json['scheduleTime'] as String?,
-      info: (json['info'] as List<dynamic>?)?.map((e) => SportRoutineInfoEntity.fromJson(e as Map<String, dynamic>)).toList(),
-      daysOfWeek: json['daysOfWeek'] as List<int>?,
+      info: (json['info'] as List<dynamic>?)
+          ?.map(
+              (e) => SportRoutineInfoEntity.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      daysOfWeek: (json['daysOfWeek'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
       timeZone: json['timeZone'] as String?,
     );
 
@@ -135,13 +140,13 @@ Map<String, dynamic> _$SportRoutineEntityToJson(SportRoutineEntity instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'eventId': instance.eventId,
-      'eventDate': instance.eventDate,
       'comment': instance.comment,
       'sportName': instance.sportName,
       'scheduleTime': instance.scheduleTime,
       'info': instance.info?.map((e) => e.toJson()).toList(),
       'daysOfWeek': instance.daysOfWeek,
       'timeZone': instance.timeZone,
+      'eventDate': instance.eventDate,
     };
 
 SportRoutineInfoEntity _$SportRoutineInfoEntityFromJson(

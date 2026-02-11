@@ -50,8 +50,8 @@ class ExplainingCardEntityAdapter extends TypeAdapter<ExplainingCardEntity> {
 ExplainingCardEntity _$ExplainingCardEntityFromJson(
         Map<String, dynamic> json) =>
     ExplainingCardEntity(
-      id: json['id'] as int,
-      timesClicked: json['timesClicked'] as int,
+      id: (json['id'] as num).toInt(),
+      timesClicked: (json['timesClicked'] as num).toInt(),
     );
 
 Map<String, dynamic> _$ExplainingCardEntityToJson(

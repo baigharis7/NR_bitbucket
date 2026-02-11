@@ -25,12 +25,13 @@ Map<String, dynamic> _$SubjectiveAnalysisListMasterToJson(
 SubjectiveAnalysisMaster _$SubjectiveAnalysisMasterFromJson(
         Map<String, dynamic> json) =>
     SubjectiveAnalysisMaster(
-      questionId: json['questionId'] as int,
+      questionId: (json['questionId'] as num).toInt(),
       questionType: $enumDecode(_$QuestionTypeEnumMap, json['questionType']),
       parameter_en: json['parameter_en'] as String?,
       parameter_es: json['parameter_es'] as String?,
-      objectivesId:
-          (json['objectivesId'] as List<dynamic>).map((e) => e as int).toList(),
+      objectivesId: (json['objectivesId'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
       subjectiveAnalysisTestMaster_en:
           json['subjectiveAnalysisTestMaster_en'] == null
               ? null
@@ -82,7 +83,7 @@ Map<String, dynamic> _$SubjectiveAnalysisTestMasterToJson(
 
 TestQuestionMaster _$TestQuestionMasterFromJson(Map<String, dynamic> json) =>
     TestQuestionMaster(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       title: json['title'] as String,
       afirm: json['afirm'] as String,
       neg: json['neg'] as String,

@@ -91,8 +91,8 @@ class CookingMethodGroupEntityAdapter
 CookingMethodsEntity _$CookingMethodsEntityFromJson(
         Map<String, dynamic> json) =>
     CookingMethodsEntity(
-      id: json['id'] as int,
-      v: json['v'] as int,
+      id: (json['id'] as num).toInt(),
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) =>
               CookingMethodGroupEntity.fromJson(e as Map<String, dynamic>))
@@ -111,7 +111,7 @@ CookingMethodGroupEntity _$CookingMethodGroupEntityFromJson(
         Map<String, dynamic> json) =>
     CookingMethodGroupEntity(
       g: json['g'] as String,
-      m: (json['m'] as List<dynamic>).map((e) => e as int).toList(),
+      m: (json['m'] as List<dynamic>).map((e) => (e as num).toInt()).toList(),
     );
 
 Map<String, dynamic> _$CookingMethodGroupEntityToJson(

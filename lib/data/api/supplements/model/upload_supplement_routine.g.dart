@@ -7,24 +7,25 @@ part of 'upload_supplement_routine.dart';
 // **************************************************************************
 
 UploadSupplementRoutine _$UploadSupplementRoutineFromJson(
-    Map<String, dynamic> json) =>
+        Map<String, dynamic> json) =>
     UploadSupplementRoutine(
       userId: json['userId'] as String,
-      eventId: json['eventId'] as int,
-      eventDate: json['eventDate'] as int,
+      eventId: (json['eventId'] as num).toInt(),
+      eventDate: (json['eventDate'] as num).toInt(),
       info: (json['info'] as List<dynamic>)
           .map((e) =>
-          UploadSupplementRoutineInfo.fromJson(e as Map<String, dynamic>))
+              UploadSupplementRoutineInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
       name: json['name'] as String?,
       time: json['time'] as String,
-      daysOfWeek:
-      (json['daysOfWeek'] as List<dynamic>).map((e) => e as int).toList(),
+      daysOfWeek: (json['daysOfWeek'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
       timeZone: json['timeZone'] as String,
     );
 
 Map<String, dynamic> _$UploadSupplementRoutineToJson(
-    UploadSupplementRoutine instance) =>
+        UploadSupplementRoutine instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'eventId': instance.eventId,
@@ -37,15 +38,15 @@ Map<String, dynamic> _$UploadSupplementRoutineToJson(
     };
 
 UploadSupplementRoutineInfo _$UploadSupplementRoutineInfoFromJson(
-    Map<String, dynamic> json) =>
+        Map<String, dynamic> json) =>
     UploadSupplementRoutineInfo(
-      id: json['id'] as int,
-      amount: json['amount'] as int,
+      id: (json['id'] as num).toInt(),
+      amount: (json['amount'] as num).toInt(),
       unit: json['unit'] as String,
     );
 
 Map<String, dynamic> _$UploadSupplementRoutineInfoToJson(
-    UploadSupplementRoutineInfo instance) =>
+        UploadSupplementRoutineInfo instance) =>
     <String, dynamic>{
       'id': instance.id,
       'amount': instance.amount,

@@ -9,7 +9,7 @@ part of 'subjective_analysis_response.dart';
 SubjectiveAnalysisListResponse _$SubjectiveAnalysisListResponseFromJson(
         Map<String, dynamic> json) =>
     SubjectiveAnalysisListResponse(
-      v: json['v'] as int,
+      v: (json['v'] as num).toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) =>
               SubjectiveAnalysisResponse.fromJson(e as Map<String, dynamic>))
@@ -26,11 +26,13 @@ Map<String, dynamic> _$SubjectiveAnalysisListResponseToJson(
 SubjectiveAnalysisResponse _$SubjectiveAnalysisResponseFromJson(
         Map<String, dynamic> json) =>
     SubjectiveAnalysisResponse(
-      q_id: json['q_id'] as int,
-      q_type: json['q_type'] as int,
+      q_id: (json['q_id'] as num).toInt(),
+      q_type: (json['q_type'] as num).toInt(),
       q_en: json['q_en'] as String?,
       q_es: json['q_es'] as String?,
-      obj_id: (json['obj_id'] as List<dynamic>).map((e) => e as int).toList(),
+      obj_id: (json['obj_id'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
       ans_en: (json['ans_en'] as List<dynamic>?)
           ?.map((e) =>
               TestQuestionAnswerResponse.fromJson(e as Map<String, dynamic>))
@@ -58,7 +60,7 @@ Map<String, dynamic> _$SubjectiveAnalysisResponseToJson(
 TestQuestionAnswerResponse _$TestQuestionAnswerResponseFromJson(
         Map<String, dynamic> json) =>
     TestQuestionAnswerResponse(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       title: json['title'] as String,
       afirm: json['afirm'] as String,
       neg: json['neg'] as String,

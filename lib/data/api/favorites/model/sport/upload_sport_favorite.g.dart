@@ -9,13 +9,13 @@ part of 'upload_sport_favorite.dart';
 UploadSportFavorite _$UploadSportFavoriteFromJson(Map<String, dynamic> json) =>
     UploadSportFavorite(
       userId: json['userId'] as String,
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       name_en: json['name_en'] as String?,
       name_es: json['name_es'] as String?,
       timeStart: json['timeStart'] as String?,
-      intensity: json['intensity'] as int?,
-      minutes: json['minutes'] as int?,
-      eventDate: json['eventDate'] as int?,
+      intensity: (json['intensity'] as num?)?.toInt(),
+      minutes: (json['minutes'] as num?)?.toInt(),
+      eventDate: (json['eventDate'] as num?)?.toInt(),
       title: json['title'] as String?,
       comment: json['comment'] as String?,
     );

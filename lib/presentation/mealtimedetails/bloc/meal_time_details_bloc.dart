@@ -25,6 +25,7 @@ import '../../../domain/models/masterfiles/food_names_master.dart';
 import '../../../domain/models/masterfiles/nutrients_info_master.dart';
 import '../../../domain/models/profile/user_profile_model.dart';
 import '../../../infrastructure/errors/error_types.dart';
+import '../../../infrastructure/helpers/macro_calculation_helper.dart';
 import '../../../infrastructure/utils/constants.dart';
 
 part 'meal_time_details_event.dart';
@@ -40,6 +41,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
   final RemoveFoodEventInteractor removeFoodEventInteractor;
   final UpdateEventsInteractor updateEventsInteractor;
   final PreferencesRepository preferencesRepository;
+  final MacroCalculationHelper _macroHelper = const MacroCalculationHelper();
 
   MealTimeDetailsBloc({
     required this.getUserIdInteractor,
@@ -202,71 +204,38 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
   }
 
   num getMacroNutrientRda(String macronutrient) {
-    double kcalPerNutrient = (state.profile?.kcal ?? 0) / 100 * getPercentageByMacro(macronutrient);
-    double gramsPerNutrient = kcalPerNutrient / getKcalPerGram(macronutrient);
-    return gramsPerNutrient.toInt();
+    return _macroHelper.getMacroNutrientRda(
+      state.profile?.kcal ?? 0,
+      macronutrient,
+      state.profile?.objectives ?? [],
+    );
   }
 
   int getPercentageByMacro(String macro) {
-    var macroo = 0;
-    if ((state.profile?.objectives?.contains(50) ?? false) || (state.profile?.objectives?.contains(51) ?? false)) {
-      macroo = macro == 'carbsAvailable' ? 40 : 30;
-    }
-    else if (state.profile?.objectives?.contains(52) ?? false) {
-      macroo = macro == 'carbsAvailable' ? 50 : macro == 'proteinSci' ? 20 : 30;
-    }
-    else {
-      macroo = macro == 'carbsAvailable' ? 30 : 35;
-    }
-    return macroo;
+    return _macroHelper.getPercentageByMacro(
+      macro,
+      state.profile?.objectives ?? [],
+    );
   }
 
-  int getKcalPerGram(String macro) => macro == 'fatTotal' ? 9 : 4;
+  int getKcalPerGram(String macro) => _macroHelper.getKcalPerGram(macro);
 
   int getUserKcalSelectiveObjectives(int userKcal) {
-    int changedKcal = userKcal;
-
-    if (state.profile?.objectives?.contains(50) ?? false) {
-      changedKcal = changedKcal + changedKcal~/100*15;
-    }
-    if (state.profile?.objectives?.contains(51) ?? false) {
-      changedKcal = changedKcal - changedKcal~/100*20;
-    }
-
-    return changedKcal;
+    return _macroHelper.getUserKcalSelectiveObjectives(
+      userKcal,
+      state.profile?.objectives ?? [],
+    );
   }
 
-
   double calculateTodayConsumedSugar(int totalSugarRequired) {
-    double sugarConsumedToday = 0.0;
-    for(var foodEvent in state.foodEvents!) {
-      for (var food in foodEvent.foodInfo!) {
-        if (food.freeSugar.orEmpty() == Constants.FREE_SUGAR) {
-          sugarConsumedToday = sugarConsumedToday + (food.params?.sugarsTotal ?? 0.0);
-        }
-      }
-    }
-
-    for(var liquidEvent in state.liquidEvents!) {
-      for (var liquid in liquidEvent.foodInfo!) {
-        if (liquid.freeSugar.orEmpty() == Constants.FREE_SUGAR) {
-          sugarConsumedToday = sugarConsumedToday + (liquid.params?.sugarsTotal ?? 0.0);
-        }
-      }
-    }
-
-    return double.parse(sugarConsumedToday.toStringAsFixed(2));
+    return _macroHelper.calculateConsumedSugar(
+      state.foodEvents.orEmpty(),
+      state.liquidEvents.orEmpty().cast<FoodEventComplete>(),
+    );
   }
 
   double calculateTodayFiber() {
-    double fiberConsumedToday = 0.0;
-    for(var foodEvent in state.foodEvents!) {
-      for (var food in foodEvent.foodInfo!) {
-        fiberConsumedToday = fiberConsumedToday + (food.params?.fiber ?? 0.0);
-      }
-    }
-
-    return double.parse(fiberConsumedToday.toStringAsFixed(2));
+    return _macroHelper.calculateConsumedFiber(state.foodEvents.orEmpty());
   }
 
 

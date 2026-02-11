@@ -138,8 +138,8 @@ class FoodItemEntityAdapter extends TypeAdapter<FoodItemEntity> {
 FoodsAndDrinksNamesEntity _$FoodsAndDrinksNamesEntityFromJson(
         Map<String, dynamic> json) =>
     FoodsAndDrinksNamesEntity(
-      id: json['id'] as int,
-      v: json['v'] as int,
+      id: (json['id'] as num).toInt(),
+      v: (json['v'] as num).toInt(),
       data: FoodsAndDrinkListsEntity.fromJson(
           json['data'] as Map<String, dynamic>),
     );
@@ -172,7 +172,7 @@ Map<String, dynamic> _$FoodsAndDrinkListsEntityToJson(
 
 FoodItemEntity _$FoodItemEntityFromJson(Map<String, dynamic> json) =>
     FoodItemEntity(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       en: json['en'] as String,
       es: json['es'] as String,
       g: json['g'] as String,
