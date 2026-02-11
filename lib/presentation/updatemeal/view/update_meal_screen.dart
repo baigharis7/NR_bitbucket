@@ -98,7 +98,10 @@ class UpdateMealScreen extends StatelessWidget {
                   backgroundColor: Colors.transparent,
                   bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                   body: SafeArea(
-                    child: SingleChildScrollView(
+                    child: Column(
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(vertical: Dimens.paddingLarge, horizontal: Dimens.paddingSmall),
                       child: Column(
                         children: [
@@ -144,20 +147,24 @@ class UpdateMealScreen extends StatelessWidget {
                               onUpdateTime: (scheduleTime) {},
                               daysOfWeek: state.foodEvent?.daysOfWeek,
                               onUpdateDayOfWeek: (dayOfWeek) {},
+                              showTimePicker: false,
                             ),
                             // Item cards with connector lines
-                            ...state.foodEvent!.ingredients.map((ingredient) {
+                            ...state.foodEvent!.ingredients.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final ingredient = entry.value;
                               final option = eventHelper.findFoodNameFromId(ingredient.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                               final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                               return Column(
                                 children: [
-                                  Center(
+                                  if (index > 0) Center(
                                     child: Container(
                                       width: 1.5,
-                                      height: 20,
+                                      height: 15,
                                       color: Colors.grey.shade300,
                                     ),
                                   ),
+                                  if (index == 0) const SizedBox(height: 15),
                                   FoodEventItem(
                                     options: option,
                                     unitsFoodsMaster: state.unitsFoodsMaster ?? UnitsFoodsMaster(unitsFoodsMaster: []),
@@ -180,32 +187,33 @@ class UpdateMealScreen extends StatelessWidget {
                             }).toList(),
                             // Add More button
                             const SizedBox(height: Dimens.height12),
-                            Center(
-                              child: TextButton.icon(
-                                icon: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
-                                label: Text(
-                                  AppLocalizations.of(context)!.add_more,
-                                  style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w500),
-                                ),
-                                onPressed: () {
-                                  // Scroll to top to search for more items
-                                },
+                            SizedBox(
+                              width: Dimens.widthLarge,
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
+                                tileColor: AppColors.floralWhite,
+                                onTap: () {},
+                                title: Text(AppLocalizations.of(context)!.add_more),
+                                trailing: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
                               ),
                             ),
                           ],
-                          if (state.foodEvent?.ingredients.isNotEmpty == true) Container(
-                            margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                            child: GeneralButton(onTap: () {
-                              if (state.foodEvent?.title.isNotEmptyOrNull() == true) {
-                                updateMealBloc.add(SaveUpdateMealUpdateMealEvent(onFinish: () => Navigator.pop(context)));
-                              }
-                            },
-                            ),
-                          ),
                         ],
                       ),
                     ),
                   ),
+                  if (state.foodEvent?.ingredients.isNotEmpty == true) Container(
+                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall, vertical: Dimens.marginSmall),
+                    child: GeneralButton(onTap: () {
+                      if (state.foodEvent?.title.isNotEmptyOrNull() == true) {
+                        updateMealBloc.add(SaveUpdateMealUpdateMealEvent(onFinish: () => Navigator.pop(context)));
+                      }
+                    },
+                    ),
+                  ),
+                ],
+                ),
+                ),
                 ),
               ),
             ],

@@ -534,6 +534,7 @@
     "micros_keep_eye_on": "Micros to keep an eye on",
     "item_title": "Title",
     "item_saved_as_favorite": "This item will also be saved as a favorite",
+    "item_saved_as_routine": "This item will also be saved as a routine",
     "combo_name_required": "Please provide a name for your combo"
 
 }

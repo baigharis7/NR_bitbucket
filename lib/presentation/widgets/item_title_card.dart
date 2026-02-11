@@ -23,6 +23,7 @@ class ItemTitleCard extends StatefulWidget {
   final List<int>? daysOfWeek;
   final Function(int)? onUpdateDayOfWeek;
   final Function(List<int>)? onBulkDaySelect;
+  final bool showTimePicker;
 
   const ItemTitleCard({
     super.key,
@@ -40,6 +41,7 @@ class ItemTitleCard extends StatefulWidget {
     this.daysOfWeek,
     this.onUpdateDayOfWeek,
     this.onBulkDaySelect,
+    this.showTimePicker = true,
   });
 
   @override
@@ -110,7 +112,7 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title row with toggle buttons
+          // Title row with toggle icons
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -154,24 +156,26 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
                 ),
               ),
               const SizedBox(width: 12),
-              // Toggle buttons
+              // Toggle icons – no outline, bigger, top-aligned with Title label
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Favorite star button
-                  _ToggleIconButton(
-                    isSelected: widget.isFavorite,
+                  GestureDetector(
                     onTap: widget.onToggleFavorite,
-                    selectedIcon: Icons.star,
-                    unselectedIcon: Icons.star_outline,
+                    child: Icon(
+                      widget.isFavorite ? Icons.star : Icons.star_outline,
+                      size: 28,
+                      color: widget.isFavorite ? AppColors.yellowishGreen : Colors.grey.shade400,
+                    ),
                   ),
-                  const SizedBox(width: 8),
-                  // Routine clock button
-                  _ToggleIconButton(
-                    isSelected: widget.isRoutine,
+                  const SizedBox(width: 12),
+                  GestureDetector(
                     onTap: widget.onToggleRoutine,
-                    selectedIcon: Icons.schedule,
-                    unselectedIcon: Icons.schedule,
+                    child: Icon(
+                      Icons.schedule,
+                      size: 28,
+                      color: widget.isRoutine ? AppColors.yellowishGreen : Colors.grey.shade400,
+                    ),
                   ),
                 ],
               ),
@@ -193,6 +197,33 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
                   Flexible(
                     child: Text(
                       AppLocalizations.of(context)!.item_saved_as_favorite,
+                      style: const TextStyle(
+                        fontSize: Dimens.fontSizeSmall,
+                        color: AppColors.yellowishGreen,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          // Routine callout
+          if (widget.isRoutine && !widget.isFavorite) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.yellowishGreen.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.schedule, size: 16, color: AppColors.yellowishGreen),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      AppLocalizations.of(context)!.item_saved_as_routine,
                       style: const TextStyle(
                         fontSize: Dimens.fontSizeSmall,
                         color: AppColors.yellowishGreen,
@@ -269,8 +300,8 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
               ),
               const SizedBox(height: Dimens.height12),
             ],
-            // Time picker
-            if (widget.onUpdateTime != null) ...[
+            // Time picker (hidden for food routines via showTimePicker flag)
+            if (widget.onUpdateTime != null && widget.showTimePicker) ...[
               Text(
                 AppLocalizations.of(context)!.hour,
                 style: const TextStyle(
@@ -326,48 +357,6 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
               ),
           ],
         ],
-      ),
-    );
-  }
-}
-
-class _ToggleIconButton extends StatelessWidget {
-  final bool isSelected;
-  final VoidCallback onTap;
-  final IconData selectedIcon;
-  final IconData unselectedIcon;
-
-  const _ToggleIconButton({
-    required this.isSelected,
-    required this.onTap,
-    required this.selectedIcon,
-    required this.unselectedIcon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.yellowishGreen.withOpacity(0.15)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isSelected
-                ? AppColors.yellowishGreen
-                : Colors.grey.shade300,
-            width: 1,
-          ),
-        ),
-        child: Icon(
-          isSelected ? selectedIcon : unselectedIcon,
-          size: 22,
-          color: isSelected ? AppColors.yellowishGreen : Colors.grey.shade500,
-        ),
       ),
     );
   }

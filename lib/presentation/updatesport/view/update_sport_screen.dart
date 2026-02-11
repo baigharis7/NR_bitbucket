@@ -89,7 +89,10 @@ class UpdateSportScreen extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                 body: SafeArea(
-                  child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingLarge),
                     child: Column(
                       children: [
@@ -139,15 +142,19 @@ class UpdateSportScreen extends StatelessWidget {
                             onUpdateDayOfWeek: (dayOfWeek) => updateSportBloc.add(UpdateSportDayOfWeekUpdateSportEvent(dayOfWeek: dayOfWeek)),
                           ),
                           // Item cards with connector lines
-                          ...state.sportSimple!.info!.map((item) => Column(
+                          ...state.sportSimple!.info!.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final item = entry.value;
+                            return Column(
                             children: [
-                              Center(
+                              if (index > 0) Center(
                                 child: Container(
                                   width: 1.5,
-                                  height: 20,
+                                  height: 15,
                                   color: Colors.grey.shade300,
                                 ),
                               ),
+                              if (index == 0) const SizedBox(height: 15),
                               SportEventItem(
                                 allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
                                 sport: item,
@@ -156,28 +163,34 @@ class UpdateSportScreen extends StatelessWidget {
                                 editIntensity: (sportInfo) => updateSportBloc.add(UpdateSportItemIntensityUpdateSportEvent(sportInfo: sportInfo)),
                               ),
                             ],
-                          )),
+                          );
+                          }),
                           // Add More button
                           const SizedBox(height: Dimens.height12),
-                          Center(
-                            child: TextButton.icon(
-                              icon: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
-                              label: Text(
-                                AppLocalizations.of(context)!.add_more,
-                                style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w500),
-                              ),
-                              onPressed: () {},
+                          SizedBox(
+                            width: Dimens.widthLarge,
+                            child: ListTile(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
+                              tileColor: AppColors.floralWhite,
+                              onTap: () {},
+                              title: Text(AppLocalizations.of(context)!.add_more),
+                              trailing: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
                             ),
                           ),
                         ],
-                        const SizedBox(height: Dimens.height32,),
-                        if (state.sportSimple?.info?.isNotEmpty == true) GeneralButton(onTap: () {
+                      ],
+                    ),
+                  ),
+                      ),
+                      if (state.sportSimple?.info?.isNotEmpty == true) Container(
+                        margin: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.marginSmall),
+                        child: GeneralButton(onTap: () {
                           if (state.sportSimple?.title.isNotEmptyOrNull() == true) {
                             updateSportBloc.add(SaveUpdateSportUpdateSportEvent(onFinish: () => Navigator.pop(context)));
                           }
                         },),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),

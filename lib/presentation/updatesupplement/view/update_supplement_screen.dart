@@ -98,7 +98,10 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                 backgroundColor: Colors.transparent,
                 bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                 body: SafeArea(
-                  child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(
                       horizontal: Dimens.paddingSmall,
                       vertical: Dimens.paddingLarge,
@@ -146,15 +149,19 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                           onUpdateDayOfWeek: (weekDay) => updateSupplementBloc.add(UpdateDaysOfWeekSupplementUpdateSupplementEvent(weekDay: weekDay)),
                         ),
                         // Item cards with connector lines
-                        ...state.supplementObj!.info.orEmpty().map((nutriInfo) => Column(
+                        ...state.supplementObj!.info.orEmpty().asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final nutriInfo = entry.value;
+                          return Column(
                           children: [
-                            Center(
+                            if (index > 0) Center(
                               child: Container(
                                 width: 1.5,
-                                height: 20,
+                                height: 15,
                                 color: Colors.grey.shade300,
                               ),
                             ),
+                            if (index == 0) const SizedBox(height: 15),
                             SupplementItemWidget(
                               title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
                               amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
@@ -167,30 +174,36 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                               onRemoveItem: () => updateSupplementBloc.add(RemoveSupplementInfoUpdateSupplementEvent(nutriInfo: nutriInfo!, isGoBack: () => Navigator.pop(context))),
                             ),
                           ],
-                        )),
+                        );
+                        }),
                         // Add More button
                         const SizedBox(height: Dimens.height12),
-                        Center(
-                          child: TextButton.icon(
-                            icon: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
-                            label: Text(
-                              AppLocalizations.of(context)!.add_more,
-                              style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w500),
-                            ),
-                            onPressed: () {},
+                        SizedBox(
+                          width: Dimens.widthLarge,
+                          child: ListTile(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
+                            tileColor: AppColors.floralWhite,
+                            onTap: () {},
+                            title: Text(AppLocalizations.of(context)!.add_more),
+                            trailing: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
                           ),
                         ),
                       ],
-                      const SizedBox(height: Dimens.height32),
-                      if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) GeneralButton(
-                        onTap: () {
-                          if (state.supplementObj!.name.isNotEmptyOrNull()) {
-                            updateSupplementBloc.add(SavingUpdateSupplement(onFinish: () => Navigator.pop(context)));
-                          }
-                        },
-                      ),
                     ],
                     ),
+                  ),
+                      ),
+                      if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) Container(
+                        margin: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.marginSmall),
+                        child: GeneralButton(
+                          onTap: () {
+                            if (state.supplementObj!.name.isNotEmptyOrNull()) {
+                              updateSupplementBloc.add(SavingUpdateSupplement(onFinish: () => Navigator.pop(context)));
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

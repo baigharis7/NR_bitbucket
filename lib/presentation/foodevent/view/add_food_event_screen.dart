@@ -148,7 +148,10 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                   backgroundColor: Colors.transparent,
                   bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                   body: SafeArea(
-                    child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                      Expanded(
+                        child: SingleChildScrollView(
                       controller: _scrollController,
                       padding: const EdgeInsets.symmetric(vertical: Dimens.paddingLarge),
                       child: Column(
@@ -171,6 +174,14 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                 _focusInputController = focus;
                                 final food = eventHelper.findFoodByFoodName(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                                 bloc.add(AddFoodFromEventAction(foodInEvent: food!));
+                                // Auto-scroll to newly added item
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  _scrollController.animateTo(
+                                    _scrollController.position.maxScrollExtent,
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeOut,
+                                  );
+                                });
                                 // Auto-title logic
                                 final currentCount = state.foodEvent!.ingredients.orEmpty().length;
                                 if (currentCount == 0) {
@@ -219,21 +230,25 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                   onUpdateTime: (scheduleTime) => bloc.add(UpdateScheduleTimeAddFoodEventActions(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
                                   daysOfWeek: state.foodEvent?.daysOfWeek,
                                   onUpdateDayOfWeek: (dayOfWeek) {},
+                                  showTimePicker: false,
                                 ),
                                 // Item cards with connector lines
-                                ...state.foodEvent!.ingredients.orEmpty().map((foodInEvent) {
+                                ...state.foodEvent!.ingredients.orEmpty().asMap().entries.map((entry) {
+                                  final index = entry.key;
+                                  final foodInEvent = entry.value;
                                   final option = eventHelper.findFoodNameFromId(foodInEvent.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                                   final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                                   return Column(
                                     children: [
-                                      // Connector line between items
-                                      Center(
+                                      // Connector line between item cards (not before first)
+                                      if (index > 0) Center(
                                         child: Container(
                                           width: 1.5,
-                                          height: 20,
+                                          height: 15,
                                           color: Colors.grey.shade300,
                                         ),
                                       ),
+                                      if (index == 0) const SizedBox(height: 15),
                                       FoodEventItem(
                                         options: option,
                                         unitsFoodsMaster: state.unitsFoodsMaster!,
@@ -256,17 +271,17 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                 }).toList(),
                                 // Add More button
                                 const SizedBox(height: Dimens.height12),
-                                Center(
-                                  child: TextButton.icon(
-                                    icon: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
-                                    label: Text(
-                                      AppLocalizations.of(context)!.add_more,
-                                      style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w500),
-                                    ),
-                                    onPressed: () {
+                                SizedBox(
+                                  width: Dimens.widthLarge,
+                                  child: ListTile(
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
+                                    tileColor: AppColors.floralWhite,
+                                    onTap: () {
                                       _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                       _focusInputController.requestFocus();
                                     },
+                                    title: Text(AppLocalizations.of(context)!.add_more),
+                                    trailing: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
                                   ),
                                 ),
                               ]),
@@ -300,9 +315,14 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               ),
                             ],),
 
-                            if (state.foodEvent!.ingredients.orEmpty().isNotEmpty) Container(
-                              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                              child: GeneralButton(onTap: () {
+                          ],),
+                        ],
+                      ),
+                    ),
+                      ),
+                      if (state.foodEvent!.ingredients.orEmpty().isNotEmpty) Container(
+                        margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall, vertical: Dimens.marginSmall),
+                        child: GeneralButton(onTap: () {
                                 if(state.foodEvent!.ingredients.isEmpty) {
                                   if (!state.foodsFromFavorite.isNull()) {
                                     bloc.add(FinishFoodFavouriteEventAction(onFinish: () => _showConfirmationDialog(
@@ -361,12 +381,10 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                   }
                                   // bloc.add(FinishFoodWithoutCreateDishEventAction(context: context, onFinish: () => _showConfirmationDialog(context)));
                                 }
-                              },
-                              ),
-                            ),
-                          ],),
-                        ],
+                        },
+                        ),
                       ),
+                    ],
                     ),
                   ),
                 ),

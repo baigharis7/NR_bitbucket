@@ -181,6 +181,14 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                     final sportInfo = bloc.findSportById(sportId);
                                     final info = AddSportFavInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null, timeStart: DateTime.now().millisecondsSinceEpoch);
                                     bloc.add(AddSportEventAction(info));
+                                    // Auto-scroll to newly added item
+                                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                                      _scrollController.animateTo(
+                                        _scrollController.position.maxScrollExtent,
+                                        duration: const Duration(milliseconds: 300),
+                                        curve: Curves.easeOut,
+                                      );
+                                    });
                                     // Auto-title logic
                                     final currentCount = state.sportSimpleEvent!.info.orEmpty().length;
                                     if (currentCount == 0) {
@@ -226,37 +234,42 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                       onUpdateDayOfWeek: (dayOfWeek) {},
                                     ),
                                     // Item cards with connector lines
-                                    ...state.sportSimpleEvent!.info.orEmpty().map((sport) => Column(
-                                      children: [
-                                        Center(
-                                          child: Container(
-                                            width: 1.5,
-                                            height: 20,
-                                            color: Colors.grey.shade300,
+                                    ...state.sportSimpleEvent!.info.orEmpty().asMap().entries.map((entry) {
+                                      final index = entry.key;
+                                      final sport = entry.value;
+                                      return Column(
+                                        children: [
+                                          if (index > 0) Center(
+                                            child: Container(
+                                              width: 1.5,
+                                              height: 15,
+                                              color: Colors.grey.shade300,
+                                            ),
                                           ),
-                                        ),
-                                        SportEventItem(
-                                          allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
-                                          sport: sport,
-                                          removeSport: () => bloc.add(RemoveSportEventAction(sportInfo: sport)),
-                                          editMinutes: (updatedSport) => bloc.add(SetMinutesAction(sportInfo: updatedSport)),
-                                          editIntensity: (updatedSport) => bloc.add(SetIntensityAction(sportInfo: updatedSport)),
-                                        ),
-                                      ],
-                                    )),
+                                          if (index == 0) const SizedBox(height: 15),
+                                          SportEventItem(
+                                            allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
+                                            sport: sport,
+                                            removeSport: () => bloc.add(RemoveSportEventAction(sportInfo: sport)),
+                                            editMinutes: (updatedSport) => bloc.add(SetMinutesAction(sportInfo: updatedSport)),
+                                            editIntensity: (updatedSport) => bloc.add(SetIntensityAction(sportInfo: updatedSport)),
+                                          ),
+                                        ],
+                                      );
+                                    }),
                                     // Add More button
                                     const SizedBox(height: Dimens.height12),
-                                    Center(
-                                      child: TextButton.icon(
-                                        icon: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
-                                        label: Text(
-                                          AppLocalizations.of(context)!.add_more,
-                                          style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w500),
-                                        ),
-                                        onPressed: () {
+                                    SizedBox(
+                                      width: Dimens.widthLarge,
+                                      child: ListTile(
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
+                                        tileColor: AppColors.floralWhite,
+                                        onTap: () {
                                           _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                           _sportFocusInputController.requestFocus();
                                         },
+                                        title: Text(AppLocalizations.of(context)!.add_more),
+                                        trailing: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
                                       ),
                                     ),
                                   ],
