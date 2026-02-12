@@ -1,17 +1,26 @@
 import 'package:nutrenaissance_flutter/data/api/foodevents/food_events_api.dart';
 import 'package:nutrenaissance_flutter/data/api/foodevents/model/upload_food_event.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/repository/foodevents/food_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/nutrient_calculation_service.dart';
 
 class FoodEventsRepositoryImpl extends FoodEventsRepository {
   final LocalStorageRepository localStorageRepository;
   final FoodEventsApi foodEventsApi;
+  final NutrientCalculationService nutrientCalculationService;
 
-  FoodEventsRepositoryImpl({required this.localStorageRepository, required this.foodEventsApi});
+  FoodEventsRepositoryImpl({
+    required this.localStorageRepository,
+    required this.foodEventsApi,
+    required this.nutrientCalculationService,
+  });
 
   @override
   Future<void> saveFoodEvent(UploadFoodEvent uploadFoodEvent, bool isEdit) async {
@@ -21,7 +30,7 @@ class FoodEventsRepositoryImpl extends FoodEventsRepository {
 
   @override
   Future<UploadFoodEvent> uploadFoodEvent(FoodEventSimple foodEventSimple) async {
-
+    // Pre-process unit equivalences (same as before)
     final ingredients = foodEventSimple.ingredients!.map((ingredient) =>
         FoodInEvent(
             id: ingredient.id,
@@ -36,11 +45,33 @@ class FoodEventsRepositoryImpl extends FoodEventsRepository {
           usedOil: ingredient.usedOil,
         ),
     );
-
     foodEventSimple.ingredients = ingredients.toList();
 
-    final foodEvent = await foodEventsApi.uploadFoodEvent(foodEventSimple);
-    return UploadFoodEvent.fromJson(foodEvent);
+    // Fetch reference data from Hive for the calculation
+    final unitsFoodsEntity = await localStorageRepository.getMasterFile(MasterFilesType.unitsFoods);
+    final convFactorsInfoEntity = await localStorageRepository.getMasterFile(MasterFilesType.conversionFactorsInfo);
+
+    final unitsFoods = (unitsFoodsEntity as UnitsFoodsEntity?)?.data ?? [];
+    final convFactorsInfo = (convFactorsInfoEntity as ConversionFactorsInfoEntity?)?.data ?? [];
+
+    // Compute enrichment locally (replaces blocking Lambda call)
+    final enrichedEvent = await nutrientCalculationService.enrichFoodEvent(
+      foodEventSimple,
+      unitsFoods: unitsFoods,
+      conversionFactorsInfo: convFactorsInfo,
+    );
+
+    // Fire background API call for DynamoDB persistence (don't block UI)
+    _syncToBackend(foodEventSimple);
+
+    return enrichedEvent;
+  }
+
+  void _syncToBackend(FoodEventSimple foodEventSimple) {
+    foodEventsApi.uploadFoodEvent(foodEventSimple).catchError((error) {
+      // TODO: queue for retry on next connectivity
+      return <String, dynamic>{};
+    });
   }
 
   @override

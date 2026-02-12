@@ -12,6 +12,7 @@ import 'package:nutrenaissance_flutter/data/api/masterfiles/model/sports_info_re
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/subjective_analysis_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/supplements_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/units_foods_response.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/cooking_methods_oils_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/units_info_response.dart';
 
 part 'master_files_response.g.dart';
@@ -32,6 +33,7 @@ class MasterFilesResponse {
   UnitsFoodsResponse? unitsFoodsResponse;
   SupplementsInfoResponse? supplementsInfoResponse;
   SubjectiveAnalysisListResponse? subjectiveAnalysisResponse;
+  CookingMethodsOilsInfoResponse? cookingMethodsOilsInfoResponse;
 
   MasterFilesResponse(
       {
@@ -49,6 +51,7 @@ class MasterFilesResponse {
         this.unitsFoodsResponse,
         this.supplementsInfoResponse,
         this.subjectiveAnalysisResponse,
+        this.cookingMethodsOilsInfoResponse,
       }
   );
 

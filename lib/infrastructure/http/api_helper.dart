@@ -150,6 +150,29 @@ abstract class ApiHelper {
     }
   }
 
+  /// Like [get] but returns the raw response body as a String,
+  /// useful for endpoints that return JSON arrays instead of objects.
+  Future<String> getRaw(Uri call) async {
+    String idToken = await _getToken();
+    final httpRequestBuild = http.get(
+      call,
+      headers: {
+        'Authorization': idToken
+      },
+    );
+    if (kDebugMode) {
+      httpRequestBuild.interceptWithChuck(_chuck);
+    }
+    final http.Response response = await httpRequestBuild;
+
+    if (response.statusCode == 200) {
+      return utf8.decode(response.bodyBytes);
+    } else {
+      final errorMessage = 'status: ${response.statusCode}\nbody:${response.body}\nheaders: ${response.headers}\n';
+      throw HttpException(errorMessage, uri: response.request?.url);
+    }
+  }
+
   Future<String> _getToken() async {
     final idToken = _preferencesRepository.getIdToken();
     if (isTokenExpired(idToken)) {

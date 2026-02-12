@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dar
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_response.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/simple_user.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
+import 'package:nutrenaissance_flutter/data/local/drift/reference_database.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/data/repository/eventssync/events_synchronization_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/localstorage/local_storage_impl.dart';
@@ -168,7 +169,8 @@ class LoginProviderNew extends BaseProvider {
     saveUsernameAndEmailInteractor = SaveUsernameAndEmailInteractorImpl(preferencesRepository: prefsRepository);
     saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
     MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService!, chuck);
-    MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi);
+    final referenceDatabase = await openReferenceDatabase();
+    MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi, referenceDatabase: referenceDatabase);
     getMasterFilesVersionInteractor = GetMasterFileVersionInteractorImpl(masterFilesRepository: masterFilesRepository);
     manageMasterFilesInteractor = ManageMasterFilesInteractorImpl(masterFilesRepository: masterFilesRepository);
     saveMasterFileInteractor = SaveMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
@@ -485,6 +487,7 @@ class LoginProviderNew extends BaseProvider {
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.unitsFoods),
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.supplementsInfo),
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.subjectiveAnalysis),
+        await getMasterFilesVersionInteractor!.execute(MasterFilesType.cookingMethodsOilsInfo),
       ).then((masterFilesResponse) => _onSuccessManageMasterFiles(masterFilesResponse, userId, onFinish));
     } catch (errorManageMasterFiles) {
       manageLoading(false);
@@ -567,6 +570,12 @@ class LoginProviderNew extends BaseProvider {
       saveMasterFileInteractor?.execute(
         masterFilesResponse.supplementsInfoResponse,
         MasterFilesType.supplementsInfo,
+      );
+    });
+    masterFilesResponse.cookingMethodsOilsInfoResponse.doIfAintNull(() {
+      saveMasterFileInteractor?.execute(
+        masterFilesResponse.cookingMethodsOilsInfoResponse,
+        MasterFilesType.cookingMethodsOilsInfo,
       );
     });
 

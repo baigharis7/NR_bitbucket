@@ -1,3 +1,4 @@
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/cooking_methods_oils_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/conversion_factors_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/conversion_factors_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/cooking_methods_info_response.dart';
@@ -16,6 +17,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_oils_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/foods_and_drinks_names_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_info_entity.dart';
@@ -84,8 +86,11 @@ dynamic mapToMasterFileEntity(dynamic masterFileResponse, MasterFilesType master
 
     case MasterFilesType.subjectiveAnalysis:
       return mapToSubjectiveAnalysisListMaster(masterFileResponse as SubjectiveAnalysisListResponse);
+
+    case MasterFilesType.cookingMethodsOilsInfo:
+      return mapToCookingMethodsOilsInfoEntity(masterFileResponse as CookingMethodsOilsInfoResponse);
   }
-  
+
 }
 
 CookingMethodsEntity mapToCookingMethodsEntity(CookingMethodsResponse cookingMethodsResponse) {
@@ -290,4 +295,9 @@ List<TestQuestionMaster> mapToTestQuestionMasterList(List<TestQuestionAnswerResp
     masterQuestions.add(testQuestion);
   }
   return masterQuestions;
+}
+
+CookingMethodsOilsInfoEntity mapToCookingMethodsOilsInfoEntity(CookingMethodsOilsInfoResponse response) {
+  List<CookingMethodOilInfoEntity> data = response.data.map((item) => CookingMethodOilInfoEntity(id: item.id, name: item.name, percentage: item.percentage)).toList();
+  return CookingMethodsOilsInfoEntity(id: MasterFilesType.cookingMethodsOilsInfo.index, v: response.v, data: data);
 }
