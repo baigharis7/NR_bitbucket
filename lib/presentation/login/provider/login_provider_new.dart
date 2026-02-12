@@ -1,7 +1,11 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:chuck_interceptor/chuck.dart';
+import 'dart:convert';
+
 import 'package:nutrenaissance_flutter/data/api/eventssync/events_sync_api.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
+import 'package:nutrenaissance_flutter/data/api/referencedata/reference_data_api.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/reference_data_service.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_response.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/simple_user.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
@@ -92,6 +96,8 @@ class LoginProviderNew extends BaseProvider {
   SynchronizeEventsInteractor? synchronizeEventsInteractor;
   GetUserIdInteractor? getUserIdInteractor;
   EraseDatabaseInteractor? eraseDatabaseInteractor;
+  ReferenceDataApi? referenceDataApi;
+  ReferenceDataService? referenceDataService;
 
   get getNotConfirmedUserTryingToLogin => _notConfirmedUserTryingToLogin;
   get isLogin => _loginMode;
@@ -170,6 +176,8 @@ class LoginProviderNew extends BaseProvider {
     saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
     MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService!, chuck);
     final referenceDatabase = await openReferenceDatabase();
+    referenceDataApi = ReferenceDataApi(prefsRepository, authenticationService!, chuck);
+    referenceDataService = ReferenceDataService(referenceDatabase);
     MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi, referenceDatabase: referenceDatabase);
     getMasterFilesVersionInteractor = GetMasterFileVersionInteractorImpl(masterFilesRepository: masterFilesRepository);
     manageMasterFilesInteractor = ManageMasterFilesInteractorImpl(masterFilesRepository: masterFilesRepository);
@@ -442,6 +450,54 @@ class LoginProviderNew extends BaseProvider {
     await synchronizeEventsInteractor!.execute(userId, fullSync: true);
   }
 
+  /// Fetches reference data (nutrients, nutrient loss, sport METs) and stores
+  /// in Drift for client-side calculations. Non-blocking — failures are ignored.
+  Future<void> _fetchReferenceData() async {
+    if (referenceDataApi == null || referenceDataService == null) return;
+    try {
+      await referenceDataService!.refreshIfNeeded(
+        fetchNutrients: () async {
+          try {
+            final raw = await referenceDataApi!.fetchNutrients();
+            final parsed = jsonDecode(raw);
+            return ReferencePayload(
+              version: parsed['v'] as int? ?? 0,
+              json: jsonEncode(parsed['data']),
+            );
+          } catch (_) {
+            return null;
+          }
+        },
+        fetchNutrientLoss: () async {
+          try {
+            final raw = await referenceDataApi!.fetchNutrientLossTable();
+            final parsed = jsonDecode(raw);
+            return ReferencePayload(
+              version: parsed['v'] as int? ?? 0,
+              json: jsonEncode(parsed['data']),
+            );
+          } catch (_) {
+            return null;
+          }
+        },
+        fetchSportMets: () async {
+          try {
+            final raw = await referenceDataApi!.fetchSportMets();
+            final parsed = jsonDecode(raw);
+            return ReferencePayload(
+              version: parsed['v'] as int? ?? 0,
+              json: jsonEncode(parsed['data']),
+            );
+          } catch (_) {
+            return null;
+          }
+        },
+      );
+    } catch (_) {
+      // Reference data fetch is best-effort — don't block login
+    }
+  }
+
   void notConfirmedUserAsksForNewVerificationCode(Function showMfaDialog) {
     _setNotConfirmedUserTryingToLogin(false);
     try {
@@ -581,7 +637,11 @@ class LoginProviderNew extends BaseProvider {
 
     _setMasterFilesChecked(true);
     try {
-      await _synchronizeEvents(userId).then((_) {
+      // Run events sync and reference data fetch in parallel
+      await Future.wait([
+        _synchronizeEvents(userId),
+        _fetchReferenceData(),
+      ]).then((_) {
         manageLoading(false);
         goesToRegistry
             ? goToRegistry.call()
