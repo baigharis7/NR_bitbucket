@@ -1,0 +1,206 @@
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
+import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_actions.dart';
+import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_state.dart';
+
+import 'bloc_test_mocks.mocks.dart';
+
+void main() {
+  late MockGetUserIdInteractor mockGetUserId;
+  late MockSaveSportEventInteractor mockSaveSportEvent;
+  late MockUploadSportEventsInteractor mockUploadSportEvent;
+  late MockGetMasterFileInteractor mockGetMasterFile;
+  late MockGetSportFavoritesInteractor mockGetSportFavorites;
+  late MockGetWeekSportsInteractor mockGetWeekSports;
+  late MockUploadRoutineInteractor mockUploadRoutine;
+  late MockSaveRoutineInteractor mockSaveRoutine;
+  late MockUploadSportFavoriteInteractor mockUploadSportFavorite;
+  late MockSaveSportFavoriteInteractor mockSaveSportFavorite;
+  late MockDeleteSportFavoriteInteractor mockDeleteSportFavorite;
+  late MockRemoveSportFavoriteInteractor mockRemoveSportFavorite;
+
+  setUp(() {
+    mockGetUserId = MockGetUserIdInteractor();
+    mockSaveSportEvent = MockSaveSportEventInteractor();
+    mockUploadSportEvent = MockUploadSportEventsInteractor();
+    mockGetMasterFile = MockGetMasterFileInteractor();
+    mockGetSportFavorites = MockGetSportFavoritesInteractor();
+    mockGetWeekSports = MockGetWeekSportsInteractor();
+    mockUploadRoutine = MockUploadRoutineInteractor();
+    mockSaveRoutine = MockSaveRoutineInteractor();
+    mockUploadSportFavorite = MockUploadSportFavoriteInteractor();
+    mockSaveSportFavorite = MockSaveSportFavoriteInteractor();
+    mockDeleteSportFavorite = MockDeleteSportFavoriteInteractor();
+    mockRemoveSportFavorite = MockRemoveSportFavoriteInteractor();
+  });
+
+  SportEventsBloc buildBloc() => SportEventsBloc(
+        getUserIdInteractor: mockGetUserId,
+        saveSportEventInteractor: mockSaveSportEvent,
+        uploadSportsEventInteractor: mockUploadSportEvent,
+        getMasterFileInteractor: mockGetMasterFile,
+        getSportFavoritesInteractor: mockGetSportFavorites,
+        getWeekSportsInteractor: mockGetWeekSports,
+        uploadRoutineInteractor: mockUploadRoutine,
+        saveRoutineInteractor: mockSaveRoutine,
+        uploadSportFavoriteInteractor: mockUploadSportFavorite,
+        saveSportFavoriteInteractor: mockSaveSportFavorite,
+        deleteSportFavoriteInteractor: mockDeleteSportFavorite,
+        removeSportFavoriteInteractor: mockRemoveSportFavorite,
+      );
+
+  group('SportEventsBloc', () {
+    blocTest<SportEventsBloc, SportEventsState>(
+      'initial state is not loading with empty sport info',
+      build: buildBloc,
+      verify: (bloc) {
+        expect(bloc.state.isLoading, false);
+        expect(bloc.state.sportsInfo!.sportsInfoMaster, isEmpty);
+        expect(bloc.state.isEdit, false);
+        expect(bloc.state.favSports, isEmpty);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'InitializeStateAction loads sportsInfo and favorites',
+      build: () {
+        when(mockGetMasterFile.execute(MasterFilesType.sportsInfo))
+            .thenAnswer((_) async => SportsInfoMaster(sportsInfoMaster: [
+                  SportInfoMaster(id: 1, en: 'Running', es: 'Correr', mets: 8),
+                ]));
+        when(mockGetSportFavorites.execute())
+            .thenAnswer((_) async => <AddSportFavorite>[]);
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(InitializeStateAction()),
+      expect: () => [
+        isA<SportEventsState>().having((s) => s.isLoading, 'isLoading', true),
+        isA<SportEventsState>().having((s) => s.isLoading, 'isLoading', false),
+      ],
+      verify: (bloc) {
+        verify(mockGetMasterFile.execute(MasterFilesType.sportsInfo)).called(1);
+        verify(mockGetSportFavorites.execute()).called(1);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'UpdateCalendarDateSportEventAction sets calendarDate',
+      build: buildBloc,
+      act: (bloc) {
+        final date = DateTime(2026, 2, 20);
+        bloc.add(UpdateCalendarDateSportEventAction(calendarDate: date));
+      },
+      verify: (bloc) {
+        expect(bloc.state.calendarDate, DateTime(2026, 2, 20));
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'SetEventSportNameAction sets title on sportSimpleEvent',
+      build: buildBloc,
+      act: (bloc) => bloc.add(SetEventSportNameAction(sportEventName: 'Morning Run')),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.title, 'Morning Run');
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'UpdateIsFavoriteSportEventsActions sets isFavorite',
+      build: buildBloc,
+      act: (bloc) => bloc.add(UpdateIsFavoriteSportEventsActions(isFavorite: true)),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.isFavorite, true);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'UpdateIsCreateRoutineSportEventsActions sets isCreateRoutine',
+      build: buildBloc,
+      act: (bloc) => bloc.add(UpdateIsCreateRoutineSportEventsActions(isCreateRoutine: true)),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.isCreateRoutine, true);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'UpdateTimeOfDaySportEventAction sets scheduleTime',
+      build: buildBloc,
+      act: (bloc) => bloc.add(UpdateTimeOfDaySportEventAction(scheduleTime: '07:00')),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.scheduleTime, '07:00');
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'AddSportEventAction adds sport info to list',
+      build: buildBloc,
+      act: (bloc) => bloc.add(AddSportEventAction(
+        AddSportFavInfo(id: 1, name_en: 'Running', minutes: 30, intensity: 2),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.info!.length, 1);
+        expect(bloc.state.sportSimpleEvent!.info!.first.id, 1);
+        expect(bloc.state.sportSimpleEvent!.info!.first.minutes, 30);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'RemoveSportEventAction removes sport info from list',
+      build: () {
+        final bloc = buildBloc();
+        bloc.state.sportSimpleEvent!.info = [
+          AddSportFavInfo(id: 1, name_en: 'Running', minutes: 30),
+          AddSportFavInfo(id: 2, name_en: 'Swimming', minutes: 45),
+        ];
+        return bloc;
+      },
+      act: (bloc) => bloc.add(RemoveSportEventAction(
+        sportInfo: AddSportFavInfo(id: 1, name_en: 'Running', minutes: 30),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.info!.length, 1);
+        expect(bloc.state.sportSimpleEvent!.info!.first.id, 2);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'SetMinutesAction updates minutes for existing sport',
+      build: () {
+        final bloc = buildBloc();
+        bloc.state.sportSimpleEvent!.info = [
+          AddSportFavInfo(id: 1, name_en: 'Running', minutes: 30),
+        ];
+        return bloc;
+      },
+      act: (bloc) => bloc.add(SetMinutesAction(
+        sportInfo: AddSportFavInfo(id: 1, name_en: 'Running', minutes: 60),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.info!.first.minutes, 60);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'UpdateSportFromFavoriteTabSportEventsActions sets event and isEdit',
+      build: buildBloc,
+      act: (bloc) => bloc.add(UpdateSportFromFavoriteTabSportEventsActions(
+        addSportFavorite: AddSportFavorite(
+          eventDate: DateTime(2026, 2, 20).millisecondsSinceEpoch,
+          title: 'Morning Run',
+          info: [AddSportFavInfo(id: 1, name_en: 'Running', minutes: 30)],
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.title, 'Morning Run');
+        expect(bloc.state.isEdit, true);
+      },
+    );
+  });
+}

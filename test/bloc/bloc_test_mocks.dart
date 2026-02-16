@@ -12,6 +12,47 @@ import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/delete_f
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/remove_food_favorite_from_local_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
+// SupplementsBloc
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_favorites_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_routine_interactor.dart';
+// AddFoodEventBloc
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/upload_food_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/save_food_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/upload_food_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/save_food_routine_interactor.dart';
+// SportEventsBloc
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/get_sport_favorites_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/upload_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/save_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sport_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/delete_sport_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/remove_sport_favorite_from_local_interactor.dart';
+// LoginBloc
+import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/send_perrification_code_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_username_and_email_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/manage_master_files_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/save_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/check_profile_existence_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/download_profile_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_user_credentials_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/login/save_user_in_users_remote_database_interactor.dart';
 
 @GenerateNiceMocks([
   // FoodBloc
@@ -31,5 +72,46 @@ import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_ex
   MockSpec<RemoveFoodFavoriteFromLocalInteractor>(),
   MockSpec<IsNecessaryToShowExplainingCardInteractor>(),
   MockSpec<SaveExplainingCardInteractionInteractor>(),
+  // SupplementsBloc
+  MockSpec<UploadSupplementEventInteractor>(),
+  MockSpec<SaveSupplementEventInteractor>(),
+  MockSpec<UploadSupplementFavoriteInteractor>(),
+  MockSpec<SaveSupplementFavoriteInteractor>(),
+  MockSpec<GetSupplementFavoritesInteractor>(),
+  MockSpec<UploadSupplementRoutineInteractor>(),
+  MockSpec<SaveSupplementRoutineInteractor>(),
+  // AddFoodEventBloc
+  MockSpec<SaveFoodEventInteractor>(),
+  MockSpec<UploadFoodEventInteractor>(),
+  MockSpec<UploadFoodFavoriteInteractor>(),
+  MockSpec<SaveFoodFavoriteInteractor>(),
+  MockSpec<UploadFoodRoutineInteractor>(),
+  MockSpec<SaveFoodRoutineInteractor>(),
+  // SportEventsBloc
+  MockSpec<SaveSportEventInteractor>(),
+  MockSpec<UploadSportEventsInteractor>(),
+  MockSpec<GetSportFavoritesInteractor>(),
+  MockSpec<UploadRoutineInteractor>(),
+  MockSpec<SaveRoutineInteractor>(),
+  MockSpec<UploadSportFavoriteInteractor>(),
+  MockSpec<SaveSportFavoriteInteractor>(),
+  MockSpec<DeleteSportFavoriteInteractor>(),
+  MockSpec<RemoveSportFavoriteInteractor>(),
+  // LoginBloc
+  MockSpec<SignUpInteractor>(),
+  MockSpec<SendVerificationCodeInteractor>(),
+  MockSpec<FetchUserAttributesInteractor>(),
+  MockSpec<SignInInteractor>(),
+  MockSpec<SaveUsernameAndEmailInteractor>(),
+  MockSpec<GetMasterFileVersionInteractor>(),
+  MockSpec<ManageMasterFilesInteractor>(),
+  MockSpec<SaveMasterFileInteractor>(),
+  MockSpec<CheckProfileExistenceInteractor>(),
+  MockSpec<DownloadProfileInteractor>(),
+  MockSpec<GetIdTokenInteractor>(),
+  MockSpec<SaveProfileInteractor>(),
+  MockSpec<ResendVerificationCodeInteractor>(),
+  MockSpec<SaveUserCredentialsInteractor>(),
+  MockSpec<SaveUserInUsersRemoteDatabaseInteractor>(),
 ])
 void main() {}

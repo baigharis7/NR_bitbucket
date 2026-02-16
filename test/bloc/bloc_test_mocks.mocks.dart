@@ -3,47 +3,145 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i4;
+import 'dart:async' as _i7;
 
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i18;
-import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart'
-    as _i5;
-import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart'
-    as _i21;
-import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart'
-    as _i22;
-import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/delete_food_favorite_interactor.dart'
-    as _i19;
-import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/get_food_favorites_interactor.dart'
-    as _i15;
-import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/remove_food_favorite_from_local_interactor.dart'
-    as _i20;
-import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart'
-    as _i8;
-import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_week_liquid_events_interactor.dart'
-    as _i10;
-import 'package:nutrenaissance_flutter/domain/interactor/login/erase_database_interactor.dart'
-    as _i7;
-import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart'
+import 'package:mockito/src/dummies.dart' as _i20;
+import 'package:nutrenaissance_flutter/data/api/foodevents/model/upload_food_event.dart'
     as _i3;
-import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart'
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_response.dart'
+    as _i5;
+import 'package:nutrenaissance_flutter/data/api/profile/model/simple_user.dart'
+    as _i71;
+import 'package:nutrenaissance_flutter/data/api/supplements/model/supplement_favorite.dart'
+    as _i30;
+import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_routine.dart'
+    as _i34;
+import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplements_ev.dart'
+    as _i26;
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart'
+    as _i8;
+import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart'
+    as _i23;
+import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart'
+    as _i24;
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/delete_food_favorite_interactor.dart'
+    as _i21;
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/get_food_favorites_interactor.dart'
     as _i17;
-import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart'
-    as _i13;
-import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor.dart'
-    as _i6;
-import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_week_sports_interactor.dart'
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/remove_food_favorite_from_local_interactor.dart'
+    as _i22;
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/save_food_favorite_interactor.dart'
+    as _i40;
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/upload_food_favorite_interactor.dart'
+    as _i39;
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/delete_sport_favorite_interactor.dart'
+    as _i54;
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/get_sport_favorites_interactor.dart'
+    as _i47;
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/remove_sport_favorite_from_local_interactor.dart'
+    as _i55;
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sport_favorite_interactor.dart'
+    as _i53;
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor.dart'
+    as _i52;
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart'
     as _i11;
-import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart'
-    as _i16;
-import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart'
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart'
+    as _i36;
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart'
+    as _i37;
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/save_food_routine_interactor.dart'
+    as _i43;
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/upload_food_routine_interactor.dart'
+    as _i41;
+import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_week_liquid_events_interactor.dart'
+    as _i13;
+import 'package:nutrenaissance_flutter/domain/interactor/login/erase_database_interactor.dart'
+    as _i10;
+import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart'
+    as _i58;
+import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor.dart'
+    as _i68;
+import 'package:nutrenaissance_flutter/domain/interactor/login/save_user_in_users_remote_database_interactor.dart'
+    as _i70;
+import 'package:nutrenaissance_flutter/domain/interactor/login/send_perrification_code_interactor.dart'
+    as _i57;
+import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor.dart'
+    as _i59;
+import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor.dart'
+    as _i56;
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart'
+    as _i6;
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor.dart'
+    as _i61;
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/manage_master_files_interactor.dart'
+    as _i62;
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/save_master_file_interactor.dart'
+    as _i63;
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor.dart'
+    as _i66;
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart'
+    as _i19;
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_user_credentials_interactor.dart'
+    as _i69;
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_username_and_email_interactor.dart'
+    as _i60;
+import 'package:nutrenaissance_flutter/domain/interactor/profile/check_profile_existence_interactor.dart'
+    as _i64;
+import 'package:nutrenaissance_flutter/domain/interactor/profile/download_profile_interactor.dart'
+    as _i65;
+import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart'
+    as _i15;
+import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart'
+    as _i67;
+import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor.dart'
     as _i9;
-import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart'
+import 'package:nutrenaissance_flutter/domain/interactor/routines/save_routine_interactor.dart'
+    as _i51;
+import 'package:nutrenaissance_flutter/domain/interactor/routines/upload_routine_interactor.dart'
+    as _i49;
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_week_sports_interactor.dart'
     as _i14;
-import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart'
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor.dart'
+    as _i44;
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart'
+    as _i45;
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_favorites_interactor.dart'
+    as _i32;
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_event_interactor.dart'
+    as _i27;
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_favorite_interactor.dart'
+    as _i31;
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_routine_interactor.dart'
+    as _i35;
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor.dart'
+    as _i25;
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_favorite_interactor.dart'
+    as _i29;
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_routine_interactor.dart'
+    as _i33;
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart'
+    as _i18;
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart'
+    as _i48;
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart'
     as _i12;
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart'
+    as _i38;
+import 'package:nutrenaissance_flutter/domain/models/foodroutine/food_routine_event.dart'
+    as _i42;
+import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart'
+    as _i16;
+import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_completed.dart'
+    as _i50;
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart'
+    as _i4;
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart'
+    as _i46;
+import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simple.dart'
+    as _i28;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -68,33 +166,97 @@ class _FakeSignOutResult_0 extends _i1.SmartFake implements _i2.SignOutResult {
         );
 }
 
+class _FakeUploadFoodEvent_1 extends _i1.SmartFake
+    implements _i3.UploadFoodEvent {
+  _FakeUploadFoodEvent_1(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeSportEventComplete_2 extends _i1.SmartFake
+    implements _i4.SportEventComplete {
+  _FakeSportEventComplete_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeSignUpResult_3 extends _i1.SmartFake implements _i2.SignUpResult {
+  _FakeSignUpResult_3(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeCognitoAuthSession_4 extends _i1.SmartFake
+    implements _i2.CognitoAuthSession {
+  _FakeCognitoAuthSession_4(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeSignInResult_5 extends _i1.SmartFake implements _i2.SignInResult {
+  _FakeSignInResult_5(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeMasterFilesResponse_6 extends _i1.SmartFake
+    implements _i5.MasterFilesResponse {
+  _FakeMasterFilesResponse_6(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [GetMasterFileInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetMasterFileInteractor extends _i1.Mock
-    implements _i3.GetMasterFileInteractor {
+    implements _i6.GetMasterFileInteractor {
   @override
-  _i4.Future<dynamic>? execute(_i5.MasterFilesType? masterFileType) =>
+  _i7.Future<dynamic>? execute(_i8.MasterFilesType? masterFileType) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [masterFileType],
         ),
         returnValueForMissingStub: null,
-      ) as _i4.Future<dynamic>?);
+      ) as _i7.Future<dynamic>?);
 }
 
 /// A class which mocks [SignOutInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSignOutInteractor extends _i1.Mock implements _i6.SignOutInteractor {
+class MockSignOutInteractor extends _i1.Mock implements _i9.SignOutInteractor {
   @override
-  _i4.Future<_i2.SignOutResult> execute() => (super.noSuchMethod(
+  _i7.Future<_i2.SignOutResult> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i4.Future<_i2.SignOutResult>.value(_FakeSignOutResult_0(
+        returnValue: _i7.Future<_i2.SignOutResult>.value(_FakeSignOutResult_0(
           this,
           Invocation.method(
             #execute,
@@ -102,142 +264,142 @@ class MockSignOutInteractor extends _i1.Mock implements _i6.SignOutInteractor {
           ),
         )),
         returnValueForMissingStub:
-            _i4.Future<_i2.SignOutResult>.value(_FakeSignOutResult_0(
+            _i7.Future<_i2.SignOutResult>.value(_FakeSignOutResult_0(
           this,
           Invocation.method(
             #execute,
             [],
           ),
         )),
-      ) as _i4.Future<_i2.SignOutResult>);
+      ) as _i7.Future<_i2.SignOutResult>);
 }
 
 /// A class which mocks [EraseDatabaseInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockEraseDatabaseInteractor extends _i1.Mock
-    implements _i7.EraseDatabaseInteractor {
+    implements _i10.EraseDatabaseInteractor {
   @override
-  _i4.Future<bool> execute() => (super.noSuchMethod(
+  _i7.Future<bool> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i4.Future<bool>.value(false),
-        returnValueForMissingStub: _i4.Future<bool>.value(false),
-      ) as _i4.Future<bool>);
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
 }
 
 /// A class which mocks [GetWeekFoodEventsInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetWeekFoodEventsInteractor extends _i1.Mock
-    implements _i8.GetWeekFoodEventsInteractor {
+    implements _i11.GetWeekFoodEventsInteractor {
   @override
-  _i4.Future<List<_i9.FoodEventComplete>> execute() => (super.noSuchMethod(
+  _i7.Future<List<_i12.FoodEventComplete>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i4.Future<List<_i9.FoodEventComplete>>.value(
-            <_i9.FoodEventComplete>[]),
+        returnValue: _i7.Future<List<_i12.FoodEventComplete>>.value(
+            <_i12.FoodEventComplete>[]),
         returnValueForMissingStub:
-            _i4.Future<List<_i9.FoodEventComplete>>.value(
-                <_i9.FoodEventComplete>[]),
-      ) as _i4.Future<List<_i9.FoodEventComplete>>);
+            _i7.Future<List<_i12.FoodEventComplete>>.value(
+                <_i12.FoodEventComplete>[]),
+      ) as _i7.Future<List<_i12.FoodEventComplete>>);
 }
 
 /// A class which mocks [GetWeekLiquidEventsInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetWeekLiquidEventsInteractor extends _i1.Mock
-    implements _i10.GetWeekLiquidEventsInteractor {
+    implements _i13.GetWeekLiquidEventsInteractor {
   @override
-  _i4.Future<List<_i9.FoodEventComplete>> execute() => (super.noSuchMethod(
+  _i7.Future<List<_i12.FoodEventComplete>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i4.Future<List<_i9.FoodEventComplete>>.value(
-            <_i9.FoodEventComplete>[]),
+        returnValue: _i7.Future<List<_i12.FoodEventComplete>>.value(
+            <_i12.FoodEventComplete>[]),
         returnValueForMissingStub:
-            _i4.Future<List<_i9.FoodEventComplete>>.value(
-                <_i9.FoodEventComplete>[]),
-      ) as _i4.Future<List<_i9.FoodEventComplete>>);
+            _i7.Future<List<_i12.FoodEventComplete>>.value(
+                <_i12.FoodEventComplete>[]),
+      ) as _i7.Future<List<_i12.FoodEventComplete>>);
 }
 
 /// A class which mocks [GetWeekSportsInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetWeekSportsInteractor extends _i1.Mock
-    implements _i11.GetWeekSportsInteractor {
+    implements _i14.GetWeekSportsInteractor {
   @override
-  _i4.Future<List<_i12.SportEventComplete>> execute() => (super.noSuchMethod(
+  _i7.Future<List<_i4.SportEventComplete>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i4.Future<List<_i12.SportEventComplete>>.value(
-            <_i12.SportEventComplete>[]),
+        returnValue: _i7.Future<List<_i4.SportEventComplete>>.value(
+            <_i4.SportEventComplete>[]),
         returnValueForMissingStub:
-            _i4.Future<List<_i12.SportEventComplete>>.value(
-                <_i12.SportEventComplete>[]),
-      ) as _i4.Future<List<_i12.SportEventComplete>>);
+            _i7.Future<List<_i4.SportEventComplete>>.value(
+                <_i4.SportEventComplete>[]),
+      ) as _i7.Future<List<_i4.SportEventComplete>>);
 }
 
 /// A class which mocks [GetProfileInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetProfileInteractor extends _i1.Mock
-    implements _i13.GetProfileInteractor {
+    implements _i15.GetProfileInteractor {
   @override
-  _i4.Future<_i14.UserProfileModel?> execute() => (super.noSuchMethod(
+  _i7.Future<_i16.UserProfileModel?> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i4.Future<_i14.UserProfileModel?>.value(),
-        returnValueForMissingStub: _i4.Future<_i14.UserProfileModel?>.value(),
-      ) as _i4.Future<_i14.UserProfileModel?>);
+        returnValue: _i7.Future<_i16.UserProfileModel?>.value(),
+        returnValueForMissingStub: _i7.Future<_i16.UserProfileModel?>.value(),
+      ) as _i7.Future<_i16.UserProfileModel?>);
 }
 
 /// A class which mocks [GetFoodFavoritesInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetFoodFavoritesInteractor extends _i1.Mock
-    implements _i15.GetFoodFavoritesInteractor {
+    implements _i17.GetFoodFavoritesInteractor {
   @override
-  _i4.Future<List<_i16.FoodFavorite>> execute() => (super.noSuchMethod(
+  _i7.Future<List<_i18.FoodFavorite>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
         returnValue:
-            _i4.Future<List<_i16.FoodFavorite>>.value(<_i16.FoodFavorite>[]),
+            _i7.Future<List<_i18.FoodFavorite>>.value(<_i18.FoodFavorite>[]),
         returnValueForMissingStub:
-            _i4.Future<List<_i16.FoodFavorite>>.value(<_i16.FoodFavorite>[]),
-      ) as _i4.Future<List<_i16.FoodFavorite>>);
+            _i7.Future<List<_i18.FoodFavorite>>.value(<_i18.FoodFavorite>[]),
+      ) as _i7.Future<List<_i18.FoodFavorite>>);
 }
 
 /// A class which mocks [GetUserIdInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetUserIdInteractor extends _i1.Mock
-    implements _i17.GetUserIdInteractor {
+    implements _i19.GetUserIdInteractor {
   @override
   String execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i18.dummyValue<String>(
+        returnValue: _i20.dummyValue<String>(
           this,
           Invocation.method(
             #execute,
             [],
           ),
         ),
-        returnValueForMissingStub: _i18.dummyValue<String>(
+        returnValueForMissingStub: _i20.dummyValue<String>(
           this,
           Invocation.method(
             #execute,
@@ -251,9 +413,9 @@ class MockGetUserIdInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockDeleteFoodFavoriteInteractor extends _i1.Mock
-    implements _i19.DeleteFoodFavoriteInteractor {
+    implements _i21.DeleteFoodFavoriteInteractor {
   @override
-  _i4.Future<bool> execute(
+  _i7.Future<bool> execute(
     String? userId,
     int? eventId,
   ) =>
@@ -265,56 +427,967 @@ class MockDeleteFoodFavoriteInteractor extends _i1.Mock
             eventId,
           ],
         ),
-        returnValue: _i4.Future<bool>.value(false),
-        returnValueForMissingStub: _i4.Future<bool>.value(false),
-      ) as _i4.Future<bool>);
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
 }
 
 /// A class which mocks [RemoveFoodFavoriteFromLocalInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockRemoveFoodFavoriteFromLocalInteractor extends _i1.Mock
-    implements _i20.RemoveFoodFavoriteFromLocalInteractor {
+    implements _i22.RemoveFoodFavoriteFromLocalInteractor {
   @override
-  _i4.Future<bool> execute(_i16.FoodFavorite? foodFavorite) =>
+  _i7.Future<bool> execute(_i18.FoodFavorite? foodFavorite) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [foodFavorite],
         ),
-        returnValue: _i4.Future<bool>.value(false),
-        returnValueForMissingStub: _i4.Future<bool>.value(false),
-      ) as _i4.Future<bool>);
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
 }
 
 /// A class which mocks [IsNecessaryToShowExplainingCardInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIsNecessaryToShowExplainingCardInteractor extends _i1.Mock
-    implements _i21.IsNecessaryToShowExplainingCardInteractor {
+    implements _i23.IsNecessaryToShowExplainingCardInteractor {
   @override
-  _i4.Future<bool> execute(int? explainingCardId) => (super.noSuchMethod(
+  _i7.Future<bool> execute(int? explainingCardId) => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [explainingCardId],
         ),
-        returnValue: _i4.Future<bool>.value(false),
-        returnValueForMissingStub: _i4.Future<bool>.value(false),
-      ) as _i4.Future<bool>);
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
 }
 
 /// A class which mocks [SaveExplainingCardInteractionInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockSaveExplainingCardInteractionInteractor extends _i1.Mock
-    implements _i22.SaveExplainingCardInteractionInteractor {
+    implements _i24.SaveExplainingCardInteractionInteractor {
   @override
-  _i4.Future<void> execute(int? explainingCardId) => (super.noSuchMethod(
+  _i7.Future<void> execute(int? explainingCardId) => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [explainingCardId],
         ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [UploadSupplementEventInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockUploadSupplementEventInteractor extends _i1.Mock
+    implements _i25.UploadSupplementEventInteractor {
+  @override
+  _i7.Future<void> execute(_i26.UploadSupplementsEv? uploadSupplementsEv) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [uploadSupplementsEv],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [SaveSupplementEventInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSaveSupplementEventInteractor extends _i1.Mock
+    implements _i27.SaveSupplementEventInteractor {
+  @override
+  _i7.Future<void> execute(
+    _i28.SupplementSimple? supplementSimple,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            supplementSimple,
+            isEdit,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [UploadSupplementFavoriteInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockUploadSupplementFavoriteInteractor extends _i1.Mock
+    implements _i29.UploadSupplementFavoriteInteractor {
+  @override
+  _i7.Future<void> execute(_i30.SupplementFavorite? supplementFavorite) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [supplementFavorite],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [SaveSupplementFavoriteInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSaveSupplementFavoriteInteractor extends _i1.Mock
+    implements _i31.SaveSupplementFavoriteInteractor {
+  @override
+  _i7.Future<void> execute(
+    _i30.SupplementFavorite? supplementFavorite,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            supplementFavorite,
+            isEdit,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [GetSupplementFavoritesInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetSupplementFavoritesInteractor extends _i1.Mock
+    implements _i32.GetSupplementFavoritesInteractor {
+  @override
+  _i7.Future<List<_i28.SupplementSimple>> execute() => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+        ),
+        returnValue: _i7.Future<List<_i28.SupplementSimple>>.value(
+            <_i28.SupplementSimple>[]),
+        returnValueForMissingStub:
+            _i7.Future<List<_i28.SupplementSimple>>.value(
+                <_i28.SupplementSimple>[]),
+      ) as _i7.Future<List<_i28.SupplementSimple>>);
+}
+
+/// A class which mocks [UploadSupplementRoutineInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockUploadSupplementRoutineInteractor extends _i1.Mock
+    implements _i33.UploadSupplementRoutineInteractor {
+  @override
+  _i7.Future<void> execute(
+          _i34.UploadSupplementRoutine? uploadSupplementRoutine) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [uploadSupplementRoutine],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [SaveSupplementRoutineInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSaveSupplementRoutineInteractor extends _i1.Mock
+    implements _i35.SaveSupplementRoutineInteractor {
+  @override
+  _i7.Future<void> execute(
+    _i34.UploadSupplementRoutine? supplementRoutine,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            supplementRoutine,
+            isEdit,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [SaveFoodEventInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSaveFoodEventInteractor extends _i1.Mock
+    implements _i36.SaveFoodEventInteractor {
+  @override
+  _i7.Future<void> execute(
+    _i3.UploadFoodEvent? uploadFoodEvent,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            uploadFoodEvent,
+            isEdit,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [UploadFoodEventInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockUploadFoodEventInteractor extends _i1.Mock
+    implements _i37.UploadFoodEventInteractor {
+  @override
+  _i7.Future<_i3.UploadFoodEvent> execute(
+          _i38.FoodEventSimple? foodEventSimple) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [foodEventSimple],
+        ),
+        returnValue:
+            _i7.Future<_i3.UploadFoodEvent>.value(_FakeUploadFoodEvent_1(
+          this,
+          Invocation.method(
+            #execute,
+            [foodEventSimple],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i7.Future<_i3.UploadFoodEvent>.value(_FakeUploadFoodEvent_1(
+          this,
+          Invocation.method(
+            #execute,
+            [foodEventSimple],
+          ),
+        )),
+      ) as _i7.Future<_i3.UploadFoodEvent>);
+}
+
+/// A class which mocks [UploadFoodFavoriteInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockUploadFoodFavoriteInteractor extends _i1.Mock
+    implements _i39.UploadFoodFavoriteInteractor {
+  @override
+  _i7.Future<bool> execute(_i18.FoodFavorite? foodFavorite) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [foodFavorite],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+}
+
+/// A class which mocks [SaveFoodFavoriteInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSaveFoodFavoriteInteractor extends _i1.Mock
+    implements _i40.SaveFoodFavoriteInteractor {
+  @override
+  _i7.Future<void> execute(
+    _i18.FoodFavorite? foodFavorite,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            foodFavorite,
+            isEdit,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [UploadFoodRoutineInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockUploadFoodRoutineInteractor extends _i1.Mock
+    implements _i41.UploadFoodRoutineInteractor {
+  @override
+  _i7.Future<bool> execute(_i42.FoodRoutineEvent? foodRoutineEvent) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [foodRoutineEvent],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+}
+
+/// A class which mocks [SaveFoodRoutineInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSaveFoodRoutineInteractor extends _i1.Mock
+    implements _i43.SaveFoodRoutineInteractor {
+  @override
+  _i7.Future<void> execute(
+    _i42.FoodRoutineEvent? foodRoutineEvent,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            foodRoutineEvent,
+            isEdit,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [SaveSportEventInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSaveSportEventInteractor extends _i1.Mock
+    implements _i44.SaveSportEventInteractor {
+  @override
+  _i7.Future<void> execute(
+    _i4.SportEventComplete? sportEventComplete,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            sportEventComplete,
+            isEdit,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [UploadSportEventsInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockUploadSportEventsInteractor extends _i1.Mock
+    implements _i45.UploadSportEventsInteractor {
+  @override
+  _i7.Future<_i4.SportEventComplete> execute(
+          _i46.SportEventSimple? sportEventSimple) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [sportEventSimple],
+        ),
+        returnValue:
+            _i7.Future<_i4.SportEventComplete>.value(_FakeSportEventComplete_2(
+          this,
+          Invocation.method(
+            #execute,
+            [sportEventSimple],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i7.Future<_i4.SportEventComplete>.value(_FakeSportEventComplete_2(
+          this,
+          Invocation.method(
+            #execute,
+            [sportEventSimple],
+          ),
+        )),
+      ) as _i7.Future<_i4.SportEventComplete>);
+}
+
+/// A class which mocks [GetSportFavoritesInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetSportFavoritesInteractor extends _i1.Mock
+    implements _i47.GetSportFavoritesInteractor {
+  @override
+  _i7.Future<List<_i48.AddSportFavorite>> execute() => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+        ),
+        returnValue: _i7.Future<List<_i48.AddSportFavorite>>.value(
+            <_i48.AddSportFavorite>[]),
+        returnValueForMissingStub:
+            _i7.Future<List<_i48.AddSportFavorite>>.value(
+                <_i48.AddSportFavorite>[]),
+      ) as _i7.Future<List<_i48.AddSportFavorite>>);
+}
+
+/// A class which mocks [UploadRoutineInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockUploadRoutineInteractor extends _i1.Mock
+    implements _i49.UploadRoutineInteractor {
+  @override
+  _i7.Future<bool> execute(_i50.SportRoutineCompleted? sportRoutineCompleted) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [sportRoutineCompleted],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+}
+
+/// A class which mocks [SaveRoutineInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSaveRoutineInteractor extends _i1.Mock
+    implements _i51.SaveRoutineInteractor {
+  @override
+  _i7.Future<void> execute(
+    _i50.SportRoutineCompleted? sportRoutineCompleted,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            sportRoutineCompleted,
+            isEdit,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [UploadSportFavoriteInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockUploadSportFavoriteInteractor extends _i1.Mock
+    implements _i52.UploadSportFavoriteInteractor {
+  @override
+  _i7.Future<bool> execute(_i48.AddSportFavorite? sportFavorite) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [sportFavorite],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+}
+
+/// A class which mocks [SaveSportFavoriteInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSaveSportFavoriteInteractor extends _i1.Mock
+    implements _i53.SaveSportFavoriteInteractor {
+  @override
+  _i7.Future<bool> execute(
+    _i48.AddSportFavorite? addSportFavorite,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            addSportFavorite,
+            isEdit,
+          ],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+}
+
+/// A class which mocks [DeleteSportFavoriteInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDeleteSportFavoriteInteractor extends _i1.Mock
+    implements _i54.DeleteSportFavoriteInteractor {
+  @override
+  _i7.Future<bool> execute(
+    String? userId,
+    int? eventId,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            userId,
+            eventId,
+          ],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+}
+
+/// A class which mocks [RemoveSportFavoriteInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockRemoveSportFavoriteInteractor extends _i1.Mock
+    implements _i55.RemoveSportFavoriteInteractor {
+  @override
+  _i7.Future<bool> execute(_i48.AddSportFavorite? addSportFavorite) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [addSportFavorite],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+}
+
+/// A class which mocks [SignUpInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSignUpInteractor extends _i1.Mock implements _i56.SignUpInteractor {
+  @override
+  _i7.Future<_i2.SignUpResult> execute(
+    String? username,
+    String? email,
+    String? password,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            username,
+            email,
+            password,
+          ],
+        ),
+        returnValue: _i7.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
+          this,
+          Invocation.method(
+            #execute,
+            [
+              username,
+              email,
+              password,
+            ],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i7.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
+          this,
+          Invocation.method(
+            #execute,
+            [
+              username,
+              email,
+              password,
+            ],
+          ),
+        )),
+      ) as _i7.Future<_i2.SignUpResult>);
+}
+
+/// A class which mocks [SendVerificationCodeInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSendVerificationCodeInteractor extends _i1.Mock
+    implements _i57.SendVerificationCodeInteractor {
+  @override
+  _i7.Future<_i2.SignUpResult> execute(
+    String? confirmationCode,
+    String? username,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            confirmationCode,
+            username,
+          ],
+        ),
+        returnValue: _i7.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
+          this,
+          Invocation.method(
+            #execute,
+            [
+              confirmationCode,
+              username,
+            ],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i7.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
+          this,
+          Invocation.method(
+            #execute,
+            [
+              confirmationCode,
+              username,
+            ],
+          ),
+        )),
+      ) as _i7.Future<_i2.SignUpResult>);
+}
+
+/// A class which mocks [FetchUserAttributesInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockFetchUserAttributesInteractor extends _i1.Mock
+    implements _i58.FetchUserAttributesInteractor {
+  @override
+  _i7.Future<_i2.CognitoAuthSession> execute() => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+        ),
+        returnValue:
+            _i7.Future<_i2.CognitoAuthSession>.value(_FakeCognitoAuthSession_4(
+          this,
+          Invocation.method(
+            #execute,
+            [],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i7.Future<_i2.CognitoAuthSession>.value(_FakeCognitoAuthSession_4(
+          this,
+          Invocation.method(
+            #execute,
+            [],
+          ),
+        )),
+      ) as _i7.Future<_i2.CognitoAuthSession>);
+}
+
+/// A class which mocks [SignInInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSignInInteractor extends _i1.Mock implements _i59.SignInInteractor {
+  @override
+  _i7.Future<_i2.SignInResult> execute(
+    String? username,
+    String? password,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            username,
+            password,
+          ],
+        ),
+        returnValue: _i7.Future<_i2.SignInResult>.value(_FakeSignInResult_5(
+          this,
+          Invocation.method(
+            #execute,
+            [
+              username,
+              password,
+            ],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i7.Future<_i2.SignInResult>.value(_FakeSignInResult_5(
+          this,
+          Invocation.method(
+            #execute,
+            [
+              username,
+              password,
+            ],
+          ),
+        )),
+      ) as _i7.Future<_i2.SignInResult>);
+}
+
+/// A class which mocks [SaveUsernameAndEmailInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSaveUsernameAndEmailInteractor extends _i1.Mock
+    implements _i60.SaveUsernameAndEmailInteractor {
+  @override
+  void execute(
+    String? username,
+    String? email,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            username,
+            email,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+}
+
+/// A class which mocks [GetMasterFileVersionInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetMasterFileVersionInteractor extends _i1.Mock
+    implements _i61.GetMasterFileVersionInteractor {
+  @override
+  _i7.Future<int> execute(_i8.MasterFilesType? masterFileType) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [masterFileType],
+        ),
+        returnValue: _i7.Future<int>.value(0),
+        returnValueForMissingStub: _i7.Future<int>.value(0),
+      ) as _i7.Future<int>);
+}
+
+/// A class which mocks [ManageMasterFilesInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockManageMasterFilesInteractor extends _i1.Mock
+    implements _i62.ManageMasterFilesInteractor {
+  @override
+  _i7.Future<_i5.MasterFilesResponse> execute(
+    int? cookingMethodsInfoVersion,
+    int? cookingMethodsVersion,
+    int? oilTypesVersion,
+    int? conversionFactorsVersion,
+    int? conversionFactorsInfoVersion,
+    int? foodsAndDrinksNamesVersion,
+    int? nutrientsInfoVersion,
+    int? objectivesInfoVersion,
+    int? recommendationGroupsVersion,
+    int? sportsInfoVersion,
+    int? unitsInfoVersion,
+    int? unitsFoodsVersion,
+    int? supplementsInfoVersion,
+    int? subjectiveAnalysisVersion,
+    int? cookingMethodsOilsInfoVersion,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            cookingMethodsInfoVersion,
+            cookingMethodsVersion,
+            oilTypesVersion,
+            conversionFactorsVersion,
+            conversionFactorsInfoVersion,
+            foodsAndDrinksNamesVersion,
+            nutrientsInfoVersion,
+            objectivesInfoVersion,
+            recommendationGroupsVersion,
+            sportsInfoVersion,
+            unitsInfoVersion,
+            unitsFoodsVersion,
+            supplementsInfoVersion,
+            subjectiveAnalysisVersion,
+            cookingMethodsOilsInfoVersion,
+          ],
+        ),
+        returnValue: _i7.Future<_i5.MasterFilesResponse>.value(
+            _FakeMasterFilesResponse_6(
+          this,
+          Invocation.method(
+            #execute,
+            [
+              cookingMethodsInfoVersion,
+              cookingMethodsVersion,
+              oilTypesVersion,
+              conversionFactorsVersion,
+              conversionFactorsInfoVersion,
+              foodsAndDrinksNamesVersion,
+              nutrientsInfoVersion,
+              objectivesInfoVersion,
+              recommendationGroupsVersion,
+              sportsInfoVersion,
+              unitsInfoVersion,
+              unitsFoodsVersion,
+              supplementsInfoVersion,
+              subjectiveAnalysisVersion,
+              cookingMethodsOilsInfoVersion,
+            ],
+          ),
+        )),
+        returnValueForMissingStub: _i7.Future<_i5.MasterFilesResponse>.value(
+            _FakeMasterFilesResponse_6(
+          this,
+          Invocation.method(
+            #execute,
+            [
+              cookingMethodsInfoVersion,
+              cookingMethodsVersion,
+              oilTypesVersion,
+              conversionFactorsVersion,
+              conversionFactorsInfoVersion,
+              foodsAndDrinksNamesVersion,
+              nutrientsInfoVersion,
+              objectivesInfoVersion,
+              recommendationGroupsVersion,
+              sportsInfoVersion,
+              unitsInfoVersion,
+              unitsFoodsVersion,
+              supplementsInfoVersion,
+              subjectiveAnalysisVersion,
+              cookingMethodsOilsInfoVersion,
+            ],
+          ),
+        )),
+      ) as _i7.Future<_i5.MasterFilesResponse>);
+}
+
+/// A class which mocks [SaveMasterFileInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSaveMasterFileInteractor extends _i1.Mock
+    implements _i63.SaveMasterFileInteractor {
+  @override
+  _i7.Future<void> execute(
+    dynamic masterFileResponse,
+    _i8.MasterFilesType? masterFilesType,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            masterFileResponse,
+            masterFilesType,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [CheckProfileExistenceInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCheckProfileExistenceInteractor extends _i1.Mock
+    implements _i64.CheckProfileExistenceInteractor {
+  @override
+  _i7.Future<bool> execute(String? userId) => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [userId],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+}
+
+/// A class which mocks [DownloadProfileInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDownloadProfileInteractor extends _i1.Mock
+    implements _i65.DownloadProfileInteractor {
+  @override
+  _i7.Future<_i16.UserProfileModel?> execute(String? email) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [email],
+        ),
+        returnValue: _i7.Future<_i16.UserProfileModel?>.value(),
+        returnValueForMissingStub: _i7.Future<_i16.UserProfileModel?>.value(),
+      ) as _i7.Future<_i16.UserProfileModel?>);
+}
+
+/// A class which mocks [GetIdTokenInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetIdTokenInteractor extends _i1.Mock
+    implements _i66.GetIdTokenInteractor {
+  @override
+  String execute() => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+        ),
+        returnValue: _i20.dummyValue<String>(
+          this,
+          Invocation.method(
+            #execute,
+            [],
+          ),
+        ),
+        returnValueForMissingStub: _i20.dummyValue<String>(
+          this,
+          Invocation.method(
+            #execute,
+            [],
+          ),
+        ),
+      ) as String);
+}
+
+/// A class which mocks [SaveProfileInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSaveProfileInteractor extends _i1.Mock
+    implements _i67.SaveProfileInteractor {
+  @override
+  _i7.Future<void> execute(_i16.UserProfileModel? profile) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [profile],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [ResendVerificationCodeInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockResendVerificationCodeInteractor extends _i1.Mock
+    implements _i68.ResendVerificationCodeInteractor {
+  @override
+  _i7.Future<void> execute(String? username) => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [username],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [SaveUserCredentialsInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSaveUserCredentialsInteractor extends _i1.Mock
+    implements _i69.SaveUserCredentialsInteractor {
+  @override
+  _i7.Future<void> execute(_i2.CognitoAuthSession? session) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [session],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [SaveUserInUsersRemoteDatabaseInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSaveUserInUsersRemoteDatabaseInteractor extends _i1.Mock
+    implements _i70.SaveUserInUsersRemoteDatabaseInteractor {
+  @override
+  _i7.Future<void> execute(_i71.SimpleUser? simpleUser) => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [simpleUser],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 }
