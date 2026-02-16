@@ -10,16 +10,19 @@ import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_stor
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/nutrient_calculation_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 
 class FoodEventsRepositoryImpl extends FoodEventsRepository {
   final LocalStorageRepository localStorageRepository;
   final FoodEventsApi foodEventsApi;
   final NutrientCalculationService nutrientCalculationService;
+  final SyncQueueService syncQueue;
 
   FoodEventsRepositoryImpl({
     required this.localStorageRepository,
     required this.foodEventsApi,
     required this.nutrientCalculationService,
+    required this.syncQueue,
   });
 
   @override
@@ -69,7 +72,7 @@ class FoodEventsRepositoryImpl extends FoodEventsRepository {
 
   void _syncToBackend(FoodEventSimple foodEventSimple) {
     foodEventsApi.uploadFoodEvent(foodEventSimple).catchError((error) {
-      // TODO: queue for retry on next connectivity
+      syncQueue.enqueue('/food-event/amplify', foodEventSimple);
       return <String, dynamic>{};
     });
   }

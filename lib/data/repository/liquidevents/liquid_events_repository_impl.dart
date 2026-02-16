@@ -7,16 +7,19 @@ import 'package:nutrenaissance_flutter/domain/repository/liquidevents/liquid_eve
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/liquid_event_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/nutrient_calculation_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 
 class LiquidEventsRepositoryImpl extends LiquidEventsRepository {
   final LocalStorageRepository localStorageRepository;
   final LiquidEventsApi liquidEventsApi;
   final NutrientCalculationService nutrientCalculationService;
+  final SyncQueueService syncQueue;
 
   LiquidEventsRepositoryImpl({
     required this.liquidEventsApi,
     required this.localStorageRepository,
     required this.nutrientCalculationService,
+    required this.syncQueue,
   });
 
   @override
@@ -32,7 +35,7 @@ class LiquidEventsRepositoryImpl extends LiquidEventsRepository {
 
   void _syncToBackend(LiquidEventSimple liquidEventSimple) {
     liquidEventsApi.uploadLiquidEvent(liquidEventSimple).catchError((error) {
-      // TODO: queue for retry on next connectivity
+      syncQueue.enqueue('/liquid-event/amplify', liquidEventSimple);
       return <String, dynamic>{};
     });
   }

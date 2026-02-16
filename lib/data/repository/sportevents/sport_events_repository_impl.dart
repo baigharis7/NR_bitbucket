@@ -7,16 +7,19 @@ import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_event
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/sport_event_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/sport_kcal_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 
 class SportEventsRepositoryImpl extends SportEventsRepository {
   final SportEventsApi sportEventsApi;
   final LocalStorageRepository localStorageRepository;
   final SportKcalCalculationService sportKcalCalculationService;
+  final SyncQueueService syncQueue;
 
   SportEventsRepositoryImpl({
     required this.sportEventsApi,
     required this.localStorageRepository,
     required this.sportKcalCalculationService,
+    required this.syncQueue,
   });
 
   @override
@@ -39,7 +42,7 @@ class SportEventsRepositoryImpl extends SportEventsRepository {
 
   void _syncToBackend(SportEventSimple sportEventSimple) {
     sportEventsApi.uploadSportEvent(sportEventSimple).catchError((error) {
-      // TODO: queue for retry on next connectivity
+      syncQueue.enqueue('/sport-event/amplify', sportEventSimple);
       return <String, dynamic>{};
     });
   }

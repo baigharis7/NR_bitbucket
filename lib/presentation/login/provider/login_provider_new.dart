@@ -6,6 +6,9 @@ import 'package:nutrenaissance_flutter/data/api/eventssync/events_sync_api.dart'
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
 import 'package:nutrenaissance_flutter/data/api/referencedata/reference_data_api.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/reference_data_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
+import 'package:nutrenaissance_flutter/data/local/models/sync/sync_queue_entry.dart';
+import 'package:hive/hive.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_response.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/simple_user.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
@@ -98,6 +101,7 @@ class LoginProviderNew extends BaseProvider {
   EraseDatabaseInteractor? eraseDatabaseInteractor;
   ReferenceDataApi? referenceDataApi;
   ReferenceDataService? referenceDataService;
+  SyncQueueService? syncQueueService;
 
   get getNotConfirmedUserTryingToLogin => _notConfirmedUserTryingToLogin;
   get isLogin => _loginMode;
@@ -178,6 +182,8 @@ class LoginProviderNew extends BaseProvider {
     final referenceDatabase = await openReferenceDatabase();
     referenceDataApi = ReferenceDataApi(prefsRepository, authenticationService!, chuck);
     referenceDataService = ReferenceDataService(referenceDatabase);
+    final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
+    syncQueueService = SyncQueueService(prefsRepository, authenticationService!, chuck, syncQueueBox);
     MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi, referenceDatabase: referenceDatabase);
     getMasterFilesVersionInteractor = GetMasterFileVersionInteractorImpl(masterFilesRepository: masterFilesRepository);
     manageMasterFilesInteractor = ManageMasterFilesInteractorImpl(masterFilesRepository: masterFilesRepository);
@@ -637,7 +643,8 @@ class LoginProviderNew extends BaseProvider {
 
     _setMasterFilesChecked(true);
     try {
-      // Run events sync and reference data fetch in parallel
+      // Run events sync, reference data fetch, and pending sync queue in parallel
+      syncQueueService?.processQueue();
       await Future.wait([
         _synchronizeEvents(userId),
         _fetchReferenceData(),
