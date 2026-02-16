@@ -598,9 +598,9 @@ void main() async {
   final DeleteFoodEventInteractor deleteFoodEventInteractor = DeleteFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
   final RemoveSportEventInteractor removeSportEventInteractor = RemoveSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
   final DeleteSportEventInteractor deleteSportEventInteractor = DeleteSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
-  final LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService, profileApi: profileApi);
+  final LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService, profileApi: profileApi, syncQueue: syncQueueService);
   final StepsApi stepsApi = StepsApi(prefsRepository, authenticationService, chuck);
-  final StepsRepository stepsRepository = StepsRepositoryImpl(stepsApi: stepsApi, localStorageRepository: localStorageRepository);
+  final StepsRepository stepsRepository = StepsRepositoryImpl(stepsApi: stepsApi, localStorageRepository: localStorageRepository, syncQueue: syncQueueService);
   final UploadStepsInteractor uploadStepsInteractor = UploadStepsInteractorImpl(stepsRepository: stepsRepository);
   final SaveStepsInteractor saveStepsInteractor = SaveStepsInteractorImpl(stepsRepository: stepsRepository);
   final GetStepsInteractor getStepsInteractor = GetStepsInteractorImpl(stepsRepository: stepsRepository);

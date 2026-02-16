@@ -170,7 +170,9 @@ class LoginProviderNew extends BaseProvider {
     fetchUserAttributesInteractor = FetchUserAttributesInteractorImpl(authenticationService: authenticationService!);
     getIdTokenInteractor = GetIdTokenInteractorImpl(preferencesRepository: prefsRepository);
     ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService!, chuck);
-    LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService!, profileApi: profileApi,);
+    final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
+    syncQueueService = SyncQueueService(prefsRepository, authenticationService!, chuck, syncQueueBox);
+    LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService!, profileApi: profileApi, syncQueue: syncQueueService!);
     saveUserCredentialsInteractor = SaveUserCredentialsInteractorImpl(preferencesRepository: prefsRepository);
     signUpInteractor = SignUpInteractorImpl(loginRepository: loginRepository);
     verificationCodeInteractor = SendVerificationCodeInteractorImpl(loginRepository: loginRepository);
@@ -181,8 +183,6 @@ class LoginProviderNew extends BaseProvider {
     final referenceDatabase = await openReferenceDatabase();
     referenceDataApi = ReferenceDataApi(prefsRepository, authenticationService!, chuck);
     referenceDataService = ReferenceDataService(referenceDatabase);
-    final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
-    syncQueueService = SyncQueueService(prefsRepository, authenticationService!, chuck, syncQueueBox);
     final profileComputationService = ProfileComputationService(referenceDatabase);
     ProfileRepository profileRepository = ProfileRepositoryImpl(
       profileApi: profileApi,
