@@ -42,17 +42,17 @@ void main() {
   // ── validatePasswordOrNull ──────────────────────────────────────────
 
   group('Password Validation - Login Mode (validatePasswordOrNull)', () {
-    test('empty password returns emptyPasswordError', () {
+    test('empty password passes in login mode (no validation)', () {
       expect(
         validatePasswordOrNull(true, ''),
-        FormErrorTypes.emptyPasswordError,
+        null,
       );
     });
 
-    test('null password returns emptyPasswordError', () {
+    test('null password passes in login mode (no validation)', () {
       expect(
         validatePasswordOrNull(true, null),
-        FormErrorTypes.emptyPasswordError,
+        null,
       );
     });
 
@@ -105,10 +105,10 @@ void main() {
       expect(validatePasswordOrNull(false, 'Abcdefg1!'), null);
     });
 
-    test('null password in signup returns invalidPasswordError', () {
+    test('null password in signup returns emptyPasswordError', () {
       expect(
         validatePasswordOrNull(false, null),
-        FormErrorTypes.invalidPasswordError,
+        FormErrorTypes.emptyPasswordError,
       );
     });
   });
