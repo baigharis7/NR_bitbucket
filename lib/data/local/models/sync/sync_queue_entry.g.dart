@@ -21,13 +21,14 @@ class SyncQueueEntryAdapter extends TypeAdapter<SyncQueueEntry> {
       bodyJson: fields[1] as String,
       createdAt: fields[2] as int,
       retryCount: fields[3] as int,
+      method: fields[4] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, SyncQueueEntry obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.path)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class SyncQueueEntryAdapter extends TypeAdapter<SyncQueueEntry> {
       ..writeByte(2)
       ..write(obj.createdAt)
       ..writeByte(3)
-      ..write(obj.retryCount);
+      ..write(obj.retryCount)
+      ..writeByte(4)
+      ..write(obj.method);
   }
 
   @override

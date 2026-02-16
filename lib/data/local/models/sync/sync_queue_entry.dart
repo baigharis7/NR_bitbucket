@@ -17,10 +17,14 @@ class SyncQueueEntry extends HiveObject {
   @HiveField(3)
   int retryCount;
 
+  @HiveField(4)
+  String method;
+
   SyncQueueEntry({
     required this.path,
     required this.bodyJson,
     required this.createdAt,
     this.retryCount = 0,
+    this.method = 'POST',
   });
 }

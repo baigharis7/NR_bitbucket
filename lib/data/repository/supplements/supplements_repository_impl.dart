@@ -133,11 +133,10 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
 
   @override
   Future<void> uploadSupplementFavorite(SupplementFavorite supplementFavorite) async {
-    try {
-      await supplementApi.uploadSupplementFavorite(supplementFavorite);
-    } catch(_) {
-      rethrow;
-    }
+    supplementApi.uploadSupplementFavorite(supplementFavorite).catchError((error) {
+      syncQueue.enqueue('/favorites/supplement', supplementFavorite);
+      return <String, dynamic>{};
+    });
   }
 
   @override

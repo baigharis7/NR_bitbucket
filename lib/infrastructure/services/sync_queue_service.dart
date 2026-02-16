@@ -19,12 +19,17 @@ class SyncQueueService extends ApiHelper {
     this._box,
   ) : super(preferencesRepository, authenticationService, chuck);
 
-  void enqueue(String path, dynamic body) {
+  void enqueue(String path, dynamic body, {String method = 'POST'}) {
     _box.add(SyncQueueEntry(
       path: path,
       bodyJson: jsonEncode(body),
       createdAt: DateTime.now().millisecondsSinceEpoch,
+      method: method,
     ));
+  }
+
+  void enqueueDelete(String path, dynamic body) {
+    enqueue(path, body, method: 'DELETE');
   }
 
   Future<void> processQueue() async {
@@ -35,7 +40,12 @@ class SyncQueueService extends ApiHelper {
           Environment().config!.baseUrl,
           '${Environment().config!.distributionPath}${entry.path}',
         );
-        await post(uri, jsonDecode(entry.bodyJson));
+        final body = jsonDecode(entry.bodyJson);
+        if (entry.method == 'DELETE') {
+          await delete(uri, body);
+        } else {
+          await post(uri, body);
+        }
         await entry.delete();
       } catch (_) {
         entry.retryCount++;
