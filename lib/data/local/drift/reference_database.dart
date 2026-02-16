@@ -69,6 +69,17 @@ class ReferenceDataVersions extends Table {
   Set<Column> get primaryKey => {key};
 }
 
+/// Generic key-value store for raw JSON reference data blobs.
+/// Used for data that is looked up in its entirety (e.g. objective-nutrient
+/// mappings, nutrient RDA tables) rather than queried row-by-row.
+class ReferenceDataBlobs extends Table {
+  TextColumn get key => text()();  // e.g. 'objectiveNutrients', 'nutrientObjective'
+  TextColumn get data => text()(); // raw JSON string
+
+  @override
+  Set<Column> get primaryKey => {key};
+}
+
 // ---------------------------------------------------------------------------
 // Database
 // ---------------------------------------------------------------------------
@@ -79,12 +90,23 @@ class ReferenceDataVersions extends Table {
   CookingMethodOils,
   SportMets,
   ReferenceDataVersions,
+  ReferenceDataBlobs,
 ])
 class ReferenceDatabase extends _$ReferenceDatabase {
   ReferenceDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (Migrator m) => m.createAll(),
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from < 2) {
+        await m.createTable(referenceDataBlobs);
+      }
+    },
+  );
 
   // -- Nutrient Compositions ------------------------------------------------
 
@@ -182,6 +204,24 @@ class ReferenceDatabase extends _$ReferenceDatabase {
       ReferenceDataVersionsCompanion(
         key: Value(key),
         version: Value(version),
+      ),
+    );
+  }
+
+  // -- Reference Data Blobs --------------------------------------------------
+
+  Future<String?> getReferenceBlob(String blobKey) async {
+    final row = await (select(referenceDataBlobs)
+          ..where((t) => t.key.equals(blobKey)))
+        .getSingleOrNull();
+    return row?.data;
+  }
+
+  Future<void> setReferenceBlob(String blobKey, String json) {
+    return into(referenceDataBlobs).insertOnConflictUpdate(
+      ReferenceDataBlobsCompanion(
+        key: Value(blobKey),
+        data: Value(json),
       ),
     );
   }

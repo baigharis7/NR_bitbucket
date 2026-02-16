@@ -53,4 +53,26 @@ class ReferenceDataApi extends ApiHelper {
       ),
     );
   }
+
+  /// Fetches objective-to-nutrient mappings for micronutrient prioritization.
+  /// Returns raw JSON string: `{ "v": <int>, "data": { "1": ["calcium", ...], ... } }`
+  Future<String> fetchObjectiveNutrients() {
+    return getRaw(
+      Uri.https(
+        Environment().config!.baseUrl,
+        '${Environment().config!.distributionPath}/reference-data/objective-nutrients',
+      ),
+    );
+  }
+
+  /// Fetches per-nutrient RDA/UL values by sex and age bracket.
+  /// Returns raw JSON string: `{ "v": <int>, "data": { "calcium": { "male": { "19-30": { "rda": 1000, "ul": 2500 }, ... }, ... }, ... } }`
+  Future<String> fetchNutrientObjective() {
+    return getRaw(
+      Uri.https(
+        Environment().config!.baseUrl,
+        '${Environment().config!.distributionPath}/reference-data/nutrient-objective',
+      ),
+    );
+  }
 }

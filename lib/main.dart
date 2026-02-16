@@ -55,6 +55,7 @@ import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_en
 import 'package:nutrenaissance_flutter/data/local/models/sync/sync_queue_entry.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/nutrient_calculation_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/reference_data_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/profile_computation_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/sport_kcal_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 import 'package:nutrenaissance_flutter/data/local/models/recipes/recipe_favorite_entity.dart';
@@ -518,7 +519,8 @@ void main() async {
   syncQueueService.processQueue();
   final ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService, chuck);
   final LocalStorageRepository localStorageRepository = LocalStorageImpl();
-  final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository);
+  final ProfileComputationService profileComputationService = ProfileComputationService(referenceDatabase);
+  final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository, profileComputationService: profileComputationService, syncQueue: syncQueueService);
   final GetUserIdInteractor getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
   final UploadProfileInteractor uploadProfileInteractor = UploadProfileInteractorImpl(profileRepository: profileRepository);
   final SaveProfileInteractor saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);

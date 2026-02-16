@@ -23,6 +23,8 @@ class ReferenceDataService {
   static const _kNutrientLoss = 'nutrientLoss';
   static const _kCookingOils = 'cookingOils';
   static const _kSportMets = 'sportMets';
+  static const kObjectiveNutrients = 'objectiveNutrients';
+  static const kNutrientObjective = 'nutrientObjective';
 
   // ---------------------------------------------------------------------------
   // Public: call from app startup
@@ -38,6 +40,8 @@ class ReferenceDataService {
     Future<ReferencePayload?> Function()? fetchNutrientLoss,
     Future<ReferencePayload?> Function()? fetchCookingOils,
     Future<ReferencePayload?> Function()? fetchSportMets,
+    Future<ReferencePayload?> Function()? fetchObjectiveNutrients,
+    Future<ReferencePayload?> Function()? fetchNutrientObjective,
   }) async {
     bool updated = false;
 
@@ -84,6 +88,30 @@ class ReferenceDataService {
         if (payload.version > localVersion) {
           await loadSportMetsJson(payload.json);
           await _db.setReferenceVersion(_kSportMets, payload.version);
+          updated = true;
+        }
+      }
+    }
+
+    if (fetchObjectiveNutrients != null) {
+      final payload = await fetchObjectiveNutrients();
+      if (payload != null) {
+        final localVersion = await _db.getReferenceVersion(kObjectiveNutrients);
+        if (payload.version > localVersion) {
+          await _db.setReferenceBlob(kObjectiveNutrients, payload.json);
+          await _db.setReferenceVersion(kObjectiveNutrients, payload.version);
+          updated = true;
+        }
+      }
+    }
+
+    if (fetchNutrientObjective != null) {
+      final payload = await fetchNutrientObjective();
+      if (payload != null) {
+        final localVersion = await _db.getReferenceVersion(kNutrientObjective);
+        if (payload.version > localVersion) {
+          await _db.setReferenceBlob(kNutrientObjective, payload.json);
+          await _db.setReferenceVersion(kNutrientObjective, payload.version);
           updated = true;
         }
       }

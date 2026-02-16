@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:nutrenaissance_flutter/data/api/eventssync/events_sync_api.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
 import 'package:nutrenaissance_flutter/data/api/referencedata/reference_data_api.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/profile_computation_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/reference_data_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sync/sync_queue_entry.dart';
@@ -175,15 +176,21 @@ class LoginProviderNew extends BaseProvider {
     verificationCodeInteractor = SendVerificationCodeInteractorImpl(loginRepository: loginRepository);
     signInInteractor = SignInInteractorImpl(loginRepository: loginRepository);
     LocalStorageRepository localStorageRepository = LocalStorageImpl();
-    ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository);
     saveUsernameAndEmailInteractor = SaveUsernameAndEmailInteractorImpl(preferencesRepository: prefsRepository);
-    saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
     MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService!, chuck);
     final referenceDatabase = await openReferenceDatabase();
     referenceDataApi = ReferenceDataApi(prefsRepository, authenticationService!, chuck);
     referenceDataService = ReferenceDataService(referenceDatabase);
     final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
     syncQueueService = SyncQueueService(prefsRepository, authenticationService!, chuck, syncQueueBox);
+    final profileComputationService = ProfileComputationService(referenceDatabase);
+    ProfileRepository profileRepository = ProfileRepositoryImpl(
+      profileApi: profileApi,
+      localStorageRepository: localStorageRepository,
+      profileComputationService: profileComputationService,
+      syncQueue: syncQueueService!,
+    );
+    saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
     MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi, referenceDatabase: referenceDatabase);
     getMasterFilesVersionInteractor = GetMasterFileVersionInteractorImpl(masterFilesRepository: masterFilesRepository);
     manageMasterFilesInteractor = ManageMasterFilesInteractorImpl(masterFilesRepository: masterFilesRepository);
@@ -489,6 +496,30 @@ class LoginProviderNew extends BaseProvider {
         fetchSportMets: () async {
           try {
             final raw = await referenceDataApi!.fetchSportMets();
+            final parsed = jsonDecode(raw);
+            return ReferencePayload(
+              version: parsed['v'] as int? ?? 0,
+              json: jsonEncode(parsed['data']),
+            );
+          } catch (_) {
+            return null;
+          }
+        },
+        fetchObjectiveNutrients: () async {
+          try {
+            final raw = await referenceDataApi!.fetchObjectiveNutrients();
+            final parsed = jsonDecode(raw);
+            return ReferencePayload(
+              version: parsed['v'] as int? ?? 0,
+              json: jsonEncode(parsed['data']),
+            );
+          } catch (_) {
+            return null;
+          }
+        },
+        fetchNutrientObjective: () async {
+          try {
+            final raw = await referenceDataApi!.fetchNutrientObjective();
             final parsed = jsonDecode(raw);
             return ReferencePayload(
               version: parsed['v'] as int? ?? 0,

@@ -1180,6 +1180,190 @@ class ReferenceDataVersionsCompanion
   }
 }
 
+class $ReferenceDataBlobsTable extends ReferenceDataBlobs
+    with TableInfo<$ReferenceDataBlobsTable, ReferenceDataBlob> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReferenceDataBlobsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+      'key', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _dataMeta = const VerificationMeta('data');
+  @override
+  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+      'data', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [key, data];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'reference_data_blobs';
+  @override
+  VerificationContext validateIntegrity(Insertable<ReferenceDataBlob> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('key')) {
+      context.handle(
+          _keyMeta, key.isAcceptableOrUnknown(data['key']!, _keyMeta));
+    } else if (isInserting) {
+      context.missing(_keyMeta);
+    }
+    if (data.containsKey('data')) {
+      context.handle(
+          _dataMeta, this.data.isAcceptableOrUnknown(data['data']!, _dataMeta));
+    } else if (isInserting) {
+      context.missing(_dataMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {key};
+  @override
+  ReferenceDataBlob map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ReferenceDataBlob(
+      key: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}key'])!,
+      data: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}data'])!,
+    );
+  }
+
+  @override
+  $ReferenceDataBlobsTable createAlias(String alias) {
+    return $ReferenceDataBlobsTable(attachedDatabase, alias);
+  }
+}
+
+class ReferenceDataBlob extends DataClass
+    implements Insertable<ReferenceDataBlob> {
+  final String key;
+  final String data;
+  const ReferenceDataBlob({required this.key, required this.data});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['key'] = Variable<String>(key);
+    map['data'] = Variable<String>(data);
+    return map;
+  }
+
+  ReferenceDataBlobsCompanion toCompanion(bool nullToAbsent) {
+    return ReferenceDataBlobsCompanion(
+      key: Value(key),
+      data: Value(data),
+    );
+  }
+
+  factory ReferenceDataBlob.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ReferenceDataBlob(
+      key: serializer.fromJson<String>(json['key']),
+      data: serializer.fromJson<String>(json['data']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'key': serializer.toJson<String>(key),
+      'data': serializer.toJson<String>(data),
+    };
+  }
+
+  ReferenceDataBlob copyWith({String? key, String? data}) => ReferenceDataBlob(
+        key: key ?? this.key,
+        data: data ?? this.data,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('ReferenceDataBlob(')
+          ..write('key: $key, ')
+          ..write('data: $data')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(key, data);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ReferenceDataBlob &&
+          other.key == this.key &&
+          other.data == this.data);
+}
+
+class ReferenceDataBlobsCompanion extends UpdateCompanion<ReferenceDataBlob> {
+  final Value<String> key;
+  final Value<String> data;
+  final Value<int> rowid;
+  const ReferenceDataBlobsCompanion({
+    this.key = const Value.absent(),
+    this.data = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ReferenceDataBlobsCompanion.insert({
+    required String key,
+    required String data,
+    this.rowid = const Value.absent(),
+  })  : key = Value(key),
+        data = Value(data);
+  static Insertable<ReferenceDataBlob> custom({
+    Expression<String>? key,
+    Expression<String>? data,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (key != null) 'key': key,
+      if (data != null) 'data': data,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ReferenceDataBlobsCompanion copyWith(
+      {Value<String>? key, Value<String>? data, Value<int>? rowid}) {
+    return ReferenceDataBlobsCompanion(
+      key: key ?? this.key,
+      data: data ?? this.data,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
+    }
+    if (data.present) {
+      map['data'] = Variable<String>(data.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReferenceDataBlobsCompanion(')
+          ..write('key: $key, ')
+          ..write('data: $data, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$ReferenceDatabase extends GeneratedDatabase {
   _$ReferenceDatabase(QueryExecutor e) : super(e);
   late final $NutrientCompositionsTable nutrientCompositions =
@@ -1190,6 +1374,8 @@ abstract class _$ReferenceDatabase extends GeneratedDatabase {
   late final $SportMetsTable sportMets = $SportMetsTable(this);
   late final $ReferenceDataVersionsTable referenceDataVersions =
       $ReferenceDataVersionsTable(this);
+  late final $ReferenceDataBlobsTable referenceDataBlobs =
+      $ReferenceDataBlobsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1199,6 +1385,7 @@ abstract class _$ReferenceDatabase extends GeneratedDatabase {
         nutrientLosses,
         cookingMethodOils,
         sportMets,
-        referenceDataVersions
+        referenceDataVersions,
+        referenceDataBlobs
       ];
 }
