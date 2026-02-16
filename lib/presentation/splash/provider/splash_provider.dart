@@ -1,6 +1,9 @@
 import 'package:chuck_interceptor/chuck.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/data/local/models/sync/sync_queue_entry.dart';
+import 'package:nutrenaissance_flutter/data/local/drift/reference_database.dart';
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/preferences/preferences_repository_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor.dart';
@@ -8,6 +11,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_toke
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/profile_computation_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/num_constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/token_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -62,7 +67,11 @@ class SplashProvider extends ChangeNotifier {
     final PreferencesRepository prefsRepository = PreferencesRepositoryImpl(prefs: prefs);
     profileApi = ProfileApi(prefsRepository, authenticationService, chuck);
     localStorageRepository = LocalStorageImpl();
-    profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository);
+    final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
+    final syncQueueService = SyncQueueService(prefsRepository, authenticationService, chuck, syncQueueBox);
+    final referenceDatabase = await openReferenceDatabase();
+    final profileComputationService = ProfileComputationService(referenceDatabase);
+    profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository, profileComputationService: profileComputationService, syncQueue: syncQueueService);
     getProfileInteractor = GetProfileInteractorImpl(profileRepository: profileRepository);
     eraseDBLocalEventsInteractor = EraseDBLocalEventsInteractorImpl(localStorageRepository: localStorageRepository);
     eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService, chuck);

@@ -529,7 +529,7 @@ void main() async {
   final UploadFoodEventInteractor uploadFoodEventInteractor = UploadFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
   final SaveFoodEventInteractor saveFoodEventInteractor = SaveFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
   final FoodRoutinesApi foodRoutinesApi = FoodRoutinesApi(prefsRepository, authenticationService, chuck);
-  final FoodRoutinesRepository foodRoutinesRepository = FoodRoutinesRepositoryImpl(foodRoutinesApi: foodRoutinesApi, localStorageRepository: localStorageRepository);
+  final FoodRoutinesRepository foodRoutinesRepository = FoodRoutinesRepositoryImpl(foodRoutinesApi: foodRoutinesApi, localStorageRepository: localStorageRepository, syncQueue: syncQueueService);
   final UploadFoodRoutineInteractor uploadFoodRoutineInteractor = UploadFoodRoutineInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
   final SaveFoodRoutineInteractor saveFoodRoutineInteractor = SaveFoodRoutineInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
   final GetFoodRoutinesInteractor getFoodRoutinesInteractor = GetFoodRoutinesInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
@@ -606,7 +606,7 @@ void main() async {
   final GetStepsInteractor getStepsInteractor = GetStepsInteractorImpl(stepsRepository: stepsRepository);
   final GetTodayStepInteractor getTodayStepInteractor = GetTodayStepInteractorImpl(stepsRepository: stepsRepository);
   final RoutinesApi routinesApi = RoutinesApi(prefsRepository, authenticationService, chuck);
-  final RoutinesRepository routinesRepository = RoutinesRepositoryImpl(routinesApi: routinesApi, localStorageRepository: localStorageRepository);
+  final RoutinesRepository routinesRepository = RoutinesRepositoryImpl(routinesApi: routinesApi, localStorageRepository: localStorageRepository, syncQueue: syncQueueService);
   final UploadRoutineInteractor uploadRoutineInteractor = UploadRoutineInteractorImpl(routinesRepository: routinesRepository);
   final GetRoutinesInteractor getRoutinesInteractor = GetRoutinesInteractorImpl(routinesRepository: routinesRepository);
   final SaveRoutineInteractor saveRoutineInteractor = SaveRoutineInteractorImpl(routinesRepository: routinesRepository);

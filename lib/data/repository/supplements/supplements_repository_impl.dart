@@ -159,11 +159,10 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
 
   @override
   Future<void> uploadSupplementRoutine(UploadSupplementRoutine uploadSupplementRoutine) async {
-    try {
-      await supplementApi.uploadSupplementRoutine(uploadSupplementRoutine);
-    } catch(_) {
-      rethrow;
-    }
+    supplementApi.uploadSupplementRoutine(uploadSupplementRoutine).catchError((error) {
+      syncQueue.enqueue('/supplement-routines', uploadSupplementRoutine);
+      return <String, dynamic>{};
+    });
   }
 
   @override
@@ -187,11 +186,10 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
 
   @override
   Future<void> deleteSupplementRoutine(SupplementSimple supplement) async {
-    try {
-      await supplementApi.deleteSupplementRoutine(supplement);
-    } catch(_) {
-      rethrow;
-    }
+    supplementApi.deleteSupplementRoutine(supplement).catchError((error) {
+      syncQueue.enqueueDelete('/supplement-routines', {'userId': supplement.userId, 'eventId': supplement.eventId});
+      return <String, dynamic>{};
+    });
   }
 
   @override
