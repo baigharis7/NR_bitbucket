@@ -90,11 +90,10 @@ class FecesUrineRepositoryImpl extends FecesUrineRepository {
 
   @override
   Future<void> deleteFecesEvent(String userId, int eventId) async {
-    try {
-      await fecesUrineApi.deleteFecesEvent(userId, eventId);
-    } catch (error) {
-      rethrow;
-    }
+    fecesUrineApi.deleteFecesEvent(userId, eventId).catchError((error) {
+      syncQueue.enqueueDelete('/feces', {'userId': userId, 'eventId': eventId});
+      return <String, dynamic>{};
+    });
   }
 
   @override
@@ -108,11 +107,10 @@ class FecesUrineRepositoryImpl extends FecesUrineRepository {
 
   @override
   Future<void> deleteUrineEvent(String userId, int eventId) async {
-    try {
-      await fecesUrineApi.deleteUrineEvent(userId, eventId);
-    } catch (error) {
-      rethrow;
-    }
+    fecesUrineApi.deleteUrineEvent(userId, eventId).catchError((error) {
+      syncQueue.enqueueDelete('/urine', {'userId': userId, 'eventId': eventId});
+      return <String, dynamic>{};
+    });
   }
 
   @override

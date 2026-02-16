@@ -65,7 +65,12 @@ class LiquidEventsRepositoryImpl extends LiquidEventsRepository {
   }
 
   @override
-  Future<void> deleteLiquidEvent(String userId, int eventDate) => liquidEventsApi.deleteLiquidEvent(userId, eventDate);
+  Future<void> deleteLiquidEvent(String userId, int eventDate) async {
+    liquidEventsApi.deleteLiquidEvent(userId, eventDate).catchError((error) {
+      syncQueue.enqueueDelete('/liquid-event', {'userId': userId, 'eventDate': eventDate});
+      return <String, dynamic>{};
+    });
+  }
 
   @override
   Future<void> removeLiquidEvent(LiquidEventComplete liquidEventComplete) async {

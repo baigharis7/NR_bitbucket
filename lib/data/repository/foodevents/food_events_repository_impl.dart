@@ -110,11 +110,10 @@ class FoodEventsRepositoryImpl extends FoodEventsRepository {
 
   @override
   Future<bool> deleteFoodEvent(String userId, int eventDate) async {
-    try {
-      await foodEventsApi.deleteFoodEvent(userId, eventDate);
-      return true;
-    } catch (_) {
-      return false;
-    }
+    foodEventsApi.deleteFoodEvent(userId, eventDate).catchError((error) {
+      syncQueue.enqueueDelete('/food-event', {'userId': userId, 'eventId': eventDate});
+      return <String, dynamic>{};
+    });
+    return true;
   }
 }

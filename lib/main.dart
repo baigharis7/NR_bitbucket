@@ -569,7 +569,7 @@ void main() async {
   final SupplementApi supplementApi = SupplementApi(prefsRepository, authenticationService, chuck);
   final SupplementsRepository supplementsRepository = SupplementsRepositoryImpl(supplementApi: supplementApi, localStorageRepository: localStorageRepository, syncQueue: syncQueueService,);
   final FavoritesApi favoritesApi = FavoritesApi(prefsRepository, authenticationService, chuck);
-  final FavoritesRepository favoritesRepository = FavoritesRepositoryImpl(localStorageRepository: localStorageRepository, favoritesApi: favoritesApi);
+  final FavoritesRepository favoritesRepository = FavoritesRepositoryImpl(localStorageRepository: localStorageRepository, favoritesApi: favoritesApi, syncQueue: syncQueueService);
   final GetFoodFavoritesInteractor getFoodFavoritesInteractor = GetFoodFavoritesInteractorImpl(favoritesRepository: favoritesRepository);
   final SaveFoodFavoriteInteractor saveFoodFavoriteInteractor = SaveFoodFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
   final UploadFoodFavoriteInteractor uploadFoodFavoriteInteractor = UploadFoodFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
@@ -581,7 +581,7 @@ void main() async {
   final DeleteSportFavoriteInteractor deleteSportFavoriteInteractor = DeleteSportFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
   final RemoveSportFavoriteInteractor removeSportFavoriteInteractor = RemoveSportFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
   final RecipesApi recipesApi = RecipesApi(prefsRepository, authenticationService, chuck);
-  final RecipesRepository recipesRepository = RecipesRepositoryImpl(recipesApi: recipesApi, localStorageRepository: localStorageRepository);
+  final RecipesRepository recipesRepository = RecipesRepositoryImpl(recipesApi: recipesApi, localStorageRepository: localStorageRepository, syncQueue: syncQueueService);
   final GetRecipesForFoodsInteractor getRecipesForFoodsInteractor = GetRecipesForFoodsInteractorImpl(recipesRepository: recipesRepository);
   final GetUserExclusionsInteractor getUserExclusionsInteractor = GetUserExclusionsInteractorImpl(profileRepository: profileRepository);
   final SaveLiquidFavoriteInteractor saveLiquidFavoriteInteractor = SaveLiquidFavoriteInteractorImpl(favoritesRepository: favoritesRepository);

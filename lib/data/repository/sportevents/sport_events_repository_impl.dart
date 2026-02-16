@@ -94,10 +94,9 @@ class SportEventsRepositoryImpl extends SportEventsRepository {
 
   @override
   Future<void> deleteSportEvent(String userId, int eventId) async {
-    try {
-      await sportEventsApi.deleteSportEvent(userId, eventId);
-    } catch (error) {
-      rethrow;
-    }
+    sportEventsApi.deleteSportEvent(userId, eventId).catchError((error) {
+      syncQueue.enqueueDelete('/sport-event', {'userId': userId, 'eventId': eventId});
+      return <String, dynamic>{};
+    });
   }
 }

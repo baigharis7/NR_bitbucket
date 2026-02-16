@@ -115,11 +115,10 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
 
   @override
   Future<void> deleteSupplementEvent(SupplementSimple supplementEvent) async {
-    try {
-      await supplementApi.deleteSupplementEvent(supplementEvent);
-    } catch(_) {
-      rethrow;
-    }
+    supplementApi.deleteSupplementEvent(supplementEvent).catchError((error) {
+      syncQueue.enqueueDelete('/supplements', {'userId': supplementEvent.userId, 'eventId': supplementEvent.eventId});
+      return <String, dynamic>{};
+    });
   }
 
   @override
@@ -206,11 +205,10 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
 
   @override
   Future<void> deleteSupplementFavorite(SupplementSimple supplement) async {
-    try {
-      await supplementApi.deleteSupplementFavorite(supplement);
-    } catch(_) {
-      rethrow;
-    }
+    supplementApi.deleteSupplementFavorite(supplement).catchError((error) {
+      syncQueue.enqueueDelete('/favorites/supplement', {'userId': supplement.userId, 'eventId': supplement.eventId});
+      return <String, dynamic>{};
+    });
   }
 
   @override

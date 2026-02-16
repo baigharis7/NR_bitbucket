@@ -3,6 +3,7 @@ import 'package:nutrenaissance_flutter/data/api/recipes/recipes_api.dart';
 import 'package:nutrenaissance_flutter/domain/models/recipes/recipes_master.dart';
 import 'package:nutrenaissance_flutter/domain/repository/recipes/recipes_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/recipes_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 
 import '../../../domain/models/recipes/upload_recipe_favorite.dart';
 import '../../../domain/repository/localstorage/local_storage.dart';
@@ -10,8 +11,9 @@ import '../../../domain/repository/localstorage/local_storage.dart';
 class RecipesRepositoryImpl extends RecipesRepository {
   final RecipesApi recipesApi;
   final LocalStorageRepository localStorageRepository;
+  final SyncQueueService syncQueue;
 
-  RecipesRepositoryImpl({required this.recipesApi, required this.localStorageRepository});
+  RecipesRepositoryImpl({required this.recipesApi, required this.localStorageRepository, required this.syncQueue});
 
   @override
   Future<List<RecipeMaster>> getRecipes(List<int> foodIds, List<int> exclusions) async {
@@ -30,11 +32,10 @@ class RecipesRepositoryImpl extends RecipesRepository {
 
   @override
   Future<void> uploadRecipeFavorite(UploadRecipeFavorite uploadRecipeFavorite) async {
-    try {
-      await recipesApi.uploadRecipeFavorite(uploadRecipeFavorite);
-    } catch (error) {
-      rethrow;
-    }
+    recipesApi.uploadRecipeFavorite(uploadRecipeFavorite).catchError((error) {
+      syncQueue.enqueue('/favorites/recipe', uploadRecipeFavorite);
+      return <String, dynamic>{};
+    });
   }
 
   @override
@@ -58,11 +59,10 @@ class RecipesRepositoryImpl extends RecipesRepository {
 
   @override
   Future<void> deleteRecipeFavorite(String userId, int eventDate) async {
-    try {
-      await recipesApi.deleteRecipeFavorite(userId, eventDate);
-    } catch (error) {
-      rethrow;
-    }
+    recipesApi.deleteRecipeFavorite(userId, eventDate).catchError((error) {
+      syncQueue.enqueueDelete('/favorites/recipe', {'userId': userId, 'eventDate': eventDate});
+      return <String, dynamic>{};
+    });
   }
 
   @override
