@@ -49,6 +49,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.d
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/lists/SupplementInfo.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
@@ -79,6 +80,8 @@ import 'package:path_provider/path_provider.dart';
 
 class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final EventsHelper _eventsHelper = EventsHelper();
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
+  DateTime? _lastSelectedDate;
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetAdviceInteractor getAdviceInteractor;
@@ -179,7 +182,67 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     foundedRoutineRemainingHours: null,
     lastTap: null,
   ),) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      add(RefreshCategoryAction(category: category));
+    });
+
+    on<RefreshCategoryAction>((event, emit) async {
+      try {
+        switch (event.category) {
+          case DataChangedCategory.food:
+            state.foodEvents = await getFoodEventsOfTodayInteractor.execute(dateTime: _lastSelectedDate);
+            state.weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
+            final caloriesConsumed = await getDayCaloriesInteractor.execute(dateTime: _lastSelectedDate);
+            state.allCalendarEvents = await getAllDashboardEventsSortedByDateInteractor.execute();
+            _recomputeNutrients();
+            _recomputeEnergyModel(caloriesConsumed.orZero());
+            _recomputeSugarFiber();
+            break;
+          case DataChangedCategory.water:
+            state.waterEvents = await getWaterEventsTodayInteractor.execute(dateTime: _lastSelectedDate);
+            break;
+          case DataChangedCategory.liquid:
+            state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute(dateTime: _lastSelectedDate);
+            state.weeklyLiquidEvents = await getWeekLiquidEventsInteractor.execute();
+            break;
+          case DataChangedCategory.sport:
+            state.weeklySportEvents = await getWeekSportsInteractor.execute();
+            final caloriesConsumed = await getDayCaloriesInteractor.execute(dateTime: _lastSelectedDate);
+            state.allCalendarEvents = await getAllDashboardEventsSortedByDateInteractor.execute();
+            _recomputeEnergyModel(caloriesConsumed.orZero());
+            break;
+          case DataChangedCategory.supplement:
+            state.supplementEvents = await getDaySupplementEventsInteractor.execute(dateTime: _lastSelectedDate);
+            _recomputeNutrients();
+            break;
+          case DataChangedCategory.fecesUrine:
+            state.allCalendarEvents = await getAllDashboardEventsSortedByDateInteractor.execute();
+            break;
+          case DataChangedCategory.profile:
+            state.profile = await getProfileInteractor.execute();
+            if (state.profile?.physicalCharacteristics?.unit == 2) {
+              state.profile?.physicalCharacteristics?.weight = (state.profile?.physicalCharacteristics?.weight ?? 0) / 2.20462;
+            }
+            state.userKcal = getUserKcalSelectiveObjectives(state.profile?.kcal ?? 0);
+            state.isMenstruation = state.profile?.objectives?.contains(Constants.DURING_MENSTRUATION);
+            state.isCold = state.profile?.objectives?.contains(Constants.COLD);
+            final caloriesConsumed = await getDayCaloriesInteractor.execute(dateTime: _lastSelectedDate);
+            _recomputeNutrients();
+            _recomputeEnergyModel(caloriesConsumed.orZero());
+            _recomputeSugarFiber();
+            break;
+          case DataChangedCategory.steps:
+            state.todayStep = await getTodayStepInteractor.execute();
+            break;
+        }
+        emit(state.copyWith(isLoading: false, onError: null));
+      } catch (error) {
+        // Silently handle — dashboard will refresh on next InitializeState
+      }
+    });
+
     on<InitializeState>((event, emit) async {
+      _lastSelectedDate = event.dateTime;
       // _clearData();
       // emit(state.copyWith(isLoading: true, foundedRoutineRemainingHours: null));
       try {
@@ -859,4 +922,88 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     }
   }
 
+  void _recomputeNutrients() {
+    state.micronutrients = state.profile?.micronutrients.orEmpty()
+        .map((micronutrient) => NutrientsModel(
+              quantityConsumed: getQuantityConsumedSoFar(micronutrient) + getQuantitySupplementsSoFar(micronutrient),
+              nutrientInfoMaster: getNutrientInfo(micronutrient),
+              fractionToFill: getFractionToFillMicros(micronutrient),
+              unit: getUnitForMicronutrient(micronutrient),
+              rda: getNutrientRda(micronutrient),
+              upperLimit: getNutrientUpperLimit(micronutrient),
+            ))
+        .toList();
+
+    state.temporaryMicronutrients = state.profile?.temporaryMicronutrients.orEmpty()
+        .map((micronutrient) => NutrientsModel(
+              quantityConsumed: getQuantityConsumedSoFar(micronutrient) + getQuantitySupplementsSoFar(micronutrient),
+              nutrientInfoMaster: getNutrientInfo(micronutrient),
+              fractionToFill: getFractionToFillMicros(micronutrient),
+              unit: getUnitForMicronutrient(micronutrient),
+              rda: getNutrientRda(micronutrient),
+              upperLimit: getNutrientUpperLimit(micronutrient),
+            ))
+        .toList();
+
+    state.macronutrients = ['proteinSci', 'carbsAvailable', 'fatTotal']
+        .map((macronutrient) => NutrientsModel(
+              quantityConsumed: getQuantityConsumedSoFar(macronutrient),
+              nutrientInfoMaster: getNutrientInfo(macronutrient),
+              fractionToFill: getFractionToFillMacros(macronutrient),
+              unit: getUnitForMicronutrient(macronutrient),
+              rda: getMacroNutrientRda(macronutrient),
+              upperLimit: getMacroNutrientRda(macronutrient),
+            ))
+        .toList();
+
+    final existingListsOfNutrients = {
+      ...state.micronutrients.orEmpty().map((e) => e.nutrientInfoMaster),
+      ...state.temporaryMicronutrients.orEmpty().map((e) => e.nutrientInfoMaster),
+    };
+
+    final allMicronutrients = state.profile?.userRdas?.userRdas
+        .orEmpty()
+        .map((nutrient) => NutrientsModel(
+              quantityConsumed: getQuantityConsumedSoFar(nutrient.name) + getQuantitySupplementsSoFar(nutrient.name),
+              nutrientInfoMaster: getNutrientInfo(nutrient.name),
+              fractionToFill: 0.0,
+              unit: getUnitForMicronutrient(nutrient.name),
+              rda: getNutrientRda(nutrient.name),
+              upperLimit: getNutrientUpperLimit(nutrient.name),
+            ))
+        .toList();
+
+    state.filteredNutrientsLess15RDA = allMicronutrients.orEmpty().where((nutrient) {
+      double percentage = (nutrient.quantityConsumed / nutrient.rda) * 100;
+      return percentage <= 15 && nutrient.rda > 0 && !existingListsOfNutrients.contains(nutrient.nutrientInfoMaster);
+    }).toList();
+    state.filteredNutrientsLess15RDA?.sort((a, b) => b.rda.compareTo(a.rda));
+  }
+
+  void _recomputeEnergyModel(int caloriesConsumed) {
+    state.energyModel = EnergyModel(
+      fractionToFill: getFractionToFillKcal(caloriesConsumed),
+      totalKcal: state.userKcal.orZero(),
+      rawKcalTaken: getTotalKcalTakenToday(),
+      spentKcal: caloriesConsumed,
+    );
+  }
+
+  void _recomputeSugarFiber() {
+    var totalSugarRequired = (state.userKcal.orZero() * 0.05) ~/ 4;
+    state.sugarAndFiberModel = SugarAndFiberModel(
+      fractionToFillSugar: calculateTodaySugar(totalSugarRequired),
+      totalSugarConsumed: calculateTodayConsumedSugar(totalSugarRequired),
+      requiredSugar: totalSugarRequired.toDouble(),
+      fractionToFillFiber: calculateTodayFiber(),
+      totalFiberConsumed: calculateTodayConsumedFiber(),
+      requiredFiber: Constants.FIBER_TOTAL_REQUIRED,
+    );
+  }
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
+  }
 }

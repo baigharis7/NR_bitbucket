@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_int
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/objectives_info_master.dart';
@@ -335,6 +336,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
           profile.kcal = userProfileResponse.kcal;
           try {
             await saveProfileInteractor.execute(profile);
+            DashboardEventBus.instance.notify(DataChangedCategory.profile);
             add(InitializeStateFromProfileAction(context: null));
             emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {
@@ -405,6 +407,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
           profile.kcal = userProfileResponse.kcal;
           try {
             await saveProfileInteractor.execute(profile);
+            DashboardEventBus.instance.notify(DataChangedCategory.profile);
             state.profile = await getProfileInteractor.execute();
             event.nextScreen.call();
             emit(state.copyWith(isLoading: false, onError: null));

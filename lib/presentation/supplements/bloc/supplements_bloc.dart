@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_favorite_interactor.dart';
@@ -178,6 +179,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
         await uploadSupplementEventInteractor.execute(uploadSupplements);
         try {
           await saveSupplementEventInteractor.execute(state.supplementObj!, state.isEdit ?? false);
+          DashboardEventBus.instance.notify(DataChangedCategory.supplement);
           _clearData();
           emit(state.copyWith(isLoading: false));
           event.onFinish.call();
@@ -227,6 +229,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
             final uploadSupplements = mapToUploadSupplementsEv(supplementForEvent);
             await uploadSupplementEventInteractor.execute(uploadSupplements);
             await saveSupplementEventInteractor.execute(supplementForEvent, false);
+            DashboardEventBus.instance.notify(DataChangedCategory.supplement);
           } catch (error, st) {
             CrashlyticsService.record(
               error,
@@ -288,6 +291,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
             final uploadSupplements = mapToUploadSupplementsEv(supplementForEvent);
             await uploadSupplementEventInteractor.execute(uploadSupplements);
             await saveSupplementEventInteractor.execute(supplementForEvent, false);
+            DashboardEventBus.instance.notify(DataChangedCategory.supplement);
           } catch (error, st) {
             CrashlyticsService.record(
               error,
@@ -339,6 +343,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
         await uploadSupplementEventInteractor.execute(uploadSupplements);
         try {
           await saveSupplementEventInteractor.execute(event.supplement, false);
+          DashboardEventBus.instance.notify(DataChangedCategory.supplement);
           _clearData();
           emit(state.copyWith(isLoading: false));
           event.onFinish.call();

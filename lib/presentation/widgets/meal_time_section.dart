@@ -22,7 +22,7 @@ class MealTimeSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(children: [
       DashTitleWidget(title: AppLocalizations.of(context)!.feeding, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
-      ...MealTime.getAllMealTimes().map((meal) => MealTimeWidget(name: meal.name.orEmpty(), svg: 'assets/images/meal_time_${meal.id.orZero()}.png', onItemClick: () => Navigator.pushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: meal, selectedDateTime: selectedDateTime)).then((value) => then?.call()), onClick: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: meal, selectedDateTime: selectedDateTime)).then((value) => then?.call()), desc: getFoodNames(foodEvents, meal.id) + ' / $totalKcal kcal.',)),
+      ...MealTime.getAllMealTimes().map((meal) => MealTimeWidget(name: meal.name.orEmpty(), svg: 'assets/images/meal_time_${meal.id.orZero()}.png', onItemClick: () => Navigator.pushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: meal, selectedDateTime: selectedDateTime)), onClick: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: meal, selectedDateTime: selectedDateTime)), desc: getFoodNames(foodEvents, meal.id) + ' / $totalKcal kcal.',)),
     ],);
   }
 

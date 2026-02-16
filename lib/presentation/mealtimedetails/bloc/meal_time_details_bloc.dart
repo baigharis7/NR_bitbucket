@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
@@ -148,6 +149,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
         await deleteFoodEventInteractor.execute(event.foodEventComplete.userId.orEmpty(), event.foodEventComplete.eventId!);
         try {
           await removeFoodEventInteractor.execute(event.foodEventComplete);
+          DashboardEventBus.instance.notify(DataChangedCategory.food);
           add(InitialMealTimeDetailsEventState());
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));

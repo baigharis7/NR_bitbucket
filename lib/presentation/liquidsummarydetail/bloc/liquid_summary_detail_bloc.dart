@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 
 import '../../../domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
 import '../../../domain/interactor/waterevents/save_water_event_interactor.dart';
@@ -62,6 +63,7 @@ class LiquidSummaryDetailBloc extends Bloc<LiquidSummaryDetailEvent, LiquidSumma
         if (uploadSuccess) {
           try {
             saveWaterEventInteractor.execute(waterEventMaster);
+            DashboardEventBus.instance.notify(DataChangedCategory.water);
             state.waterEvents = await getWaterEventsTodayInteractor.execute();
             event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null));
