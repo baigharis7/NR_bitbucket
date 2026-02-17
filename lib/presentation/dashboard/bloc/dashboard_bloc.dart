@@ -1,5 +1,9 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/data/api/fcm/fcm_api.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_model_appearance_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_model_appearance_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
@@ -75,12 +79,12 @@ import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../../domain/models/watervents/water_event_master.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
 import 'package:chuck_interceptor/chuck.dart';
-import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final EventsHelper _eventsHelper = EventsHelper();
   late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
+  StreamSubscription<RemoteMessage>? _fcmSubscription;
   Timer? _periodicSyncTimer;
   DateTime? _lastSelectedDate;
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
@@ -125,6 +129,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final SaveModelAppearanceInteractor saveModelAppearanceInteractor;
   final GetTodaySportsInteractor getTodaySportsInteractor;
   final GetDaySupplementEventsInteractor getDaySupplementEventsInteractor;
+  final FcmApi? fcmApi;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -169,6 +174,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.saveModelAppearanceInteractor,
     required this.getTodaySportsInteractor,
     required this.getDaySupplementEventsInteractor,
+    this.fcmApi,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -188,6 +194,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     });
 
     _periodicSyncTimer = Timer.periodic(const Duration(minutes: 5), (_) {
+      add(SyncAndRefreshAction());
+    });
+
+    _fcmSubscription = FcmService.instance.onDataMessage.listen((_) {
       add(SyncAndRefreshAction());
     });
 
@@ -378,6 +388,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       catch(error) {
         Fluttertoast.showToast(msg: '$error', toastLength: Toast.LENGTH_LONG, backgroundColor: AppColors.errorRed, textColor: Colors.white);
       }
+      _registerFcmToken();
       if (event.onFinish != null) event.onFinish?.call();
       emit(state.copyWith(
         isLoading: false,
@@ -1017,10 +1028,27 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     );
   }
 
+  void _registerFcmToken() {
+    final userId = getUserIdInteractor.execute();
+    final token = FcmService.instance.token;
+    if (userId.isNotEmpty && token != null && fcmApi != null) {
+      fcmApi!.registerToken(userId, token, Platform.isIOS ? 'ios' : 'android')
+          .catchError((_) {});
+    }
+    FcmService.instance.setOnTokenRefresh((newToken) {
+      final uid = getUserIdInteractor.execute();
+      if (uid.isNotEmpty && fcmApi != null) {
+        fcmApi!.registerToken(uid, newToken, Platform.isIOS ? 'ios' : 'android')
+            .catchError((_) {});
+      }
+    });
+  }
+
   @override
   Future<void> close() {
     _periodicSyncTimer?.cancel();
     _eventBusSubscription.cancel();
+    _fcmSubscription?.cancel();
     return super.close();
   }
 }
