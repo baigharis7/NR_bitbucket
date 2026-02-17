@@ -12,6 +12,7 @@ import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 
 import '../../../domain/interactor/eventssync/update_events_interactor.dart';
 import '../../../domain/interactor/supplements/get_day_supplement_events_interactor.dart';
@@ -29,6 +30,7 @@ class SupplementsDetailBloc extends Bloc<SupplementsDetailEvent, SupplementsDeta
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetProfileInteractor getProfileInteractor;
   final UpdateEventsInteractor updateEventsInteractor;
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   SupplementsDetailBloc({
     required this.getDaySupplementEventsInteractor,
@@ -41,6 +43,12 @@ class SupplementsDetailBloc extends Bloc<SupplementsDetailEvent, SupplementsDeta
     isLoading: false,
     supplementEvents: [],
   ),) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.supplement) {
+        add(SummaryInitializeSupplementsDetailEvent());
+      }
+    });
+
     on<InitializeSupplementsDetailEvent>((event, emit) async {
       // _clearData();
       emit(state.copyWith(isLoading: true));
@@ -99,6 +107,12 @@ class SupplementsDetailBloc extends Bloc<SupplementsDetailEvent, SupplementsDeta
 
     });
 
+  }
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
   }
 
   void _clearData() {

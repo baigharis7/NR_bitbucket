@@ -43,6 +43,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
   final UpdateEventsInteractor updateEventsInteractor;
   final PreferencesRepository preferencesRepository;
   final MacroCalculationHelper _macroHelper = const MacroCalculationHelper();
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   MealTimeDetailsBloc({
     required this.getUserIdInteractor,
@@ -55,6 +56,11 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
     required this.updateEventsInteractor,
     required this.preferencesRepository,
 }) : super(MealTimeDetailsState(isLoading: false)) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.food) {
+        add(SummaryInitializationMealTimeDetailsEventState());
+      }
+    });
     on<InitialMealTimeDetailsEventState>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.profile = await getProfileInteractor.execute();
@@ -241,6 +247,12 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
   }
 
 
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
+  }
 
   bool _shouldCallAPI(DateTime? lastTime, DateTime? syncTime, Duration threshold) {
     if (lastTime == null || syncTime == null) return true; // first run
