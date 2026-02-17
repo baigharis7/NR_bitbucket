@@ -81,6 +81,7 @@ import 'package:path_provider/path_provider.dart';
 class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final EventsHelper _eventsHelper = EventsHelper();
   late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
+  Timer? _periodicSyncTimer;
   DateTime? _lastSelectedDate;
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
@@ -184,6 +185,21 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   ),) {
     _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
       add(RefreshCategoryAction(category: category));
+    });
+
+    _periodicSyncTimer = Timer.periodic(const Duration(minutes: 5), (_) {
+      add(SyncAndRefreshAction());
+    });
+
+    on<SyncAndRefreshAction>((event, emit) async {
+      try {
+        final userId = getUserIdInteractor.execute();
+        if (userId.isNotEmpty) {
+          await synchronizeEventsInteractor.execute(userId, fullSync: false, forceSync: true);
+        }
+      } catch (_) {
+        // Silently handle — network may be unavailable
+      }
     });
 
     on<RefreshCategoryAction>((event, emit) async {
@@ -1003,6 +1019,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   @override
   Future<void> close() {
+    _periodicSyncTimer?.cancel();
     _eventBusSubscription.cancel();
     return super.close();
   }

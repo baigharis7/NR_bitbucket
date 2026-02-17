@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers
 import 'package:nutrenaissance_flutter/infrastructure/mappers/liquid_event_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/recipes_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/sport_event_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
 import '../../../infrastructure/mappers/feces_urine_mappers.dart';
@@ -50,10 +51,12 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
 
 
   @override
-  Future<bool> synchronizeEvents(String userId, {required bool fullSync}) async {
+  Future<bool> synchronizeEvents(String userId, {required bool fullSync, bool forceSync = false}) async {
     try {
-      final syncTime = await preferencesRepository.getLastFetchTime(PrefsKeys.synchronizeEvents);
-      if (!_isExpired(syncTime, const Duration(minutes: 10))) return false;
+      if (!forceSync) {
+        final syncTime = await preferencesRepository.getLastFetchTime(PrefsKeys.synchronizeEvents);
+        if (!_isExpired(syncTime, const Duration(minutes: 10))) return false;
+      }
 
       final idsToSkip = fullSync
           ? _emptyEventsPayload()
@@ -133,34 +136,42 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
   }
 
   Future<bool> _saveSynchronizedEvents(EventsSynchronizationResponse eventsSynchronizationResponse) async {
+    final Set<DataChangedCategory> changedCategories = {};
+
     if (eventsSynchronizationResponse.foodEvents.isNotEmpty) {
+      changedCategories.add(DataChangedCategory.food);
       for (var foodEvent in eventsSynchronizationResponse.foodEvents) {
         await localStorageRepository.saveFoodEvent(mapToFoodEventEntity(foodEvent), false);
       }
     }
 
     if (eventsSynchronizationResponse.foodRoutines.isNotEmpty) {
+      changedCategories.add(DataChangedCategory.food);
       for (var foodRoutine in eventsSynchronizationResponse.foodRoutines) {
         await localStorageRepository.saveFoodRoutine(mapToFoodRoutineEntity(foodRoutine), isEdit: false);
       }
     }
 
     if (eventsSynchronizationResponse.sportEvents.isNotEmpty) {
+      changedCategories.add(DataChangedCategory.sport);
       for (var sportEvent in eventsSynchronizationResponse.sportEvents) {
         await localStorageRepository.saveSportEvent(mapToSportEventEntity(sportEvent), false);
       }
     }
     if (eventsSynchronizationResponse.sportRoutines.isNotEmpty) {
+      changedCategories.add(DataChangedCategory.sport);
       for (var sportRoutine in eventsSynchronizationResponse.sportRoutines) {
         await localStorageRepository.saveSportRoutine(mapToSportRoutineEntity(sportRoutine), isEdit: false);
       }
     }
     if (eventsSynchronizationResponse.liquidEvents.isNotEmpty) {
+      changedCategories.add(DataChangedCategory.liquid);
       for (var liquidEvent in eventsSynchronizationResponse.liquidEvents) {
         await localStorageRepository.saveLiquidEvent(mapToLiquidEventEntity(liquidEvent), false);
       }
     }
     if (eventsSynchronizationResponse.waterEvents.isNotEmpty) {
+      changedCategories.add(DataChangedCategory.water);
       for (var waterEvent in eventsSynchronizationResponse.waterEvents) {
         await localStorageRepository.saveWaterEvent(waterEvent);
       }
@@ -191,29 +202,34 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
       }
     }
     if (eventsSynchronizationResponse.fecesEvents.isNotEmpty) {
+      changedCategories.add(DataChangedCategory.fecesUrine);
       for (var uploadFecesEvent in eventsSynchronizationResponse.fecesEvents) {
         await localStorageRepository.saveFecesEvent(mapToUploadFecesEventEntity(uploadFecesEvent));
       }
     }
     if (eventsSynchronizationResponse.urineEvents.isNotEmpty) {
+      changedCategories.add(DataChangedCategory.fecesUrine);
       for (var uploadUrineEvent in eventsSynchronizationResponse.urineEvents) {
         await localStorageRepository.saveUrineEvent(mapToUploadFecesEventEntity(uploadUrineEvent));
       }
     }
 
     if (eventsSynchronizationResponse.creatineEvents.isNotEmpty) {
+      changedCategories.add(DataChangedCategory.supplement);
       for (var uploadCreatineEvent in eventsSynchronizationResponse.creatineEvents) {
         await localStorageRepository.saveCreatineEvent(mapToSupplementEventEntity(uploadCreatineEvent));
       }
     }
 
     if (eventsSynchronizationResponse.collagenEvents.isNotEmpty) {
+      changedCategories.add(DataChangedCategory.supplement);
       for (var uploadCollagenEvent in eventsSynchronizationResponse.collagenEvents) {
         await localStorageRepository.saveCollagenEvent(mapToSupplementEventEntity(uploadCollagenEvent));
       }
     }
 
     if (eventsSynchronizationResponse.supplementEvents.isNotEmpty) {
+      changedCategories.add(DataChangedCategory.supplement);
       for (var supplementEvent in eventsSynchronizationResponse.supplementEvents) {
         await localStorageRepository.saveSupplementEvent(mapToSupplementEventsEntity(supplementEvent));
       }
@@ -226,12 +242,18 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
     }
 
     if (eventsSynchronizationResponse.supplementRoutines.isNotEmpty) {
+      changedCategories.add(DataChangedCategory.supplement);
       for (var supplementRoutine in eventsSynchronizationResponse.supplementRoutines) {
         await localStorageRepository.saveSupplementRoutine(mapToSupplementEventEntityFromRoutine(supplementRoutine));
       }
     }
 
-    return true;
+    // Notify DashboardEventBus for each category that received new data
+    for (final category in changedCategories) {
+      DashboardEventBus.instance.notify(category);
+    }
+
+    return changedCategories.isNotEmpty;
   }
 
   bool _shouldCallAPI(DateTime? lastTime, DateTime? syncTime, Duration threshold) {

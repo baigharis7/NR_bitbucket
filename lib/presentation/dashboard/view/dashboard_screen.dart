@@ -82,7 +82,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreen extends State<DashboardScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
 
   // StepCount? _stepCountValue;
   DateTime? selectedDateTime;
@@ -93,31 +93,29 @@ class _DashboardScreen extends State<DashboardScreen>
 
   @override
   void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
     bloc = BlocProvider.of<DashboardBloc>(context);
     bloc.state.isShowDialog = false;
     bloc.add(InitializeState());
     selectedDateTime = DateTime.now();
 
-
     _controller = AnimationController(duration: Duration(milliseconds: 250), vsync: this);
     _animation = Tween<double>(begin: 0.0, end: 0.5).animate(_controller);
+  }
 
-    // RequestPermissionManager(PermissionType.activityRecognition)
-    //     .onPermissionDenied(() {
-    //       ToastHelper().showToast(backgroundColor: AppColors.mountainMeadow, textColor: Colors.white, text: 'You\'ve to give permission to use physical activity feature' );
-    // }).onPermissionGranted(() {
-    //   PedometerManager.init().onData((stepCount) {
-    //     setState(() {
-    //       _stepCountValue = stepCount;
-    //     });
-    //   }).onError((error) {
-    //     ToastHelper().showToast(text: '$error');
-    //   }).execute();
-    // }).onPermissionPermanentlyDenied(() {
-    //   showErrorSnackBar(context, 'Can\'t Access Activity Recognition', actionLabel: 'Open App Settings', action: () => openAppSettings());
-    // }).execute();
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _controller.dispose();
+    super.dispose();
+  }
 
-    super.initState();
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      bloc.add(SyncAndRefreshAction());
+    }
   }
 
   void toggleMenu() {

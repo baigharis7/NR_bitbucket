@@ -91,3 +91,5 @@ class RefreshCategoryAction extends DashboardActions {
 
   RefreshCategoryAction({required this.category});
 }
+
+class SyncAndRefreshAction extends DashboardActions {}
