@@ -63,9 +63,14 @@ import 'package:nutrenaissance_flutter/domain/interactor/sportevents/remove_spor
 import 'package:nutrenaissance_flutter/domain/interactor/routines/delete_sport_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/routines/remove_sport_routine_interactor.dart';
 // SupplementsDetailBloc
+import 'package:nutrenaissance_flutter/domain/interactor/eventssync/update_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_event_interactor.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/eventssync/update_events_interactor.dart';
+// LiquidEventBloc
+import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/upload_liquid_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/save_liquid_event_interactor.dart';
+// ForgottenPasswordBloc
+import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart';
 // MealTimeDetailsBloc
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 // FecesUrineBloc
@@ -211,9 +216,14 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<DeleteSportRoutineInteractor>(),
   MockSpec<RemoveSportRoutineInteractor>(),
   // SupplementsDetailBloc
+  MockSpec<UpdateEventsInteractor>(),
   MockSpec<DeleteSupplementEventInteractor>(),
   MockSpec<RemoveSupplementEventInteractor>(),
-  MockSpec<UpdateEventsInteractor>(),
+  // LiquidEventBloc
+  MockSpec<UploadLiquidEventInteractor>(),
+  MockSpec<SaveLiquidEventInteractor>(),
+  // ForgottenPasswordBloc
+  MockSpec<LoginRepository>(),
   // MealTimeDetailsBloc
   MockSpec<PreferencesRepository>(),
   // FecesUrineBloc
