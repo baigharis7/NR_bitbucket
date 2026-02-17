@@ -53,16 +53,20 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_en
 import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_user_credentials_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/save_user_in_users_remote_database_interactor.dart';
+// JournalFoodBloc / JournalSportBloc
+import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_kcal_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_sport_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/remove_sport_event_interactor.dart';
+// RoutinesBloc
+import 'package:nutrenaissance_flutter/domain/interactor/routines/delete_sport_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/remove_sport_routine_interactor.dart';
 // SupplementsDetailBloc
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/eventssync/update_events_interactor.dart';
-// SportItemsBloc
-import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_sport_event_interactor.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/sportevents/remove_sport_event_interactor.dart';
 // MealTimeDetailsBloc
-import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_event_interactor.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 // FecesUrineBloc
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_faeces_by_date_interactor.dart';
@@ -197,16 +201,20 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<GetDaySupplementEventsInteractor>(),
   MockSpec<Chuck>(),
   MockSpec<SharedPreferences>(),
+  // JournalFoodBloc / JournalSportBloc
+  MockSpec<GetUserKcalInteractor>(),
+  MockSpec<RemoveFoodEventInteractor>(),
+  MockSpec<DeleteFoodEventInteractor>(),
+  MockSpec<DeleteSportEventInteractor>(),
+  MockSpec<RemoveSportEventInteractor>(),
+  // RoutinesBloc
+  MockSpec<DeleteSportRoutineInteractor>(),
+  MockSpec<RemoveSportRoutineInteractor>(),
   // SupplementsDetailBloc
   MockSpec<DeleteSupplementEventInteractor>(),
   MockSpec<RemoveSupplementEventInteractor>(),
   MockSpec<UpdateEventsInteractor>(),
-  // SportItemsBloc
-  MockSpec<DeleteSportEventInteractor>(),
-  MockSpec<RemoveSportEventInteractor>(),
   // MealTimeDetailsBloc
-  MockSpec<DeleteFoodEventInteractor>(),
-  MockSpec<RemoveFoodEventInteractor>(),
   MockSpec<PreferencesRepository>(),
   // FecesUrineBloc
   MockSpec<GetFaecesByDateInteractor>(),
