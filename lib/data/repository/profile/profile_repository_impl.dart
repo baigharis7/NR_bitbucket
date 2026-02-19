@@ -29,27 +29,28 @@ class ProfileRepositoryImpl extends ProfileRepository {
   Future<UserProfileResponse> uploadProfile(UserProfileModel profile) async {
     final uploadProfile = mapToUploadUserProfileModel(profile);
 
-    // Try local computation (returns null if reference data not loaded yet)
+    // Compute locally (requires reference data from /reference-data/* endpoints)
     final localResponse = await profileComputationService.computeProfile(uploadProfile);
 
-    if (localResponse != null) {
-      // Stamp computed fields onto DTO for backend DB persistence
-      uploadProfile.micronutrients = localResponse.micronutrients;
-      uploadProfile.userAll = localResponse.userAll;
-      uploadProfile.temporaryMicronutrients = localResponse.temporaryMicronutrients;
-      uploadProfile.temporaryAll = localResponse.temporaryAll;
-      uploadProfile.userRdas = localResponse.userRdas;
-      uploadProfile.kcal = localResponse.kcal;
-
-      // Fire-and-forget API call for DynamoDB persistence (don't block UI)
-      _syncToBackend(uploadProfile);
-
-      return localResponse;
+    if (localResponse == null) {
+      throw Exception(
+        'Profile computation failed: reference data not loaded. '
+        'Ensure /reference-data/objective-nutrients and /reference-data/nutrient-objective endpoints are available.',
+      );
     }
 
-    // Fallback: blocking Lambda call (reference data not available)
-    final result = await profileApi.uploadProfileApi(uploadProfile);
-    return UserProfileResponse.fromJson(result);
+    // Stamp computed fields onto DTO for backend DB persistence
+    uploadProfile.micronutrients = localResponse.micronutrients;
+    uploadProfile.userAll = localResponse.userAll;
+    uploadProfile.temporaryMicronutrients = localResponse.temporaryMicronutrients;
+    uploadProfile.temporaryAll = localResponse.temporaryAll;
+    uploadProfile.userRdas = localResponse.userRdas;
+    uploadProfile.kcal = localResponse.kcal;
+
+    // Fire-and-forget API call for DynamoDB persistence (don't block UI)
+    _syncToBackend(uploadProfile);
+
+    return localResponse;
   }
 
   void _syncToBackend(upload.UploadUserProfile uploadProfile) {
