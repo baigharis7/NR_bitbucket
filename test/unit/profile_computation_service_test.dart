@@ -107,7 +107,7 @@ void main() {
   UploadUserProfile _buildProfile({
     double height = 175.0,
     double weight = 70.0,
-    int unit = 0,
+    int unit = 1,
     int sex = 0,
     int birthDate = 694224000000, // ~1992-01-01 → age ~34
     double activityFactor = 1.5,
@@ -159,11 +159,11 @@ void main() {
     group('unit conversion', () {
       test('metric units pass through unchanged', () async {
         await _insertReferenceData();
-        // 175cm, 70kg, unit=0 (metric), male, age ~34
+        // 175cm, 70kg, unit=1 (metric/CmKg), male, age ~34
         // BMI = 70 / (1.75^2) = 22.86 → Harris-Benedict
         // BMR = 66.5 + 13.75*70 + 5.003*175 - 6.75*34 = 66.5 + 962.5 + 875.525 - 229.5 = 1675.025
         // kcal = 1675.025 * 1.5 = 2512.5 → 2513
-        final profile = _buildProfile(height: 175.0, weight: 70.0, unit: 0);
+        final profile = _buildProfile(height: 175.0, weight: 70.0, unit: 1);
         final result = await service.computeProfile(profile);
         expect(result, isNotNull);
         expect(result!.kcal, 2513);
@@ -177,7 +177,7 @@ void main() {
         final profile = _buildProfile(
           height: 5.74,
           weight: 154.32,
-          unit: 1,
+          unit: 2,
         );
         final result = await service.computeProfile(profile);
         expect(result, isNotNull);

@@ -34,9 +34,9 @@ class ProfileComputationService {
     // 1. Unit conversion (imperial → metric)
     double height = profile.physicalCharacteristics?.height ?? 170.0;
     double weight = profile.physicalCharacteristics?.weight ?? 70.0;
-    final unit = profile.physicalCharacteristics?.unit ?? 0;
+    final unit = profile.physicalCharacteristics?.unit ?? 1;
 
-    if (unit != 0) {
+    if (unit == 2) {
       height = height * 30.48;      // feet → cm
       weight = weight * 0.453592;   // lb → kg
     }
