@@ -9,62 +9,62 @@ part of 'events_synchronization_response.dart';
 EventsSynchronizationResponse _$EventsSynchronizationResponseFromJson(
         Map<String, dynamic> json) =>
     EventsSynchronizationResponse(
-      foodEvents: (json['foodEvents'] as List<dynamic>)
-          .map((e) => UploadFoodEvent.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      foodRoutines: (json['foodRoutines'] as List<dynamic>)
-          .map((e) => FoodRoutineEvent.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      sportEvents: (json['sportEvents'] as List<dynamic>)
-          .map((e) => SportEventComplete.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      sportRoutines: (json['sportRoutines'] as List<dynamic>)
-          .map((e) => SportRoutineCompleted.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      liquidEvents: (json['liquidEvents'] as List<dynamic>)
-          .map((e) => UploadLiquidEvent.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      waterEvents: (json['waterEvents'] as List<dynamic>)
-          .map((e) => WaterEventMaster.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      foodFavorites: (json['foodFavorites'] as List<dynamic>)
-          .map((e) => FoodFavorite.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      sportFavorites: (json['sportFavorites'] as List<dynamic>)
-          .map((e) => AddSportFavorite.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      liquidFavorites: (json['liquidFavorites'] as List<dynamic>)
-          .map((e) => LiquidFavorite.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      subjectiveAnalysis: (json['subjectiveAnalysis'] as List<dynamic>)
-          .map((e) =>
+      foodEvents: (json['foodEvents'] as List<dynamic>?)
+          ?.map((e) => UploadFoodEvent.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      foodRoutines: (json['foodRoutines'] as List<dynamic>?)
+          ?.map((e) => FoodRoutineEvent.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      sportEvents: (json['sportEvents'] as List<dynamic>?)
+          ?.map((e) => SportEventComplete.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      sportRoutines: (json['sportRoutines'] as List<dynamic>?)
+          ?.map((e) => SportRoutineCompleted.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      liquidEvents: (json['liquidEvents'] as List<dynamic>?)
+          ?.map((e) => UploadLiquidEvent.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      waterEvents: (json['waterEvents'] as List<dynamic>?)
+          ?.map((e) => WaterEventMaster.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      foodFavorites: (json['foodFavorites'] as List<dynamic>?)
+          ?.map((e) => FoodFavorite.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      sportFavorites: (json['sportFavorites'] as List<dynamic>?)
+          ?.map((e) => AddSportFavorite.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      liquidFavorites: (json['liquidFavorites'] as List<dynamic>?)
+          ?.map((e) => LiquidFavorite.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      subjectiveAnalysis: (json['subjectiveAnalysis'] as List<dynamic>?)
+          ?.map((e) =>
               SubjectiveAnalysisResult.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      recipeFavorites: (json['recipeFavorites'] as List<dynamic>)
-          .map((e) => UploadRecipeFavorite.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      fecesEvents: (json['fecesEvents'] as List<dynamic>)
-          .map((e) => UploadFeces.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      urineEvents: (json['urineEvents'] as List<dynamic>)
-          .map((e) => UploadFeces.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      creatineEvents: (json['creatineEvents'] as List<dynamic>)
-          .map((e) => UploadSupplementEvent.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      collagenEvents: (json['collagenEvents'] as List<dynamic>)
-          .map((e) => UploadSupplementEvent.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      supplementEvents: (json['supplementEvents'] as List<dynamic>)
-          .map((e) => UploadSupplementsEv.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      supplementFavorites: (json['supplementFavorites'] as List<dynamic>)
-          .map((e) => SupplementFavorite.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      supplementRoutines: (json['supplementRoutines'] as List<dynamic>)
-          .map((e) =>
+          .toList() ?? [],
+      recipeFavorites: (json['recipeFavorites'] as List<dynamic>?)
+          ?.map((e) => UploadRecipeFavorite.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      fecesEvents: (json['fecesEvents'] as List<dynamic>?)
+          ?.map((e) => UploadFeces.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      urineEvents: (json['urineEvents'] as List<dynamic>?)
+          ?.map((e) => UploadFeces.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      creatineEvents: (json['creatineEvents'] as List<dynamic>?)
+          ?.map((e) => UploadSupplementEvent.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      collagenEvents: (json['collagenEvents'] as List<dynamic>?)
+          ?.map((e) => UploadSupplementEvent.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      supplementEvents: (json['supplementEvents'] as List<dynamic>?)
+          ?.map((e) => UploadSupplementsEv.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      supplementFavorites: (json['supplementFavorites'] as List<dynamic>?)
+          ?.map((e) => SupplementFavorite.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      supplementRoutines: (json['supplementRoutines'] as List<dynamic>?)
+          ?.map((e) =>
               UploadSupplementRoutine.fromJson(e as Map<String, dynamic>))
-          .toList(),
+          .toList() ?? [],
     );
 
 Map<String, dynamic> _$EventsSynchronizationResponseToJson(
