@@ -500,7 +500,7 @@ void main() async {
     return true;
   };
 
-  final authenticationService = await CognitoAuthenticationService.init();
+  final authenticationService = await _initAmplifyWithRetry();
   final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
   Chuck chuck = Chuck(
@@ -1321,6 +1321,23 @@ void main() async {
   chuck.showInspector();
 }
 
+/// Initializes Amplify/Cognito with retry logic.
+/// AWSMobileClient can timeout on first launch (clean install) if network is slow.
+Future<CognitoAuthenticationService> _initAmplifyWithRetry() async {
+  const maxAttempts = 3;
+  for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await CognitoAuthenticationService.init();
+    } catch (e) {
+      if (attempt == maxAttempts) rethrow;
+      // Wait before retrying: 2s, 4s
+      await Future.delayed(Duration(seconds: attempt * 2));
+    }
+  }
+  // Unreachable, but satisfies the compiler
+  return await CognitoAuthenticationService.init();
+}
+
 /// Fetches reference data (nutrients, nutrient loss, sport METs) in the
 /// background at app startup. Populates Drift tables for client-side
 /// calculations. Non-blocking — failures are silently ignored.
@@ -1329,11 +1346,13 @@ void _fetchReferenceData(ReferenceDataApi api, ReferenceDataService service) {
     fetchNutrients: () async {
       try {
         final raw = await api.fetchNutrients();
-        // Expect wrapper: { "v": <int>, "data": [...] }
         final parsed = jsonDecode(raw);
+        // S3 format: { "v": <int>, "data": { "nutrientList": [...] } }
+        final data = parsed['data'];
+        final list = data is Map ? data['nutrientList'] : data;
         return ReferencePayload(
           version: parsed['v'] as int? ?? 0,
-          json: jsonEncode(parsed['data']),
+          json: jsonEncode(list),
         );
       } catch (_) {
         return null;
@@ -1343,9 +1362,12 @@ void _fetchReferenceData(ReferenceDataApi api, ReferenceDataService service) {
       try {
         final raw = await api.fetchNutrientLossTable();
         final parsed = jsonDecode(raw);
+        // S3 format: { "v": <int>, "data": { "cookingMethods": [...] } }
+        final data = parsed['data'];
+        final list = data is Map ? data['cookingMethods'] : data;
         return ReferencePayload(
           version: parsed['v'] as int? ?? 0,
-          json: jsonEncode(parsed['data']),
+          json: jsonEncode(list),
         );
       } catch (_) {
         return null;
@@ -1355,9 +1377,12 @@ void _fetchReferenceData(ReferenceDataApi api, ReferenceDataService service) {
       try {
         final raw = await api.fetchSportMets();
         final parsed = jsonDecode(raw);
+        // S3 format: { "v": <int>, "data": { "sports": [...] } }
+        final data = parsed['data'];
+        final list = data is Map ? data['sports'] : data;
         return ReferencePayload(
           version: parsed['v'] as int? ?? 0,
-          json: jsonEncode(parsed['data']),
+          json: jsonEncode(list),
         );
       } catch (_) {
         return null;

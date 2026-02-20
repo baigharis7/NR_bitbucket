@@ -153,12 +153,12 @@ class ReferenceDataService {
           MapEntry(k, v is num ? v.toDouble() : 0.0));
 
       return NutrientCompositionsCompanion(
-        foodId: Value(map['id'] as int),
-        isFood: Value(map['isFood'] as int? ?? 0),
-        group: Value(map['g'] as String? ?? ''),
-        nameEn: Value(map['en'] as String? ?? ''),
-        nameEs: Value(map['es'] as String? ?? ''),
-        recommendable: Value(map['recommendable'] as int? ?? 0),
+        foodId: Value(int.tryParse(map['id'].toString()) ?? 0),
+        isFood: Value(int.tryParse(map['isFood'].toString()) ?? 0),
+        group: Value(map['group'] as String? ?? map['g'] as String? ?? ''),
+        nameEn: Value(map['name_en'] as String? ?? map['en'] as String? ?? ''),
+        nameEs: Value(map['name_es'] as String? ?? map['es'] as String? ?? ''),
+        recommendable: Value(int.tryParse(map['recommendable'].toString()) ?? 0),
         freeSugar: Value(map['freeSugar']?.toString()),
         params: Value(jsonEncode(cleanParams)),
       );
@@ -184,12 +184,16 @@ class ReferenceDataService {
     final List<dynamic> items = jsonDecode(json);
     final entries = items.map((item) {
       final map = item as Map<String, dynamic>;
-      final nutrients = map['nutrients'] as Map<String, dynamic>? ?? {};
+      // S3 uses "nutrients_loss", code expected "nutrients"
+      final nutrients = map['nutrients_loss'] as Map<String, dynamic>?
+          ?? map['nutrients'] as Map<String, dynamic>?
+          ?? {};
       final cleanLosses = nutrients.map((k, v) =>
           MapEntry(k, v is num ? v.toDouble() : 0.0));
 
+      // S3 uses "id", code expected "cookingMethodId"
       return NutrientLossesCompanion(
-        cookingMethodId: Value(map['cookingMethodId'] as int),
+        cookingMethodId: Value(map['id'] as int? ?? map['cookingMethodId'] as int? ?? 0),
         losses: Value(jsonEncode(cleanLosses)),
       );
     }).toList();
@@ -248,8 +252,8 @@ class ReferenceDataService {
 
       return SportMetsCompanion(
         sportId: Value(map['id'] as int),
-        nameEn: Value(map['en'] as String? ?? ''),
-        nameEs: Value(map['es'] as String? ?? ''),
+        nameEn: Value(map['name_en'] as String? ?? map['en'] as String? ?? ''),
+        nameEs: Value(map['name_es'] as String? ?? map['es'] as String? ?? ''),
         mets: Value(jsonEncode(mets)),
       );
     }).toList();

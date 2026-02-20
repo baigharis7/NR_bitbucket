@@ -473,9 +473,12 @@ class LoginProviderNew extends BaseProvider {
           try {
             final raw = await referenceDataApi!.fetchNutrients();
             final parsed = jsonDecode(raw);
+            // S3 format: { "v": <int>, "data": { "nutrientList": [...] } }
+            final data = parsed['data'];
+            final list = data is Map ? data['nutrientList'] : data;
             return ReferencePayload(
               version: parsed['v'] as int? ?? 0,
-              json: jsonEncode(parsed['data']),
+              json: jsonEncode(list),
             );
           } catch (_) {
             return null;
@@ -485,9 +488,12 @@ class LoginProviderNew extends BaseProvider {
           try {
             final raw = await referenceDataApi!.fetchNutrientLossTable();
             final parsed = jsonDecode(raw);
+            // S3 format: { "v": <int>, "data": { "cookingMethods": [...] } }
+            final data = parsed['data'];
+            final list = data is Map ? data['cookingMethods'] : data;
             return ReferencePayload(
               version: parsed['v'] as int? ?? 0,
-              json: jsonEncode(parsed['data']),
+              json: jsonEncode(list),
             );
           } catch (_) {
             return null;
@@ -497,9 +503,12 @@ class LoginProviderNew extends BaseProvider {
           try {
             final raw = await referenceDataApi!.fetchSportMets();
             final parsed = jsonDecode(raw);
+            // S3 format: { "v": <int>, "data": { "sports": [...] } }
+            final data = parsed['data'];
+            final list = data is Map ? data['sports'] : data;
             return ReferencePayload(
               version: parsed['v'] as int? ?? 0,
-              json: jsonEncode(parsed['data']),
+              json: jsonEncode(list),
             );
           } catch (_) {
             return null;
@@ -509,9 +518,19 @@ class LoginProviderNew extends BaseProvider {
           try {
             final raw = await referenceDataApi!.fetchObjectiveNutrients();
             final parsed = jsonDecode(raw);
+            // S3 format: { "v": <int>, "data": { "objectives": [{code, nutrients}, ...] } }
+            // ProfileComputationService expects: {"2": ["vitB1", ...], "3": [...], ...}
+            final data = parsed['data'];
+            final objectives = data is Map ? data['objectives'] as List? ?? [] : data as List? ?? [];
+            final transformed = <String, dynamic>{};
+            for (final obj in objectives) {
+              if (obj is Map<String, dynamic>) {
+                transformed[obj['code'].toString()] = obj['nutrients'];
+              }
+            }
             return ReferencePayload(
               version: parsed['v'] as int? ?? 0,
-              json: jsonEncode(parsed['data']),
+              json: jsonEncode(transformed),
             );
           } catch (_) {
             return null;
@@ -521,9 +540,35 @@ class LoginProviderNew extends BaseProvider {
           try {
             final raw = await referenceDataApi!.fetchNutrientObjective();
             final parsed = jsonDecode(raw);
+            // S3 format: { "v": <int>, "data": { "nutrients": [{name, male1..4, female1..4, ulMale1..3, ulFemale1..3, ...}, ...] } }
+            // ProfileComputationService expects: {"vitA": {"male": {"19-30": {"rda": 900, "ul": 3000}}, ...}, ...}
+            final data = parsed['data'];
+            final nutrients = data is Map ? data['nutrients'] as List? ?? [] : data as List? ?? [];
+            const ageBrackets = ['19-30', '30-50', '50-70', '70+'];
+            final transformed = <String, dynamic>{};
+            for (final n in nutrients) {
+              if (n is! Map<String, dynamic>) continue;
+              final name = n['name'] as String?;
+              if (name == null) continue;
+              final maleRda = <String, dynamic>{};
+              final femaleRda = <String, dynamic>{};
+              for (int i = 0; i < 4; i++) {
+                final bracket = ageBrackets[i];
+                final suffix = i + 1;
+                final rdaM = (n['male$suffix'] as num?)?.toDouble() ?? 0.0;
+                final rdaF = (n['female$suffix'] as num?)?.toDouble() ?? 0.0;
+                // UL has 3 brackets (1-3); for bracket 4 (70+), reuse bracket 3
+                final ulSuffix = suffix <= 3 ? suffix : 3;
+                final ulM = (n['ulMale$ulSuffix'] as num?)?.toDouble() ?? 0.0;
+                final ulF = (n['ulFemale$ulSuffix'] as num?)?.toDouble() ?? 0.0;
+                maleRda[bracket] = {'rda': rdaM, 'ul': ulM};
+                femaleRda[bracket] = {'rda': rdaF, 'ul': ulF};
+              }
+              transformed[name] = {'male': maleRda, 'female': femaleRda};
+            }
             return ReferencePayload(
               version: parsed['v'] as int? ?? 0,
-              json: jsonEncode(parsed['data']),
+              json: jsonEncode(transformed),
             );
           } catch (_) {
             return null;
