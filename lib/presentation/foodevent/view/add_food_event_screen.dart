@@ -240,15 +240,6 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                   final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                                   return Column(
                                     children: [
-                                      // Connector line between item cards (not before first)
-                                      if (index > 0) Center(
-                                        child: Container(
-                                          width: 1.5,
-                                          height: 15,
-                                          color: Colors.grey.shade300,
-                                        ),
-                                      ),
-                                      if (index == 0) const SizedBox(height: 15),
                                       FoodEventItem(
                                         options: option,
                                         unitsFoodsMaster: state.unitsFoodsMaster!,
@@ -271,19 +262,22 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                 }).toList(),
                                 // Add More button
                                 const SizedBox(height: Dimens.height12),
-                                SizedBox(
-                                  width: Dimens.widthLarge,
-                                  child: ListTile(
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
-                                    tileColor: AppColors.floralWhite,
-                                    onTap: () {
-                                      _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-                                      _focusInputController.requestFocus();
-                                    },
-                                    title: Text(AppLocalizations.of(context)!.add_more),
-                                    trailing: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
+                                Center(
+                                  child: SizedBox(
+                                    width: Dimens.widthLarge,
+                                    child: ListTile(
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
+                                      tileColor: AppColors.floralWhite,
+                                      onTap: () {
+                                        _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                        _focusInputController.requestFocus();
+                                      },
+                                      title: Text(AppLocalizations.of(context)!.add_more),
+                                      trailing: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
+                                    ),
                                   ),
                                 ),
+                                const SizedBox(height: Dimens.paddingXLarge),
                               ]),
                             ),
 
