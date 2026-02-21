@@ -50,6 +50,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
   late FocusNode _focusInputController;
   final ScrollController _scrollController = ScrollController();
   int filteredListLength = 0;
+  bool _showValidation = false;
 
   void _showConfirmationDialog({String? message, required BuildContext context, Function? onDismiss}) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
@@ -256,6 +257,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                         onCookingMethodChange: (changedFood) => bloc.add(UpdateFoodCookingMethodEventAction(foodInEvent: changedFood)),
                                         onConversionFactorChange: (changedFood) => bloc.add(UpdateFoodConversionFactor(foodInEvent: changedFood)),
                                         onOilUsedChange: (changedFood) => bloc.add(UpdateOilUsedEventAction(foodInEvent: changedFood)),
+                                        showValidation: _showValidation,
                                       ),
                                     ],
                                   );
@@ -273,7 +275,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                         _focusInputController.requestFocus();
                                       },
                                       title: Text(AppLocalizations.of(context)!.add_more),
-                                      trailing: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
+                                      trailing: const Icon(Icons.add_circle, color: AppColors.yellowishGreen),
                                     ),
                                   ),
                                 ),
@@ -326,7 +328,10 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                   }
                                 }
                                 else {
-                                  if (bloc.validateList() ?? true) return;
+                                  if (bloc.validateList() ?? true) {
+                                    setState(() { _showValidation = true; });
+                                    return;
+                                  }
 
                                   // Auto-set title for single items
                                   if (state.foodEvent!.ingredients.orEmpty().length == 1 && (state.foodEvent?.title.isEmptyOrNull() == true)) {

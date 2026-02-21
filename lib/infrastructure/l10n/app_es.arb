@@ -537,7 +537,8 @@
     "item_title": "Título",
     "item_saved_as_favorite": "Este artículo también se guardará como favorito",
     "item_saved_as_routine": "Este artículo también se guardará como rutina",
-    "combo_name_required": "Por favor proporcione un nombre para tu combo"
+    "combo_name_required": "Por favor proporcione un nombre para tu combo",
+    "please_complete_required_fields": "Por favor, introduce la cantidad y selecciona una unidad"
 
 
 }

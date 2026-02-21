@@ -36,6 +36,7 @@ class FoodEventItem extends StatefulWidget {
   final Function(FoodInFavorite) onCookingMethodChange;
   final Function(FoodInFavorite) onConversionFactorChange;
   final Function(FoodInFavorite) onOilUsedChange;
+  final bool showValidation;
 
   const FoodEventItem({
     Key? key,
@@ -54,6 +55,7 @@ class FoodEventItem extends StatefulWidget {
     required this.onCookingMethodChange,
     required this.onConversionFactorChange,
     required this.onOilUsedChange,
+    this.showValidation = false,
   }) : super(key: key);
 
   @override
@@ -141,15 +143,15 @@ class _FoodEventItemState extends State<FoodEventItem> {
       ingredient.unit = widget.foodInEvent.unit;
 
     _error = widget.foodInEvent.qty <= 0 || widget.foodInEvent.unit == -1 || (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && ingredient.cookingMethod == -1);
+    final showError = widget.showValidation && _error;
 
     return Column(
       children: [
         Container(
           decoration: BoxDecoration(
-            border: _error ? const Border.fromBorderSide(BorderSide(color: AppColors.red45Percent,  width: 4)) : null,
               borderRadius: BorderRadius.circular(15),
-              color: _error ? AppColors.white65Percent : AppColors.white85Percent,),
-          margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge,),
+              color: AppColors.white85Percent,),
+          margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall,),
           padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingNormal),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -382,7 +384,16 @@ class _FoodEventItemState extends State<FoodEventItem> {
             ],
           ),
         ),
-        // if (_error) Container(child: Text(AppLocalizations.of(context)!.must_complete_field, style: const TextStyle(color: Colors.red,)),alignment: Alignment.centerLeft,),
+        if (showError) Padding(
+          padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              AppLocalizations.of(context)!.please_complete_required_fields,
+              style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall),
+            ),
+          ),
+        ),
       ],
     );
   }
