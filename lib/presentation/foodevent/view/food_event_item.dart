@@ -65,7 +65,6 @@ class FoodEventItem extends StatefulWidget {
 class _FoodEventItemState extends State<FoodEventItem> {
   final _quantityController = TextEditingController();
   String? _unitName;
-  bool _error = false;
 
   List<SimpleItem> findUnitsForFood(int foodId, BuildContext context) {
     // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
@@ -142,8 +141,9 @@ class _FoodEventItemState extends State<FoodEventItem> {
           units.firstWhere((unit) => unit.id == widget.foodInEvent.unit).name;
       ingredient.unit = widget.foodInEvent.unit;
 
-    _error = widget.foodInEvent.qty <= 0 || widget.foodInEvent.unit == -1 || (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && ingredient.cookingMethod == -1);
-    final showError = widget.showValidation && _error;
+    final missingQty = widget.foodInEvent.qty <= 0;
+    final missingUnit = widget.foodInEvent.unit == -1;
+    final missingCookingMethod = ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && ingredient.cookingMethod == -1;
 
     return Column(
       children: [
@@ -384,14 +384,25 @@ class _FoodEventItemState extends State<FoodEventItem> {
             ],
           ),
         ),
-        if (showError) Padding(
+        if (widget.showValidation && missingQty) Padding(
           padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Text(
-              AppLocalizations.of(context)!.please_complete_required_fields,
-              style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall),
-            ),
+            child: Text(AppLocalizations.of(context)!.please_enter_amount, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
+          ),
+        ),
+        if (widget.showValidation && missingUnit) Padding(
+          padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(AppLocalizations.of(context)!.please_select_unit, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
+          ),
+        ),
+        if (widget.showValidation && missingCookingMethod) Padding(
+          padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(AppLocalizations.of(context)!.please_select_cooking_method, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
           ),
         ),
       ],

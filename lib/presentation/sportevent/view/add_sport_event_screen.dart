@@ -260,6 +260,10 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
                                           tileColor: AppColors.floralWhite,
                                           onTap: () {
+                                            if (bloc.validateSportList() ?? false) {
+                                              setState(() { _showValidation = true; });
+                                              return;
+                                            }
                                             _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                             _sportFocusInputController.requestFocus();
                                           },

@@ -41,7 +41,6 @@ class _SportEventItem extends State<SportEventItem> {
   int? _sportIntensities;
   int? _duration;
   int? _intensity;
-  bool _error = false;
   final _durationTextController = TextEditingController();
 
   List<String> getIntensityList(int itemsNumber, BuildContext context) {
@@ -75,8 +74,8 @@ class _SportEventItem extends State<SportEventItem> {
     // }
 
     if (widget.sport.intensity != null) _intensity = widget.sport.intensity;
-    _error = widget.sport.minutes == null || widget.sport.intensity == null;
-    final showError = widget.showValidation && _error;
+    final missingDuration = widget.sport.minutes == null;
+    final missingIntensity = widget.sport.intensity == null;
 
     return Column(
       children: [
@@ -187,14 +186,18 @@ class _SportEventItem extends State<SportEventItem> {
         ],
       ),
     ),
-    if (showError) Padding(
+    if (widget.showValidation && missingDuration) Padding(
       padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Text(
-          AppLocalizations.of(context)!.please_complete_required_fields,
-          style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall),
-        ),
+        child: Text(AppLocalizations.of(context)!.please_enter_duration, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
+      ),
+    ),
+    if (widget.showValidation && missingIntensity && _sportIntensities != null && _sportIntensities! > 1) Padding(
+      padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(AppLocalizations.of(context)!.please_select_intensity, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
       ),
     ),
     ],

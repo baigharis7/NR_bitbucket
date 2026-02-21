@@ -536,6 +536,10 @@
     "item_saved_as_favorite": "This item will also be saved as a favorite",
     "item_saved_as_routine": "This item will also be saved as a routine",
     "combo_name_required": "Please provide a name for your combo",
-    "please_complete_required_fields": "Please complete all required fields"
+    "please_enter_amount": "Please enter the amount",
+    "please_select_unit": "Please select a unit",
+    "please_select_cooking_method": "Please select a cooking method",
+    "please_enter_duration": "Please enter the duration",
+    "please_select_intensity": "Please select the intensity"
 
 }

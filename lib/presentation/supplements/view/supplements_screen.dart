@@ -334,6 +334,11 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
                                 tileColor: AppColors.floralWhite,
                                 onTap: () {
+                                  final hasEmptyAmount = state.supplementObj?.info.orEmpty().any((n) => n.amount == 0) ?? false;
+                                  if (hasEmptyAmount) {
+                                    setState(() { _showValidation = true; });
+                                    return;
+                                  }
                                   _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                   _supplementFocusInputController.requestFocus();
                                 },

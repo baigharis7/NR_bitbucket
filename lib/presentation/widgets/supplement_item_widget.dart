@@ -131,10 +131,7 @@ class SupplementItemWidget extends StatelessWidget {
       padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Text(
-          AppLocalizations.of(context)!.please_complete_required_fields,
-          style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall),
-        ),
+        child: Text(AppLocalizations.of(context)!.please_enter_amount, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
       ),
     ),
     ],
