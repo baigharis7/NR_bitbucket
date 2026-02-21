@@ -20,7 +20,7 @@ class CalenderEventListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge, vertical: Dimens.marginSmall),
+      margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
       shape: RoundedRectangleBorder(side: const BorderSide(color: Colors.black12, width: 1), borderRadius: BorderRadius.circular(8)),
       elevation: 5,
       child: Container(

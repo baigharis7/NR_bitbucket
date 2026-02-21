@@ -26,6 +26,7 @@ class EventItemWithEditAndLike extends StatelessWidget {
     return InkWell(
       onTap: () { onDetail.call(); },
       child: Card(
+        margin: const EdgeInsets.only(top: Dimens.marginSmall),
         elevation: 2,
         child: Column(
           children: [

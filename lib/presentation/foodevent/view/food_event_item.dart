@@ -151,7 +151,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               color: AppColors.white85Percent,),
-          margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall,),
+          margin: const EdgeInsets.only(top: Dimens.marginSmall),
           padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingNormal),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

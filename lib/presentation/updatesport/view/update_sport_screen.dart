@@ -166,15 +166,18 @@ class UpdateSportScreen extends StatelessWidget {
                           );
                           }),
                           // Add More button
-                          const SizedBox(height: Dimens.height12),
-                          SizedBox(
-                            width: Dimens.widthLarge,
-                            child: ListTile(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
-                              tileColor: AppColors.floralWhite,
-                              onTap: () {},
-                              title: Text(AppLocalizations.of(context)!.add_more),
-                              trailing: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
+                          const SizedBox(height: Dimens.marginSmall),
+                          Center(
+                            child: SizedBox(
+                              width: Dimens.widthLarge,
+                              height: Dimens.height55,
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
+                                tileColor: AppColors.floralWhite,
+                                onTap: () {},
+                                title: Text(AppLocalizations.of(context)!.add_more),
+                                trailing: const Icon(Icons.add_circle, color: AppColors.yellowishGreen),
+                              ),
                             ),
                           ),
                         ],

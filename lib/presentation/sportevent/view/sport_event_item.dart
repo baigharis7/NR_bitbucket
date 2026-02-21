@@ -83,7 +83,7 @@ class _SportEventItem extends State<SportEventItem> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(Dimens.border15),
         color: AppColors.white85Percent,),
-      margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall,),
+      margin: const EdgeInsets.only(top: Dimens.marginSmall),
       padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingNormal),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

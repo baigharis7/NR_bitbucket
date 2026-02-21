@@ -263,7 +263,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                   );
                                 }).toList(),
                                 // Add More button
-                                const SizedBox(height: Dimens.height12),
+                                const SizedBox(height: Dimens.marginSmall),
                                 Center(
                                   child: SizedBox(
                                     width: Dimens.widthLarge,

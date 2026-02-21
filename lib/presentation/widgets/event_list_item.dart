@@ -16,6 +16,7 @@ class EventListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      margin: const EdgeInsets.only(top: Dimens.marginSmall),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
         child: Row(
