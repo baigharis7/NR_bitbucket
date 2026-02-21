@@ -13,7 +13,8 @@ class SupplementItemWidget extends StatelessWidget {
   final String? unit;
   final VoidCallback onRemoveItem;
   final Function(String) onChangeAmount;
-  const SupplementItemWidget({super.key, required this.title, required this.amount, required this.units, required this.unit, required this.onRemoveItem, required this.onChangeAmount});
+  final bool showValidation;
+  const SupplementItemWidget({super.key, required this.title, required this.amount, required this.units, required this.unit, required this.onRemoveItem, required this.onChangeAmount, this.showValidation = false});
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +26,15 @@ class SupplementItemWidget extends StatelessWidget {
       TextPosition(offset: _controller.text.length),
     );
     _error = amount.isEmpty;
+    final showError = showValidation && _error;
 
-    return Container(
+    return Column(
+      children: [
+      Container(
       decoration: BoxDecoration(
-        border: _error ? const Border.fromBorderSide(BorderSide(color: AppColors.red45Percent,  width: 4)) : null,
         borderRadius: BorderRadius.circular(15),
-        color: _error ? AppColors.white65Percent : AppColors.white85Percent,),
-      margin:  const EdgeInsets.symmetric(vertical: Dimens.marginLarge,),
+        color: AppColors.white85Percent,),
+      margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall,),
       padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingNormal),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,6 +126,18 @@ class SupplementItemWidget extends StatelessWidget {
           const SizedBox(width: Dimens.widthXXXXSmall),
         ],
       ),
+    ),
+    if (showError) Padding(
+      padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          AppLocalizations.of(context)!.please_complete_required_fields,
+          style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall),
+        ),
+      ),
+    ),
+    ],
     );
   }
 

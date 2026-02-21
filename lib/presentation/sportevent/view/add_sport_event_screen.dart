@@ -50,6 +50,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
   late SportEventsBloc bloc;
   final ScrollController _scrollController = ScrollController();
   int filteredListLength = 0;
+  bool _showValidation = false;
 
   void _showConfirmationDialog({String? message, required BuildContext context, required Function onDismiss}) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
@@ -239,39 +240,35 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                       final sport = entry.value;
                                       return Column(
                                         children: [
-                                          if (index > 0) Center(
-                                            child: Container(
-                                              width: 1.5,
-                                              height: 15,
-                                              color: Colors.grey.shade300,
-                                            ),
-                                          ),
-                                          if (index == 0) const SizedBox(height: 15),
                                           SportEventItem(
                                             allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
                                             sport: sport,
                                             removeSport: () => bloc.add(RemoveSportEventAction(sportInfo: sport)),
                                             editMinutes: (updatedSport) => bloc.add(SetMinutesAction(sportInfo: updatedSport)),
                                             editIntensity: (updatedSport) => bloc.add(SetIntensityAction(sportInfo: updatedSport)),
+                                            showValidation: _showValidation,
                                           ),
                                         ],
                                       );
                                     }),
                                     // Add More button
                                     const SizedBox(height: Dimens.height12),
-                                    SizedBox(
-                                      width: Dimens.widthLarge,
-                                      child: ListTile(
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
-                                        tileColor: AppColors.floralWhite,
-                                        onTap: () {
-                                          _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-                                          _sportFocusInputController.requestFocus();
-                                        },
-                                        title: Text(AppLocalizations.of(context)!.add_more),
-                                        trailing: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
+                                    Center(
+                                      child: SizedBox(
+                                        width: Dimens.widthLarge,
+                                        child: ListTile(
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
+                                          tileColor: AppColors.floralWhite,
+                                          onTap: () {
+                                            _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                            _sportFocusInputController.requestFocus();
+                                          },
+                                          title: Text(AppLocalizations.of(context)!.add_more),
+                                          trailing: const Icon(Icons.add_circle, color: AppColors.yellowishGreen),
+                                        ),
                                       ),
                                     ),
+                                    const SizedBox(height: Dimens.paddingXLarge),
                                   ],
                                 ),
                               ),
@@ -308,7 +305,10 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                       if (state.sportSimpleEvent?.info?.orEmpty().isNotEmpty == true) Container(
                         margin: const EdgeInsets.all(Dimens.marginLarge),
                         child: GeneralButton(onTap: () {
-                            if (bloc.validateSportList() ?? true) return;
+                            if (bloc.validateSportList() ?? true) {
+                              setState(() { _showValidation = true; });
+                              return;
+                            }
 
                             if (state.sportSimpleEvent!.info.orEmpty().isEmpty) {
                               if (!state.sportFavoriteEvent.isNull()) {

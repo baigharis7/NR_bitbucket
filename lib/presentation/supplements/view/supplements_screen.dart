@@ -41,6 +41,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
   late SupplementsBloc supplementsBloc;
   final ScrollController _scrollController = ScrollController();
   late FocusNode _supplementFocusInputController;
+  bool _showValidation = false;
 
   @override
   void initState() {
@@ -309,14 +310,6 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                             final nutriInfo = entry.value;
                             return Column(
                             children: [
-                              if (index > 0) Center(
-                                child: Container(
-                                  width: 1.5,
-                                  height: 15,
-                                  color: Colors.grey.shade300,
-                                ),
-                              ),
-                              if (index == 0) const SizedBox(height: 15),
                               SupplementItemWidget(
                                 title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
                                 amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
@@ -327,25 +320,29 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                   supplementsBloc.add(UpdateAmountSupplementsAction(nutriInfo: nutriInfo!));
                                 },
                                 onRemoveItem: () => supplementsBloc.add(RemoveSupplementInfoSupplementsAction(nutriInfo: nutriInfo!, isGoBack: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName))),
+                                showValidation: _showValidation,
                               ),
                             ],
                           );
                           }),
                           // Add More button
                           const SizedBox(height: Dimens.height12),
-                          SizedBox(
-                            width: Dimens.widthLarge,
-                            child: ListTile(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
-                              tileColor: AppColors.floralWhite,
-                              onTap: () {
-                                _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-                                _supplementFocusInputController.requestFocus();
-                              },
-                              title: Text(AppLocalizations.of(context)!.add_more),
-                              trailing: const Icon(Icons.add_circle_outline, color: AppColors.yellowishGreen),
+                          Center(
+                            child: SizedBox(
+                              width: Dimens.widthLarge,
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
+                                tileColor: AppColors.floralWhite,
+                                onTap: () {
+                                  _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                  _supplementFocusInputController.requestFocus();
+                                },
+                                title: Text(AppLocalizations.of(context)!.add_more),
+                                trailing: const Icon(Icons.add_circle, color: AppColors.yellowishGreen),
+                              ),
                             ),
                           ),
+                          const SizedBox(height: Dimens.paddingXLarge),
                         ],
                       ),
                     ),
@@ -357,6 +354,12 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginSmall),
                         child: GeneralButton(
                           onTap: () {
+                            // Validate amounts
+                            final hasEmptyAmount = state.supplementObj?.info.orEmpty().any((n) => n.amount == 0) ?? false;
+                            if (hasEmptyAmount) {
+                              setState(() { _showValidation = true; });
+                              return;
+                            }
                             // Auto-set title for single items
                             if (state.supplementObj!.info.orEmpty().length == 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
                               final name = NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], state.supplementObj?.info.orEmpty()[0].id ?? -1).translate(context);

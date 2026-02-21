@@ -21,6 +21,7 @@ class SportEventItem extends StatefulWidget {
   final Function removeSport;
   final Function(AddSportFavInfo) editMinutes;
   final Function(AddSportFavInfo) editIntensity;
+  final bool showValidation;
   const SportEventItem({
     Key? key,
     required this.allSportsInfo,
@@ -28,6 +29,7 @@ class SportEventItem extends StatefulWidget {
     required this.removeSport,
     required this.editMinutes,
     required this.editIntensity,
+    this.showValidation = false,
   }) : super(key: key);
 
   @override
@@ -74,13 +76,15 @@ class _SportEventItem extends State<SportEventItem> {
 
     if (widget.sport.intensity != null) _intensity = widget.sport.intensity;
     _error = widget.sport.minutes == null || widget.sport.intensity == null;
+    final showError = widget.showValidation && _error;
 
-    return Container(
+    return Column(
+      children: [
+      Container(
       decoration: BoxDecoration(
-        border: _error ? const Border.fromBorderSide(BorderSide(color: AppColors.red45Percent,  width: 4)) : null,
         borderRadius: BorderRadius.circular(Dimens.border15),
-        color: _error ? AppColors.white65Percent : AppColors.white85Percent,),
-      margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge,),
+        color: AppColors.white85Percent,),
+      margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall,),
       padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingNormal),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,6 +186,18 @@ class _SportEventItem extends State<SportEventItem> {
               ),
         ],
       ),
+    ),
+    if (showError) Padding(
+      padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          AppLocalizations.of(context)!.please_complete_required_fields,
+          style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall),
+        ),
+      ),
+    ),
+    ],
     );
   }
 }
