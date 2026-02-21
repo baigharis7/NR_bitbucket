@@ -17,30 +17,27 @@ class EventListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(top: Dimens.marginSmall),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginSmall),
         child: Row(
           children: [
             Expanded(
-              flex: 4,
               child: Text(
                 title,
                 overflow: TextOverflow.clip,
               ),
             ),
-            Expanded(
-              flex: 1,
-              child: IconButton(
-                onPressed: () => onEdit.call(),
-                icon: const Icon(Icons.edit),
-              ),
+            const SizedBox(width: Dimens.marginSmall),
+            IconButton(
+              onPressed: () => onEdit.call(),
+              iconSize: 28,
+              icon: const Icon(Icons.edit),
             ),
-            Expanded(
-              flex: 1,
-              child: IconButton(
-                onPressed: () => onFavorite.call(),
-                icon: const Icon(Icons.favorite, color: Colors.red,),
-              ),
+            const SizedBox(width: Dimens.marginSmall),
+            IconButton(
+              onPressed: () => onFavorite.call(),
+              iconSize: 28,
+              icon: const Icon(Icons.favorite, color: Colors.red),
             ),
           ],
         ),

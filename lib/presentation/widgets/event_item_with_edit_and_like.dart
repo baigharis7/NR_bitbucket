@@ -28,43 +28,33 @@ class EventItemWithEditAndLike extends StatelessWidget {
       child: Card(
         margin: const EdgeInsets.only(top: Dimens.marginSmall),
         elevation: 2,
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    alignment: Alignment.topLeft,
-                    margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall, horizontal: Dimens.marginNormal),
-                    child: Text(name, overflow: TextOverflow.clip,),
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.bottomRight,
-                  child: IconButton(
-                    onPressed: () => onEdit.call(),
-                    icon: const Icon(Icons.edit),
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.bottomRight,
-                  child: IconButton(
-                    onPressed: () => onFavorite.call(),
-                    icon: isFavorite ? const Icon(Icons.favorite, color: Colors.red,) : const Icon(Icons.favorite_border, color: Colors.red,),
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.centerRight,
-                  child: IconButton(
-                    onPressed: () => onDelete.call(),
-                    icon: const Icon(Icons.delete),
-                  ),
-                ),
-              ],
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginSmall),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(name, overflow: TextOverflow.clip),
+              ),
+              const SizedBox(width: Dimens.marginSmall),
+              IconButton(
+                onPressed: () => onEdit.call(),
+                iconSize: 28,
+                icon: const Icon(Icons.edit),
+              ),
+              const SizedBox(width: Dimens.marginSmall),
+              IconButton(
+                onPressed: () => onFavorite.call(),
+                iconSize: 28,
+                icon: isFavorite ? const Icon(Icons.favorite, color: Colors.red) : const Icon(Icons.favorite_border, color: Colors.red),
+              ),
+              const SizedBox(width: Dimens.marginSmall),
+              IconButton(
+                onPressed: () => onDelete.call(),
+                iconSize: 28,
+                icon: const Icon(Icons.delete),
+              ),
+            ],
+          ),
         ),
       ),
     );
