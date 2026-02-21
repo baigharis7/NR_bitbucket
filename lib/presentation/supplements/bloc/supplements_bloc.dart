@@ -91,7 +91,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
         state.supplementObj!.info.orEmpty().remove(state.supplementObj!.info.orEmpty()[itemIndex]);
         state.supplementObj!.info?.add(event.nutriInfo);
       } else {
-        state.supplementObj!.info?.insert(0, event.nutriInfo);
+        state.supplementObj!.info?.add(event.nutriInfo);
       }
       emit(state.copyWith(isLoading: false,));
     });

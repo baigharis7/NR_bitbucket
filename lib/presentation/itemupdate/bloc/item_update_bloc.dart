@@ -63,8 +63,7 @@ class ItemUpdateBloc extends Bloc<ItemUpdateEvent, ItemUpdateState> {
         state.foodEvent!.ingredients.remove(state.foodEvent!.ingredients[itemIndex]);
         state.foodEvent!.ingredients.add(event.foodInEvent);
       } else {
-        state.foodEvent!.ingredients.insert(0, event.foodInEvent);
-        // state.foodsInEvent!.add(event.foodInEvent);
+        state.foodEvent!.ingredients.add(event.foodInEvent);
       }
       emit(state.copyWith(isLoading: false,));
     });
