@@ -14,6 +14,7 @@ import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../favorites/common/undo_favorite_dialog.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
+import '../../widgets/general_button.dart';
 import '../../../infrastructure/utils/constants.dart';
 
 class RoutinesScreen extends StatefulWidget {
@@ -114,7 +115,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
               ),
             ),
           ),
-          body: Column(children: [
+          body: SingleChildScrollView(child: Column(children: [
             ...state.routines.orEmpty().map((sportRoutine) => CalenderEventListItem(
                 title: sportRoutine.sportName.toString(),
                 onEdit: () { Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: sportRoutine).then((value) => Navigator.pop(context)); },
@@ -136,7 +137,14 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
               },
             ),
             ),
-          ],),
+            Container(
+              margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+              child: GeneralButton(
+                title: '${AppLocalizations.of(context)!.add} ${AppLocalizations.of(context)!.routines}',
+                onTap: () => Navigator.pushNamed(context, AddSportEventScreen.routeName).then((value) => Navigator.pop(context)),
+              ),
+            ),
+          ],),),
         ),
       ),),
     );

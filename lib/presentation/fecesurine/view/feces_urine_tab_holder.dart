@@ -164,14 +164,11 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
                         ],
                       ),
                     ),
-                    ListTile(
-                      onTap: () {
-                          Navigator.popAndPushNamed(context, FecesUrineTabs.routeName, arguments: _selectedTab);
-                      },
-                      leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
-                      title: Text(
-                        AppLocalizations.of(context)!.add_new,
-                        style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),
+                    Container(
+                      margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+                      child: GeneralButton(
+                        title: AppLocalizations.of(context)!.add_new,
+                        onTap: () => Navigator.popAndPushNamed(context, FecesUrineTabs.routeName, arguments: _selectedTab),
                       ),
                     ),
                   ],

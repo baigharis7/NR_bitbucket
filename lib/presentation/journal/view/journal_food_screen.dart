@@ -16,6 +16,7 @@ import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_food_bl
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_food_state.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/event_item_with_edit_and_like.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_info_card.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
@@ -146,15 +147,7 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                   preferredSize: const Size.fromHeight(Dimens.heightSmall),
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
-                    child: Row(
-                      children: [
-                        Expanded(child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold,),)),
-                        IconButton(
-                          onPressed: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
-                          icon: const Icon(Icons.add_circle, color: Colors.teal,),
-                        ),
-                      ],
-                    ),
+                    child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold,),),
                   ),
                 ),
               ),
@@ -227,6 +220,13 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
                         //   kcals: state.userKcal!,
                         //   cardElevation: 4,
                         // ),
+                        Container(
+                          margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+                          child: GeneralButton(
+                            title: AppLocalizations.of(context)!.add_food,
+                            onTap: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
+                          ),
+                        ),
                       ],
                     ),
                   ),

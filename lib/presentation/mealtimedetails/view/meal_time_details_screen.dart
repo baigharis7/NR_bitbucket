@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart
 import 'package:nutrenaissance_flutter/presentation/itemupdate/view/item_update_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/mealtimedetails/bloc/meal_time_details_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/item_info_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrient_row.dart';
@@ -170,14 +171,10 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
                             );
                           },),
                           Container(
-                            margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
-                            child: ListTile(
-                              onTap: () => Navigator.popAndPushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: state.mealTime!, selectedDateTime: state.selectedDateTime!)).then((value) => bloc.add(InitialMealTimeDetailsEventState())),
-                              leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
-                              title: Text(
-                                AppLocalizations.of(context)!.add_food,
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline,),
-                              ),
+                            margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+                            child: GeneralButton(
+                              title: AppLocalizations.of(context)!.add_food,
+                              onTap: () => Navigator.popAndPushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: state.mealTime!, selectedDateTime: state.selectedDateTime!)),
                             ),
                           ),
 

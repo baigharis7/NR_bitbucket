@@ -14,6 +14,7 @@ import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_sport_s
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/event_item_with_edit_and_like.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_info_card.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
@@ -139,15 +140,7 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                   preferredSize: const Size.fromHeight(Dimens.heightSmall),
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
-                    child: Row(
-                      children: [
-                        Expanded(child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold,),)),
-                        IconButton(
-                          onPressed: () => Navigator.pushNamed(context, AddSportEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
-                          icon: const Icon(Icons.add_circle, color: Colors.teal,),
-                        ),
-                      ],
-                    ),
+                    child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold,),),
                   ),
                 ),
               ),
@@ -222,6 +215,13 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                       //     kcals: state.userKcal ?? 0,
                       //   ),
                       // ),
+                      Container(
+                        margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+                        child: GeneralButton(
+                          title: AppLocalizations.of(context)!.add_physical_activity,
+                          onTap: () => Navigator.pushNamed(context, AddSportEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
+                        ),
+                      ),
                     ],
                   ),
                 ),

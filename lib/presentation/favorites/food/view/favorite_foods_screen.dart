@@ -18,6 +18,7 @@ import 'package:nutrenaissance_flutter/presentation/favorites/food/view/create_n
 import 'package:nutrenaissance_flutter/presentation/favorites/food/view/favorite_foods_cluster_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/favorites_cluster.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 
 class FavoriteFoodsScreen extends StatefulWidget {
@@ -86,21 +87,12 @@ class _FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
                   ),
                   onPressed: () => Navigator.pop(context),
                 ),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.food_favs,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: Dimens.fontSizeLarge,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pushNamed(context, CreateNewFoodFavoriteScreen.routeName).then((value) => bloc.add(InitializeState())),
-                      icon: const Icon(Icons.add_circle, color: Colors.teal,),
-                    )
-                  ],
+                title: Text(
+                  AppLocalizations.of(context)!.food_favs,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: Dimens.fontSizeLarge,
+                  ),
                 ),
               ),
               body: SingleChildScrollView(
@@ -177,6 +169,13 @@ class _FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
                           ),
                         ),
                         onSeeMore: () => Navigator.pushNamed(context, FavoriteFoodsClusterScreen.routeName, arguments: Snack()),),
+                      Container(
+                        margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+                        child: GeneralButton(
+                          title: AppLocalizations.of(context)!.add_new_food_button_text,
+                          onTap: () => Navigator.pushNamed(context, CreateNewFoodFavoriteScreen.routeName).then((value) => bloc.add(InitializeState())),
+                        ),
+                      ),
                     ],
                   ),
                 ),

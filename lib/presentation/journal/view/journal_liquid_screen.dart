@@ -20,6 +20,7 @@ import 'package:nutrenaissance_flutter/presentation/liquidevent/view/add_liquid_
 import 'package:nutrenaissance_flutter/presentation/waterevent/view/add_water_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/event_item_with_edit_and_like.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/horizontal_water_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_info_card.dart';
@@ -113,15 +114,7 @@ class _JournalLiquidScreen extends State<JournalLiquidScreen> {
                   preferredSize: const Size.fromHeight(Dimens.heightSmall),
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
-                    child: Row(
-                      children: [
-                        Expanded(child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold,),)),
-                        IconButton(
-                          onPressed: () => Navigator.pushNamed(ctx, AddLiquidEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
-                          icon: const Icon(Icons.add_circle, color: Colors.teal,),
-                        ),
-                      ],
-                    ),
+                    child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold,),),
                   ),
                 ),
               ),
@@ -194,6 +187,13 @@ class _JournalLiquidScreen extends State<JournalLiquidScreen> {
                       //   kcals: state.userKcal!,
                       //   cardElevation: 2,
                       // ),
+                      Container(
+                        margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+                        child: GeneralButton(
+                          title: AppLocalizations.of(context)!.add_liquid_title,
+                          onTap: () => Navigator.pushNamed(ctx, AddLiquidEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
+                        ),
+                      ),
                     ],
                   ),
                 ),

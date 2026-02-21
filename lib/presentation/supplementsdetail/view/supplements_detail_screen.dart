@@ -188,13 +188,11 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
                         );
                       },
                     ),
-                    const SizedBox(height: Dimens.height32),
-                    ListTile(
-                      onTap: () => Navigator.popAndPushNamed(context, SupplementsScreen.routeName),
-                      leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
-                      title: Text(
-                        AppLocalizations.of(context)!.add + ' ' +AppLocalizations.of(context)!.supplements,
-                        style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),
+                    Container(
+                      margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+                      child: GeneralButton(
+                        title: '${AppLocalizations.of(context)!.add} ${AppLocalizations.of(context)!.supplements}',
+                        onTap: () => Navigator.popAndPushNamed(context, SupplementsScreen.routeName),
                       ),
                     ),
                   ],

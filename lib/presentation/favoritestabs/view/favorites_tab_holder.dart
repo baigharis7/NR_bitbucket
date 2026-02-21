@@ -24,6 +24,7 @@ import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
+import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../../infrastructure/utils/constants.dart';
 
@@ -151,24 +152,6 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
           Scaffold(
             backgroundColor: Colors.transparent,
             bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
-            floatingActionButton: FloatingActionButton(
-              onPressed: _onFabPressed,
-              backgroundColor: Colors.transparent,
-              clipBehavior: Clip.hardEdge,
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppColors.greenCyan, AppColors.bluishGreen],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    stops: [0.0, 0.7],
-                  ),
-                ),
-                child: const Icon(Icons.add),
-              ),
-            ),
             body: SafeArea(child: Container(
               padding: const EdgeInsets.all(Dimens.paddingLarge),
               child: Column(children: [
@@ -210,6 +193,13 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
                       PhysicalActivityTab(),
                       SupplementsTab(),
                     ],
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+                  child: GeneralButton(
+                    title: AppLocalizations.of(context)!.add_new,
+                    onTap: _onFabPressed,
                   ),
                 ),
               ],

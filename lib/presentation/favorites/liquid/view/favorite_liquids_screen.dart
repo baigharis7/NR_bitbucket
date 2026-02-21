@@ -15,6 +15,7 @@ import 'package:nutrenaissance_flutter/presentation/favorites/liquid/view/create
 import 'package:nutrenaissance_flutter/presentation/favorites/liquid/view/favorite_liquids_cluster_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/favorites_cluster.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 
 class FavoriteLiquidsScreen extends StatefulWidget {
@@ -77,24 +78,12 @@ class _FavoriteLiquidsScreenState extends State<FavoriteLiquidsScreen> {
               appBar: AppBar(
                 backgroundColor: Colors.white,
                 titleSpacing: Dimens.marginNormal,
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: Dimens.marginNormal),
-                      child: Text(
-                        AppLocalizations.of(context)!.liquid_favorites,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: Dimens.fontSizeLarge,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pushNamed(context, CreateNewLiquidFavoriteScreen.routeName).then((value) => bloc.add(InitializeState())),
-                      icon: const Icon(Icons.add_circle_outline_sharp, color: Colors.black,),
-                    )
-                  ],
+                title: Text(
+                  AppLocalizations.of(context)!.liquid_favorites,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: Dimens.fontSizeLarge,
+                  ),
                 ),
               ),
               body: SingleChildScrollView(
@@ -163,6 +152,13 @@ class _FavoriteLiquidsScreenState extends State<FavoriteLiquidsScreen> {
                         ),
                       ),
                       onSeeMore: () => Navigator.pushNamed(context, FavoriteLiquidsClusterScreen.routeName, arguments: Snack()),                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+                      child: GeneralButton(
+                        title: AppLocalizations.of(context)!.add_new_liquid_button_text,
+                        onTap: () => Navigator.pushNamed(context, CreateNewLiquidFavoriteScreen.routeName).then((value) => bloc.add(InitializeState())),
+                      ),
+                    ),
                   ],
                 ),
               ),

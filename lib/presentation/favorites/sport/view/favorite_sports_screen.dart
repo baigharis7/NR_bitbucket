@@ -14,6 +14,7 @@ import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_spo
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/create_new_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/event_list_item.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
@@ -85,21 +86,9 @@ class _FavoriteSportsScreenState extends State<FavoriteSportsScreen> {
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 25,),
                 ),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.sport_favs,
-                      style: const TextStyle(color: Colors.black,),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.add_circle, color: Colors.teal),
-                      onPressed: () => Navigator.pushNamed(
-                        context,
-                        CreateNewSportFavoriteScreen.routeName,
-                      ).then((value) => bloc.add(InitializeStateAction())),
-                    )
-                  ],
+                title: Text(
+                  AppLocalizations.of(context)!.sport_favs,
+                  style: const TextStyle(color: Colors.black,),
                 ),
               ),
               body: SingleChildScrollView(
@@ -127,7 +116,14 @@ class _FavoriteSportsScreenState extends State<FavoriteSportsScreen> {
                           reloadScreen: () => bloc.add(InitializeStateAction()),
                         ),
                         onEdit: () => Navigator.pushNamed(context, AddSportFavoriteScreen.routeName, arguments: sportFavorite).then((value) => bloc.add(InitializeStateAction())),
-                      ),)
+                      ),),
+                      Container(
+                        margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+                        child: GeneralButton(
+                          title: AppLocalizations.of(context)!.add_new_sport_button_text,
+                          onTap: () => Navigator.pushNamed(context, CreateNewSportFavoriteScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
+                        ),
+                      ),
                     ],
                   ),
                 ),
