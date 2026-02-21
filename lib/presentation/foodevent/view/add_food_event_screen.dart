@@ -267,6 +267,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                 Center(
                                   child: SizedBox(
                                     width: Dimens.widthLarge,
+                                    height: Dimens.height55,
                                     child: ListTile(
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
                                       tileColor: AppColors.floralWhite,

@@ -168,7 +168,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                     ),
                     InkWell(
                       onTap: () => widget.onRemove.call(),
-                      child: const Icon(Icons.cancel_outlined, size: Dimens.heightXSmall),
+                      child: const Icon(Icons.cancel_outlined, size: 28, color: AppColors.yellowishGreen),
                     ),
                   ],
                 ),
@@ -381,28 +381,19 @@ class _FoodEventItemState extends State<FoodEventItem> {
                         ),
                       ),
               ),
+              if (widget.showValidation && missingQty) Padding(
+                padding: const EdgeInsets.only(top: Dimens.marginSmall),
+                child: Text(AppLocalizations.of(context)!.please_enter_amount, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
+              ),
+              if (widget.showValidation && missingUnit) Padding(
+                padding: const EdgeInsets.only(top: Dimens.marginSmall),
+                child: Text(AppLocalizations.of(context)!.please_select_unit, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
+              ),
+              if (widget.showValidation && missingCookingMethod) Padding(
+                padding: const EdgeInsets.only(top: Dimens.marginSmall),
+                child: Text(AppLocalizations.of(context)!.please_select_cooking_method, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
+              ),
             ],
-          ),
-        ),
-        if (widget.showValidation && missingQty) Padding(
-          padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(AppLocalizations.of(context)!.please_enter_amount, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
-          ),
-        ),
-        if (widget.showValidation && missingUnit) Padding(
-          padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(AppLocalizations.of(context)!.please_select_unit, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
-          ),
-        ),
-        if (widget.showValidation && missingCookingMethod) Padding(
-          padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(AppLocalizations.of(context)!.please_select_cooking_method, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
           ),
         ),
       ],

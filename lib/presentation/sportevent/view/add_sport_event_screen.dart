@@ -256,6 +256,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                     Center(
                                       child: SizedBox(
                                         width: Dimens.widthLarge,
+                                        height: Dimens.height55,
                                         child: ListTile(
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
                                           tileColor: AppColors.floralWhite,

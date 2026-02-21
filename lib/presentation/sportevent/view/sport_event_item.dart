@@ -100,7 +100,7 @@ class _SportEventItem extends State<SportEventItem> {
               ),
               // InkWell(onTap: () { /*assets/images/favorite_icon.png*/ }, child: Image.asset('assets/icon/un_favorite_outlined.png', height: Dimens.heightXSmall)),
               const SizedBox(width: Dimens.width12),
-              InkWell(onTap: () => widget.removeSport.call(), child: const Icon(Icons.cancel_outlined, size: Dimens.height27, color: AppColors.yellowishGreen)),
+              InkWell(onTap: () => widget.removeSport.call(), child: const Icon(Icons.cancel_outlined, size: 28, color: AppColors.yellowishGreen)),
             ],
           ),
           Text(AppLocalizations.of(context)!.duration, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal)),
@@ -183,21 +183,15 @@ class _SportEventItem extends State<SportEventItem> {
                       .toList(),
                 ),
               ),
+          if (widget.showValidation && missingDuration) Padding(
+            padding: const EdgeInsets.only(top: Dimens.marginSmall),
+            child: Text(AppLocalizations.of(context)!.please_enter_duration, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
+          ),
+          if (widget.showValidation && missingIntensity && _sportIntensities != null && _sportIntensities! > 1) Padding(
+            padding: const EdgeInsets.only(top: Dimens.marginSmall),
+            child: Text(AppLocalizations.of(context)!.please_select_intensity, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
+          ),
         ],
-      ),
-    ),
-    if (widget.showValidation && missingDuration) Padding(
-      padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(AppLocalizations.of(context)!.please_enter_duration, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
-      ),
-    ),
-    if (widget.showValidation && missingIntensity && _sportIntensities != null && _sportIntensities! > 1) Padding(
-      padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(AppLocalizations.of(context)!.please_select_intensity, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
       ),
     ),
     ],

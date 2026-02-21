@@ -51,7 +51,7 @@ class SupplementItemWidget extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: onRemoveItem,
-                  child: const Icon(Icons.cancel_outlined, size: Dimens.heightXSmall),
+                  child: const Icon(Icons.cancel_outlined, size: 28, color: AppColors.yellowishGreen),
                 ),
               ],
             ),
@@ -124,14 +124,11 @@ class SupplementItemWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(width: Dimens.widthXXXXSmall),
+          if (showError) Padding(
+            padding: const EdgeInsets.only(top: Dimens.marginSmall),
+            child: Text(AppLocalizations.of(context)!.please_enter_amount, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
+          ),
         ],
-      ),
-    ),
-    if (showError) Padding(
-      padding: const EdgeInsets.only(top: Dimens.marginXSmall, left: Dimens.paddingSmall),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(AppLocalizations.of(context)!.please_enter_amount, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
       ),
     ),
     ],

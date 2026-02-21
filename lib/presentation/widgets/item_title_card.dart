@@ -164,7 +164,7 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
                     onTap: widget.onToggleFavorite,
                     child: Icon(
                       widget.isFavorite ? Icons.star : Icons.star_outline,
-                      size: 30,
+                      size: 28,
                       color: widget.isFavorite ? AppColors.yellowishGreen : AppColors.yellowishGreen50,
                     ),
                   ),
@@ -173,7 +173,7 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
                     onTap: widget.onToggleRoutine,
                     child: Icon(
                       Icons.schedule,
-                      size: 30,
+                      size: 28,
                       color: widget.isRoutine ? AppColors.yellowishGreen : AppColors.yellowishGreen50,
                     ),
                   ),
