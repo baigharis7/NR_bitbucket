@@ -77,6 +77,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
           context,
           _getMealTimeMenuItems(context),
           showFavoritesRoutinesButtons: false,
+          centered: true,
         );
         break;
       case 1: // Physical Activity tab - direct navigation

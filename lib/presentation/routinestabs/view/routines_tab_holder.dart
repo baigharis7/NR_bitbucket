@@ -75,6 +75,7 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
           context,
           _getMealTimeMenuItems(context),
           showFavoritesRoutinesButtons: false,
+          centered: true,
         );
         break;
       case 1: // Physical Activity tab - direct navigation

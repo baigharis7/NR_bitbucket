@@ -13,12 +13,14 @@ class FloatingMenuOverlay extends StatefulWidget {
   final VoidCallback onClose;
   final List<Map<String, dynamic>> menuItems;
   final bool showFavoritesRoutinesButtons;
+  final bool centered;
 
   const FloatingMenuOverlay({
     super.key,
     required this.onClose,
     required this.menuItems,
     this.showFavoritesRoutinesButtons = true,
+    this.centered = false,
   });
 
   @override
@@ -70,7 +72,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with SingleTi
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: Dimens.margin6,),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: widget.centered ? MainAxisAlignment.center : MainAxisAlignment.end,
             children: [
               InkWell(
                 onTap: () {
@@ -125,14 +127,19 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with SingleTi
     return AnimatedBuilder(
       animation: _fadeController,
       builder: (context, child) {
-        return Scaffold(
+        return WillPopScope(
+          onWillPop: () async {
+            _closeMenu();
+            return false;
+          },
+          child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Material(
             color: Colors.transparent,
             child: GestureDetector(
               onTap: _closeMenu,
               child: Stack(
-                alignment: Alignment.center,
+                alignment: widget.centered ? Alignment.center : Alignment.bottomRight,
                 children: [
                   // Background blur with fade
                   Opacity(
@@ -150,7 +157,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with SingleTi
                       padding: const EdgeInsets.all(Dimens.padding4),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: widget.centered ? CrossAxisAlignment.center : CrossAxisAlignment.end,
                         children: [
                           if (widget.showFavoritesRoutinesButtons) SlideTransition(
                             position: Tween<Offset>(
@@ -219,6 +226,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with SingleTi
               ),
             ),
           ),
+        ),
         );
       },
     );
