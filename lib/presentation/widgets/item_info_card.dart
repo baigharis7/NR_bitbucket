@@ -69,11 +69,11 @@ class ItemInfoCard extends StatelessWidget {
               ],),),
               if(beforeTrailingSrc.isNotNull() && !beforeTrailingTap.isNull()) ...[
                 const SizedBox(width: Dimens.marginSmall),
-                InkWell(onTap: beforeTrailingTap, child: Image.asset(beforeTrailingSrc!, height: 28, width: 28, color: AppColors.yellowishGreen)),
+                InkWell(onTap: beforeTrailingTap, child: Image.asset(beforeTrailingSrc!, height: 26, width: 26, color: AppColors.yellowishGreen)),
               ],
               if(!trailingSrc.isNull() && !trailingTap.isNull()) ...[
                 const SizedBox(width: Dimens.marginSmall),
-                InkWell(onTap: () => trailingTap?.call(), child: Image.asset(trailingSrc!, height: 28, width: 28)),
+                InkWell(onTap: () => trailingTap?.call(), child: Image.asset(trailingSrc!, height: 26, width: 26)),
               ],
             ],
           ),

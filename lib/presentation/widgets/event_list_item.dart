@@ -30,13 +30,13 @@ class EventListItem extends StatelessWidget {
             const SizedBox(width: Dimens.marginSmall),
             IconButton(
               onPressed: () => onEdit.call(),
-              iconSize: 28,
+              iconSize: 26,
               icon: const Icon(Icons.edit),
             ),
             const SizedBox(width: Dimens.marginSmall),
             IconButton(
               onPressed: () => onFavorite.call(),
-              iconSize: 28,
+              iconSize: 26,
               icon: const Icon(Icons.favorite, color: Colors.red),
             ),
           ],

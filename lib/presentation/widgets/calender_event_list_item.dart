@@ -38,20 +38,20 @@ class CalenderEventListItem extends StatelessWidget {
             if (onHeartClick != null) ...[
               IconButton(
                 onPressed: () => onHeartClick?.call(),
-                iconSize: 28,
+                iconSize: 26,
                 icon: Icon(isFavourite ? Icons.favorite : Icons.favorite_border, color: Colors.red),
               ),
               const SizedBox(width: Dimens.marginSmall),
             ],
             IconButton(
               onPressed: () => onEdit.call(),
-              iconSize: 28,
+              iconSize: 26,
               icon: const Icon(Icons.edit),
             ),
             const SizedBox(width: Dimens.marginSmall),
             IconButton(
               onPressed: () => onDelete.call(),
-              iconSize: 28,
+              iconSize: 26,
               icon: const Icon(Icons.delete),
             ),
           ],

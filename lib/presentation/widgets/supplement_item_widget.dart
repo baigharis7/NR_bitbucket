@@ -51,7 +51,7 @@ class SupplementItemWidget extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: onRemoveItem,
-                  child: const Icon(Icons.cancel_outlined, size: 28, color: AppColors.yellowishGreen),
+                  child: const Icon(Icons.cancel_outlined, size: 26, color: AppColors.yellowishGreen),
                 ),
               ],
             ),
