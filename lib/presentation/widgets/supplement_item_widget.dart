@@ -6,7 +6,7 @@ import '../../infrastructure/helpers/app_text_styles.dart';
 import '../../infrastructure/utils/app_color.dart';
 import '../../infrastructure/utils/dimens.dart';
 
-class SupplementItemWidget extends StatelessWidget {
+class SupplementItemWidget extends StatefulWidget {
   final String title;
   final String amount;
   final List<String> units;
@@ -17,16 +17,35 @@ class SupplementItemWidget extends StatelessWidget {
   const SupplementItemWidget({super.key, required this.title, required this.amount, required this.units, required this.unit, required this.onRemoveItem, required this.onChangeAmount, this.showValidation = false});
 
   @override
-  Widget build(BuildContext context) {
-    bool _error = false;
-    final _controller = TextEditingController();
+  State<SupplementItemWidget> createState() => _SupplementItemWidgetState();
+}
 
-    _controller.text = amount;
-    _controller.selection = TextSelection.fromPosition( // keep cursor at end
-      TextPosition(offset: _controller.text.length),
-    );
-    _error = amount.isEmpty;
-    final showError = showValidation && _error;
+class _SupplementItemWidgetState extends State<SupplementItemWidget> {
+  final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.text = widget.amount;
+  }
+
+  @override
+  void didUpdateWidget(covariant SupplementItemWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_controller.text != widget.amount) {
+      _controller.text = widget.amount;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final showError = widget.showValidation && widget.amount.isEmpty;
 
     return Column(
       children: [
@@ -40,17 +59,17 @@ class SupplementItemWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge),
+            margin: const EdgeInsets.only(bottom: Dimens.marginLarge),
             child: Row(
               children: [
                 Expanded(
                   child: Text(
-                    title,
+                    widget.title,
                     style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w400, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),
                   ),
                 ),
                 InkWell(
-                  onTap: onRemoveItem,
+                  onTap: widget.onRemoveItem,
                   child: const Icon(Icons.cancel_outlined, size: 26, color: AppColors.yellowishGreen),
                 ),
               ],
@@ -71,12 +90,13 @@ class SupplementItemWidget extends StatelessWidget {
                     decoration: const InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
+                      contentPadding: EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingSmall),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(11)),
                         borderSide: BorderSide(color: AppColors.silver, width: 1),
                       ),
                     ),
-                    onChanged: onChangeAmount,
+                    onChanged: widget.onChangeAmount,
                   ),
                 ),
                 const SizedBox(width: Dimens.widthXXXXSmall),
@@ -96,20 +116,19 @@ class SupplementItemWidget extends StatelessWidget {
                       isExpanded: true,
                       underline: Container(),
                       icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
-                      value: unit,
+                      value: widget.unit,
                       onChanged: (String? unitName) {},
-                      items: units
+                      items: widget.units
                           .map<DropdownMenuItem<String>>(
                             (item) => DropdownMenuItem(
                           value: item,
                           alignment: Alignment.center,
-                          child: SizedBox(
-                            child: Text(
-                              item,
-                              // overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: Dimens.fontSizeNormal,
-                              ),
+                          child: Text(
+                            item,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: const TextStyle(
+                              fontSize: Dimens.fontSizeNormal,
                             ),
                           ),
                         ),

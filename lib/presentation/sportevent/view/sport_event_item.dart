@@ -68,10 +68,11 @@ class _SportEventItem extends State<SportEventItem> {
     final sportInfo = widget.sport;
       _sportIntensities = NutritionUtils.findSportIntensities(names: widget.allSportsInfo, id: sportInfo.id);
       _sportName = NutritionUtils.findSportName(names: widget.allSportsInfo, ingredients: [sportInfo], context: context);
-    // if (widget.sport.minutes != null && _durationTextController.text == '') {
       _duration = widget.sport.minutes;
-      _durationTextController.text = !_duration.isNull() ? _duration.toString() : '';
-    // }
+      final durationText = !_duration.isNull() ? _duration.toString() : '';
+      if (_durationTextController.text != durationText) {
+        _durationTextController.text = durationText;
+      }
 
     if (widget.sport.intensity != null) _intensity = widget.sport.intensity;
     final missingDuration = widget.sport.minutes == null;
@@ -118,6 +119,7 @@ class _SportEventItem extends State<SportEventItem> {
                     decoration: const InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
+                      contentPadding: EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingSmall),
                       focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.silver, width: 1), borderRadius: BorderRadius.all(Radius.circular(Dimens.border11))),
                       enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.silver, width: 1), borderRadius: BorderRadius.all(Radius.circular(Dimens.border11))),
                     ),

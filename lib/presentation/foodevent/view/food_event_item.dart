@@ -132,9 +132,9 @@ class _FoodEventItemState extends State<FoodEventItem> {
         .units;
     ingredient.unitsEquivalences = unitsEquivalences;
 
-    if (widget.foodInEvent.qty != 0 && _quantityController.text == '') {
-      _quantityController.text = widget.foodInEvent.qty.toString();
-      ingredient.qty = widget.foodInEvent.qty;
+    final qtyText = ingredient.qty == 0 ? '' : ingredient.qty.toString();
+    if (_quantityController.text != qtyText) {
+      _quantityController.text = qtyText;
     }
 
     _unitName = _unitName ??
@@ -157,7 +157,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge),
+                margin: const EdgeInsets.only(bottom: Dimens.marginLarge),
                 child: Row(
                   children: [
                     Expanded(
@@ -185,17 +185,11 @@ class _FoodEventItemState extends State<FoodEventItem> {
                         textAlignVertical: TextAlignVertical.center,
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.search,
-                        controller: TextEditingController.fromValue(
-                          TextEditingValue(
-                            text: ingredient.qty == 0 ? '' : ingredient.qty.toString(),
-                            selection: TextSelection.collapsed(
-                              offset: ingredient.qty == 0 ? 0 : ingredient.qty.toString().length,
-                            ),
-                          ),
-                        ),
+                        controller: _quantityController,
                         decoration: const InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
+                          contentPadding: EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingSmall),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(11)),
                             borderSide: BorderSide(color: AppColors.silver, width: 1),
@@ -235,13 +229,12 @@ class _FoodEventItemState extends State<FoodEventItem> {
                                       (item) => DropdownMenuItem(
                                         value: item.name,
                                         alignment: Alignment.center,
-                                        child: SizedBox(
-                                          child: Text(
-                                            item.name,
-                                            // overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              fontSize: Dimens.fontSizeNormal,
-                                            ),
+                                        child: Text(
+                                          item.name,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          style: const TextStyle(
+                                            fontSize: Dimens.fontSizeNormal,
                                           ),
                                         ),
                                       ),
@@ -289,24 +282,16 @@ class _FoodEventItemState extends State<FoodEventItem> {
                     widget.onConversionFactorChange.call(ingredient);
                   },),
                   Text(AppLocalizations.of(context)!.cooked, style: const TextStyle(fontSize: Dimens.fontSizeLarge, fontWeight: FontWeight.w400)),
-                ],
-              ),
-              if (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED) Container(
-                margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
-                height: Dimens.heightSmall - 15,
-                child: (widget.cookingMethodsInfoMaster.cookingMethodsInfo.orEmpty().isEmpty)
-                    ? Center(
-                        child: Text(AppLocalizations.of(context)!.none),
-                      )
-                    : Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: Dimens.paddingSmall),
+                  if (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && widget.cookingMethodsInfoMaster.cookingMethodsInfo.orEmpty().isNotEmpty) ...[
+                    const SizedBox(width: Dimens.paddingSmall),
+                    Expanded(
+                      child: Container(
+                        height: Dimens.heightSmall - 15,
+                        padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall),
                         decoration: const BoxDecoration(
                             color: Colors.white,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(11)),
-                            border: Border.fromBorderSide(
-                                BorderSide(color: AppColors.silver, width: 1))),
+                            borderRadius: BorderRadius.all(Radius.circular(11)),
+                            border: Border.fromBorderSide(BorderSide(color: AppColors.silver, width: 1))),
                         child: DropdownButton<int>(
                           icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
                           isExpanded: true,
@@ -321,15 +306,12 @@ class _FoodEventItemState extends State<FoodEventItem> {
                                 (item) => DropdownMenuItem(
                                   alignment: Alignment.center,
                                   value: item.id,
-                                  child: SizedBox(
-                                    child: Text(
-                                      item.translate(context),
-                                      overflow: TextOverflow.clip,
-                                      maxLines: 2,
-                                      style: const TextStyle(
-                                        fontSize: Dimens.fontSizeLarge,
-                                        fontWeight: FontWeight.bold
-                                      ),
+                                  child: Text(
+                                    item.translate(context),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                      fontSize: Dimens.fontSizeNormal,
                                     ),
                                   ),
                                 ),
@@ -337,6 +319,9 @@ class _FoodEventItemState extends State<FoodEventItem> {
                               .toList(),
                         ),
                       ),
+                    ),
+                  ],
+                ],
               ),
               if ((ingredient.cookingMethod == Constants.COOKING_METHOD_BREADED || ingredient.cookingMethod == Constants.COOKING_METHOD_FRIED) && widget.oilTypes?.data != null) Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
@@ -364,15 +349,12 @@ class _FoodEventItemState extends State<FoodEventItem> {
                                 (item) => DropdownMenuItem(
                                   value: item.id,
                                   alignment: Alignment.center,
-                                  child: SizedBox(
-                                    child: Text(
-                                      item.translate(context),
-                                      overflow: TextOverflow.clip,
-                                      maxLines: 2,
-                                      style: const TextStyle(
-                                          fontSize: Dimens.fontSizeLarge,
-                                          fontWeight: FontWeight.bold
-                                      ),
+                                  child: Text(
+                                    item.translate(context),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                      fontSize: Dimens.fontSizeNormal,
                                     ),
                                   ),
                                 ),
