@@ -340,6 +340,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                     setState(() { _showValidation = true; });
                                     return;
                                   }
+                                  setState(() { _showValidation = false; });
                                   _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                   _supplementFocusInputController.requestFocus();
                                 },
