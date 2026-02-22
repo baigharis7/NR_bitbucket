@@ -33,6 +33,8 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
   late UpdateSupplementBloc updateSupplementBloc;
   final _scrollController = ScrollController();
   FocusNode _supplementFocusInputController = FocusNode();
+  bool _showValidation = false;
+  final List<GlobalKey> _itemKeys = [];
 
   @override
   void initState() {
@@ -116,11 +118,19 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                         image: 'assets/images/supplement.png',
                         searchHintText: AppLocalizations.of(context)!.search_supplement_hint,
                         items: state.supplementsInfo?.data.map((element) => element.translate(context)).toList(),
+                        onFocusNodeCreated: (node) => _supplementFocusInputController = node,
                         onItemSelect: (supplementName, focus) {
                           _supplementFocusInputController = focus;
                           focus.unfocus();
                           final supplement = NutritionUtils.findSupplementByName(state.supplementsInfo?.data ?? [], supplementName, context);
                           updateSupplementBloc.add(AddSupplementInfoUpdateSupplementEvent(nutriInfo: NutriInfo(id: supplement.id, unit: supplement.unit, amount: 0)));
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _scrollController.animateTo(
+                              _scrollController.position.maxScrollExtent,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeOut,
+                            );
+                          });
                         },
                       ),
                       if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) ...[
@@ -156,7 +166,9 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                         ...state.supplementObj!.info.orEmpty().asMap().entries.map((entry) {
                           final index = entry.key;
                           final nutriInfo = entry.value;
+                          while (_itemKeys.length <= index) { _itemKeys.add(GlobalKey()); }
                           return SupplementItemWidget(
+                              key: _itemKeys[index],
                               title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
                               amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
                               units: nutriInfo != null ? [nutriInfo.unit] : [],
@@ -166,6 +178,7 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                                 updateSupplementBloc.add(UpdateAmountSupplementInfoUpdateSupplementEvent(nutriInfo: nutriInfo!));
                               },
                               onRemoveItem: () => updateSupplementBloc.add(RemoveSupplementInfoUpdateSupplementEvent(nutriInfo: nutriInfo!, isGoBack: () => Navigator.pop(context))),
+                              showValidation: _showValidation,
                           );
                         }),
                         // Add More button
@@ -195,6 +208,23 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                         margin: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.marginSmall),
                         child: GeneralButton(
                           onTap: () {
+                            final hasErrors = state.supplementObj?.info.orEmpty().any((n) => n.amount == 0) ?? false;
+                            if (hasErrors) {
+                              setState(() { _showValidation = true; });
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                final items = state.supplementObj?.info.orEmpty() ?? [];
+                                for (int i = 0; i < items.length; i++) {
+                                  if (items[i].amount == 0) {
+                                    if (i < _itemKeys.length && _itemKeys[i].currentContext != null) {
+                                      Scrollable.ensureVisible(_itemKeys[i].currentContext!, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                    }
+                                    break;
+                                  }
+                                }
+                              });
+                              return;
+                            }
+                            setState(() { _showValidation = false; });
                             if (state.supplementObj!.name.isNotEmptyOrNull()) {
                               updateSupplementBloc.add(SavingUpdateSupplement(onFinish: () => Navigator.pop(context)));
                             }

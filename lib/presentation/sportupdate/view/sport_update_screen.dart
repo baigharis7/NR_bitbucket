@@ -30,8 +30,11 @@ class SportUpdateScreen extends StatefulWidget {
 }
 
 class _SportUpdateScreenState extends State<SportUpdateScreen> {
-  late FocusNode _focusInputController;
+  FocusNode _focusInputController = FocusNode();
   late SportUpdateBloc sportUpdateBloc;
+  final _scrollController = ScrollController();
+  bool _showValidation = false;
+  final List<GlobalKey> _itemKeys = [];
 
   @override
   void initState() {
@@ -48,6 +51,12 @@ class _SportUpdateScreenState extends State<SportUpdateScreen> {
       }
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -98,6 +107,7 @@ class _SportUpdateScreenState extends State<SportUpdateScreen> {
               backgroundColor: Colors.transparent,
               body: SafeArea(
                   child: SingleChildScrollView(
+                    controller: _scrollController,
                     padding: const EdgeInsets.symmetric(
                         horizontal: Dimens.paddingSmall,
                         vertical: Dimens.paddingLarge),
@@ -113,6 +123,7 @@ class _SportUpdateScreenState extends State<SportUpdateScreen> {
                         image: 'assets/images/sport.png',
                         searchHintText: AppLocalizations.of(context)!.search_activity_hint,
                         items: state.sportsInfo?.sportsInfoMaster.map((sport) => sport.translate(context)).toList(),
+                        onFocusNodeCreated: (node) => _focusInputController = node,
                         onItemSelect: (sportName, focus) {
                           _focusInputController = focus;
                           final sportIntensities = eventsHelper.getChosenSportIntensities(sportName, state.sportsInfo!, currentLanguage);
@@ -120,6 +131,13 @@ class _SportUpdateScreenState extends State<SportUpdateScreen> {
                           final sportInfo = sportUpdateBloc.findSportById(sportId);
                           final info = AddSportFavInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null, timeStart: DateTime.now().millisecondsSinceEpoch);
                           sportUpdateBloc.add(AddSportSportUpdateEvent(sportInfo: info));
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _scrollController.animateTo(
+                              _scrollController.position.maxScrollExtent,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeOut,
+                            );
+                          });
                         },
                       ),
                       const SizedBox(height: Dimens.height12),
@@ -130,18 +148,37 @@ class _SportUpdateScreenState extends State<SportUpdateScreen> {
                         itemCount: state.sportSimpleEvent?.info?.length ?? 0,
                         itemBuilder: (context, index) {
                           final sport = state.sportSimpleEvent?.info?[index];
+                          while (_itemKeys.length <= index) { _itemKeys.add(GlobalKey()); }
                           return SportEventItem(
+                            key: _itemKeys[index],
                             allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
                             sport: sport!,
                             removeSport: () => sportUpdateBloc.add(RemoveSportSportUpdateEvent(sportInfo: sport, isGoBack: () => Navigator.pop(context))),
                             editMinutes: (updatedSport) => sportUpdateBloc.add(SetMinutesSportUpdateEvent(sportInfo: updatedSport)),
                             editIntensity: (updatedSport) => sportUpdateBloc.add(SetIntensitySportUpdateEvent(sportInfo: updatedSport)),
+                            showValidation: _showValidation,
                           );
                         },),
                       Container(
                         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                         child: GeneralButton(onTap: () {
-                          if (sportUpdateBloc.validateSportList() ?? true) return;
+                          if (sportUpdateBloc.validateSportList() ?? true) {
+                            setState(() { _showValidation = true; });
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              final items = state.sportSimpleEvent?.info ?? [];
+                              for (int i = 0; i < items.length; i++) {
+                                final sport = items[i];
+                                if (sport.minutes == null || sport.minutes! <= 0 || sport.intensity == null) {
+                                  if (i < _itemKeys.length && _itemKeys[i].currentContext != null) {
+                                    Scrollable.ensureVisible(_itemKeys[i].currentContext!, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                  }
+                                  break;
+                                }
+                              }
+                            });
+                            return;
+                          }
+                          setState(() { _showValidation = false; });
                           sportUpdateBloc.add(FinishUpdateSportItemSportUpdateEvent(onFinish: () => Navigator.pop(context)));
                         },
                         ),

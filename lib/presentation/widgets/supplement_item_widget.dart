@@ -87,13 +87,17 @@ class _SupplementItemWidgetState extends State<SupplementItemWidget> {
                     textAlignVertical: TextAlignVertical.center,
                     keyboardType: TextInputType.number,
                     controller: _controller,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingSmall),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingSmall),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(11)),
-                        borderSide: BorderSide(color: AppColors.silver, width: 1),
+                        borderRadius: const BorderRadius.all(Radius.circular(11)),
+                        borderSide: BorderSide(color: showError ? AppColors.errorRed : AppColors.silver, width: 1),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: const BorderRadius.all(Radius.circular(11)),
+                        borderSide: BorderSide(color: showError ? AppColors.errorRed : AppColors.silver, width: 1),
                       ),
                     ),
                     onChanged: widget.onChangeAmount,

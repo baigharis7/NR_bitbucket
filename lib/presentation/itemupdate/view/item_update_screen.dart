@@ -32,7 +32,10 @@ class ItemUpdateScreen extends StatefulWidget {
 class _ItemUpdateScreenState extends State<ItemUpdateScreen> {
   late ItemUpdateBloc itemUpdateBloc;
   TextEditingController _foodInputController = TextEditingController();
-  late FocusNode _focusInputController;
+  FocusNode _focusInputController = FocusNode();
+  final _scrollController = ScrollController();
+  bool _showValidation = false;
+  final List<GlobalKey> _itemKeys = [];
 
   @override
   void initState() {
@@ -57,6 +60,7 @@ class _ItemUpdateScreenState extends State<ItemUpdateScreen> {
   @override
   void dispose() {
     _foodInputController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -108,6 +112,7 @@ class _ItemUpdateScreenState extends State<ItemUpdateScreen> {
               backgroundColor: Colors.transparent,
               body: SafeArea(
                   child: SingleChildScrollView(
+                controller: _scrollController,
                 padding: const EdgeInsets.symmetric(
                     horizontal: Dimens.paddingSmall,
                     vertical: Dimens.paddingLarge),
@@ -123,11 +128,19 @@ class _ItemUpdateScreenState extends State<ItemUpdateScreen> {
                     image: 'assets/images/meal_time_${state.foodEvent?.mealTime ?? 0}.png',
                     searchHintText: AppLocalizations.of(context)!.search_food_hint,
                     items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),
+                    onFocusNodeCreated: (node) => _focusInputController = node,
                     onItemSelect: (option, focus) {
                       _focusInputController = focus;
                       final food = eventHelper.findFoodByFoodName(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                       final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                       itemUpdateBloc.add(AddFoodItemUpdateEvent(foodInEvent: food!));
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _scrollController.animateTo(
+                          _scrollController.position.maxScrollExtent,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOut,
+                        );
+                      });
                     },
                   ),
                   const SizedBox(height: Dimens.height12),
@@ -138,9 +151,11 @@ class _ItemUpdateScreenState extends State<ItemUpdateScreen> {
                     itemCount: state.foodEvent?.ingredients.length ?? 0,
                     itemBuilder: (context, index) {
                       final foodInEvent = state.foodEvent!.ingredients.orEmpty()[index];
+                      while (_itemKeys.length <= index) { _itemKeys.add(GlobalKey()); }
                       final option = eventHelper.findFoodNameFromId(foodInEvent.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                       final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                       return FoodEventItem(
+                        key: _itemKeys[index],
                         options: option,
                         unitsFoodsMaster: state.unitsFoodsMaster!,
                         unitsInfoMaster: state.unitsInfoMaster!,
@@ -156,12 +171,28 @@ class _ItemUpdateScreenState extends State<ItemUpdateScreen> {
                         onCookingMethodChange: (changedFood) => itemUpdateBloc.add(UpdateCookingMethodItemUpdateEvent(foodInEvent: changedFood)),
                         onConversionFactorChange: (changedFood) => itemUpdateBloc.add(UpdateConversionFactorItemUpdateEvent(foodInEvent: changedFood)),
                         onOilUsedChange: (changedFood) => itemUpdateBloc.add(UpdateOilItemUpdateEvent(foodInEvent: changedFood)),
+                        showValidation: _showValidation,
                       );
                   },),
                   if (state.foodEvent?.ingredients.isNotEmpty == true) Container(
                     margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                     child: GeneralButton(onTap: () {
-                      if (itemUpdateBloc.validateList() ?? true) return;
+                      if (itemUpdateBloc.validateList() ?? true) {
+                        setState(() { _showValidation = true; });
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          final items = state.foodEvent?.ingredients ?? [];
+                          for (int i = 0; i < items.length; i++) {
+                            if (items[i].qty <= 0 || items[i].unit == -1) {
+                              if (i < _itemKeys.length && _itemKeys[i].currentContext != null) {
+                                Scrollable.ensureVisible(_itemKeys[i].currentContext!, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                              }
+                              break;
+                            }
+                          }
+                        });
+                        return;
+                      }
+                      setState(() { _showValidation = false; });
                       itemUpdateBloc.add(FinishUpdateFoodEventAction(onFinish: ()=> Navigator.pop(context)));
                     },
                     ),

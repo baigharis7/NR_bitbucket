@@ -18,7 +18,8 @@ class HeaderAddItemCardSection extends StatefulWidget {
   final Widget? child;
   final String? backgroundImage;
   final String? searchHintText;
-  const HeaderAddItemCardSection({super.key, this.title, this.onBackTap, this.image, this.items, this.onItemSelect, this.path, this.child, this.backgroundImage, this.searchHintText});
+  final ValueChanged<FocusNode>? onFocusNodeCreated;
+  const HeaderAddItemCardSection({super.key, this.title, this.onBackTap, this.image, this.items, this.onItemSelect, this.path, this.child, this.backgroundImage, this.searchHintText, this.onFocusNodeCreated});
 
   @override
   State<HeaderAddItemCardSection> createState() => _HeaderAddItemCardSectionState();
@@ -29,6 +30,14 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
   final FocusNode _focusInputController = FocusNode();
   final GlobalKey _inputKey = GlobalKey();
   List<String> _currentSuggestions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onFocusNodeCreated?.call(_focusInputController);
+    });
+  }
 
   @override
   void dispose() {

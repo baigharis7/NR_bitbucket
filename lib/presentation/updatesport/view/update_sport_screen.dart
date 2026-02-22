@@ -32,6 +32,8 @@ class UpdateSportScreen extends StatefulWidget {
 class _UpdateSportScreenState extends State<UpdateSportScreen> {
   final _scrollController = ScrollController();
   FocusNode _focusInputController = FocusNode();
+  bool _showValidation = false;
+  final List<GlobalKey> _itemKeys = [];
 
   @override
   void dispose() {
@@ -118,6 +120,7 @@ class _UpdateSportScreenState extends State<UpdateSportScreen> {
                           image: 'assets/images/sport.png',
                           searchHintText: AppLocalizations.of(context)!.search_activity_hint,
                           items: state.sportsInfo?.sportsInfoMaster.map((sport) => sport.translate(context)).toList() ?? [],
+                          onFocusNodeCreated: (node) => _focusInputController = node,
                           onItemSelect: (sportName, focus) {
                             _focusInputController = focus;
                             final sportIntensities = eventsHelper.getChosenSportIntensities(sportName, state.sportsInfo!, currentLanguage);
@@ -125,6 +128,13 @@ class _UpdateSportScreenState extends State<UpdateSportScreen> {
                             final sportInfo = updateSportBloc.findSportById(sportId);
                             final info = AddSportFavInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null, timeStart: DateTime.now().millisecondsSinceEpoch);
                             updateSportBloc.add(UpdateSportItemUpdateSportEvent(sportInfo: info));
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              _scrollController.animateTo(
+                                _scrollController.position.maxScrollExtent,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeOut,
+                              );
+                            });
                           },
                         ),
                         if (state.sportSimple?.info?.isNotEmpty == true) ...[
@@ -160,12 +170,15 @@ class _UpdateSportScreenState extends State<UpdateSportScreen> {
                           ...state.sportSimple!.info!.asMap().entries.map((entry) {
                             final index = entry.key;
                             final item = entry.value;
+                            while (_itemKeys.length <= index) { _itemKeys.add(GlobalKey()); }
                             return SportEventItem(
+                                key: _itemKeys[index],
                                 allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
                                 sport: item,
                                 removeSport: () => updateSportBloc.add(RemoveSportItemUpdateSportEvent(sportInfo: item, isGoBack: () => Navigator.pop(context))),
                                 editMinutes: (sportInfo) => updateSportBloc.add(UpdateSportItemMinutesUpdateSportEvent(sportInfo: sportInfo)),
                                 editIntensity: (sportInfo) => updateSportBloc.add(UpdateSportItemIntensityUpdateSportEvent(sportInfo: sportInfo)),
+                                showValidation: _showValidation,
                             );
                           }),
                           // Add More button
@@ -194,6 +207,24 @@ class _UpdateSportScreenState extends State<UpdateSportScreen> {
                       if (state.sportSimple?.info?.isNotEmpty == true) Container(
                         margin: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.marginSmall),
                         child: GeneralButton(onTap: () {
+                          final hasErrors = state.sportSimple?.info?.any((sport) => sport.minutes == null || sport.minutes! <= 0 || sport.intensity == null) ?? false;
+                          if (hasErrors) {
+                            setState(() { _showValidation = true; });
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              final items = state.sportSimple?.info ?? [];
+                              for (int i = 0; i < items.length; i++) {
+                                final sport = items[i];
+                                if (sport.minutes == null || sport.minutes! <= 0 || sport.intensity == null) {
+                                  if (i < _itemKeys.length && _itemKeys[i].currentContext != null) {
+                                    Scrollable.ensureVisible(_itemKeys[i].currentContext!, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                  }
+                                  break;
+                                }
+                              }
+                            });
+                            return;
+                          }
+                          setState(() { _showValidation = false; });
                           if (state.sportSimple?.title.isNotEmptyOrNull() == true) {
                             updateSportBloc.add(SaveUpdateSportUpdateSportEvent(onFinish: () => Navigator.pop(context)));
                           }

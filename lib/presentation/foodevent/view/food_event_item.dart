@@ -186,13 +186,17 @@ class _FoodEventItemState extends State<FoodEventItem> {
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.search,
                         controller: _quantityController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
-                          contentPadding: EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingSmall),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingSmall),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(11)),
-                            borderSide: BorderSide(color: AppColors.silver, width: 1),
+                            borderRadius: const BorderRadius.all(Radius.circular(11)),
+                            borderSide: BorderSide(color: widget.showValidation && missingQty ? AppColors.errorRed : AppColors.silver, width: 1),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: const BorderRadius.all(Radius.circular(11)),
+                            borderSide: BorderSide(color: widget.showValidation && missingQty ? AppColors.errorRed : AppColors.silver, width: 1),
                           ),
                         ),
                         onChanged: (qty) {
@@ -208,12 +212,12 @@ class _FoodEventItemState extends State<FoodEventItem> {
                           ? Container(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: Dimens.paddingSmall),
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(11)),
+                                      const BorderRadius.all(Radius.circular(11)),
                                   border: Border.fromBorderSide(
-                                      BorderSide(color: AppColors.silver, width: 1))),
+                                      BorderSide(color: widget.showValidation && missingUnit ? AppColors.errorRed : AppColors.silver, width: 1))),
                               child: DropdownButton<String>(
                                 isExpanded: true,
                                 underline: Container(),
@@ -288,10 +292,10 @@ class _FoodEventItemState extends State<FoodEventItem> {
                       child: Container(
                         height: Dimens.heightSmall - 15,
                         padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall),
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(11)),
-                            border: Border.fromBorderSide(BorderSide(color: AppColors.silver, width: 1))),
+                            borderRadius: const BorderRadius.all(Radius.circular(11)),
+                            border: Border.fromBorderSide(BorderSide(color: widget.showValidation && missingCookingMethod ? AppColors.errorRed : AppColors.silver, width: 1))),
                         child: DropdownButton<int>(
                           icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
                           isExpanded: true,

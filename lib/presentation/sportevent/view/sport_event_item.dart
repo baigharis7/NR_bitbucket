@@ -116,12 +116,12 @@ class _SportEventItem extends State<SportEventItem> {
                     keyboardType: TextInputType.number,
                     controller: _durationTextController,
                     textAlignVertical: TextAlignVertical.center,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingSmall),
-                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.silver, width: 1), borderRadius: BorderRadius.all(Radius.circular(Dimens.border11))),
-                      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.silver, width: 1), borderRadius: BorderRadius.all(Radius.circular(Dimens.border11))),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingSmall),
+                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: widget.showValidation && missingDuration ? AppColors.errorRed : AppColors.silver, width: 1), borderRadius: const BorderRadius.all(Radius.circular(Dimens.border11))),
+                      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: widget.showValidation && missingDuration ? AppColors.errorRed : AppColors.silver, width: 1), borderRadius: const BorderRadius.all(Radius.circular(Dimens.border11))),
                     ),
                     onChanged: (minutes) {
                       sportInfo.minutes = minutes.isEmpty ? null : int.parse(minutes);
@@ -151,12 +151,12 @@ class _SportEventItem extends State<SportEventItem> {
           if (_sportIntensities != null && _sportIntensities! > 1) Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
                 height: Dimens.heightSmall - 15,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius:
-                    BorderRadius.all(Radius.circular(11)),
+                    const BorderRadius.all(Radius.circular(11)),
                     border: Border.fromBorderSide(
-                        BorderSide(color: AppColors.silver, width: 1))),
+                        BorderSide(color: widget.showValidation && missingIntensity ? AppColors.errorRed : AppColors.silver, width: 1))),
                 child: DropdownButton<String>(
                   isExpanded: true,
                   underline: Container(),
