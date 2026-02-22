@@ -118,85 +118,91 @@ class _JournalLiquidScreen extends State<JournalLiquidScreen> {
                   ),
                 ),
               ),
-              body: SingleChildScrollView(
-                child: Container(
-                  margin: const EdgeInsets.all(Dimens.marginNormal),
-                  child: Column(
-                    children: [
-                      if (state.showCard != null && state.showCard!) ExplainingCardsHelper().getExplainingCardWithId(
-                        context: context,
-                        explainingCardId: ExplainingCardRefs.addNewLiquidEvent.index,
-                        onHideCard: () => bloc.add(HideExplainingCardAction()),
-                        onPressedButton: () => Navigator.pushNamed(context, AddLiquidEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
-                      ),
-                      // HorizontalWaterBar(
-                      //   waterTaken: eventsHelper.getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty()),
-                      //   fractionToFill: eventsHelper.getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), ((state.userProfile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
-                      //   onAddWater: () => Navigator.pushNamed(context, AddWaterEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
-                      //   cardElevation: 2,
-                      // ),
-                      state.todayLiquidEvents!.isNotEmpty
-                          ? Column(
-                        children: [
-                          ...state.todayLiquidEvents!.map((liquidEvent) {
-                            return EventItemWithEditAndLike(
-                              name: liquidEvent.foodInfo!.map((food) => food.translate(context)).join(', '),
-                              isFavorite: /** TODO: aquí poner la lógica de los favoritos */ false,
-                              onEdit: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  AddLiquidEventScreen.routeName,
-                                  arguments: mapToLiquidEventSimple(liquidEvent),
-                                ).then((value) {
-                                  bloc.add(InitializeStateAction());
-                                });
-                              },
-                              onDetail: () => Navigator.pushNamed(
-                                  context,
-                                  AddLiquidEventScreen.routeName,
-                                  arguments: mapToLiquidEventSimple(liquidEvent),
-                              ).then((value) {
-                                bloc.add(InitializeStateAction());
-                              }),
-                              onFavorite: () => Navigator.pushNamed(
-                                context,
-                                AddFoodFavoriteScreen.routeName,
-                                arguments: mapToFoodFavoriteList(liquidEvent.foodInfo!),
-                              ),
-                              onDelete: () => bloc.add(DeleteLiquidEventAction(liquidEventComplete: liquidEvent, onFinish: () => _showConfirmationDialog(context))),
-                            );
-                          }),
-                        ],
-                      )
-                          : Container(
-                              margin: const EdgeInsets.only(bottom: Dimens.marginLarge, top: Dimens.marginLarge),
-                              child: Text(AppLocalizations.of(context)!.no_liquid_events),
+              body: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Container(
+                        margin: const EdgeInsets.all(Dimens.marginNormal),
+                        child: Column(
+                          children: [
+                            if (state.showCard != null && state.showCard!) ExplainingCardsHelper().getExplainingCardWithId(
+                              context: context,
+                              explainingCardId: ExplainingCardRefs.addNewLiquidEvent.index,
+                              onHideCard: () => bloc.add(HideExplainingCardAction()),
+                              onPressedButton: () => Navigator.pushNamed(context, AddLiquidEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
                             ),
-                      // Container(
-                      //   alignment: Alignment.centerLeft,
-                      //   margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
-                      //   child: Text(
-                      //     AppLocalizations.of(context)!.this_week,
-                      //     style: const TextStyle(
-                      //       fontWeight: FontWeight.bold,
-                      //     ),
-                      //   ),
-                      // ),
-                      // WeeklyInfoCard(
-                      //   weeklyData: state.weeklyData ?? [],
-                      //   kcals: state.userKcal!,
-                      //   cardElevation: 2,
-                      // ),
-                      Container(
-                        margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
-                        child: GeneralButton(
-                          title: AppLocalizations.of(context)!.add_liquid_title,
-                          onTap: () => Navigator.pushNamed(ctx, AddLiquidEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
+                            // HorizontalWaterBar(
+                            //   waterTaken: eventsHelper.getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty()),
+                            //   fractionToFill: eventsHelper.getWaterFractionToFillFromEvents(state.waterEvents, state.todayLiquidEvents.orEmpty(), ((state.userProfile?.physicalCharacteristics?.weight ?? 0) * 0.035)),
+                            //   onAddWater: () => Navigator.pushNamed(context, AddWaterEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
+                            //   cardElevation: 2,
+                            // ),
+                            state.todayLiquidEvents!.isNotEmpty
+                                ? Column(
+                              children: [
+                                ...state.todayLiquidEvents!.map((liquidEvent) {
+                                  return EventItemWithEditAndLike(
+                                    name: liquidEvent.foodInfo!.map((food) => food.translate(context)).join(', '),
+                                    isFavorite: /** TODO: aquí poner la lógica de los favoritos */ false,
+                                    onEdit: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        AddLiquidEventScreen.routeName,
+                                        arguments: mapToLiquidEventSimple(liquidEvent),
+                                      ).then((value) {
+                                        bloc.add(InitializeStateAction());
+                                      });
+                                    },
+                                    onDetail: () => Navigator.pushNamed(
+                                        context,
+                                        AddLiquidEventScreen.routeName,
+                                        arguments: mapToLiquidEventSimple(liquidEvent),
+                                    ).then((value) {
+                                      bloc.add(InitializeStateAction());
+                                    }),
+                                    onFavorite: () => Navigator.pushNamed(
+                                      context,
+                                      AddFoodFavoriteScreen.routeName,
+                                      arguments: mapToFoodFavoriteList(liquidEvent.foodInfo!),
+                                    ),
+                                    onDelete: () => bloc.add(DeleteLiquidEventAction(liquidEventComplete: liquidEvent, onFinish: () => _showConfirmationDialog(context))),
+                                  );
+                                }),
+                              ],
+                            )
+                                : Container(
+                                    margin: const EdgeInsets.only(bottom: Dimens.marginLarge, top: Dimens.marginLarge),
+                                    child: Text(AppLocalizations.of(context)!.no_liquid_events),
+                                  ),
+                            // Container(
+                            //   alignment: Alignment.centerLeft,
+                            //   margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
+                            //   child: Text(
+                            //     AppLocalizations.of(context)!.this_week,
+                            //     style: const TextStyle(
+                            //       fontWeight: FontWeight.bold,
+                            //     ),
+                            //   ),
+                            // ),
+                            // WeeklyInfoCard(
+                            //   weeklyData: state.weeklyData ?? [],
+                            //   kcals: state.userKcal!,
+                            //   cardElevation: 2,
+                            // ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  Container(
+                    margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge, bottom: Dimens.marginSmall),
+                    child: GeneralButton(
+                      title: AppLocalizations.of(context)!.add,
+                      onTap: () => Navigator.pushNamed(ctx, AddLiquidEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
+                    ),
+                  ),
+                ],
               ),
               bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.JOURNAL)
               // const CustomBottomAppBar(initStateCallback: null,),

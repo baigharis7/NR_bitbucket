@@ -198,7 +198,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
                 Container(
                   margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
                   child: GeneralButton(
-                    title: AppLocalizations.of(context)!.add_new,
+                    title: AppLocalizations.of(context)!.add,
                     onTap: _onFabPressed,
                   ),
                 ),

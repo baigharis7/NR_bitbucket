@@ -115,36 +115,40 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
               ),
             ),
           ),
-          body: SingleChildScrollView(child: Column(children: [
-            ...state.routines.orEmpty().map((sportRoutine) => CalenderEventListItem(
-                title: sportRoutine.sportName.toString(),
-                onEdit: () { Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: sportRoutine).then((value) => Navigator.pop(context)); },
-                onDelete: () => bloc.add(RoutineDeleteEventAction(sportRoutineCompleted: sportRoutine, onFinish: () => Navigator.pop(context))),
-              isFavourite: bloc.isFoundObjectFromFavoriteList(mapToSportFavoriteFromRoutine(sportRoutine)) == null ? false : true,
-              onHeartClick: () {
-                  if (bloc.isFoundObjectFromFavoriteList(mapToSportFavoriteFromRoutine(sportRoutine)) == null) {
-                    bloc.add(RoutineFavoriteEventAction(sportRoutineCompleted: sportRoutine, onFinish: () => Navigator.pop(context)));
-                  } else {
-                    showUndoFavoriteDialog(
-                      context: context,
-                      title: sportRoutine.sportName.orEmpty(),
-                      reloadScreen: () => bloc.add(RoutinesInitialStateAction()),
-                      onUndoFavorite: () {
-                        bloc.add(RemoveRoutineFavoriteEventAction(sportRoutineCompleted: sportRoutine, onFinish: () => Navigator.pop(context)));
-                      },
-                    );
-                  }
-              },
-            ),
+          body: Column(children: [
+            Expanded(
+              child: SingleChildScrollView(child: Column(children: [
+                ...state.routines.orEmpty().map((sportRoutine) => CalenderEventListItem(
+                    title: sportRoutine.sportName.toString(),
+                    onEdit: () { Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: sportRoutine).then((value) => Navigator.pop(context)); },
+                    onDelete: () => bloc.add(RoutineDeleteEventAction(sportRoutineCompleted: sportRoutine, onFinish: () => Navigator.pop(context))),
+                  isFavourite: bloc.isFoundObjectFromFavoriteList(mapToSportFavoriteFromRoutine(sportRoutine)) == null ? false : true,
+                  onHeartClick: () {
+                      if (bloc.isFoundObjectFromFavoriteList(mapToSportFavoriteFromRoutine(sportRoutine)) == null) {
+                        bloc.add(RoutineFavoriteEventAction(sportRoutineCompleted: sportRoutine, onFinish: () => Navigator.pop(context)));
+                      } else {
+                        showUndoFavoriteDialog(
+                          context: context,
+                          title: sportRoutine.sportName.orEmpty(),
+                          reloadScreen: () => bloc.add(RoutinesInitialStateAction()),
+                          onUndoFavorite: () {
+                            bloc.add(RemoveRoutineFavoriteEventAction(sportRoutineCompleted: sportRoutine, onFinish: () => Navigator.pop(context)));
+                          },
+                        );
+                      }
+                  },
+                ),
+                ),
+              ],),),
             ),
             Container(
-              margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+              margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge, bottom: Dimens.marginSmall),
               child: GeneralButton(
-                title: '${AppLocalizations.of(context)!.add} ${AppLocalizations.of(context)!.routines}',
+                title: AppLocalizations.of(context)!.add,
                 onTap: () => Navigator.pushNamed(context, AddSportEventScreen.routeName).then((value) => Navigator.pop(context)),
               ),
             ),
-          ],),),
+          ],),
         ),
       ),),
     );

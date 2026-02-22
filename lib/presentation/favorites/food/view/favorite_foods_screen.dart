@@ -95,90 +95,96 @@ class _FavoriteFoodsScreenState extends State<FavoriteFoodsScreen> {
                   ),
                 ),
               ),
-              body: SingleChildScrollView(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      if (state.showCard != null && state.showCard!) ExplainingCardsHelper().getExplainingCardWithId(
-                        context: context,
-                        explainingCardId: ExplainingCardRefs.addFoodFavorite.index,
-                        onHideCard: () => bloc.add(HideExplainingCardAction()),
-                        onPressedButton: () => Navigator.pushNamed(context, CreateNewFoodFavoriteScreen.routeName).then((value) => bloc.add(InitializeState())),
-                      ),
-                      FavoritesCluster(
-                        clusterTitle: '${AppLocalizationsHelper.instance.translate('breakfast')}s',
-                        items: /*bloc.getFavoritesSummary(Breakfast()).map((favorite) => favorite.title).toList()*/ [],
-                        onEdit: (index) => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: bloc.getFavoritesSummary(Breakfast())[index]).then((value) => bloc.add(InitializeState())),
-                        onFavorite: (index) => showUndoFavoriteDialog(
-                          context: context,
-                          foodTitle: bloc.getFavoritesSummary(Breakfast())[index].title ?? '',
-                          onUndoFavorite: () => bloc.add(
-                            RemoveFavoriteAction(
-                              foodFavorite: bloc.getFavoritesSummary(Breakfast())[index],
-                              onFinish: () => Navigator.pop(context),
+              body: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            if (state.showCard != null && state.showCard!) ExplainingCardsHelper().getExplainingCardWithId(
+                              context: context,
+                              explainingCardId: ExplainingCardRefs.addFoodFavorite.index,
+                              onHideCard: () => bloc.add(HideExplainingCardAction()),
+                              onPressedButton: () => Navigator.pushNamed(context, CreateNewFoodFavoriteScreen.routeName).then((value) => bloc.add(InitializeState())),
                             ),
-                          ),
-                        ),
-                        onSeeMore: () => Navigator.pushNamed(context, FavoriteFoodsClusterScreen.routeName, arguments: Breakfast()),
-                      ),
-                      FavoritesCluster(
-                        clusterTitle: '${AppLocalizationsHelper.instance.translate('lunch')}s',
-                        items: /*bloc.getFavoritesSummary(Lunch()).map((favorite) => favorite.title).toList()*/ [],
-                        onEdit: (index) => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: bloc.getFavoritesSummary(Lunch())[index]).then((value) => bloc.add(InitializeState())),
-                        onFavorite: (index) => showUndoFavoriteDialog(
-                          context: context,
-                          foodTitle: bloc.getFavoritesSummary(Lunch())[index].title ?? '',
-                          onUndoFavorite: () => bloc.add(
-                            RemoveFavoriteAction(
-                              foodFavorite: bloc.getFavoritesSummary(Lunch())[index],
-                              onFinish: () => Navigator.pop(context),
+                            FavoritesCluster(
+                              clusterTitle: '${AppLocalizationsHelper.instance.translate('breakfast')}s',
+                              items: /*bloc.getFavoritesSummary(Breakfast()).map((favorite) => favorite.title).toList()*/ [],
+                              onEdit: (index) => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: bloc.getFavoritesSummary(Breakfast())[index]).then((value) => bloc.add(InitializeState())),
+                              onFavorite: (index) => showUndoFavoriteDialog(
+                                context: context,
+                                foodTitle: bloc.getFavoritesSummary(Breakfast())[index].title ?? '',
+                                onUndoFavorite: () => bloc.add(
+                                  RemoveFavoriteAction(
+                                    foodFavorite: bloc.getFavoritesSummary(Breakfast())[index],
+                                    onFinish: () => Navigator.pop(context),
+                                  ),
+                                ),
+                              ),
+                              onSeeMore: () => Navigator.pushNamed(context, FavoriteFoodsClusterScreen.routeName, arguments: Breakfast()),
                             ),
-                          ),
-                        ),
-                        onSeeMore: () => Navigator.pushNamed(context, FavoriteFoodsClusterScreen.routeName, arguments: Lunch()),
-                      ),
-                      FavoritesCluster(
-                        clusterTitle: '${AppLocalizationsHelper.instance.translate('dinner')}s',
-                        items: /*bloc.getFavoritesSummary(Dinner()).map((favorite) => favorite.title).toList()*/ [],
-                        onEdit: (index) => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: bloc.getFavoritesSummary(Dinner())[index]).then((value) => bloc.add(InitializeState())),
-                        onFavorite: (index) => showUndoFavoriteDialog(
-                          context: context,
-                          foodTitle: bloc.getFavoritesSummary(Dinner())[index].title ?? '',
-                          onUndoFavorite: () => bloc.add(
-                            RemoveFavoriteAction(
-                              foodFavorite: bloc.getFavoritesSummary(Dinner())[index],
-                              onFinish: () => Navigator.pop(context),
+                            FavoritesCluster(
+                              clusterTitle: '${AppLocalizationsHelper.instance.translate('lunch')}s',
+                              items: /*bloc.getFavoritesSummary(Lunch()).map((favorite) => favorite.title).toList()*/ [],
+                              onEdit: (index) => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: bloc.getFavoritesSummary(Lunch())[index]).then((value) => bloc.add(InitializeState())),
+                              onFavorite: (index) => showUndoFavoriteDialog(
+                                context: context,
+                                foodTitle: bloc.getFavoritesSummary(Lunch())[index].title ?? '',
+                                onUndoFavorite: () => bloc.add(
+                                  RemoveFavoriteAction(
+                                    foodFavorite: bloc.getFavoritesSummary(Lunch())[index],
+                                    onFinish: () => Navigator.pop(context),
+                                  ),
+                                ),
+                              ),
+                              onSeeMore: () => Navigator.pushNamed(context, FavoriteFoodsClusterScreen.routeName, arguments: Lunch()),
                             ),
-                          ),
-                        ),
-                        onSeeMore: () => Navigator.pushNamed(context, FavoriteFoodsClusterScreen.routeName, arguments: Dinner()),),
-                      FavoritesCluster(
-                        clusterTitle: '${AppLocalizationsHelper.instance.translate('snack')}s',
-                        items: /*bloc.getFavoritesSummary(Snack()).map((favorite) => favorite.title).toList()*/ [],
-                        onEdit: (index) => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: bloc.getFavoritesSummary(Snack())[index]).then((value) => bloc.add(InitializeState())),
-                        onFavorite: (index) => showUndoFavoriteDialog(
-                          context: context,
-                          foodTitle: bloc.getFavoritesSummary(Snack())[index].title ?? '',
-                          onUndoFavorite: () => bloc.add(
-                            RemoveFavoriteAction(
-                              foodFavorite: bloc.getFavoritesSummary(Snack())[index],
-                              onFinish: () => Navigator.pop(context),
-                            ),
-                          ),
-                        ),
-                        onSeeMore: () => Navigator.pushNamed(context, FavoriteFoodsClusterScreen.routeName, arguments: Snack()),),
-                      Container(
-                        margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
-                        child: GeneralButton(
-                          title: AppLocalizations.of(context)!.add_new_food_button_text,
-                          onTap: () => Navigator.pushNamed(context, CreateNewFoodFavoriteScreen.routeName).then((value) => bloc.add(InitializeState())),
+                            FavoritesCluster(
+                              clusterTitle: '${AppLocalizationsHelper.instance.translate('dinner')}s',
+                              items: /*bloc.getFavoritesSummary(Dinner()).map((favorite) => favorite.title).toList()*/ [],
+                              onEdit: (index) => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: bloc.getFavoritesSummary(Dinner())[index]).then((value) => bloc.add(InitializeState())),
+                              onFavorite: (index) => showUndoFavoriteDialog(
+                                context: context,
+                                foodTitle: bloc.getFavoritesSummary(Dinner())[index].title ?? '',
+                                onUndoFavorite: () => bloc.add(
+                                  RemoveFavoriteAction(
+                                    foodFavorite: bloc.getFavoritesSummary(Dinner())[index],
+                                    onFinish: () => Navigator.pop(context),
+                                  ),
+                                ),
+                              ),
+                              onSeeMore: () => Navigator.pushNamed(context, FavoriteFoodsClusterScreen.routeName, arguments: Dinner()),),
+                            FavoritesCluster(
+                              clusterTitle: '${AppLocalizationsHelper.instance.translate('snack')}s',
+                              items: /*bloc.getFavoritesSummary(Snack()).map((favorite) => favorite.title).toList()*/ [],
+                              onEdit: (index) => Navigator.pushNamed(context, AddFoodFavoriteScreen.routeName, arguments: bloc.getFavoritesSummary(Snack())[index]).then((value) => bloc.add(InitializeState())),
+                              onFavorite: (index) => showUndoFavoriteDialog(
+                                context: context,
+                                foodTitle: bloc.getFavoritesSummary(Snack())[index].title ?? '',
+                                onUndoFavorite: () => bloc.add(
+                                  RemoveFavoriteAction(
+                                    foodFavorite: bloc.getFavoritesSummary(Snack())[index],
+                                    onFinish: () => Navigator.pop(context),
+                                  ),
+                                ),
+                              ),
+                              onSeeMore: () => Navigator.pushNamed(context, FavoriteFoodsClusterScreen.routeName, arguments: Snack()),),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  Container(
+                    margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge, bottom: Dimens.marginSmall),
+                    child: GeneralButton(
+                      title: AppLocalizations.of(context)!.add,
+                      onTap: () => Navigator.pushNamed(context, CreateNewFoodFavoriteScreen.routeName).then((value) => bloc.add(InitializeState())),
+                    ),
+                  ),
+                ],
               ),
             );
           },

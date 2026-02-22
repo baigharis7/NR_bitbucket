@@ -86,81 +86,87 @@ class _FavoriteLiquidsScreenState extends State<FavoriteLiquidsScreen> {
                   ),
                 ),
               ),
-              body: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    FavoritesCluster(
-                      clusterTitle: AppLocalizationsHelper.instance.translate('breakfast'),
-                      items: bloc.getFavoritesSummary(Breakfast()).map((favorite) => favorite.title).toList(),
-                      onEdit: (index) => bloc.getFavoritesSummary(Breakfast())[index],
-                      onFavorite: (index) => showUndoFavoriteDialog(
-                        context: context,
-                        liquidTitle: bloc.getFavoritesSummary(Breakfast())[index].title,
-                        onUndoFavorite: () => bloc.add(
-                          RemoveFavoriteAction(
-                            liquidFavorite: bloc.getFavoritesSummary(Breakfast())[index],
-                            onFinish: () => Navigator.pop(context),
+              body: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          FavoritesCluster(
+                            clusterTitle: AppLocalizationsHelper.instance.translate('breakfast'),
+                            items: bloc.getFavoritesSummary(Breakfast()).map((favorite) => favorite.title).toList(),
+                            onEdit: (index) => bloc.getFavoritesSummary(Breakfast())[index],
+                            onFavorite: (index) => showUndoFavoriteDialog(
+                              context: context,
+                              liquidTitle: bloc.getFavoritesSummary(Breakfast())[index].title,
+                              onUndoFavorite: () => bloc.add(
+                                RemoveFavoriteAction(
+                                  liquidFavorite: bloc.getFavoritesSummary(Breakfast())[index],
+                                  onFinish: () => Navigator.pop(context),
+                                ),
+                              ),
+                            ),
+                            onSeeMore: () => Navigator.pushNamed(context, FavoriteLiquidsClusterScreen.routeName, arguments: Breakfast()),
                           ),
-                        ),
+                          FavoritesCluster(
+                            clusterTitle: AppLocalizationsHelper.instance.translate('lunch'),
+                            items: bloc.getFavoritesSummary(Lunch()).map((favorite) => favorite.title).toList(),
+                            onEdit: (index) => bloc.getFavoritesSummary(Lunch())[index],
+                            onFavorite: (index) => showUndoFavoriteDialog(
+                              context: context,
+                              liquidTitle: bloc.getFavoritesSummary(Breakfast())[index].title,
+                              onUndoFavorite: () => bloc.add(
+                                RemoveFavoriteAction(
+                                  liquidFavorite: bloc.getFavoritesSummary(Lunch())[index],
+                                  onFinish: () => Navigator.pop(context),
+                                ),
+                              ),
+                            ),
+                            onSeeMore: () => Navigator.pushNamed(context, FavoriteLiquidsClusterScreen.routeName, arguments: Lunch()),
+                          ),
+                          FavoritesCluster(
+                            clusterTitle: AppLocalizationsHelper.instance.translate('dinner'),
+                            items: bloc.getFavoritesSummary(Dinner()).map((favorite) => favorite.title).toList(),
+                            onEdit: (index) => bloc.getFavoritesSummary(Dinner())[index],
+                            onFavorite: (index) => showUndoFavoriteDialog(
+                              context: context,
+                              liquidTitle: bloc.getFavoritesSummary(Breakfast())[index].title,
+                              onUndoFavorite: () => bloc.add(
+                                RemoveFavoriteAction(
+                                  liquidFavorite: bloc.getFavoritesSummary(Dinner())[index],
+                                  onFinish: () => Navigator.pop(context),
+                                ),
+                              ),
+                            ),
+                            onSeeMore: () => Navigator.pushNamed(context, FavoriteLiquidsClusterScreen.routeName, arguments: Dinner()),                    ),
+                          FavoritesCluster(
+                            clusterTitle: AppLocalizationsHelper.instance.translate('snack'),
+                            items: bloc.getFavoritesSummary(Snack()).map((favorite) => favorite.title).toList(),
+                            onEdit: (index) => bloc.getFavoritesSummary(Snack())[index],
+                            onFavorite: (index) => showUndoFavoriteDialog(
+                              context: context,
+                              liquidTitle: bloc.getFavoritesSummary(Breakfast())[index].title,
+                              onUndoFavorite: () => bloc.add(
+                                RemoveFavoriteAction(
+                                  liquidFavorite: bloc.getFavoritesSummary(Snack())[index],
+                                  onFinish: () => Navigator.pop(context),
+                                ),
+                              ),
+                            ),
+                            onSeeMore: () => Navigator.pushNamed(context, FavoriteLiquidsClusterScreen.routeName, arguments: Snack()),                    ),
+                        ],
                       ),
-                      onSeeMore: () => Navigator.pushNamed(context, FavoriteLiquidsClusterScreen.routeName, arguments: Breakfast()),
                     ),
-                    FavoritesCluster(
-                      clusterTitle: AppLocalizationsHelper.instance.translate('lunch'),
-                      items: bloc.getFavoritesSummary(Lunch()).map((favorite) => favorite.title).toList(),
-                      onEdit: (index) => bloc.getFavoritesSummary(Lunch())[index],
-                      onFavorite: (index) => showUndoFavoriteDialog(
-                        context: context,
-                        liquidTitle: bloc.getFavoritesSummary(Breakfast())[index].title,
-                        onUndoFavorite: () => bloc.add(
-                          RemoveFavoriteAction(
-                            liquidFavorite: bloc.getFavoritesSummary(Lunch())[index],
-                            onFinish: () => Navigator.pop(context),
-                          ),
-                        ),
-                      ),
-                      onSeeMore: () => Navigator.pushNamed(context, FavoriteLiquidsClusterScreen.routeName, arguments: Lunch()),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge, bottom: Dimens.marginSmall),
+                    child: GeneralButton(
+                      title: AppLocalizations.of(context)!.add,
+                      onTap: () => Navigator.pushNamed(context, CreateNewLiquidFavoriteScreen.routeName).then((value) => bloc.add(InitializeState())),
                     ),
-                    FavoritesCluster(
-                      clusterTitle: AppLocalizationsHelper.instance.translate('dinner'),
-                      items: bloc.getFavoritesSummary(Dinner()).map((favorite) => favorite.title).toList(),
-                      onEdit: (index) => bloc.getFavoritesSummary(Dinner())[index],
-                      onFavorite: (index) => showUndoFavoriteDialog(
-                        context: context,
-                        liquidTitle: bloc.getFavoritesSummary(Breakfast())[index].title,
-                        onUndoFavorite: () => bloc.add(
-                          RemoveFavoriteAction(
-                            liquidFavorite: bloc.getFavoritesSummary(Dinner())[index],
-                            onFinish: () => Navigator.pop(context),
-                          ),
-                        ),
-                      ),
-                      onSeeMore: () => Navigator.pushNamed(context, FavoriteLiquidsClusterScreen.routeName, arguments: Dinner()),                    ),
-                    FavoritesCluster(
-                      clusterTitle: AppLocalizationsHelper.instance.translate('snack'),
-                      items: bloc.getFavoritesSummary(Snack()).map((favorite) => favorite.title).toList(),
-                      onEdit: (index) => bloc.getFavoritesSummary(Snack())[index],
-                      onFavorite: (index) => showUndoFavoriteDialog(
-                        context: context,
-                        liquidTitle: bloc.getFavoritesSummary(Breakfast())[index].title,
-                        onUndoFavorite: () => bloc.add(
-                          RemoveFavoriteAction(
-                            liquidFavorite: bloc.getFavoritesSummary(Snack())[index],
-                            onFinish: () => Navigator.pop(context),
-                          ),
-                        ),
-                      ),
-                      onSeeMore: () => Navigator.pushNamed(context, FavoriteLiquidsClusterScreen.routeName, arguments: Snack()),                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
-                      child: GeneralButton(
-                        title: AppLocalizations.of(context)!.add_new_liquid_button_text,
-                        onTap: () => Navigator.pushNamed(context, CreateNewLiquidFavoriteScreen.routeName).then((value) => bloc.add(InitializeState())),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             );
           },
