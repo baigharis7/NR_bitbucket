@@ -25,11 +25,9 @@ class FloatingMenuOverlay extends StatefulWidget {
   State<FloatingMenuOverlay> createState() => _FloatingMenuOverlayState();
 }
 
-class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerProviderStateMixin {
+class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with SingleTickerProviderStateMixin {
   late AnimationController _fadeController;
-  late AnimationController _fabRotationController;
   late Animation<double> _opacityAnimation;
-  late Animation<double> _rotationAnimation;
 
   @override
   void initState() {
@@ -40,35 +38,21 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
       duration: const Duration(milliseconds: 400),
     );
 
-    _fabRotationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-
     _opacityAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
     );
 
-    _rotationAnimation = Tween<double>(begin: 0, end: 0.125).animate(
-      CurvedAnimation(parent: _fabRotationController, curve: Curves.easeOut),
-    );
-
     _fadeController.forward();
-    _fabRotationController.forward();
   }
 
   @override
   void dispose() {
     _fadeController.dispose();
-    _fabRotationController.dispose();
     super.dispose();
   }
 
   void _closeMenu() async {
-    await Future.wait([
-      _fadeController.reverse(),
-      _fabRotationController.reverse(),
-    ]);
+    await _fadeController.reverse();
     widget.onClose();
   }
 
@@ -86,7 +70,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: Dimens.margin6,),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               InkWell(
                 onTap: () {
@@ -148,7 +132,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
             child: GestureDetector(
               onTap: _closeMenu,
               child: Stack(
-                alignment: Alignment.bottomRight,
+                alignment: Alignment.center,
                 children: [
                   // Background blur with fade
                   Opacity(
@@ -166,7 +150,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                       padding: const EdgeInsets.all(Dimens.padding4),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           if (widget.showFavoritesRoutinesButtons) SlideTransition(
                             position: Tween<Offset>(
@@ -232,28 +216,6 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                     ),
                   ),
                 ],
-              ),
-            ),
-          ),
-          floatingActionButton: Container(
-            margin: const EdgeInsets.only(bottom: Dimens.margin62),
-            child: FloatingActionButton(
-              clipBehavior: Clip.hardEdge,
-              onPressed: _closeMenu,
-              child: AnimatedBuilder(
-                animation: _rotationAnimation,
-                child: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  decoration: const BoxDecoration(gradient: LinearGradient(colors: [AppColors.greenCyan, AppColors.bluishGreen], begin: Alignment.bottomCenter, end: Alignment.topCenter, stops: [0.0, 0.7])),
-                  child: const Icon(Icons.add),
-                ),
-                builder: (context, child) {
-                  return Transform.rotate(
-                    angle: _rotationAnimation.value * 6.28,
-                    child: child,
-                  );
-                },
               ),
             ),
           ),
