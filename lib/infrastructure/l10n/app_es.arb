@@ -542,7 +542,10 @@
     "please_select_unit": "Por favor, selecciona una unidad",
     "please_select_cooking_method": "Por favor, selecciona un método de cocción",
     "please_enter_duration": "Por favor, introduce la duración",
-    "please_select_intensity": "Por favor, selecciona la intensidad"
+    "please_select_intensity": "Por favor, selecciona la intensidad",
+    "add_faeces": "Agregar heces",
+    "add_urine": "Agregar orina",
+    "food_label": "Etiqueta nutricional"
 
 
 }

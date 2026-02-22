@@ -540,6 +540,9 @@
     "please_select_unit": "Please select a unit",
     "please_select_cooking_method": "Please select a cooking method",
     "please_enter_duration": "Please enter the duration",
-    "please_select_intensity": "Please select the intensity"
+    "please_select_intensity": "Please select the intensity",
+    "add_faeces": "Add Faeces",
+    "add_urine": "Add Urine",
+    "food_label": "Food Label"
 
 }
