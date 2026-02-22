@@ -27,12 +27,23 @@ class _FecesUrineTabsState extends State<FecesUrineTabs> with SingleTickerProvid
   late FecesUrineBloc fecesUrineBloc;
   late TabController _tabController;
   int _selectedTab = 0;
+  bool _initialized = false;
 
   List<String> _tabs = ['', ''];
 
   @override
   void didChangeDependencies() {
     _tabs = [AppLocalizations.of(context)!.faeces.toUpperCase(), AppLocalizations.of(context)!.urine.toUpperCase()];
+    if (!_initialized) {
+      _initialized = true;
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is int) {
+        _selectedTab = args;
+        _tabController.index = _selectedTab;
+      } else if (args is DateTime) {
+        fecesUrineBloc.add(UpdateCalendarDateFecesUrineEventAction(dateTime: args));
+      }
+    }
     super.didChangeDependencies();
   }
 
@@ -45,19 +56,6 @@ class _FecesUrineTabsState extends State<FecesUrineTabs> with SingleTickerProvid
       setState(() {
         _selectedTab = _tabController.index;
       });
-    });
-
-    final widgetsBinding = WidgetsBinding.instance;
-    widgetsBinding.addPostFrameCallback((callback) {
-      if (ModalRoute.of(context)?.settings.arguments != null) {
-        var infoReceived = ModalRoute.of(context)?.settings.arguments;
-        if (infoReceived != null) {
-          if (infoReceived is int?) {
-            _selectedTab = infoReceived as int;
-            _tabController.index = _selectedTab;
-          }
-        }
-      }
     });
 
     super.initState();
