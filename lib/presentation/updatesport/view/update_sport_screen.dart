@@ -21,9 +21,23 @@ import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../../infrastructure/utils/constants.dart';
 
-class UpdateSportScreen extends StatelessWidget {
+class UpdateSportScreen extends StatefulWidget {
   static const routeName = '/update_sport_screen';
   const UpdateSportScreen({super.key});
+
+  @override
+  State<UpdateSportScreen> createState() => _UpdateSportScreenState();
+}
+
+class _UpdateSportScreenState extends State<UpdateSportScreen> {
+  final _scrollController = ScrollController();
+  FocusNode _focusInputController = FocusNode();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +107,7 @@ class UpdateSportScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: SingleChildScrollView(
+                    controller: _scrollController,
                     padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingLarge),
                     child: Column(
                       children: [
@@ -101,9 +116,10 @@ class UpdateSportScreen extends StatelessWidget {
                           title: '${AppLocalizations.of(context)!.update} ${AppLocalizations.of(context)!.physical_activity}',
                           onBackTap: () => Navigator.pop(context),
                           image: 'assets/images/sport.png',
+                          searchHintText: AppLocalizations.of(context)!.search_activity_hint,
                           items: state.sportsInfo?.sportsInfoMaster.map((sport) => sport.translate(context)).toList() ?? [],
                           onItemSelect: (sportName, focus) {
-                            // _sportFocusInputController = focus;
+                            _focusInputController = focus;
                             final sportIntensities = eventsHelper.getChosenSportIntensities(sportName, state.sportsInfo!, currentLanguage);
                             final sportId = eventsHelper.getSportIdByName(sportName, state.sportsInfo!, currentLanguage);
                             final sportInfo = updateSportBloc.findSportById(sportId);
@@ -141,29 +157,16 @@ class UpdateSportScreen extends StatelessWidget {
                             daysOfWeek: state.sportSimple?.daysOfWeek,
                             onUpdateDayOfWeek: (dayOfWeek) => updateSportBloc.add(UpdateSportDayOfWeekUpdateSportEvent(dayOfWeek: dayOfWeek)),
                           ),
-                          // Item cards with connector lines
                           ...state.sportSimple!.info!.asMap().entries.map((entry) {
                             final index = entry.key;
                             final item = entry.value;
-                            return Column(
-                            children: [
-                              if (index > 0) Center(
-                                child: Container(
-                                  width: 1.5,
-                                  height: 15,
-                                  color: Colors.grey.shade300,
-                                ),
-                              ),
-                              if (index == 0) const SizedBox(height: 15),
-                              SportEventItem(
+                            return SportEventItem(
                                 allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
                                 sport: item,
                                 removeSport: () => updateSportBloc.add(RemoveSportItemUpdateSportEvent(sportInfo: item, isGoBack: () => Navigator.pop(context))),
                                 editMinutes: (sportInfo) => updateSportBloc.add(UpdateSportItemMinutesUpdateSportEvent(sportInfo: sportInfo)),
                                 editIntensity: (sportInfo) => updateSportBloc.add(UpdateSportItemIntensityUpdateSportEvent(sportInfo: sportInfo)),
-                              ),
-                            ],
-                          );
+                            );
                           }),
                           // Add More button
                           const SizedBox(height: Dimens.marginSmall),
@@ -174,7 +177,10 @@ class UpdateSportScreen extends StatelessWidget {
                               child: ListTile(
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
                                 tileColor: AppColors.floralWhite,
-                                onTap: () {},
+                                onTap: () {
+                                  _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                  _focusInputController.requestFocus();
+                                },
                                 title: Text(AppLocalizations.of(context)!.add_more),
                                 trailing: const Icon(Icons.add_circle, color: AppColors.yellowishGreen),
                               ),

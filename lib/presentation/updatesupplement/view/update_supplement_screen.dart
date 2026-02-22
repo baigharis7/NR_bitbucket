@@ -31,7 +31,9 @@ class UpdateSupplementScreen extends StatefulWidget {
 
 class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
   late UpdateSupplementBloc updateSupplementBloc;
-  
+  final _scrollController = ScrollController();
+  FocusNode _supplementFocusInputController = FocusNode();
+
   @override
   void initState() {
     updateSupplementBloc = BlocProvider.of<UpdateSupplementBloc>(context);
@@ -102,6 +104,7 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                     children: [
                       Expanded(
                         child: SingleChildScrollView(
+                          controller: _scrollController,
                     padding: const EdgeInsets.symmetric(
                       horizontal: Dimens.paddingSmall,
                       vertical: Dimens.paddingLarge,
@@ -111,8 +114,10 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                         onBackTap: () => Navigator.pop(context),
                         title: AppLocalizations.of(context)!.update + ' ' + AppLocalizations.of(context)!.supplement,
                         image: 'assets/images/supplement.png',
+                        searchHintText: AppLocalizations.of(context)!.search_supplement_hint,
                         items: state.supplementsInfo?.data.map((element) => element.translate(context)).toList(),
                         onItemSelect: (supplementName, focus) {
+                          _supplementFocusInputController = focus;
                           focus.unfocus();
                           final supplement = NutritionUtils.findSupplementByName(state.supplementsInfo?.data ?? [], supplementName, context);
                           updateSupplementBloc.add(AddSupplementInfoUpdateSupplementEvent(nutriInfo: NutriInfo(id: supplement.id, unit: supplement.unit, amount: 0)));
@@ -148,21 +153,10 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                           daysOfWeek: state.supplementObj?.daysOfWeek.orEmpty(),
                           onUpdateDayOfWeek: (weekDay) => updateSupplementBloc.add(UpdateDaysOfWeekSupplementUpdateSupplementEvent(weekDay: weekDay)),
                         ),
-                        // Item cards with connector lines
                         ...state.supplementObj!.info.orEmpty().asMap().entries.map((entry) {
                           final index = entry.key;
                           final nutriInfo = entry.value;
-                          return Column(
-                          children: [
-                            if (index > 0) Center(
-                              child: Container(
-                                width: 1.5,
-                                height: 15,
-                                color: Colors.grey.shade300,
-                              ),
-                            ),
-                            if (index == 0) const SizedBox(height: 15),
-                            SupplementItemWidget(
+                          return SupplementItemWidget(
                               title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
                               amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
                               units: nutriInfo != null ? [nutriInfo.unit] : [],
@@ -172,9 +166,7 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                                 updateSupplementBloc.add(UpdateAmountSupplementInfoUpdateSupplementEvent(nutriInfo: nutriInfo!));
                               },
                               onRemoveItem: () => updateSupplementBloc.add(RemoveSupplementInfoUpdateSupplementEvent(nutriInfo: nutriInfo!, isGoBack: () => Navigator.pop(context))),
-                            ),
-                          ],
-                        );
+                          );
                         }),
                         // Add More button
                         const SizedBox(height: Dimens.marginSmall),
@@ -185,7 +177,10 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                             child: ListTile(
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
                               tileColor: AppColors.floralWhite,
-                              onTap: () {},
+                              onTap: () {
+                                _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                _supplementFocusInputController.requestFocus();
+                              },
                               title: Text(AppLocalizations.of(context)!.add_more),
                               trailing: const Icon(Icons.add_circle, color: AppColors.yellowishGreen),
                             ),

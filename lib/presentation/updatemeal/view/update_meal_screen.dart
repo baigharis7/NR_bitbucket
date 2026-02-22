@@ -26,11 +26,23 @@ import '../../widgets/general_button.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/header_add_item_card_section.dart';
 
-class UpdateMealScreen extends StatelessWidget {
+class UpdateMealScreen extends StatefulWidget {
   static const routeName = '/update_meal_screen';
   const UpdateMealScreen({super.key});
 
-  // late UpdateMealBloc updateMealBloc;
+  @override
+  State<UpdateMealScreen> createState() => _UpdateMealScreenState();
+}
+
+class _UpdateMealScreenState extends State<UpdateMealScreen> {
+  final _scrollController = ScrollController();
+  FocusNode _focusInputController = FocusNode();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +114,7 @@ class UpdateMealScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: SingleChildScrollView(
+                      controller: _scrollController,
                       padding: const EdgeInsets.symmetric(vertical: Dimens.paddingLarge, horizontal: Dimens.paddingSmall),
                       child: Column(
                         children: [
@@ -109,9 +122,10 @@ class UpdateMealScreen extends StatelessWidget {
                             title: '${AppLocalizations.of(context)!.update} ${MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name}',
                             image: 'assets/images/meal_time_${state.foodEvent?.mealTime}.png',
                             onBackTap: () => Navigator.pop(context),
+                            searchHintText: AppLocalizations.of(context)!.search_food_hint,
                             items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),
                             onItemSelect: (option, focus) {
-                              // _focusInputController = focus;
+                              _focusInputController = focus;
                               final food = eventHelper.findFoodByFoodName(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                               updateMealBloc.add(UpdateIngredientsUpdateMealEvent(ingredient: food!));
                             },
@@ -149,23 +163,12 @@ class UpdateMealScreen extends StatelessWidget {
                               onUpdateDayOfWeek: (dayOfWeek) {},
                               showTimePicker: false,
                             ),
-                            // Item cards with connector lines
                             ...state.foodEvent!.ingredients.asMap().entries.map((entry) {
                               final index = entry.key;
                               final ingredient = entry.value;
                               final option = eventHelper.findFoodNameFromId(ingredient.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                               final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                              return Column(
-                                children: [
-                                  if (index > 0) Center(
-                                    child: Container(
-                                      width: 1.5,
-                                      height: 15,
-                                      color: Colors.grey.shade300,
-                                    ),
-                                  ),
-                                  if (index == 0) const SizedBox(height: 15),
-                                  FoodEventItem(
+                              return FoodEventItem(
                                     options: option,
                                     unitsFoodsMaster: state.unitsFoodsMaster ?? UnitsFoodsMaster(unitsFoodsMaster: []),
                                     unitsInfoMaster: state.unitsInfoMaster ?? UnitsInfoMaster(unitsInfoMaster: []),
@@ -181,8 +184,6 @@ class UpdateMealScreen extends StatelessWidget {
                                     onCookingMethodChange: (ingredient) => updateMealBloc.add(UpdateIngredientCookingMethodUpdateMealEvent(ingredient: ingredient)),
                                     onConversionFactorChange: (ingredient) => updateMealBloc.add(UpdateIngredientPreparationUpdateMealEvent(ingredient: ingredient)),
                                     onOilUsedChange: (ingredient) => updateMealBloc.add(UpdateIngredientOilUpdateMealEvent(ingredient: ingredient)),
-                                  ),
-                                ],
                               );
                             }).toList(),
                             // Add More button
@@ -194,7 +195,10 @@ class UpdateMealScreen extends StatelessWidget {
                                 child: ListTile(
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
                                   tileColor: AppColors.floralWhite,
-                                  onTap: () {},
+                                  onTap: () {
+                                    _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                    _focusInputController.requestFocus();
+                                  },
                                   title: Text(AppLocalizations.of(context)!.add_more),
                                   trailing: const Icon(Icons.add_circle, color: AppColors.yellowishGreen),
                                 ),
