@@ -17,7 +17,8 @@ class HeaderAddItemCardSection extends StatefulWidget {
   final Function(String, FocusNode)? onItemSelect;
   final Widget? child;
   final String? backgroundImage;
-  const HeaderAddItemCardSection({super.key, this.title, this.onBackTap, this.image, this.items, this.onItemSelect, this.path, this.child, this.backgroundImage});
+  final String? searchHintText;
+  const HeaderAddItemCardSection({super.key, this.title, this.onBackTap, this.image, this.items, this.onItemSelect, this.path, this.child, this.backgroundImage, this.searchHintText});
 
   @override
   State<HeaderAddItemCardSection> createState() => _HeaderAddItemCardSectionState();
@@ -148,7 +149,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
                 cursorWidth: Dimens.width1,
                 decoration: InputDecoration(
                   fillColor: Colors.white,
-                  hintText: focusNode.hasFocus ? null : AppLocalizations.of(context)!.write_here_hint,
+                  hintText: focusNode.hasFocus ? null : (widget.searchHintText ?? AppLocalizations.of(context)!.write_here_hint),
                   hintStyle: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeNormal, fontWeight: FontWeight.w400),
                   focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
                   enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white54)),

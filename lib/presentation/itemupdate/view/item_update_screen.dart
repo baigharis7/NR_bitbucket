@@ -121,6 +121,7 @@ class _ItemUpdateScreenState extends State<ItemUpdateScreen> {
                     onBackTap: () => Navigator.pop(context),
                     title: AppLocalizations.of(context)!.edit +' '+ (MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name ?? ''),
                     image: 'assets/images/meal_time_${state.foodEvent?.mealTime ?? 0}.png',
+                    searchHintText: AppLocalizations.of(context)!.search_food_hint,
                     items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),
                     onItemSelect: (option, focus) {
                       _focusInputController = focus;

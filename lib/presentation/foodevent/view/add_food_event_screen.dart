@@ -170,6 +170,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               title: '${AppLocalizations.of(context)!.add} ${MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name}',
                               image: 'assets/images/meal_time_${state.foodEvent?.mealTime}.png',
                               onBackTap: () => Navigator.pop(context),
+                              searchHintText: AppLocalizations.of(context)!.search_food_hint,
                               items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),
                               onItemSelect: (option, focus) {
                                 _focusInputController = focus;

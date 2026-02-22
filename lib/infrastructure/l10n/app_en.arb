@@ -543,6 +543,10 @@
     "please_select_intensity": "Please select the intensity",
     "add_faeces": "Add Faeces",
     "add_urine": "Add Urine",
-    "food_label": "Food Label"
+    "food_label": "Food Label",
+    "search_food_hint": "Type to search for food",
+    "search_activity_hint": "Type to search for an activity",
+    "search_supplement_hint": "Type to search for a supplement",
+    "search_drink_hint": "Type to search for a drink"
 
 }

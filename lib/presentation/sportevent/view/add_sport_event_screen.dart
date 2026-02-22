@@ -174,6 +174,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                   title: AppLocalizations.of(context)!.add_physical_activity,
                                   onBackTap: () => Navigator.pop(context),
                                   image: 'assets/images/sport.png',
+                                  searchHintText: AppLocalizations.of(context)!.search_activity_hint,
                                   items: state.sportsInfo!.sportsInfoMaster.map((sport) => sport.translate(context)).toList(),
                                   onItemSelect: (sportName, focus) {
                                     _sportFocusInputController = focus;

@@ -111,6 +111,7 @@ class _SportUpdateScreenState extends State<SportUpdateScreen> {
                         onBackTap: () => Navigator.pop(context),
                         title: AppLocalizations.of(context)!.edit + ' ' + AppLocalizations.of(context)!.physical_activity,
                         image: 'assets/images/sport.png',
+                        searchHintText: AppLocalizations.of(context)!.search_activity_hint,
                         items: state.sportsInfo?.sportsInfoMaster.map((sport) => sport.translate(context)).toList(),
                         onItemSelect: (sportName, focus) {
                           _focusInputController = focus;

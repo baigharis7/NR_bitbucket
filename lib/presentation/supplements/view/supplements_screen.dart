@@ -152,6 +152,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                             onBackTap: () => Navigator.pop(context),
                             title: state.screenTitle ?? (AppLocalizations.of(context)!.add + ' ' + AppLocalizations.of(context)!.supplement),
                             image: 'assets/images/supplement.png',
+                            searchHintText: AppLocalizations.of(context)!.search_supplement_hint,
                             items: state.supplementsInfo?.data.map((element) => element.translate(context)).toList(),
                             onItemSelect: (supplementName, focus) {
                               _supplementFocusInputController = focus;

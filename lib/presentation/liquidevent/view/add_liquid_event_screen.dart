@@ -194,6 +194,7 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
                             items: state.liquidNames!.foodsAndDrinksNames!.drinkNames!
                                 .map((item) => item.translate(context)).toList(),
                             onBackTap: () => Navigator.pop(context),
+                            searchHintText: AppLocalizations.of(context)!.search_drink_hint,
                             onItemSelect: (option, focus) {
                               // _focusInputController = focus;
                               final food =
