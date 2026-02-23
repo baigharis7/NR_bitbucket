@@ -29,6 +29,8 @@ class LiquidSummaryDetailBloc extends Bloc<LiquidSummaryDetailEvent, LiquidSumma
   final SaveWaterEventInteractor saveWaterEventInteractor;
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
   final GetWaterEventsTodayInteractor getWaterEventsTodayInteractor;
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
+
   LiquidSummaryDetailBloc({
     required this.getLiquidEventsOfTodayInteractor,
     required this.getProfileInteractor,
@@ -38,6 +40,11 @@ class LiquidSummaryDetailBloc extends Bloc<LiquidSummaryDetailEvent, LiquidSumma
     required this.getFoodEventsOfTodayInteractor,
     required this.getWaterEventsTodayInteractor,
   }) : super(LiquidSummaryDetailState(isLoading: false)) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.liquid || category == DataChangedCategory.water) {
+        add(LoadLiquidSummaryEventAction());
+      }
+    });
     on<LoadLiquidSummaryEventAction>((event, emit) async {
       // state.waterEvents = event.waterEvents;
       state.waterEvents = await getWaterEventsTodayInteractor.execute();
@@ -78,4 +85,10 @@ class LiquidSummaryDetailBloc extends Bloc<LiquidSummaryDetailEvent, LiquidSumma
   }
 
   String getTodayMessage(String todayString, String locale) => DateTimeHelper().formatDashboardTodayMessage(todayString, locale);
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
+  }
 }
