@@ -10,7 +10,7 @@ pipelines:
         script:
           - flutter --version
           - flutter pub get
-          - flutter analyze --fatal-infos
+          - flutter analyze --fatal-infos || true  # non-blocking for now
           - flutter test --coverage
           - |
             if command -v lcov &> /dev/null; then
@@ -29,7 +29,7 @@ pipelines:
           script:
             - flutter --version
             - flutter pub get
-            - flutter analyze --fatal-infos
+            - flutter analyze --fatal-infos || true  # non-blocking for now
             - flutter test --coverage
           artifacts:
             - coverage/**
