@@ -6,6 +6,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_file
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 import '../../../domain/interactor/masterfiles/get_master_file_interactor.dart';
@@ -147,6 +148,7 @@ class UpdateSportBloc extends Bloc<UpdateSportEvent, UpdateSportState> {
         final sportEventComplete = await uploadRoutineInteractor.execute(sportRoutine);
         try {
           await saveRoutineInteractor.execute(sportRoutine, true);
+          DashboardEventBus.instance.notify(DataChangedCategory.sport);
 
           _clearFields();
           emit(state.copyWith(isLoading: false, onError: null));

@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_week_liquid_events_interactor.dart';
@@ -33,6 +36,7 @@ class JournalLiquidBloc
   final DeleteLiquidEventInteractor deleteLiquidEventInteractor;
   final RemoveLiquidEventInteractor removeLiquidEventInteractor;
   final GetUserIdInteractor getUserIdInteractor;
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   JournalLiquidBloc({
     required this.getLiquidEventsOfTodayInteractor,
@@ -56,6 +60,13 @@ class JournalLiquidBloc
             showCard: false,
           ),
         ) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.liquid ||
+          category == DataChangedCategory.water) {
+        add(InitializeStateAction());
+      }
+    });
+
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.userKcal = await getUserKcalInteractor.execute();
@@ -142,5 +153,11 @@ class JournalLiquidBloc
     }
 
     return kcals;
+  }
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
   }
 }

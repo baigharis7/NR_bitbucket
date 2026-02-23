@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/lists/SupplementInfo.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 
 class DashboardActions {
   DashboardActions();
@@ -84,3 +85,9 @@ class ShowDialogEventAction extends DashboardActions {}
 class ShowLogs extends DashboardActions {}
 
 class SaveHideModelInfo extends DashboardActions {}
+
+class RefreshCategoryAction extends DashboardActions {
+  final DataChangedCategory category;
+
+  RefreshCategoryAction({required this.category});
+}

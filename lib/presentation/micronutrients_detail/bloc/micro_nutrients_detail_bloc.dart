@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
 import '../../../domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
@@ -25,6 +28,7 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetProfileInteractor getProfileInteractor;
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   MicroNutrientsDetailBloc({
     required this.getWeekFoodEventsInteractor,
@@ -35,6 +39,12 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
     isLoading: false,
   ),
   ) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.food ||
+          category == DataChangedCategory.supplement) {
+        add(InitializationEventAction());
+      }
+    });
 
     on<InitializationEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
@@ -235,5 +245,11 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
       rda: rda,
       upperLimit: getNutrientUpperLimit(micronutrient),
     );
+  }
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
   }
 }

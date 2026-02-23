@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
@@ -42,6 +43,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
   final UpdateEventsInteractor updateEventsInteractor;
   final PreferencesRepository preferencesRepository;
   final MacroCalculationHelper _macroHelper = const MacroCalculationHelper();
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   MealTimeDetailsBloc({
     required this.getUserIdInteractor,
@@ -54,6 +56,11 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
     required this.updateEventsInteractor,
     required this.preferencesRepository,
 }) : super(MealTimeDetailsState(isLoading: false)) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.food) {
+        add(SummaryInitializationMealTimeDetailsEventState());
+      }
+    });
     on<InitialMealTimeDetailsEventState>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.profile = await getProfileInteractor.execute();
@@ -148,6 +155,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
         await deleteFoodEventInteractor.execute(event.foodEventComplete.userId.orEmpty(), event.foodEventComplete.eventId!);
         try {
           await removeFoodEventInteractor.execute(event.foodEventComplete);
+          DashboardEventBus.instance.notify(DataChangedCategory.food);
           add(InitialMealTimeDetailsEventState());
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
@@ -239,6 +247,12 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
   }
 
 
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
+  }
 
   bool _shouldCallAPI(DateTime? lastTime, DateTime? syncTime, Duration threshold) {
     if (lastTime == null || syncTime == null) return true; // first run

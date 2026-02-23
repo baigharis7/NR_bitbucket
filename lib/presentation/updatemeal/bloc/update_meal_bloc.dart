@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/upload_f
 import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/save_food_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/upload_food_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
 
@@ -188,6 +189,7 @@ class UpdateMealBloc extends Bloc<UpdateMealEvent, UpdateMealState> {
         if (uploadedRoutine) {
           try {
             await saveFoodRoutineInteractor.execute(foodRoutine, true);
+            DashboardEventBus.instance.notify(DataChangedCategory.food);
 
             _clearFields();
             event.onFinish.call();

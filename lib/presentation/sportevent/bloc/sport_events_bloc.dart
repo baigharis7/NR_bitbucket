@@ -6,6 +6,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/get_spo
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/remove_sport_favorite_from_local_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_week_sports_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart';
@@ -222,6 +223,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
           final sportEventComplete = await uploadSportsEventInteractor.execute(event.sportEventSimple);
           try {
             await saveSportEventInteractor.execute(sportEventComplete, false);
+            DashboardEventBus.instance.notify(DataChangedCategory.sport);
 
             _clearFields();
             event.onFinish.call();
@@ -273,6 +275,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
               sportEventSimple.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
               final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
               await saveSportEventInteractor.execute(sportEventComplete, false);
+              DashboardEventBus.instance.notify(DataChangedCategory.sport);
             } catch (error, st) {
               CrashlyticsService.record(
                 error,
@@ -335,6 +338,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
             sportEventSimple.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
             final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
             await saveSportEventInteractor.execute(sportEventComplete, false);
+            DashboardEventBus.instance.notify(DataChangedCategory.sport);
           } catch (error, st) {
             CrashlyticsService.record(
               error,

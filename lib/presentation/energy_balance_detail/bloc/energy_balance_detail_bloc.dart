@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_week_liquid_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_week_sports_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 
 import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import '../../../domain/models/dashboard/energy_model.dart';
@@ -21,6 +22,7 @@ class EnergyBalanceDetailBloc extends Bloc<EnergyBalanceDetailEvent, EnergyBalan
   final GetWeekLiquidEventsInteractor getWeekLiquidEventsInteractor;
   final GetWeekSportsInteractor getWeekSportsInteractor;
   final GetProfileInteractor getProfileInteractor;
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   EnergyBalanceDetailBloc({
     required this.getWeekFoodEventsInteractor,
@@ -28,6 +30,13 @@ class EnergyBalanceDetailBloc extends Bloc<EnergyBalanceDetailEvent, EnergyBalan
     required this.getWeekSportsInteractor,
     required this.getProfileInteractor,
 }) : super(EnergyBalanceDetailState(isLoading: false)) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.food ||
+          category == DataChangedCategory.liquid ||
+          category == DataChangedCategory.sport) {
+        add(InitializeEventAction());
+      }
+    });
     on<InitializeEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       final a = await getWeekFoodEventsInteractor.execute();
@@ -140,5 +149,11 @@ class EnergyBalanceDetailBloc extends Bloc<EnergyBalanceDetailEvent, EnergyBalan
 
     weeklyData.sort((a, b) => (a['day']!).compareTo(b['day']!));
     return weeklyData;
+  }
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
   }
 }

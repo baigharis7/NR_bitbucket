@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
 import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
@@ -22,12 +23,19 @@ class WeeklyAllNutrientsBloc extends Bloc<WeeklyAllNutrientsEventActions, Weekly
   final GetProfileInteractor getProfileInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor;
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   WeeklyAllNutrientsBloc({
     required this.getProfileInteractor,
     required this.getMasterFileInteractor,
     required this.getWeekFoodEventsInteractor,
   }) : super(WeeklyAllNutrientsState(isLoading: false,)) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.food ||
+          category == DataChangedCategory.supplement) {
+        add(InitializationEventAction());
+      }
+    });
     on<InitializationEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.profile = await getProfileInteractor.execute();
@@ -107,5 +115,11 @@ class WeeklyAllNutrientsBloc extends Bloc<WeeklyAllNutrientsEventActions, Weekly
       }
     }
     return rda;
+  }
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
   }
 }

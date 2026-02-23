@@ -135,9 +135,9 @@ class _DashboardScreen extends State<DashboardScreen>
     final List<Map<String, dynamic>> menuItems = [
       ...MealTime.getAllMealTimes().map((e) => {'label': e.name, 'id': e.id, 'icon': 'assets/images/meal_time_${e.id.orZero()}.png', 'onTap': () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: e, selectedDateTime: selectedDateTime ?? DateTime.now()))}),
       // {'label': 'Actividad física', 'icon': Icons.fitness_center},
-      {'label': AppLocalizations.of(context)!.supplements, 'icon': 'assets/images/supplement.png', 'onTap': () => Navigator.pushNamed(context, SupplementsScreen.routeName).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime)))},
+      {'label': AppLocalizations.of(context)!.supplements, 'icon': 'assets/images/supplement.png', 'onTap': () => Navigator.pushNamed(context, SupplementsScreen.routeName)},
       {'label': AppLocalizations.of(context)!.physical_activity, 'icon': 'assets/images/sport.png', 'onTap': () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime)},
-      {'label': AppLocalizations.of(context)!.faeces_urine, 'icon': 'assets/images/feces_urine.png', 'onTap': () => Navigator.pushNamed(context, FecesUrineTabs.routeName,).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime)))},
+      {'label': AppLocalizations.of(context)!.faeces_urine, 'icon': 'assets/images/feces_urine.png', 'onTap': () => Navigator.pushNamed(context, FecesUrineTabs.routeName)},
     ];
 
     return menuItems;
@@ -342,11 +342,11 @@ class _DashboardScreen extends State<DashboardScreen>
                       WaterIntakeWidget(
                         totalLitersGoal: (state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035,
                         consumedGlasses: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty()) ~/ 0.25,
-                        onInfoClick: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                        onInfoClick: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: state.waterEvents),
                         onAddWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () {})),
                         onRemoveWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () {})),
                       ),
-                      MealTimeSection(foodEvents: state.foodEvents.orEmpty(), totalKcal: state.userKcal.orZero(), selectedDateTime: selectedDateTime!, then: () => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                      MealTimeSection(foodEvents: state.foodEvents.orEmpty(), totalKcal: state.userKcal.orZero(), selectedDateTime: selectedDateTime!),
                       // WeeklyRDANutrientsDashboardWidget(
                       //   title: AppLocalizations.of(context)!.weekly_nutrients,
                       //   nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,
@@ -356,22 +356,22 @@ class _DashboardScreen extends State<DashboardScreen>
                       MealTimeWidget(
                         name: AppLocalizations.of(context)!.supplements,
                         svg: 'assets/images/supplement.png',
-                        onItemClick: () => Navigator.pushNamed(context, SupplementsDetailScreen.routeName).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
-                        onClick: () => Navigator.pushNamed(context, SupplementsScreen.routeName).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                        onItemClick: () => Navigator.pushNamed(context, SupplementsDetailScreen.routeName),
+                        onClick: () => Navigator.pushNamed(context, SupplementsScreen.routeName),
                       ),
                       DashTitleWidget(title: AppLocalizations.of(context)!.physical_activity, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
                       MealTimeWidget(
                         name: AppLocalizations.of(context)!.physical_activity,
                         onItemClick: () => Navigator.pushNamed(context, SportItemsScreen.routeName),
-                        onClick: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                        onClick: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime),
                         iconColor: Colors.black, backgroundColor: AppColors.floralWhite, svg: 'assets/images/sport.png',
                       ),
                       DashTitleWidget(title: AppLocalizations.of(context)!.depositions, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
                       MealTimeWidget(
                         name: AppLocalizations.of(context)!.faeces_urine,
                         svg: 'assets/images/feces_urine.png',
-                        onItemClick: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName, arguments: selectedDateTime).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
-                        onClick: () => Navigator.pushNamed(context, FecesUrineTabs.routeName,).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
+                        onItemClick: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName, arguments: selectedDateTime),
+                        onClick: () => Navigator.pushNamed(context, FecesUrineTabs.routeName),
                         iconColor: Colors.black,
                         backgroundColor: Colors.transparent,
                         backgroundImage: 'assets/images/feces_urine_background.png',

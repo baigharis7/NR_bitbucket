@@ -26,6 +26,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.d
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_actions.dart';
@@ -299,6 +300,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
             final uploadFoodEvent = await uploadFoodEventInteractor.execute(foodEventSimple);
             if (uploadFoodEvent.uploadSuccess) {
               await saveFoodEventInteractor.execute(uploadFoodEvent, false);
+              DashboardEventBus.instance.notify(DataChangedCategory.food);
             }
           } catch (error, st) {
             CrashlyticsService.record(
@@ -404,6 +406,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         if (uploadFoodEvent.uploadSuccess) {
           try {
             await saveFoodEventInteractor.execute(uploadFoodEvent, state.isEdit!);
+            DashboardEventBus.instance.notify(DataChangedCategory.food);
 
             _clearFields();
             emit(state.copyWith(isLoading: false,));
@@ -465,6 +468,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
               final uploadFoodEvent = await uploadFoodEventInteractor.execute(foodEventSimple);
               if (uploadFoodEvent.uploadSuccess) {
                 await saveFoodEventInteractor.execute(uploadFoodEvent, false);
+                DashboardEventBus.instance.notify(DataChangedCategory.food);
               }
             } catch (error, st) {
               CrashlyticsService.record(

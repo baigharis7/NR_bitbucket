@@ -53,6 +53,36 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_en
 import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_user_credentials_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/save_user_in_users_remote_database_interactor.dart';
+// DashboardBloc
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_day_calories_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_today_liquid_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/waterevents/upload_water_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/waterevents/save_water_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/save_steps_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/get_steps_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/steps/get_today_step_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_events_sorted_by_date_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_dashboard_events_sorted_by_date_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_creatine_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_creatine_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_creatine_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_collagen_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_collagen_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_collagen_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/routines/get_routines_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/localstorage/erase_db_local_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/eventssync/synchronize_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_model_appearance_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_model_appearance_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_day_supplement_events_interactor.dart';
+import 'package:chuck_interceptor/chuck.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 @GenerateNiceMocks([
   // FoodBloc
@@ -113,5 +143,35 @@ import 'package:nutrenaissance_flutter/domain/interactor/login/save_user_in_user
   MockSpec<ResendVerificationCodeInteractor>(),
   MockSpec<SaveUserCredentialsInteractor>(),
   MockSpec<SaveUserInUsersRemoteDatabaseInteractor>(),
+  // DashboardBloc
+  MockSpec<GetFoodEventsOfTodayInteractor>(),
+  MockSpec<GetAdviceInteractor>(),
+  MockSpec<GetWaterEventsTodayInteractor>(),
+  MockSpec<GetDayCaloriesInteractor>(),
+  MockSpec<GetTodayLiquidEventsInteractor>(),
+  MockSpec<UploadProfileInteractor>(),
+  MockSpec<UploadWaterEventInteractor>(),
+  MockSpec<SaveWaterEventInteractor>(),
+  MockSpec<UploadStepsInteractor>(),
+  MockSpec<SaveStepsInteractor>(),
+  MockSpec<GetStepsInteractor>(),
+  MockSpec<GetTodayStepInteractor>(),
+  MockSpec<GetAllEventsSortedByDateInteractor>(),
+  MockSpec<GetAllDashboardEventsSortedByDateInteractor>(),
+  MockSpec<GetTodayCreatineEventInteractor>(),
+  MockSpec<UploadCreatineEventInteractor>(),
+  MockSpec<SaveCreatineEventInteractor>(),
+  MockSpec<GetTodayCollagenEventInteractor>(),
+  MockSpec<UploadCollagenEventInteractor>(),
+  MockSpec<SaveCollagenEventInteractor>(),
+  MockSpec<GetRoutinesInteractor>(),
+  MockSpec<EraseDBLocalEventsInteractor>(),
+  MockSpec<SynchronizeEventsInteractor>(),
+  MockSpec<ShowModelAppearanceInteractor>(),
+  MockSpec<SaveModelAppearanceInteractor>(),
+  MockSpec<GetTodaySportsInteractor>(),
+  MockSpec<GetDaySupplementEventsInteractor>(),
+  MockSpec<Chuck>(),
+  MockSpec<SharedPreferences>(),
 ])
 void main() {}

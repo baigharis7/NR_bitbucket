@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_compl
 import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidevent/bloc/liquid_event_actions.dart';
@@ -94,6 +95,7 @@ class LiquidEventBloc extends BaseBloc<LiquidEventActions, LiquidEventState> {
         if (uploadLiquidEvent.uploadSuccess) {
           try {
             await saveLiquidEventInteractor.execute(uploadLiquidEvent, state.isEdit!);
+            DashboardEventBus.instance.notify(DataChangedCategory.liquid);
             _clearFields();
             event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
@@ -149,6 +151,7 @@ class LiquidEventBloc extends BaseBloc<LiquidEventActions, LiquidEventState> {
         if (uploadLiquidEvent.uploadSuccess) {
           try {
             await saveLiquidEventInteractor.execute(uploadLiquidEvent, state.isEdit!);
+            DashboardEventBus.instance.notify(DataChangedCategory.liquid);
             _clearFields();
             event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));

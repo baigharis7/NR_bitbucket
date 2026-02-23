@@ -13,6 +13,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_urine_i
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_feces_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_urine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/urine.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
@@ -112,6 +113,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         await uploadFecesInteractor.execute(uploadFeces);
         try {
           await saveFecesEventInteractor.execute(uploadFeces);
+          DashboardEventBus.instance.notify(DataChangedCategory.fecesUrine);
           state.facesDayEvents = await getFaecesByDateInteractor.execute(dateTime: state.calendarDateTime);
           _clearFields();
           event.onFinish.call();
@@ -136,6 +138,7 @@ class FecesUrineBloc extends Bloc<FecesUrineEvent, FecesUrineState> {
         await uploadUrineInteractor.execute(uploadUrine);
         try {
           await saveUrineInteractor.execute(uploadUrine);
+          DashboardEventBus.instance.notify(DataChangedCategory.fecesUrine);
           state.urineDayEvents = await getUrineByDateInteractor.execute(dateTime: state.calendarDateTime);
           _clearFields();
           event.onFinish.call();

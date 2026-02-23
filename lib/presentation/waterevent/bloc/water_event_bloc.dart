@@ -4,6 +4,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/waterevents/save_water_
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/upload_water_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
@@ -55,6 +56,7 @@ class WaterEventBloc extends BaseBloc<WaterEventActions, WaterEventState> {
         if (uploadSuccess) {
           try {
             saveWaterEventInteractor.execute(waterEventMaster);
+            DashboardEventBus.instance.notify(DataChangedCategory.water);
             event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {

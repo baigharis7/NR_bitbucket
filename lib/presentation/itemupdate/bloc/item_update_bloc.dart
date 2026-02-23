@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
 
@@ -146,6 +147,7 @@ class ItemUpdateBloc extends Bloc<ItemUpdateEvent, ItemUpdateState> {
         if (uploadFoodEvent.uploadSuccess) {
           try {
             await saveFoodEventInteractor.execute(uploadFoodEvent, true);
+            DashboardEventBus.instance.notify(DataChangedCategory.food);
 
             _clearFields();
             emit(state.copyWith(isLoading: false,));

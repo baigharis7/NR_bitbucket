@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_interactor.dart';
@@ -32,6 +35,7 @@ class WeeklyDashboardDetailBloc
   final GetWeekLiquidEventsInteractor getWeekLiquidEventsInteractor;
   final GetWeekSportsInteractor getWeekSportsInteractor;
   final MacroCalculationHelper _macroHelper = const MacroCalculationHelper();
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   WeeklyDashboardDetailBloc(
       {required this.getWeekFoodEventsInteractor,
@@ -42,6 +46,14 @@ class WeeklyDashboardDetailBloc
       required this.getWeekLiquidEventsInteractor,
       required this.getWeekSportsInteractor})
       : super(WeeklyDashboardDetailState(isLoading: false)) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.food ||
+          category == DataChangedCategory.sport ||
+          category == DataChangedCategory.liquid) {
+        add(InitialStateEventAction());
+      }
+    });
+
     on<InitialStateEventAction>((event, emit) async {
       state.userMicronutrients =
           await getUserMicronutrientsInteractor.execute();
@@ -297,5 +309,11 @@ class WeeklyDashboardDetailBloc
           sportKcalConsumed + (event.eventKcals ?? 0.0);
     }
     return sportKcalConsumed;
+  }
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
   }
 }
