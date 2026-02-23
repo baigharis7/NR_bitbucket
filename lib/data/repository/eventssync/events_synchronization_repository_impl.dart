@@ -1,9 +1,7 @@
 import 'package:nutrenaissance_flutter/data/api/eventssync/events_sync_api.dart';
-import 'package:nutrenaissance_flutter/data/api/eventssync/model/events_synchronization_request.dart';
 import 'package:nutrenaissance_flutter/data/api/eventssync/model/events_synchronization_response.dart';
 import 'package:nutrenaissance_flutter/domain/repository/eventssync/events_synchronization_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
-import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/liquid_event_mappers.dart';
@@ -19,94 +17,48 @@ import '../../../infrastructure/mappers/supplement_mappers.dart';
 class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRequestRepository {
   final LocalStorageRepository localStorageRepository;
   final EventsSyncApi eventsSyncApi;
-  final PreferencesRepository preferencesRepository;
 
   EventsSynchronizationRequestRepositoryImpl({
     required this.localStorageRepository,
     required this.eventsSyncApi,
-    required this.preferencesRepository,
   });
 
-  /// List of all categories
-  static const List<String> _categories = [
-    'foodEvents',
-    'foodRoutines',
-    'sportEvents',
-    'sportRoutines',
-    'liquidEvents',
-    'waterEvents',
-    'foodFavorites',
-    'sportFavorites',
-    'liquidFavorites',
-    'subjectiveAnalysis',
-    'recipeFavorites',
-    'fecesEvents',
-    'urineEvents',
-    'creatineEvents',
-    'collagenEvents',
-    'supplementEvents',
-    'supplementFavorites',
-    'supplementRoutines',
-  ];
-
-
   @override
-  Future<bool> synchronizeEvents(String userId, {required bool fullSync, bool forceSync = false}) async {
-    try {
-      if (!forceSync) {
-        final syncTime = await preferencesRepository.getLastFetchTime(PrefsKeys.synchronizeEvents);
-        if (!_isExpired(syncTime, const Duration(minutes: 10))) return false;
-      }
+  Future<bool> synchronizeEvents(String userId, {required bool fullSync}) async {
+    final idsToSkip = fullSync
+        ? _emptyEventsPayload()
+        : await _buildEventsPayloadFromLocal();
 
-      final idsToSkip = fullSync
-          ? _emptyEventsPayload()
-          : await _buildEventsPayloadFromLocal();
+    final response = await eventsSyncApi.syncAllData(
+      userId.orEmpty(),
+      idsToSkip,
+    );
 
-      final response = await eventsSyncApi.syncAllData(
-        userId.orEmpty(),
-        idsToSkip,
-      );
-
-      final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
-      await preferencesRepository.saveLastFetchTime(PrefsKeys.synchronizeEvents, DateTime.now());
-      return await _saveSynchronizedEvents(eventsSyncResponse);
-    } catch (error) {
-      rethrow;
-    }
+    final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
+    return await _saveSynchronizedEvents(eventsSyncResponse);
   }
 
   @override
   Future<bool> fetchEvents(String userId, PrefsKeys categoryType, {required bool fullSync}) async {
-    try {
-      final lastEventTime = await preferencesRepository.getLastFetchTime(categoryType);
-      final syncTime = await preferencesRepository.getLastFetchTime(PrefsKeys.synchronizeEvents);
-      final shouldCall = _shouldCallAPI(lastEventTime, syncTime, const Duration(minutes: 10));
-      if (!shouldCall) return false;
+    final eventsIds = await localStorageRepository.getAllEventIdsByType(categoryType.name);
 
-      final eventsIds = await localStorageRepository.getAllEventIdsByType(categoryType.name);
+    final idsToSkip = fullSync
+        ? <String>[]
+        : eventsIds.map((e) => e.toString()).toList();
 
-      // Get the list for the selected category
-      final idsToSkip = fullSync
-          ? <String>[] // full sync: empty list
-          : eventsIds.map((e) => e.toString()).toList();
+    final response = await eventsSyncApi.syncCategory(
+      userId.orEmpty(),
+      categoryType.name,
+      idsToSkip,
+    );
 
-      final response = await eventsSyncApi.syncCategory(
-        userId.orEmpty(),
-        categoryType.name,
-        idsToSkip,
-      );
-
-      final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
-      await preferencesRepository.saveLastFetchTime(categoryType, DateTime.now());
-      return await _saveSynchronizedEvents(eventsSyncResponse);
-    } catch (error) {
-      rethrow;
-    }
+    final eventsSyncResponse = EventsSynchronizationResponse.fromJson(response);
+    return await _saveSynchronizedEvents(eventsSyncResponse);
   }
 
   /// Helper to generate empty payload for full sync
   Map<String, List<String>> _emptyEventsPayload() {
-    return {for (var category in _categories) category: []};
+    return {for (var category in EventsSyncApi.validCategories) category: []};
   }
 
   /// Helper to build payload from local storage
@@ -254,16 +206,6 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
     }
 
     return changedCategories.isNotEmpty;
-  }
-
-  bool _shouldCallAPI(DateTime? lastTime, DateTime? syncTime, Duration threshold) {
-    return _isExpired(lastTime, threshold) && _isExpired(syncTime, threshold);
-  }
-
-  bool _isExpired(DateTime? time, Duration threshold) {
-    if (time == null) return true;
-    final now = DateTime.now();
-    return now.isAfter(time.add(threshold));
   }
 
 }

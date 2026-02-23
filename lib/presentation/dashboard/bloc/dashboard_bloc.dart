@@ -4,6 +4,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/data/api/fcm/fcm_api.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/eventssync/update_events_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_model_appearance_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_model_appearance_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
@@ -123,6 +125,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final GetRoutinesInteractor getRoutinesInteractor;
   final EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor;
   final SynchronizeEventsInteractor synchronizeEventsInteractor;
+  final UpdateEventsInteractor updateEventsInteractor;
   final Chuck chuck;
   final ShowModelAppearanceInteractor showModelAppearanceInteractor;
   final SaveModelAppearanceInteractor saveModelAppearanceInteractor;
@@ -168,6 +171,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.getRoutinesInteractor,
     required this.eraseDBLocalEventsInteractor,
     required this.synchronizeEventsInteractor,
+    required this.updateEventsInteractor,
     required this.chuck,
     required this.showModelAppearanceInteractor,
     required this.saveModelAppearanceInteractor,
@@ -192,18 +196,30 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       add(RefreshCategoryAction(category: category));
     });
 
-    _fcmSubscription = FcmService.instance.onDataMessage.listen((_) {
-      add(SyncAndRefreshAction());
+    _fcmSubscription = FcmService.instance.onDataMessage.listen((message) {
+      add(SyncAndRefreshAction(category: message.data['category']));
     });
 
     on<SyncAndRefreshAction>((event, emit) async {
       try {
         final userId = getUserIdInteractor.execute();
-        if (userId.isNotEmpty) {
-          await synchronizeEventsInteractor.execute(userId, fullSync: false, forceSync: true);
+        if (userId.isEmpty) return;
+
+        final prefsKey = _fcmCategoryToPrefsKey(event.category);
+        if (prefsKey != null) {
+          await updateEventsInteractor.execute(userId: userId, categoryType: prefsKey, fullSync: false);
+        } else {
+          await synchronizeEventsInteractor.execute(userId, fullSync: false);
         }
       } catch (_) {
-        // Silently handle — network may be unavailable
+        // Retry once after a short delay
+        try {
+          await Future.delayed(const Duration(seconds: 5));
+          final userId = getUserIdInteractor.execute();
+          if (userId.isNotEmpty) {
+            await synchronizeEventsInteractor.execute(userId, fullSync: false);
+          }
+        } catch (_) {}
       }
     });
 
@@ -1041,6 +1057,15 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
             .catchError((_) {});
       }
     });
+  }
+
+  PrefsKeys? _fcmCategoryToPrefsKey(String? category) {
+    switch (category) {
+      case 'food': return PrefsKeys.foodEvents;
+      case 'sport': return PrefsKeys.sportEvents;
+      case 'supplement': return PrefsKeys.supplementEvents;
+      default: return null;
+    }
   }
 
   @override

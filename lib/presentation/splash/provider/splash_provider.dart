@@ -79,7 +79,7 @@ class SplashProvider extends ChangeNotifier {
     getProfileInteractor = GetProfileInteractorImpl(profileRepository: profileRepository);
     eraseDBLocalEventsInteractor = EraseDBLocalEventsInteractorImpl(localStorageRepository: localStorageRepository);
     eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService, chuck);
-    eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi, preferencesRepository: prefsRepository);
+    eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
     synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
     getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
     fcmApi = FcmApi(prefsRepository, authenticationService, chuck);

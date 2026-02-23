@@ -7,5 +7,5 @@ class SynchronizeEventsInteractorImpl extends SynchronizeEventsInteractor {
   SynchronizeEventsInteractorImpl({required this.eventsSynchronizationRequestRepository});
 
   @override
-  Future<void> execute(String userId, {required bool fullSync, bool forceSync = false}) => eventsSynchronizationRequestRepository.synchronizeEvents(userId, fullSync: fullSync, forceSync: forceSync);
+  Future<void> execute(String userId, {required bool fullSync}) => eventsSynchronizationRequestRepository.synchronizeEvents(userId, fullSync: fullSync);
 }

@@ -2124,16 +2124,12 @@ class MockSynchronizeEventsInteractor extends _i1.Mock
   _i14.Future<void> execute(
     String? userId, {
     required bool? fullSync,
-    bool? forceSync = false,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [userId],
-          {
-            #fullSync: fullSync,
-            #forceSync: forceSync,
-          },
+          {#fullSync: fullSync},
         ),
         returnValue: _i14.Future<void>.value(),
         returnValueForMissingStub: _i14.Future<void>.value(),

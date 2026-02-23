@@ -207,7 +207,7 @@ class LoginProviderNew extends BaseProvider {
     saveUserInUsersRemoteDatabaseInteractor = SaveUserInUsersRemoteDatabaseInteractorImpl(loginRepository: loginRepository);
     signOutInteractor = SignOutInteractorImpl(authenticationService: authenticationService!);
     EventsSyncApi eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService!, chuck);
-    EventsSynchronizationRequestRepository eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi, preferencesRepository: prefsRepository);
+    EventsSynchronizationRequestRepository eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
     synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
     getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
     eraseDatabaseInteractor = EraseDatabaseInteractorImpl(localStorageRepository: localStorageRepository);

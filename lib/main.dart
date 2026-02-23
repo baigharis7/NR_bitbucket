@@ -664,7 +664,7 @@ void main() async {
   final GetAllEventsSortedByDateInteractor getAllEventsSortedByDateInteractor = GetAllEventsSortedByDateInteractorImpl(calendarRepository: calendarRepository);
   final EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor = EraseDBLocalEventsInteractorImpl(localStorageRepository: localStorageRepository);
   final eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService, chuck);
-  final eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi, preferencesRepository: prefsRepository);
+  final eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
   final SynchronizeEventsInteractor synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
   final ModelsAppearanceRepository modelsAppearanceRepository = ModelsAppearanceRepositoryImpl(localStorageRepository: localStorageRepository);
   final ShowModelAppearanceInteractor showModelAppearanceInteractor = ShowModelAppearanceInteractorImpl(modelsAppearanceRepository: modelsAppearanceRepository);
@@ -726,6 +726,7 @@ void main() async {
     getRoutinesInteractor: getRoutinesInteractor,
     eraseDBLocalEventsInteractor: eraseDBLocalEventsInteractor,
     synchronizeEventsInteractor: synchronizeEventsInteractor,
+    updateEventsInteractor: updateEventsInteractor,
     chuck: chuck,
     showModelAppearanceInteractor: showModelAppearanceInteractor,
     saveModelAppearanceInteractor: saveModelAppearanceInteractor,
