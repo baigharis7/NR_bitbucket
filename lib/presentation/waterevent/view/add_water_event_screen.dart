@@ -8,6 +8,8 @@ import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.d
 import 'package:nutrenaissance_flutter/presentation/waterevent/bloc/water_event_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/waterevent/bloc/water_event_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/waterevent/bloc/water_event_state.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
 class AddWaterEventScreen extends StatefulWidget {
@@ -49,6 +51,7 @@ class _AddWaterEventScreesState extends State<AddWaterEventScreen> {
           },
           builder: (ctx, state) {
             return Scaffold(
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
               appBar: AppBar(
                 backgroundColor: Colors.transparent,
                 elevation: 0,

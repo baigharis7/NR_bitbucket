@@ -9,18 +9,55 @@ import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_stor
 import 'package:nutrenaissance_flutter/domain/repository/profile/profile_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/profile_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/profile_computation_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 
 class ProfileRepositoryImpl extends ProfileRepository {
   final ProfileApi profileApi;
   final LocalStorageRepository localStorageRepository;
+  final ProfileComputationService profileComputationService;
+  final SyncQueueService syncQueue;
 
-  ProfileRepositoryImpl({required this.profileApi, required this.localStorageRepository});
+  ProfileRepositoryImpl({
+    required this.profileApi,
+    required this.localStorageRepository,
+    required this.profileComputationService,
+    required this.syncQueue,
+  });
 
   @override
   Future<UserProfileResponse> uploadProfile(UserProfileModel profile) async {
     final uploadProfile = mapToUploadUserProfileModel(profile);
-    final upload = await profileApi.uploadProfileApi(uploadProfile);
-    return UserProfileResponse.fromJson(upload);
+
+    // Compute locally (requires reference data from /reference-data/* endpoints)
+    final localResponse = await profileComputationService.computeProfile(uploadProfile);
+
+    if (localResponse == null) {
+      throw Exception(
+        'Profile computation failed: reference data not loaded. '
+        'Ensure /reference-data/objective-nutrients and /reference-data/nutrient-objective endpoints are available.',
+      );
+    }
+
+    // Stamp computed fields onto DTO for backend DB persistence
+    uploadProfile.micronutrients = localResponse.micronutrients;
+    uploadProfile.userAll = localResponse.userAll;
+    uploadProfile.temporaryMicronutrients = localResponse.temporaryMicronutrients;
+    uploadProfile.temporaryAll = localResponse.temporaryAll;
+    uploadProfile.userRdas = localResponse.userRdas;
+    uploadProfile.kcal = localResponse.kcal;
+
+    // Fire-and-forget API call for DynamoDB persistence (don't block UI)
+    _syncToBackend(uploadProfile);
+
+    return localResponse;
+  }
+
+  void _syncToBackend(upload.UploadUserProfile uploadProfile) {
+    profileApi.uploadProfileApi(uploadProfile).catchError((error) {
+      syncQueue.enqueue('/profile-data', uploadProfile);
+      return <String, dynamic>{};
+    });
   }
 
   @override

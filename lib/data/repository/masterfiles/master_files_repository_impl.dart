@@ -1,9 +1,13 @@
+import 'package:drift/drift.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/cooking_methods_oils_info_response.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_response.dart';
+import 'package:nutrenaissance_flutter/data/local/drift/reference_database.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_oils_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/foods_and_drinks_names_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_info_entity.dart';
@@ -23,8 +27,13 @@ import 'package:nutrenaissance_flutter/infrastructure/mappers/master_files_mappe
 class MasterFilesRepositoryImpl extends MasterFilesRepository {
   final LocalStorageRepository localStorageRepository;
   final MasterFilesApi masterFilesApi;
+  final ReferenceDatabase referenceDatabase;
 
-  MasterFilesRepositoryImpl({required this.localStorageRepository, required this.masterFilesApi});
+  MasterFilesRepositoryImpl({
+    required this.localStorageRepository,
+    required this.masterFilesApi,
+    required this.referenceDatabase,
+  });
 
   @override
   FoodsAndDrinksNamesMaster? getFoodsAndDrinksNames() {
@@ -51,6 +60,7 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
       int unitsFoodsVersion,
       int supplementsInfoVersion,
       int subjectiveAnalysisVersion,
+      int cookingMethodsOilsInfoVersion,
   ) async {
     final response = await masterFilesApi.manageMasterFiles(
       cookingMethodsVersion,
@@ -67,6 +77,7 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
       unitsFoodsVersion,
       supplementsInfoVersion,
       subjectiveAnalysisVersion,
+      cookingMethodsOilsInfoVersion,
     );
     if (response.isNotEmpty) {
       return MasterFilesResponse.fromJson(response);
@@ -76,9 +87,30 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
   }
 
   @override
-  Future<void> saveMasterFile(dynamic masterFileResponse, MasterFilesType masterFilesType) {
+  Future<void> saveMasterFile(dynamic masterFileResponse, MasterFilesType masterFilesType) async {
     final masterFileEntity = mapToMasterFileEntity(masterFileResponse, masterFilesType);
-    return localStorageRepository.saveMasterFile(masterFilesType, masterFileEntity);
+    await localStorageRepository.saveMasterFile(masterFilesType, masterFileEntity);
+
+    // Also populate Drift reference tables for data used by client-side calculations
+    if (masterFilesType == MasterFilesType.cookingMethodsOilsInfo) {
+      await _syncCookingMethodOilsToDrift(masterFileResponse as CookingMethodsOilsInfoResponse);
+    }
+  }
+
+  /// Extracts oil percentage data from the cookingMethodsOilsInfo master file
+  /// and stores it in the Drift CookingMethodOils table for fast lookups
+  /// by the NutrientCalculationService.
+  Future<void> _syncCookingMethodOilsToDrift(CookingMethodsOilsInfoResponse response) async {
+    final entries = response.data
+        .map((item) => CookingMethodOilsCompanion(
+              cookingMethodId: Value(item.id),
+              percentage: Value(item.percentage),
+            ))
+        .toList();
+
+    if (entries.isNotEmpty) {
+      await referenceDatabase.replaceAllCookingMethodOils(entries);
+    }
   }
 
   @override
@@ -114,7 +146,8 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
         return mapToSupplementsInfoMaster(masterFileEntity as SupplementsInfoEntity);
       case MasterFilesType.subjectiveAnalysis:
         return mapToSubjectiveAnalysisMaster(masterFileEntity as SubjectiveAnalysisListEntity);
+      case MasterFilesType.cookingMethodsOilsInfo:
+        return masterFileEntity as CookingMethodsOilsInfoEntity;
     }
   }
-
 }

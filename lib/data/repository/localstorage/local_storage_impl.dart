@@ -11,6 +11,7 @@ import 'package:nutrenaissance_flutter/data/local/models/foodroutines/food_routi
 import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_oils_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/foods_and_drinks_names_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_info_entity.dart';
@@ -90,6 +91,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _creatineEventsBox;
   Box? _collagenEventsBox;
   Box? _modelAppearanceBox;
+  Box? _cookingMethodsOilsInfoBox;
 
   Future<Box> _openProfileBox() async => openBox(_profileBox, UserProfileEntity.boxName);
   Future<Box> _openFoodEventsBox() async => openBox(_foodEventsBox, FoodEventEntity.boxName);
@@ -126,6 +128,8 @@ class LocalStorageImpl extends LocalStorageRepository {
         return openBox(_supplementsInfoBox, supplementsInfoBoxName);
       case MasterFilesType.subjectiveAnalysis:
         return openBox(_subjectiveAnalysisBox, subjectiveAnalysisBoxName);
+      case MasterFilesType.cookingMethodsOilsInfo:
+        return openBox(_cookingMethodsOilsInfoBox, cookingMethodsOilsInfoBoxName);
     }
   }
   Future<Box> _openSportEventsBox() async => openBox(_sportEventsBox, SportEventEntity.boxName);
@@ -249,6 +253,8 @@ class LocalStorageImpl extends LocalStorageRepository {
           return (masterFile as UnitsFoodsEntity).v;
         case MasterFilesType.subjectiveAnalysis:
           return (masterFile as SubjectiveAnalysisListEntity).v;
+        case MasterFilesType.cookingMethodsOilsInfo:
+          return (masterFile as CookingMethodsOilsInfoEntity).v;
         default:
           return -1;
       }

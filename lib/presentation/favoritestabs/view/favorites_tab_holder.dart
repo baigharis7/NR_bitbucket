@@ -4,18 +4,29 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_arguments_model.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
+import 'package:nutrenaissance_flutter/presentation/common/view/floating_menu_controller.dart';
 import 'package:nutrenaissance_flutter/presentation/favoritestabs/bloc/favorites_tabs_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/meal_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/physical_activity_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/supplements_tab.dart';
+import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements_screen.dart';
 
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
+import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 class FavoritesTabHolder extends StatefulWidget {
   static const routeName = '/favorites_tab_holder';
@@ -59,6 +70,48 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
     super.dispose();
   }
 
+  void _onFabPressed() {
+    switch (_selectedTab) {
+      case 0: // Meal tab - show overlay with meal time options
+        FloatingMenuController().show(
+          context,
+          _getMealTimeMenuItems(context),
+          showFavoritesRoutinesButtons: false,
+          centered: true,
+        );
+        break;
+      case 1: // Physical Activity tab - direct navigation
+        Navigator.pushNamed(
+          context,
+          AddSportEventScreen.routeName,
+          arguments: SportArgumentsModel(
+            selectedDateTime: DateTime.now(),
+            preSelectFavorite: true,
+          ),
+        );
+        break;
+      case 2: // Supplements tab - direct navigation
+        Navigator.pushNamed(context, SupplementsScreen.routeName);
+        break;
+    }
+  }
+
+  List<Map<String, dynamic>> _getMealTimeMenuItems(BuildContext context) {
+    return MealTime.getAllMealTimes().map((e) => {
+      'label': e.name,
+      'id': e.id,
+      'icon': 'assets/images/meal_time_${e.id.orZero()}.png',
+      'onTap': () => Navigator.pushNamed(
+        context,
+        AddFoodEventScreen.routeName,
+        arguments: FoodArgumentsModel(
+          mealTime: e,
+          selectedDateTime: DateTime.now(),
+          preSelectFavorite: true,
+        ),
+      ),
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +152,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
 
           Scaffold(
             backgroundColor: Colors.transparent,
+            bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
             body: SafeArea(child: Container(
               padding: const EdgeInsets.all(Dimens.paddingLarge),
               child: Column(children: [
@@ -140,6 +194,13 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
                       PhysicalActivityTab(),
                       SupplementsTab(),
                     ],
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+                  child: GeneralButton(
+                    title: AppLocalizations.of(context)!.add,
+                    onTap: _onFabPressed,
                   ),
                 ),
               ],

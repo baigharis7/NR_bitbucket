@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_event_item.dart';
 
 void main() {
@@ -43,6 +44,7 @@ void main() {
     Function(FoodInFavorite)? onConversionFactorChange,
     Function(FoodInFavorite)? onOilUsedChange,
     CookingMethodsInfoMaster? cookingMethodsInfoOverride,
+    bool showValidation = false,
   }) {
     return MaterialApp(
       localizationsDelegates: const [
@@ -74,6 +76,7 @@ void main() {
             onCookingMethodChange: onCookingMethodChange ?? (_) {},
             onConversionFactorChange: onConversionFactorChange ?? (_) {},
             onOilUsedChange: onOilUsedChange ?? (_) {},
+            showValidation: showValidation,
           ),
         ),
       ),
@@ -240,10 +243,10 @@ void main() {
         conversionFactor: 1,
       );
 
-      await tester.pumpWidget(buildTestWidget(foodInEvent: food));
+      await tester.pumpWidget(buildTestWidget(foodInEvent: food, showValidation: true));
       await tester.pumpAndSettle();
 
-      // The container should have an error border (width: 4)
+      // The cooking method dropdown container should have a red error border
       final containers = find.byType(Container);
       bool hasErrorBorder = false;
       for (final element in containers.evaluate()) {
@@ -251,7 +254,7 @@ void main() {
         final decoration = widget.decoration;
         if (decoration is BoxDecoration && decoration.border != null) {
           final border = decoration.border;
-          if (border is Border && border.top.width == 4) {
+          if (border is Border && border.top.color == AppColors.errorRed) {
             hasErrorBorder = true;
             break;
           }

@@ -84,6 +84,17 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
+    on<AddSportArgumentModelEventAction>((event, emit) {
+      state.calendarDate = event.sportArgumentsModel.selectedDateTime;
+      if (event.sportArgumentsModel.preSelectFavorite) {
+        state.sportSimpleEvent?.isFavorite = true;
+      }
+      if (event.sportArgumentsModel.preSelectRoutine) {
+        state.sportSimpleEvent?.isCreateRoutine = true;
+      }
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
+
     on<AddSportEventAction>((event, emit) {
       emit(state.copyWith(isLoading: true, onError: null));
       final listOfIds = state.sportSimpleEvent?.info.orEmpty().map((e) => e.id).toList();
@@ -250,9 +261,29 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
           event.sportRoutineCompleted.userId = getUserIdInteractor.execute();
           event.sportRoutineCompleted.timeZone = await DateTimeHelper.getDeviceIANATimeZone();
 
-          final sportEventComplete = await uploadRoutineInteractor.execute(event.sportRoutineCompleted);
+          final sportRoutineUploadResult = await uploadRoutineInteractor.execute(event.sportRoutineCompleted);
           try {
             await saveRoutineInteractor.execute(event.sportRoutineCompleted, state.isEdit ?? false);
+
+            // Also log the item as an event
+            try {
+              final sportEventSimple = mapToSportEventSimpleFromAddFavoriteSport(state.sportSimpleEvent!);
+              sportEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
+              sportEventSimple.userId = getUserIdInteractor.execute();
+              sportEventSimple.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
+              final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
+              await saveSportEventInteractor.execute(sportEventComplete, false);
+            } catch (error, st) {
+              CrashlyticsService.record(
+                error,
+                st,
+                context: {
+                  'action': 'Sport event logging alongside routine',
+                  'screen': 'Add Sport',
+                  'event data': event.sportRoutineCompleted.toJson().toString(),
+                },
+              );
+            }
 
             _clearFields();
             event.onFinish.call();
@@ -295,6 +326,26 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
         if (uploadResult) {
           await saveSportFavoriteInteractor.execute(event.sportFavorite, state.isEdit ?? false);
           state.favSports = await getSportFavoritesInteractor.execute();
+
+          // Also log the item as an event
+          try {
+            final sportEventSimple = mapToSportEventSimpleFromAddFavoriteSport(state.sportSimpleEvent!);
+            sportEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
+            sportEventSimple.userId = getUserIdInteractor.execute();
+            sportEventSimple.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
+            final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
+            await saveSportEventInteractor.execute(sportEventComplete, false);
+          } catch (error, st) {
+            CrashlyticsService.record(
+              error,
+              st,
+              context: {
+                'action': 'Sport event logging alongside favorite',
+                'screen': 'Add Sport',
+                'event data': event.sportFavorite.toJson().toString(),
+              },
+            );
+          }
 
           _clearFields();
           event.onFinish.call();

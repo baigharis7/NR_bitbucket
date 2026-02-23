@@ -1,26 +1,24 @@
-import 'dart:math';
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/supplements/bloc/supplements_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/supplementsdetail/view/supplements_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/item_title_card.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/supplement_item_widget.dart';
 
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
-import '../../../infrastructure/utils/app_color.dart';
-import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/confirmation_dialog.dart';
 import '../../common/view/loading_screen.dart';
 import '../../updatesupplement/view/update_supplement_screen.dart';
@@ -28,7 +26,7 @@ import '../../widgets/dash_title_widget.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/item_info_card.dart';
-import '../../widgets/item_routine_widget.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 
 class SupplementsScreen extends StatefulWidget {
   static const routeName = '/supplements_screen';
@@ -41,6 +39,9 @@ class SupplementsScreen extends StatefulWidget {
 
 class _SupplementsScreenState extends State<SupplementsScreen> {
   late SupplementsBloc supplementsBloc;
+  final ScrollController _scrollController = ScrollController();
+  late FocusNode _supplementFocusInputController;
+  bool _showValidation = false;
 
   @override
   void initState() {
@@ -55,6 +56,8 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
           // supplementsBloc.state.screenTitle = AppLocalizations.of(context)!.update + ' ' + AppLocalizations.of(context)!.supplement;
           supplementsBloc.add(UpdateScreenTitle(screenTitle: AppLocalizations.of(context)!.update + ' ' + AppLocalizations.of(context)!.supplement));
           supplementsBloc.add(GetSupplementFromNavAction(supplementSimple: arguments));
+        } else if (arguments is Map && arguments['preSelectRoutine'] == true) {
+          supplementsBloc.state.supplementObj?.isRoutine = true;
         }
       }
     });
@@ -77,36 +80,10 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
     );
   }
 
-  Future<void> showRoutineTimeDialog({
-    Function? onNameChange,
-    required Function onTimeChanged,
-    required Function(int) onChangeWeekDays,
-    required Function(bool) onFavoriteChange,
-    required Function(bool) onChangeCreateRoutine,
-    String? name,
-    required List<int>? daysOfWeek,
-    required TimeOfDay? scheduleTime,
-    required bool? isFavorite,
-    required bool? isCreateRoutine,
-    required int itemsLength,
-  }) async {
-    await showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (ctx) => ItemRoutineWidget(
-        onNameChange: (name) => onNameChange?.call(name),
-        onTimeChange: (pickedTime) => onTimeChanged.call(pickedTime),
-        onChangeWeekDays: (weekDay) => onChangeWeekDays.call(weekDay),
-        name: name,
-        daysOfWeek: daysOfWeek,
-        scheduleTime: scheduleTime,
-        isFavorite: isFavorite,
-        isCreateRoutine: isCreateRoutine,
-        onFavoriteChange: (value) => onFavoriteChange.call(value),
-        onChangeCreateRoutine: (value) => onChangeCreateRoutine.call(value),
-        itemsLength: itemsLength,
-      ),
-    ).then((_) {});
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -155,8 +132,12 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
               behavior: HitTestBehavior.opaque,
               child: Scaffold(
                 backgroundColor: Colors.transparent,
+                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                 body: SafeArea(
-                    child: SingleChildScrollView(
+                    child: Column(children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                  controller: _scrollController,
                   child: Column(children: [
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
@@ -171,11 +152,27 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                             onBackTap: () => Navigator.pop(context),
                             title: state.screenTitle ?? (AppLocalizations.of(context)!.add + ' ' + AppLocalizations.of(context)!.supplement),
                             image: 'assets/images/supplement.png',
+                            searchHintText: AppLocalizations.of(context)!.search_supplement_hint,
                             items: state.supplementsInfo?.data.map((element) => element.translate(context)).toList(),
                             onItemSelect: (supplementName, focus) {
-                              // focus.unfocus();
+                              _supplementFocusInputController = focus;
                               final supplement = NutritionUtils.findSupplementByName(state.supplementsInfo?.data ?? [], supplementName, context);
                               supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: supplement.id, unit: supplement.unit, amount: 0)));
+                              // Auto-scroll to newly added item
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                _scrollController.animateTo(
+                                  _scrollController.position.maxScrollExtent,
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeOut,
+                                );
+                              });
+                              // Auto-title logic
+                              final currentCount = state.supplementObj!.info.orEmpty().length;
+                              if (currentCount == 0) {
+                                supplementsBloc.add(UpdateNameSupplementsEvent(name: supplementName));
+                              } else if (currentCount == 1) {
+                                supplementsBloc.add(UpdateNameSupplementsEvent(name: ''));
+                              }
                             },
                           ),
                         ],
@@ -279,13 +276,42 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            primary: false,
-                            itemCount: state.supplementObj?.info?.orEmpty().length,
-                            itemBuilder: (context, index) {
-                              final nutriInfo = state.supplementObj?.info.orEmpty()[index];
-                              return SupplementItemWidget(
+                          const SizedBox(height: Dimens.height12),
+                          // Title card with favorite/routine toggles
+                          ItemTitleCard(
+                            name: state.supplementObj?.name,
+                            onUpdateName: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
+                            isFavorite: state.supplementObj?.isFavorite ?? false,
+                            onToggleFavorite: () {
+                              if (state.supplementObj?.isFavorite != true) {
+                                if (state.supplementObj?.isRoutine == true) supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: false));
+                                supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: true));
+                              } else {
+                                supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: false));
+                              }
+                            },
+                            isRoutine: state.supplementObj?.isRoutine ?? false,
+                            onToggleRoutine: () {
+                              if (state.supplementObj?.isRoutine != true) {
+                                if (state.supplementObj?.isFavorite == true) supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: false));
+                                supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: true));
+                              } else {
+                                supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: false));
+                              }
+                            },
+                            itemCount: state.supplementObj!.info.orEmpty().length,
+                            scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
+                            onUpdateTime: (scheduleTime) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
+                            daysOfWeek: state.supplementObj?.daysOfWeek,
+                            onUpdateDayOfWeek: (dayOfWeek) {},
+                          ),
+                          // Item cards with connector lines
+                          ...state.supplementObj!.info.orEmpty().asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final nutriInfo = entry.value;
+                            return Column(
+                            children: [
+                              SupplementItemWidget(
                                 title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
                                 amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
                                 units: nutriInfo != null ? [nutriInfo.unit] : [],
@@ -295,94 +321,97 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                   supplementsBloc.add(UpdateAmountSupplementsAction(nutriInfo: nutriInfo!));
                                 },
                                 onRemoveItem: () => supplementsBloc.add(RemoveSupplementInfoSupplementsAction(nutriInfo: nutriInfo!, isGoBack: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName))),
-                              );
-                            },
-                          ),
-                          if (state.isEdit != true) const SizedBox(height: Dimens.height32),
-                          if (state.isEdit != true) SizedBox(
-                            width: Dimens.widthLarge,
-                            child: ListTile(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
-                              tileColor: AppColors.floralWhite,
-                              onTap: () => showRoutineTimeDialog(
-                                onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
-                                onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
-                                onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
-                                onFavoriteChange: (value) => supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: value)),
-                                onChangeCreateRoutine: (value) => supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: value)),
-                                name: state.supplementObj?.name,
-                                daysOfWeek: state.supplementObj?.daysOfWeek,
-                                scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
-                                isFavorite: state.supplementObj?.isFavorite,
-                                isCreateRoutine: state.supplementObj?.isRoutine,
-                                itemsLength: state.supplementObj?.info?.length ?? 0,
+                                showValidation: _showValidation,
                               ),
-                              title: Text(AppLocalizations.of(context)!.add_more_options),
-                              trailing: const Icon(Icons.radio_button_checked, color: AppColors.yellowishGreen),
-                            ),
-                          ),
-                          const SizedBox(height: Dimens.height32),
-                          GeneralButton(
-                            onTap: () {
-                              if (state.supplementObj!.info.orEmpty().length == 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
-                                final name = NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], state.supplementObj?.info.orEmpty()[0].id ?? -1).translate(context);
-                                state.supplementObj?.name = name;
-                                // supplementsBloc.add(UpdateNameSupplementsEvent(name: name));
-                              }
-
-                              if (state.supplementObj!.info.orEmpty().length > 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
-                                showRoutineTimeDialog(
-                                  onNameChange: (name) => supplementsBloc.add(UpdateNameSupplementsEvent(name: name)),
-                                  onTimeChanged: (time) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
-                                  onChangeWeekDays: (weekDay) => supplementsBloc.add(UpdateDaysOfWeekSupplementsEvent(weekDay: weekDay)),
-                                  onFavoriteChange: (value) => supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: value)),
-                                  onChangeCreateRoutine: (value) => supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: value)),
-                                  name: state.supplementObj?.name,
-                                  daysOfWeek: state.supplementObj?.daysOfWeek,
-                                  scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.supplementObj?.scheduleTime),
-                                  isFavorite: state.supplementObj?.isFavorite,
-                                  isCreateRoutine: state.supplementObj?.isRoutine,
-                                  itemsLength: state.supplementObj?.info?.length ?? 0,
-                                );
-                              }
-
-                              if (state.supplementObj!.name.isNotEmptyOrNull()) {
-                                if (state.supplementObj?.info.orEmpty().isEmpty == true) return;
-
-                                if (state.supplementObj?.isFavorite == true) {
-                                  supplementsBloc.add(FinishSupplementFavorite(onFinish: () => _showConfirmationDialog(
-                                    message: AppLocalizations.of(context)!.supplement_favorite_successfully_saved,
-                                    context: context,
-                                    onDismiss: () {},
-                                  ),),);
-                                } else if (state.supplementObj?.isRoutine == true) {
-                                  if (state.supplementObj?.daysOfWeek?.isEmpty == true || state.supplementObj?.scheduleTime.isEmptyOrNull() == true) {
-                                    ToastHelper().showToast(text: AppLocalizations.of(context)!.routine_time_day_error);
+                            ],
+                          );
+                          }),
+                          // Add More button
+                          const SizedBox(height: Dimens.marginSmall),
+                          Center(
+                            child: SizedBox(
+                              width: Dimens.widthLarge,
+                              height: Dimens.height55,
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
+                                tileColor: AppColors.floralWhite,
+                                onTap: () {
+                                  final hasEmptyAmount = state.supplementObj?.info.orEmpty().any((n) => n.amount == 0) ?? false;
+                                  if (hasEmptyAmount) {
+                                    setState(() { _showValidation = true; });
                                     return;
                                   }
-                                  supplementsBloc.add(FinishSupplementRoutineSupplementsEvent(onFinish: () => _showConfirmationDialog(
-                                    message: AppLocalizations.of(context)!.supplement_routine_successfully_saved,
-                                    context: context,
-                                    onDismiss: () {},
-                                  ),),);
-                                } else {
-                                  supplementsBloc.add(FinishEventSupplementsAction(
-                                      onFinish: () => _showConfirmationDialog(
-                                        message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
-                                        context: context,
-                                        onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
-                                      ),),);
-                                }
-                                // supplementsBloc.add(SavingEventSupplementsAction(onFinish: () => _showConfirmationDialog(context, () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate))));
-                              }
-                            },
+                                  setState(() { _showValidation = false; });
+                                  _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                  _supplementFocusInputController.requestFocus();
+                                },
+                                title: Text(AppLocalizations.of(context)!.add_more),
+                                trailing: const Icon(Icons.add_circle, color: AppColors.yellowishGreen),
+                              ),
+                            ),
                           ),
+                          const SizedBox(height: Dimens.paddingXLarge),
                         ],
                       ),
                     ),
                   ],
                   ),
                 ),
+                ),
+                      if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) Container(
+                        margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginSmall),
+                        child: GeneralButton(
+                          onTap: () {
+                            // Validate amounts
+                            final hasEmptyAmount = state.supplementObj?.info.orEmpty().any((n) => n.amount == 0) ?? false;
+                            if (hasEmptyAmount) {
+                              setState(() { _showValidation = true; });
+                              return;
+                            }
+                            // Auto-set title for single items
+                            if (state.supplementObj!.info.orEmpty().length == 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
+                              final name = NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], state.supplementObj?.info.orEmpty()[0].id ?? -1).translate(context);
+                              state.supplementObj?.name = name;
+                            }
+
+                            // Block save if combo has no name (inline error is shown in the title card)
+                            if (state.supplementObj!.info.orEmpty().length > 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
+                              return;
+                            }
+
+                            if (state.supplementObj!.name.isNotEmptyOrNull()) {
+                              if (state.supplementObj?.info.orEmpty().isEmpty == true) return;
+
+                              if (state.supplementObj?.isFavorite == true) {
+                                supplementsBloc.add(FinishSupplementFavorite(onFinish: () => _showConfirmationDialog(
+                                  message: '${AppLocalizations.of(context)!.supplement_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.supplement_favorite_successfully_saved}',
+                                  context: context,
+                                  onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
+                                ),),);
+                              } else if (state.supplementObj?.isRoutine == true) {
+                                if (state.supplementObj?.daysOfWeek?.isEmpty == true || state.supplementObj?.scheduleTime.isEmptyOrNull() == true) {
+                                  ToastHelper().showToast(text: AppLocalizations.of(context)!.routine_time_day_error);
+                                  return;
+                                }
+                                supplementsBloc.add(FinishSupplementRoutineSupplementsEvent(onFinish: () => _showConfirmationDialog(
+                                  message: '${AppLocalizations.of(context)!.supplement_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.supplement_routine_successfully_saved}',
+                                  context: context,
+                                  onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
+                                ),),);
+                              } else {
+                                supplementsBloc.add(FinishEventSupplementsAction(
+                                    onFinish: () => _showConfirmationDialog(
+                                      message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
+                                      context: context,
+                                      onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
+                                    ),),);
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                    ),
                 ),
               ),
             ),

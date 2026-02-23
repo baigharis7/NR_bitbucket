@@ -16,8 +16,11 @@ import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../widgets/date_picker_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
+import '../../widgets/general_button.dart';
 import '../../widgets/item_info_card.dart';
 import '../../widgets/remove_item_widget.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 class SportItemsScreen extends StatelessWidget {
   static const routeName = '/sport_items_screen';
@@ -80,90 +83,93 @@ class SportItemsScreen extends StatelessWidget {
 
               Scaffold(
                 backgroundColor: Colors.transparent,
+                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                 body: SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.all(Dimens.padding10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          // const SizedBox(height: Dimens.height12),
-                          Container(
-                            margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                            child: DatePickerBar(selectedDateTime: state.dateTime ?? DateTime.now(), onChangeDate: (dateTime) {
-                              bloc.add(UpdateDatetimeSportItemsEvents(dateTime: dateTime));
-                            },),
-                          ),
-                          const SizedBox(height: Dimens.height12),
-                          HeaderAddItemCardSection(
-                            title: '${AppLocalizations.of(context)!.physical_activity} ${AppLocalizations.of(context)!.summary}',
-                            image: 'assets/images/sport.png',
-                            onBackTap: () => Navigator.pop(context),
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: Column(
-                                children: [
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    '${NutritionUtils.calculateKcal(foodEvents: state.sportEvents.orEmpty())} Kcal',
-                                    style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize28),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          // const SizedBox(height: Dimens.height12),
-                          (state.sportEvents?.isEmpty ?? true)
-                              ? Container(
-                            margin: const EdgeInsets.all(Dimens.marginSmall),
-                            padding: const EdgeInsets.symmetric(vertical: Dimens.paddingLarge, horizontal: Dimens.padding30),
-                            decoration: BoxDecoration(color: AppColors.floralWhite, borderRadius: BorderRadius.circular(Dimens.border18)),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
                             child: Column(
                               children: [
-                                Row(children: [
-                                  Text(AppLocalizations.of(context)!.information, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),),
-                                ]),
-                                const SizedBox(height: Dimens.heightXSmall),
-                                Text(
-                                  AppLocalizations.of(context)!.physical_summary_exp,
-                                  style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, color: AppColors.yellowishGreen),
+                                Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+                                  child: DatePickerBar(selectedDateTime: state.dateTime ?? DateTime.now(), onChangeDate: (dateTime) {
+                                    bloc.add(UpdateDatetimeSportItemsEvents(dateTime: dateTime));
+                                  },),
                                 ),
+                                const SizedBox(height: Dimens.height12),
+                                HeaderAddItemCardSection(
+                                  title: '${AppLocalizations.of(context)!.physical_activity} ${AppLocalizations.of(context)!.summary}',
+                                  image: 'assets/images/sport.png',
+                                  onBackTap: () => Navigator.pop(context),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          '${NutritionUtils.calculateKcal(foodEvents: state.sportEvents.orEmpty())} Kcal',
+                                          style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize28),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                (state.sportEvents?.isEmpty ?? true)
+                                    ? Container(
+                                  margin: const EdgeInsets.all(Dimens.marginSmall),
+                                  padding: const EdgeInsets.symmetric(vertical: Dimens.paddingLarge, horizontal: Dimens.padding30),
+                                  decoration: BoxDecoration(color: AppColors.floralWhite, borderRadius: BorderRadius.circular(Dimens.border18)),
+                                  child: Column(
+                                    children: [
+                                      Row(children: [
+                                        Text(AppLocalizations.of(context)!.information, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),),
+                                      ]),
+                                      const SizedBox(height: Dimens.heightXSmall),
+                                      Text(
+                                        AppLocalizations.of(context)!.physical_summary_exp,
+                                        style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, color: AppColors.yellowishGreen),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                    : ListView.builder(
+                                  shrinkWrap: true,
+                                      primary: false,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      itemCount: state.sportEvents?.length ?? 0,
+                                      itemBuilder: (context, index) {
+                                        final activity = state.sportEvents![index];
+                                        final itemName = activity.sportName ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: activity.info, context: context);
+                                        return ItemInfoCard(
+                                          title: itemName,
+                                          subtitle: '${AppLocalizations.of(context)!.energy}: -${activity.eventKcals} kcal. - ${(activity.info?.length ?? 0) > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : "${AppLocalizations.of(context)!.duration}: ${activity.info![0].minutes} min."}',
+                                          trailingSrc: 'assets/images/delete_icon.png',
+                                          beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                                          beforeTrailingTap: () => Navigator.pushNamed(context, SportUpdateScreen.routeName, arguments: activity).then((value) => bloc.add(UpdateDatetimeSportItemsEvents(dateTime: state.dateTime ?? DateTime.now()))),
+                                          trailingTap: () => _showRemoveDialog(
+                                            description: AppLocalizations.of(context)!.remove_item(itemName),
+                                            onCancel: () => Navigator.pop(context),
+                                            onConfirm: () => bloc.add(DeleteSportItemSportItemsEvents(sportEventComplete: activity)),
+                                          ),
+                                        );
+                                      },
+                                    ),
                               ],
                             ),
-                          )
-                              : ListView.builder(
-                            shrinkWrap: true,
-                                primary: false,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: state.sportEvents?.length ?? 0,
-                                itemBuilder: (context, index) {
-                                  final activity = state.sportEvents![index];
-                                  final itemName = activity.sportName ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: activity.info, context: context);
-                                  return ItemInfoCard(
-                                    title: itemName,
-                                    subtitle: '${AppLocalizations.of(context)!.energy}: -${activity.eventKcals} kcal. - ${(activity.info?.length ?? 0) > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : "${AppLocalizations.of(context)!.duration}: ${activity.info![0].minutes} min."}',
-                                    trailingSrc: 'assets/images/delete_icon.png',
-                                    beforeTrailingSrc: 'assets/icon/edit_icon.png',
-                                    beforeTrailingTap: () => Navigator.pushNamed(context, SportUpdateScreen.routeName, arguments: activity).then((value) => bloc.add(UpdateDatetimeSportItemsEvents(dateTime: state.dateTime ?? DateTime.now()))),
-                                    trailingTap: () => _showRemoveDialog(
-                                      description: AppLocalizations.of(context)!.remove_item(itemName),
-                                      onCancel: () => Navigator.pop(context),
-                                      onConfirm: () => bloc.add(DeleteSportItemSportItemsEvents(sportEventComplete: activity)),
-                                    ),
-                                  );
-                                },
-                              ),
-                          // Add Activity Button
-                          ListTile(
-                            onTap: () => Navigator.popAndPushNamed(context, AddSportEventScreen.routeName),
-                            leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
-                            title: Text(
-                              AppLocalizations.of(context)!.add_physical_activity,
-                              style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),
-                            ),
                           ),
-                        ],
-                      ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge, bottom: Dimens.marginSmall),
+                          child: GeneralButton(
+                            title: AppLocalizations.of(context)!.add,
+                            onTap: () => Navigator.popAndPushNamed(context, AddSportEventScreen.routeName),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

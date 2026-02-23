@@ -9,5 +9,5 @@ class StepEventResponse {
   StepEventResponse({required this.eventId, required this.initialSteps, required this.actualSteps});
 
   factory StepEventResponse.fromJson(Map<String, dynamic> json) => _$StepEventResponseFromJson(json);
-  Map<String, dynamic> toJson() => _$SportEventResponseToJson(this);
+  Map<String, dynamic> toJson() => _$StepEventResponseToJson(this);
 }

@@ -136,8 +136,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         state.foodEvent!.ingredients.remove(state.foodEvent!.ingredients[itemIndex]);
         state.foodEvent!.ingredients.add(event.foodInEvent);
       } else {
-        state.foodEvent!.ingredients.insert(0, event.foodInEvent);
-        // state.foodsInEvent!.add(event.foodInEvent);
+        state.foodEvent!.ingredients.add(event.foodInEvent);
       }
       emit(state.copyWith(isLoading: false,));
     });
@@ -252,6 +251,12 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       state.foodEvent?.mealTime = event.foodArgumentsModel.mealTime.id;
       state.foodEvent?.eventDate = event.foodArgumentsModel.selectedDateTime.millisecondsSinceEpoch;
       state.foodEvent?.time = event.foodArgumentsModel.mealTime.time;
+      if (event.foodArgumentsModel.preSelectFavorite) {
+        state.foodEvent?.isFavorite = true;
+      }
+      if (event.foodArgumentsModel.preSelectRoutine) {
+        state.foodEvent?.isRoutine = true;
+      }
       emit(state.copyWith(isLoading: false,));
     },);
 
@@ -284,6 +289,29 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
           final saveFoodsAsFavorite = await saveFoodFavoriteInteractor.execute(event.foodFavorite, state.isEdit!);
           state.foodFavorites = await getFoodFavoritesInteractor.execute();
           state.foodFavorites = state.foodFavorites.orEmpty().where((foodFav) => foodFav.mealTime == state.foodEvent?.mealTime).toList();
+
+          // Also log the item as an event
+          try {
+            final foodEventSimple = mapToFoodEventSimpleFromFoodFavorite(state.foodEvent!);
+            foodEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
+            foodEventSimple.userId = getUserIdInteractor.execute();
+            foodEventSimple.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+            final uploadFoodEvent = await uploadFoodEventInteractor.execute(foodEventSimple);
+            if (uploadFoodEvent.uploadSuccess) {
+              await saveFoodEventInteractor.execute(uploadFoodEvent, false);
+            }
+          } catch (error, st) {
+            CrashlyticsService.record(
+              error,
+              st,
+              context: {
+                'action': 'Food event logging alongside favorite',
+                'screen': 'Add Food',
+                'event data': event.foodFavorite.toJson().toString(),
+              },
+            );
+          }
+
           _clearFields();
           emit(state.copyWith(isLoading: false, onError: null,));
           event.onFinish.call();
@@ -427,6 +455,28 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         if (uploadedRoutine) {
           try {
             await saveFoodRoutineInteractor.execute(event.foodRoutineEvent, state.isEdit ?? false);
+
+            // Also log the item as an event
+            try {
+              final foodEventSimple = mapToFoodEventSimpleFromFoodFavorite(state.foodEvent!);
+              foodEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
+              foodEventSimple.userId = getUserIdInteractor.execute();
+              foodEventSimple.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+              final uploadFoodEvent = await uploadFoodEventInteractor.execute(foodEventSimple);
+              if (uploadFoodEvent.uploadSuccess) {
+                await saveFoodEventInteractor.execute(uploadFoodEvent, false);
+              }
+            } catch (error, st) {
+              CrashlyticsService.record(
+                error,
+                st,
+                context: {
+                  'action': 'Food event logging alongside routine',
+                  'screen': 'Add Food',
+                  'event data': event.foodRoutineEvent.toJson().toString(),
+                },
+              );
+            }
 
             _clearFields();
             emit(state.copyWith(isLoading: false, onError: null,));

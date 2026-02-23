@@ -519,6 +519,7 @@ class LoginBloc extends BaseBloc<LoginActions, LoginState> {
           await getMasterFilesVersionInteractor.execute(MasterFilesType.unitsFoods),
           await getMasterFilesVersionInteractor.execute(MasterFilesType.supplementsInfo),
           await getMasterFilesVersionInteractor.execute(MasterFilesType.subjectiveAnalysis),
+          await getMasterFilesVersionInteractor.execute(MasterFilesType.cookingMethodsOilsInfo),
         ),
         onSuccess: (MasterFilesResponse masterFilesResponse) async => await _onSuccessManageMasterFiles(masterFilesResponse, onFinish, removeLoading),
         onError: (error) async => await _onErrorManageMasterFiles(error, removeLoading),
@@ -577,6 +578,12 @@ class LoginBloc extends BaseBloc<LoginActions, LoginState> {
       await saveMasterFileInteractor.execute(
           masterFilesResponse.unitsInfoResponse,
           MasterFilesType.unitsInfo,
+      );
+    });
+    masterFilesResponse.cookingMethodsOilsInfoResponse.doIfAintNull(() async {
+      await saveMasterFileInteractor.execute(
+          masterFilesResponse.cookingMethodsOilsInfoResponse,
+          MasterFilesType.cookingMethodsOilsInfo,
       );
     });
     state.areMasterFilesChecked = true;

@@ -3,24 +3,24 @@ import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_
 import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_completed.dart';
 import 'package:nutrenaissance_flutter/domain/repository/routines/routines_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/sport_routine_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 
 import '../../../domain/repository/localstorage/local_storage.dart';
 
 class RoutinesRepositoryImpl extends RoutinesRepository {
   final RoutinesApi routinesApi;
   final LocalStorageRepository localStorageRepository;
+  final SyncQueueService syncQueue;
 
-
-  RoutinesRepositoryImpl({required this.routinesApi, required this.localStorageRepository});
+  RoutinesRepositoryImpl({required this.routinesApi, required this.localStorageRepository, required this.syncQueue});
 
   @override
   Future<bool> uploadRoutine(SportRoutineCompleted sportRoutineCompleted) async {
-    try {
-      final result = await routinesApi.uploadRoutine(sportRoutineCompleted);
-      return true;
-    } catch (_) {
-      rethrow;
-    }
+    routinesApi.uploadRoutine(sportRoutineCompleted).catchError((error) {
+      syncQueue.enqueue('/sport-routine/v2', sportRoutineCompleted);
+      return <String, dynamic>{};
+    });
+    return true;
   }
 
   @override
@@ -40,11 +40,10 @@ class RoutinesRepositoryImpl extends RoutinesRepository {
 
   @override
   Future<void> deleteSportRoutine(String userId, int eventId) async {
-    try {
-      final result = await routinesApi.deleteSportRoutine(userId, eventId);
-    } catch (_) {
-      rethrow;
-    }
+    routinesApi.deleteSportRoutine(userId, eventId).catchError((error) {
+      syncQueue.enqueueDelete('/sport-routine/v2', {'userId': userId, 'eventId': eventId});
+      return <String, dynamic>{};
+    });
   }
 
   @override

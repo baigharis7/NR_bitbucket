@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/add_food_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
@@ -16,6 +17,7 @@ import 'package:nutrenaissance_flutter/presentation/favorites/common/add_favorit
 import 'package:nutrenaissance_flutter/presentation/favorites/liquid/bloc/create_new_liquid_favorite_state.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/liquid/view/add_liquid_favorite_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_card.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 
 class CreateNewLiquidFavoriteScreen extends StatefulWidget {
   static const routeName = '/create_new_liquid_favorite';
@@ -106,6 +108,7 @@ class _CreateNewLiquidFavoriteScreenState extends State<CreateNewLiquidFavoriteS
       value: bloc,
       child: SafeArea(
         child: Scaffold(
+          bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
           appBar: AppBar(
             backgroundColor: Colors.white,
             titleSpacing: Dimens.marginNormal,

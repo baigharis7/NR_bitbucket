@@ -48,6 +48,19 @@ class _LoginScreenState extends State<LoginScreen>
   final _formKey = GlobalKey<FormState>();
   bool isChecked = false;
 
+  // FocusNodes for blur-based validation
+  final _usernameFocusNode = FocusNode();
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
+  final _repeatPasswordFocusNode = FocusNode();
+
+  // Track which fields have been touched (interacted with and blurred with content)
+  static const String _fieldUsername = 'username';
+  static const String _fieldEmail = 'email';
+  static const String _fieldPassword = 'password';
+  static const String _fieldRepeatPassword = 'repeatPassword';
+  final Set<String> _touchedFields = {};
+
   void _showExitConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -280,17 +293,47 @@ class _LoginScreenState extends State<LoginScreen>
         curve: Curves.easeIn,
       ),
     );
+
+    // Add focus listeners for blur-based validation
+    _usernameFocusNode.addListener(() => _onFieldBlur(_fieldUsername, _usernameFocusNode, _usernameController));
+    _emailFocusNode.addListener(() => _onFieldBlur(_fieldEmail, _emailFocusNode, _emailController));
+    _passwordFocusNode.addListener(() => _onFieldBlur(_fieldPassword, _passwordFocusNode, _passwordController));
+    _repeatPasswordFocusNode.addListener(() => _onFieldBlur(_fieldRepeatPassword, _repeatPasswordFocusNode, _repeatPasswordController));
+  }
+
+  void _onFieldBlur(String fieldName, FocusNode focusNode, TextEditingController controller) {
+    // Only process when field loses focus (not gains focus)
+    if (!focusNode.hasFocus) {
+      setState(() {
+        _touchedFields.add(fieldName);
+      });
+      _formKey.currentState?.validate();
+    }
+  }
+
+  // Helper to check if a field should show validation errors
+  bool _shouldValidate(String fieldName) {
+    return _touchedFields.contains(fieldName);
+  }
+
+  // Reset touched state when switching between login/register modes
+  void _resetTouchedFields() {
+    _touchedFields.clear();
   }
 
   @override
   void dispose() {
-    super.dispose();
+    _usernameFocusNode.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    _repeatPasswordFocusNode.dispose();
     _controller!.dispose();
     _emailController.dispose();
     _mfaController.dispose();
     _passwordController.dispose();
     _repeatPasswordController.dispose();
     _usernameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -363,6 +406,7 @@ class _LoginScreenState extends State<LoginScreen>
                             Padding(
                               padding: const EdgeInsets.only(bottom: 20,top: 50),
                               child: TextFormField(
+                                focusNode: _usernameFocusNode,
                                 autofillHints: model.isLogin ? const[AutofillHints.email] : null,
                                 onEditingComplete: model.isLogin ? () => TextInput.finishAutofillContext() : null,
                                 cursorColor: Colors.white,
@@ -379,13 +423,14 @@ class _LoginScreenState extends State<LoginScreen>
                                     ),
                                   ),
                                   hintStyle: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
-                                  hintText: model.isLogin ? AppLocalizations.of(context)!.email : AppLocalizations.of(context)!.username,
+                                  hintText: '${model.isLogin ? AppLocalizations.of(context)!.email : AppLocalizations.of(context)!.username} *',
                                   errorMaxLines: 3,
                                 ),
                                 controller: _usernameController,
-                                validator: (value) => resolveFormError(context, model.validateUsername(value)),
-                              // onChanged: (value) => _formKey.currentState!.validate(),
-                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                validator: (value) => _shouldValidate(_fieldUsername)
+                                    ? resolveFormError(context, model.validateUsername(value))
+                                    : null,
+                                autovalidateMode: AutovalidateMode.disabled,
                               ),
                             ),
                             if (!model.isLogin) AnimatedContainer(
@@ -403,6 +448,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   child: Padding(
                                     padding: const EdgeInsets.only(bottom: 20),
                                     child: TextFormField(
+                                      focusNode: _emailFocusNode,
                                       cursorColor: Colors.white,
                                       style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
                                       decoration: InputDecoration(
@@ -420,19 +466,21 @@ class _LoginScreenState extends State<LoginScreen>
                                         ),
                                         hintStyle: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
                                         hintText:
-                                        AppLocalizations.of(context)!.email,
+                                        '${AppLocalizations.of(context)!.email} *',
                                         errorMaxLines: 3,
                                       ),
                                       controller: _emailController,
-                                      validator: (value) => resolveFormError(context, model.validateEmail(value)),
-                                      // onChanged: (value) => _formKey.currentState!.validate(),
-                                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                                      validator: (value) => _shouldValidate(_fieldEmail)
+                                          ? resolveFormError(context, model.validateEmail(value))
+                                          : null,
+                                      autovalidateMode: AutovalidateMode.disabled,
                                     ),
                                   ),
                                 ),
                               ),
                             ),
                             TextFormField(
+                              focusNode: _passwordFocusNode,
                               autofillHints: const[AutofillHints.password],
                               onEditingComplete: () => TextInput.finishAutofillContext(),
                               cursorColor: Colors.white,
@@ -449,7 +497,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   ),
                                 ),
                                 hintStyle: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
-                                hintText: AppLocalizations.of(context)!.password_hint,
+                                hintText: '${AppLocalizations.of(context)!.password_hint} *',
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     model.isPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -461,9 +509,10 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                               controller: _passwordController,
                               obscureText: !model.isPasswordVisible,
-                              validator: (value) => resolveFormError(context, model.validatePassword(value)),
-                              // onChanged: (value) => _formKey.currentState!.validate(),
-                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              validator: (value) => _shouldValidate(_fieldPassword)
+                                  ? resolveFormError(context, model.validatePassword(value))
+                                  : null,
+                              autovalidateMode: AutovalidateMode.disabled,
                             ),
                             if (!model.isLogin)
                               AnimatedContainer(
@@ -480,6 +529,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 20),
                                       child: TextFormField(
+                                        focusNode: _repeatPasswordFocusNode,
                                         cursorColor: Colors.white,
                                         style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
                                         decoration: InputDecoration(
@@ -494,7 +544,7 @@ class _LoginScreenState extends State<LoginScreen>
                                             ),
                                           ),
                                           hintStyle: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
-                                          hintText: AppLocalizations.of(context)!.repeat_password,
+                                          hintText: '${AppLocalizations.of(context)!.repeat_password} *',
                                           suffixIcon: IconButton(
                                             icon: Icon(
                                               model.isRepeatPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -506,9 +556,10 @@ class _LoginScreenState extends State<LoginScreen>
                                         ),
                                         controller: _repeatPasswordController,
                                         obscureText: !model.isRepeatPasswordVisible,
-                                        validator: (value) => resolveFormError(context, model.validateRepeatPassword(value, _passwordController.text)),
-                                        // onChanged: (value) => _formKey.currentState!.validate(),
-                                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                                        validator: (value) => _shouldValidate(_fieldRepeatPassword)
+                                            ? resolveFormError(context, model.validateRepeatPassword(value, _passwordController.text))
+                                            : null,
+                                        autovalidateMode: AutovalidateMode.disabled,
                                       ),
                                     ),
                                   ),
@@ -546,6 +597,12 @@ class _LoginScreenState extends State<LoginScreen>
                                       : AppLocalizations.of(context)!.register,
                                 enableButton: model.isLogin ? true : model.isPrivacyPolicyChecked,
                                 onPressed: () {
+                                  // Mark all fields as touched on submit so inline errors show
+                                  if (!model.isLogin) {
+                                    setState(() {
+                                      _touchedFields.addAll([_fieldUsername, _fieldEmail, _fieldPassword, _fieldRepeatPassword]);
+                                    });
+                                  }
                                   if (_formKey.currentState!.validate()) {
                                     model.submitData(
                                       username: _usernameController.text.trim().orEmpty(),
@@ -586,6 +643,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   _emailController.clear();
                                   _passwordController.clear();
                                   _repeatPasswordController.clear();
+                                  _resetTouchedFields();
                                   model.changeLoginMode(() { _controller!.forward(); });
                                 },
                                 child: RichText(text: TextSpan(

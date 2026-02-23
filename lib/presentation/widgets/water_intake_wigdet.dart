@@ -33,8 +33,8 @@ class WaterIntakeWidget extends StatelessWidget {
       children: [
         DashTitleWidget(title: AppLocalizations.of(context)!.hydration, onInfoClick: onInfoClick.isNull() ? null : () => onInfoClick?.call(), style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall, vertical: Dimens.marginNormal),
-          padding: const EdgeInsets.all(Dimens.paddingLarge),
+          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
+          padding: const EdgeInsets.all(Dimens.paddingNormal),
           decoration: BoxDecoration(
             color: AppColors.darkJungleGreen,
             border: Border.all(color: Colors.white, width: Dimens.width1),
@@ -42,81 +42,43 @@ class WaterIntakeWidget extends StatelessWidget {
           ),
           child: Column(
             children: [
-              // GridView(
-              //   gridDelegate:
-              //   const SliverGridDelegateWithFixedCrossAxisCount(
-              //     crossAxisCount: 8,
-              //     mainAxisSpacing: 10,
-              //     crossAxisSpacing: Dimens.marginNormal,
-              //     mainAxisExtent: 55.0,
-              //   ),
-              //   shrinkWrap: true,
-              //   children: List.generate(totalGlasses, (index) {
-              //     bool isFilled = index < consumedGlasses;
-              //     return InkWell(
-              //       onTap: () {
-              //         !isFilled ? onAddWater.call() : onRemoveWater.call();
-              //       },
-              //       child: Container(
-              //         width: Dimens.widthSmall,
-              //         height: Dimens.width55,
-              //         // margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
-              //         decoration: BoxDecoration(
-              //           image: DecorationImage(
-              //             image: AssetImage(isFilled
-              //                 ? 'assets/images/filled_glass.png'
-              //                 : 'assets/images/empty_glass.png'),
-              //             fit: BoxFit.cover,
-              //           ),
-              //         ),
-              //         child: !isFilled
-              //             ? const Center(
-              //           child: Icon(Icons.add, size: 18, color: Colors.white),
-              //         )
-              //             : null,
-              //       ),
-              //     );
-              //   }),
-              // ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(totalGlasses, (index) {
-                    bool isFilled = index < consumedGlasses;
-                    return InkWell(
-                      onTap: () {
-                        if (!isFilled) {
-                          onAddWater.call();
-                        } else {
-                          onRemoveWater.call();
-                        }
-                      },
-                      child: Container(
-                        width: Dimens.widthSmall,
-                        height: Dimens.width55,
-                        // margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(isFilled
-                                ? 'assets/images/filled_glass.png'
-                                : 'assets/images/empty_glass.png'),
-                            fit: BoxFit.cover,
-                          ),
+              Wrap(
+                runSpacing: 8,
+                children: List.generate(totalGlasses, (index) {
+                  bool isFilled = index < consumedGlasses;
+                  return InkWell(
+                    onTap: () {
+                      if (!isFilled) {
+                        onAddWater.call();
+                      } else {
+                        onRemoveWater.call();
+                      }
+                    },
+                    child: Container(
+                      width: Dimens.widthSmall,
+                      height: Dimens.width55,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(isFilled
+                              ? 'assets/images/filled_glass.png'
+                              : 'assets/images/empty_glass.png'),
+                          fit: BoxFit.cover,
                         ),
-                        child: !isFilled
-                            ? const Center(
-                          child: Icon(Icons.add, size: 18, color: Colors.white),
-                        )
-                            : null,
                       ),
-                    );
-                  }),
-                ),
+                      child: !isFilled
+                          ? const Center(
+                        child: Icon(Icons.add, size: 18, color: Colors.white),
+                      )
+                          : null,
+                    ),
+                  );
+                }),
               ),
               // Progress Bar
               Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
                   child: AnimatedNutrientProgressBarWidget(percent: progress * 100, height: Dimens.heightXXSmall,)),
+              const SizedBox(height: 4),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

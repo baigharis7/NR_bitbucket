@@ -60,6 +60,18 @@ class SaveUpdateSportUpdateSportEvent extends UpdateSportEvent {
   SaveUpdateSportUpdateSportEvent({required this.onFinish});
 }
 
+class UpdateIsFavoriteUpdateSportEvent extends UpdateSportEvent {
+  final bool isFavorite;
+
+  UpdateIsFavoriteUpdateSportEvent({required this.isFavorite});
+}
+
+class UpdateIsRoutineUpdateSportEvent extends UpdateSportEvent {
+  final bool isRoutine;
+
+  UpdateIsRoutineUpdateSportEvent({required this.isRoutine});
+}
+
 class SaveUpdateSportFavoriteUpdateSportEvent extends UpdateSportEvent {
   final Function onFinish;
 

@@ -17,10 +17,12 @@ import 'package:nutrenaissance_flutter/presentation/liquidevent/bloc/liquid_even
 import 'package:nutrenaissance_flutter/presentation/liquidevent/bloc/liquid_event_state.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidevent/view/add_liquid_event_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidevent/view/liquid_card.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
 import '../../../infrastructure/helpers/remove_diac.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 class AddLiquidEventScreen extends StatefulWidget {
   const AddLiquidEventScreen({Key? key}) : super(key: key);
@@ -144,6 +146,7 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
       value: bloc,
       child: SafeArea(
         child: Scaffold(
+          bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
           body: BlocConsumer<LiquidEventBloc, LiquidEventState>(
             listener: (ctx, state) {
               if (state.isLoading) {
@@ -191,6 +194,7 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
                             items: state.liquidNames!.foodsAndDrinksNames!.drinkNames!
                                 .map((item) => item.translate(context)).toList(),
                             onBackTap: () => Navigator.pop(context),
+                            searchHintText: AppLocalizations.of(context)!.search_drink_hint,
                             onItemSelect: (option, focus) {
                               // _focusInputController = focus;
                               final food =

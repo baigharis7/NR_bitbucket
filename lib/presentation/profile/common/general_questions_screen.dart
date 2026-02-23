@@ -136,7 +136,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                 decoration: InputDecoration(
                                   contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
                                   hintText:
-                                  AppLocalizations.of(ctx)!.write_your_name_here,
+                                  '${AppLocalizations.of(ctx)!.write_your_name_here} *',
                                   hintStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
                                   focusColor: Colors.white,
                                   enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
@@ -146,10 +146,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                 validator: (value) {
                                   return value.isEmptyOrNull() ? AppLocalizations.of(context)!.must_complete_field : null;
                                 },
-                                // onChanged: (name) => bloc
-                                //     .add(RefreshCommonNameAction(commonName: name)),
                                 onChanged: (value) {
-                                  _formKey.currentState!.validate();
                                   bloc.add(RefreshCommonNameAction(commonName: value));
                                 },
                               ),
@@ -163,7 +160,6 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       initialDate: DateTime(DateTime.now().year-19),
                                       firstDate: DateTime(DateTime.now().year-100),
                                       lastDate: DateTime(DateTime.now().year-19)).then((pickedDate) {
-                                    _formKey.currentState!.validate();
                                     if (pickedDate != null) bloc.add(RefreshBirthdateAction(birthdate: pickedDate.millisecondsSinceEpoch));
                                   });
                                 },
@@ -173,14 +169,14 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                 // contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
                                   hintStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
                                 enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
-                                  hintText: state.profile!.birthDate == null ? AppLocalizations.of(ctx)!.birthday_question : DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.birthDate!)),
+                                  hintText: state.profile!.birthDate == null ? '${AppLocalizations.of(ctx)!.birthday_question} *' : DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.birthDate!)),
                                   prefixIcon: const Icon(Icons.calendar_month, color: Colors.white),
                                 ),
                                 validator: (value) => state.profile?.birthDate?.isNull() ?? true ? AppLocalizations.of(context)!.must_complete_field : null,),
                               const SizedBox(height: Dimens.height32),
                               Column(crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  if (state.profile?.sex?.isNull() ?? true) Text(AppLocalizations.of(context)!.select_gender, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17,),),
+                                  if (state.profile?.sex?.isNull() ?? true) Text('${AppLocalizations.of(context)!.select_gender} *', style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17,),),
                                   if (state.profile?.sex?.isNull() ?? true) const SizedBox(height: Dimens.height32),
                                   Row(
                                     children: [
@@ -214,7 +210,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const SizedBox(height: Dimens.height32),
-                                    Text(AppLocalizations.of(context)!.regularity_period_question, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17,)),
+                                    Text('${AppLocalizations.of(context)!.regularity_period_question} *', style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17,)),
                                     const SizedBox(height: Dimens.height12),
                                     if (state.profile?.femaleCharacteristics?.menstruation?.regularity.isNull() ?? true) Text(AppLocalizations.of(context)!.must_complete_field+':', style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17,), textAlign: TextAlign.start),
                                     const SizedBox(height: Dimens.heightXXSmall),
@@ -284,7 +280,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                           ),
                                         ),
                                         const SizedBox(height: Dimens.height12),
-                                        Text(AppLocalizations.of(context)!.last_period_question, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),),
+                                        Text('${AppLocalizations.of(context)!.last_period_question} *', style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),),
                                         TextFormField(
                                           onTap: () {
                                             DatePickerHelper
@@ -346,7 +342,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                     children: [
                                       Expanded(
                                         child: TextFieldGeneralQuest(
-                                          errorBorderColor: (state.profile?.physicalCharacteristics?.height ?? 0) <= 0 ? Colors.red : Colors.grey.shade100,
+                                          errorBorderColor: Colors.grey.shade100,
                                           isNumeric: true,
                                           value: state.profile!
                                               .physicalCharacteristics!.height,
@@ -364,7 +360,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       const SizedBox(width: Dimens.width32),
                                       Expanded(
                                         child: TextFieldGeneralQuest(
-                                          errorBorderColor: (state.profile?.physicalCharacteristics?.weight ?? 0) <= 0 ? Colors.red : Colors.grey.shade100,
+                                          errorBorderColor: Colors.grey.shade100,
                                           isNumeric: true,
                                           value: state.profile!
                                               .physicalCharacteristics!.weight,
@@ -423,7 +419,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                   GeneralButton(
                                     title: AppLocalizations.of(context)!.save,
                                     onTap: () {
-                                      if (_formKey.currentState!.validate() && ((state.profile?.physicalCharacteristics?.height ?? 0) > 0) && ((state.profile?.physicalCharacteristics?.weight ?? 0) > 0)) {
+                                      if (_formKey.currentState!.validate()) {
                                         bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName)));
                                       }
                                     },

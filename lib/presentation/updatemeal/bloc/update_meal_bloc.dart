@@ -76,7 +76,7 @@ class UpdateMealBloc extends Bloc<UpdateMealEvent, UpdateMealState> {
         state.foodEvent!.ingredients.remove(state.foodEvent!.ingredients[itemIndex]);
         state.foodEvent!.ingredients.add(event.ingredient);
       } else {
-        state.foodEvent!.ingredients.insert(0, event.ingredient);
+        state.foodEvent!.ingredients.add(event.ingredient);
       }
       emit(state.copyWith(isLoading: false,));
     });
@@ -140,6 +140,16 @@ class UpdateMealBloc extends Bloc<UpdateMealEvent, UpdateMealState> {
       }
 
       emit(state.copyWith(isLoading: false,));
+    });
+
+    on<UpdateIsFavoriteUpdateMealEvent>((event, emit) {
+      state.foodEvent?.isFavorite = event.isFavorite;
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateIsRoutineUpdateMealEvent>((event, emit) {
+      state.foodEvent?.isRoutine = event.isRoutine;
+      emit(state.copyWith(isLoading: false));
     });
 
     on<SaveUpdateMealUpdateMealEvent>((event, emit) {

@@ -58,7 +58,7 @@ class UpdateSupplementBloc
         state.supplementObj!.info.orEmpty().remove(state.supplementObj!.info.orEmpty()[itemIndex]);
         state.supplementObj!.info?.add(event.nutriInfo);
       } else {
-        state.supplementObj!.info?.insert(0, event.nutriInfo);
+        state.supplementObj!.info?.add(event.nutriInfo);
       }
       emit(state.copyWith(isLoading: false,));
     });
@@ -105,6 +105,16 @@ class UpdateSupplementBloc
         state.supplementObj!.info?[itemIndex].amount = event.nutriInfo.amount;
       }
 
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateIsFavoriteUpdateSupplementEvent>((event, emit) {
+      state.supplementObj?.isFavorite = event.isFavorite;
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateIsRoutineUpdateSupplementEvent>((event, emit) {
+      state.supplementObj?.isRoutine = event.isRoutine;
       emit(state.copyWith(isLoading: false));
     });
 

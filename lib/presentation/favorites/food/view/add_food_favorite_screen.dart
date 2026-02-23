@@ -6,6 +6,7 @@ import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_compl
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -21,6 +22,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.d
 
 import '../../../foodevent/view/add_food_event_screen.dart';
 import '../../../widgets/box_type_radio_text_widget.dart';
+import '../../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../common/undo_favorite_dialog.dart';
 
 class AddFoodFavoriteScreen extends StatefulWidget {
@@ -138,6 +140,7 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
           },
           builder: (ctx, state) {
             return Scaffold(
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
               body: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

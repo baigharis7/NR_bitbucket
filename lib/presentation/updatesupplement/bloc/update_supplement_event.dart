@@ -54,6 +54,18 @@ class SavingUpdateSupplement extends UpdateSupplementEvent {
   SavingUpdateSupplement({required this.onFinish});
 }
 
+class UpdateIsFavoriteUpdateSupplementEvent extends UpdateSupplementEvent {
+  final bool isFavorite;
+
+  UpdateIsFavoriteUpdateSupplementEvent({required this.isFavorite});
+}
+
+class UpdateIsRoutineUpdateSupplementEvent extends UpdateSupplementEvent {
+  final bool isRoutine;
+
+  UpdateIsRoutineUpdateSupplementEvent({required this.isRoutine});
+}
+
 class SavingUpdateSupplementFavorite extends UpdateSupplementEvent {
   final Function onFinish;
 

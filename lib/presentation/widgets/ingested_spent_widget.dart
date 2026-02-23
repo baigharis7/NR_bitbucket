@@ -14,10 +14,10 @@ class IngestedSpentWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-      SvgPicture.asset(svg,),
+      SvgPicture.asset(svg, width: 28, height: 28,),
       const SizedBox(height: Dimens.height12),
-      Text(value.toString(), style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSizeXXLarge)),
-      Text(title.toUpperCase(), textAlign: TextAlign.center, style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSize11)),
+      Text(value.toString(), style: AppTextStyles.radioCanadaBig.copyWith(fontSize: 26)),
+      Text(title.toUpperCase(), textAlign: TextAlign.center, style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSize13)),
     ],);
   }
 

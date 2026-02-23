@@ -14,6 +14,7 @@ import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_sport_s
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/event_item_with_edit_and_like.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/weekly_info_card.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
@@ -139,92 +140,97 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                   preferredSize: const Size.fromHeight(Dimens.heightSmall),
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
-                    child: Row(
-                      children: [
-                        Expanded(child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold,),)),
-                        IconButton(
-                          onPressed: () => Navigator.pushNamed(context, AddSportEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
-                          icon: const Icon(Icons.add_circle, color: Colors.teal,),
-                        ),
-                      ],
-                    ),
+                    child: Text(AppLocalizations.of(context)!.today, style: const TextStyle(fontWeight: FontWeight.bold,),),
                   ),
                 ),
               ),
-              body: SingleChildScrollView(
-                child: Container(
-                  margin: const EdgeInsets.only(left: Dimens.marginNormal, right: Dimens.marginNormal, top: Dimens.marginNormal),
-                  width: mediaQuerySize.width,
-                  child: Column(
-                    children: [
-                      if (state.showCard != null && state.showCard!) ExplainingCardsHelper().getExplainingCardWithId(
-                        context: context,
-                        explainingCardId: ExplainingCardRefs.addNewSportEvent.index,
-                        onHideCard: () => bloc.add(HideExplainingCardAction()),
-                        onPressedButton: () => Navigator.pushNamed(context, AddSportEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
-                      ),
-                      state.todaySportEvents!.isNotEmpty
-                          ? Column(
-                        children: [
-                          ...state.todaySportEvents!.map((sportEvent) {
-                            return EventItemWithEditAndLike(
-                              name: sportEvent.sportName.toString(),
-                              isFavorite: bloc.isSportFavorite(sportEvent),
-                              onEdit: () {
-                                Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: sportEvent).then((value) => bloc.add(InitializeStateAction()));
-                              },
-                              onDetail: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  AddSportFavoriteScreen.routeName,
-                                  arguments: sportEvent,
-                                ).then((value) {
-                                  bloc.add(InitializeStateAction());
-                                });
-                              },
-                              onFavorite: () {
-                                if(!bloc.isSportFavorite(sportEvent)) {
-                                  bloc.add(FinishAddSportToFavoriteAction(onFinish: () => _showConfirmationDialog(context), sportEvent: sportEvent));
-                                } else {
-                                  showUndoFavoriteDialog(
-                                    context: ctx,
-                                    title: sportEvent.sportName.orEmpty(),
-                                    reloadScreen: () => bloc.add(InitializeStateAction()),
-                                    onUndoFavorite: () {
-                                      bloc.add(
-                                        RemoveFavoriteSportAction(
-                                          sportFavorite: bloc.isFoundObjectFromFavoriteList(mapToSportFavoriteFromEventComplete(sportEvent)),
-                                          onFinish: () => Navigator.pop(context),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                }
-                              },
-                              onDelete: () => bloc.add(DeleteSportEventAction(sportEventComplete: sportEvent, onFinish: () => _showConfirmationDialog(context))),
-                            );
-                          }).toList()
-                        ],
-                      )
-                          : Container(
-                              margin: const EdgeInsets.only(bottom: Dimens.marginNormal),
-                              child: Text(AppLocalizations.of(context)!.no_sport_events),
+              body: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Container(
+                        margin: const EdgeInsets.only(left: Dimens.marginNormal, right: Dimens.marginNormal, top: Dimens.marginNormal),
+                        width: mediaQuerySize.width,
+                        child: Column(
+                          children: [
+                            if (state.showCard != null && state.showCard!) ExplainingCardsHelper().getExplainingCardWithId(
+                              context: context,
+                              explainingCardId: ExplainingCardRefs.addNewSportEvent.index,
+                              onHideCard: () => bloc.add(HideExplainingCardAction()),
+                              onPressedButton: () => Navigator.pushNamed(context, AddSportEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
                             ),
-                      // Container(
-                      //   alignment: Alignment.centerLeft,
-                      //   margin: const EdgeInsets.only(left: Dimens.marginNormal, right: Dimens.marginNormal, top: Dimens.marginLarge),
-                      //   child: Text(AppLocalizations.of(context)!.this_week),
-                      // ),
-                      // Container(
-                      //   margin: const EdgeInsets.only(bottom: Dimens.marginLarge),
-                      //   child: WeeklyInfoCard(
-                      //     weeklyData: state.weeklyData ?? [],
-                      //     kcals: state.userKcal ?? 0,
-                      //   ),
-                      // ),
-                    ],
+                            state.todaySportEvents!.isNotEmpty
+                                ? Column(
+                              children: [
+                                ...state.todaySportEvents!.map((sportEvent) {
+                                  return EventItemWithEditAndLike(
+                                    name: sportEvent.sportName.toString(),
+                                    isFavorite: bloc.isSportFavorite(sportEvent),
+                                    onEdit: () {
+                                      Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: sportEvent).then((value) => bloc.add(InitializeStateAction()));
+                                    },
+                                    onDetail: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        AddSportFavoriteScreen.routeName,
+                                        arguments: sportEvent,
+                                      ).then((value) {
+                                        bloc.add(InitializeStateAction());
+                                      });
+                                    },
+                                    onFavorite: () {
+                                      if(!bloc.isSportFavorite(sportEvent)) {
+                                        bloc.add(FinishAddSportToFavoriteAction(onFinish: () => _showConfirmationDialog(context), sportEvent: sportEvent));
+                                      } else {
+                                        showUndoFavoriteDialog(
+                                          context: ctx,
+                                          title: sportEvent.sportName.orEmpty(),
+                                          reloadScreen: () => bloc.add(InitializeStateAction()),
+                                          onUndoFavorite: () {
+                                            bloc.add(
+                                              RemoveFavoriteSportAction(
+                                                sportFavorite: bloc.isFoundObjectFromFavoriteList(mapToSportFavoriteFromEventComplete(sportEvent)),
+                                                onFinish: () => Navigator.pop(context),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      }
+                                    },
+                                    onDelete: () => bloc.add(DeleteSportEventAction(sportEventComplete: sportEvent, onFinish: () => _showConfirmationDialog(context))),
+                                  );
+                                }).toList()
+                              ],
+                            )
+                                : Container(
+                                    margin: const EdgeInsets.only(bottom: Dimens.marginNormal),
+                                    child: Text(AppLocalizations.of(context)!.no_sport_events),
+                                  ),
+                            // Container(
+                            //   alignment: Alignment.centerLeft,
+                            //   margin: const EdgeInsets.only(left: Dimens.marginNormal, right: Dimens.marginNormal, top: Dimens.marginLarge),
+                            //   child: Text(AppLocalizations.of(context)!.this_week),
+                            // ),
+                            // Container(
+                            //   margin: const EdgeInsets.only(bottom: Dimens.marginLarge),
+                            //   child: WeeklyInfoCard(
+                            //     weeklyData: state.weeklyData ?? [],
+                            //     kcals: state.userKcal ?? 0,
+                            //   ),
+                            // ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  Container(
+                    margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge, bottom: Dimens.marginSmall),
+                    child: GeneralButton(
+                      title: AppLocalizations.of(context)!.add,
+                      onTap: () => Navigator.pushNamed(context, AddSportEventScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
+                    ),
+                  ),
+                ],
               ),
               bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.JOURNAL)
               // const CustomBottomAppBar(initStateCallback: null,),

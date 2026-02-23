@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_sim
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -22,6 +23,7 @@ import '../../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../../infrastructure/helpers/date_time_helper.dart';
 import '../../../../infrastructure/helpers/remove_diac.dart';
 import '../../../sportevent/view/sport_event_item.dart';
+import '../../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../../widgets/box_type_radio_text_widget.dart';
 
 class CreateNewSportFavoriteScreen extends StatefulWidget {
@@ -120,6 +122,7 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
           },
           builder: (ctx, state) {
             return Scaffold(
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
               appBar: AppBar(
                 leading: IconButton(
                   icon: const Icon(

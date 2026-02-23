@@ -36,6 +36,7 @@ class FoodEventItem extends StatefulWidget {
   final Function(FoodInFavorite) onCookingMethodChange;
   final Function(FoodInFavorite) onConversionFactorChange;
   final Function(FoodInFavorite) onOilUsedChange;
+  final bool showValidation;
 
   const FoodEventItem({
     Key? key,
@@ -54,6 +55,7 @@ class FoodEventItem extends StatefulWidget {
     required this.onCookingMethodChange,
     required this.onConversionFactorChange,
     required this.onOilUsedChange,
+    this.showValidation = false,
   }) : super(key: key);
 
   @override
@@ -63,7 +65,6 @@ class FoodEventItem extends StatefulWidget {
 class _FoodEventItemState extends State<FoodEventItem> {
   final _quantityController = TextEditingController();
   String? _unitName;
-  bool _error = false;
 
   List<SimpleItem> findUnitsForFood(int foodId, BuildContext context) {
     // TODO: quitar el orElse, es para subsanar que no aparecen todos los cooking methods en el JSON.
@@ -131,31 +132,32 @@ class _FoodEventItemState extends State<FoodEventItem> {
         .units;
     ingredient.unitsEquivalences = unitsEquivalences;
 
-    if (widget.foodInEvent.qty != 0 && _quantityController.text == '') {
-      _quantityController.text = widget.foodInEvent.qty.toString();
-      ingredient.qty = widget.foodInEvent.qty;
+    final qtyText = ingredient.qty == 0 ? '' : ingredient.qty.toString();
+    if (_quantityController.text != qtyText) {
+      _quantityController.text = qtyText;
     }
 
     _unitName = _unitName ??
           units.firstWhere((unit) => unit.id == widget.foodInEvent.unit).name;
       ingredient.unit = widget.foodInEvent.unit;
 
-    _error = widget.foodInEvent.qty <= 0 || widget.foodInEvent.unit == -1 || (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && ingredient.cookingMethod == -1);
+    final missingQty = widget.foodInEvent.qty <= 0;
+    final missingUnit = widget.foodInEvent.unit == -1;
+    final missingCookingMethod = ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && ingredient.cookingMethod == -1;
 
     return Column(
       children: [
         Container(
           decoration: BoxDecoration(
-            border: _error ? const Border.fromBorderSide(BorderSide(color: AppColors.red45Percent,  width: 4)) : null,
               borderRadius: BorderRadius.circular(15),
-              color: _error ? AppColors.white65Percent : AppColors.white85Percent,),
-          margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge,),
+              color: AppColors.white85Percent,),
+          margin: const EdgeInsets.only(top: Dimens.marginSmall),
           padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingNormal),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge),
+                margin: const EdgeInsets.only(bottom: Dimens.marginLarge),
                 child: Row(
                   children: [
                     Expanded(
@@ -166,7 +168,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                     ),
                     InkWell(
                       onTap: () => widget.onRemove.call(),
-                      child: const Icon(Icons.cancel_outlined, size: Dimens.heightXSmall),
+                      child: const Icon(Icons.cancel_outlined, size: 28, color: AppColors.yellowishGreen),
                     ),
                   ],
                 ),
@@ -183,20 +185,18 @@ class _FoodEventItemState extends State<FoodEventItem> {
                         textAlignVertical: TextAlignVertical.center,
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.search,
-                        controller: TextEditingController.fromValue(
-                          TextEditingValue(
-                            text: ingredient.qty == 0 ? '' : ingredient.qty.toString(),
-                            selection: TextSelection.collapsed(
-                              offset: ingredient.qty == 0 ? 0 : ingredient.qty.toString().length,
-                            ),
-                          ),
-                        ),
-                        decoration: const InputDecoration(
+                        controller: _quantityController,
+                        decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingSmall),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(11)),
-                            borderSide: BorderSide(color: AppColors.silver, width: 1),
+                            borderRadius: const BorderRadius.all(Radius.circular(11)),
+                            borderSide: BorderSide(color: widget.showValidation && missingQty ? AppColors.errorRed : AppColors.silver, width: 1),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: const BorderRadius.all(Radius.circular(11)),
+                            borderSide: BorderSide(color: widget.showValidation && missingQty ? AppColors.errorRed : AppColors.silver, width: 1),
                           ),
                         ),
                         onChanged: (qty) {
@@ -212,12 +212,12 @@ class _FoodEventItemState extends State<FoodEventItem> {
                           ? Container(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: Dimens.paddingSmall),
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(11)),
+                                      const BorderRadius.all(Radius.circular(11)),
                                   border: Border.fromBorderSide(
-                                      BorderSide(color: AppColors.silver, width: 1))),
+                                      BorderSide(color: widget.showValidation && missingUnit ? AppColors.errorRed : AppColors.silver, width: 1))),
                               child: DropdownButton<String>(
                                 isExpanded: true,
                                 underline: Container(),
@@ -233,13 +233,12 @@ class _FoodEventItemState extends State<FoodEventItem> {
                                       (item) => DropdownMenuItem(
                                         value: item.name,
                                         alignment: Alignment.center,
-                                        child: SizedBox(
-                                          child: Text(
-                                            item.name,
-                                            // overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              fontSize: Dimens.fontSizeNormal,
-                                            ),
+                                        child: Text(
+                                          item.name,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          style: const TextStyle(
+                                            fontSize: Dimens.fontSizeNormal,
                                           ),
                                         ),
                                       ),
@@ -287,24 +286,16 @@ class _FoodEventItemState extends State<FoodEventItem> {
                     widget.onConversionFactorChange.call(ingredient);
                   },),
                   Text(AppLocalizations.of(context)!.cooked, style: const TextStyle(fontSize: Dimens.fontSizeLarge, fontWeight: FontWeight.w400)),
-                ],
-              ),
-              if (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED) Container(
-                margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
-                height: Dimens.heightSmall - 15,
-                child: (widget.cookingMethodsInfoMaster.cookingMethodsInfo.orEmpty().isEmpty)
-                    ? Center(
-                        child: Text(AppLocalizations.of(context)!.none),
-                      )
-                    : Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: Dimens.paddingSmall),
-                        decoration: const BoxDecoration(
+                  if (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && widget.cookingMethodsInfoMaster.cookingMethodsInfo.orEmpty().isNotEmpty) ...[
+                    const SizedBox(width: Dimens.paddingSmall),
+                    Expanded(
+                      child: Container(
+                        height: Dimens.heightSmall - 15,
+                        padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall),
+                        decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(11)),
-                            border: Border.fromBorderSide(
-                                BorderSide(color: AppColors.silver, width: 1))),
+                            borderRadius: const BorderRadius.all(Radius.circular(11)),
+                            border: Border.fromBorderSide(BorderSide(color: widget.showValidation && missingCookingMethod ? AppColors.errorRed : AppColors.silver, width: 1))),
                         child: DropdownButton<int>(
                           icon: const Icon(Icons.arrow_drop_down, color: AppColors.silver),
                           isExpanded: true,
@@ -319,15 +310,12 @@ class _FoodEventItemState extends State<FoodEventItem> {
                                 (item) => DropdownMenuItem(
                                   alignment: Alignment.center,
                                   value: item.id,
-                                  child: SizedBox(
-                                    child: Text(
-                                      item.translate(context),
-                                      overflow: TextOverflow.clip,
-                                      maxLines: 2,
-                                      style: const TextStyle(
-                                        fontSize: Dimens.fontSizeLarge,
-                                        fontWeight: FontWeight.bold
-                                      ),
+                                  child: Text(
+                                    item.translate(context),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                      fontSize: Dimens.fontSizeNormal,
                                     ),
                                   ),
                                 ),
@@ -335,6 +323,9 @@ class _FoodEventItemState extends State<FoodEventItem> {
                               .toList(),
                         ),
                       ),
+                    ),
+                  ],
+                ],
               ),
               if ((ingredient.cookingMethod == Constants.COOKING_METHOD_BREADED || ingredient.cookingMethod == Constants.COOKING_METHOD_FRIED) && widget.oilTypes?.data != null) Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
@@ -362,15 +353,12 @@ class _FoodEventItemState extends State<FoodEventItem> {
                                 (item) => DropdownMenuItem(
                                   value: item.id,
                                   alignment: Alignment.center,
-                                  child: SizedBox(
-                                    child: Text(
-                                      item.translate(context),
-                                      overflow: TextOverflow.clip,
-                                      maxLines: 2,
-                                      style: const TextStyle(
-                                          fontSize: Dimens.fontSizeLarge,
-                                          fontWeight: FontWeight.bold
-                                      ),
+                                  child: Text(
+                                    item.translate(context),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                      fontSize: Dimens.fontSizeNormal,
                                     ),
                                   ),
                                 ),
@@ -379,10 +367,21 @@ class _FoodEventItemState extends State<FoodEventItem> {
                         ),
                       ),
               ),
+              if (widget.showValidation && missingQty) Padding(
+                padding: const EdgeInsets.only(top: Dimens.marginSmall),
+                child: Text(AppLocalizations.of(context)!.please_enter_amount, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
+              ),
+              if (widget.showValidation && missingUnit) Padding(
+                padding: const EdgeInsets.only(top: Dimens.marginSmall),
+                child: Text(AppLocalizations.of(context)!.please_select_unit, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
+              ),
+              if (widget.showValidation && missingCookingMethod) Padding(
+                padding: const EdgeInsets.only(top: Dimens.marginSmall),
+                child: Text(AppLocalizations.of(context)!.please_select_cooking_method, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
+              ),
             ],
           ),
         ),
-        // if (_error) Container(child: Text(AppLocalizations.of(context)!.must_complete_field, style: const TextStyle(color: Colors.red,)),alignment: Alignment.centerLeft,),
       ],
     );
   }

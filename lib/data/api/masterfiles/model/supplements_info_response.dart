@@ -23,6 +23,6 @@ class SupplementInfoResponse {
 
   SupplementInfoResponse({required this.id, required this.es, required this.en, required this.unit, this.computerName});
 
-  factory SupplementInfoResponse.fromJson(Map<String, dynamic> json) => _$SupplementInfoResponse(json);
+  factory SupplementInfoResponse.fromJson(Map<String, dynamic> json) => _$SupplementInfoResponseFromJson(json);
   Map<String, dynamic> toJson() => _$SupplementInfoResponseToJson(this);
 }

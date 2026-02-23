@@ -3,23 +3,24 @@ import 'package:nutrenaissance_flutter/data/local/models/foodroutines/food_routi
 import 'package:nutrenaissance_flutter/domain/models/foodroutine/food_routine_event.dart';
 import 'package:nutrenaissance_flutter/domain/repository/foodroutines/food_routines_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 
 import '../../../domain/repository/localstorage/local_storage.dart';
 
 class FoodRoutinesRepositoryImpl extends FoodRoutinesRepository {
   final FoodRoutinesApi foodRoutinesApi;
   final LocalStorageRepository localStorageRepository;
+  final SyncQueueService syncQueue;
 
-  FoodRoutinesRepositoryImpl({required this.foodRoutinesApi, required this.localStorageRepository});
+  FoodRoutinesRepositoryImpl({required this.foodRoutinesApi, required this.localStorageRepository, required this.syncQueue});
 
   @override
   Future<bool> uploadRoutine(FoodRoutineEvent foodRoutineEvent) async {
-    try {
-      final result = await foodRoutinesApi.uploadRoutine(foodRoutineEvent);
-      return true;
-    } catch (_) {
-      rethrow;
-    }
+    foodRoutinesApi.uploadRoutine(foodRoutineEvent).catchError((error) {
+      syncQueue.enqueue('/food-routines', foodRoutineEvent);
+      return <String, dynamic>{};
+    });
+    return true;
   }
 
   @override
@@ -54,13 +55,9 @@ class FoodRoutinesRepositoryImpl extends FoodRoutinesRepository {
 
   @override
   Future<void> deleteFoodRoutine(FoodRoutineEvent foodRoutineEvent) async {
-    try {
-      await foodRoutinesApi.deleteRoutine(foodRoutineEvent);
-    } catch (_) {
-      rethrow;
-    }
+    foodRoutinesApi.deleteRoutine(foodRoutineEvent).catchError((error) {
+      syncQueue.enqueueDelete('/food-routines', {'userId': foodRoutineEvent.userId, 'eventId': foodRoutineEvent.eventId});
+      return <String, dynamic>{};
+    });
   }
-
-
-
 }

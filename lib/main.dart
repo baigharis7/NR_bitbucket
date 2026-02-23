@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -15,6 +16,7 @@ import 'package:nutrenaissance_flutter/data/api/foodevents/food_events_api.dart'
 import 'package:nutrenaissance_flutter/data/api/foodroutines/food_routines_api.dart';
 import 'package:nutrenaissance_flutter/data/api/liquidevents/liquid_events_api.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
+import 'package:nutrenaissance_flutter/data/api/referencedata/reference_data_api.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
 import 'package:nutrenaissance_flutter/data/api/recipes/recipes_api.dart';
 import 'package:nutrenaissance_flutter/data/api/recommendations/recommendations_api.dart';
@@ -36,6 +38,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/conversion_factors_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_info_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/cooking_methods_oils_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/foods_and_drinks_names_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/nutrients_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/objectives_info_entity.dart';
@@ -47,7 +50,14 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/supplements
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_foods_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/units_info_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/modelsappearence/models_appearance_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/drift/reference_database.dart';
 import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/sync/sync_queue_entry.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/nutrient_calculation_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/reference_data_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/profile_computation_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sport_kcal_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 import 'package:nutrenaissance_flutter/data/local/models/recipes/recipe_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
@@ -474,6 +484,10 @@ void main() async {
   // await AndroidAlarmManager.initialize();
 
   initLocalStorage();
+  final ReferenceDatabase referenceDatabase = await openReferenceDatabase();
+  final NutrientCalculationService nutrientCalculationService = NutrientCalculationService(referenceDatabase);
+  final SportKcalCalculationService sportKcalCalculationService = SportKcalCalculationService(referenceDatabase);
+  final ReferenceDataService referenceDataService = ReferenceDataService(referenceDatabase);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -486,7 +500,7 @@ void main() async {
     return true;
   };
 
-  final authenticationService = await CognitoAuthenticationService.init();
+  final authenticationService = await _initAmplifyWithRetry();
   final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
   Chuck chuck = Chuck(
@@ -496,18 +510,26 @@ void main() async {
   );
   final Preferences prefs = PreferencesImpl(sharedPreferences);
   final PreferencesRepository prefsRepository = PreferencesRepositoryImpl(prefs: prefs);
+  final ReferenceDataApi referenceDataApi = ReferenceDataApi(prefsRepository, authenticationService, chuck);
+  // Fetch reference data in the background (nutrients, nutrient loss, sport METs)
+  _fetchReferenceData(referenceDataApi, referenceDataService);
+  final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
+  final SyncQueueService syncQueueService = SyncQueueService(prefsRepository, authenticationService, chuck, syncQueueBox);
+  // Retry any pending API calls from previous sessions
+  syncQueueService.processQueue();
   final ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService, chuck);
   final LocalStorageRepository localStorageRepository = LocalStorageImpl();
-  final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository);
+  final ProfileComputationService profileComputationService = ProfileComputationService(referenceDatabase);
+  final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository, profileComputationService: profileComputationService, syncQueue: syncQueueService);
   final GetUserIdInteractor getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
   final UploadProfileInteractor uploadProfileInteractor = UploadProfileInteractorImpl(profileRepository: profileRepository);
   final SaveProfileInteractor saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
   final FoodEventsApi foodEventsApi = FoodEventsApi(prefsRepository, authenticationService, chuck);
-  final FoodEventsRepository foodEventsRepository = FoodEventsRepositoryImpl(localStorageRepository: localStorageRepository, foodEventsApi: foodEventsApi,);
+  final FoodEventsRepository foodEventsRepository = FoodEventsRepositoryImpl(localStorageRepository: localStorageRepository, foodEventsApi: foodEventsApi, nutrientCalculationService: nutrientCalculationService, syncQueue: syncQueueService,);
   final UploadFoodEventInteractor uploadFoodEventInteractor = UploadFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
   final SaveFoodEventInteractor saveFoodEventInteractor = SaveFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
   final FoodRoutinesApi foodRoutinesApi = FoodRoutinesApi(prefsRepository, authenticationService, chuck);
-  final FoodRoutinesRepository foodRoutinesRepository = FoodRoutinesRepositoryImpl(foodRoutinesApi: foodRoutinesApi, localStorageRepository: localStorageRepository);
+  final FoodRoutinesRepository foodRoutinesRepository = FoodRoutinesRepositoryImpl(foodRoutinesApi: foodRoutinesApi, localStorageRepository: localStorageRepository, syncQueue: syncQueueService);
   final UploadFoodRoutineInteractor uploadFoodRoutineInteractor = UploadFoodRoutineInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
   final SaveFoodRoutineInteractor saveFoodRoutineInteractor = SaveFoodRoutineInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
   final GetFoodRoutinesInteractor getFoodRoutinesInteractor = GetFoodRoutinesInteractorImpl(foodRoutinesRepository: foodRoutinesRepository);
@@ -519,11 +541,11 @@ void main() async {
   final GetUserMicronutrientsInteractor getUserMicronutrientsInteractor = GetUserMicronutrientsInteractorImpl(profileRepository: profileRepository);
   final GetUserObjectivesInteractor getUserObjectivesInteractor = GetUserObjectivesInteractorImpl(profileRepository: profileRepository);
   final MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService, chuck);
-  final MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi);
+  final MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi, referenceDatabase: referenceDatabase,);
   final GetMasterFileInteractor getMasterFileInteractor = GetMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
   final GetUserRdasInteractor getUserRdasInteractor = GetUserRdasInteractorImpl(localStorageRepository: localStorageRepository);
   final SportEventsApi sportEventsApi = SportEventsApi(prefsRepository, authenticationService, chuck);
-  final SportEventsRepository sportEventsRepository = SportEventsRepositoryImpl(sportEventsApi: sportEventsApi, localStorageRepository: localStorageRepository);
+  final SportEventsRepository sportEventsRepository = SportEventsRepositoryImpl(sportEventsApi: sportEventsApi, localStorageRepository: localStorageRepository, sportKcalCalculationService: sportKcalCalculationService, syncQueue: syncQueueService,);
   final UploadSportEventsInteractor uploadSportEventsInteractor = UploadSportEventsInteractorImpl(sportEventsRepository: sportEventsRepository);
   final SaveSportEventInteractor saveSportEventInteractor = SaveSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
   final AdvicesApi advicesApi = AdvicesApi(prefsRepository, authenticationService, chuck);
@@ -532,7 +554,7 @@ void main() async {
   final GetProfileInteractor getProfileInteractor = GetProfileInteractorImpl(profileRepository: profileRepository);
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor = GetFoodEventsOfTodayInteractorImpl(foodEventsRepository: foodEventsRepository);
   final LiquidEventsApi liquidEventsApi = LiquidEventsApi(prefsRepository, authenticationService, chuck);
-  final LiquidEventsRepository liquidEventsRepository = LiquidEventsRepositoryImpl(liquidEventsApi: liquidEventsApi, localStorageRepository: localStorageRepository);
+  final LiquidEventsRepository liquidEventsRepository = LiquidEventsRepositoryImpl(liquidEventsApi: liquidEventsApi, localStorageRepository: localStorageRepository, nutrientCalculationService: nutrientCalculationService, syncQueue: syncQueueService,);
   final SaveLiquidEventInteractor saveLiquidEventInteractor = SaveLiquidEventInteractorImpl(liquidEventsRepository: liquidEventsRepository);
   final UploadLiquidEventInteractor uploadLiquidEventInteractor = UploadLiquidEventInteractorImpl(liquidEventsRepository: liquidEventsRepository);
   final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor = GetWeekFoodEventsInteractorImpl(foodEventsRepository: foodEventsRepository);
@@ -542,14 +564,14 @@ void main() async {
   final GetWeekLiquidEventsInteractor getWeekLiquidEventsInteractor = GetWeekLiquidEventsInteractorImpl(liquidEventsRepository: liquidEventsRepository);
   final GetTodayLiquidEventsInteractor getTodayLiquidEventsInteractor = GetTodayLiquidEventsInteractorImpl(liquidEventsRepository: liquidEventsRepository);
   final WaterEventsApi waterEventsApi = WaterEventsApi(prefsRepository, authenticationService, chuck);
-  final WaterEventsRepository waterEventsRepository = WaterEventRepositoryImpl(localStorageRepository: localStorageRepository, waterEventsApi: waterEventsApi);
+  final WaterEventsRepository waterEventsRepository = WaterEventRepositoryImpl(localStorageRepository: localStorageRepository, waterEventsApi: waterEventsApi, syncQueue: syncQueueService,);
   final UploadWaterEventInteractor uploadWaterEventInteractor = UploadWaterEventInteractorImpl(waterEventsRepository: waterEventsRepository);
   final SaveWaterEventInteractor saveWaterEventInteractor = SaveWaterEventInteractorImpl(waterEventsRepository: waterEventsRepository);
   final GetWaterEventsTodayInteractor getWaterEventsTodayInteractor = GetWaterEventsTodayInteractorImpl(waterEventsRepository: waterEventsRepository);
   final SupplementApi supplementApi = SupplementApi(prefsRepository, authenticationService, chuck);
-  final SupplementsRepository supplementsRepository = SupplementsRepositoryImpl(supplementApi: supplementApi, localStorageRepository: localStorageRepository);
+  final SupplementsRepository supplementsRepository = SupplementsRepositoryImpl(supplementApi: supplementApi, localStorageRepository: localStorageRepository, syncQueue: syncQueueService,);
   final FavoritesApi favoritesApi = FavoritesApi(prefsRepository, authenticationService, chuck);
-  final FavoritesRepository favoritesRepository = FavoritesRepositoryImpl(localStorageRepository: localStorageRepository, favoritesApi: favoritesApi);
+  final FavoritesRepository favoritesRepository = FavoritesRepositoryImpl(localStorageRepository: localStorageRepository, favoritesApi: favoritesApi, syncQueue: syncQueueService);
   final GetFoodFavoritesInteractor getFoodFavoritesInteractor = GetFoodFavoritesInteractorImpl(favoritesRepository: favoritesRepository);
   final SaveFoodFavoriteInteractor saveFoodFavoriteInteractor = SaveFoodFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
   final UploadFoodFavoriteInteractor uploadFoodFavoriteInteractor = UploadFoodFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
@@ -561,7 +583,7 @@ void main() async {
   final DeleteSportFavoriteInteractor deleteSportFavoriteInteractor = DeleteSportFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
   final RemoveSportFavoriteInteractor removeSportFavoriteInteractor = RemoveSportFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
   final RecipesApi recipesApi = RecipesApi(prefsRepository, authenticationService, chuck);
-  final RecipesRepository recipesRepository = RecipesRepositoryImpl(recipesApi: recipesApi, localStorageRepository: localStorageRepository);
+  final RecipesRepository recipesRepository = RecipesRepositoryImpl(recipesApi: recipesApi, localStorageRepository: localStorageRepository, syncQueue: syncQueueService);
   final GetRecipesForFoodsInteractor getRecipesForFoodsInteractor = GetRecipesForFoodsInteractorImpl(recipesRepository: recipesRepository);
   final GetUserExclusionsInteractor getUserExclusionsInteractor = GetUserExclusionsInteractorImpl(profileRepository: profileRepository);
   final SaveLiquidFavoriteInteractor saveLiquidFavoriteInteractor = SaveLiquidFavoriteInteractorImpl(favoritesRepository: favoritesRepository);
@@ -576,15 +598,15 @@ void main() async {
   final DeleteFoodEventInteractor deleteFoodEventInteractor = DeleteFoodEventInteractorImpl(foodEventsRepository: foodEventsRepository);
   final RemoveSportEventInteractor removeSportEventInteractor = RemoveSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
   final DeleteSportEventInteractor deleteSportEventInteractor = DeleteSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
-  final LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService, profileApi: profileApi);
+  final LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService, profileApi: profileApi, syncQueue: syncQueueService);
   final StepsApi stepsApi = StepsApi(prefsRepository, authenticationService, chuck);
-  final StepsRepository stepsRepository = StepsRepositoryImpl(stepsApi: stepsApi, localStorageRepository: localStorageRepository);
+  final StepsRepository stepsRepository = StepsRepositoryImpl(stepsApi: stepsApi, localStorageRepository: localStorageRepository, syncQueue: syncQueueService);
   final UploadStepsInteractor uploadStepsInteractor = UploadStepsInteractorImpl(stepsRepository: stepsRepository);
   final SaveStepsInteractor saveStepsInteractor = SaveStepsInteractorImpl(stepsRepository: stepsRepository);
   final GetStepsInteractor getStepsInteractor = GetStepsInteractorImpl(stepsRepository: stepsRepository);
   final GetTodayStepInteractor getTodayStepInteractor = GetTodayStepInteractorImpl(stepsRepository: stepsRepository);
   final RoutinesApi routinesApi = RoutinesApi(prefsRepository, authenticationService, chuck);
-  final RoutinesRepository routinesRepository = RoutinesRepositoryImpl(routinesApi: routinesApi, localStorageRepository: localStorageRepository);
+  final RoutinesRepository routinesRepository = RoutinesRepositoryImpl(routinesApi: routinesApi, localStorageRepository: localStorageRepository, syncQueue: syncQueueService);
   final UploadRoutineInteractor uploadRoutineInteractor = UploadRoutineInteractorImpl(routinesRepository: routinesRepository);
   final GetRoutinesInteractor getRoutinesInteractor = GetRoutinesInteractorImpl(routinesRepository: routinesRepository);
   final SaveRoutineInteractor saveRoutineInteractor = SaveRoutineInteractorImpl(routinesRepository: routinesRepository);
@@ -598,7 +620,7 @@ void main() async {
   final DeleteRecipeFavoriteInteractor deleteRecipeFavoriteInteractor = DeleteRecipeFavoriteInteractorImpl(recipesRepository: recipesRepository);
   final RemoveRecipeFavoriteInteractor removeRecipeFavoriteInteractor = RemoveRecipeFavoriteInteractorImpl(recipesRepository: recipesRepository);
   final FecesUrineApi fecesUrineApi = FecesUrineApi(prefsRepository, authenticationService, chuck);
-  final FecesUrineRepository fecesUrineRepository = FecesUrineRepositoryImpl(fecesUrineApi: fecesUrineApi, localStorageRepository: localStorageRepository);
+  final FecesUrineRepository fecesUrineRepository = FecesUrineRepositoryImpl(fecesUrineApi: fecesUrineApi, localStorageRepository: localStorageRepository, syncQueue: syncQueueService,);
   final UploadFecesInteractor uploadFecesInteractor = UploadFecesInteractorImpl(fecesUrineRepository: fecesUrineRepository);
   final SaveFecesEventInteractor saveFecesEventInteractor = SaveFecesEventInteractorImpl(fecesUrineRepository: fecesUrineRepository);
   final GetFecesEventsInteractor getFecesEventsInteractor = GetFecesEventsInteractorImpl(fecesUrineRepository: fecesUrineRepository);
@@ -1299,6 +1321,76 @@ void main() async {
   chuck.showInspector();
 }
 
+/// Initializes Amplify/Cognito with retry logic.
+/// AWSMobileClient can timeout on first launch (clean install) if network is slow.
+Future<CognitoAuthenticationService> _initAmplifyWithRetry() async {
+  const maxAttempts = 3;
+  for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await CognitoAuthenticationService.init();
+    } catch (e) {
+      if (attempt == maxAttempts) rethrow;
+      // Wait before retrying: 2s, 4s
+      await Future.delayed(Duration(seconds: attempt * 2));
+    }
+  }
+  // Unreachable, but satisfies the compiler
+  return await CognitoAuthenticationService.init();
+}
+
+/// Fetches reference data (nutrients, nutrient loss, sport METs) in the
+/// background at app startup. Populates Drift tables for client-side
+/// calculations. Non-blocking — failures are silently ignored.
+void _fetchReferenceData(ReferenceDataApi api, ReferenceDataService service) {
+  service.refreshIfNeeded(
+    fetchNutrients: () async {
+      try {
+        final raw = await api.fetchNutrients();
+        final parsed = jsonDecode(raw);
+        // S3 format: { "v": <int>, "data": { "nutrientList": [...] } }
+        final data = parsed['data'];
+        final list = data is Map ? data['nutrientList'] : data;
+        return ReferencePayload(
+          version: parsed['v'] as int? ?? 0,
+          json: jsonEncode(list),
+        );
+      } catch (_) {
+        return null;
+      }
+    },
+    fetchNutrientLoss: () async {
+      try {
+        final raw = await api.fetchNutrientLossTable();
+        final parsed = jsonDecode(raw);
+        // S3 format: { "v": <int>, "data": { "cookingMethods": [...] } }
+        final data = parsed['data'];
+        final list = data is Map ? data['cookingMethods'] : data;
+        return ReferencePayload(
+          version: parsed['v'] as int? ?? 0,
+          json: jsonEncode(list),
+        );
+      } catch (_) {
+        return null;
+      }
+    },
+    fetchSportMets: () async {
+      try {
+        final raw = await api.fetchSportMets();
+        final parsed = jsonDecode(raw);
+        // S3 format: { "v": <int>, "data": { "sports": [...] } }
+        final data = parsed['data'];
+        final list = data is Map ? data['sports'] : data;
+        return ReferencePayload(
+          version: parsed['v'] as int? ?? 0,
+          json: jsonEncode(list),
+        );
+      } catch (_) {
+        return null;
+      }
+    },
+  );
+}
+
 void initLocalStorage() async {
   await Hive.initFlutter();
   Hive.registerAdapter(UserProfileEntityAdapter());
@@ -1379,4 +1471,7 @@ void initLocalStorage() async {
   Hive.registerAdapter(SupplementInfoEntityAdapter());
   Hive.registerAdapter(SupplementEventsEntityAdapter());
   Hive.registerAdapter(SupplementEventsInfoEntityAdapter());
+  Hive.registerAdapter(CookingMethodsOilsInfoEntityAdapter());
+  Hive.registerAdapter(CookingMethodOilInfoEntityAdapter());
+  Hive.registerAdapter(SyncQueueEntryAdapter());
 }

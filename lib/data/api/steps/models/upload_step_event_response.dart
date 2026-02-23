@@ -1,5 +1,8 @@
+import 'package:json_annotation/json_annotation.dart';
+
 part 'upload_step_event_response.g.dart';
 
+@JsonSerializable()
 class UploadStepEventResponse {
   String? userId;
   int? eventId;

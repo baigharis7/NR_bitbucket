@@ -12,18 +12,24 @@ import 'package:nutrenaissance_flutter/presentation/routinestabs/view/routines_t
 class FloatingMenuOverlay extends StatefulWidget {
   final VoidCallback onClose;
   final List<Map<String, dynamic>> menuItems;
+  final bool showFavoritesRoutinesButtons;
+  final bool centered;
 
-  const FloatingMenuOverlay({super.key, required this.onClose, required this.menuItems});
+  const FloatingMenuOverlay({
+    super.key,
+    required this.onClose,
+    required this.menuItems,
+    this.showFavoritesRoutinesButtons = true,
+    this.centered = false,
+  });
 
   @override
   State<FloatingMenuOverlay> createState() => _FloatingMenuOverlayState();
 }
 
-class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerProviderStateMixin {
+class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with SingleTickerProviderStateMixin {
   late AnimationController _fadeController;
-  late AnimationController _fabRotationController;
   late Animation<double> _opacityAnimation;
-  late Animation<double> _rotationAnimation;
 
   @override
   void initState() {
@@ -34,35 +40,21 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
       duration: const Duration(milliseconds: 400),
     );
 
-    _fabRotationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-
     _opacityAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
     );
 
-    _rotationAnimation = Tween<double>(begin: 0, end: 0.125).animate(
-      CurvedAnimation(parent: _fabRotationController, curve: Curves.easeOut),
-    );
-
     _fadeController.forward();
-    _fabRotationController.forward();
   }
 
   @override
   void dispose() {
     _fadeController.dispose();
-    _fabRotationController.dispose();
     super.dispose();
   }
 
   void _closeMenu() async {
-    await Future.wait([
-      _fadeController.reverse(),
-      _fabRotationController.reverse(),
-    ]);
+    await _fadeController.reverse();
     widget.onClose();
   }
 
@@ -80,7 +72,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: Dimens.margin6,),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: widget.centered ? MainAxisAlignment.center : MainAxisAlignment.end,
             children: [
               InkWell(
                 onTap: () {
@@ -135,14 +127,19 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
     return AnimatedBuilder(
       animation: _fadeController,
       builder: (context, child) {
-        return Scaffold(
+        return WillPopScope(
+          onWillPop: () async {
+            _closeMenu();
+            return false;
+          },
+          child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Material(
             color: Colors.transparent,
             child: GestureDetector(
               onTap: _closeMenu,
               child: Stack(
-                alignment: Alignment.bottomRight,
+                alignment: widget.centered ? Alignment.center : Alignment.bottomRight,
                 children: [
                   // Background blur with fade
                   Opacity(
@@ -160,9 +157,9 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                       padding: const EdgeInsets.all(Dimens.padding4),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        crossAxisAlignment: widget.centered ? CrossAxisAlignment.center : CrossAxisAlignment.end,
                         children: [
-                          SlideTransition(
+                          if (widget.showFavoritesRoutinesButtons) SlideTransition(
                             position: Tween<Offset>(
                               begin: Offset(0, 0.2 * (7 + 1)),
                               end: Offset.zero,
@@ -215,7 +212,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
                               ],
                             ),
                           ),
-                          const SizedBox(height: Dimens.height32),
+                          if (widget.showFavoritesRoutinesButtons) const SizedBox(height: Dimens.height32),
                           ...List.generate(widget.menuItems.length, (i) {
                             final item = widget.menuItems[i];
                             return buildMenuItem(item['label'], item['icon'], item['onTap'], widget.menuItems.length - i);
@@ -229,28 +226,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with TickerPr
               ),
             ),
           ),
-          floatingActionButton: Container(
-            margin: const EdgeInsets.only(bottom: Dimens.margin62),
-            child: FloatingActionButton(
-              clipBehavior: Clip.hardEdge,
-              onPressed: _closeMenu,
-              child: AnimatedBuilder(
-                animation: _rotationAnimation,
-                child: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  decoration: const BoxDecoration(gradient: LinearGradient(colors: [AppColors.greenCyan, AppColors.bluishGreen], begin: Alignment.bottomCenter, end: Alignment.topCenter, stops: [0.0, 0.7])),
-                  child: const Icon(Icons.add),
-                ),
-                builder: (context, child) {
-                  return Transform.rotate(
-                    angle: _rotationAnimation.value * 6.28,
-                    child: child,
-                  );
-                },
-              ),
-            ),
-          ),
+        ),
         );
       },
     );

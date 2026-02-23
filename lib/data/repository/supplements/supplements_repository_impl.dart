@@ -8,15 +8,16 @@ import 'package:nutrenaissance_flutter/data/local/models/supplements/upload_supp
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/supplements/supplements_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/supplement_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 
 import '../../../domain/models/supplements/supplement_simple.dart';
 
 class SupplementsRepositoryImpl extends SupplementsRepository {
   final SupplementApi supplementApi;
   final LocalStorageRepository localStorageRepository;
+  final SyncQueueService syncQueue;
 
-
-  SupplementsRepositoryImpl({required this.supplementApi, required this.localStorageRepository});
+  SupplementsRepositoryImpl({required this.supplementApi, required this.localStorageRepository, required this.syncQueue});
 
   @override
   Future<UploadSupplementEvent?> getTodayCreatineEvent({DateTime? dateTime}) async {
@@ -39,11 +40,10 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
 
   @override
   Future<void> uploadCreatineEvent(UploadSupplementEvent uploadSupplementEvent) async {
-    try {
-      await supplementApi.uploadCreatineEvent(uploadSupplementEvent);
-    } catch (error) {
-      rethrow;
-    }
+    supplementApi.uploadCreatineEvent(uploadSupplementEvent).catchError((error) {
+      syncQueue.enqueue('/creatine', uploadSupplementEvent);
+      return <String, dynamic>{};
+    });
   }
 
   @override
@@ -58,11 +58,10 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
 
   @override
   Future<void> uploadCollagenEvent(UploadSupplementEvent uploadSupplementCollagenEvent,) async {
-    try {
-      await supplementApi.uploadCollagenEvent(uploadSupplementCollagenEvent);
-    } catch (error) {
-      rethrow;
-    }
+    supplementApi.uploadCollagenEvent(uploadSupplementCollagenEvent).catchError((error) {
+      syncQueue.enqueue('/collagen', uploadSupplementCollagenEvent);
+      return <String, dynamic>{};
+    });
   }
 
   @override
@@ -89,11 +88,10 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
   //New
   @override
   Future<void> uploadSupplementEvent(UploadSupplementsEv uploadSupplementsEv) async {
-    try {
-      await supplementApi.uploadSupplementEvent(uploadSupplementsEv);
-    } catch(_) {
-      rethrow;
-    }
+    supplementApi.uploadSupplementEvent(uploadSupplementsEv).catchError((error) {
+      syncQueue.enqueue('/supplements', uploadSupplementsEv);
+      return <String, dynamic>{};
+    });
   }
 
   @override
@@ -117,11 +115,10 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
 
   @override
   Future<void> deleteSupplementEvent(SupplementSimple supplementEvent) async {
-    try {
-      await supplementApi.deleteSupplementEvent(supplementEvent);
-    } catch(_) {
-      rethrow;
-    }
+    supplementApi.deleteSupplementEvent(supplementEvent).catchError((error) {
+      syncQueue.enqueueDelete('/supplements', {'userId': supplementEvent.userId, 'eventId': supplementEvent.eventId});
+      return <String, dynamic>{};
+    });
   }
 
   @override
@@ -135,11 +132,10 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
 
   @override
   Future<void> uploadSupplementFavorite(SupplementFavorite supplementFavorite) async {
-    try {
-      await supplementApi.uploadSupplementFavorite(supplementFavorite);
-    } catch(_) {
-      rethrow;
-    }
+    supplementApi.uploadSupplementFavorite(supplementFavorite).catchError((error) {
+      syncQueue.enqueue('/favorites/supplement', supplementFavorite);
+      return <String, dynamic>{};
+    });
   }
 
   @override
@@ -163,11 +159,10 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
 
   @override
   Future<void> uploadSupplementRoutine(UploadSupplementRoutine uploadSupplementRoutine) async {
-    try {
-      await supplementApi.uploadSupplementRoutine(uploadSupplementRoutine);
-    } catch(_) {
-      rethrow;
-    }
+    supplementApi.uploadSupplementRoutine(uploadSupplementRoutine).catchError((error) {
+      syncQueue.enqueue('/supplement-routines', uploadSupplementRoutine);
+      return <String, dynamic>{};
+    });
   }
 
   @override
@@ -191,11 +186,10 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
 
   @override
   Future<void> deleteSupplementRoutine(SupplementSimple supplement) async {
-    try {
-      await supplementApi.deleteSupplementRoutine(supplement);
-    } catch(_) {
-      rethrow;
-    }
+    supplementApi.deleteSupplementRoutine(supplement).catchError((error) {
+      syncQueue.enqueueDelete('/supplement-routines', {'userId': supplement.userId, 'eventId': supplement.eventId});
+      return <String, dynamic>{};
+    });
   }
 
   @override
@@ -209,11 +203,10 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
 
   @override
   Future<void> deleteSupplementFavorite(SupplementSimple supplement) async {
-    try {
-      await supplementApi.deleteSupplementFavorite(supplement);
-    } catch(_) {
-      rethrow;
-    }
+    supplementApi.deleteSupplementFavorite(supplement).catchError((error) {
+      syncQueue.enqueueDelete('/favorites/supplement', {'userId': supplement.userId, 'eventId': supplement.eventId});
+      return <String, dynamic>{};
+    });
   }
 
   @override

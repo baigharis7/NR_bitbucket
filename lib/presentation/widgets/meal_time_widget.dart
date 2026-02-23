@@ -23,7 +23,7 @@ class MealTimeWidget extends StatelessWidget {
     return InkWell(
       onTap: () => onItemClick?.call(),
       child: Card(clipBehavior: Clip.antiAlias,
-        margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge, vertical: Dimens.marginSmall),
+        margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginSmall),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border20), side: const BorderSide(color: Colors.white, width: 1,)),
         elevation: 10,
         color: backgroundColor ?? AppColors.floralWhite,
@@ -37,7 +37,7 @@ class MealTimeWidget extends StatelessWidget {
               opacity: 0.35,
             ) : null,
           ),
-          child: Row(children: [
+          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             if (svg != null) SizedBox(height: 49, width: 49, child: Image.asset(svg!,)),
             Expanded(
               child: Container(
@@ -45,11 +45,11 @@ class MealTimeWidget extends StatelessWidget {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black),),
                   const SizedBox(height: Dimens.heightXXSmall),
-                  if (desc.isNotNull()) Text(desc!, style: TextStyle(fontSize: Dimens.fontSizeSmall, color: iconColor ?? AppColors.battleshipGrey),),
+                  if (desc.isNotNull()) Text(desc!, style: TextStyle(fontSize: Dimens.fontSize13, color: iconColor ?? AppColors.battleshipGrey),),
                 ],),
               ),
             ),
-            InkWell(onTap: () => onClick.call(), child: Icon(Icons.add_circle, size: 26, color: iconColor)),
+            InkWell(onTap: () => onClick.call(), child: Padding(padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8, right: 4), child: Icon(Icons.add_circle, size: 32, color: iconColor))),
           ],),
         ),
       ),

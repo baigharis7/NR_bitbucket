@@ -3,18 +3,29 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:nutrenaissance_flutter/presentation/routinestabs/bloc/routines_tab_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_arguments_model.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/presentation/common/view/floating_menu_controller.dart';
+import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/routinestabs/bloc/routines_tab_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/routinestabs/view/meal_routines_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/routinestabs/view/physical_activity_routines_tab.dart';
 import 'package:nutrenaissance_flutter/presentation/routinestabs/view/supplement_routines_tab.dart';
+import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements_screen.dart';
 
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
+import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../../infrastructure/utils/constants.dart';
 
 class RoutinesTabHolder extends StatefulWidget {
   static const routeName = '/routines_tab_holder';
@@ -57,6 +68,53 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
     super.dispose();
   }
 
+  void _onFabPressed() {
+    switch (_selectedTab) {
+      case 0: // Meal tab - show overlay with meal time options
+        FloatingMenuController().show(
+          context,
+          _getMealTimeMenuItems(context),
+          showFavoritesRoutinesButtons: false,
+          centered: true,
+        );
+        break;
+      case 1: // Physical Activity tab - direct navigation
+        Navigator.pushNamed(
+          context,
+          AddSportEventScreen.routeName,
+          arguments: SportArgumentsModel(
+            selectedDateTime: DateTime.now(),
+            preSelectRoutine: true, // Pre-select routine option
+          ),
+        );
+        break;
+      case 2: // Supplements tab - direct navigation
+        Navigator.pushNamed(
+          context,
+          SupplementsScreen.routeName,
+          arguments: {'preSelectRoutine': true},
+        );
+        break;
+    }
+  }
+
+  List<Map<String, dynamic>> _getMealTimeMenuItems(BuildContext context) {
+    return MealTime.getAllMealTimes().map((e) => {
+      'label': e.name,
+      'id': e.id,
+      'icon': 'assets/images/meal_time_${e.id.orZero()}.png',
+      'onTap': () => Navigator.pushNamed(
+        context,
+        AddFoodEventScreen.routeName,
+        arguments: FoodArgumentsModel(
+          mealTime: e,
+          selectedDateTime: DateTime.now(),
+          preSelectRoutine: true, // Pre-select routine option
+        ),
+      ),
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
@@ -96,6 +154,7 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
 
             Scaffold(
               backgroundColor: Colors.transparent,
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
               body: SafeArea(child: Container(
                 padding: const EdgeInsets.all(Dimens.paddingLarge),
                 child: Column(children: [
@@ -134,6 +193,13 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
                         PhysicalActivityRoutinesTab(),
                         SupplementRoutinesTab(),
                       ],
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+                    child: GeneralButton(
+                      title: AppLocalizations.of(context)!.add,
+                      onTap: _onFabPressed,
                     ),
                   ),
                 ],

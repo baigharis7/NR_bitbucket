@@ -1,10 +1,19 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:chuck_interceptor/chuck.dart';
+import 'dart:convert';
+
 import 'package:nutrenaissance_flutter/data/api/eventssync/events_sync_api.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
+import 'package:nutrenaissance_flutter/data/api/referencedata/reference_data_api.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/profile_computation_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/reference_data_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
+import 'package:nutrenaissance_flutter/data/local/models/sync/sync_queue_entry.dart';
+import 'package:hive/hive.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/master_files_response.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/simple_user.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
+import 'package:nutrenaissance_flutter/data/local/drift/reference_database.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/data/repository/eventssync/events_synchronization_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/localstorage/local_storage_impl.dart';
@@ -91,6 +100,9 @@ class LoginProviderNew extends BaseProvider {
   SynchronizeEventsInteractor? synchronizeEventsInteractor;
   GetUserIdInteractor? getUserIdInteractor;
   EraseDatabaseInteractor? eraseDatabaseInteractor;
+  ReferenceDataApi? referenceDataApi;
+  ReferenceDataService? referenceDataService;
+  SyncQueueService? syncQueueService;
 
   get getNotConfirmedUserTryingToLogin => _notConfirmedUserTryingToLogin;
   get isLogin => _loginMode;
@@ -158,17 +170,28 @@ class LoginProviderNew extends BaseProvider {
     fetchUserAttributesInteractor = FetchUserAttributesInteractorImpl(authenticationService: authenticationService!);
     getIdTokenInteractor = GetIdTokenInteractorImpl(preferencesRepository: prefsRepository);
     ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService!, chuck);
-    LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService!, profileApi: profileApi,);
+    final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
+    syncQueueService = SyncQueueService(prefsRepository, authenticationService!, chuck, syncQueueBox);
+    LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService!, profileApi: profileApi, syncQueue: syncQueueService!);
     saveUserCredentialsInteractor = SaveUserCredentialsInteractorImpl(preferencesRepository: prefsRepository);
     signUpInteractor = SignUpInteractorImpl(loginRepository: loginRepository);
     verificationCodeInteractor = SendVerificationCodeInteractorImpl(loginRepository: loginRepository);
     signInInteractor = SignInInteractorImpl(loginRepository: loginRepository);
     LocalStorageRepository localStorageRepository = LocalStorageImpl();
-    ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository);
     saveUsernameAndEmailInteractor = SaveUsernameAndEmailInteractorImpl(preferencesRepository: prefsRepository);
-    saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
     MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService!, chuck);
-    MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi);
+    final referenceDatabase = await openReferenceDatabase();
+    referenceDataApi = ReferenceDataApi(prefsRepository, authenticationService!, chuck);
+    referenceDataService = ReferenceDataService(referenceDatabase);
+    final profileComputationService = ProfileComputationService(referenceDatabase);
+    ProfileRepository profileRepository = ProfileRepositoryImpl(
+      profileApi: profileApi,
+      localStorageRepository: localStorageRepository,
+      profileComputationService: profileComputationService,
+      syncQueue: syncQueueService!,
+    );
+    saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
+    MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi, referenceDatabase: referenceDatabase);
     getMasterFilesVersionInteractor = GetMasterFileVersionInteractorImpl(masterFilesRepository: masterFilesRepository);
     manageMasterFilesInteractor = ManageMasterFilesInteractorImpl(masterFilesRepository: masterFilesRepository);
     saveMasterFileInteractor = SaveMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
@@ -440,6 +463,123 @@ class LoginProviderNew extends BaseProvider {
     await synchronizeEventsInteractor!.execute(userId, fullSync: true);
   }
 
+  /// Fetches reference data (nutrients, nutrient loss, sport METs) and stores
+  /// in Drift for client-side calculations. Non-blocking — failures are ignored.
+  Future<void> _fetchReferenceData() async {
+    if (referenceDataApi == null || referenceDataService == null) return;
+    try {
+      await referenceDataService!.refreshIfNeeded(
+        fetchNutrients: () async {
+          try {
+            final raw = await referenceDataApi!.fetchNutrients();
+            final parsed = jsonDecode(raw);
+            // S3 format: { "v": <int>, "data": { "nutrientList": [...] } }
+            final data = parsed['data'];
+            final list = data is Map ? data['nutrientList'] : data;
+            return ReferencePayload(
+              version: parsed['v'] as int? ?? 0,
+              json: jsonEncode(list),
+            );
+          } catch (_) {
+            return null;
+          }
+        },
+        fetchNutrientLoss: () async {
+          try {
+            final raw = await referenceDataApi!.fetchNutrientLossTable();
+            final parsed = jsonDecode(raw);
+            // S3 format: { "v": <int>, "data": { "cookingMethods": [...] } }
+            final data = parsed['data'];
+            final list = data is Map ? data['cookingMethods'] : data;
+            return ReferencePayload(
+              version: parsed['v'] as int? ?? 0,
+              json: jsonEncode(list),
+            );
+          } catch (_) {
+            return null;
+          }
+        },
+        fetchSportMets: () async {
+          try {
+            final raw = await referenceDataApi!.fetchSportMets();
+            final parsed = jsonDecode(raw);
+            // S3 format: { "v": <int>, "data": { "sports": [...] } }
+            final data = parsed['data'];
+            final list = data is Map ? data['sports'] : data;
+            return ReferencePayload(
+              version: parsed['v'] as int? ?? 0,
+              json: jsonEncode(list),
+            );
+          } catch (_) {
+            return null;
+          }
+        },
+        fetchObjectiveNutrients: () async {
+          try {
+            final raw = await referenceDataApi!.fetchObjectiveNutrients();
+            final parsed = jsonDecode(raw);
+            // S3 format: { "v": <int>, "data": { "objectives": [{code, nutrients}, ...] } }
+            // ProfileComputationService expects: {"2": ["vitB1", ...], "3": [...], ...}
+            final data = parsed['data'];
+            final objectives = data is Map ? data['objectives'] as List? ?? [] : data as List? ?? [];
+            final transformed = <String, dynamic>{};
+            for (final obj in objectives) {
+              if (obj is Map<String, dynamic>) {
+                transformed[obj['code'].toString()] = obj['nutrients'];
+              }
+            }
+            return ReferencePayload(
+              version: parsed['v'] as int? ?? 0,
+              json: jsonEncode(transformed),
+            );
+          } catch (_) {
+            return null;
+          }
+        },
+        fetchNutrientObjective: () async {
+          try {
+            final raw = await referenceDataApi!.fetchNutrientObjective();
+            final parsed = jsonDecode(raw);
+            // S3 format: { "v": <int>, "data": { "nutrients": [{name, male1..4, female1..4, ulMale1..3, ulFemale1..3, ...}, ...] } }
+            // ProfileComputationService expects: {"vitA": {"male": {"19-30": {"rda": 900, "ul": 3000}}, ...}, ...}
+            final data = parsed['data'];
+            final nutrients = data is Map ? data['nutrients'] as List? ?? [] : data as List? ?? [];
+            const ageBrackets = ['19-30', '30-50', '50-70', '70+'];
+            final transformed = <String, dynamic>{};
+            for (final n in nutrients) {
+              if (n is! Map<String, dynamic>) continue;
+              final name = n['name'] as String?;
+              if (name == null) continue;
+              final maleRda = <String, dynamic>{};
+              final femaleRda = <String, dynamic>{};
+              for (int i = 0; i < 4; i++) {
+                final bracket = ageBrackets[i];
+                final suffix = i + 1;
+                final rdaM = (n['male$suffix'] as num?)?.toDouble() ?? 0.0;
+                final rdaF = (n['female$suffix'] as num?)?.toDouble() ?? 0.0;
+                // UL has 3 brackets (1-3); for bracket 4 (70+), reuse bracket 3
+                final ulSuffix = suffix <= 3 ? suffix : 3;
+                final ulM = (n['ulMale$ulSuffix'] as num?)?.toDouble() ?? 0.0;
+                final ulF = (n['ulFemale$ulSuffix'] as num?)?.toDouble() ?? 0.0;
+                maleRda[bracket] = {'rda': rdaM, 'ul': ulM};
+                femaleRda[bracket] = {'rda': rdaF, 'ul': ulF};
+              }
+              transformed[name] = {'male': maleRda, 'female': femaleRda};
+            }
+            return ReferencePayload(
+              version: parsed['v'] as int? ?? 0,
+              json: jsonEncode(transformed),
+            );
+          } catch (_) {
+            return null;
+          }
+        },
+      );
+    } catch (_) {
+      // Reference data fetch is best-effort — don't block login
+    }
+  }
+
   void notConfirmedUserAsksForNewVerificationCode(Function showMfaDialog) {
     _setNotConfirmedUserTryingToLogin(false);
     try {
@@ -485,6 +625,7 @@ class LoginProviderNew extends BaseProvider {
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.unitsFoods),
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.supplementsInfo),
         await getMasterFilesVersionInteractor!.execute(MasterFilesType.subjectiveAnalysis),
+        await getMasterFilesVersionInteractor!.execute(MasterFilesType.cookingMethodsOilsInfo),
       ).then((masterFilesResponse) => _onSuccessManageMasterFiles(masterFilesResponse, userId, onFinish));
     } catch (errorManageMasterFiles) {
       manageLoading(false);
@@ -569,10 +710,21 @@ class LoginProviderNew extends BaseProvider {
         MasterFilesType.supplementsInfo,
       );
     });
+    masterFilesResponse.cookingMethodsOilsInfoResponse.doIfAintNull(() {
+      saveMasterFileInteractor?.execute(
+        masterFilesResponse.cookingMethodsOilsInfoResponse,
+        MasterFilesType.cookingMethodsOilsInfo,
+      );
+    });
 
     _setMasterFilesChecked(true);
     try {
-      await _synchronizeEvents(userId).then((_) {
+      // Run events sync, reference data fetch, and pending sync queue in parallel
+      syncQueueService?.processQueue();
+      await Future.wait([
+        _synchronizeEvents(userId),
+        _fetchReferenceData(),
+      ]).then((_) {
         manageLoading(false);
         goesToRegistry
             ? goToRegistry.call()
@@ -628,43 +780,44 @@ class LoginProviderNew extends BaseProvider {
   }
 
   FormErrorTypes? validateUsername(String? username) {
-    if (username == null || username.isEmpty || username.contains(' ')) {
+    if (isLogin) {
+      return null;
+    }
+    if (username == null || username.isEmpty) {
       return FormErrorTypes.usernameEmptyOrNullError;
+    }
+    if (username.contains(' ')) {
+      return FormErrorTypes.usernameContainsSpacesError;
     }
     return null;
   }
 
   FormErrorTypes? validateEmail(String? value) {
-    if (!isLogin) {
-      if (isEmail(value)) {
-        return null;
-      } else {
-        return FormErrorTypes.emailFormatError;
-      }
-    } else {
+    if (isLogin) {
       return null;
     }
+    if (value == null || value.isEmpty) {
+      return FormErrorTypes.emailFormatError;
+    }
+    if (!isEmail(value)) {
+      return FormErrorTypes.emailFormatError;
+    }
+    return null;
   }
 
-  FormErrorTypes? validatePassword(String? value) => validatePasswordOrNull(isLogin , value);
+  FormErrorTypes? validatePassword(String? value) => validatePasswordOrNull(isLogin, value);
+
   FormErrorTypes? validateRepeatPassword(String? value, String password) {
     if (isLogin) {
       return null;
-    } else {
-      if (value.isEmptyOrNull()) {
-        return FormErrorTypes.emptyRepeatPassword;
-      } else {
-        if (validatePasswordOrNull(!isLogin, password) == null) {
-          if (value != password) {
-            return FormErrorTypes.repeatPasswordError;
-          } else {
-            return null;
-          }
-        } else {
-          return null;
-        }
-      }
     }
+    if (value.isEmptyOrNull()) {
+      return FormErrorTypes.emptyRepeatPassword;
+    }
+    if (password.isNotEmpty && value != password) {
+      return FormErrorTypes.repeatPasswordError;
+    }
+    return null;
   }
 
 }

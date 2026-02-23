@@ -13,6 +13,7 @@ enum MasterFilesType {
   unitsFoods,
   supplementsInfo,
   subjectiveAnalysis,
+  cookingMethodsOilsInfo,
 }
 
 const cookingMethodsBoxName = 'cookingMethodsBoxName';
@@ -44,3 +45,5 @@ const unitsInfo = 'unitsInfo';
 const unitsFoods = 'unitsFoods';
 const supplementsInfo = 'supplementsInfo';
 const subjectiveAnalysis = 'subjectiveAnalysis';
+const cookingMethodsOilsInfoBoxName = 'cookingMethodsOilsInfoBoxName';
+const cookingMethodsOilsInfo = 'cookingMethodsOilsInfo';

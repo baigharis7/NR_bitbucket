@@ -19,6 +19,7 @@ import '../../../infrastructure/utils/dimens.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../common/view/loading_screen.dart';
 import '../../widgets/date_picker_bar.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/remove_item_widget.dart';
@@ -112,91 +113,96 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
 
             Scaffold(
               backgroundColor: Colors.transparent,
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
               body: SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Dimens.paddingSmall,
-                    vertical: Dimens.paddingLarge,
-                  ),
-                  child: Column(children: [
-                    DatePickerBar(
-                      selectedDateTime: state.eventDate,
-                      onChangeDate: (dateTime) => supplementsDetailBloc.add(UpdateEventsDateSupplementsDetailEvent(dateTime: dateTime)),
-                    ),
-                    const SizedBox(height: Dimens.height12),
-                    HeaderAddItemCardSection(
-                      onBackTap: () => Navigator.pop(context),
-                      title: '${AppLocalizations.of(context)!.supplements} ${AppLocalizations.of(context)!.summary}',
-                      image: 'assets/images/supplement.png',
-                    ),
-                    if (state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) const SizedBox(height: Dimens.height12),
-                    if (state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) Container(
-                      padding: const EdgeInsets.all(Dimens.paddingSmall),
-                      decoration: BoxDecoration(
-                        color: AppColors.white70Percent,
-                        borderRadius: BorderRadius.circular(Dimens.border11),
-                      ),
-                      child: Column(children: [
-                        ListTile(
-                          leading: Image.asset('assets/images/goal_objectives.png', height: Dimens.height32),
-                          visualDensity: VisualDensity.compact,
-                          title: Text(AppLocalizations.of(context)!.related_objectives,
-                            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSize17, color: AppColors.peacockBlue),),
-                          trailing: Image.asset('assets/images/info.png', height: Dimens.heightXSmall, color: AppColors.peacockBlue),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Dimens.paddingSmall,
+                          vertical: Dimens.paddingLarge,
                         ),
-                        if (state.userProfile?.objectives?.contains(Constants.REDUCE_RISK_OF_INJURY) ?? false) ItemInfoCard(
-                          title: AppLocalizations.of(context)!.creatine,
-                          leadingIconSize: Dimens.height25,
-                          trailingSrc: 'assets/images/delete_icon.png',
-                          trailingTap: state.supplemntCreatines.orEmpty().isNotEmpty == true ? () => supplementsDetailBloc.add(DeleteSupplementEventAction(supplement: state.supplemntCreatines!.first)) : null,
-                          subtitle: '${state.totalAmountCreatine.orZero()} mg',
-                          leadingSrc: 'assets/images/goal_objectives.png',
-                          leadingTap: () {},
-                        ),
-                        if (state.userProfile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) ItemInfoCard(
-                          title: AppLocalizations.of(context)!.collagen,
-                          leadingIconSize: Dimens.height25,
-                          trailingSrc: 'assets/images/delete_icon.png',
-                          trailingTap: state.supplemntCollagens.orEmpty().isNotEmpty == true ? () => supplementsDetailBloc.add(DeleteSupplementEventAction(supplement: state.supplemntCollagens!.first)) : null,
-                          subtitle: '${state.totalAmountCollagen.orZero()} mg',
-                          leadingSrc: 'assets/images/goal_objectives.png',
-                          leadingTap: () {},
-                        ),
-                      ],),
-                    ),
-                    const SizedBox(height: Dimens.height12),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      primary: false,
-                      itemCount: state.supplementEvents.length,
-                      itemBuilder: (context, index) {
-                        final supplement = state.supplementEvents[index];
-                        final itemName = supplement.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplement.info.orEmpty()[0].id).translate(context);
-                        return ItemInfoCard(
-                            title: itemName,
-                          trailingSrc: 'assets/images/delete_icon.png',
-                          subtitle: supplement.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${supplement.info![0].amount.toString()} ${supplement.info![0].unit}.',
-                          trailingTap: () => _showRemoveDialog(
-                              description: AppLocalizations.of(context)!.remove_item(itemName),
-                              onCancel: () => Navigator.pop(context),
-                              onConfirm: () => supplementsDetailBloc.add(DeleteSupplementEventAction(supplement: supplement)),
+                        child: Column(children: [
+                          DatePickerBar(
+                            selectedDateTime: state.eventDate,
+                            onChangeDate: (dateTime) => supplementsDetailBloc.add(UpdateEventsDateSupplementsDetailEvent(dateTime: dateTime)),
                           ),
-                            beforeTrailingSrc: 'assets/icon/edit_icon.png',
-                            beforeTrailingTap: () => Navigator.popAndPushNamed(context, SupplementsScreen.routeName, arguments: supplement),
-                        );
-                      },
+                          const SizedBox(height: Dimens.height12),
+                          HeaderAddItemCardSection(
+                            onBackTap: () => Navigator.pop(context),
+                            title: '${AppLocalizations.of(context)!.supplements} ${AppLocalizations.of(context)!.summary}',
+                            image: 'assets/images/supplement.png',
+                          ),
+                          if (state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) const SizedBox(height: Dimens.height12),
+                          if (state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) Container(
+                            padding: const EdgeInsets.all(Dimens.paddingSmall),
+                            decoration: BoxDecoration(
+                              color: AppColors.white70Percent,
+                              borderRadius: BorderRadius.circular(Dimens.border11),
+                            ),
+                            child: Column(children: [
+                              ListTile(
+                                leading: Image.asset('assets/images/goal_objectives.png', height: Dimens.height32),
+                                visualDensity: VisualDensity.compact,
+                                title: Text(AppLocalizations.of(context)!.related_objectives,
+                                  style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSize17, color: AppColors.peacockBlue),),
+                                trailing: Image.asset('assets/images/info.png', height: Dimens.heightXSmall, color: AppColors.peacockBlue),
+                              ),
+                              if (state.userProfile?.objectives?.contains(Constants.REDUCE_RISK_OF_INJURY) ?? false) ItemInfoCard(
+                                title: AppLocalizations.of(context)!.creatine,
+                                leadingIconSize: Dimens.height25,
+                                trailingSrc: 'assets/images/delete_icon.png',
+                                trailingTap: state.supplemntCreatines.orEmpty().isNotEmpty == true ? () => supplementsDetailBloc.add(DeleteSupplementEventAction(supplement: state.supplemntCreatines!.first)) : null,
+                                subtitle: '${state.totalAmountCreatine.orZero()} mg',
+                                leadingSrc: 'assets/images/goal_objectives.png',
+                                leadingTap: () {},
+                              ),
+                              if (state.userProfile?.objectives?.contains(Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) ItemInfoCard(
+                                title: AppLocalizations.of(context)!.collagen,
+                                leadingIconSize: Dimens.height25,
+                                trailingSrc: 'assets/images/delete_icon.png',
+                                trailingTap: state.supplemntCollagens.orEmpty().isNotEmpty == true ? () => supplementsDetailBloc.add(DeleteSupplementEventAction(supplement: state.supplemntCollagens!.first)) : null,
+                                subtitle: '${state.totalAmountCollagen.orZero()} mg',
+                                leadingSrc: 'assets/images/goal_objectives.png',
+                                leadingTap: () {},
+                              ),
+                            ],),
+                          ),
+                          const SizedBox(height: Dimens.height12),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            primary: false,
+                            itemCount: state.supplementEvents.length,
+                            itemBuilder: (context, index) {
+                              final supplement = state.supplementEvents[index];
+                              final itemName = supplement.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplement.info.orEmpty()[0].id).translate(context);
+                              return ItemInfoCard(
+                                  title: itemName,
+                                trailingSrc: 'assets/images/delete_icon.png',
+                                subtitle: supplement.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${supplement.info![0].amount.toString()} ${supplement.info![0].unit}.',
+                                trailingTap: () => _showRemoveDialog(
+                                    description: AppLocalizations.of(context)!.remove_item(itemName),
+                                    onCancel: () => Navigator.pop(context),
+                                    onConfirm: () => supplementsDetailBloc.add(DeleteSupplementEventAction(supplement: supplement)),
+                                ),
+                                  beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                                  beforeTrailingTap: () => Navigator.popAndPushNamed(context, SupplementsScreen.routeName, arguments: supplement),
+                              );
+                            },
+                          ),
+                        ],
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: Dimens.height32),
-                    ListTile(
-                      onTap: () => Navigator.popAndPushNamed(context, SupplementsScreen.routeName),
-                      leading: Image.asset('assets/images/add_items.png', height: Dimens.height37, width: Dimens.width37),
-                      title: Text(
-                        AppLocalizations.of(context)!.add + ' ' +AppLocalizations.of(context)!.supplements,
-                        style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, decoration: TextDecoration.underline),
+                    Container(
+                      margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge, bottom: Dimens.marginSmall),
+                      child: GeneralButton(
+                        title: AppLocalizations.of(context)!.add,
+                        onTap: () => Navigator.popAndPushNamed(context, SupplementsScreen.routeName),
                       ),
                     ),
                   ],
-                  ),
                 ),
               ),
             )

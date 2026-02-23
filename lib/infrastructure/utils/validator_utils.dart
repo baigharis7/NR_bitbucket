@@ -18,26 +18,20 @@ bool isEmail(String? string) {
 
 
 FormErrorTypes? validatePasswordOrNull(bool? isLogin,String? password) {
-  // if (password == null || password.length < 8 || !_isPasswordValid(password)) {
-  if(!isLogin!) {
-    if (password == null || password.length < 8 || !_isPasswordValid(password)) {
-      return FormErrorTypes.invalidPasswordError;
-    } else {
-      return null;
-    }
+  if(isLogin!) {
+    return null;
   }
-  else {
-    if (password == null || password.isEmpty) {
-      return FormErrorTypes.emptyPasswordError;
-    } else {
-      return null;
-    }
+  if (password == null || password.isEmpty) {
+    return FormErrorTypes.emptyPasswordError;
   }
+  if (password.length < 8 || !_isPasswordValid(password)) {
+    return FormErrorTypes.invalidPasswordError;
+  }
+  return null;
 }
 
 bool _isPasswordValid(String password) {
-  const pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$';
-  // const pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$';
+  const pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:,.<>?/\\|`~"' "'" r'])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};:,.<>?/\\|`~"' "'" r']{8,}$';
   final regExp = RegExp(pattern);
 
   if (!regExp.hasMatch(password)) {

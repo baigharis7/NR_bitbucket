@@ -21,6 +21,7 @@ class SportEventItem extends StatefulWidget {
   final Function removeSport;
   final Function(AddSportFavInfo) editMinutes;
   final Function(AddSportFavInfo) editIntensity;
+  final bool showValidation;
   const SportEventItem({
     Key? key,
     required this.allSportsInfo,
@@ -28,6 +29,7 @@ class SportEventItem extends StatefulWidget {
     required this.removeSport,
     required this.editMinutes,
     required this.editIntensity,
+    this.showValidation = false,
   }) : super(key: key);
 
   @override
@@ -39,7 +41,6 @@ class _SportEventItem extends State<SportEventItem> {
   int? _sportIntensities;
   int? _duration;
   int? _intensity;
-  bool _error = false;
   final _durationTextController = TextEditingController();
 
   List<String> getIntensityList(int itemsNumber, BuildContext context) {
@@ -67,20 +68,23 @@ class _SportEventItem extends State<SportEventItem> {
     final sportInfo = widget.sport;
       _sportIntensities = NutritionUtils.findSportIntensities(names: widget.allSportsInfo, id: sportInfo.id);
       _sportName = NutritionUtils.findSportName(names: widget.allSportsInfo, ingredients: [sportInfo], context: context);
-    // if (widget.sport.minutes != null && _durationTextController.text == '') {
       _duration = widget.sport.minutes;
-      _durationTextController.text = !_duration.isNull() ? _duration.toString() : '';
-    // }
+      final durationText = !_duration.isNull() ? _duration.toString() : '';
+      if (_durationTextController.text != durationText) {
+        _durationTextController.text = durationText;
+      }
 
     if (widget.sport.intensity != null) _intensity = widget.sport.intensity;
-    _error = widget.sport.minutes == null || widget.sport.intensity == null;
+    final missingDuration = widget.sport.minutes == null;
+    final missingIntensity = widget.sport.intensity == null;
 
-    return Container(
+    return Column(
+      children: [
+      Container(
       decoration: BoxDecoration(
-        border: _error ? const Border.fromBorderSide(BorderSide(color: AppColors.red45Percent,  width: 4)) : null,
         borderRadius: BorderRadius.circular(Dimens.border15),
-        color: _error ? AppColors.white65Percent : AppColors.white85Percent,),
-      margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge,),
+        color: AppColors.white85Percent,),
+      margin: const EdgeInsets.only(top: Dimens.marginSmall),
       padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingNormal),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,7 +101,7 @@ class _SportEventItem extends State<SportEventItem> {
               ),
               // InkWell(onTap: () { /*assets/images/favorite_icon.png*/ }, child: Image.asset('assets/icon/un_favorite_outlined.png', height: Dimens.heightXSmall)),
               const SizedBox(width: Dimens.width12),
-              InkWell(onTap: () => widget.removeSport.call(), child: const Icon(Icons.cancel_outlined, size: Dimens.height27, color: AppColors.yellowishGreen)),
+              InkWell(onTap: () => widget.removeSport.call(), child: const Icon(Icons.cancel_outlined, size: 28, color: AppColors.yellowishGreen)),
             ],
           ),
           Text(AppLocalizations.of(context)!.duration, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal)),
@@ -112,11 +116,12 @@ class _SportEventItem extends State<SportEventItem> {
                     keyboardType: TextInputType.number,
                     controller: _durationTextController,
                     textAlignVertical: TextAlignVertical.center,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
-                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.silver, width: 1), borderRadius: BorderRadius.all(Radius.circular(Dimens.border11))),
-                      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.silver, width: 1), borderRadius: BorderRadius.all(Radius.circular(Dimens.border11))),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingSmall),
+                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: widget.showValidation && missingDuration ? AppColors.errorRed : AppColors.silver, width: 1), borderRadius: const BorderRadius.all(Radius.circular(Dimens.border11))),
+                      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: widget.showValidation && missingDuration ? AppColors.errorRed : AppColors.silver, width: 1), borderRadius: const BorderRadius.all(Radius.circular(Dimens.border11))),
                     ),
                     onChanged: (minutes) {
                       sportInfo.minutes = minutes.isEmpty ? null : int.parse(minutes);
@@ -146,12 +151,12 @@ class _SportEventItem extends State<SportEventItem> {
           if (_sportIntensities != null && _sportIntensities! > 1) Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
                 height: Dimens.heightSmall - 15,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius:
-                    BorderRadius.all(Radius.circular(11)),
+                    const BorderRadius.all(Radius.circular(11)),
                     border: Border.fromBorderSide(
-                        BorderSide(color: AppColors.silver, width: 1))),
+                        BorderSide(color: widget.showValidation && missingIntensity ? AppColors.errorRed : AppColors.silver, width: 1))),
                 child: DropdownButton<String>(
                   isExpanded: true,
                   underline: Container(),
@@ -180,8 +185,18 @@ class _SportEventItem extends State<SportEventItem> {
                       .toList(),
                 ),
               ),
+          if (widget.showValidation && missingDuration) Padding(
+            padding: const EdgeInsets.only(top: Dimens.marginSmall),
+            child: Text(AppLocalizations.of(context)!.please_enter_duration, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
+          ),
+          if (widget.showValidation && missingIntensity && _sportIntensities != null && _sportIntensities! > 1) Padding(
+            padding: const EdgeInsets.only(top: Dimens.marginSmall),
+            child: Text(AppLocalizations.of(context)!.please_select_intensity, style: const TextStyle(color: AppColors.errorRed, fontSize: Dimens.fontSizeSmall)),
+          ),
         ],
       ),
+    ),
+    ],
     );
   }
 }

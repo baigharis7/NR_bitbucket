@@ -5,10 +5,15 @@ import 'floating_menu_overlay.dart';
 class FloatingMenuController {
   OverlayEntry? _overlayEntry;
 
-  void show(BuildContext context, List<Map<String, dynamic>> menuItems) {
+  void show(
+    BuildContext context,
+    List<Map<String, dynamic>> menuItems, {
+    bool showFavoritesRoutinesButtons = true,
+    bool centered = false,
+  }) {
     if (_overlayEntry != null) return;
 
-    _overlayEntry = _buildOverlayEntry(context, menuItems);
+    _overlayEntry = _buildOverlayEntry(context, menuItems, showFavoritesRoutinesButtons, centered);
     Overlay.of(context, rootOverlay: true).insert(_overlayEntry!);
   }
 
@@ -17,9 +22,19 @@ class FloatingMenuController {
     _overlayEntry = null;
   }
 
-  OverlayEntry _buildOverlayEntry(BuildContext context, List<Map<String, dynamic>> menuItems) {
+  OverlayEntry _buildOverlayEntry(
+    BuildContext context,
+    List<Map<String, dynamic>> menuItems,
+    bool showFavoritesRoutinesButtons,
+    bool centered,
+  ) {
     return OverlayEntry(
-      builder: (context) => FloatingMenuOverlay(onClose: hide, menuItems: menuItems),
+      builder: (context) => FloatingMenuOverlay(
+        onClose: hide,
+        menuItems: menuItems,
+        showFavoritesRoutinesButtons: showFavoritesRoutinesButtons,
+        centered: centered,
+      ),
     );
   }
 }

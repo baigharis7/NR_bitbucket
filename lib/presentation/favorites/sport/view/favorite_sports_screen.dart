@@ -12,9 +12,12 @@ import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/sport_f
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/bloc/sport_favorites_state.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_sport_favorite_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/create_new_sport_favorite_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/event_list_item.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 
 class FavoriteSportsScreen extends StatefulWidget {
   static const routeName = '/favorite_sports';
@@ -75,6 +78,7 @@ class _FavoriteSportsScreenState extends State<FavoriteSportsScreen> {
           builder: (ctx, state) {
             return Scaffold(
               backgroundColor: Colors.grey[200],
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
               appBar: AppBar(
                 backgroundColor: Colors.transparent,
                 elevation: 0,
@@ -82,52 +86,53 @@ class _FavoriteSportsScreenState extends State<FavoriteSportsScreen> {
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 25,),
                 ),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.sport_favs,
-                      style: const TextStyle(color: Colors.black,),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.add_circle, color: Colors.teal),
-                      onPressed: () => Navigator.pushNamed(
-                        context,
-                        CreateNewSportFavoriteScreen.routeName,
-                      ).then((value) => bloc.add(InitializeStateAction())),
-                    )
-                  ],
+                title: Text(
+                  AppLocalizations.of(context)!.sport_favs,
+                  style: const TextStyle(color: Colors.black,),
                 ),
               ),
-              body: SingleChildScrollView(
-                child: Container(
-                  margin: const EdgeInsets.all(Dimens.marginNormal),
-                  child: Column(
-                    children: [
-                      if (state.showCard != null && state.showCard!) ExplainingCardsHelper().getExplainingCardWithId(
-                        context: context,
-                        explainingCardId: ExplainingCardRefs.addNewSportEvent.index,
-                        onHideCard: () => bloc.add(HideExplainingCardAction()),
-                        onPressedButton: () => Navigator.pushNamed(context, CreateNewSportFavoriteScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
-                      ),
-                      ...state.sportFavorites!.map((sportFavorite) => EventListItem(
-                        title: sportFavorite.title.orEmpty(),
-                        onFavorite: () => showUndoFavoriteDialog(
-                          context: ctx,
-                          title: sportFavorite.title.orEmpty(),
-                          onUndoFavorite: () => bloc.add(
-                            RemoveFavoriteAction(
-                              sportFavorite: sportFavorite,
-                              onFinish: () => Navigator.pop(context),
+              body: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Container(
+                        margin: const EdgeInsets.all(Dimens.marginNormal),
+                        child: Column(
+                          children: [
+                            if (state.showCard != null && state.showCard!) ExplainingCardsHelper().getExplainingCardWithId(
+                              context: context,
+                              explainingCardId: ExplainingCardRefs.addNewSportEvent.index,
+                              onHideCard: () => bloc.add(HideExplainingCardAction()),
+                              onPressedButton: () => Navigator.pushNamed(context, CreateNewSportFavoriteScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
                             ),
-                          ),
-                          reloadScreen: () => bloc.add(InitializeStateAction()),
+                            ...state.sportFavorites!.map((sportFavorite) => EventListItem(
+                              title: sportFavorite.title.orEmpty(),
+                              onFavorite: () => showUndoFavoriteDialog(
+                                context: ctx,
+                                title: sportFavorite.title.orEmpty(),
+                                onUndoFavorite: () => bloc.add(
+                                  RemoveFavoriteAction(
+                                    sportFavorite: sportFavorite,
+                                    onFinish: () => Navigator.pop(context),
+                                  ),
+                                ),
+                                reloadScreen: () => bloc.add(InitializeStateAction()),
+                              ),
+                              onEdit: () => Navigator.pushNamed(context, AddSportFavoriteScreen.routeName, arguments: sportFavorite).then((value) => bloc.add(InitializeStateAction())),
+                            ),),
+                          ],
                         ),
-                        onEdit: () => Navigator.pushNamed(context, AddSportFavoriteScreen.routeName, arguments: sportFavorite).then((value) => bloc.add(InitializeStateAction())),
-                      ),)
-                    ],
+                      ),
+                    ),
                   ),
-                ),
+                  Container(
+                    margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge, bottom: Dimens.marginSmall),
+                    child: GeneralButton(
+                      title: AppLocalizations.of(context)!.add,
+                      onTap: () => Navigator.pushNamed(context, CreateNewSportFavoriteScreen.routeName).then((value) => bloc.add(InitializeStateAction())),
+                    ),
+                  ),
+                ],
               ),
             );
           },

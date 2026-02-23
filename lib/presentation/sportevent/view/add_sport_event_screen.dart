@@ -3,13 +3,14 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/food_event_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -18,26 +19,20 @@ import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_state.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/sport_event_item.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/item_title_card.dart';
 
 import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../domain/models/routines/sport_routine_completed.dart';
-import '../../../domain/models/sportevents/sport_event_complete.dart';
+import '../../../domain/models/sportevents/sport_arguments_model.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
-import '../../../infrastructure/helpers/remove_diac.dart';
-import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../sportitems/view/sport_items_screen.dart';
 import '../../updatesport/view/update_sport_screen.dart';
-import '../../widgets/add_item_name_dialog.dart';
-import '../../widgets/box_type_radio_text_widget.dart';
 import '../../widgets/dash_title_widget.dart';
 import '../../widgets/date_picker_bar.dart';
-import '../../widgets/food_actions_widget.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/item_info_card.dart';
-import '../../widgets/item_routine_widget.dart';
 
 class AddSportEventScreen extends StatefulWidget {
   const AddSportEventScreen({
@@ -53,7 +48,9 @@ class AddSportEventScreen extends StatefulWidget {
 class _AddSportEventScreenState extends State<AddSportEventScreen> {
   late FocusNode _sportFocusInputController;
   late SportEventsBloc bloc;
+  final ScrollController _scrollController = ScrollController();
   int filteredListLength = 0;
+  bool _showValidation = false;
 
   void _showConfirmationDialog({String? message, required BuildContext context, required Function onDismiss}) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
@@ -74,57 +71,6 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
     });
   }
 
-  Future<void> showAddSportNameDialog({
-    required BuildContext context,
-    required Function onFinish,
-    required Function onNameChange,
-  }) async {
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AddItemNameDialog(
-        title: '${AppLocalizations.of(context)!.sport_name}:',
-        onNameChange: (String sportEventName) =>
-            onNameChange.call(sportEventName),
-        onSave: () => onFinish.call(),
-        onCancel: () => Navigator.pop(context),
-        itemsLength: 0,
-      ),
-    ).then((_) => Navigator.pop(context));
-  }
-
-  Future<void> showRoutineTimeDialog({
-    required Function(String) onNameChange,
-    required Function onTimeChanged,
-    required Function(int) onChangeWeekDays,
-    required Function(bool) onFavoriteChange,
-    required Function(bool) onChangeCreateRoutine,
-    required List<int>? daysOfWeek,
-    required TimeOfDay? scheduleTime,
-    required bool? isFavorite,
-    required bool? isCreateRoutine,
-    required String? name,
-    required int itemsLength,
-}) async {
-    await showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (ctx) => ItemRoutineWidget(
-        onNameChange: (name) => onNameChange.call(name),
-        onTimeChange: (pickedTime) => onTimeChanged.call(pickedTime),
-        onChangeWeekDays: (weekDay) => onChangeWeekDays.call(weekDay),
-        daysOfWeek: daysOfWeek,
-        scheduleTime: scheduleTime,
-        isFavorite: isFavorite,
-        isCreateRoutine: isCreateRoutine,
-        name: name,
-        onFavoriteChange: (value) => onFavoriteChange.call(value),
-        onChangeCreateRoutine: (value) => onChangeCreateRoutine.call(value),
-        itemsLength: itemsLength,
-      ),
-    ).then((_) {});
-  }
-
   @override
   void initState() {
     bloc = BlocProvider.of<SportEventsBloc>(context);
@@ -136,7 +82,9 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
       if (ModalRoute.of(context)?.settings.arguments != null) {
         final infoReceived = ModalRoute.of(context)!.settings.arguments;
         if (infoReceived != null) {
-          if (infoReceived is DateTime?) {
+          if (infoReceived is SportArgumentsModel) {
+            bloc.add(AddSportArgumentModelEventAction(sportArgumentsModel: infoReceived));
+          } else if (infoReceived is DateTime?) {
             bloc.add(UpdateCalendarDateSportEventAction(calendarDate: infoReceived as DateTime));
           } else if (infoReceived is AddSportFavorite) {
             bloc.add(UpdateSportFromFavoriteTabSportEventsActions(addSportFavorite: infoReceived));
@@ -148,6 +96,12 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
     });
     bloc.add(InitializeStateAction());
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -197,12 +151,13 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
               behavior: HitTestBehavior.opaque,
               child: Scaffold(
                 backgroundColor: Colors.transparent,
+                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                 body: SafeArea(
                   child: Column(
                     children: [
                       Expanded(
                         child: SingleChildScrollView(
-                          // padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingLarge),
+                          controller: _scrollController,
                           child: Column(
                             children: [
                               const SizedBox(height: Dimens.height12),
@@ -219,6 +174,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                   title: AppLocalizations.of(context)!.add_physical_activity,
                                   onBackTap: () => Navigator.pop(context),
                                   image: 'assets/images/sport.png',
+                                  searchHintText: AppLocalizations.of(context)!.search_activity_hint,
                                   items: state.sportsInfo!.sportsInfoMaster.map((sport) => sport.translate(context)).toList(),
                                   onItemSelect: (sportName, focus) {
                                     _sportFocusInputController = focus;
@@ -227,6 +183,21 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                     final sportInfo = bloc.findSportById(sportId);
                                     final info = AddSportFavInfo(id: sportId, name_en: sportInfo.en, name_es: sportInfo.es, intensity: sportIntensities == 1 ? 0 : null, timeStart: DateTime.now().millisecondsSinceEpoch);
                                     bloc.add(AddSportEventAction(info));
+                                    // Auto-scroll to newly added item
+                                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                                      _scrollController.animateTo(
+                                        _scrollController.position.maxScrollExtent,
+                                        duration: const Duration(milliseconds: 300),
+                                        curve: Curves.easeOut,
+                                      );
+                                    });
+                                    // Auto-title logic
+                                    final currentCount = state.sportSimpleEvent!.info.orEmpty().length;
+                                    if (currentCount == 0) {
+                                      bloc.add(SetEventSportNameAction(sportEventName: sportName));
+                                    } else if (currentCount == 1) {
+                                      bloc.add(SetEventSportNameAction(sportEventName: ''));
+                                    }
                                   },
                                 ),
                               ),
@@ -235,36 +206,76 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                      ...?state.sportSimpleEvent?.info?.orEmpty().map((sport) => SportEventItem(
-                                        allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
-                                          sport: sport,
-                                          removeSport: () => bloc.add(RemoveSportEventAction(sportInfo: sport)),
-                                          editMinutes: (updatedSport) => bloc.add(SetMinutesAction(sportInfo: updatedSport)),
-                                          editIntensity: (updatedSport) => bloc.add(SetIntensityAction(sportInfo: updatedSport)),
+                                    const SizedBox(height: Dimens.height12),
+                                    // Title card with favorite/routine toggles
+                                    ItemTitleCard(
+                                      name: state.sportSimpleEvent?.title,
+                                      onUpdateName: (name) => bloc.add(SetEventSportNameAction(sportEventName: name)),
+                                      isFavorite: state.sportSimpleEvent?.isFavorite ?? false,
+                                      onToggleFavorite: () {
+                                        if (state.sportSimpleEvent?.isFavorite != true) {
+                                          if (state.sportSimpleEvent?.isCreateRoutine == true) bloc.add(UpdateIsCreateRoutineSportEventsActions(isCreateRoutine: false));
+                                          bloc.add(UpdateIsFavoriteSportEventsActions(isFavorite: true));
+                                        } else {
+                                          bloc.add(UpdateIsFavoriteSportEventsActions(isFavorite: false));
+                                        }
+                                      },
+                                      isRoutine: state.sportSimpleEvent?.isCreateRoutine ?? false,
+                                      onToggleRoutine: () {
+                                        if (state.sportSimpleEvent?.isCreateRoutine != true) {
+                                          if (state.sportSimpleEvent?.isFavorite == true) bloc.add(UpdateIsFavoriteSportEventsActions(isFavorite: false));
+                                          bloc.add(UpdateIsCreateRoutineSportEventsActions(isCreateRoutine: true));
+                                        } else {
+                                          bloc.add(UpdateIsCreateRoutineSportEventsActions(isCreateRoutine: false));
+                                        }
+                                      },
+                                      itemCount: state.sportSimpleEvent!.info.orEmpty().length,
+                                      scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.sportSimpleEvent?.scheduleTime),
+                                      onUpdateTime: (scheduleTime) => bloc.add(UpdateTimeOfDaySportEventAction(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
+                                      daysOfWeek: state.sportSimpleEvent?.daysOfWeek,
+                                      onUpdateDayOfWeek: (dayOfWeek) {},
+                                    ),
+                                    // Item cards with connector lines
+                                    ...state.sportSimpleEvent!.info.orEmpty().asMap().entries.map((entry) {
+                                      final index = entry.key;
+                                      final sport = entry.value;
+                                      return Column(
+                                        children: [
+                                          SportEventItem(
+                                            allSportsInfo: state.sportsInfo?.sportsInfoMaster ?? [],
+                                            sport: sport,
+                                            removeSport: () => bloc.add(RemoveSportEventAction(sportInfo: sport)),
+                                            editMinutes: (updatedSport) => bloc.add(SetMinutesAction(sportInfo: updatedSport)),
+                                            editIntensity: (updatedSport) => bloc.add(SetIntensityAction(sportInfo: updatedSport)),
+                                            showValidation: _showValidation,
+                                          ),
+                                        ],
+                                      );
+                                    }),
+                                    // Add More button
+                                    const SizedBox(height: Dimens.marginSmall),
+                                    Center(
+                                      child: SizedBox(
+                                        width: Dimens.widthLarge,
+                                        height: Dimens.height55,
+                                        child: ListTile(
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
+                                          tileColor: AppColors.floralWhite,
+                                          onTap: () {
+                                            if (bloc.validateSportList() ?? false) {
+                                              setState(() { _showValidation = true; });
+                                              return;
+                                            }
+                                            setState(() { _showValidation = false; });
+                                            _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                            _sportFocusInputController.requestFocus();
+                                          },
+                                          title: Text(AppLocalizations.of(context)!.add_more),
+                                          trailing: const Icon(Icons.add_circle, color: AppColors.yellowishGreen),
                                         ),
-                                      ),
-                                    SizedBox(
-                                      width: Dimens.widthLarge,
-                                      child: ListTile(
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15),),
-                                        tileColor: AppColors.floralWhite,
-                                        onTap: () => showRoutineTimeDialog(
-                                          onNameChange: (name) => bloc.add(SetEventSportNameAction(sportEventName: name)),
-                                            onTimeChanged: (time) => bloc.add(UpdateTimeOfDaySportEventAction(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
-                                          onChangeWeekDays: (weekDay) => bloc.add(UpdateDaysOfWeekSportEventAction(weekDay: weekDay)),
-                                          onFavoriteChange: (value) => bloc.add(UpdateIsFavoriteSportEventsActions(isFavorite: value)),
-                                          onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineSportEventsActions(isCreateRoutine: value)),
-                                          daysOfWeek: state.sportSimpleEvent?.daysOfWeek,
-                                          scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.sportSimpleEvent?.scheduleTime),
-                                          isFavorite: state.sportSimpleEvent?.isFavorite,
-                                          isCreateRoutine: state.sportSimpleEvent?.isCreateRoutine,
-                                          name: state.sportSimpleEvent?.title,
-                                          itemsLength: state.sportSimpleEvent?.info?.length ?? 0,
-                                        ),
-                                        title: Text(AppLocalizations.of(context)!.add_more_options),
-                                        trailing: const Icon(Icons.radio_button_checked, color: AppColors.yellowishGreen),
                                       ),
                                     ),
+                                    const SizedBox(height: Dimens.paddingXLarge),
                                   ],
                                 ),
                               ),
@@ -301,48 +312,35 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                       if (state.sportSimpleEvent?.info?.orEmpty().isNotEmpty == true) Container(
                         margin: const EdgeInsets.all(Dimens.marginLarge),
                         child: GeneralButton(onTap: () {
-                            if (bloc.validateSportList() ?? true) return;
+                            if (bloc.validateSportList() ?? true) {
+                              setState(() { _showValidation = true; });
+                              return;
+                            }
 
                             if (state.sportSimpleEvent!.info.orEmpty().isEmpty) {
                               if (!state.sportFavoriteEvent.isNull()) {
                                 bloc.add(FinishSportFavoriteActions(onFinish: () => _showConfirmationDialog(context: context, onDismiss: () {})));
                               }
                             } else {
+                              // Auto-set title for single items
                               if (state.sportSimpleEvent!.info.orEmpty().length == 1 && (state.sportSimpleEvent?.title.isEmptyOrNull() == true)) {
                                 final name = NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: [state.sportSimpleEvent?.info.orEmpty()[0]], context: context);
                                 state.sportSimpleEvent?.title = name;
-                                // bloc.add(SetEventSportNameAction(sportEventName: name));
                               }
-                              // FocusScope.of(context).unfocus();
-                              // _sportFocusInputController.unfocus();
+
+                              // Block save if combo has no name (inline error is shown in the title card)
                               if (state.sportSimpleEvent!.info.orEmpty().length > 1 && (state.sportSimpleEvent?.title.isEmptyOrNull() == true)) {
-                                showRoutineTimeDialog(
-                                  onNameChange: (name) => bloc.add(SetEventSportNameAction(sportEventName: name)),
-                                  onTimeChanged: (time) => bloc.add(UpdateTimeOfDaySportEventAction(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(time))),
-                                  onChangeWeekDays: (weekDay) => bloc.add(UpdateDaysOfWeekSportEventAction(weekDay: weekDay)),
-                                  onFavoriteChange: (value) => bloc.add(UpdateIsFavoriteSportEventsActions(isFavorite: value)),
-                                  onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineSportEventsActions(isCreateRoutine: value)),
-                                  daysOfWeek: state.sportSimpleEvent?.daysOfWeek,
-                                  scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.sportSimpleEvent?.scheduleTime),
-                                  isFavorite: state.sportSimpleEvent?.isFavorite,
-                                  isCreateRoutine: state.sportSimpleEvent?.isCreateRoutine,
-                                  name: state.sportSimpleEvent?.title,
-                                  itemsLength: state.sportSimpleEvent?.info?.length ?? 0,
-                                );
+                                return;
                               }
 
                               if (state.sportSimpleEvent!.title.isNotEmptyOrNull()) {
-                                // bloc.add(FinishSportEventActions(onFinish: () => _showConfirmationDialog(context: context, onDismiss: () {
-                                //   Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate);
-                                // })));
-
                                 if (state.sportSimpleEvent?.isFavorite == true) {
                                   state.sportSimpleEvent?.eventId = state.sportSimpleEvent?.eventId ?? DateTime.now().millisecondsSinceEpoch;
                                   state.sportSimpleEvent?.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
                                   bloc.add(FinishSportFavouriteAddSportAction(sportFavorite: state.sportSimpleEvent!, onFinish: () => _showConfirmationDialog(
-                                    message: AppLocalizations.of(context)!.sport_favorite_successfully_saved,
+                                    message: '${AppLocalizations.of(context)!.sport_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.sport_favorite_successfully_saved}',
                                       context: context,
-                                      onDismiss: () {},
+                                      onDismiss: () => Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate),
                                   ),),);
                                 }
                                 else if (state.sportSimpleEvent?.isCreateRoutine == true) {
@@ -355,9 +353,9 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
 
                                   final sportRoutineCompleted = mapAddFavSportToSportRoutineCompleted(state.sportSimpleEvent!);
                                   bloc.add(FinishSportRoutineAddSportAction(sportRoutineCompleted: sportRoutineCompleted, onFinish: () => _showConfirmationDialog(
-                                    message: AppLocalizations.of(context)!.sport_routine_successfully_saved,
+                                    message: '${AppLocalizations.of(context)!.sport_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.sport_routine_successfully_saved}',
                                       context: context,
-                                      onDismiss: () {},
+                                      onDismiss: () => Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate),
                                   ),),);
                                 } else {
                                   state.sportSimpleEvent?.eventId = state.sportSimpleEvent?.eventId ?? DateTime.now().millisecondsSinceEpoch;

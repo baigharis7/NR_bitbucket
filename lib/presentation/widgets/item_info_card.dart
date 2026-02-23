@@ -35,7 +35,7 @@ class ItemInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal, horizontal: Dimens.marginLarge),
+      margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
       padding: const EdgeInsets.symmetric(vertical: Dimens.marginNormal, horizontal: Dimens.marginLarge),
       decoration: BoxDecoration(
         color: color ?? AppColors.floralWhite, // light greenish
@@ -67,10 +67,14 @@ class ItemInfoCard extends StatelessWidget {
                   style: const TextStyle(color: AppColors.battleshipGrey, fontWeight: FontWeight.w500, fontSize: Dimens.fontSizeXSmall),
                 ) : const SizedBox(),
               ],),),
-              const SizedBox(width: Dimens.width12),
-              if(beforeTrailingSrc.isNotNull() && !beforeTrailingTap.isNull()) InkWell(onTap: beforeTrailingTap, child: Image.asset(beforeTrailingSrc!, height: 21, width: 21, color: AppColors.yellowishGreen,)),
-              const SizedBox(width: Dimens.width12),
-              !trailingSrc.isNull() && !trailingTap.isNull() ? InkWell(onTap: () => trailingTap?.call(), child: Image.asset(trailingSrc!, height: 21, width: 21)) : const SizedBox(),
+              if(beforeTrailingSrc.isNotNull() && !beforeTrailingTap.isNull()) ...[
+                const SizedBox(width: Dimens.marginSmall),
+                InkWell(onTap: beforeTrailingTap, child: Image.asset(beforeTrailingSrc!, height: 26, width: 26, color: AppColors.yellowishGreen)),
+              ],
+              if(!trailingSrc.isNull() && !trailingTap.isNull()) ...[
+                const SizedBox(width: Dimens.marginSmall),
+                InkWell(onTap: () => trailingTap?.call(), child: Image.asset(trailingSrc!, height: 26, width: 26)),
+              ],
             ],
           ),
           // ListTile(

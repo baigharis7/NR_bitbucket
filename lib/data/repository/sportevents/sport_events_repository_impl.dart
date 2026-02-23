@@ -1,4 +1,3 @@
-import 'package:nutrenaissance_flutter/data/api/sportevents/model/sport_event_response.dart';
 import 'package:nutrenaissance_flutter/data/api/sportevents/sport_events_api.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
@@ -7,19 +6,45 @@ import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_stor
 import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_events_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/sport_event_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sport_kcal_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 
 class SportEventsRepositoryImpl extends SportEventsRepository {
   final SportEventsApi sportEventsApi;
   final LocalStorageRepository localStorageRepository;
+  final SportKcalCalculationService sportKcalCalculationService;
+  final SyncQueueService syncQueue;
 
-  SportEventsRepositoryImpl({required this.sportEventsApi, required this.localStorageRepository});
+  SportEventsRepositoryImpl({
+    required this.sportEventsApi,
+    required this.localStorageRepository,
+    required this.sportKcalCalculationService,
+    required this.syncQueue,
+  });
 
   @override
   Future<SportEventComplete> uploadSportEvent(SportEventSimple sportEventSimple) async {
-    final sportEvent = await sportEventsApi.uploadSportEvent(sportEventSimple);
-    final sportEventResponse = SportEventResponse.fromJson(sportEvent);
-    final sportEventComplete = mapToSportEventCompleteFromResponse(sportEventResponse);
+    // Get user weight from local profile
+    final profile = await localStorageRepository.getProfile();
+    final userWeight = profile?.physicalCharacteristics?.weight ?? 70.0;
+
+    // Compute kcal locally (replaces blocking Lambda call)
+    final sportEventComplete = await sportKcalCalculationService.enrichSportEvent(
+      sportEventSimple,
+      userWeight: userWeight,
+    );
+
+    // Fire background API call for DynamoDB persistence (don't block UI)
+    _syncToBackend(sportEventSimple);
+
     return sportEventComplete;
+  }
+
+  void _syncToBackend(SportEventSimple sportEventSimple) {
+    sportEventsApi.uploadSportEvent(sportEventSimple).catchError((error) {
+      syncQueue.enqueue('/sport-event/amplify', sportEventSimple);
+      return <String, dynamic>{};
+    });
   }
 
   @override
@@ -69,11 +94,9 @@ class SportEventsRepositoryImpl extends SportEventsRepository {
 
   @override
   Future<void> deleteSportEvent(String userId, int eventId) async {
-    try {
-      await sportEventsApi.deleteSportEvent(userId, eventId);
-    } catch (error) {
-      rethrow;
-    }
+    sportEventsApi.deleteSportEvent(userId, eventId).catchError((error) {
+      syncQueue.enqueueDelete('/sport-event', {'userId': userId, 'eventId': eventId});
+      return <String, dynamic>{};
+    });
   }
-
 }

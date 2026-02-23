@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/add_food_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
@@ -22,6 +23,7 @@ import '../../../widgets/add_item_name_dialog.dart';
 import '../../../widgets/box_type_radio_text_widget.dart';
 import '../../../widgets/food_event_foods_cluster.dart';
 import '../../../widgets/meal_type_selection_widget.dart';
+import '../../../widgets/custom_bottom_navi_bar_widget.dart';
 import 'food_fav_item.dart';
 
 class CreateNewFoodFavoriteScreen extends StatefulWidget {
@@ -145,6 +147,7 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
       value: bloc,
       child: SafeArea(
         child: Scaffold(
+          bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
           appBar: AppBar(
             backgroundColor: Colors.white,
             foregroundColor: Colors.black,

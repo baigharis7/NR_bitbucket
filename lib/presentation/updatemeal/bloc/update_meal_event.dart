@@ -72,6 +72,18 @@ class SaveUpdateMealUpdateMealEvent extends UpdateMealEvent {
   SaveUpdateMealUpdateMealEvent({required this.onFinish});
 }
 
+class UpdateIsFavoriteUpdateMealEvent extends UpdateMealEvent {
+  final bool isFavorite;
+
+  UpdateIsFavoriteUpdateMealEvent({required this.isFavorite});
+}
+
+class UpdateIsRoutineUpdateMealEvent extends UpdateMealEvent {
+  final bool isRoutine;
+
+  UpdateIsRoutineUpdateMealEvent({required this.isRoutine});
+}
+
 class SaveUpdateMealFavoriteUpdateMealEvent extends UpdateMealEvent {
   final Function onFinish;
 

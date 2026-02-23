@@ -11,17 +11,32 @@ class WeekCalendarWidget extends StatelessWidget {
   final DateTime? selectedDateTime;
   const WeekCalendarWidget({super.key, required this.callGetAllEvents, required this.onDateClick, this.selectedDateTime});
 
+  static const double _cellSpacing = 9.0;
+
   @override
   Widget build(BuildContext context) {
     final weekDates = DateTimeHelper.getWeekDays(dateTime: selectedDateTime);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall),
-      scrollDirection: Axis.horizontal,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ...weekDates.map((date) => InkWell(onTap: () => onDateClick.call(date), child: SizedBox(width: Dimens.width55, height: Dimens.height70, child: WeekWidget(dateTime: date, selectedDateTime: selectedDateTime, events: callGetAllEvents.call(date))))),
+          for (int i = 0; i < weekDates.length; i++) ...[
+            Expanded(
+              child: InkWell(
+                onTap: () => onDateClick.call(weekDates[i]),
+                child: SizedBox(
+                  height: Dimens.height70,
+                  child: WeekWidget(
+                    dateTime: weekDates[i],
+                    selectedDateTime: selectedDateTime,
+                    events: callGetAllEvents.call(weekDates[i]),
+                  ),
+                ),
+              ),
+            ),
+            if (i < weekDates.length - 1) const SizedBox(width: _cellSpacing),
+          ],
         ],
       ),
     );

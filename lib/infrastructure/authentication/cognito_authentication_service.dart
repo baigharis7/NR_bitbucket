@@ -8,11 +8,16 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 class CognitoAuthenticationService implements AuthenticationService {
   final AmplifyService amplifyService;
 
+  static bool _pluginAdded = false;
+
   static Future<CognitoAuthenticationService> init({AmplifyService? amplify}) async {
     if (amplify == null) {
       amplify = AmplifyService();
       if (!Amplify.isConfigured) {
-        await amplify.addPlugin(AmplifyAuthCognito());
+        if (!_pluginAdded) {
+          await amplify.addPlugin(AmplifyAuthCognito());
+          _pluginAdded = true;
+        }
         await amplify.configure(Environment().config!.cognitoConfig.orEmpty());
       }
     }

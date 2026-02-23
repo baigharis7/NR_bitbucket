@@ -182,6 +182,8 @@ String? resolveFormError(BuildContext context, FormErrorTypes? formErrorTypes) {
   switch (formErrorTypes) {
     case FormErrorTypes.usernameEmptyOrNullError:
       return stringResolver.username_empty_or_null_error;
+    case FormErrorTypes.usernameContainsSpacesError:
+      return stringResolver.username_contains_spaces_error;
     case FormErrorTypes.emailFormatError:
       return stringResolver.email_format_error;
     case FormErrorTypes.emptyPasswordError:

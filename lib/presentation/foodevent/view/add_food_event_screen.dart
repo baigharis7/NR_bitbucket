@@ -3,48 +3,36 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
-import 'package:nutrenaissance_flutter/presentation/common/view/add_food_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_state.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_event_item.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/add_item_name_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/dash_title_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/date_picker_bar.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/food_actions_widget.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/food_event_foods_cluster.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/generic_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/meal_time_widget.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/meal_type_selection_widget.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/save_button_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/item_title_card.dart';
 
 import '../../../domain/models/favorites/food/food_favorite.dart';
 import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../domain/models/foodevents/food_arguments_model.dart';
-import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../../domain/models/foodroutine/food_routine_event.dart';
 import '../../../infrastructure/errors/error_resolver.dart';
-import '../../../infrastructure/helpers/remove_diac.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/mappers/food_event_mappers.dart';
 import '../../mealtimedetails/view/meal_time_details_screen.dart';
 import '../../updatemeal/view/update_meal_screen.dart';
-import '../../widgets/box_type_radio_text_widget.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/item_info_card.dart';
-// import 'package:remove_diacritic/remove_diacritic.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 
 // TODO: tengo que poner lo de las bebidas en algún sitio.
 class AddFoodEventScreen extends StatefulWidget {
@@ -60,10 +48,10 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
   late AddFoodEventBloc bloc;
   TextEditingController _foodInputController = TextEditingController();
   late FocusNode _focusInputController;
+  final ScrollController _scrollController = ScrollController();
   int filteredListLength = 0;
+  bool _showValidation = false;
 
-
-  // TODO: si esto permanece se puede convertir en un widget en un momento.
   void _showConfirmationDialog({String? message, required BuildContext context, Function? onDismiss}) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
     final mediaQuerySize = MediaQuery.of(context).size;
@@ -76,45 +64,6 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
     ),).then((value) {
       onDismiss?.call();
     }
-    );
-  }
-
-  Future<void> showAddFoodNameDialog({
-    required BuildContext context,
-    required Function onFinish,
-    required Function(String) onNameChange,
-    required Function(TimeOfDay) onTimeChange,
-    bool? isFavorite,
-    bool? isCreateRoutine,
-    int? mealTime,
-    List<int>? daysOfWeek,
-    String? eventName,
-    TimeOfDay? scheduleTime,
-    required Function(bool) onFavoriteChange,
-    required Function(bool) onChangeCreateRoutine,
-    required Function(int) onMealTieChange,
-    required int ingredientLength,
-  }) async {
-    await showDialog(
-      context: context,
-      builder: (ctx) => AddItemNameDialog(
-        title: AppLocalizations.of(context)!.food_name,
-        onNameChange: (String foodName) => onNameChange.call(foodName),
-        onSave: () => Navigator.pop(context),
-        onCancel: () => Navigator.pop(context),
-        isFavorite: isFavorite,
-        onFavoriteChange: (value) => onFavoriteChange.call(value),
-        isCreateRoutine: isCreateRoutine,
-        onChangeCreateRoutine: (routine) => onChangeCreateRoutine.call(routine),
-        onMealTieChange: (mealTime) => onMealTieChange.call(mealTime ?? 0),
-        onChangeWeekDays: (weekDay) {},
-        daysOfWeek: daysOfWeek,
-        eventName: eventName,
-        mealTime: mealTime,
-        itemsLength: ingredientLength,
-        onChangeScheduleTime: (scheduleTime) => onTimeChange.call(scheduleTime),
-        scheduleTime: scheduleTime,
-      ),
     );
   }
 
@@ -144,6 +93,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
   @override
   void dispose() {
     _foodInputController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -197,10 +147,14 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                 behavior: HitTestBehavior.opaque,
                 child: Scaffold(
                   backgroundColor: Colors.transparent,
+                  bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
                   body: SafeArea(
-                    child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                      controller: _scrollController,
                       padding: const EdgeInsets.symmetric(vertical: Dimens.paddingLarge),
-                      // child: (state.mealType ?? -1) <= -1 ? MealTypeSelectionWidget(onSaveMealType: (mealType) => bloc.add(AddFoodMealTypeEventAction(mealType: mealType))) : Column(
                       child: Column(
                         children: [
                           Container(
@@ -216,97 +170,123 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               title: '${AppLocalizations.of(context)!.add} ${MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name}',
                               image: 'assets/images/meal_time_${state.foodEvent?.mealTime}.png',
                               onBackTap: () => Navigator.pop(context),
+                              searchHintText: AppLocalizations.of(context)!.search_food_hint,
                               items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),
                               onItemSelect: (option, focus) {
                                 _focusInputController = focus;
                                 final food = eventHelper.findFoodByFoodName(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                                final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                                 bloc.add(AddFoodFromEventAction(foodInEvent: food!));
+                                // Auto-scroll to newly added item
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  _scrollController.animateTo(
+                                    _scrollController.position.maxScrollExtent,
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeOut,
+                                  );
+                                });
+                                // Auto-title logic
+                                final currentCount = state.foodEvent!.ingredients.orEmpty().length;
+                                if (currentCount == 0) {
+                                  // First item being added: set title to item name
+                                  bloc.add(AddFoodNameEventAction(foodName: option));
+                                } else if (currentCount == 1) {
+                                  // Second item: clear title for combo naming
+                                  bloc.add(AddFoodNameEventAction(foodName: ''));
+                                }
                               },
                             ),
                           ),
-                          // (state.foodsInEvent.orEmpty().isNotEmpty)
                           Column(children: [
                             if (state.foodEvent!.ingredients.orEmpty().isNotEmpty) Container(
                               margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                ...state.foodEvent!.ingredients.orEmpty().map((foodInEvent) {
+                                const SizedBox(height: Dimens.height12),
+                                // Title card with favorite/routine toggles
+                                ItemTitleCard(
+                                  name: state.foodEvent?.title,
+                                  onUpdateName: (name) => bloc.add(AddFoodNameEventAction(foodName: name)),
+                                  isFavorite: state.foodEvent?.isFavorite ?? false,
+                                  onToggleFavorite: () {
+                                    if (state.foodEvent?.isFavorite != true) {
+                                      // Selecting favorite: deselect routine
+                                      if (state.foodEvent?.isRoutine == true) bloc.add(UpdateIsCreateRoutineEventAction());
+                                      bloc.add(UpdateIsFavoriteEventAction());
+                                    } else {
+                                      bloc.add(UpdateIsFavoriteEventAction());
+                                    }
+                                  },
+                                  isRoutine: state.foodEvent?.isRoutine ?? false,
+                                  onToggleRoutine: () {
+                                    if (state.foodEvent?.isRoutine != true) {
+                                      // Selecting routine: deselect favorite
+                                      if (state.foodEvent?.isFavorite == true) bloc.add(UpdateIsFavoriteEventAction());
+                                      bloc.add(UpdateIsCreateRoutineEventAction());
+                                    } else {
+                                      bloc.add(UpdateIsCreateRoutineEventAction());
+                                    }
+                                  },
+                                  itemCount: state.foodEvent!.ingredients.orEmpty().length,
+                                  mealTime: state.foodEvent?.mealTime,
+                                  onUpdateMealTime: (mealTime) => bloc.add(AddFoodMealTypeEventAction(mealType: mealTime)),
+                                  scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.foodEvent?.time),
+                                  onUpdateTime: (scheduleTime) => bloc.add(UpdateScheduleTimeAddFoodEventActions(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
+                                  daysOfWeek: state.foodEvent?.daysOfWeek,
+                                  onUpdateDayOfWeek: (dayOfWeek) {},
+                                  showTimePicker: false,
+                                ),
+                                // Item cards with connector lines
+                                ...state.foodEvent!.ingredients.orEmpty().asMap().entries.map((entry) {
+                                  final index = entry.key;
+                                  final foodInEvent = entry.value;
                                   final option = eventHelper.findFoodNameFromId(foodInEvent.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                                   final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                                  return FoodEventItem(
-                                    options: option,
-                                    unitsFoodsMaster: state.unitsFoodsMaster!,
-                                    unitsInfoMaster: state.unitsInfoMaster!,
-                                    oilTypes: state.oilTypes,
-                                    conversionFactors: state.conversionFactors,
-                                    foodInEvent: foodInEvent,
-                                    foodGroup: foodGroup.orEmpty(),
-                                    cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
-                                    cookingMethodsMaster: state.cookingMethodsMaster!,
-                                    onRemove: () => context.read<AddFoodEventBloc>().add(RemoveFoodFromEventAction(foodInEvent: foodInEvent)),
-                                    onQtyChange: (changedFood) { bloc.add(UpdateFoodQuantityEventAction(foodInEvent: changedFood));},
-                                    onUnitChange: (changedFood) => bloc.add(UpdateFoodUnitEventAction(foodInEvent: changedFood)),
-                                    onCookingMethodChange: (changedFood) => bloc.add(UpdateFoodCookingMethodEventAction(foodInEvent: changedFood)),
-                                    onConversionFactorChange: (changedFood) => bloc.add(UpdateFoodConversionFactor(foodInEvent: changedFood)),
-                                    onOilUsedChange: (changedFood) => bloc.add(UpdateOilUsedEventAction(foodInEvent: changedFood)),
+                                  return Column(
+                                    children: [
+                                      FoodEventItem(
+                                        options: option,
+                                        unitsFoodsMaster: state.unitsFoodsMaster!,
+                                        unitsInfoMaster: state.unitsInfoMaster!,
+                                        oilTypes: state.oilTypes,
+                                        conversionFactors: state.conversionFactors,
+                                        foodInEvent: foodInEvent,
+                                        foodGroup: foodGroup.orEmpty(),
+                                        cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,
+                                        cookingMethodsMaster: state.cookingMethodsMaster!,
+                                        onRemove: () => context.read<AddFoodEventBloc>().add(RemoveFoodFromEventAction(foodInEvent: foodInEvent)),
+                                        onQtyChange: (changedFood) { bloc.add(UpdateFoodQuantityEventAction(foodInEvent: changedFood));},
+                                        onUnitChange: (changedFood) => bloc.add(UpdateFoodUnitEventAction(foodInEvent: changedFood)),
+                                        onCookingMethodChange: (changedFood) => bloc.add(UpdateFoodCookingMethodEventAction(foodInEvent: changedFood)),
+                                        onConversionFactorChange: (changedFood) => bloc.add(UpdateFoodConversionFactor(foodInEvent: changedFood)),
+                                        onOilUsedChange: (changedFood) => bloc.add(UpdateOilUsedEventAction(foodInEvent: changedFood)),
+                                        showValidation: _showValidation,
+                                      ),
+                                    ],
                                   );
                                 }).toList(),
-                                SizedBox(
-                                  width: Dimens.widthLarge,
-                                  child: Row(children: [
-                                    Expanded(child: FoodActionsWidget(
-                                      title: AppLocalizations.of(context)!.add_more_options,
-                                      rightSideWidget: const Icon(Icons.radio_button_checked, color: AppColors.yellowishGreen),
-                                      onTap: () => showAddFoodNameDialog(
-                                        context: context,
-                                        isFavorite: state.foodEvent?.isFavorite,
-                                        isCreateRoutine: state.foodEvent!.isRoutine,
-                                        mealTime: state.foodEvent?.mealTime,
-                                        daysOfWeek: state.foodEvent?.daysOfWeek,
-                                        eventName: state.foodEvent?.title,
-                                        onFinish: () => Navigator.pop(context),
-                                        onNameChange: (foodName) => bloc.add(AddFoodNameEventAction(foodName: foodName,),),
-                                        onFavoriteChange: (value) => bloc.add(UpdateIsFavoriteEventAction()),
-                                        onMealTieChange: (mealTime) => bloc.add(AddFoodMealTypeEventAction(mealType: mealTime)),
-                                        onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineEventAction()),
-                                        ingredientLength: state.foodEvent?.ingredients.length ?? 0,
-                                        onTimeChange: (scheduleTime) => bloc.add(UpdateScheduleTimeAddFoodEventActions(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
-                                        scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.foodEvent?.time),
-                                      ),
-                                    ))
-                                  ],),
+                                // Add More button
+                                const SizedBox(height: Dimens.marginSmall),
+                                Center(
+                                  child: SizedBox(
+                                    width: Dimens.widthLarge,
+                                    height: Dimens.height55,
+                                    child: ListTile(
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
+                                      tileColor: AppColors.floralWhite,
+                                      onTap: () {
+                                        if (bloc.validateList() ?? false) {
+                                          setState(() { _showValidation = true; });
+                                          return;
+                                        }
+                                        setState(() { _showValidation = false; });
+                                        _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                        _focusInputController.requestFocus();
+                                      },
+                                      title: Text(AppLocalizations.of(context)!.add_more),
+                                      trailing: const Icon(Icons.add_circle, color: AppColors.yellowishGreen),
+                                    ),
+                                  ),
                                 ),
-                                // Row(children: [
-                                //   Expanded(child: FoodActionsWidget(
-                                //     title: AppLocalizations.of(context)!.add_more,
-                                //     rightSideWidget: const Icon(Icons.add_circle),
-                                //     onTap: () => _focusInputController.requestFocus(),
-                                //   )),
-                                //   Expanded(child: FoodActionsWidget(
-                                //     title: AppLocalizations.of(context)!.create_dish,
-                                //     rightSideWidget: Container(
-                                //       height: 21,
-                                //       width: 21,
-                                //       decoration: BoxDecoration(
-                                //         shape: BoxShape.circle,
-                                //         color: Colors.white,
-                                //         border: Border.all(
-                                //           color: Colors.black,
-                                //           width: Dimens.borderSmall,
-                                //         ),
-                                //       ),
-                                //       child: Container(
-                                //         margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
-                                //         decoration: BoxDecoration(
-                                //           shape: BoxShape.circle,
-                                //           color: state.isCreateDish ?? false ? Colors.black : Colors.white,
-                                //         ),
-                                //       ),
-                                //     ),
-                                //     onTap: () => bloc.add(UpdateCreteDishEventAction()),
-                                //     backgroundColor: AppColors.butter,
-                                //   )),
-                                // ]),
+                                const SizedBox(height: Dimens.paddingXLarge),
                               ]),
                             ),
 
@@ -338,9 +318,14 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               ),
                             ],),
 
-                            if (state.foodEvent!.ingredients.orEmpty().isNotEmpty) Container(
-                              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                              child: GeneralButton(onTap: () {
+                          ],),
+                        ],
+                      ),
+                    ),
+                      ),
+                      if (state.foodEvent!.ingredients.orEmpty().isNotEmpty) Container(
+                        margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall, vertical: Dimens.marginSmall),
+                        child: GeneralButton(onTap: () {
                                 if(state.foodEvent!.ingredients.isEmpty) {
                                   if (!state.foodsFromFavorite.isNull()) {
                                     bloc.add(FinishFoodFavouriteEventAction(onFinish: () => _showConfirmationDialog(
@@ -350,31 +335,20 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                   }
                                 }
                                 else {
-                                  if (bloc.validateList() ?? true) return;
+                                  if (bloc.validateList() ?? true) {
+                                    setState(() { _showValidation = true; });
+                                    return;
+                                  }
 
+                                  // Auto-set title for single items
                                   if (state.foodEvent!.ingredients.orEmpty().length == 1 && (state.foodEvent?.title.isEmptyOrNull() == true)) {
                                     final foodName = NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: [state.foodEvent?.ingredients.orEmpty()[0]], context: context);
-                                    // bloc.add(AddFoodNameEventAction(foodName: foodName,),);
                                     state.foodEvent?.title = foodName;
                                   }
 
+                                  // Block save if combo has no name (inline error is shown in the title card)
                                   if (state.foodEvent!.ingredients.orEmpty().length > 1 && (state.foodEvent?.title.isEmptyOrNull() == true)) {
-                                    showAddFoodNameDialog(
-                                      context: context,
-                                      isFavorite: state.foodEvent?.isFavorite,
-                                      isCreateRoutine: state.foodEvent!.isRoutine,
-                                      mealTime: state.foodEvent?.mealTime,
-                                      daysOfWeek: state.foodEvent?.daysOfWeek,
-                                      eventName: state.foodEvent?.title,
-                                      onFinish: () => Navigator.pop(context),
-                                      onNameChange: (foodName) => bloc.add(AddFoodNameEventAction(foodName: foodName,),),
-                                      onFavoriteChange: (value) => bloc.add(UpdateIsFavoriteEventAction()),
-                                      onMealTieChange: (mealTime) => bloc.add(AddFoodMealTypeEventAction(mealType: mealTime)),
-                                      onChangeCreateRoutine: (value) => bloc.add(UpdateIsCreateRoutineEventAction()),
-                                      ingredientLength: state.foodEvent?.ingredients.length ?? 0,
-                                      onTimeChange: (scheduleTime) => bloc.add(UpdateScheduleTimeAddFoodEventActions(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
-                                      scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.foodEvent?.time),
-                                    );
+                                    return;
                                   }
 
                                   if (state.foodEvent!.title.isNotEmptyOrNull()) {
@@ -386,9 +360,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
 
                                     if (state.foodEvent?.isFavorite ?? false) {
                                       bloc.add(FinishFoodAsFavoriteEventAction(foodFavorite: state.foodEvent!, onFinish: () => _showConfirmationDialog(
-                                        message: AppLocalizations.of(context)!.food_favorite_successfully_saved,
+                                        message: '${AppLocalizations.of(context)!.food_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.food_favorite_successfully_saved}',
                                           context: context,
-                                          onDismiss: () {},
+                                          onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
                                       ),),);
                                     }
                                     else if (state.foodEvent?.isRoutine == true && state.foodEvent?.daysOfWeek?.isNotEmpty == true) {
@@ -396,9 +370,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                       state.foodEvent?.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
                                       final foodEventRoutine = mapToFoodRoutineEventFromFoodFavorite(state.foodEvent!);
                                       bloc.add(FinishAddFoodRoutineEventAction(foodRoutineEvent: foodEventRoutine, onFinish: () => _showConfirmationDialog(
-                                        message: AppLocalizations.of(context)!.food_routine_successfully_saved,
+                                        message: '${AppLocalizations.of(context)!.food_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.food_routine_successfully_saved}',
                                           context: context,
-                                          onDismiss: () {},
+                                          onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
                                       ),),);
                                     } else {
                                       state.foodEvent?.userId = '';
@@ -413,12 +387,10 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                   }
                                   // bloc.add(FinishFoodWithoutCreateDishEventAction(context: context, onFinish: () => _showConfirmationDialog(context)));
                                 }
-                              },
-                              ),
-                            ),
-                          ],),
-                        ],
+                        },
+                        ),
                       ),
+                    ],
                     ),
                   ),
                 ),

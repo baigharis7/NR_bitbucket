@@ -65,6 +65,11 @@ MasterFilesResponse _$MasterFilesResponseFromJson(Map<String, dynamic> json) =>
           ? null
           : SubjectiveAnalysisListResponse.fromJson(
               json['subjectiveAnalysisResponse'] as Map<String, dynamic>),
+      cookingMethodsOilsInfoResponse: json['cookingMethodsOilsInfoResponse'] ==
+              null
+          ? null
+          : CookingMethodsOilsInfoResponse.fromJson(
+              json['cookingMethodsOilsInfoResponse'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$MasterFilesResponseToJson(
@@ -89,4 +94,6 @@ Map<String, dynamic> _$MasterFilesResponseToJson(
       'supplementsInfoResponse': instance.supplementsInfoResponse?.toJson(),
       'subjectiveAnalysisResponse':
           instance.subjectiveAnalysisResponse?.toJson(),
+      'cookingMethodsOilsInfoResponse':
+          instance.cookingMethodsOilsInfoResponse?.toJson(),
     };
