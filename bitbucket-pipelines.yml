@@ -1,4 +1,4 @@
-image: ghcr.io/cirruslabs/flutter:stable
+image: ghcr.io/cirruslabs/flutter:3.13.8
 
 pipelines:
   # Run on every push to any branch
