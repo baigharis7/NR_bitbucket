@@ -587,6 +587,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     on<LogoutFromAppEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true,));
       try {
+        final token = FcmService.instance.token;
+        if (token != null && fcmApi != null) {
+          try { await fcmApi!.unregisterToken(token); } catch (_) {}
+        }
         signOutInteractor.execute();
         eraseDatabaseInteractor.execute();
         sharedPreferences.clear();

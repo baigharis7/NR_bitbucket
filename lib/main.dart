@@ -1157,6 +1157,7 @@ void main() async {
       signOutInteractor: signOutInteractor,
       eraseDatabaseInteractor: eraseDatabaseInteractor,
       sharedPreferences: sharedPreferences,
+      fcmApi: fcmApi,
   );
 
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
