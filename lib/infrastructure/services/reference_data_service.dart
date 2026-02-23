@@ -43,81 +43,40 @@ class ReferenceDataService {
     Future<ReferencePayload?> Function()? fetchObjectiveNutrients,
     Future<ReferencePayload?> Function()? fetchNutrientObjective,
   }) async {
-    bool updated = false;
+    // Fire all non-null fetches in parallel — each writes to a separate table
+    final results = await Future.wait([
+      if (fetchNutrients != null)
+        _refreshCategory(fetchFn: fetchNutrients, versionKey: _kNutrients, onUpdate: (json) => loadNutrientsJson(json)),
+      if (fetchNutrientLoss != null)
+        _refreshCategory(fetchFn: fetchNutrientLoss, versionKey: _kNutrientLoss, onUpdate: (json) => loadNutrientLossJson(json)),
+      if (fetchCookingOils != null)
+        _refreshCategory(fetchFn: fetchCookingOils, versionKey: _kCookingOils, onUpdate: (json) => loadCookingMethodOilsJson(json)),
+      if (fetchSportMets != null)
+        _refreshCategory(fetchFn: fetchSportMets, versionKey: _kSportMets, onUpdate: (json) => loadSportMetsJson(json)),
+      if (fetchObjectiveNutrients != null)
+        _refreshCategory(fetchFn: fetchObjectiveNutrients, versionKey: kObjectiveNutrients, onUpdate: (json) => _db.setReferenceBlob(kObjectiveNutrients, json)),
+      if (fetchNutrientObjective != null)
+        _refreshCategory(fetchFn: fetchNutrientObjective, versionKey: kNutrientObjective, onUpdate: (json) => _db.setReferenceBlob(kNutrientObjective, json)),
+    ]);
 
-    if (fetchNutrients != null) {
-      final payload = await fetchNutrients();
-      if (payload != null) {
-        final localVersion = await _db.getReferenceVersion(_kNutrients);
-        if (payload.version > localVersion) {
-          await loadNutrientsJson(payload.json);
-          await _db.setReferenceVersion(_kNutrients, payload.version);
-          updated = true;
-        }
-      }
+    return results.any((updated) => updated);
+  }
+
+  /// Fetches one reference data category, checks version, and updates if newer.
+  Future<bool> _refreshCategory({
+    required Future<ReferencePayload?> Function() fetchFn,
+    required String versionKey,
+    required Future<void> Function(String json) onUpdate,
+  }) async {
+    final payload = await fetchFn();
+    if (payload == null) return false;
+    final localVersion = await _db.getReferenceVersion(versionKey);
+    if (payload.version > localVersion) {
+      await onUpdate(payload.json);
+      await _db.setReferenceVersion(versionKey, payload.version);
+      return true;
     }
-
-    if (fetchNutrientLoss != null) {
-      final payload = await fetchNutrientLoss();
-      if (payload != null) {
-        final localVersion = await _db.getReferenceVersion(_kNutrientLoss);
-        if (payload.version > localVersion) {
-          await loadNutrientLossJson(payload.json);
-          await _db.setReferenceVersion(_kNutrientLoss, payload.version);
-          updated = true;
-        }
-      }
-    }
-
-    if (fetchCookingOils != null) {
-      final payload = await fetchCookingOils();
-      if (payload != null) {
-        final localVersion = await _db.getReferenceVersion(_kCookingOils);
-        if (payload.version > localVersion) {
-          await loadCookingMethodOilsJson(payload.json);
-          await _db.setReferenceVersion(_kCookingOils, payload.version);
-          updated = true;
-        }
-      }
-    }
-
-    if (fetchSportMets != null) {
-      final payload = await fetchSportMets();
-      if (payload != null) {
-        final localVersion = await _db.getReferenceVersion(_kSportMets);
-        if (payload.version > localVersion) {
-          await loadSportMetsJson(payload.json);
-          await _db.setReferenceVersion(_kSportMets, payload.version);
-          updated = true;
-        }
-      }
-    }
-
-    if (fetchObjectiveNutrients != null) {
-      final payload = await fetchObjectiveNutrients();
-      if (payload != null) {
-        final localVersion = await _db.getReferenceVersion(kObjectiveNutrients);
-        if (payload.version > localVersion) {
-          await _db.setReferenceBlob(kObjectiveNutrients, payload.json);
-          await _db.setReferenceVersion(kObjectiveNutrients, payload.version);
-          updated = true;
-        }
-      }
-    }
-
-    if (fetchNutrientObjective != null) {
-      final payload = await fetchNutrientObjective();
-      if (payload != null) {
-        final localVersion = await _db.getReferenceVersion(kNutrientObjective);
-        if (payload.version > localVersion) {
-          await _db.setReferenceBlob(kNutrientObjective, payload.json);
-          await _db.setReferenceVersion(kNutrientObjective, payload.version);
-          updated = true;
-        }
-      }
-    }
-
-    return updated;
+    return false;
   }
 
   // ---------------------------------------------------------------------------
