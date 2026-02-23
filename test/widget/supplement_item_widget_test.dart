@@ -13,6 +13,7 @@ void main() {
     String? unit = 'mg',
     VoidCallback? onRemoveItem,
     Function(String)? onChangeAmount,
+    bool showValidation = false,
   }) {
     return MaterialApp(
       localizationsDelegates: const [
@@ -31,6 +32,7 @@ void main() {
             unit: unit,
             onRemoveItem: onRemoveItem ?? () {},
             onChangeAmount: onChangeAmount ?? (_) {},
+            showValidation: showValidation,
           ),
         ),
       ),
@@ -53,18 +55,13 @@ void main() {
     });
 
     testWidgets('shows error styling when amount is empty', (tester) async {
-      await tester.pumpWidget(buildTestWidget(amount: ''));
+      await tester.pumpWidget(buildTestWidget(amount: '', showValidation: true));
       await tester.pumpAndSettle();
 
-      // When amount is empty, container gets red border and white65 bg
-      final errorContainer = find.byWidgetPredicate((w) {
-        if (w is Container && w.decoration is BoxDecoration) {
-          final d = w.decoration as BoxDecoration;
-          return d.color == AppColors.white65Percent && d.border != null;
-        }
-        return false;
-      });
-      expect(errorContainer, findsOneWidget);
+      // When amount is empty and showValidation is true, the TextField gets a red border
+      final tf = tester.widget<TextField>(find.byType(TextField));
+      final enabledBorder = tf.decoration?.enabledBorder as OutlineInputBorder;
+      expect(enabledBorder.borderSide.color, AppColors.errorRed);
     });
 
     testWidgets('shows normal styling when amount is not empty',

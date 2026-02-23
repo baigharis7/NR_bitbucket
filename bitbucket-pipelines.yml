@@ -1,25 +1,7 @@
 image: ghcr.io/cirruslabs/flutter:3.13.8
 
 pipelines:
-  # Run on every push to any branch
-  default:
-    - step:
-        name: Analyze & Test
-        caches:
-          - flutter
-        script:
-          - flutter --version
-          - flutter pub get
-          - flutter analyze --fatal-infos || true  # non-blocking for now
-          - flutter test --coverage
-          - |
-            if command -v lcov &> /dev/null; then
-              lcov --summary coverage/lcov.info
-            fi
-        artifacts:
-          - coverage/**
-
-  # Run on pull requests
+  # Run on PRs targeting master and on pushes to master
   pull-requests:
     '**':
       - step:
@@ -31,6 +13,10 @@ pipelines:
             - flutter pub get
             - flutter analyze --fatal-infos || true  # non-blocking for now
             - flutter test --coverage
+            - |
+              if command -v lcov &> /dev/null; then
+                lcov --summary coverage/lcov.info
+              fi
           artifacts:
             - coverage/**
 
