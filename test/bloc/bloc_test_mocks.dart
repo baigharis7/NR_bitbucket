@@ -1,4 +1,5 @@
 import 'package:mockito/annotations.dart';
+import 'package:nutrenaissance_flutter/data/api/fcm/fcm_api.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/erase_database_interactor.dart';
@@ -224,6 +225,8 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<SaveLiquidEventInteractor>(),
   // ForgottenPasswordBloc
   MockSpec<LoginRepository>(),
+  // FcmApi
+  MockSpec<FcmApi>(),
   // MealTimeDetailsBloc
   MockSpec<PreferencesRepository>(),
   // FecesUrineBloc

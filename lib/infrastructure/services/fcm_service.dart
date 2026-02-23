@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:meta/meta.dart';
 
 class FcmService {
   FcmService._privateConstructor();
@@ -10,6 +11,8 @@ class FcmService {
   Stream<RemoteMessage> get onDataMessage => _messageController.stream;
   String? _token;
   String? get token => _token;
+  @visibleForTesting
+  set tokenForTesting(String? value) => _token = value;
 
   Future<void> init() async {
     await FirebaseMessaging.instance.requestPermission(
