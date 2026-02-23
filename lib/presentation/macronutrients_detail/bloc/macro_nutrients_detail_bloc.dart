@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
 import '../../../domain/interactor/foodevents/get_week_food_events_interactor.dart';
@@ -21,6 +24,8 @@ class MacroNutrientsDetailBloc extends Bloc<MacroNutrientsDetailEvent, MacroNutr
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetProfileInteractor getProfileInteractor;
   final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor;
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
+
   MacroNutrientsDetailBloc({
     required this.getMasterFileInteractor,
     required this.getProfileInteractor,
@@ -28,6 +33,12 @@ class MacroNutrientsDetailBloc extends Bloc<MacroNutrientsDetailEvent, MacroNutr
   }) : super(MacroNutrientsDetailState(
     isLoading: false,
   ),) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.food ||
+          category == DataChangedCategory.liquid) {
+        add(InitializeEventAction());
+      }
+    });
     on<InitializeEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.nutrientsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.nutrientsInfo);
@@ -141,5 +152,11 @@ class MacroNutrientsDetailBloc extends Bloc<MacroNutrientsDetailEvent, MacroNutr
     }
 
     return changedKcal;
+  }
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
   }
 }

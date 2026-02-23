@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/eventssync/synchronize_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
@@ -44,6 +47,7 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
   final RemoveSportEventInteractor removeSportEventInteractor;
   final EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor;
   final SynchronizeEventsInteractor synchronizeEventsInteractor;
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   JournalSportBloc({
     required this.getMasterFileInteractor,
@@ -70,6 +74,12 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
       showCard: false,
     ),
   ) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.sport) {
+        add(InitializeStateAction());
+      }
+    });
+
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       // try { await eraseDBLocalEventsInteractor.execute(); await synchronizeEventsInteractor.execute(getUserIdInteractor.execute()); } catch (_) {}
@@ -205,4 +215,9 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
     return isFound ? object : null;
   }
 
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
+  }
 }

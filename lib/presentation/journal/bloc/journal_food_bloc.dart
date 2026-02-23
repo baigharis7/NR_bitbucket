@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/delete_food_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/remove_food_favorite_from_local_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
@@ -37,6 +40,7 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
   final DeleteFoodFavoriteInteractor deleteFoodFavoriteInteractor;
   final DeleteFoodEventInteractor deleteFoodEventInteractor;
   final RemoveFoodEventInteractor removeFoodEventInteractor;
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   JournalFoodBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -60,6 +64,11 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
     userKcal: 0,
     showCard: false,
   ),) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.food) {
+        add(InitializeStateAction());
+      }
+    });
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.userKcal = await getUserKcalInteractor.execute();
@@ -233,4 +242,9 @@ class JournalFoodBloc extends BaseBloc<JournalFoodActions, JournalFoodState> {
     return isFound ? object : null;
   }
 
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
+  }
 }
