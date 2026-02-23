@@ -85,7 +85,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final EventsHelper _eventsHelper = EventsHelper();
   late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
   StreamSubscription<RemoteMessage>? _fcmSubscription;
-  Timer? _periodicSyncTimer;
   DateTime? _lastSelectedDate;
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
@@ -191,10 +190,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   ),) {
     _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
       add(RefreshCategoryAction(category: category));
-    });
-
-    _periodicSyncTimer = Timer.periodic(const Duration(minutes: 5), (_) {
-      add(SyncAndRefreshAction());
     });
 
     _fcmSubscription = FcmService.instance.onDataMessage.listen((_) {
@@ -1046,7 +1041,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
 
   @override
   Future<void> close() {
-    _periodicSyncTimer?.cancel();
     _eventBusSubscription.cancel();
     _fcmSubscription?.cancel();
     return super.close();
