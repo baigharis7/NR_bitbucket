@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nutrenaissance_flutter/domain/models/calendar/calendar_events.dart';
@@ -18,6 +19,20 @@ import 'package:nutrenaissance_flutter/presentation/updatesupplement/bloc/update
 import 'bloc_test_mocks.mocks.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  // Stub flutter_timezone method channel to avoid MissingPluginException
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(
+    const MethodChannel('flutter_timezone'),
+    (MethodCall methodCall) async {
+      if (methodCall.method == 'getLocalTimezone') {
+        return 'UTC';
+      }
+      return null;
+    },
+  );
+
   // ---------------------------------------------------------------------------
   // SportItemsBloc EventBus
   // ---------------------------------------------------------------------------
