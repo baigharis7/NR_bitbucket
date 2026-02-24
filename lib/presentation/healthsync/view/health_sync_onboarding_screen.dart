@@ -12,16 +12,47 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 /// Onboarding screen for health app sync, shown during registration flow.
 /// Promotes syncing with HealthKit/Health Connect and allows users to
 /// connect or skip.
-class HealthSyncOnboardingScreen extends StatelessWidget {
+class HealthSyncOnboardingScreen extends StatefulWidget {
   static const routeName = '/health_sync_onboarding_screen';
 
   const HealthSyncOnboardingScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<HealthSyncBloc>(context);
-    bloc.add(HealthSyncInitialization());
+  State<HealthSyncOnboardingScreen> createState() => _HealthSyncOnboardingScreenState();
+}
 
+class _HealthSyncOnboardingScreenState extends State<HealthSyncOnboardingScreen>
+    with WidgetsBindingObserver {
+  late HealthSyncBloc _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bloc = BlocProvider.of<HealthSyncBloc>(context);
+    _bloc.add(HealthSyncInitialization());
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _bloc.add(HealthSyncInitialization());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocConsumer<HealthSyncBloc, HealthSyncState>(
       listener: (context, state) {
         if (state.isLoading) {
@@ -115,7 +146,7 @@ class HealthSyncOnboardingScreen extends StatelessWidget {
                             const SizedBox(height: Dimens.height12),
                             OutlinedButton.icon(
                               onPressed: () {
-                                bloc.add(HealthSyncInstallHealthConnect());
+                                _bloc.add(HealthSyncInstallHealthConnect());
                               },
                               icon: const Icon(Icons.download, size: 18),
                               label: const Text('Install Health Connect'),
@@ -131,7 +162,7 @@ class HealthSyncOnboardingScreen extends StatelessWidget {
                       // Connect Now button
                       RoundedCustomButton(
                         onPressed: () {
-                          bloc.add(HealthSyncRequestPermissions());
+                          _bloc.add(HealthSyncRequestPermissions());
                         },
                         enableButton: state.isAvailable,
                         buttonText: AppLocalizations.of(context)!.health_sync_connect,

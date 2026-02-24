@@ -14,16 +14,48 @@ import 'package:intl/intl.dart';
 /// Settings screen for health app sync configuration.
 /// Allows users to enable/disable sync, manually trigger sync,
 /// and view sync status.
-class HealthSyncSettingsScreen extends StatelessWidget {
+class HealthSyncSettingsScreen extends StatefulWidget {
   static const routeName = '/health_sync_settings_screen';
 
   const HealthSyncSettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<HealthSyncBloc>(context);
-    bloc.add(HealthSyncInitialization());
+  State<HealthSyncSettingsScreen> createState() => _HealthSyncSettingsScreenState();
+}
 
+class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
+    with WidgetsBindingObserver {
+  late HealthSyncBloc _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bloc = BlocProvider.of<HealthSyncBloc>(context);
+    _bloc.add(HealthSyncInitialization());
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Re-check availability when returning from Play Store (after installing Health Connect)
+    if (state == AppLifecycleState.resumed) {
+      _bloc.add(HealthSyncInitialization());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocConsumer<HealthSyncBloc, HealthSyncState>(
       listener: (context, state) {
         if (state.isLoading && !state.isSyncing) {
@@ -176,7 +208,7 @@ class HealthSyncSettingsScreen extends StatelessWidget {
                                           width: double.infinity,
                                           child: OutlinedButton.icon(
                                             onPressed: () {
-                                              bloc.add(HealthSyncInstallHealthConnect());
+                                              _bloc.add(HealthSyncInstallHealthConnect());
                                             },
                                             icon: const Icon(Icons.download, size: 18),
                                             label: const Text('Install Health Connect'),
@@ -197,7 +229,7 @@ class HealthSyncSettingsScreen extends StatelessWidget {
                                   value: state.isSyncEnabled,
                                   enabled: state.isAvailable,
                                   onChanged: (value) {
-                                    bloc.add(HealthSyncToggle(enable: value));
+                                    _bloc.add(HealthSyncToggle(enable: value));
                                   },
                                 ),
                                 const SizedBox(height: Dimens.height12),
@@ -251,7 +283,7 @@ class HealthSyncSettingsScreen extends StatelessWidget {
                         child: ElevatedButton.icon(
                           onPressed: state.isSyncEnabled && !state.isSyncing
                               ? () {
-                                  bloc.add(HealthSyncManualTrigger());
+                                  _bloc.add(HealthSyncManualTrigger());
                                 }
                               : null,
                           icon: state.isSyncing

@@ -18,15 +18,18 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
 
   // Lazy initialization to avoid blocking during app startup
   HealthFactory? _healthInstance;
-  HealthFactory get _health => _healthInstance ??= HealthFactory();
+  HealthFactory get _health =>
+      _healthInstance ??= HealthFactory(useHealthConnectIfAvailable: true);
 
-  /// Health data types we want to read from the platform
-  static const List<HealthDataType> _readTypes = [
+  /// Health data types we want to read from the platform.
+  /// Uses DISTANCE_DELTA on Android (DISTANCE_WALKING_RUNNING is iOS-only).
+  static final List<HealthDataType> _readTypes = [
     HealthDataType.WORKOUT,
     HealthDataType.STEPS,
     HealthDataType.ACTIVE_ENERGY_BURNED,
     HealthDataType.HEART_RATE,
-    HealthDataType.DISTANCE_WALKING_RUNNING,
+    if (Platform.isIOS) HealthDataType.DISTANCE_WALKING_RUNNING,
+    if (Platform.isAndroid) HealthDataType.DISTANCE_DELTA,
   ];
 
   /// Permissions for the health data types (all read)
@@ -41,14 +44,20 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   @override
   Future<bool> isHealthSyncAvailable() async {
     try {
-      // Check if we're on a supported platform
       if (!Platform.isIOS && !Platform.isAndroid) {
         return false;
       }
 
-      // For both iOS and Android, return true if on a supported platform.
-      // The actual availability will be determined when requesting permissions
-      // or when fetching data fails.
+      if (Platform.isAndroid) {
+        // Probe Health Connect availability by calling hasPermissions.
+        // Returns true/false/null if HC is installed; throws PlatformException if not.
+        await _health.hasPermissions(
+          [HealthDataType.STEPS],
+          permissions: [HealthDataAccess.READ],
+        );
+      }
+
+      // iOS: HealthKit is always available on supported devices
       return true;
     } catch (e) {
       return false;
@@ -101,10 +110,13 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
         [HealthDataType.ACTIVE_ENERGY_BURNED],
       );
 
+      final distanceType = Platform.isIOS
+          ? HealthDataType.DISTANCE_WALKING_RUNNING
+          : HealthDataType.DISTANCE_DELTA;
       final distanceData = await _health.getHealthDataFromTypes(
         startDate,
         endDate,
-        [HealthDataType.DISTANCE_WALKING_RUNNING],
+        [distanceType],
       );
 
       final heartRateData = await _health.getHealthDataFromTypes(

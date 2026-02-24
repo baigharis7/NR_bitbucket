@@ -166,7 +166,8 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     try {
       await healthSyncRepository.installHealthConnect();
       // After returning from Play Store, re-check availability
-      // The user will need to come back and try again
+      final isAvailable = await healthSyncRepository.isHealthSyncAvailable();
+      emit(state.copyWith(isAvailable: isAvailable));
     } catch (e) {
       // Ignore errors - user may have cancelled or Play Store not available
     }
