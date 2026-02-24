@@ -1,0 +1,27 @@
+{
+  "v": 2,
+  "data": [
+    {
+      "officialName": "vitA",
+      "unit": "μg",
+      "name_es": "Vitamina A",
+      "name_en": "Vitamin A",
+      "description_es": "Esencial para la visión",
+      "description_en": "Essential for vision",
+      "foods_es": "Zanahorias, espinacas",
+      "foods_en": "Carrots, spinach",
+      "abbr": "VA"
+    },
+    {
+      "officialName": "calcium",
+      "unit": "mg",
+      "name_es": "Calcio",
+      "name_en": "Calcium",
+      "description_es": null,
+      "description_en": null,
+      "foods_es": null,
+      "foods_en": null,
+      "abbr": null
+    }
+  ]
+}

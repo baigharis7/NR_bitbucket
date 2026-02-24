@@ -1,0 +1,13 @@
+{
+  "v": 1,
+  "data": [
+    { "id": 0, "en": "Lose weight", "es": "Perder peso" },
+    { "id": 1, "en": "Gain muscle", "es": "Ganar músculo" }
+  ],
+  "metabolicObjectives": [
+    { "id": 10, "en": "Improve metabolism", "es": "Mejorar metabolismo" }
+  ],
+  "bodyCompositionObjectives": [
+    { "id": 20, "en": "Reduce body fat", "es": "Reducir grasa corporal" }
+  ]
+}

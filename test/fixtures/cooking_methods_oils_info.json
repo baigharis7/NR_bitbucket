@@ -1,0 +1,7 @@
+{
+  "v": 1,
+  "data": [
+    { "id": 0, "name": "Olive Oil", "percentage": 0.15 },
+    { "id": 1, "name": "Sunflower Oil", "percentage": 0.12 }
+  ]
+}

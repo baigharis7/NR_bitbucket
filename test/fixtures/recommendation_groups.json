@@ -1,0 +1,7 @@
+{
+  "v": 1,
+  "data": [
+    { "id": 0, "groups": ["fruits", "vegetables"], "size": 5, "en": "Fruits & Vegs", "es": "Frutas y Verduras" },
+    { "id": 1, "groups": ["grains"], "size": 3, "en": "Grains", "es": "Cereales" }
+  ]
+}

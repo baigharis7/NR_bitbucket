@@ -1,0 +1,30 @@
+{
+  "v": 3,
+  "data": {
+    "foodNames": [
+      {
+        "id": 100,
+        "en": "Apple",
+        "es": "Manzana",
+        "g": "fruits",
+        "units": "piece"
+      },
+      {
+        "id": 101,
+        "en": "Rice",
+        "es": "Arroz",
+        "g": "grains",
+        "units": null
+      }
+    ],
+    "drinkNames": [
+      {
+        "id": 200,
+        "en": "Orange Juice",
+        "es": "Zumo de naranja",
+        "g": "juices",
+        "units": "glass"
+      }
+    ]
+  }
+}

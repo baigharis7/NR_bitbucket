@@ -1,0 +1,13 @@
+{
+  "v": 1,
+  "data": [
+    {
+      "id": 0,
+      "value": "weight_loss",
+      "list": [
+        { "g": "protein", "v": 1.2 },
+        { "g": "carbs", "v": 0.8 }
+      ]
+    }
+  ]
+}

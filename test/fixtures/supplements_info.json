@@ -1,0 +1,25 @@
+{
+  "v": 1,
+  "data": [
+    {
+      "id": 0,
+      "es": "Vitamina A",
+      "en": "Vitamin A",
+      "computer_name": "vitA",
+      "unit": "μg"
+    },
+    {
+      "id": 14,
+      "es": "Omega 3",
+      "en": "Omega 3",
+      "computer_name": "omega3",
+      "unit": "g"
+    },
+    {
+      "id": 80,
+      "es": "Creatina",
+      "en": "Creatine",
+      "unit": "mg"
+    }
+  ]
+}

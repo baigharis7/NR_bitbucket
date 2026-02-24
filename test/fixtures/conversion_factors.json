@@ -1,0 +1,7 @@
+{
+  "v": 1,
+  "data": [
+    { "id": 0, "en": "Raw", "es": "Crudo" },
+    { "id": 1, "en": "Cooked", "es": "Cocido" }
+  ]
+}

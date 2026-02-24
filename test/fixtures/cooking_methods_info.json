@@ -1,0 +1,8 @@
+{
+  "v": 1,
+  "data": [
+    { "id": 0, "en": "Grilling", "es": "A la parrilla" },
+    { "id": 1, "en": "Baking", "es": "Hornear" },
+    { "id": 3, "en": "Boiling", "es": "Hervir" }
+  ]
+}

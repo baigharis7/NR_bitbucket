@@ -1,0 +1,8 @@
+{
+  "v": 1,
+  "data": [
+    { "id": 0, "en": "gram", "es": "gramo", "enPlural": "grams", "esPlural": "gramos" },
+    { "id": 1, "en": "cup", "es": "taza", "enPlural": "cups", "esPlural": "tazas" },
+    { "id": 2, "en": "piece", "es": "pieza" }
+  ]
+}
