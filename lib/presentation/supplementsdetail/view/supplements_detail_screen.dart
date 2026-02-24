@@ -48,6 +48,8 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
         if (infoReceived != null) {
           if (infoReceived is int) {
             supplementsDetailBloc.add(InitializeSupplementsDetailEvent(eventDate: DateTimeHelper.dateTimeFromMilliseconds(infoReceived)));
+          } else if (infoReceived is DateTime) {
+            supplementsDetailBloc.add(InitializeSupplementsDetailEvent(eventDate: infoReceived));
           }
         }
       }

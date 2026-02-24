@@ -34,12 +34,12 @@ class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
   }) : super(SportItemsState(isLoading: false)) {
     on<SportItemsInitialization>((event, emit) async {
       state.sportsInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
-      state.sportEvents = await getTodaySportsInteractor.execute();
+      state.sportEvents = await getTodaySportsInteractor.execute(dateTime: state.dateTime);
       emit(state.copyWith(isLoading: false));
 
       final shouldRefresh = await updateEventsInteractor.execute(userId: getUserIdInteractor.execute(), categoryType: PrefsKeys.sportEvents, fullSync: false);
       if (shouldRefresh) {
-        state.sportEvents = await getTodaySportsInteractor.execute();
+        state.sportEvents = await getTodaySportsInteractor.execute(dateTime: state.dateTime);
         emit(state.copyWith(isLoading: false));
       }
     });

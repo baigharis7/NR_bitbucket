@@ -53,6 +53,30 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_en
 import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/save_user_credentials_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/save_user_in_users_remote_database_interactor.dart';
+// SupplementsDetailBloc
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/eventssync/update_events_interactor.dart';
+// SportItemsBloc
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_sport_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/remove_sport_event_interactor.dart';
+// MealTimeDetailsBloc
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
+// FecesUrineBloc
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_faeces_by_date_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_urine_by_date_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_feces_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_urine_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_feces_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_feces_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_urine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_urine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_feces_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_feces_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_urine_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_urine_event_interactor.dart';
 // DashboardBloc
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart';
@@ -173,5 +197,29 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<GetDaySupplementEventsInteractor>(),
   MockSpec<Chuck>(),
   MockSpec<SharedPreferences>(),
+  // SupplementsDetailBloc
+  MockSpec<DeleteSupplementEventInteractor>(),
+  MockSpec<RemoveSupplementEventInteractor>(),
+  MockSpec<UpdateEventsInteractor>(),
+  // SportItemsBloc
+  MockSpec<DeleteSportEventInteractor>(),
+  MockSpec<RemoveSportEventInteractor>(),
+  // MealTimeDetailsBloc
+  MockSpec<DeleteFoodEventInteractor>(),
+  MockSpec<RemoveFoodEventInteractor>(),
+  MockSpec<PreferencesRepository>(),
+  // FecesUrineBloc
+  MockSpec<GetFaecesByDateInteractor>(),
+  MockSpec<GetUrineByDateInteractor>(),
+  MockSpec<GetFecesEventsInteractor>(),
+  MockSpec<GetUrineEventsInteractor>(),
+  MockSpec<UploadFecesInteractor>(),
+  MockSpec<SaveFecesEventInteractor>(),
+  MockSpec<UploadUrineInteractor>(),
+  MockSpec<SaveUrineInteractor>(),
+  MockSpec<DeleteFecesEventInteractor>(),
+  MockSpec<RemoveFecesEventInteractor>(),
+  MockSpec<DeleteUrineEventInteractor>(),
+  MockSpec<RemoveUrineEventInteractor>(),
 ])
 void main() {}
