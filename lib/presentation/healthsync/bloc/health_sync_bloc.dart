@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/check_health_sync_status_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/request_health_permissions_interactor.dart';
@@ -28,6 +30,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     on<HealthSyncToggle>(_onToggle);
     on<HealthSyncManualTrigger>(_onManualTrigger);
     on<HealthSyncInstallHealthConnect>(_onInstallHealthConnect);
+    on<HealthSyncOpenHealthConnect>(_onOpenHealthConnect);
   }
 
   Future<void> _onInitialization(
@@ -75,6 +78,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
           hasPermissions: true,
           isSyncEnabled: true,
           permissionGranted: true,
+          showHcSetupGuide: Platform.isAndroid ? true : null,
         ));
       } else {
         emit(state.copyWith(
@@ -108,6 +112,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
           isSyncEnabled: event.enable,
           hasPermissions: event.enable, // If enable succeeded, we have permissions
           lastSyncTime: lastSyncTime,
+          showHcSetupGuide: event.enable && Platform.isAndroid ? true : null,
         ));
       } else {
         // Toggle failed - likely permissions denied or Health Connect not available
@@ -170,6 +175,17 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       emit(state.copyWith(isAvailable: isAvailable));
     } catch (e) {
       // Ignore errors - user may have cancelled or Play Store not available
+    }
+  }
+
+  Future<void> _onOpenHealthConnect(
+    HealthSyncOpenHealthConnect event,
+    Emitter<HealthSyncState> emit,
+  ) async {
+    try {
+      await healthSyncRepository.openHealthConnect();
+    } catch (e) {
+      // Ignore errors - user may have cancelled
     }
   }
 }

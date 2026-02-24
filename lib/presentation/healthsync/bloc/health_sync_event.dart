@@ -20,3 +20,6 @@ class HealthSyncManualTrigger extends HealthSyncEvent {}
 
 /// Open Play Store to install Health Connect (Android only).
 class HealthSyncInstallHealthConnect extends HealthSyncEvent {}
+
+/// Open the Health Connect app directly (Android only).
+class HealthSyncOpenHealthConnect extends HealthSyncEvent {}

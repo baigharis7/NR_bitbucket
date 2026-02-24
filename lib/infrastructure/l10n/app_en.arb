@@ -581,6 +581,13 @@
                 "type": "int"
             }
         }
-    }
+    },
+    "health_sync_hc_setup_title": "One more step",
+    "health_sync_hc_setup_body": "For your workouts to appear in NutRenaissance, your fitness apps (e.g. Samsung Health, Fitbit, Garmin) need to share data with Health Connect.",
+    "health_sync_hc_setup_step1": "Open Health Connect",
+    "health_sync_hc_setup_step2": "Tap 'App permissions'",
+    "health_sync_hc_setup_step3": "Select your fitness app and allow data sharing",
+    "health_sync_hc_setup_open": "Open Health Connect",
+    "health_sync_hc_setup_done": "Got it"
 
 }

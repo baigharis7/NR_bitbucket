@@ -582,6 +582,13 @@
                 "type": "int"
             }
         }
-    }
+    },
+    "health_sync_hc_setup_title": "Un paso más",
+    "health_sync_hc_setup_body": "Para que tus entrenamientos aparezcan en NutRenaissance, tus apps de fitness (p.ej. Samsung Health, Fitbit, Garmin) deben compartir datos con Health Connect.",
+    "health_sync_hc_setup_step1": "Abre Health Connect",
+    "health_sync_hc_setup_step2": "Toca 'Permisos de apps'",
+    "health_sync_hc_setup_step3": "Selecciona tu app de fitness y permite compartir datos",
+    "health_sync_hc_setup_open": "Abrir Health Connect",
+    "health_sync_hc_setup_done": "Entendido"
 
 }

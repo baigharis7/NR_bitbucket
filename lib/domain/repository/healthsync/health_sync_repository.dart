@@ -53,4 +53,8 @@ abstract class HealthSyncRepository {
   /// Install Health Connect app (Android only).
   /// Opens the Play Store to install Health Connect.
   Future<void> installHealthConnect();
+
+  /// Open the Health Connect app (Android only).
+  /// Falls back to the Play Store if the app can't be opened directly.
+  Future<void> openHealthConnect();
 }

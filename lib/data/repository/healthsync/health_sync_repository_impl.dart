@@ -363,4 +363,21 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       }
     }
   }
+
+  @override
+  Future<void> openHealthConnect() async {
+    if (Platform.isAndroid) {
+      // Try to launch Health Connect app directly via its package
+      const hcPackage = 'com.google.android.apps.healthdata';
+      final launchUri = Uri.parse('https://play.google.com/store/apps/details?id=$hcPackage');
+
+      // Try the market launch URI first (opens the app if installed)
+      final marketUri = Uri.parse('market://launch?id=$hcPackage');
+      if (await canLaunchUrl(marketUri)) {
+        await launchUrl(marketUri);
+      } else {
+        await launchUrl(launchUri, mode: LaunchMode.externalApplication);
+      }
+    }
+  }
 }
