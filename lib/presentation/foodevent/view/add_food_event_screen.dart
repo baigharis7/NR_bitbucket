@@ -227,12 +227,12 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                   },
                                   itemCount: state.foodEvent!.ingredients.orEmpty().length,
                                   mealTime: state.foodEvent?.mealTime,
-                                  onUpdateMealTime: (mealTime) => bloc.add(AddFoodMealTypeEventAction(mealType: mealTime)),
+                                  onUpdateMealTime: state.foodEvent?.mealTime == 3 ? null : (mealTime) => bloc.add(AddFoodMealTypeEventAction(mealType: mealTime)),
                                   scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.foodEvent?.time),
                                   onUpdateTime: (scheduleTime) => bloc.add(UpdateScheduleTimeAddFoodEventActions(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
                                   daysOfWeek: state.foodEvent?.daysOfWeek,
                                   onUpdateDayOfWeek: (dayOfWeek) {},
-                                  showTimePicker: false,
+                                  showTimePicker: state.foodEvent?.mealTime == 3,
                                 ),
                                 // Item cards with connector lines
                                 ...state.foodEvent!.ingredients.orEmpty().asMap().entries.map((entry) {

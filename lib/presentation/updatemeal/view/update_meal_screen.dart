@@ -166,12 +166,12 @@ class _UpdateMealScreenState extends State<UpdateMealScreen> {
                               },
                               itemCount: state.foodEvent?.ingredients.length ?? 0,
                               mealTime: state.foodEvent?.mealTime,
-                              onUpdateMealTime: (mealTime) => updateMealBloc.add(UpdateMealTimeUpdateMealEvent(mealTime: mealTime)),
+                              onUpdateMealTime: state.foodEvent?.mealTime == 3 ? null : (mealTime) => updateMealBloc.add(UpdateMealTimeUpdateMealEvent(mealTime: mealTime)),
                               scheduleTime: DateTimeHelper.timeOfDayFrom24HrString(state.foodEvent?.time),
-                              onUpdateTime: (scheduleTime) {},
+                              onUpdateTime: (scheduleTime) => updateMealBloc.add(UpdateScheduleTimeUpdateMealEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
                               daysOfWeek: state.foodEvent?.daysOfWeek,
                               onUpdateDayOfWeek: (dayOfWeek) {},
-                              showTimePicker: false,
+                              showTimePicker: state.foodEvent?.mealTime == 3,
                             ),
                             ...state.foodEvent!.ingredients.asMap().entries.map((entry) {
                               final index = entry.key;

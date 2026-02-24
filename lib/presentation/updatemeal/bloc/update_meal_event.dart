@@ -95,3 +95,9 @@ class SaveUpdateMealRoutineUpdateMealEvent extends UpdateMealEvent {
 
   SaveUpdateMealRoutineUpdateMealEvent({required this.onFinish});
 }
+
+class UpdateScheduleTimeUpdateMealEvent extends UpdateMealEvent {
+  final String scheduleTime;
+
+  UpdateScheduleTimeUpdateMealEvent({required this.scheduleTime});
+}

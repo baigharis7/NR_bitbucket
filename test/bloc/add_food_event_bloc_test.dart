@@ -131,6 +131,51 @@ void main() {
     );
 
     blocTest<AddFoodEventBloc, AddFoodEventState>(
+      'UpdateIsCreateRoutineEventAction auto-initializes time for snack routines',
+      build: () {
+        final bloc = buildBloc();
+        bloc.state.foodEvent!.mealTime = 3; // Snack
+        return bloc;
+      },
+      act: (bloc) => bloc.add(UpdateIsCreateRoutineEventAction()),
+      verify: (bloc) {
+        expect(bloc.state.foodEvent!.isRoutine, true);
+        expect(bloc.state.foodEvent!.time, isNotNull);
+        expect(bloc.state.foodEvent!.time!.isNotEmpty, true);
+        expect(bloc.state.foodEvent!.time!.contains(':'), true);
+      },
+    );
+
+    blocTest<AddFoodEventBloc, AddFoodEventState>(
+      'UpdateIsCreateRoutineEventAction does not auto-init time for non-snack routines',
+      build: () {
+        final bloc = buildBloc();
+        bloc.state.foodEvent!.mealTime = 1; // Lunch
+        return bloc;
+      },
+      act: (bloc) => bloc.add(UpdateIsCreateRoutineEventAction()),
+      verify: (bloc) {
+        expect(bloc.state.foodEvent!.isRoutine, true);
+        // Non-snack food routines do not get auto-initialized time
+        expect(bloc.state.foodEvent!.time, isNull);
+      },
+    );
+
+    blocTest<AddFoodEventBloc, AddFoodEventState>(
+      'UpdateIsCreateRoutineEventAction does not overwrite existing snack time',
+      build: () {
+        final bloc = buildBloc();
+        bloc.state.foodEvent!.mealTime = 3; // Snack
+        bloc.state.foodEvent!.time = '16:00';
+        return bloc;
+      },
+      act: (bloc) => bloc.add(UpdateIsCreateRoutineEventAction()),
+      verify: (bloc) {
+        expect(bloc.state.foodEvent!.time, '16:00');
+      },
+    );
+
+    blocTest<AddFoodEventBloc, AddFoodEventState>(
       'UpdateCreteDishEventAction toggles dish flag',
       build: buildBloc,
       act: (bloc) => bloc.add(UpdateCreteDishEventAction()),
