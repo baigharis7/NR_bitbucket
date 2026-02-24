@@ -19,6 +19,7 @@ class SupplementInfoResponse {
   String es;
   String en;
   String unit;
+  @JsonKey(name: 'computer_name')
   String? computerName;
 
   SupplementInfoResponse({required this.id, required this.es, required this.en, required this.unit, this.computerName});

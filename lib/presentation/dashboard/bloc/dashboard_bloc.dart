@@ -727,7 +727,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     double supplementQuantitySoFar = 0.0;
     for (var supplement in state.supplementEvents.orEmpty()) {
       for (var supplementItem in supplement.info.orEmpty()) {
-        final supplementInfo = state.supplementsInfoMaster?.data.firstWhere((element) => supplementItem.id == element.id);
+        final supplementInfo = state.supplementsInfoMaster?.data.where((element) => supplementItem.id == element.id).firstOrNull;
         if (supplementInfo?.computerName == micronutrient) {
           supplementQuantitySoFar = supplementQuantitySoFar + supplementItem.amount;
         }
