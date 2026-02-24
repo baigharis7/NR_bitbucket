@@ -344,7 +344,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                   ),),);
                                 }
                                 else if (state.sportSimpleEvent?.isCreateRoutine == true) {
-                                  if (state.sportSimpleEvent!.daysOfWeek.orEmpty().isEmpty && state.sportSimpleEvent!.scheduleTime.orEmpty().isEmpty) {
+                                  if (state.sportSimpleEvent!.daysOfWeek.orEmpty().isEmpty || state.sportSimpleEvent!.scheduleTime.orEmpty().isEmpty) {
                                     ToastHelper().showToast(text: AppLocalizations.of(context)!.routine_time_day_error, backgroundColor: Colors.red, textColor: Colors.white);
                                     return;
                                   }

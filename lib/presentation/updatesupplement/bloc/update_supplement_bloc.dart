@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_routine_interactor.dart';
@@ -116,6 +117,11 @@ class UpdateSupplementBloc
 
     on<UpdateIsRoutineUpdateSupplementEvent>((event, emit) {
       state.supplementObj?.isRoutine = event.isRoutine;
+
+      if (event.isRoutine && state.supplementObj?.scheduleTime.isEmptyOrNull() == true) {
+        state.supplementObj?.scheduleTime = DateTimeHelper.timeOfDayTo24HrString(TimeOfDay.now());
+      }
+
       emit(state.copyWith(isLoading: false));
     });
 

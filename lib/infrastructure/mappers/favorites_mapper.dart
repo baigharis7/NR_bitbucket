@@ -154,7 +154,7 @@ AddSportFavorite mapToSportFavoriteFromEntity(SportFavoriteEntity sportFavoriteE
     isCreateRoutine: sportFavoriteEntity.isCreateRoutine,
     scheduleTime: sportFavoriteEntity.scheduleTime,
     daysOfWeek: sportFavoriteEntity.daysOfWeek,
-    timeZone: sportFavoriteEntity.scheduleTime,
+    timeZone: sportFavoriteEntity.timeZone,
   );
 }
 

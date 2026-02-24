@@ -128,6 +128,30 @@ void main() {
     );
 
     blocTest<SupplementsBloc, SupplementsState>(
+      'UpdateRoutineActionSupplementsEvent auto-initializes scheduleTime when enabling routine',
+      build: buildBloc,
+      act: (bloc) => bloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: true)),
+      verify: (bloc) {
+        expect(bloc.state.supplementObj!.scheduleTime, isNotNull);
+        expect(bloc.state.supplementObj!.scheduleTime!.isNotEmpty, true);
+        expect(bloc.state.supplementObj!.scheduleTime!.contains(':'), true);
+      },
+    );
+
+    blocTest<SupplementsBloc, SupplementsState>(
+      'UpdateRoutineActionSupplementsEvent does not overwrite existing scheduleTime',
+      build: () {
+        final bloc = buildBloc();
+        bloc.state.supplementObj!.scheduleTime = '08:30';
+        return bloc;
+      },
+      act: (bloc) => bloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: true)),
+      verify: (bloc) {
+        expect(bloc.state.supplementObj!.scheduleTime, '08:30');
+      },
+    );
+
+    blocTest<SupplementsBloc, SupplementsState>(
       'UpdateNameSupplementsEvent sets name on supplementObj',
       build: buildBloc,
       act: (bloc) => bloc.add(UpdateNameSupplementsEvent(name: 'Vitamin D')),

@@ -130,6 +130,40 @@ void main() {
     );
 
     blocTest<SportEventsBloc, SportEventsState>(
+      'UpdateIsCreateRoutineSportEventsActions auto-initializes scheduleTime when enabling routine',
+      build: buildBloc,
+      act: (bloc) => bloc.add(UpdateIsCreateRoutineSportEventsActions(isCreateRoutine: true)),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.scheduleTime, isNotNull);
+        expect(bloc.state.sportSimpleEvent!.scheduleTime!.isNotEmpty, true);
+        // Should be in HH:MM format
+        expect(bloc.state.sportSimpleEvent!.scheduleTime!.contains(':'), true);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'UpdateIsCreateRoutineSportEventsActions does not overwrite existing scheduleTime',
+      build: () {
+        final bloc = buildBloc();
+        bloc.state.sportSimpleEvent!.scheduleTime = '17:30';
+        return bloc;
+      },
+      act: (bloc) => bloc.add(UpdateIsCreateRoutineSportEventsActions(isCreateRoutine: true)),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.scheduleTime, '17:30');
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'UpdateIsCreateRoutineSportEventsActions does not set scheduleTime when disabling routine',
+      build: buildBloc,
+      act: (bloc) => bloc.add(UpdateIsCreateRoutineSportEventsActions(isCreateRoutine: false)),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.scheduleTime, isNull);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
       'UpdateTimeOfDaySportEventAction sets scheduleTime',
       build: buildBloc,
       act: (bloc) => bloc.add(UpdateTimeOfDaySportEventAction(scheduleTime: '07:00')),

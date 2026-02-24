@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
@@ -135,6 +136,10 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
     on<UpdateRoutineActionSupplementsEvent>((event, emit) {
       state.supplementObj?.isRoutine = event.isRoutine;
       state.supplementObj?.isFavorite = event.isRoutine == true ? false : false;
+
+      if (event.isRoutine && state.supplementObj?.scheduleTime.isEmptyOrNull() == true) {
+        state.supplementObj?.scheduleTime = DateTimeHelper.timeOfDayTo24HrString(TimeOfDay.now());
+      }
 
       emit(state.copyWith(isLoading: false));
     });

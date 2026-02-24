@@ -153,6 +153,12 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
     on<UpdateIsCreateRoutineSportEventsActions>((event, emit) {
       state.sportSimpleEvent?.isCreateRoutine = event.isCreateRoutine;
 
+      // Auto-initialize scheduleTime to current time when enabling routine mode,
+      // matching the default time displayed by the UI time picker widget.
+      if (event.isCreateRoutine && state.sportSimpleEvent?.scheduleTime.isEmptyOrNull() == true) {
+        state.sportSimpleEvent?.scheduleTime = DateTimeHelper.timeOfDayTo24HrString(TimeOfDay.now());
+      }
+
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
