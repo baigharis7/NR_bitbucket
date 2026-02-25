@@ -215,5 +215,27 @@ void main() {
         expect(bloc.state.supplementObj!.info!.first.amount, 500);
       },
     );
+
+    blocTest<SupplementsBloc, SupplementsState>(
+      'preSelectRoutine from routines screen sets isRoutine and initializes scheduleTime',
+      build: buildBloc,
+      act: (bloc) => bloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: true)),
+      verify: (bloc) {
+        expect(bloc.state.supplementObj!.isRoutine, true);
+        expect(bloc.state.supplementObj!.isFavorite, false);
+        expect(bloc.state.supplementObj!.scheduleTime, isNotNull);
+        expect(bloc.state.supplementObj!.scheduleTime!.contains(':'), true);
+      },
+    );
+
+    blocTest<SupplementsBloc, SupplementsState>(
+      'preSelectFavorite from favorites screen sets isFavorite and clears isRoutine',
+      build: buildBloc,
+      act: (bloc) => bloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: true)),
+      verify: (bloc) {
+        expect(bloc.state.supplementObj!.isFavorite, true);
+        expect(bloc.state.supplementObj!.isRoutine, false);
+      },
+    );
   });
 }

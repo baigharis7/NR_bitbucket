@@ -8,6 +8,8 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_state.dart';
@@ -230,6 +232,55 @@ void main() {
             .having((s) => s.onError, 'onError', null)
             .having((s) => s.isEdit, 'isEdit', false),
       ],
+    );
+
+    blocTest<AddFoodEventBloc, AddFoodEventState>(
+      'AddFoodArgumentModelEventAction with preSelectRoutine sets isRoutine true',
+      build: buildBloc,
+      act: (bloc) => bloc.add(AddFoodArgumentModelEventAction(
+        foodArgumentsModel: FoodArgumentsModel(
+          mealTime: MealTime(id: 0, name: 'Breakfast', time: '08:00'),
+          selectedDateTime: DateTime(2026, 2, 25),
+          preSelectRoutine: true,
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.foodEvent!.isRoutine, true);
+        expect(bloc.state.foodEvent!.isFavorite, isNot(true));
+        expect(bloc.state.foodEvent!.mealTime, 0);
+      },
+    );
+
+    blocTest<AddFoodEventBloc, AddFoodEventState>(
+      'AddFoodArgumentModelEventAction with preSelectFavorite sets isFavorite true',
+      build: buildBloc,
+      act: (bloc) => bloc.add(AddFoodArgumentModelEventAction(
+        foodArgumentsModel: FoodArgumentsModel(
+          mealTime: MealTime(id: 1, name: 'Lunch', time: '12:00'),
+          selectedDateTime: DateTime(2026, 2, 25),
+          preSelectFavorite: true,
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.foodEvent!.isFavorite, true);
+        expect(bloc.state.foodEvent!.isRoutine, isNot(true));
+        expect(bloc.state.foodEvent!.mealTime, 1);
+      },
+    );
+
+    blocTest<AddFoodEventBloc, AddFoodEventState>(
+      'AddFoodArgumentModelEventAction without preselect keeps both unset',
+      build: buildBloc,
+      act: (bloc) => bloc.add(AddFoodArgumentModelEventAction(
+        foodArgumentsModel: FoodArgumentsModel(
+          mealTime: MealTime(id: 2, name: 'Dinner', time: '19:00'),
+          selectedDateTime: DateTime(2026, 2, 25),
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.foodEvent!.isFavorite, isNot(true));
+        expect(bloc.state.foodEvent!.isRoutine, isNot(true));
+      },
     );
   });
 }

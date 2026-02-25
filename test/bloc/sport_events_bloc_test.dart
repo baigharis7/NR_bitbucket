@@ -4,6 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_arguments_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
@@ -234,6 +235,50 @@ void main() {
       verify: (bloc) {
         expect(bloc.state.sportSimpleEvent!.title, 'Morning Run');
         expect(bloc.state.isEdit, true);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'AddSportArgumentModelEventAction with preSelectRoutine sets isCreateRoutine true',
+      build: buildBloc,
+      act: (bloc) => bloc.add(AddSportArgumentModelEventAction(
+        sportArgumentsModel: SportArgumentsModel(
+          selectedDateTime: DateTime(2026, 2, 25),
+          preSelectRoutine: true,
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.isCreateRoutine, true);
+        expect(bloc.state.sportSimpleEvent!.isFavorite, isNot(true));
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'AddSportArgumentModelEventAction with preSelectFavorite sets isFavorite true',
+      build: buildBloc,
+      act: (bloc) => bloc.add(AddSportArgumentModelEventAction(
+        sportArgumentsModel: SportArgumentsModel(
+          selectedDateTime: DateTime(2026, 2, 25),
+          preSelectFavorite: true,
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.isFavorite, true);
+        expect(bloc.state.sportSimpleEvent!.isCreateRoutine, isNot(true));
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'AddSportArgumentModelEventAction without preselect keeps both unset',
+      build: buildBloc,
+      act: (bloc) => bloc.add(AddSportArgumentModelEventAction(
+        sportArgumentsModel: SportArgumentsModel(
+          selectedDateTime: DateTime(2026, 2, 25),
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.isFavorite, isNot(true));
+        expect(bloc.state.sportSimpleEvent!.isCreateRoutine, isNot(true));
       },
     );
   });
