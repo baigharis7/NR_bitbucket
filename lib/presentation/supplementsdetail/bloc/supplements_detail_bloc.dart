@@ -80,6 +80,7 @@ class SupplementsDetailBloc extends Bloc<SupplementsDetailEvent, SupplementsDeta
           .expand((event) => event.info!)
           .where((info) => info.id == Constants.COLLAGEN)
           .fold<int>(0, (sum, info) => sum + (info.amount));
+      emit(state.copyWith(isLoading: false));
     });
 
     on<UpdateEventsDateSupplementsDetailEvent>((event, emit) async {
