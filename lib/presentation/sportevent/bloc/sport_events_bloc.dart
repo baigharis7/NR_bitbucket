@@ -273,27 +273,6 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
           try {
             await saveRoutineInteractor.execute(event.sportRoutineCompleted, state.isEdit ?? false);
 
-            // Also log the item as an event
-            try {
-              final sportEventSimple = mapToSportEventSimpleFromAddFavoriteSport(state.sportSimpleEvent!);
-              sportEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
-              sportEventSimple.userId = getUserIdInteractor.execute();
-              sportEventSimple.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
-              final sportEventComplete = await uploadSportsEventInteractor.execute(sportEventSimple);
-              await saveSportEventInteractor.execute(sportEventComplete, false);
-              DashboardEventBus.instance.notify(DataChangedCategory.sport);
-            } catch (error, st) {
-              CrashlyticsService.record(
-                error,
-                st,
-                context: {
-                  'action': 'Sport event logging alongside routine',
-                  'screen': 'Add Sport',
-                  'event data': event.sportRoutineCompleted.toJson().toString(),
-                },
-              );
-            }
-
             _clearFields();
             event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null));

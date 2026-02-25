@@ -394,7 +394,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                   return;
                                 }
                                 supplementsBloc.add(FinishSupplementRoutineSupplementsEvent(onFinish: () => _showConfirmationDialog(
-                                  message: '${AppLocalizations.of(context)!.supplement_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.supplement_routine_successfully_saved}',
+                                  message: AppLocalizations.of(context)!.supplement_routine_successfully_saved,
                                   context: context,
                                   onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
                                 ),),);

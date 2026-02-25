@@ -353,7 +353,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
 
                                   final sportRoutineCompleted = mapAddFavSportToSportRoutineCompleted(state.sportSimpleEvent!);
                                   bloc.add(FinishSportRoutineAddSportAction(sportRoutineCompleted: sportRoutineCompleted, onFinish: () => _showConfirmationDialog(
-                                    message: '${AppLocalizations.of(context)!.sport_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.sport_routine_successfully_saved}',
+                                    message: AppLocalizations.of(context)!.sport_routine_successfully_saved,
                                       context: context,
                                       onDismiss: () => Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate),
                                   ),),);

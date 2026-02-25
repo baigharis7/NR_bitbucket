@@ -465,29 +465,6 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
           try {
             await saveFoodRoutineInteractor.execute(event.foodRoutineEvent, state.isEdit ?? false);
 
-            // Also log the item as an event
-            try {
-              final foodEventSimple = mapToFoodEventSimpleFromFoodFavorite(state.foodEvent!);
-              foodEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
-              foodEventSimple.userId = getUserIdInteractor.execute();
-              foodEventSimple.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
-              final uploadFoodEvent = await uploadFoodEventInteractor.execute(foodEventSimple);
-              if (uploadFoodEvent.uploadSuccess) {
-                await saveFoodEventInteractor.execute(uploadFoodEvent, false);
-                DashboardEventBus.instance.notify(DataChangedCategory.food);
-              }
-            } catch (error, st) {
-              CrashlyticsService.record(
-                error,
-                st,
-                context: {
-                  'action': 'Food event logging alongside routine',
-                  'screen': 'Add Food',
-                  'event data': event.foodRoutineEvent.toJson().toString(),
-                },
-              );
-            }
-
             _clearFields();
             emit(state.copyWith(isLoading: false, onError: null,));
             event.onFinish.call();
