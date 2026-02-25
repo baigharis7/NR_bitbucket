@@ -72,7 +72,12 @@ class _EventOptionsWidgetState extends State<EventOptionsWidget> {
       initialEntryMode: TimePickerEntryMode.dial,
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(useMaterial3: true),
+          data: Theme.of(context).copyWith(
+            useMaterial3: true,
+            timePickerTheme: TimePickerThemeData(
+              hourMinuteTextStyle: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+            ),
+          ),
           child: MediaQuery(
             data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
             child: child!,
