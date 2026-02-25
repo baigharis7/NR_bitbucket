@@ -45,7 +45,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
 
   @override
   void didChangeDependencies() {
-    _tabs = [AppLocalizations.of(context)!.meal.toUpperCase(), AppLocalizations.of(context)!.physical_activity.toUpperCase(), AppLocalizations.of(context)!.supplements];
+    _tabs = [AppLocalizations.of(context)!.meal.toUpperCase(), AppLocalizations.of(context)!.physical_activity.toUpperCase(), AppLocalizations.of(context)!.supplements.toUpperCase()];
     super.didChangeDependencies();
   }
 

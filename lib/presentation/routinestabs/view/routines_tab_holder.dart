@@ -44,7 +44,7 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
 
   @override
   void didChangeDependencies() {
-    _tabs = [AppLocalizations.of(context)!.meal.toUpperCase(), AppLocalizations.of(context)!.physical_activity.toUpperCase(), AppLocalizations.of(context)!.supplements];
+    _tabs = [AppLocalizations.of(context)!.meal.toUpperCase(), AppLocalizations.of(context)!.physical_activity.toUpperCase(), AppLocalizations.of(context)!.supplements.toUpperCase()];
     super.didChangeDependencies();
   }
 
