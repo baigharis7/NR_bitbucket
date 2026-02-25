@@ -164,7 +164,7 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
                     controller: _tabController,
                     indicator: BoxDecoration(
                       color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(Dimens.borderNormal),
+                      borderRadius: BorderRadius.circular(Dimens.border15),
                     ),
                     labelPadding: const EdgeInsets.symmetric(horizontal: Dimens.padding6),
                     labelColor: Colors.white,
@@ -176,7 +176,7 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
                         height: 45,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(Dimens.borderNormal),
+                          borderRadius: BorderRadius.circular(Dimens.border15),
                           color: isSelected ? AppColors.yellowishGreen : AppColors.butter59,
                         ),
                         child: Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6), child: Text(_tabs[index], style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize11), textAlign: TextAlign.center)),

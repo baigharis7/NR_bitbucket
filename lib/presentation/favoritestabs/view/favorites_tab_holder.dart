@@ -165,7 +165,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
                   controller: _tabController,
                   indicator: BoxDecoration(
                     color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(Dimens.borderNormal),
+                    borderRadius: BorderRadius.circular(Dimens.border15),
                   ),
                   labelPadding: const EdgeInsets.symmetric(horizontal: Dimens.padding6),
                   labelColor: Colors.white,
@@ -177,7 +177,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
                       height: 45,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(Dimens.borderNormal),
+                        borderRadius: BorderRadius.circular(Dimens.border15),
                         color: isSelected ? AppColors.yellowishGreen : AppColors.butter59,
                       ),
                       child: Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6), child: Text(_tabs[index], style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize11), textAlign: TextAlign.center)),
