@@ -177,7 +177,7 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(Dimens.border15),
-                          color: isSelected ? AppColors.yellowishGreen : AppColors.butter59,
+                          color: isSelected ? AppColors.yellowishGreen59 : AppColors.butter59,
                         ),
                         child: Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6), child: Text(_tabs[index], style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize11), textAlign: TextAlign.center)),
                       );
