@@ -489,6 +489,7 @@ void main() async {
   const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   // await AndroidAlarmManager.initialize();
 
   initLocalStorage();
