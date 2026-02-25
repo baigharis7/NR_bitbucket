@@ -57,7 +57,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
           supplementsBloc.add(UpdateScreenTitle(screenTitle: AppLocalizations.of(context)!.update + ' ' + AppLocalizations.of(context)!.supplement));
           supplementsBloc.add(GetSupplementFromNavAction(supplementSimple: arguments));
         } else if (arguments is Map && arguments['preSelectRoutine'] == true) {
-          supplementsBloc.state.supplementObj?.isRoutine = true;
+          supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: true));
         }
       }
     });

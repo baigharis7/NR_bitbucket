@@ -159,6 +159,7 @@ class _SportUpdateScreenState extends State<SportUpdateScreen> {
                             showValidation: _showValidation,
                           );
                         },),
+                      const SizedBox(height: Dimens.height12),
                       Container(
                         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                         child: GeneralButton(onTap: () {
