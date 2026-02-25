@@ -185,19 +185,18 @@ class LocalStorageImpl extends LocalStorageRepository {
       await foodEventEntity.save();
     } catch (error) {
       try {
-        _getFoodEventsBox.then((box) {
-          if (isEdit) {
-            final foodEventsMap = box.toMap();
-            foodEventsMap.forEach((key, value) {
-              if ((value as FoodEventEntity).eventId == foodEventEntity.eventId) {
-                box.put(key, foodEventEntity);
-              }
-            });
-          } else {
-            box.add(foodEventEntity);
-            //box.put(foodEventEntity.eventDate.getHiveKey(), foodEventEntity);
+        final box = await _getFoodEventsBox;
+        dynamic existingKey;
+        box.toMap().forEach((key, value) {
+          if ((value as FoodEventEntity).eventId == foodEventEntity.eventId) {
+            existingKey = key;
           }
         });
+        if (existingKey != null) {
+          box.put(existingKey, foodEventEntity);
+        } else {
+          box.add(foodEventEntity);
+        }
       } catch (error) {
         rethrow;
       }
@@ -298,19 +297,18 @@ class LocalStorageImpl extends LocalStorageRepository {
       await sportEventEntity.save();
     } catch (error) {
       try {
-        _getSportEventsBox.then((box) {
-          if (isEdit) {
-            final sportEventsMap = box.toMap();
-            sportEventsMap.forEach((key, value) {
-              if ((value as SportEventEntity).eventId == sportEventEntity.eventId) {
-                box.put(key, sportEventEntity);
-              }
-            });
-          } else {
-            box.add(sportEventEntity);
-            // box.put(sportEventEntity.eventDate.getHiveKey(), sportEventEntity);
+        final box = await _getSportEventsBox;
+        dynamic existingKey;
+        box.toMap().forEach((key, value) {
+          if ((value as SportEventEntity).eventId == sportEventEntity.eventId) {
+            existingKey = key;
           }
         });
+        if (existingKey != null) {
+          box.put(existingKey, sportEventEntity);
+        } else {
+          box.add(sportEventEntity);
+        }
       } catch (error) {
         rethrow;
       }
@@ -333,19 +331,18 @@ class LocalStorageImpl extends LocalStorageRepository {
       await liquidEventEntity.save();
     } catch (error) {
       try {
-        _getLiquidEventsBox.then((box) {
-          if (isEdit) {
-            final liquidEventsMap = box.toMap();
-            liquidEventsMap.forEach((key, value) {
-              if ((value as LiquidEventEntity).eventDate == liquidEventEntity.eventDate) {
-                box.put(key, liquidEventEntity);
-              }
-            });
-          } else {
-            box.add(liquidEventEntity);
-            //box.put(foodEventEntity.eventDate.getHiveKey(), foodEventEntity);
+        final box = await _getLiquidEventsBox;
+        dynamic existingKey;
+        box.toMap().forEach((key, value) {
+          if ((value as LiquidEventEntity).eventDate == liquidEventEntity.eventDate) {
+            existingKey = key;
           }
         });
+        if (existingKey != null) {
+          box.put(existingKey, liquidEventEntity);
+        } else {
+          box.add(liquidEventEntity);
+        }
       } catch (error) {
         rethrow;
       }
@@ -409,10 +406,18 @@ class LocalStorageImpl extends LocalStorageRepository {
       await waterEventEntity.save();
     } catch (error) {
       try {
-        _getWaterEventsBox.then((box) {
-          box.add(waterEventEntity);
-          //box.put(foodEventEntity.eventDate.getHiveKey(), foodEventEntity);
+        final box = await _getWaterEventsBox;
+        dynamic existingKey;
+        box.toMap().forEach((key, value) {
+          if ((value as WaterEventEntity).eventDate == waterEventEntity.eventDate) {
+            existingKey = key;
+          }
         });
+        if (existingKey != null) {
+          box.put(existingKey, waterEventEntity);
+        } else {
+          box.add(waterEventEntity);
+        }
       } catch (error) {
         rethrow;
       }
@@ -1017,18 +1022,18 @@ class LocalStorageImpl extends LocalStorageRepository {
       await sportRoutineEntity.save();
     } catch(error) {
       try {
-        _getSportRoutinesBox.then((box) {
-        if (isEdit) {
-          final spoRoutinesMap = box.toMap();
-          spoRoutinesMap.forEach((key, value) {
-            if ((value as SportRoutineEntity).eventId == sportRoutineEntity.eventId) {
-              box.put(key, sportRoutineEntity);
-            }
-          });
+        final box = await _getSportRoutinesBox;
+        dynamic existingKey;
+        box.toMap().forEach((key, value) {
+          if ((value as SportRoutineEntity).eventId == sportRoutineEntity.eventId) {
+            existingKey = key;
+          }
+        });
+        if (existingKey != null) {
+          box.put(existingKey, sportRoutineEntity);
         } else {
           box.add(sportRoutineEntity);
         }
-      },);
       } catch(error) {
         rethrow;
       }
@@ -1140,18 +1145,18 @@ class LocalStorageImpl extends LocalStorageRepository {
       await fecesEventEntity.save();
     } catch (error) {
       try {
-        _getFecesEventsBox.then((box) {
-          if (isEdit) {
-            final fecesEventsMap = box.toMap();
-            fecesEventsMap.forEach((key, value) {
-              if ((value as UploadFecesEventEntity).eventId == fecesEventEntity.eventId) {
-                box.put(key, fecesEventEntity);
-              }
-            });
-          } else {
-            box.add(fecesEventEntity);
+        final box = await _getFecesEventsBox;
+        dynamic existingKey;
+        box.toMap().forEach((key, value) {
+          if ((value as UploadFecesEventEntity).eventId == fecesEventEntity.eventId) {
+            existingKey = key;
           }
-        },);
+        });
+        if (existingKey != null) {
+          box.put(existingKey, fecesEventEntity);
+        } else {
+          box.add(fecesEventEntity);
+        }
       } catch (error) {
         rethrow;
       }
@@ -1264,18 +1269,18 @@ class LocalStorageImpl extends LocalStorageRepository {
       await urineEventEntity.save();
     } catch (error) {
       try {
-        _getUrineEventsBox.then((box) {
-          if (isEdit) {
-            final urineEventsMap = box.toMap();
-            urineEventsMap.forEach((key, value) {
-              if ((value as UploadFecesEventEntity).eventId == urineEventEntity.eventId) {
-                box.put(key, urineEventEntity);
-              }
-            });
-          } else {
-            box.add(urineEventEntity);
+        final box = await _getUrineEventsBox;
+        dynamic existingKey;
+        box.toMap().forEach((key, value) {
+          if ((value as UploadFecesEventEntity).eventId == urineEventEntity.eventId) {
+            existingKey = key;
           }
-        },);
+        });
+        if (existingKey != null) {
+          box.put(existingKey, urineEventEntity);
+        } else {
+          box.add(urineEventEntity);
+        }
       } catch (error) {
         rethrow;
       }
@@ -1332,18 +1337,18 @@ class LocalStorageImpl extends LocalStorageRepository {
       await supplementCollagenEventEntity.save();
     } catch (error) {
       try {
-        _getCollagenEventsBox.then((box) {
-          if (isEdit) {
-            final collagenEventsMap = box.toMap();
-            collagenEventsMap.forEach((key, value) {
-              if ((value as UploadSupplementEventEntity).eventId == supplementCollagenEventEntity.eventId) {
-                box.put(key, supplementCollagenEventEntity);
-              }
-            });
-          } else {
-            box.add(supplementCollagenEventEntity);
+        final box = await _getCollagenEventsBox;
+        dynamic existingKey;
+        box.toMap().forEach((key, value) {
+          if ((value as UploadSupplementEventEntity).eventId == supplementCollagenEventEntity.eventId) {
+            existingKey = key;
           }
-        },);
+        });
+        if (existingKey != null) {
+          box.put(existingKey, supplementCollagenEventEntity);
+        } else {
+          box.add(supplementCollagenEventEntity);
+        }
       } catch (error) {
         rethrow;
       }
@@ -1356,18 +1361,18 @@ class LocalStorageImpl extends LocalStorageRepository {
       await supplementCreatineEventEntity.save();
     } catch (error) {
       try {
-        _getCreatineEventsBox.then((box) {
-          if (isEdit) {
-            final creatineEventsMap = box.toMap();
-            creatineEventsMap.forEach((key, value) {
-              if ((value as UploadSupplementEventEntity).eventId == supplementCreatineEventEntity.eventId) {
-                box.put(key, supplementCreatineEventEntity);
-              }
-            });
-          } else {
-            box.add(supplementCreatineEventEntity);
+        final box = await _getCreatineEventsBox;
+        dynamic existingKey;
+        box.toMap().forEach((key, value) {
+          if ((value as UploadSupplementEventEntity).eventId == supplementCreatineEventEntity.eventId) {
+            existingKey = key;
           }
-        },);
+        });
+        if (existingKey != null) {
+          box.put(existingKey, supplementCreatineEventEntity);
+        } else {
+          box.add(supplementCreatineEventEntity);
+        }
       } catch (error) {
         rethrow;
       }
@@ -1418,18 +1423,18 @@ class LocalStorageImpl extends LocalStorageRepository {
       await supplementEventsEntity.save();
     } catch (error) {
       try {
-        _getSupplementEventsBox.then((box) {
-          if (isEdit) {
-            final supplementEventsMap = box.toMap();
-            supplementEventsMap.forEach((key, value) {
-              if ((value as SupplementEventsEntity).eventId == supplementEventsEntity.eventId) {
-                box.put(key, supplementEventsEntity);
-              }
-            });
-          } else {
-            box.add(supplementEventsEntity);
+        final box = await _getSupplementEventsBox;
+        dynamic existingKey;
+        box.toMap().forEach((key, value) {
+          if ((value as SupplementEventsEntity).eventId == supplementEventsEntity.eventId) {
+            existingKey = key;
           }
-        },);
+        });
+        if (existingKey != null) {
+          box.put(existingKey, supplementEventsEntity);
+        } else {
+          box.add(supplementEventsEntity);
+        }
       } catch (error) {
         rethrow;
       }
@@ -1474,18 +1479,18 @@ class LocalStorageImpl extends LocalStorageRepository {
       await supplementEventsEntity.save();
     } catch (error) {
       try {
-        _getSupplementFavoritesBox.then((box) {
-          if (isEdit) {
-            final supplementEventsMap = box.toMap();
-            supplementEventsMap.forEach((key, value) {
-              if ((value as SupplementEventsEntity).eventId == supplementEventsEntity.eventId) {
-                box.put(key, supplementEventsEntity);
-              }
-            });
-          } else {
-            box.add(supplementEventsEntity);
+        final box = await _getSupplementFavoritesBox;
+        dynamic existingKey;
+        box.toMap().forEach((key, value) {
+          if ((value as SupplementEventsEntity).eventId == supplementEventsEntity.eventId) {
+            existingKey = key;
           }
-        },);
+        });
+        if (existingKey != null) {
+          box.put(existingKey, supplementEventsEntity);
+        } else {
+          box.add(supplementEventsEntity);
+        }
       } catch (error) {
         rethrow;
       }
@@ -1509,18 +1514,18 @@ class LocalStorageImpl extends LocalStorageRepository {
       await supplementRoutineEntity.save();
     } catch (error) {
       try {
-        _getSupplementRoutinesBox.then((box) {
-          if (isEdit) {
-            final supplementRoutinesMap = box.toMap();
-            supplementRoutinesMap.forEach((key, value) {
-              if ((value as SupplementEventsEntity).eventId == supplementRoutineEntity.eventId) {
-                box.put(key, supplementRoutineEntity);
-              }
-            });
-          } else {
-            box.add(supplementRoutineEntity);
+        final box = await _getSupplementRoutinesBox;
+        dynamic existingKey;
+        box.toMap().forEach((key, value) {
+          if ((value as SupplementEventsEntity).eventId == supplementRoutineEntity.eventId) {
+            existingKey = key;
           }
-        },);
+        });
+        if (existingKey != null) {
+          box.put(existingKey, supplementRoutineEntity);
+        } else {
+          box.add(supplementRoutineEntity);
+        }
       } catch (error) {
         rethrow;
       }
@@ -1640,18 +1645,18 @@ class LocalStorageImpl extends LocalStorageRepository {
       await foodRoutineEntity.save();
     } catch(error) {
       try {
-        _getFoodRoutinesBox.then((box) {
-          if (isEdit) {
-            final spoRoutinesMap = box.toMap();
-            spoRoutinesMap.forEach((key, value) {
-              if ((value as FoodRoutineEntity).eventId == foodRoutineEntity.eventId) {
-                box.put(key, foodRoutineEntity);
-              }
-            });
-          } else {
-            box.add(foodRoutineEntity);
+        final box = await _getFoodRoutinesBox;
+        dynamic existingKey;
+        box.toMap().forEach((key, value) {
+          if ((value as FoodRoutineEntity).eventId == foodRoutineEntity.eventId) {
+            existingKey = key;
           }
-        },);
+        });
+        if (existingKey != null) {
+          box.put(existingKey, foodRoutineEntity);
+        } else {
+          box.add(foodRoutineEntity);
+        }
       } catch(error) {
         rethrow;
       }
