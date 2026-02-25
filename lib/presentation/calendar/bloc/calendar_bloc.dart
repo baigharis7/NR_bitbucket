@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_events_sorted_by_date_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
@@ -36,6 +39,7 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
   final DeleteFoodEventInteractor deleteFoodEventInteractor;
   final RemoveSportEventInteractor removeSportEventInteractor;
   final DeleteSportEventInteractor deleteSportEventInteractor;
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   CalendarBloc({
     required this.getAllEventsSortedByDateInteractor,
@@ -50,6 +54,16 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
     eventsOfDate: CalendarEvents.empty(),
     dayEvents: [],
   ),) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.food ||
+          category == DataChangedCategory.sport ||
+          category == DataChangedCategory.liquid ||
+          category == DataChangedCategory.water ||
+          category == DataChangedCategory.supplement ||
+          category == DataChangedCategory.fecesUrine) {
+        add(InitializeStateAction());
+      }
+    });
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       state.allCalendarEvents = await getAllEventsSortedByDateInteractor.execute();
@@ -73,7 +87,8 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
       try {
           await deleteFoodEventInteractor.execute(getUserIdInteractor.execute(), event.foodEventComplete.eventDate ?? -1);
         try {
-          final a = await removeFoodEventInteractor.execute(event.foodEventComplete);
+          await removeFoodEventInteractor.execute(event.foodEventComplete);
+          DashboardEventBus.instance.notify(DataChangedCategory.food);
           add(RefreshEventsAction(selectedDay: DateTime.fromMillisecondsSinceEpoch(event.foodEventComplete.eventDate ?? -1)));
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
@@ -92,7 +107,7 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
 
         try {
           await removeSportEventInteractor.execute(event.sportEventComplete);
-
+          DashboardEventBus.instance.notify(DataChangedCategory.sport);
           add(RefreshEventsAction(selectedDay: DateTime.fromMillisecondsSinceEpoch(event.sportEventComplete.eventDate)));
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
@@ -174,5 +189,11 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
       case FoodEventComplete: return RemoveFoodEventAction(foodEventComplete: event as FoodEventComplete, onFinish: () => onFinish.call());
       case SportEventComplete: return RemoveSportEventAction(sportEventComplete: event as SportEventComplete, onFinish: () => onFinish.call());
     }
+  }
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
   }
 }

@@ -156,8 +156,16 @@ class LoginProviderNew extends BaseProvider {
   void initialize(Function onError) async {
     super.initialize(onError);
 
-    authenticationService = await CognitoAuthenticationService.init();
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    // Fire all 4 async initializations in parallel
+    final authFuture = CognitoAuthenticationService.init();
+    final prefsFuture = SharedPreferences.getInstance();
+    final hiveFuture = Hive.openBox<SyncQueueEntry>('syncQueue');
+    final dbFuture = openReferenceDatabase();
+
+    authenticationService = await authFuture;
+    final sharedPreferences = await prefsFuture;
+    final syncQueueBox = await hiveFuture;
+    final referenceDatabase = await dbFuture;
 
     Chuck chuck = Chuck(
       showNotification: true,
@@ -170,7 +178,6 @@ class LoginProviderNew extends BaseProvider {
     fetchUserAttributesInteractor = FetchUserAttributesInteractorImpl(authenticationService: authenticationService!);
     getIdTokenInteractor = GetIdTokenInteractorImpl(preferencesRepository: prefsRepository);
     ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService!, chuck);
-    final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
     syncQueueService = SyncQueueService(prefsRepository, authenticationService!, chuck, syncQueueBox);
     LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService!, profileApi: profileApi, syncQueue: syncQueueService!);
     saveUserCredentialsInteractor = SaveUserCredentialsInteractorImpl(preferencesRepository: prefsRepository);
@@ -180,7 +187,6 @@ class LoginProviderNew extends BaseProvider {
     LocalStorageRepository localStorageRepository = LocalStorageImpl();
     saveUsernameAndEmailInteractor = SaveUsernameAndEmailInteractorImpl(preferencesRepository: prefsRepository);
     MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService!, chuck);
-    final referenceDatabase = await openReferenceDatabase();
     referenceDataApi = ReferenceDataApi(prefsRepository, authenticationService!, chuck);
     referenceDataService = ReferenceDataService(referenceDatabase);
     final profileComputationService = ProfileComputationService(referenceDatabase);
@@ -201,7 +207,7 @@ class LoginProviderNew extends BaseProvider {
     saveUserInUsersRemoteDatabaseInteractor = SaveUserInUsersRemoteDatabaseInteractorImpl(loginRepository: loginRepository);
     signOutInteractor = SignOutInteractorImpl(authenticationService: authenticationService!);
     EventsSyncApi eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService!, chuck);
-    EventsSynchronizationRequestRepository eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi, preferencesRepository: prefsRepository);
+    EventsSynchronizationRequestRepository eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
     synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
     getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
     eraseDatabaseInteractor = EraseDatabaseInteractorImpl(localStorageRepository: localStorageRepository);
@@ -610,22 +616,29 @@ class LoginProviderNew extends BaseProvider {
 
   void _manageMasterFiles(String userId, Function? onFinish) async {
     try {
+      // Fire all 15 Hive version reads in parallel
+      final versions = await Future.wait([
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.cookingMethods),
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.cookingMethodsInfo),
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.oilTypes),
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.conversionFactors),
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.conversionFactorsInfo),
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.foodsAndDrinksNames),
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.nutrientsInfo),
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.objectivesInfo),
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.recommendationGroups),
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.sportsInfo),
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.unitsInfo),
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.unitsFoods),
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.supplementsInfo),
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.subjectiveAnalysis),
+        getMasterFilesVersionInteractor!.execute(MasterFilesType.cookingMethodsOilsInfo),
+      ]);
+
       manageMasterFilesInteractor?.execute(
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.cookingMethods),
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.cookingMethodsInfo),
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.oilTypes),
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.conversionFactors),
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.conversionFactorsInfo),
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.foodsAndDrinksNames),
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.nutrientsInfo),
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.objectivesInfo),
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.recommendationGroups),
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.sportsInfo),
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.unitsInfo),
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.unitsFoods),
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.supplementsInfo),
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.subjectiveAnalysis),
-        await getMasterFilesVersionInteractor!.execute(MasterFilesType.cookingMethodsOilsInfo),
+        versions[0], versions[1], versions[2], versions[3], versions[4],
+        versions[5], versions[6], versions[7], versions[8], versions[9],
+        versions[10], versions[11], versions[12], versions[13], versions[14],
       ).then((masterFilesResponse) => _onSuccessManageMasterFiles(masterFilesResponse, userId, onFinish));
     } catch (errorManageMasterFiles) {
       manageLoading(false);

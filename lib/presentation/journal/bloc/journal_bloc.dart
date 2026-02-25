@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
@@ -6,6 +8,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_kcal_i
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_week_sports_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/waterevents/get_water_events_today_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
@@ -26,6 +29,7 @@ class JournalBloc extends BaseBloc<JournalActions, JournalState> {
   final GetTodayLiquidEventsInteractor getLiquidEventsOfTodayInteractor;
   final GetProfileInteractor getProfileInteractor;
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   JournalBloc({
     required this.getUserKcalInteractor,
@@ -50,6 +54,14 @@ class JournalBloc extends BaseBloc<JournalActions, JournalState> {
     liquidsCard: ExplainingCardUIModel(showCard: false, cardHasBeenShown: false),
     userKcals: 0,
   ),) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.food ||
+          category == DataChangedCategory.sport ||
+          category == DataChangedCategory.liquid ||
+          category == DataChangedCategory.water) {
+        add(InitializeStateAction());
+      }
+    });
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null, ),);
       state.userKcals = await getUserKcalInteractor.execute();
@@ -128,6 +140,12 @@ class JournalBloc extends BaseBloc<JournalActions, JournalState> {
       kcal = kcal + (sportEvent.eventKcals ?? 0);
     }
     return kcal;
+  }
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
   }
 
   void manageClickedCard(ExplainingCardUIModel explainingCardUIModel, int explainingCardId, Function? action) async {

@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:nutrenaissance_flutter/data/api/fcm/fcm_api.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -477,10 +480,16 @@ import 'package:firebase_core/firebase_core.dart';
 // }
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // No-op: lifecycle sync handles data refresh on app resume
+}
+
 void main() async {
   const String environmentName = String.fromEnvironment(Environment.PROD, defaultValue: Environment.PROD);
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   // await AndroidAlarmManager.initialize();
 
   initLocalStorage();
@@ -491,6 +500,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await FcmService.instance.init();
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
@@ -599,6 +610,7 @@ void main() async {
   final RemoveSportEventInteractor removeSportEventInteractor = RemoveSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
   final DeleteSportEventInteractor deleteSportEventInteractor = DeleteSportEventInteractorImpl(sportEventsRepository: sportEventsRepository);
   final LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService, profileApi: profileApi, syncQueue: syncQueueService);
+  final FcmApi fcmApi = FcmApi(prefsRepository, authenticationService, chuck);
   final StepsApi stepsApi = StepsApi(prefsRepository, authenticationService, chuck);
   final StepsRepository stepsRepository = StepsRepositoryImpl(stepsApi: stepsApi, localStorageRepository: localStorageRepository, syncQueue: syncQueueService);
   final UploadStepsInteractor uploadStepsInteractor = UploadStepsInteractorImpl(stepsRepository: stepsRepository);
@@ -653,7 +665,7 @@ void main() async {
   final GetAllEventsSortedByDateInteractor getAllEventsSortedByDateInteractor = GetAllEventsSortedByDateInteractorImpl(calendarRepository: calendarRepository);
   final EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor = EraseDBLocalEventsInteractorImpl(localStorageRepository: localStorageRepository);
   final eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService, chuck);
-  final eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi, preferencesRepository: prefsRepository);
+  final eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
   final SynchronizeEventsInteractor synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
   final ModelsAppearanceRepository modelsAppearanceRepository = ModelsAppearanceRepositoryImpl(localStorageRepository: localStorageRepository);
   final ShowModelAppearanceInteractor showModelAppearanceInteractor = ShowModelAppearanceInteractorImpl(modelsAppearanceRepository: modelsAppearanceRepository);
@@ -674,6 +686,12 @@ void main() async {
   final DeleteSupplementFavoriteInteractor deleteSupplementFavoriteInteractor = DeleteSupplementFavoriteInteractorImpl(supplementsRepository: supplementsRepository);
   final RemoveSupplementFavoriteInteractor removeSupplementFavoriteInteractor = RemoveSupplementFavoriteInteractorImpl(supplementsRepository: supplementsRepository);
   final UpdateEventsInteractor updateEventsInteractor = UpdateEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
+
+  FcmService.instance.configureSyncHandler(
+    getUserIdInteractor: getUserIdInteractor,
+    updateEventsInteractor: updateEventsInteractor,
+    synchronizeEventsInteractor: synchronizeEventsInteractor,
+  );
 
   await NutritionUtils(getMasterFileInteractor: getMasterFileInteractor).init();
 
@@ -715,11 +733,13 @@ void main() async {
     getRoutinesInteractor: getRoutinesInteractor,
     eraseDBLocalEventsInteractor: eraseDBLocalEventsInteractor,
     synchronizeEventsInteractor: synchronizeEventsInteractor,
+    updateEventsInteractor: updateEventsInteractor,
     chuck: chuck,
     showModelAppearanceInteractor: showModelAppearanceInteractor,
     saveModelAppearanceInteractor: saveModelAppearanceInteractor,
     getTodaySportsInteractor: getTodaySportsInteractor,
     getDaySupplementEventsInteractor: getDaySupplementEventsInteractor,
+    fcmApi: fcmApi,
   );
 
   final micronutrientsDetailBloc = MicroNutrientsDetailBloc(
@@ -1145,6 +1165,7 @@ void main() async {
       signOutInteractor: signOutInteractor,
       eraseDatabaseInteractor: eraseDatabaseInteractor,
       sharedPreferences: sharedPreferences,
+      fcmApi: fcmApi,
   );
 
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);

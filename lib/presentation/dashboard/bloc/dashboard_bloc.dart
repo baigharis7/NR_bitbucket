@@ -1,5 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/data/api/fcm/fcm_api.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/eventssync/update_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_model_appearance_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_model_appearance_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
@@ -75,7 +79,6 @@ import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../../domain/models/watervents/water_event_master.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
 import 'package:chuck_interceptor/chuck.dart';
-import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
@@ -119,11 +122,13 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final GetRoutinesInteractor getRoutinesInteractor;
   final EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor;
   final SynchronizeEventsInteractor synchronizeEventsInteractor;
+  final UpdateEventsInteractor updateEventsInteractor;
   final Chuck chuck;
   final ShowModelAppearanceInteractor showModelAppearanceInteractor;
   final SaveModelAppearanceInteractor saveModelAppearanceInteractor;
   final GetTodaySportsInteractor getTodaySportsInteractor;
   final GetDaySupplementEventsInteractor getDaySupplementEventsInteractor;
+  final FcmApi? fcmApi;
 
   DashboardBloc({
     required this.getFoodEventsOfTodayInteractor,
@@ -163,11 +168,13 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.getRoutinesInteractor,
     required this.eraseDBLocalEventsInteractor,
     required this.synchronizeEventsInteractor,
+    required this.updateEventsInteractor,
     required this.chuck,
     required this.showModelAppearanceInteractor,
     required this.saveModelAppearanceInteractor,
     required this.getTodaySportsInteractor,
     required this.getDaySupplementEventsInteractor,
+    this.fcmApi,
   }) : super(DashboardState(
     isLoading: false,
     advice: '',
@@ -362,6 +369,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       catch(error) {
         Fluttertoast.showToast(msg: '$error', toastLength: Toast.LENGTH_LONG, backgroundColor: AppColors.errorRed, textColor: Colors.white);
       }
+      _registerFcmToken();
       if (event.onFinish != null) event.onFinish?.call();
       emit(state.copyWith(
         isLoading: false,
@@ -565,6 +573,10 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     on<LogoutFromAppEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true,));
       try {
+        final token = FcmService.instance.token;
+        if (token != null && fcmApi != null) {
+          try { await fcmApi!.unregisterToken(token); } catch (_) {}
+        }
         signOutInteractor.execute();
         eraseDatabaseInteractor.execute();
         sharedPreferences.clear();
@@ -999,6 +1011,22 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       totalFiberConsumed: calculateTodayConsumedFiber(),
       requiredFiber: Constants.FIBER_TOTAL_REQUIRED,
     );
+  }
+
+  void _registerFcmToken() {
+    final userId = getUserIdInteractor.execute();
+    final token = FcmService.instance.token;
+    if (userId.isNotEmpty && token != null && fcmApi != null) {
+      fcmApi!.registerToken(userId, token, Platform.isIOS ? 'ios' : 'android')
+          .catchError((_) {});
+    }
+    FcmService.instance.setOnTokenRefresh((newToken) {
+      final uid = getUserIdInteractor.execute();
+      if (uid.isNotEmpty && fcmApi != null) {
+        fcmApi!.registerToken(uid, newToken, Platform.isIOS ? 'ios' : 'android')
+            .catchError((_) {});
+      }
+    });
   }
 
   @override

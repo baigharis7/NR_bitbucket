@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_routine_interactor.dart';
@@ -17,6 +18,7 @@ import '../../../domain/models/supplements/supplement_simple.dart';
 import '../../../infrastructure/errors/error_types.dart';
 import '../../../infrastructure/helpers/date_time_helper.dart';
 import '../../../infrastructure/mappers/supplement_mappers.dart';
+import '../../../infrastructure/services/dashboard_event_bus.dart';
 
 part 'update_supplement_event.dart';
 
@@ -115,6 +117,11 @@ class UpdateSupplementBloc
 
     on<UpdateIsRoutineUpdateSupplementEvent>((event, emit) {
       state.supplementObj?.isRoutine = event.isRoutine;
+
+      if (event.isRoutine && state.supplementObj?.scheduleTime.isEmptyOrNull() == true) {
+        state.supplementObj?.scheduleTime = DateTimeHelper.timeOfDayTo24HrString(TimeOfDay.now());
+      }
+
       emit(state.copyWith(isLoading: false));
     });
 
@@ -138,6 +145,7 @@ class UpdateSupplementBloc
         await uploadSupplementFavoriteInteractor.execute(uploadSupplementFavorite);
         try {
           await saveSupplementFavoriteInteractor.execute(uploadSupplementFavorite, true);
+          DashboardEventBus.instance.notify(DataChangedCategory.supplement);
           _clearData();
           event.onFinish.call();
           emit(state.copyWith(isLoading: false));
@@ -160,6 +168,7 @@ class UpdateSupplementBloc
         await uploadSupplementRoutineInteractor.execute(uploadSupplementRoutine);
         try {
           await saveSupplementRoutineInteractor.execute(uploadSupplementRoutine, true);
+          DashboardEventBus.instance.notify(DataChangedCategory.supplement);
           _clearData();
           event.onFinish.call();
           emit(state.copyWith(isLoading: false));

@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
@@ -110,6 +112,11 @@ class UpdateSportBloc extends Bloc<UpdateSportEvent, UpdateSportState> {
 
     on<UpdateIsRoutineUpdateSportEvent>((event, emit) {
       state.sportSimple?.isCreateRoutine = event.isRoutine;
+
+      if (event.isRoutine && state.sportSimple?.scheduleTime.isEmptyOrNull() == true) {
+        state.sportSimple?.scheduleTime = DateTimeHelper.timeOfDayTo24HrString(TimeOfDay.now());
+      }
+
       emit(state.copyWith(isLoading: false, onError: null));
     });
 

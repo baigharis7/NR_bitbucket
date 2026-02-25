@@ -11,6 +11,8 @@ import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.
 import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
@@ -60,6 +62,7 @@ void main() {
   late MockSaveModelAppearanceInteractor mockSaveModelAppearance;
   late MockGetTodaySportsInteractor mockGetTodaySports;
   late MockGetDaySupplementEventsInteractor mockGetDaySupplementEvents;
+  late MockUpdateEventsInteractor mockUpdateEvents;
 
   setUp(() {
     mockGetFoodEvents = MockGetFoodEventsOfTodayInteractor();
@@ -104,6 +107,7 @@ void main() {
     mockSaveModelAppearance = MockSaveModelAppearanceInteractor();
     mockGetTodaySports = MockGetTodaySportsInteractor();
     mockGetDaySupplementEvents = MockGetDaySupplementEventsInteractor();
+    mockUpdateEvents = MockUpdateEventsInteractor();
   });
 
   DashboardBloc buildBloc() => DashboardBloc(
@@ -144,6 +148,7 @@ void main() {
     getRoutinesInteractor: mockGetRoutines,
     eraseDBLocalEventsInteractor: mockEraseDBLocalEvents,
     synchronizeEventsInteractor: mockSynchronizeEvents,
+    updateEventsInteractor: mockUpdateEvents,
     chuck: mockChuck,
     showModelAppearanceInteractor: mockShowModelAppearance,
     saveModelAppearanceInteractor: mockSaveModelAppearance,
@@ -463,6 +468,207 @@ void main() {
 
         await bloc.close();
       });
+    });
+
+    group('LogoutFromAppEventAction FCM', () {
+      late MockFcmApi mockFcmApi;
+
+      setUp(() {
+        mockFcmApi = MockFcmApi();
+      });
+
+      tearDown(() {
+        FcmService.instance.tokenForTesting = null;
+      });
+
+      blocTest<DashboardBloc, DashboardState>(
+        'unregisters FCM token before sign-out',
+        build: () {
+          FcmService.instance.tokenForTesting = 'test-token-123';
+          when(mockFcmApi.unregisterToken(any)).thenAnswer((_) async {});
+          when(mockSharedPreferences.clear()).thenAnswer((_) async => true);
+          return DashboardBloc(
+            getFoodEventsOfTodayInteractor: mockGetFoodEvents,
+            getMasterFileInteractor: mockGetMasterFile,
+            getAdviceInteractor: mockGetAdvice,
+            getUserIdInteractor: mockGetUserId,
+            getProfileInteractor: mockGetProfile,
+            getWaterEventsTodayInteractor: mockGetWaterEvents,
+            isNecessaryToShowExplainingCardInteractor: mockShowExplainingCard,
+            saveExplainingCardInteractionInteractor: mockSaveExplainingCard,
+            getDayCaloriesInteractor: mockGetDayCalories,
+            getLiquidEventsOfTodayInteractor: mockGetLiquidEvents,
+            getWeekFoodEventsInteractor: mockGetWeekFoodEvents,
+            getWeekLiquidEventsInteractor: mockGetWeekLiquidEvents,
+            getWeekSportsInteractor: mockGetWeekSports,
+            uploadProfileInteractor: mockUploadProfile,
+            saveProfileInteractor: mockSaveProfile,
+            uploadWaterEventInteractor: mockUploadWaterEvent,
+            saveWaterEventInteractor: mockSaveWaterEvent,
+            uploadStepsInteractor: mockUploadSteps,
+            saveStepsInteractor: mockSaveSteps,
+            getStepsInteractor: mockGetSteps,
+            getTodayStepInteractor: mockGetTodayStep,
+            getAllEventsSortedByDateInteractor: mockGetAllEvents,
+            getTodayCreatineEventInteractor: mockGetTodayCreatine,
+            uploadCreatineEventInteractor: mockUploadCreatine,
+            saveCreatineEventInteractor: mockSaveCreatine,
+            getTodayCollagenEventInteractor: mockGetTodayCollagen,
+            uploadCollagenEventInteractor: mockUploadCollagen,
+            saveCollagenEventInteractor: mockSaveCollagen,
+            getAllDashboardEventsSortedByDateInteractor: mockGetAllDashboardEvents,
+            getMasterFilesVersionInteractor: mockGetMasterFileVersion,
+            manageMasterFilesInteractor: mockManageMasterFiles,
+            sharedPreferences: mockSharedPreferences,
+            eraseDatabaseInteractor: mockEraseDatabase,
+            signOutInteractor: mockSignOut,
+            getRoutinesInteractor: mockGetRoutines,
+            eraseDBLocalEventsInteractor: mockEraseDBLocalEvents,
+            synchronizeEventsInteractor: mockSynchronizeEvents,
+            updateEventsInteractor: mockUpdateEvents,
+            chuck: mockChuck,
+            showModelAppearanceInteractor: mockShowModelAppearance,
+            saveModelAppearanceInteractor: mockSaveModelAppearance,
+            getTodaySportsInteractor: mockGetTodaySports,
+            getDaySupplementEventsInteractor: mockGetDaySupplementEvents,
+            fcmApi: mockFcmApi,
+          );
+        },
+        act: (bloc) => bloc.add(LogoutFromAppEventAction(onFinish: () {})),
+        expect: () => [
+          isA<DashboardState>().having((s) => s.isLoading, 'isLoading', true),
+          isA<DashboardState>().having((s) => s.isLoading, 'isLoading', false),
+        ],
+        verify: (bloc) {
+          verify(mockFcmApi.unregisterToken('test-token-123')).called(1);
+        },
+      );
+
+      blocTest<DashboardBloc, DashboardState>(
+        'logout proceeds when unregisterToken fails',
+        build: () {
+          FcmService.instance.tokenForTesting = 'test-token-123';
+          when(mockFcmApi.unregisterToken(any)).thenThrow(Exception('network error'));
+          when(mockSharedPreferences.clear()).thenAnswer((_) async => true);
+          return DashboardBloc(
+            getFoodEventsOfTodayInteractor: mockGetFoodEvents,
+            getMasterFileInteractor: mockGetMasterFile,
+            getAdviceInteractor: mockGetAdvice,
+            getUserIdInteractor: mockGetUserId,
+            getProfileInteractor: mockGetProfile,
+            getWaterEventsTodayInteractor: mockGetWaterEvents,
+            isNecessaryToShowExplainingCardInteractor: mockShowExplainingCard,
+            saveExplainingCardInteractionInteractor: mockSaveExplainingCard,
+            getDayCaloriesInteractor: mockGetDayCalories,
+            getLiquidEventsOfTodayInteractor: mockGetLiquidEvents,
+            getWeekFoodEventsInteractor: mockGetWeekFoodEvents,
+            getWeekLiquidEventsInteractor: mockGetWeekLiquidEvents,
+            getWeekSportsInteractor: mockGetWeekSports,
+            uploadProfileInteractor: mockUploadProfile,
+            saveProfileInteractor: mockSaveProfile,
+            uploadWaterEventInteractor: mockUploadWaterEvent,
+            saveWaterEventInteractor: mockSaveWaterEvent,
+            uploadStepsInteractor: mockUploadSteps,
+            saveStepsInteractor: mockSaveSteps,
+            getStepsInteractor: mockGetSteps,
+            getTodayStepInteractor: mockGetTodayStep,
+            getAllEventsSortedByDateInteractor: mockGetAllEvents,
+            getTodayCreatineEventInteractor: mockGetTodayCreatine,
+            uploadCreatineEventInteractor: mockUploadCreatine,
+            saveCreatineEventInteractor: mockSaveCreatine,
+            getTodayCollagenEventInteractor: mockGetTodayCollagen,
+            uploadCollagenEventInteractor: mockUploadCollagen,
+            saveCollagenEventInteractor: mockSaveCollagen,
+            getAllDashboardEventsSortedByDateInteractor: mockGetAllDashboardEvents,
+            getMasterFilesVersionInteractor: mockGetMasterFileVersion,
+            manageMasterFilesInteractor: mockManageMasterFiles,
+            sharedPreferences: mockSharedPreferences,
+            eraseDatabaseInteractor: mockEraseDatabase,
+            signOutInteractor: mockSignOut,
+            getRoutinesInteractor: mockGetRoutines,
+            eraseDBLocalEventsInteractor: mockEraseDBLocalEvents,
+            synchronizeEventsInteractor: mockSynchronizeEvents,
+            updateEventsInteractor: mockUpdateEvents,
+            chuck: mockChuck,
+            showModelAppearanceInteractor: mockShowModelAppearance,
+            saveModelAppearanceInteractor: mockSaveModelAppearance,
+            getTodaySportsInteractor: mockGetTodaySports,
+            getDaySupplementEventsInteractor: mockGetDaySupplementEvents,
+            fcmApi: mockFcmApi,
+          );
+        },
+        act: (bloc) => bloc.add(LogoutFromAppEventAction(onFinish: () {})),
+        expect: () => [
+          isA<DashboardState>().having((s) => s.isLoading, 'isLoading', true),
+          isA<DashboardState>().having((s) => s.isLoading, 'isLoading', false),
+        ],
+        verify: (bloc) {
+          verify(mockSignOut.execute()).called(1);
+        },
+      );
+
+      blocTest<DashboardBloc, DashboardState>(
+        'skips unregister when token is null',
+        build: () {
+          FcmService.instance.tokenForTesting = null;
+          when(mockSharedPreferences.clear()).thenAnswer((_) async => true);
+          return DashboardBloc(
+            getFoodEventsOfTodayInteractor: mockGetFoodEvents,
+            getMasterFileInteractor: mockGetMasterFile,
+            getAdviceInteractor: mockGetAdvice,
+            getUserIdInteractor: mockGetUserId,
+            getProfileInteractor: mockGetProfile,
+            getWaterEventsTodayInteractor: mockGetWaterEvents,
+            isNecessaryToShowExplainingCardInteractor: mockShowExplainingCard,
+            saveExplainingCardInteractionInteractor: mockSaveExplainingCard,
+            getDayCaloriesInteractor: mockGetDayCalories,
+            getLiquidEventsOfTodayInteractor: mockGetLiquidEvents,
+            getWeekFoodEventsInteractor: mockGetWeekFoodEvents,
+            getWeekLiquidEventsInteractor: mockGetWeekLiquidEvents,
+            getWeekSportsInteractor: mockGetWeekSports,
+            uploadProfileInteractor: mockUploadProfile,
+            saveProfileInteractor: mockSaveProfile,
+            uploadWaterEventInteractor: mockUploadWaterEvent,
+            saveWaterEventInteractor: mockSaveWaterEvent,
+            uploadStepsInteractor: mockUploadSteps,
+            saveStepsInteractor: mockSaveSteps,
+            getStepsInteractor: mockGetSteps,
+            getTodayStepInteractor: mockGetTodayStep,
+            getAllEventsSortedByDateInteractor: mockGetAllEvents,
+            getTodayCreatineEventInteractor: mockGetTodayCreatine,
+            uploadCreatineEventInteractor: mockUploadCreatine,
+            saveCreatineEventInteractor: mockSaveCreatine,
+            getTodayCollagenEventInteractor: mockGetTodayCollagen,
+            uploadCollagenEventInteractor: mockUploadCollagen,
+            saveCollagenEventInteractor: mockSaveCollagen,
+            getAllDashboardEventsSortedByDateInteractor: mockGetAllDashboardEvents,
+            getMasterFilesVersionInteractor: mockGetMasterFileVersion,
+            manageMasterFilesInteractor: mockManageMasterFiles,
+            sharedPreferences: mockSharedPreferences,
+            eraseDatabaseInteractor: mockEraseDatabase,
+            signOutInteractor: mockSignOut,
+            getRoutinesInteractor: mockGetRoutines,
+            eraseDBLocalEventsInteractor: mockEraseDBLocalEvents,
+            synchronizeEventsInteractor: mockSynchronizeEvents,
+            updateEventsInteractor: mockUpdateEvents,
+            chuck: mockChuck,
+            showModelAppearanceInteractor: mockShowModelAppearance,
+            saveModelAppearanceInteractor: mockSaveModelAppearance,
+            getTodaySportsInteractor: mockGetTodaySports,
+            getDaySupplementEventsInteractor: mockGetDaySupplementEvents,
+            fcmApi: mockFcmApi,
+          );
+        },
+        act: (bloc) => bloc.add(LogoutFromAppEventAction(onFinish: () {})),
+        expect: () => [
+          isA<DashboardState>().having((s) => s.isLoading, 'isLoading', true),
+          isA<DashboardState>().having((s) => s.isLoading, 'isLoading', false),
+        ],
+        verify: (bloc) {
+          verifyNever(mockFcmApi.unregisterToken(any));
+          verify(mockSignOut.execute()).called(1);
+        },
+      );
     });
   });
 }

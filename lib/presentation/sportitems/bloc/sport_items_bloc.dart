@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/eventssync/update_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_sport_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/remove_sport_event_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
@@ -23,6 +26,7 @@ class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
   final DeleteSportEventInteractor deleteSportEventInteractor;
   final RemoveSportEventInteractor removeSportEventInteractor;
   final UpdateEventsInteractor updateEventsInteractor;
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   SportItemsBloc({
     required this.getUserIdInteractor,
@@ -32,6 +36,11 @@ class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
     required this.removeSportEventInteractor,
     required this.updateEventsInteractor,
   }) : super(SportItemsState(isLoading: false)) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.sport) {
+        add(SportItemsInitialization());
+      }
+    });
     on<SportItemsInitialization>((event, emit) async {
       state.sportsInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
       state.sportEvents = await getTodaySportsInteractor.execute(dateTime: state.dateTime);
@@ -56,6 +65,7 @@ class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
         await deleteSportEventInteractor.execute(event.sportEventComplete.userId, event.sportEventComplete.eventId);
         try {
           await removeSportEventInteractor.execute(event.sportEventComplete);
+          DashboardEventBus.instance.notify(DataChangedCategory.sport);
           state.sportEvents = await getTodaySportsInteractor.execute(dateTime: state.dateTime);
           emit(state.copyWith(isLoading: false));
         } catch (_) {
@@ -65,5 +75,11 @@ class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteSportEventError));
       }
     });
+  }
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
   }
 }

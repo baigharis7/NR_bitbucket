@@ -1,4 +1,6 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/save_food_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/upload_food_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/save_food_routine_interactor.dart';
@@ -150,6 +152,16 @@ class UpdateMealBloc extends Bloc<UpdateMealEvent, UpdateMealState> {
 
     on<UpdateIsRoutineUpdateMealEvent>((event, emit) {
       state.foodEvent?.isRoutine = event.isRoutine;
+
+      if (event.isRoutine && state.foodEvent?.mealTime == 3 && state.foodEvent?.time.isEmptyOrNull() == true) {
+        state.foodEvent?.time = DateTimeHelper.timeOfDayTo24HrString(TimeOfDay.now());
+      }
+
+      emit(state.copyWith(isLoading: false));
+    });
+
+    on<UpdateScheduleTimeUpdateMealEvent>((event, emit) {
+      state.foodEvent?.time = event.scheduleTime;
       emit(state.copyWith(isLoading: false));
     });
 

@@ -468,6 +468,7 @@ void main() {
     late MockSaveModelAppearanceInteractor mockSaveModelAppearance;
     late MockGetTodaySportsInteractor mockGetTodaySports;
     late MockGetDaySupplementEventsInteractor mockGetDaySupplementEvents;
+    late MockUpdateEventsInteractor mockUpdateEvents;
 
     setUp(() {
       mockGetFoodEvents = MockGetFoodEventsOfTodayInteractor();
@@ -512,6 +513,7 @@ void main() {
       mockSaveModelAppearance = MockSaveModelAppearanceInteractor();
       mockGetTodaySports = MockGetTodaySportsInteractor();
       mockGetDaySupplementEvents = MockGetDaySupplementEventsInteractor();
+      mockUpdateEvents = MockUpdateEventsInteractor();
     });
 
     DashboardBloc buildBloc() => DashboardBloc(
@@ -557,6 +559,7 @@ void main() {
           saveModelAppearanceInteractor: mockSaveModelAppearance,
           getTodaySportsInteractor: mockGetTodaySports,
           getDaySupplementEventsInteractor: mockGetDaySupplementEvents,
+          updateEventsInteractor: mockUpdateEvents,
         );
 
     void stubInitializeDefaults() {

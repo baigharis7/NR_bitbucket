@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/delete_food_favorite_interactor.dart';
@@ -209,6 +210,11 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
 
     on<UpdateIsCreateRoutineEventAction>((event, emit) {
       state.foodEvent!.isRoutine = (state.foodEvent!.isRoutine ?? false) ? false : true;
+
+      // Auto-initialize time for snack routines (snack mealTime == 3 has no default time)
+      if (state.foodEvent!.isRoutine == true && state.foodEvent?.mealTime == 3 && state.foodEvent?.time.isEmptyOrNull() == true) {
+        state.foodEvent?.time = DateTimeHelper.timeOfDayTo24HrString(TimeOfDay.now());
+      }
 
       emit(state.copyWith(isLoading: false, onError: null));
     },);
@@ -458,29 +464,6 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         if (uploadedRoutine) {
           try {
             await saveFoodRoutineInteractor.execute(event.foodRoutineEvent, state.isEdit ?? false);
-
-            // Also log the item as an event
-            try {
-              final foodEventSimple = mapToFoodEventSimpleFromFoodFavorite(state.foodEvent!);
-              foodEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
-              foodEventSimple.userId = getUserIdInteractor.execute();
-              foodEventSimple.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
-              final uploadFoodEvent = await uploadFoodEventInteractor.execute(foodEventSimple);
-              if (uploadFoodEvent.uploadSuccess) {
-                await saveFoodEventInteractor.execute(uploadFoodEvent, false);
-                DashboardEventBus.instance.notify(DataChangedCategory.food);
-              }
-            } catch (error, st) {
-              CrashlyticsService.record(
-                error,
-                st,
-                context: {
-                  'action': 'Food event logging alongside routine',
-                  'screen': 'Add Food',
-                  'event data': event.foodRoutineEvent.toJson().toString(),
-                },
-              );
-            }
 
             _clearFields();
             emit(state.copyWith(isLoading: false, onError: null,));

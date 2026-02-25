@@ -84,10 +84,19 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: _selectedTime,
+      initialEntryMode: TimePickerEntryMode.dial,
       builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-          child: child!,
+        return Theme(
+          data: Theme.of(context).copyWith(
+            useMaterial3: true,
+            timePickerTheme: TimePickerThemeData(
+              hourMinuteTextStyle: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+            ),
+          ),
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child!,
+          ),
         );
       },
     );

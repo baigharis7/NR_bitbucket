@@ -30,7 +30,7 @@ class ManageMasterFilesInteractorImpl extends ManageMasterFilesInteractor {
       cookingMethodsInfoVersion,
       oilTypesVersion,
       conversionFactorsVersion,
-      conversionFactorsVersion,
+      conversionFactorsInfoVersion,
       foodsAndDrinksNamesVersion,
       nutrientsInfoVersion,
       objectivesInfoVersion,

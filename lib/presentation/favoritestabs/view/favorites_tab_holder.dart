@@ -45,7 +45,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
 
   @override
   void didChangeDependencies() {
-    _tabs = [AppLocalizations.of(context)!.meal.toUpperCase(), AppLocalizations.of(context)!.physical_activity.toUpperCase(), AppLocalizations.of(context)!.supplements];
+    _tabs = [AppLocalizations.of(context)!.meal.toUpperCase(), AppLocalizations.of(context)!.physical_activity.toUpperCase(), AppLocalizations.of(context)!.supplements.toUpperCase()];
     super.didChangeDependencies();
   }
 
@@ -165,7 +165,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
                   controller: _tabController,
                   indicator: BoxDecoration(
                     color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(Dimens.borderNormal),
+                    borderRadius: BorderRadius.circular(Dimens.border15),
                   ),
                   labelPadding: const EdgeInsets.symmetric(horizontal: Dimens.padding6),
                   labelColor: Colors.white,
@@ -177,8 +177,8 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
                       height: 45,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(Dimens.borderNormal),
-                        color: isSelected ? AppColors.yellowishGreen : AppColors.butter59,
+                        borderRadius: BorderRadius.circular(Dimens.border15),
+                        color: isSelected ? AppColors.yellowishGreen59 : AppColors.butter59,
                       ),
                       child: Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6), child: Text(_tabs[index], style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize11), textAlign: TextAlign.center)),
                     );

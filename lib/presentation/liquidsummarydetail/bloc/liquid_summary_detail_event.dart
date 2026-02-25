@@ -6,7 +6,7 @@ abstract class LiquidSummaryDetailEvent {}
 class LoadLiquidSummaryEventAction extends LiquidSummaryDetailEvent {
   final List<WaterEventMaster>? waterEvents;
 
-  LoadLiquidSummaryEventAction({required this.waterEvents});
+  LoadLiquidSummaryEventAction({this.waterEvents});
 }
 
 class FinishWaterEventAction extends LiquidSummaryDetailEvent {

@@ -254,7 +254,8 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
               );
             },
             itemBuilder: (context, suggestion) {
-              return Padding(
+              return Container(
+                width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Text(
                   suggestion,

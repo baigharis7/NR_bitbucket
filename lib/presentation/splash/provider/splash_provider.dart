@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:chuck_interceptor/chuck.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -10,7 +11,9 @@ import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_toke
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+import 'package:nutrenaissance_flutter/data/api/fcm/fcm_api.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/profile_computation_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/num_constants.dart';
@@ -49,6 +52,7 @@ class SplashProvider extends ChangeNotifier {
   late EventsSynchronizationRequestRepository eventsSynchronizationRequestRepository;
   late SynchronizeEventsInteractor synchronizeEventsInteractor;
   late GetUserIdInteractor getUserIdInteractor;
+  late FcmApi fcmApi;
 
   SplashProvider();
 
@@ -75,9 +79,10 @@ class SplashProvider extends ChangeNotifier {
     getProfileInteractor = GetProfileInteractorImpl(profileRepository: profileRepository);
     eraseDBLocalEventsInteractor = EraseDBLocalEventsInteractorImpl(localStorageRepository: localStorageRepository);
     eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService, chuck);
-    eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi, preferencesRepository: prefsRepository);
+    eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
     synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
     getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
+    fcmApi = FcmApi(prefsRepository, authenticationService, chuck);
 
     final profile = await getProfileInteractor.execute();
     getIdTokenInteractor = GetIdTokenInteractorImpl(
@@ -102,6 +107,11 @@ class SplashProvider extends ChangeNotifier {
         // await eraseDBLocalEventsInteractor.execute();
         await synchronizeEventsInteractor.execute(getUserIdInteractor.execute(), fullSync: false); // Doing partial sync
         // await preferencesRepository.saveLastFetchTime(PrefsKeys.synchronizeEvents, DateTime.now());
+        final fcmToken = FcmService.instance.token;
+        if (fcmToken != null) {
+          fcmApi.registerToken(userId, fcmToken, Platform.isIOS ? 'ios' : 'android')
+              .catchError((_) {});
+        }
       } catch(_) {}
       await doAccordingToToken(toLogin, toDashboard, profile);
     } else {

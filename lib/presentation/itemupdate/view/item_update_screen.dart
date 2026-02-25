@@ -174,6 +174,7 @@ class _ItemUpdateScreenState extends State<ItemUpdateScreen> {
                         showValidation: _showValidation,
                       );
                   },),
+                  if (state.foodEvent?.ingredients.isNotEmpty == true) const SizedBox(height: Dimens.height12),
                   if (state.foodEvent?.ingredients.isNotEmpty == true) Container(
                     margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                     child: GeneralButton(onTap: () {
