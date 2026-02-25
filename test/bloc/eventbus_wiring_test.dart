@@ -14,9 +14,27 @@ import 'package:nutrenaissance_flutter/presentation/calendar/bloc/calendar_bloc.
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/bloc/liquid_summary_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportitems/bloc/sport_items_bloc.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
 import 'package:nutrenaissance_flutter/presentation/updatesupplement/bloc/update_supplement_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/supplementsdetail/bloc/supplements_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/mealtimedetails/bloc/meal_time_details_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/bloc/weekly_dashboard_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/bloc/macro_nutrients_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/micronutrients_detail/bloc/micro_nutrients_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/energy_balance_detail/bloc/energy_balance_detail_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_food_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_liquid_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_sport_bloc.dart';
 
 import 'bloc_test_mocks.mocks.dart';
+
+final _stubNutrientsInfo = NutrientsInfoMaster(nutrientsInfo: [
+  NutrientInfoMaster(officialName: 'proteinSci', unit: 'g', en: 'Protein', es: 'Proteína'),
+  NutrientInfoMaster(officialName: 'carbsAvailable', unit: 'g', en: 'Carbs', es: 'Carbohidratos'),
+  NutrientInfoMaster(officialName: 'fatTotal', unit: 'g', en: 'Fat', es: 'Grasa'),
+  NutrientInfoMaster(officialName: 'addedSugar', unit: 'g', en: 'Added Sugar', es: 'Azúcar'),
+  NutrientInfoMaster(officialName: 'fiber', unit: 'g', en: 'Fiber', es: 'Fibra'),
+]);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -526,6 +544,730 @@ void main() {
 
       await sub.cancel();
       await bloc.close();
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // SupplementsDetailBloc EventBus
+  // ---------------------------------------------------------------------------
+  group('SupplementsDetailBloc EventBus', () {
+    late MockGetDaySupplementEventsInteractor mockGetDaySuppEvents;
+    late MockDeleteSupplementEventInteractor mockDeleteSuppEvent;
+    late MockRemoveSupplementEventInteractor mockRemoveSuppEvent;
+    late MockGetMasterFileInteractor mockGetMasterFile;
+    late MockGetProfileInteractor mockGetProfile;
+    late MockUpdateEventsInteractor mockUpdateEvents;
+
+    setUp(() {
+      mockGetDaySuppEvents = MockGetDaySupplementEventsInteractor();
+      mockDeleteSuppEvent = MockDeleteSupplementEventInteractor();
+      mockRemoveSuppEvent = MockRemoveSupplementEventInteractor();
+      mockGetMasterFile = MockGetMasterFileInteractor();
+      mockGetProfile = MockGetProfileInteractor();
+      mockUpdateEvents = MockUpdateEventsInteractor();
+    });
+
+    SupplementsDetailBloc buildBloc() => SupplementsDetailBloc(
+          getDaySupplementEventsInteractor: mockGetDaySuppEvents,
+          deleteSupplementEventInteractor: mockDeleteSuppEvent,
+          removeSupplementEventInteractor: mockRemoveSuppEvent,
+          getMasterFileInteractor: mockGetMasterFile,
+          getProfileInteractor: mockGetProfile,
+          updateEventsInteractor: mockUpdateEvents,
+        );
+
+    test('supplement event bus notification triggers reload', () async {
+      when(mockGetDaySuppEvents.execute(dateTime: anyNamed('dateTime')))
+          .thenAnswer((_) async => <SupplementSimple>[]);
+
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.supplement);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verify(mockGetDaySuppEvents.execute(dateTime: anyNamed('dateTime'))).called(greaterThanOrEqualTo(1));
+
+      await bloc.close();
+    });
+
+    test('food event bus notification does NOT trigger reload', () async {
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetDaySuppEvents.execute(dateTime: anyNamed('dateTime')));
+
+      await bloc.close();
+    });
+
+    test('close cancels event bus subscription', () async {
+      final bloc = buildBloc();
+      await bloc.close();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.supplement);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetDaySuppEvents.execute(dateTime: anyNamed('dateTime')));
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // MealTimeDetailsBloc EventBus
+  // ---------------------------------------------------------------------------
+  group('MealTimeDetailsBloc EventBus', () {
+    late MockGetUserIdInteractor mockGetUserId;
+    late MockGetFoodEventsOfTodayInteractor mockGetFoodEvents;
+    late MockGetTodayLiquidEventsInteractor mockGetLiquidEvents;
+    late MockGetProfileInteractor mockGetProfile;
+    late MockGetMasterFileInteractor mockGetMasterFile;
+    late MockDeleteFoodEventInteractor mockDeleteFoodEvent;
+    late MockRemoveFoodEventInteractor mockRemoveFoodEvent;
+    late MockUpdateEventsInteractor mockUpdateEvents;
+    late MockPreferencesRepository mockPreferencesRepo;
+
+    setUp(() {
+      mockGetUserId = MockGetUserIdInteractor();
+      mockGetFoodEvents = MockGetFoodEventsOfTodayInteractor();
+      mockGetLiquidEvents = MockGetTodayLiquidEventsInteractor();
+      mockGetProfile = MockGetProfileInteractor();
+      mockGetMasterFile = MockGetMasterFileInteractor();
+      mockDeleteFoodEvent = MockDeleteFoodEventInteractor();
+      mockRemoveFoodEvent = MockRemoveFoodEventInteractor();
+      mockUpdateEvents = MockUpdateEventsInteractor();
+      mockPreferencesRepo = MockPreferencesRepository();
+    });
+
+    MealTimeDetailsBloc buildBloc() => MealTimeDetailsBloc(
+          getUserIdInteractor: mockGetUserId,
+          getFoodEventsOfTodayInteractor: mockGetFoodEvents,
+          getLiquidEventsOfTodayInteractor: mockGetLiquidEvents,
+          getProfileInteractor: mockGetProfile,
+          getMasterFileInteractor: mockGetMasterFile,
+          deleteFoodEventInteractor: mockDeleteFoodEvent,
+          removeFoodEventInteractor: mockRemoveFoodEvent,
+          updateEventsInteractor: mockUpdateEvents,
+          preferencesRepository: mockPreferencesRepo,
+        );
+
+    void stubAllInteractors() {
+      when(mockGetFoodEvents.execute(dateTime: anyNamed('dateTime')))
+          .thenAnswer((_) async => <FoodEventComplete>[]);
+      when(mockGetLiquidEvents.execute(dateTime: anyNamed('dateTime')))
+          .thenAnswer((_) async => <LiquidEventComplete>[]);
+    }
+
+    test('food event bus notification triggers summary reload', () async {
+      stubAllInteractors();
+
+      final bloc = buildBloc();
+      // Summary handler depends on state set during full init
+      bloc.state.nutrientsInfoMaster = _stubNutrientsInfo;
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verify(mockGetFoodEvents.execute(dateTime: anyNamed('dateTime'))).called(greaterThanOrEqualTo(1));
+
+      await bloc.close();
+    });
+
+    test('sport event bus notification does NOT trigger reload', () async {
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.sport);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetFoodEvents.execute(dateTime: anyNamed('dateTime')));
+
+      await bloc.close();
+    });
+
+    test('close cancels event bus subscription', () async {
+      final bloc = buildBloc();
+      await bloc.close();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetFoodEvents.execute(dateTime: anyNamed('dateTime')));
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // WeeklyDashboardDetailBloc EventBus
+  // ---------------------------------------------------------------------------
+  group('WeeklyDashboardDetailBloc EventBus', () {
+    late MockGetWeekFoodEventsInteractor mockGetWeekFood;
+    late MockGetUserMicronutrientsInteractor mockGetUserMicro;
+    late MockGetUserRdasInteractor mockGetUserRdas;
+    late MockGetProfileInteractor mockGetProfile;
+    late MockGetMasterFileInteractor mockGetMasterFile;
+    late MockGetWeekLiquidEventsInteractor mockGetWeekLiquid;
+    late MockGetWeekSportsInteractor mockGetWeekSports;
+
+    setUp(() {
+      mockGetWeekFood = MockGetWeekFoodEventsInteractor();
+      mockGetUserMicro = MockGetUserMicronutrientsInteractor();
+      mockGetUserRdas = MockGetUserRdasInteractor();
+      mockGetProfile = MockGetProfileInteractor();
+      mockGetMasterFile = MockGetMasterFileInteractor();
+      mockGetWeekLiquid = MockGetWeekLiquidEventsInteractor();
+      mockGetWeekSports = MockGetWeekSportsInteractor();
+    });
+
+    WeeklyDashboardDetailBloc buildBloc() => WeeklyDashboardDetailBloc(
+          getWeekFoodEventsInteractor: mockGetWeekFood,
+          getUserMicronutrientsInteractor: mockGetUserMicro,
+          getUserRdasInteractor: mockGetUserRdas,
+          getProfileInteractor: mockGetProfile,
+          getMasterFileInteractor: mockGetMasterFile,
+          getWeekLiquidEventsInteractor: mockGetWeekLiquid,
+          getWeekSportsInteractor: mockGetWeekSports,
+        );
+
+    void stubAllInteractors() {
+      when(mockGetUserMicro.execute()).thenAnswer((_) async => []);
+      when(mockGetUserRdas.execute()).thenAnswer((_) async => []);
+      when(mockGetMasterFile.execute(any)).thenAnswer((_) async => _stubNutrientsInfo);
+      when(mockGetWeekFood.execute()).thenAnswer((_) async => <FoodEventComplete>[]);
+      when(mockGetProfile.execute()).thenAnswer((_) async => UserProfileModel());
+      when(mockGetWeekLiquid.execute()).thenAnswer((_) async => <LiquidEventComplete>[]);
+      when(mockGetWeekSports.execute()).thenAnswer((_) async => <SportEventComplete>[]);
+    }
+
+    for (final category in [
+      DataChangedCategory.food,
+      DataChangedCategory.sport,
+      DataChangedCategory.liquid,
+    ]) {
+      test('$category event bus notification triggers reload', () async {
+        stubAllInteractors();
+
+        final bloc = buildBloc();
+
+        DashboardEventBus.instance.notify(category);
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        verify(mockGetWeekFood.execute()).called(greaterThanOrEqualTo(1));
+
+        await bloc.close();
+      });
+    }
+
+    test('supplement event bus notification does NOT trigger reload', () async {
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.supplement);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetWeekFood.execute());
+
+      await bloc.close();
+    });
+
+    test('close cancels event bus subscription', () async {
+      stubAllInteractors();
+      final bloc = buildBloc();
+      await bloc.close();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetWeekFood.execute());
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // MacroNutrientsDetailBloc EventBus
+  // ---------------------------------------------------------------------------
+  group('MacroNutrientsDetailBloc EventBus', () {
+    late MockGetMasterFileInteractor mockGetMasterFile;
+    late MockGetProfileInteractor mockGetProfile;
+    late MockGetWeekFoodEventsInteractor mockGetWeekFood;
+
+    setUp(() {
+      mockGetMasterFile = MockGetMasterFileInteractor();
+      mockGetProfile = MockGetProfileInteractor();
+      mockGetWeekFood = MockGetWeekFoodEventsInteractor();
+    });
+
+    MacroNutrientsDetailBloc buildBloc() => MacroNutrientsDetailBloc(
+          getMasterFileInteractor: mockGetMasterFile,
+          getProfileInteractor: mockGetProfile,
+          getWeekFoodEventsInteractor: mockGetWeekFood,
+        );
+
+    void stubAllInteractors() {
+      when(mockGetMasterFile.execute(any)).thenAnswer((_) async => _stubNutrientsInfo);
+      when(mockGetProfile.execute()).thenAnswer((_) async => UserProfileModel());
+      when(mockGetWeekFood.execute()).thenAnswer((_) async => <FoodEventComplete>[]);
+    }
+
+    for (final category in [
+      DataChangedCategory.food,
+      DataChangedCategory.liquid,
+    ]) {
+      test('$category event bus notification triggers reload', () async {
+        stubAllInteractors();
+
+        final bloc = buildBloc();
+
+        DashboardEventBus.instance.notify(category);
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        verify(mockGetWeekFood.execute()).called(greaterThanOrEqualTo(1));
+
+        await bloc.close();
+      });
+    }
+
+    test('sport event bus notification does NOT trigger reload', () async {
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.sport);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetWeekFood.execute());
+
+      await bloc.close();
+    });
+
+    test('close cancels event bus subscription', () async {
+      final bloc = buildBloc();
+      await bloc.close();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetWeekFood.execute());
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // MicroNutrientsDetailBloc EventBus
+  // ---------------------------------------------------------------------------
+  group('MicroNutrientsDetailBloc EventBus', () {
+    late MockGetWeekFoodEventsInteractor mockGetWeekFood;
+    late MockGetMasterFileInteractor mockGetMasterFile;
+    late MockGetProfileInteractor mockGetProfile;
+    late MockGetFoodEventsOfTodayInteractor mockGetFoodEvents;
+
+    setUp(() {
+      mockGetWeekFood = MockGetWeekFoodEventsInteractor();
+      mockGetMasterFile = MockGetMasterFileInteractor();
+      mockGetProfile = MockGetProfileInteractor();
+      mockGetFoodEvents = MockGetFoodEventsOfTodayInteractor();
+    });
+
+    MicroNutrientsDetailBloc buildBloc() => MicroNutrientsDetailBloc(
+          getWeekFoodEventsInteractor: mockGetWeekFood,
+          getMasterFileInteractor: mockGetMasterFile,
+          getProfileInteractor: mockGetProfile,
+          getFoodEventsOfTodayInteractor: mockGetFoodEvents,
+        );
+
+    void stubAllInteractors() {
+      when(mockGetWeekFood.execute()).thenAnswer((_) async => <FoodEventComplete>[]);
+      when(mockGetMasterFile.execute(any)).thenAnswer((_) async => _stubNutrientsInfo);
+      when(mockGetProfile.execute()).thenAnswer((_) async => UserProfileModel());
+      when(mockGetFoodEvents.execute(dateTime: anyNamed('dateTime'))).thenAnswer((_) async => <FoodEventComplete>[]);
+    }
+
+    for (final category in [
+      DataChangedCategory.food,
+      DataChangedCategory.supplement,
+    ]) {
+      test('$category event bus notification triggers reload', () async {
+        stubAllInteractors();
+
+        final bloc = buildBloc();
+
+        DashboardEventBus.instance.notify(category);
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        verify(mockGetWeekFood.execute()).called(greaterThanOrEqualTo(1));
+
+        await bloc.close();
+      });
+    }
+
+    test('sport event bus notification does NOT trigger reload', () async {
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.sport);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetWeekFood.execute());
+
+      await bloc.close();
+    });
+
+    test('close cancels event bus subscription', () async {
+      final bloc = buildBloc();
+      await bloc.close();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetWeekFood.execute());
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // EnergyBalanceDetailBloc EventBus
+  // ---------------------------------------------------------------------------
+  group('EnergyBalanceDetailBloc EventBus', () {
+    late MockGetWeekFoodEventsInteractor mockGetWeekFood;
+    late MockGetWeekLiquidEventsInteractor mockGetWeekLiquid;
+    late MockGetWeekSportsInteractor mockGetWeekSports;
+    late MockGetProfileInteractor mockGetProfile;
+
+    setUp(() {
+      mockGetWeekFood = MockGetWeekFoodEventsInteractor();
+      mockGetWeekLiquid = MockGetWeekLiquidEventsInteractor();
+      mockGetWeekSports = MockGetWeekSportsInteractor();
+      mockGetProfile = MockGetProfileInteractor();
+    });
+
+    EnergyBalanceDetailBloc buildBloc() => EnergyBalanceDetailBloc(
+          getWeekFoodEventsInteractor: mockGetWeekFood,
+          getWeekLiquidEventsInteractor: mockGetWeekLiquid,
+          getWeekSportsInteractor: mockGetWeekSports,
+          getProfileInteractor: mockGetProfile,
+        );
+
+    void stubAllInteractors() {
+      when(mockGetWeekFood.execute()).thenAnswer((_) async => <FoodEventComplete>[]);
+      when(mockGetWeekLiquid.execute()).thenAnswer((_) async => <LiquidEventComplete>[]);
+      when(mockGetWeekSports.execute()).thenAnswer((_) async => <SportEventComplete>[]);
+      when(mockGetProfile.execute()).thenAnswer((_) async => UserProfileModel());
+    }
+
+    for (final category in [
+      DataChangedCategory.food,
+      DataChangedCategory.liquid,
+      DataChangedCategory.sport,
+    ]) {
+      test('$category event bus notification triggers reload', () async {
+        stubAllInteractors();
+
+        final bloc = buildBloc();
+
+        DashboardEventBus.instance.notify(category);
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        verify(mockGetWeekFood.execute()).called(greaterThanOrEqualTo(1));
+
+        await bloc.close();
+      });
+    }
+
+    test('supplement event bus notification does NOT trigger reload', () async {
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.supplement);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetWeekFood.execute());
+
+      await bloc.close();
+    });
+
+    test('close cancels event bus subscription', () async {
+      final bloc = buildBloc();
+      await bloc.close();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetWeekFood.execute());
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // JournalFoodBloc EventBus
+  // ---------------------------------------------------------------------------
+  group('JournalFoodBloc EventBus', () {
+    late MockGetFoodEventsOfTodayInteractor mockGetFoodEvents;
+    late MockGetFoodFavoritesInteractor mockGetFoodFavorites;
+    late MockGetWeekFoodEventsInteractor mockGetWeekFood;
+    late MockGetUserKcalInteractor mockGetUserKcal;
+    late MockIsNecessaryToShowExplainingCardInteractor mockShowExplainingCard;
+    late MockSaveExplainingCardInteractionInteractor mockSaveExplainingCard;
+    late MockSaveFoodFavoriteInteractor mockSaveFoodFavorite;
+    late MockUploadFoodFavoriteInteractor mockUploadFoodFavorite;
+    late MockGetUserIdInteractor mockGetUserId;
+    late MockRemoveFoodFavoriteFromLocalInteractor mockRemoveFoodFavorite;
+    late MockDeleteFoodFavoriteInteractor mockDeleteFoodFavorite;
+    late MockDeleteFoodEventInteractor mockDeleteFoodEvent;
+    late MockRemoveFoodEventInteractor mockRemoveFoodEvent;
+
+    setUp(() {
+      mockGetFoodEvents = MockGetFoodEventsOfTodayInteractor();
+      mockGetFoodFavorites = MockGetFoodFavoritesInteractor();
+      mockGetWeekFood = MockGetWeekFoodEventsInteractor();
+      mockGetUserKcal = MockGetUserKcalInteractor();
+      mockShowExplainingCard = MockIsNecessaryToShowExplainingCardInteractor();
+      mockSaveExplainingCard = MockSaveExplainingCardInteractionInteractor();
+      mockSaveFoodFavorite = MockSaveFoodFavoriteInteractor();
+      mockUploadFoodFavorite = MockUploadFoodFavoriteInteractor();
+      mockGetUserId = MockGetUserIdInteractor();
+      mockRemoveFoodFavorite = MockRemoveFoodFavoriteFromLocalInteractor();
+      mockDeleteFoodFavorite = MockDeleteFoodFavoriteInteractor();
+      mockDeleteFoodEvent = MockDeleteFoodEventInteractor();
+      mockRemoveFoodEvent = MockRemoveFoodEventInteractor();
+    });
+
+    JournalFoodBloc buildBloc() => JournalFoodBloc(
+          getFoodEventsOfTodayInteractor: mockGetFoodEvents,
+          getFoodFavoritesInteractor: mockGetFoodFavorites,
+          getWeekFoodEventsInteractor: mockGetWeekFood,
+          getUserKcalInteractor: mockGetUserKcal,
+          isNecessaryToShowExplainingCardInteractor: mockShowExplainingCard,
+          saveExplainingCardInteractionInteractor: mockSaveExplainingCard,
+          saveFoodFavoriteInteractor: mockSaveFoodFavorite,
+          uploadFoodFavoriteInteractor: mockUploadFoodFavorite,
+          getUserIdInteractor: mockGetUserId,
+          removeFoodFavoriteFromLocalInteractor: mockRemoveFoodFavorite,
+          deleteFoodFavoriteInteractor: mockDeleteFoodFavorite,
+          deleteFoodEventInteractor: mockDeleteFoodEvent,
+          removeFoodEventInteractor: mockRemoveFoodEvent,
+        );
+
+    void stubAllInteractors() {
+      when(mockGetUserKcal.execute()).thenAnswer((_) async => 2000);
+      when(mockGetFoodEvents.execute()).thenAnswer((_) async => <FoodEventComplete>[]);
+      when(mockGetFoodFavorites.execute()).thenAnswer((_) async => []);
+      when(mockGetWeekFood.execute()).thenAnswer((_) async => <FoodEventComplete>[]);
+      when(mockShowExplainingCard.execute(any)).thenAnswer((_) async => false);
+    }
+
+    test('food event bus notification triggers reload', () async {
+      stubAllInteractors();
+
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verify(mockGetFoodEvents.execute()).called(greaterThanOrEqualTo(1));
+
+      await bloc.close();
+    });
+
+    test('sport event bus notification does NOT trigger reload', () async {
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.sport);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetFoodEvents.execute());
+
+      await bloc.close();
+    });
+
+    test('close cancels event bus subscription', () async {
+      final bloc = buildBloc();
+      await bloc.close();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetFoodEvents.execute());
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // JournalLiquidBloc EventBus
+  // ---------------------------------------------------------------------------
+  group('JournalLiquidBloc EventBus', () {
+    late MockGetTodayLiquidEventsInteractor mockGetLiquidEvents;
+    late MockGetWeekLiquidEventsInteractor mockGetWeekLiquid;
+    late MockGetUserKcalInteractor mockGetUserKcal;
+    late MockIsNecessaryToShowExplainingCardInteractor mockShowExplainingCard;
+    late MockSaveExplainingCardInteractionInteractor mockSaveExplainingCard;
+    late MockGetWaterEventsTodayInteractor mockGetWaterEvents;
+    late MockGetProfileInteractor mockGetProfile;
+    late MockDeleteLiquidEventInteractor mockDeleteLiquidEvent;
+    late MockRemoveLiquidEventInteractor mockRemoveLiquidEvent;
+    late MockGetUserIdInteractor mockGetUserId;
+
+    setUp(() {
+      mockGetLiquidEvents = MockGetTodayLiquidEventsInteractor();
+      mockGetWeekLiquid = MockGetWeekLiquidEventsInteractor();
+      mockGetUserKcal = MockGetUserKcalInteractor();
+      mockShowExplainingCard = MockIsNecessaryToShowExplainingCardInteractor();
+      mockSaveExplainingCard = MockSaveExplainingCardInteractionInteractor();
+      mockGetWaterEvents = MockGetWaterEventsTodayInteractor();
+      mockGetProfile = MockGetProfileInteractor();
+      mockDeleteLiquidEvent = MockDeleteLiquidEventInteractor();
+      mockRemoveLiquidEvent = MockRemoveLiquidEventInteractor();
+      mockGetUserId = MockGetUserIdInteractor();
+    });
+
+    JournalLiquidBloc buildBloc() => JournalLiquidBloc(
+          getLiquidEventsOfTodayInteractor: mockGetLiquidEvents,
+          getWeekLiquidEventsInteractor: mockGetWeekLiquid,
+          getUserKcalInteractor: mockGetUserKcal,
+          isNecessaryToShowExplainingCardInteractor: mockShowExplainingCard,
+          saveExplainingCardInteractionInteractor: mockSaveExplainingCard,
+          getWaterEventsTodayInteractor: mockGetWaterEvents,
+          getProfileInteractor: mockGetProfile,
+          deleteLiquidEventInteractor: mockDeleteLiquidEvent,
+          removeLiquidEventInteractor: mockRemoveLiquidEvent,
+          getUserIdInteractor: mockGetUserId,
+        );
+
+    void stubAllInteractors() {
+      when(mockGetUserKcal.execute()).thenAnswer((_) async => 2000);
+      when(mockGetProfile.execute()).thenAnswer((_) async => UserProfileModel());
+      when(mockGetLiquidEvents.execute()).thenAnswer((_) async => <LiquidEventComplete>[]);
+      when(mockGetWeekLiquid.execute()).thenAnswer((_) async => <LiquidEventComplete>[]);
+      when(mockGetWaterEvents.execute()).thenAnswer((_) async => <WaterEventMaster>[]);
+      when(mockShowExplainingCard.execute(any)).thenAnswer((_) async => false);
+    }
+
+    for (final category in [
+      DataChangedCategory.liquid,
+      DataChangedCategory.water,
+    ]) {
+      test('$category event bus notification triggers reload', () async {
+        stubAllInteractors();
+
+        final bloc = buildBloc();
+
+        DashboardEventBus.instance.notify(category);
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        verify(mockGetLiquidEvents.execute()).called(greaterThanOrEqualTo(1));
+
+        await bloc.close();
+      });
+    }
+
+    test('food event bus notification does NOT trigger reload', () async {
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetLiquidEvents.execute());
+
+      await bloc.close();
+    });
+
+    test('close cancels event bus subscription', () async {
+      final bloc = buildBloc();
+      await bloc.close();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.liquid);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetLiquidEvents.execute());
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // JournalSportBloc EventBus
+  // ---------------------------------------------------------------------------
+  group('JournalSportBloc EventBus', () {
+    late MockGetMasterFileInteractor mockGetMasterFile;
+    late MockGetUserKcalInteractor mockGetUserKcal;
+    late MockGetTodaySportsInteractor mockGetTodaySports;
+    late MockGetWeekSportsInteractor mockGetWeekSports;
+    late MockIsNecessaryToShowExplainingCardInteractor mockShowExplainingCard;
+    late MockSaveExplainingCardInteractionInteractor mockSaveExplainingCard;
+    late MockGetSportFavoritesInteractor mockGetSportFavorites;
+    late MockUploadSportFavoriteInteractor mockUploadSportFavorite;
+    late MockSaveSportFavoriteInteractor mockSaveSportFavorite;
+    late MockGetUserIdInteractor mockGetUserId;
+    late MockDeleteSportFavoriteInteractor mockDeleteSportFavorite;
+    late MockRemoveSportFavoriteInteractor mockRemoveSportFavorite;
+    late MockDeleteSportEventInteractor mockDeleteSportEvent;
+    late MockRemoveSportEventInteractor mockRemoveSportEvent;
+    late MockEraseDBLocalEventsInteractor mockEraseDBLocalEvents;
+    late MockSynchronizeEventsInteractor mockSynchronizeEvents;
+
+    setUp(() {
+      mockGetMasterFile = MockGetMasterFileInteractor();
+      mockGetUserKcal = MockGetUserKcalInteractor();
+      mockGetTodaySports = MockGetTodaySportsInteractor();
+      mockGetWeekSports = MockGetWeekSportsInteractor();
+      mockShowExplainingCard = MockIsNecessaryToShowExplainingCardInteractor();
+      mockSaveExplainingCard = MockSaveExplainingCardInteractionInteractor();
+      mockGetSportFavorites = MockGetSportFavoritesInteractor();
+      mockUploadSportFavorite = MockUploadSportFavoriteInteractor();
+      mockSaveSportFavorite = MockSaveSportFavoriteInteractor();
+      mockGetUserId = MockGetUserIdInteractor();
+      mockDeleteSportFavorite = MockDeleteSportFavoriteInteractor();
+      mockRemoveSportFavorite = MockRemoveSportFavoriteInteractor();
+      mockDeleteSportEvent = MockDeleteSportEventInteractor();
+      mockRemoveSportEvent = MockRemoveSportEventInteractor();
+      mockEraseDBLocalEvents = MockEraseDBLocalEventsInteractor();
+      mockSynchronizeEvents = MockSynchronizeEventsInteractor();
+    });
+
+    JournalSportBloc buildBloc() => JournalSportBloc(
+          getMasterFileInteractor: mockGetMasterFile,
+          getUserKcalInteractor: mockGetUserKcal,
+          getTodaySportsInteractor: mockGetTodaySports,
+          getWeekSportsInteractor: mockGetWeekSports,
+          isNecessaryToShowExplainingCardInteractor: mockShowExplainingCard,
+          saveExplainingCardInteractionInteractor: mockSaveExplainingCard,
+          getSportFavoritesInteractor: mockGetSportFavorites,
+          uploadSportFavoriteInteractor: mockUploadSportFavorite,
+          saveSportFavoriteInteractor: mockSaveSportFavorite,
+          getUserIdInteractor: mockGetUserId,
+          deleteSportFavoriteInteractor: mockDeleteSportFavorite,
+          removeSportFavoriteInteractor: mockRemoveSportFavorite,
+          deleteSportEventInteractor: mockDeleteSportEvent,
+          removeSportEventInteractor: mockRemoveSportEvent,
+          eraseDBLocalEventsInteractor: mockEraseDBLocalEvents,
+          synchronizeEventsInteractor: mockSynchronizeEvents,
+        );
+
+    void stubAllInteractors() {
+      when(mockGetMasterFile.execute(any)).thenAnswer((_) async => null);
+      when(mockGetUserKcal.execute()).thenAnswer((_) async => 2000);
+      when(mockGetTodaySports.execute()).thenAnswer((_) async => <SportEventComplete>[]);
+      when(mockGetSportFavorites.execute()).thenAnswer((_) async => []);
+      when(mockGetWeekSports.execute()).thenAnswer((_) async => <SportEventComplete>[]);
+      when(mockShowExplainingCard.execute(any)).thenAnswer((_) async => false);
+    }
+
+    test('sport event bus notification triggers reload', () async {
+      stubAllInteractors();
+
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.sport);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verify(mockGetTodaySports.execute()).called(greaterThanOrEqualTo(1));
+
+      await bloc.close();
+    });
+
+    test('food event bus notification does NOT trigger reload', () async {
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetTodaySports.execute());
+
+      await bloc.close();
+    });
+
+    test('close cancels event bus subscription', () async {
+      final bloc = buildBloc();
+      await bloc.close();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.sport);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetTodaySports.execute());
     });
   });
 }

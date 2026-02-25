@@ -115,10 +115,14 @@ import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/save_food_
     as _i50;
 import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/upload_food_routine_interactor.dart'
     as _i48;
+import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/delete_liquid_event_interactor.dart'
+    as _i148;
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_today_liquid_events_interactor.dart'
     as _i84;
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_week_liquid_events_interactor.dart'
     as _i20;
+import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/remove_liquid_event_interactor.dart'
+    as _i149;
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/save_liquid_event_interactor.dart'
     as _i129;
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/upload_liquid_event_interactor.dart'
@@ -167,6 +171,10 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_int
     as _i22;
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_kcal_interactor.dart'
     as _i116;
+import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart'
+    as _i146;
+import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_interactor.dart'
+    as _i147;
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart'
     as _i74;
 import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor.dart'
@@ -3704,6 +3712,69 @@ class MockRemoveUrineEventInteractor extends _i1.Mock
         Invocation.method(
           #execute,
           [uploadUrine],
+        ),
+        returnValue: _i14.Future<void>.value(),
+        returnValueForMissingStub: _i14.Future<void>.value(),
+      ) as _i14.Future<void>);
+}
+
+/// A class which mocks [GetUserMicronutrientsInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetUserMicronutrientsInteractor extends _i1.Mock
+    implements _i146.GetUserMicronutrientsInteractor {}
+
+/// A class which mocks [GetUserRdasInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetUserRdasInteractor extends _i1.Mock
+    implements _i147.GetUserRdasInteractor {
+  @override
+  _i14.Future<List<_i23.UserRda>> execute() => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+        ),
+        returnValue: _i14.Future<List<_i23.UserRda>>.value(<_i23.UserRda>[]),
+        returnValueForMissingStub:
+            _i14.Future<List<_i23.UserRda>>.value(<_i23.UserRda>[]),
+      ) as _i14.Future<List<_i23.UserRda>>);
+}
+
+/// A class which mocks [DeleteLiquidEventInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDeleteLiquidEventInteractor extends _i1.Mock
+    implements _i148.DeleteLiquidEventInteractor {
+  @override
+  _i14.Future<void> execute(
+    String? userId,
+    int? eventDate,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [
+            userId,
+            eventDate,
+          ],
+        ),
+        returnValue: _i14.Future<void>.value(),
+        returnValueForMissingStub: _i14.Future<void>.value(),
+      ) as _i14.Future<void>);
+}
+
+/// A class which mocks [RemoveLiquidEventInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockRemoveLiquidEventInteractor extends _i1.Mock
+    implements _i149.RemoveLiquidEventInteractor {
+  @override
+  _i14.Future<void> execute(_i85.LiquidEventComplete? liquidEventComplete) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [liquidEventComplete],
         ),
         returnValue: _i14.Future<void>.value(),
         returnValueForMissingStub: _i14.Future<void>.value(),

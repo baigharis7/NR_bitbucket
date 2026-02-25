@@ -87,6 +87,12 @@ import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_feces
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_feces_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_urine_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_urine_event_interactor.dart';
+// WeeklyDashboardDetailBloc
+import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_interactor.dart';
+// JournalLiquidBloc
+import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/delete_liquid_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/remove_liquid_event_interactor.dart';
 // DashboardBloc
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart';
@@ -242,5 +248,10 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<RemoveFecesEventInteractor>(),
   MockSpec<DeleteUrineEventInteractor>(),
   MockSpec<RemoveUrineEventInteractor>(),
+  // WeeklyDashboardDetailBloc / JournalLiquidBloc
+  MockSpec<GetUserMicronutrientsInteractor>(),
+  MockSpec<GetUserRdasInteractor>(),
+  MockSpec<DeleteLiquidEventInteractor>(),
+  MockSpec<RemoveLiquidEventInteractor>(),
 ])
 void main() {}

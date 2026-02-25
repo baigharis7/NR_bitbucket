@@ -18,6 +18,8 @@ class FcmService {
   String? get token => _token;
   @visibleForTesting
   set tokenForTesting(String? value) => _token = value;
+  @visibleForTesting
+  void simulateMessage(RemoteMessage message) => _messageController.add(message);
 
   GetUserIdInteractor? _getUserIdInteractor;
   UpdateEventsInteractor? _updateEventsInteractor;
