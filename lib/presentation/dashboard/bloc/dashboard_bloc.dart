@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/data/api/fcm/fcm_api.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/eventssync/update_events_interactor.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_model_appearance_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_model_appearance_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
@@ -86,7 +84,6 @@ import 'package:path_provider/path_provider.dart';
 class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final EventsHelper _eventsHelper = EventsHelper();
   late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
-  StreamSubscription<RemoteMessage>? _fcmSubscription;
   DateTime? _lastSelectedDate;
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
   final GetMasterFileInteractor getMasterFileInteractor;
@@ -194,33 +191,6 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   ),) {
     _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
       add(RefreshCategoryAction(category: category));
-    });
-
-    _fcmSubscription = FcmService.instance.onDataMessage.listen((message) {
-      add(SyncAndRefreshAction(category: message.data['category']));
-    });
-
-    on<SyncAndRefreshAction>((event, emit) async {
-      try {
-        final userId = getUserIdInteractor.execute();
-        if (userId.isEmpty) return;
-
-        final prefsKey = _fcmCategoryToPrefsKey(event.category);
-        if (prefsKey != null) {
-          await updateEventsInteractor.execute(userId: userId, categoryType: prefsKey, fullSync: false);
-        } else {
-          await synchronizeEventsInteractor.execute(userId, fullSync: false);
-        }
-      } catch (_) {
-        // Retry once after a short delay
-        try {
-          await Future.delayed(const Duration(seconds: 5));
-          final userId = getUserIdInteractor.execute();
-          if (userId.isNotEmpty) {
-            await synchronizeEventsInteractor.execute(userId, fullSync: false);
-          }
-        } catch (_) {}
-      }
     });
 
     on<RefreshCategoryAction>((event, emit) async {
@@ -1059,19 +1029,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     });
   }
 
-  PrefsKeys? _fcmCategoryToPrefsKey(String? category) {
-    switch (category) {
-      case 'food': return PrefsKeys.foodEvents;
-      case 'sport': return PrefsKeys.sportEvents;
-      case 'supplement': return PrefsKeys.supplementEvents;
-      default: return null;
-    }
-  }
-
   @override
   Future<void> close() {
     _eventBusSubscription.cancel();
-    _fcmSubscription?.cancel();
     return super.close();
   }
 }

@@ -686,6 +686,12 @@ void main() async {
   final RemoveSupplementFavoriteInteractor removeSupplementFavoriteInteractor = RemoveSupplementFavoriteInteractorImpl(supplementsRepository: supplementsRepository);
   final UpdateEventsInteractor updateEventsInteractor = UpdateEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
 
+  FcmService.instance.configureSyncHandler(
+    getUserIdInteractor: getUserIdInteractor,
+    updateEventsInteractor: updateEventsInteractor,
+    synchronizeEventsInteractor: synchronizeEventsInteractor,
+  );
+
   await NutritionUtils(getMasterFileInteractor: getMasterFileInteractor).init();
 
   final dashboardBloc = DashboardBloc(
