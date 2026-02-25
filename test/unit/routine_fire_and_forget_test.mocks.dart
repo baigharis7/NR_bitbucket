@@ -30,6 +30,8 @@ import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_e
     as _i20;
 import 'package:nutrenaissance_flutter/data/local/models/foodroutines/food_routine_entity.dart'
     as _i37;
+import 'package:nutrenaissance_flutter/data/local/models/healthsync/health_sync_metadata_entity.dart'
+    as _i38;
 import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_event_entity.dart'
     as _i21;
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart'
@@ -75,7 +77,7 @@ import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_mast
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart'
     as _i18;
 import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart'
-    as _i38;
+    as _i39;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -1623,6 +1625,43 @@ class MockLocalStorageRepository extends _i1.Mock
       ) as _i7.Future<void>);
 
   @override
+  _i7.Future<void> saveHealthSyncMetadata(
+          _i38.HealthSyncMetadataEntity? metadata) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveHealthSyncMetadata,
+          [metadata],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<List<_i38.HealthSyncMetadataEntity>> getHealthSyncMetadata() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getHealthSyncMetadata,
+          [],
+        ),
+        returnValue: _i7.Future<List<_i38.HealthSyncMetadataEntity>>.value(
+            <_i38.HealthSyncMetadataEntity>[]),
+        returnValueForMissingStub:
+            _i7.Future<List<_i38.HealthSyncMetadataEntity>>.value(
+                <_i38.HealthSyncMetadataEntity>[]),
+      ) as _i7.Future<List<_i38.HealthSyncMetadataEntity>>);
+
+  @override
+  _i7.Future<bool> isHealthActivitySynced(String? healthPlatformId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #isHealthActivitySynced,
+          [healthPlatformId],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+
+  @override
   _i7.Future<_i5.Box<dynamic>> openBox(
     _i5.Box<dynamic>? box,
     String? boxName,
@@ -1662,7 +1701,7 @@ class MockLocalStorageRepository extends _i1.Mock
 /// A class which mocks [SyncQueueService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSyncQueueService extends _i1.Mock implements _i38.SyncQueueService {
+class MockSyncQueueService extends _i1.Mock implements _i39.SyncQueueService {
   @override
   int get pendingCount => (super.noSuchMethod(
         Invocation.getter(#pendingCount),

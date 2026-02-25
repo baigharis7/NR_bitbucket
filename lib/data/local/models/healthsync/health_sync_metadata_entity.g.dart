@@ -9,7 +9,7 @@ part of 'health_sync_metadata_entity.dart';
 class HealthSyncMetadataEntityAdapter
     extends TypeAdapter<HealthSyncMetadataEntity> {
   @override
-  final int typeId = 80;
+  final int typeId = 83;
 
   @override
   HealthSyncMetadataEntity read(BinaryReader reader) {
