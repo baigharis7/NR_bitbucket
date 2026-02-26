@@ -265,38 +265,46 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                 if (state.favRecentTab == 0) {
                                   final recentSupplement = currentTabItems[index];
                                   final itemName = recentSupplement.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], recentSupplement.info![0].id ?? -1).translate(context);
+                                  final isRoutine = state.supplementObj?.isRoutine == true;
                                   return ItemInfoCard(
                                     title: itemName,
-                                    trailingSrc: 'assets/icon/add_icon.png',
-                                    trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
-                                        supplement: recentSupplement,
-                                        onFinish: () => _showConfirmationDialog(
-                                          message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
-                                            context: context,
-                                            onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
-                                        ),),),
+                                    trailingSrc: isRoutine ? null : 'assets/icon/add_icon.png',
+                                    trailingIcon: isRoutine ? Icons.arrow_forward_rounded : null,
+                                    trailingTap: isRoutine
+                                        ? () => supplementsBloc.add(PrefillSupplementForRoutineEvent(supplement: recentSupplement))
+                                        : () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
+                                            supplement: recentSupplement,
+                                            onFinish: () => _showConfirmationDialog(
+                                              message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
+                                                context: context,
+                                                onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
+                                            ),),),
                                     subtitle: recentSupplement.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${recentSupplement.info![0].amount.toString()} ${recentSupplement.info![0].unit}.',
-                                    beforeTrailingSrc: 'assets/icon/edit_icon.png',
-                                    beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: recentSupplement).then((value) => supplementsBloc.add(InitializationSupplementsAction())),
+                                    beforeTrailingSrc: isRoutine ? null : 'assets/icon/edit_icon.png',
+                                    beforeTrailingTap: isRoutine ? null : () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: recentSupplement).then((value) => supplementsBloc.add(InitializationSupplementsAction())),
                                   );
                                 } else {
                                   final supplementFavorite = currentTabItems[index];
                                   final itemName = supplementFavorite.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite.info![0].id ?? -1).translate(context);
+                                  final isRoutine = state.supplementObj?.isRoutine == true;
                                   return ItemInfoCard(
                                     title: itemName,
-                                    trailingSrc: 'assets/icon/add_icon.png',
-                                    trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
-                                        supplement: supplementFavorite,
-                                        onFinish: () => _showConfirmationDialog(
-                                          message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
-                                            context: context,
-                                            onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
-                                        ),),),
+                                    trailingSrc: isRoutine ? null : 'assets/icon/add_icon.png',
+                                    trailingIcon: isRoutine ? Icons.arrow_forward_rounded : null,
+                                    trailingTap: isRoutine
+                                        ? () => supplementsBloc.add(PrefillSupplementForRoutineEvent(supplement: supplementFavorite))
+                                        : () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
+                                            supplement: supplementFavorite,
+                                            onFinish: () => _showConfirmationDialog(
+                                              message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
+                                                context: context,
+                                                onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
+                                            ),),),
                                     subtitle: supplementFavorite.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${supplementFavorite.info![0].amount.toString()} ${supplementFavorite.info![0].unit}.',
-                                    leadingSrc: 'assets/images/favorite_icon.png',
-                                    leadingTap: () {},
-                                    beforeTrailingSrc: 'assets/icon/edit_icon.png',
-                                    beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: supplementFavorite).then((value) => supplementsBloc.add(InitializationSupplementsAction())),
+                                    leadingSrc: isRoutine ? null : 'assets/images/favorite_icon.png',
+                                    leadingTap: isRoutine ? null : () {},
+                                    beforeTrailingSrc: isRoutine ? null : 'assets/icon/edit_icon.png',
+                                    beforeTrailingTap: isRoutine ? null : () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: supplementFavorite).then((value) => supplementsBloc.add(InitializationSupplementsAction())),
                                   );
                                 }
                               },

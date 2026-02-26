@@ -220,43 +220,49 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                               children: [
                                 if (state.favRecentTab == 0) ...state.recentSports.orEmpty().map((recentSport) => ItemInfoCard(
                                   title: recentSport.title ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: recentSport.info, context: context),
-                                  trailingSrc: 'assets/icon/add_icon.png',
+                                  trailingSrc: state.sportSimpleEvent?.isCreateRoutine == true ? null : 'assets/icon/add_icon.png',
+                                  trailingIcon: state.sportSimpleEvent?.isCreateRoutine == true ? Icons.arrow_forward_rounded : null,
                                   color: AppColors.floralWhite,
-                                  trailingTap: () {
-                                    final sportEventSimple = mapToSportEventSimpleFromAddFavoriteSport(recentSport);
-                                    sportEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
-                                    sportEventSimple.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
-                                    bloc.add(FinishSportEventAction(
-                                        sportEventSimple: sportEventSimple,
-                                        onFinish: () => _showConfirmationDialog(
-                                            context: context,
-                                            onDismiss: () => Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate),
-                                        ),),);
-                                  },
+                                  trailingTap: state.sportSimpleEvent?.isCreateRoutine == true
+                                    ? () => bloc.add(PrefillSportForRoutineAction(addSportFavorite: recentSport))
+                                    : () {
+                                        final sportEventSimple = mapToSportEventSimpleFromAddFavoriteSport(recentSport);
+                                        sportEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
+                                        sportEventSimple.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
+                                        bloc.add(FinishSportEventAction(
+                                            sportEventSimple: sportEventSimple,
+                                            onFinish: () => _showConfirmationDialog(
+                                                context: context,
+                                                onDismiss: () => Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate),
+                                            ),),);
+                                      },
                                   subtitle: recentSport.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.duration}: ${recentSport.info![0].minutes} min. - ${AppLocalizations.of(context)!.intensity}: ${NutritionUtils.activityIntensityById(recentSport.info![0].intensity.orZero(), context)}.',
-                                  beforeTrailingSrc: 'assets/icon/edit_icon.png',
-                                  beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSportScreen.routeName, arguments: recentSport).then((value) => bloc.add(InitializeStateAction())),
+                                  beforeTrailingSrc: state.sportSimpleEvent?.isCreateRoutine == true ? null : 'assets/icon/edit_icon.png',
+                                  beforeTrailingTap: state.sportSimpleEvent?.isCreateRoutine == true ? null : () => Navigator.pushNamed(context, UpdateSportScreen.routeName, arguments: recentSport).then((value) => bloc.add(InitializeStateAction())),
                                 ),),
                                 if (state.favRecentTab == 1) ...state.favSports.orEmpty().map((favSport) => ItemInfoCard(
                                   title: favSport.title ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: favSport.info, context: context),
-                                  leadingSrc: 'assets/images/favorite_icon.png',
-                                  trailingSrc: 'assets/icon/add_icon.png',
+                                  leadingSrc: state.sportSimpleEvent?.isCreateRoutine == true ? null : 'assets/images/favorite_icon.png',
+                                  trailingSrc: state.sportSimpleEvent?.isCreateRoutine == true ? null : 'assets/icon/add_icon.png',
+                                  trailingIcon: state.sportSimpleEvent?.isCreateRoutine == true ? Icons.arrow_forward_rounded : null,
                                   color: state.sportFavoriteEvent == favSport ? AppColors.butter : AppColors.floralWhite,
-                                  leadingTap: () {} /*bloc.add(DeleteFavSportSportEventsAction(sportFavorite: favSport, onFinish: () {}))*/,
-                                  trailingTap: () {
-                                    final sportEventSimple = mapToSportEventSimpleFromAddFavoriteSport(favSport);
-                                    sportEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
-                                    sportEventSimple.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
-                                    bloc.add(FinishSportEventAction(
-                                        sportEventSimple: sportEventSimple,
-                                        onFinish: () => _showConfirmationDialog(
-                                            context: context,
-                                            onDismiss: () => Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate),
-                                        ),),);
-                                  },
+                                  leadingTap: state.sportSimpleEvent?.isCreateRoutine == true ? null : () {} /*bloc.add(DeleteFavSportSportEventsAction(sportFavorite: favSport, onFinish: () {}))*/,
+                                  trailingTap: state.sportSimpleEvent?.isCreateRoutine == true
+                                    ? () => bloc.add(PrefillSportForRoutineAction(addSportFavorite: favSport))
+                                    : () {
+                                        final sportEventSimple = mapToSportEventSimpleFromAddFavoriteSport(favSport);
+                                        sportEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
+                                        sportEventSimple.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
+                                        bloc.add(FinishSportEventAction(
+                                            sportEventSimple: sportEventSimple,
+                                            onFinish: () => _showConfirmationDialog(
+                                                context: context,
+                                                onDismiss: () => Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate),
+                                            ),),);
+                                      },
                                   subtitle: favSport.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.duration}: ${favSport.info![0].minutes} min. - ${AppLocalizations.of(context)!.intensity}: ${NutritionUtils.activityIntensityById(favSport.info![0].intensity.orZero(), context)}.',
-                                  beforeTrailingSrc: 'assets/icon/edit_icon.png',
-                                  beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSportScreen.routeName, arguments: favSport).then((value) => bloc.add(InitializeStateAction())),
+                                  beforeTrailingSrc: state.sportSimpleEvent?.isCreateRoutine == true ? null : 'assets/icon/edit_icon.png',
+                                  beforeTrailingTap: state.sportSimpleEvent?.isCreateRoutine == true ? null : () => Navigator.pushNamed(context, UpdateSportScreen.routeName, arguments: favSport).then((value) => bloc.add(InitializeStateAction())),
                                 ),),
                               ],
                             ),

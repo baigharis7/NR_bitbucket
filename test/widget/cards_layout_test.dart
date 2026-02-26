@@ -183,6 +183,49 @@ void main() {
       });
       expect(redCard, findsOneWidget);
     });
+
+    testWidgets('renders trailingIcon when provided with trailingTap', (tester) async {
+      bool tapped = false;
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: ItemInfoCard(
+            title: 'Test Item',
+            trailingIcon: Icons.arrow_forward_rounded,
+            trailingTap: () => tapped = true,
+          ),
+        ),
+      ));
+      expect(find.byIcon(Icons.arrow_forward_rounded), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.arrow_forward_rounded));
+      expect(tapped, isTrue);
+    });
+
+    testWidgets('trailingIcon takes precedence over trailingSrc', (tester) async {
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: ItemInfoCard(
+            title: 'Test Item',
+            trailingIcon: Icons.arrow_forward_rounded,
+            trailingSrc: 'assets/icon/add_icon.png',
+            trailingTap: () {},
+          ),
+        ),
+      ));
+      // trailingIcon should render instead of the asset
+      expect(find.byIcon(Icons.arrow_forward_rounded), findsOneWidget);
+    });
+
+    testWidgets('does not render trailing when neither trailingSrc nor trailingIcon provided', (tester) async {
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: ItemInfoCard(
+            title: 'Test Item',
+            trailingTap: () {},
+          ),
+        ),
+      ));
+      expect(find.byType(InkWell), findsNothing);
+    });
   });
 
   // ---------------------------------------------------------------------------

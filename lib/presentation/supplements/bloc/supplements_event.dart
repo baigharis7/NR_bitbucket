@@ -108,3 +108,9 @@ class SwitchFavRecentTabSupplementsAction extends SupplementsEvent {
 
   SwitchFavRecentTabSupplementsAction({required this.tabIndex});
 }
+
+class PrefillSupplementForRoutineEvent extends SupplementsEvent {
+  final SupplementSimple supplement;
+
+  PrefillSupplementForRoutineEvent({required this.supplement});
+}

@@ -17,6 +17,7 @@ class ItemInfoCard extends StatelessWidget {
   final Color? color;
   final VoidCallback? onItemTap;
   final double? leadingIconSize;
+  final IconData? trailingIcon;
   const ItemInfoCard({
     super.key,
     required this.title,
@@ -30,6 +31,7 @@ class ItemInfoCard extends StatelessWidget {
     this.color,
     this.onItemTap,
     this.leadingIconSize,
+    this.trailingIcon,
   });
 
   @override
@@ -71,9 +73,14 @@ class ItemInfoCard extends StatelessWidget {
                 const SizedBox(width: Dimens.marginSmall),
                 InkWell(onTap: beforeTrailingTap, child: Image.asset(beforeTrailingSrc!, height: 26, width: 26, color: AppColors.yellowishGreen)),
               ],
-              if(!trailingSrc.isNull() && !trailingTap.isNull()) ...[
+              if((!trailingSrc.isNull() || trailingIcon != null) && !trailingTap.isNull()) ...[
                 const SizedBox(width: Dimens.marginSmall),
-                InkWell(onTap: () => trailingTap?.call(), child: Image.asset(trailingSrc!, height: 26, width: 26)),
+                InkWell(
+                  onTap: () => trailingTap?.call(),
+                  child: trailingIcon != null
+                    ? Icon(trailingIcon, size: 26, color: AppColors.yellowishGreen)
+                    : Image.asset(trailingSrc!, height: 26, width: 26),
+                ),
               ],
             ],
           ),

@@ -141,3 +141,9 @@ class SwitchFavRecentTabSportAction extends SportEventsActions {
 
   SwitchFavRecentTabSportAction({required this.tabIndex});
 }
+
+class PrefillSportForRoutineAction extends SportEventsActions {
+  final AddSportFavorite addSportFavorite;
+
+  PrefillSportForRoutineAction({required this.addSportFavorite});
+}

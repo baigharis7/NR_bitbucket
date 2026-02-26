@@ -281,6 +281,17 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
+    on<PrefillFoodForRoutineAction>((event, emit) {
+      final item = event.foodFavorite;
+      item.isRoutine = true;
+      item.isFavorite = false;
+      item.mealTime = item.mealTime ?? state.foodEvent?.mealTime;
+      item.eventDate = item.eventDate ?? state.foodEvent?.eventDate;
+      item.daysOfWeek = item.daysOfWeek ?? [];
+      state.foodEvent = item;
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
+
     on<UpdateFoodRoutineFromRoutines>((event, emit) {
       final item = mapToFoodFavoriteFromRoutine(event.foodRoutineEvent);
       item.isRoutine = true;

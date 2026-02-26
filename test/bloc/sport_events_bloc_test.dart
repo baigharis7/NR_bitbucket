@@ -304,5 +304,43 @@ void main() {
         expect(bloc.state.favRecentTab, 1);
       },
     );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'PrefillSportForRoutineAction sets isCreateRoutine true and isFavorite false',
+      build: buildBloc,
+      act: (bloc) => bloc.add(PrefillSportForRoutineAction(
+        addSportFavorite: AddSportFavorite(
+          info: [AddSportFavInfo(id: 1, minutes: 30, intensity: 1)],
+          title: 'Running',
+          isFavorite: true,
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.isCreateRoutine, true);
+        expect(bloc.state.sportSimpleEvent!.isFavorite, false);
+        expect(bloc.state.sportSimpleEvent!.title, 'Running');
+        expect(bloc.state.sportSimpleEvent!.info!.length, 1);
+        expect(bloc.state.sportSimpleEvent!.daysOfWeek, isEmpty);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'PrefillSportForRoutineAction preserves calendarDate as eventDate',
+      build: () {
+        final bloc = buildBloc();
+        bloc.state.calendarDate = DateTime(2026, 3, 15);
+        return bloc;
+      },
+      act: (bloc) => bloc.add(PrefillSportForRoutineAction(
+        addSportFavorite: AddSportFavorite(
+          info: [],
+          title: 'Yoga',
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.isCreateRoutine, true);
+        expect(bloc.state.sportSimpleEvent!.eventDate, DateTime(2026, 3, 15).millisecondsSinceEpoch);
+      },
+    );
   });
 }

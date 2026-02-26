@@ -183,3 +183,9 @@ class SwitchFavRecentTabAction extends AddFoodEventActions {
 
   SwitchFavRecentTabAction({required this.tabIndex});
 }
+
+class PrefillFoodForRoutineAction extends AddFoodEventActions {
+  final FoodFavorite foodFavorite;
+
+  PrefillFoodForRoutineAction({required this.foodFavorite});
+}
