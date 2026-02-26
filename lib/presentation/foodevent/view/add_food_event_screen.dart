@@ -52,6 +52,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
   final ScrollController _scrollController = ScrollController();
   int filteredListLength = 0;
   bool _showValidation = false;
+  bool _showRoutineValidation = false;
 
   void _showConfirmationDialog({String? message, required BuildContext context, Function? onDismiss}) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
@@ -234,6 +235,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                   daysOfWeek: state.foodEvent?.daysOfWeek,
                                   onUpdateDayOfWeek: (dayOfWeek) {},
                                   showTimePicker: state.foodEvent?.mealTime == 3,
+                                  showRoutineValidation: _showRoutineValidation,
                                 ),
                                 // Item cards with connector lines
                                 ...state.foodEvent!.ingredients.orEmpty().asMap().entries.map((entry) {
@@ -390,6 +392,11 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                           context: context,
                                           onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
                                       ),),);
+                                    }
+                                    else if (state.foodEvent?.isRoutine == true && state.foodEvent?.daysOfWeek?.isEmpty == true) {
+                                      setState(() { _showRoutineValidation = true; });
+                                      _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                                      return;
                                     }
                                     else if (state.foodEvent?.isRoutine == true && state.foodEvent?.daysOfWeek?.isNotEmpty == true) {
                                       state.foodEvent?.userId = '';

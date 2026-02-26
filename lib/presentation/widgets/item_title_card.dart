@@ -24,6 +24,7 @@ class ItemTitleCard extends StatefulWidget {
   final Function(int)? onUpdateDayOfWeek;
   final Function(List<int>)? onBulkDaySelect;
   final bool showTimePicker;
+  final bool showRoutineValidation;
 
   const ItemTitleCard({
     super.key,
@@ -42,6 +43,7 @@ class ItemTitleCard extends StatefulWidget {
     this.onUpdateDayOfWeek,
     this.onBulkDaySelect,
     this.showTimePicker = true,
+    this.showRoutineValidation = false,
   });
 
   @override
@@ -111,6 +113,7 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
   @override
   Widget build(BuildContext context) {
     final showComboError = widget.itemCount > 1 && widget.name.isEmptyOrNull();
+    final showDaysError = widget.showRoutineValidation && widget.isRoutine && widget.daysOfWeek.orEmpty().isEmpty;
 
     return Container(
       padding: const EdgeInsets.all(Dimens.paddingLarge),
@@ -345,6 +348,7 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
               RoutineDaysWidget(
                 title: AppLocalizations.of(context)!.days_of_week,
                 daysOfWeek: _daysOfWeek,
+                showError: showDaysError,
                 onDaySelect: (day) {
                   final dayNumber = day.weekday;
                   _daysOfWeek.contains(dayNumber)
@@ -364,6 +368,18 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
                   setState(() {});
                 },
               ),
+            // Routine validation error
+            if (showDaysError) ...[
+              const SizedBox(height: 8),
+              Text(
+                AppLocalizations.of(context)!.routine_time_day_error,
+                style: const TextStyle(
+                  fontSize: Dimens.fontSizeSmall,
+                  color: AppColors.errorRed,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
           ],
         ],
       ),

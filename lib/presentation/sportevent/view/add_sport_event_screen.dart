@@ -52,6 +52,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
   final ScrollController _scrollController = ScrollController();
   int filteredListLength = 0;
   bool _showValidation = false;
+  bool _showRoutineValidation = false;
 
   void _showConfirmationDialog({String? message, required BuildContext context, required Function onDismiss}) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
@@ -235,6 +236,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                       onUpdateTime: (scheduleTime) => bloc.add(UpdateTimeOfDaySportEventAction(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
                                       daysOfWeek: state.sportSimpleEvent?.daysOfWeek,
                                       onUpdateDayOfWeek: (dayOfWeek) {},
+                                      showRoutineValidation: _showRoutineValidation,
                                     ),
                                     // Item cards with connector lines
                                     ...state.sportSimpleEvent!.info.orEmpty().asMap().entries.map((entry) {
@@ -369,8 +371,8 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                   ),),);
                                 }
                                 else if (state.sportSimpleEvent?.isCreateRoutine == true) {
-                                  if (state.sportSimpleEvent!.daysOfWeek.orEmpty().isEmpty || state.sportSimpleEvent!.scheduleTime.orEmpty().isEmpty) {
-                                    ToastHelper().showToast(text: AppLocalizations.of(context)!.routine_time_day_error, backgroundColor: Colors.red, textColor: Colors.white);
+                                  if (state.sportSimpleEvent!.daysOfWeek.orEmpty().isEmpty) {
+                                    setState(() { _showRoutineValidation = true; });
                                     _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                     return;
                                   }

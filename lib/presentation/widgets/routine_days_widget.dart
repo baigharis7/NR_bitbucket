@@ -12,7 +12,8 @@ class RoutineDaysWidget extends StatefulWidget {
   final List<int>? daysOfWeek;
   final Function(DateTime) onDaySelect;
   final Function(List<int>)? onBulkDaySelect;
-  const RoutineDaysWidget({super.key, this.title, required this.onDaySelect, this.daysOfWeek, this.onBulkDaySelect});
+  final bool showError;
+  const RoutineDaysWidget({super.key, this.title, required this.onDaySelect, this.daysOfWeek, this.onBulkDaySelect, this.showError = false});
 
   @override
   State<RoutineDaysWidget> createState() => _RoutineDaysWidgetState();
@@ -71,7 +72,7 @@ class _RoutineDaysWidgetState extends State<RoutineDaysWidget> {
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.yellowishGreen : Colors.white,
                   borderRadius: BorderRadius.circular(Dimens.border50),
-                  border: Border.all(color: isSelected ? AppColors.yellowishGreen : AppColors.cloudyGrey,),
+                  border: Border.all(color: isSelected ? AppColors.yellowishGreen : (widget.showError ? AppColors.errorRed : AppColors.cloudyGrey),),
                 ),
                 child: Text(
                   dayAbbr.substring(0, 2),
@@ -116,7 +117,7 @@ class _RoutineDaysWidgetState extends State<RoutineDaysWidget> {
         decoration: BoxDecoration(
           color: allSelected ? AppColors.yellowishGreen : Colors.white,
           borderRadius: BorderRadius.circular(Dimens.border50),
-          border: Border.all(color: allSelected ? AppColors.yellowishGreen : AppColors.cloudyGrey),
+          border: Border.all(color: allSelected ? AppColors.yellowishGreen : (widget.showError ? AppColors.errorRed : AppColors.cloudyGrey)),
         ),
         child: Text(
           label,

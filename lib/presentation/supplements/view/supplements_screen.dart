@@ -43,6 +43,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
   final ScrollController _scrollController = ScrollController();
   late FocusNode _supplementFocusInputController;
   bool _showValidation = false;
+  bool _showRoutineValidation = false;
 
   @override
   void initState() {
@@ -332,6 +333,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                             onUpdateTime: (scheduleTime) => supplementsBloc.add(UpdateTimeOfDaySupplementsEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
                             daysOfWeek: state.supplementObj?.daysOfWeek,
                             onUpdateDayOfWeek: (dayOfWeek) {},
+                            showRoutineValidation: _showRoutineValidation,
                           ),
                           // Item cards with connector lines
                           ...state.supplementObj!.info.orEmpty().asMap().entries.map((entry) {
@@ -419,8 +421,8 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                   onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
                                 ),),);
                               } else if (state.supplementObj?.isRoutine == true) {
-                                if (state.supplementObj?.daysOfWeek?.isEmpty == true || state.supplementObj?.scheduleTime.isEmptyOrNull() == true) {
-                                  ToastHelper().showToast(text: AppLocalizations.of(context)!.routine_time_day_error);
+                                if (state.supplementObj?.daysOfWeek?.isEmpty == true) {
+                                  setState(() { _showRoutineValidation = true; });
                                   _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                   return;
                                 }
