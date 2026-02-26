@@ -63,6 +63,8 @@ void main() {
       expect: () => [
         isA<SupplementsDetailState>().having((s) => s.isLoading, 'isLoading', true),
         isA<SupplementsDetailState>().having((s) => s.isLoading, 'isLoading', false),
+        // SummaryInitializeSupplementsDetailEvent queued by init handler
+        isA<SupplementsDetailState>().having((s) => s.isLoading, 'isLoading', false),
       ],
       verify: (bloc) {
         verify(mockGetProfile.execute()).called(1);
@@ -86,6 +88,10 @@ void main() {
       act: (bloc) => bloc.add(InitializeSupplementsDetailEvent(eventDate: DateTime(2026, 2, 15))),
       expect: () => [
         isA<SupplementsDetailState>().having((s) => s.isLoading, 'isLoading', true),
+        isA<SupplementsDetailState>().having((s) => s.isLoading, 'isLoading', false),
+        // SummaryInitializeSupplementsDetailEvent queued by init handler
+        isA<SupplementsDetailState>().having((s) => s.isLoading, 'isLoading', false),
+        // updateEvents returns true → second summary + emit
         isA<SupplementsDetailState>().having((s) => s.isLoading, 'isLoading', false),
         isA<SupplementsDetailState>().having((s) => s.isLoading, 'isLoading', false),
       ],
