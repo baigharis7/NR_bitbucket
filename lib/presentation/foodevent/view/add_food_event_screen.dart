@@ -361,6 +361,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                 else {
                                   if (bloc.validateList() ?? true) {
                                     setState(() { _showValidation = true; });
+                                    _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                     return;
                                   }
 
@@ -372,6 +373,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
 
                                   // Block save if combo has no name (inline error is shown in the title card)
                                   if (state.foodEvent!.ingredients.orEmpty().length > 1 && (state.foodEvent?.title.isEmptyOrNull() == true)) {
+                                    _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                     return;
                                   }
 

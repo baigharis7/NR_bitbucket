@@ -394,6 +394,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                             final hasEmptyAmount = state.supplementObj?.info.orEmpty().any((n) => n.amount == 0) ?? false;
                             if (hasEmptyAmount) {
                               setState(() { _showValidation = true; });
+                              _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                               return;
                             }
                             // Auto-set title for single items
@@ -404,6 +405,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
 
                             // Block save if combo has no name (inline error is shown in the title card)
                             if (state.supplementObj!.info.orEmpty().length > 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
+                              _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                               return;
                             }
 
@@ -419,6 +421,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                               } else if (state.supplementObj?.isRoutine == true) {
                                 if (state.supplementObj?.daysOfWeek?.isEmpty == true || state.supplementObj?.scheduleTime.isEmptyOrNull() == true) {
                                   ToastHelper().showToast(text: AppLocalizations.of(context)!.routine_time_day_error);
+                                  _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                   return;
                                 }
                                 supplementsBloc.add(FinishSupplementRoutineSupplementsEvent(onFinish: () => _showConfirmationDialog(

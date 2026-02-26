@@ -337,6 +337,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                         child: GeneralButton(onTap: () {
                             if (bloc.validateSportList() ?? true) {
                               setState(() { _showValidation = true; });
+                              _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                               return;
                             }
 
@@ -353,6 +354,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
 
                               // Block save if combo has no name (inline error is shown in the title card)
                               if (state.sportSimpleEvent!.info.orEmpty().length > 1 && (state.sportSimpleEvent?.title.isEmptyOrNull() == true)) {
+                                _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                 return;
                               }
 
@@ -369,6 +371,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                 else if (state.sportSimpleEvent?.isCreateRoutine == true) {
                                   if (state.sportSimpleEvent!.daysOfWeek.orEmpty().isEmpty || state.sportSimpleEvent!.scheduleTime.orEmpty().isEmpty) {
                                     ToastHelper().showToast(text: AppLocalizations.of(context)!.routine_time_day_error, backgroundColor: Colors.red, textColor: Colors.white);
+                                    _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                     return;
                                   }
                                   state.sportSimpleEvent?.eventId = state.sportSimpleEvent?.eventId ?? DateTime.now().millisecondsSinceEpoch;
