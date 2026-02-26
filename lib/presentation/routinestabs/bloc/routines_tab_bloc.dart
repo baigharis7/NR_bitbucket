@@ -12,6 +12,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_spor
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_routines_interactor.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
 import '../../../domain/interactor/foodroutines/get_food_routines_interactor.dart';
@@ -41,6 +42,7 @@ class RoutinesTabBloc extends Bloc<RoutinesTabEvent, RoutinesTabState> {
   final RemoveSportRoutineInteractor removeSportRoutineInteractor;
   final DeleteSupplementRoutineInteractor deleteSupplementRoutineInteractor;
   final RemoveSupplementRoutineInteractor removeSupplementRoutineInteractor;
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
   RoutinesTabBloc({
     required this.getFoodRoutinesInteractor,
     required this.getMasterFileInteractor,
@@ -53,6 +55,13 @@ class RoutinesTabBloc extends Bloc<RoutinesTabEvent, RoutinesTabState> {
     required this.deleteSupplementRoutineInteractor,
     required this.removeSupplementRoutineInteractor,
   }) : super(RoutinesTabState(isLoading: false)) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.food ||
+          category == DataChangedCategory.sport ||
+          category == DataChangedCategory.supplement) {
+        add(_RefreshRoutinesCategoryEvent(category));
+      }
+    });
     on<InitializeRoutinesTabEvent>((event, emit) async {
       state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
       final foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
@@ -120,5 +129,28 @@ class RoutinesTabBloc extends Bloc<RoutinesTabEvent, RoutinesTabState> {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteSportRoutineError));
       }
     });
+
+    on<_RefreshRoutinesCategoryEvent>((event, emit) async {
+      switch (event.category) {
+        case DataChangedCategory.food:
+          state.mealRoutines = await getFoodRoutinesInteractor.execute();
+          break;
+        case DataChangedCategory.sport:
+          state.sportRoutines = await getRoutinesInteractor.execute();
+          break;
+        case DataChangedCategory.supplement:
+          state.supplementRoutines = await getSupplementRoutinesInteractor.execute();
+          break;
+        default:
+          return;
+      }
+      emit(state.copyWith(isLoading: false));
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
   }
 }

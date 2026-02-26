@@ -22,3 +22,9 @@ class DeleteSupplementFavoriteFavoritesTabsEvent extends FavoritesTabsEvent {
 
   DeleteSupplementFavoriteFavoritesTabsEvent({required this.supplementSimple});
 }
+
+class _RefreshFavoritesCategoryEvent extends FavoritesTabsEvent {
+  final DataChangedCategory category;
+
+  _RefreshFavoritesCategoryEvent(this.category);
+}

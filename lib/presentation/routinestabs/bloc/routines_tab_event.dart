@@ -22,3 +22,9 @@ class DeleteSupplementRoutineRoutinesTabEvent extends RoutinesTabEvent {
 
   DeleteSupplementRoutineRoutinesTabEvent({required this.supplement});
 }
+
+class _RefreshRoutinesCategoryEvent extends RoutinesTabEvent {
+  final DataChangedCategory category;
+
+  _RefreshRoutinesCategoryEvent(this.category);
+}

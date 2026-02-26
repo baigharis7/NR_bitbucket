@@ -12,6 +12,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supp
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 
 import '../../../domain/interactor/favorites/food/get_food_favorites_interactor.dart';
 import '../../../domain/interactor/favorites/sport/delete_sport_favorite_interactor.dart';
@@ -41,6 +42,7 @@ class FavoritesTabsBloc extends Bloc<FavoritesTabsEvent, FavoritesTabsState> {
   final RemoveSportFavoriteInteractor removeSportFavoriteInteractor;
   final DeleteSupplementFavoriteInteractor deleteSupplementFavoriteInteractor;
   final RemoveSupplementFavoriteInteractor removeSupplementFavoriteInteractor;
+  late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   FavoritesTabsBloc({
     required this.getFoodFavoritesInteractor,
@@ -63,6 +65,14 @@ class FavoritesTabsBloc extends Bloc<FavoritesTabsEvent, FavoritesTabsState> {
               ),
             ),
   ),) {
+    _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
+      if (category == DataChangedCategory.food ||
+          category == DataChangedCategory.sport ||
+          category == DataChangedCategory.supplement) {
+        add(_RefreshFavoritesCategoryEvent(category));
+      }
+    });
+
     on<InitializeFavoritesTabsEvent>((event, emit) async {
       state.favFoods = await getFoodFavoritesInteractor.execute();
       state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
@@ -135,5 +145,28 @@ class FavoritesTabsBloc extends Bloc<FavoritesTabsEvent, FavoritesTabsState> {
         emit(state.copyWith(isLoading: false, onError: ErrorTypes.deleteSupplementEventError));
       }
     });
+
+    on<_RefreshFavoritesCategoryEvent>((event, emit) async {
+      switch (event.category) {
+        case DataChangedCategory.food:
+          state.favFoods = await getFoodFavoritesInteractor.execute();
+          break;
+        case DataChangedCategory.sport:
+          state.favSports = await getSportFavoritesInteractor.execute();
+          break;
+        case DataChangedCategory.supplement:
+          state.favSupplements = await getSupplementFavoritesInteractor.execute();
+          break;
+        default:
+          return;
+      }
+      emit(state.copyWith(isLoading: false));
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _eventBusSubscription.cancel();
+    return super.close();
   }
 }
