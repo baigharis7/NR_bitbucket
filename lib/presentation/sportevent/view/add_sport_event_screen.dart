@@ -378,7 +378,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                   bloc.add(FinishSportRoutineAddSportAction(sportRoutineCompleted: sportRoutineCompleted, onFinish: () => _showConfirmationDialog(
                                     message: AppLocalizations.of(context)!.sport_routine_successfully_saved,
                                       context: context,
-                                      onDismiss: () => Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate),
+                                      onDismiss: () => Navigator.pop(context),
                                   ),),);
                                 } else {
                                   state.sportSimpleEvent?.eventId = state.sportSimpleEvent?.eventId ?? DateTime.now().millisecondsSinceEpoch;

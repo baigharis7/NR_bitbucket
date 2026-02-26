@@ -396,7 +396,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                       bloc.add(FinishAddFoodRoutineEventAction(foodRoutineEvent: foodEventRoutine, onFinish: () => _showConfirmationDialog(
                                         message: AppLocalizations.of(context)!.food_routine_successfully_saved,
                                           context: context,
-                                          onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
+                                          onDismiss: () => Navigator.pop(context),
                                       ),),);
                                     } else {
                                       state.foodEvent?.userId = '';
