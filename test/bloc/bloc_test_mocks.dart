@@ -63,6 +63,15 @@ import 'package:nutrenaissance_flutter/domain/interactor/sportevents/remove_spor
 // RoutinesBloc
 import 'package:nutrenaissance_flutter/domain/interactor/routines/delete_sport_routine_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/routines/remove_sport_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/get_food_routines_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/delete_food_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/remove_food_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_routines_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_routine_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_routine_interactor.dart';
+// FavoritesTabsBloc
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_favorite_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_favorite_interactor.dart';
 // SupplementsDetailBloc
 import 'package:nutrenaissance_flutter/domain/interactor/eventssync/update_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_event_interactor.dart';
@@ -222,6 +231,15 @@ import 'package:shared_preferences/shared_preferences.dart';
   // RoutinesBloc
   MockSpec<DeleteSportRoutineInteractor>(),
   MockSpec<RemoveSportRoutineInteractor>(),
+  MockSpec<GetFoodRoutinesInteractor>(),
+  MockSpec<DeleteFoodRoutineInteractor>(),
+  MockSpec<RemoveFoodRoutineInteractor>(),
+  MockSpec<GetSupplementRoutinesInteractor>(),
+  MockSpec<DeleteSupplementRoutineInteractor>(),
+  MockSpec<RemoveSupplementRoutineInteractor>(),
+  // FavoritesTabsBloc
+  MockSpec<DeleteSupplementFavoriteInteractor>(),
+  MockSpec<RemoveSupplementFavoriteInteractor>(),
   // SupplementsDetailBloc
   MockSpec<UpdateEventsInteractor>(),
   MockSpec<DeleteSupplementEventInteractor>(),

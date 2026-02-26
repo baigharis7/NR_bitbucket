@@ -14,9 +14,9 @@ import 'package:flutter/material.dart' as _i111;
 import 'package:http/http.dart' as _i113;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i27;
-import 'package:nutrenaissance_flutter/data/api/fcm/fcm_api.dart' as _i131;
+import 'package:nutrenaissance_flutter/data/api/fcm/fcm_api.dart' as _i139;
 import 'package:nutrenaissance_flutter/data/api/fecesurine/models/upload_feces.dart'
-    as _i134;
+    as _i142;
 import 'package:nutrenaissance_flutter/data/api/foodevents/model/upload_food_event.dart'
     as _i3;
 import 'package:nutrenaissance_flutter/data/api/liquidevents/model/upload_liquid_event.dart'
@@ -50,7 +50,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/calendar/get_all_events
 import 'package:nutrenaissance_flutter/domain/interactor/eventssync/synchronize_events_interactor.dart'
     as _i104;
 import 'package:nutrenaissance_flutter/domain/interactor/eventssync/update_events_interactor.dart'
-    as _i123;
+    as _i131;
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart'
     as _i30;
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart'
@@ -76,29 +76,29 @@ import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sp
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_sport_favorite_interactor.dart'
     as _i59;
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_feces_event_interactor.dart'
-    as _i142;
+    as _i150;
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/delete_urine_event_interactor.dart'
-    as _i144;
+    as _i152;
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_faeces_by_date_interactor.dart'
-    as _i133;
-import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_feces_events_interactor.dart'
-    as _i136;
-import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_urine_by_date_interactor.dart'
-    as _i135;
-import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_urine_events_interactor.dart'
-    as _i137;
-import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_feces_event_interactor.dart'
-    as _i143;
-import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_urine_event_interactor.dart'
-    as _i145;
-import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_feces_event_interactor.dart'
-    as _i139;
-import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_urine_interactor.dart'
     as _i141;
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_feces_events_interactor.dart'
+    as _i144;
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_urine_by_date_interactor.dart'
+    as _i143;
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/get_urine_events_interactor.dart'
+    as _i145;
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_feces_event_interactor.dart'
+    as _i151;
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/remove_urine_event_interactor.dart'
+    as _i153;
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_feces_event_interactor.dart'
+    as _i147;
+import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/save_urine_interactor.dart'
+    as _i149;
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_feces_interactor.dart'
-    as _i138;
+    as _i146;
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_urine_interactor.dart'
-    as _i140;
+    as _i148;
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_event_interactor.dart'
     as _i118;
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart'
@@ -111,22 +111,28 @@ import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_ev
     as _i43;
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart'
     as _i44;
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/delete_food_routine_interactor.dart'
+    as _i124;
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/get_food_routines_interactor.dart'
+    as _i123;
+import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/remove_food_routine_interactor.dart'
+    as _i125;
 import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/save_food_routine_interactor.dart'
     as _i50;
 import 'package:nutrenaissance_flutter/domain/interactor/foodroutines/upload_food_routine_interactor.dart'
     as _i48;
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/delete_liquid_event_interactor.dart'
-    as _i148;
+    as _i156;
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_today_liquid_events_interactor.dart'
     as _i84;
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_week_liquid_events_interactor.dart'
     as _i20;
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/remove_liquid_event_interactor.dart'
-    as _i149;
+    as _i157;
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/save_liquid_event_interactor.dart'
-    as _i129;
+    as _i137;
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/upload_liquid_event_interactor.dart'
-    as _i127;
+    as _i135;
 import 'package:nutrenaissance_flutter/domain/interactor/localstorage/erase_db_local_events_interactor.dart'
     as _i103;
 import 'package:nutrenaissance_flutter/domain/interactor/login/erase_database_interactor.dart'
@@ -172,9 +178,9 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_int
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_kcal_interactor.dart'
     as _i116;
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart'
-    as _i146;
+    as _i154;
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_interactor.dart'
-    as _i147;
+    as _i155;
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart'
     as _i74;
 import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor.dart'
@@ -214,17 +220,27 @@ import 'package:nutrenaissance_flutter/domain/interactor/steps/save_steps_intera
 import 'package:nutrenaissance_flutter/domain/interactor/steps/upload_steps_interactor.dart'
     as _i89;
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_event_interactor.dart'
-    as _i125;
+    as _i133;
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_favorite_interactor.dart'
+    as _i129;
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supplement_routine_interactor.dart'
+    as _i127;
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_day_supplement_events_interactor.dart'
     as _i109;
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_favorites_interactor.dart'
     as _i39;
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_routines_interactor.dart'
+    as _i126;
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_collagen_event_interactor.dart'
     as _i99;
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_today_creatine_event_interactor.dart'
     as _i95;
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_event_interactor.dart'
-    as _i126;
+    as _i134;
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_favorite_interactor.dart'
+    as _i130;
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/remove_supplement_routine_interactor.dart'
+    as _i128;
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_collagen_event_interactor.dart'
     as _i101;
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_creatine_event_interactor.dart'
@@ -270,7 +286,7 @@ import 'package:nutrenaissance_flutter/domain/models/foodroutine/food_routine_ev
 import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_complete.dart'
     as _i85;
 import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_simple.dart'
-    as _i128;
+    as _i136;
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart'
     as _i23;
 import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_completed.dart'
@@ -284,11 +300,11 @@ import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simp
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart'
     as _i82;
 import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart'
-    as _i130;
+    as _i138;
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart'
-    as _i132;
+    as _i140;
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart'
-    as _i124;
+    as _i132;
 import 'package:shared_preferences/shared_preferences.dart' as _i115;
 
 // ignore_for_file: type=lint
@@ -2705,15 +2721,155 @@ class MockRemoveSportRoutineInteractor extends _i1.Mock
       ) as _i14.Future<void>);
 }
 
+/// A class which mocks [GetFoodRoutinesInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetFoodRoutinesInteractor extends _i1.Mock
+    implements _i123.GetFoodRoutinesInteractor {
+  @override
+  _i14.Future<List<_i49.FoodRoutineEvent>> execute() => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+        ),
+        returnValue: _i14.Future<List<_i49.FoodRoutineEvent>>.value(
+            <_i49.FoodRoutineEvent>[]),
+        returnValueForMissingStub:
+            _i14.Future<List<_i49.FoodRoutineEvent>>.value(
+                <_i49.FoodRoutineEvent>[]),
+      ) as _i14.Future<List<_i49.FoodRoutineEvent>>);
+}
+
+/// A class which mocks [DeleteFoodRoutineInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDeleteFoodRoutineInteractor extends _i1.Mock
+    implements _i124.DeleteFoodRoutineInteractor {
+  @override
+  _i14.Future<void> execute(_i49.FoodRoutineEvent? foodRoutineEvent) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [foodRoutineEvent],
+        ),
+        returnValue: _i14.Future<void>.value(),
+        returnValueForMissingStub: _i14.Future<void>.value(),
+      ) as _i14.Future<void>);
+}
+
+/// A class which mocks [RemoveFoodRoutineInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockRemoveFoodRoutineInteractor extends _i1.Mock
+    implements _i125.RemoveFoodRoutineInteractor {
+  @override
+  _i14.Future<void> execute(_i49.FoodRoutineEvent? foodRoutineEvent) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [foodRoutineEvent],
+        ),
+        returnValue: _i14.Future<void>.value(),
+        returnValueForMissingStub: _i14.Future<void>.value(),
+      ) as _i14.Future<void>);
+}
+
+/// A class which mocks [GetSupplementRoutinesInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetSupplementRoutinesInteractor extends _i1.Mock
+    implements _i126.GetSupplementRoutinesInteractor {
+  @override
+  _i14.Future<List<_i35.SupplementSimple>> execute() => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+        ),
+        returnValue: _i14.Future<List<_i35.SupplementSimple>>.value(
+            <_i35.SupplementSimple>[]),
+        returnValueForMissingStub:
+            _i14.Future<List<_i35.SupplementSimple>>.value(
+                <_i35.SupplementSimple>[]),
+      ) as _i14.Future<List<_i35.SupplementSimple>>);
+}
+
+/// A class which mocks [DeleteSupplementRoutineInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDeleteSupplementRoutineInteractor extends _i1.Mock
+    implements _i127.DeleteSupplementRoutineInteractor {
+  @override
+  _i14.Future<void> execute(_i35.SupplementSimple? supplement) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [supplement],
+        ),
+        returnValue: _i14.Future<void>.value(),
+        returnValueForMissingStub: _i14.Future<void>.value(),
+      ) as _i14.Future<void>);
+}
+
+/// A class which mocks [RemoveSupplementRoutineInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockRemoveSupplementRoutineInteractor extends _i1.Mock
+    implements _i128.RemoveSupplementRoutineInteractor {
+  @override
+  _i14.Future<void> execute(_i35.SupplementSimple? supplement) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [supplement],
+        ),
+        returnValue: _i14.Future<void>.value(),
+        returnValueForMissingStub: _i14.Future<void>.value(),
+      ) as _i14.Future<void>);
+}
+
+/// A class which mocks [DeleteSupplementFavoriteInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDeleteSupplementFavoriteInteractor extends _i1.Mock
+    implements _i129.DeleteSupplementFavoriteInteractor {
+  @override
+  _i14.Future<void> execute(_i35.SupplementSimple? supplementFavorite) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [supplementFavorite],
+        ),
+        returnValue: _i14.Future<void>.value(),
+        returnValueForMissingStub: _i14.Future<void>.value(),
+      ) as _i14.Future<void>);
+}
+
+/// A class which mocks [RemoveSupplementFavoriteInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockRemoveSupplementFavoriteInteractor extends _i1.Mock
+    implements _i130.RemoveSupplementFavoriteInteractor {
+  @override
+  _i14.Future<void> execute(_i35.SupplementSimple? supplementFavorite) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [supplementFavorite],
+        ),
+        returnValue: _i14.Future<void>.value(),
+        returnValueForMissingStub: _i14.Future<void>.value(),
+      ) as _i14.Future<void>);
+}
+
 /// A class which mocks [UpdateEventsInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockUpdateEventsInteractor extends _i1.Mock
-    implements _i123.UpdateEventsInteractor {
+    implements _i131.UpdateEventsInteractor {
   @override
   _i14.Future<bool> execute({
     required String? userId,
-    required _i124.PrefsKeys? categoryType,
+    required _i132.PrefsKeys? categoryType,
     required bool? fullSync,
   }) =>
       (super.noSuchMethod(
@@ -2735,7 +2891,7 @@ class MockUpdateEventsInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockDeleteSupplementEventInteractor extends _i1.Mock
-    implements _i125.DeleteSupplementEventInteractor {
+    implements _i133.DeleteSupplementEventInteractor {
   @override
   _i14.Future<void> execute(_i35.SupplementSimple? supplementEvent) =>
       (super.noSuchMethod(
@@ -2752,7 +2908,7 @@ class MockDeleteSupplementEventInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockRemoveSupplementEventInteractor extends _i1.Mock
-    implements _i126.RemoveSupplementEventInteractor {
+    implements _i134.RemoveSupplementEventInteractor {
   @override
   _i14.Future<void> execute(_i35.SupplementSimple? supplementEvent) =>
       (super.noSuchMethod(
@@ -2769,10 +2925,10 @@ class MockRemoveSupplementEventInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockUploadLiquidEventInteractor extends _i1.Mock
-    implements _i127.UploadLiquidEventInteractor {
+    implements _i135.UploadLiquidEventInteractor {
   @override
   _i14.Future<_i12.UploadLiquidEvent> execute(
-          _i128.LiquidEventSimple? liquidEventSimple) =>
+          _i136.LiquidEventSimple? liquidEventSimple) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -2801,7 +2957,7 @@ class MockUploadLiquidEventInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockSaveLiquidEventInteractor extends _i1.Mock
-    implements _i129.SaveLiquidEventInteractor {
+    implements _i137.SaveLiquidEventInteractor {
   @override
   _i14.Future<void> execute(
     _i12.UploadLiquidEvent? uploadLiquidEvent,
@@ -2823,7 +2979,7 @@ class MockSaveLiquidEventInteractor extends _i1.Mock
 /// A class which mocks [LoginRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockLoginRepository extends _i1.Mock implements _i130.LoginRepository {
+class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
   @override
   _i14.Future<_i2.SignUpResult> signUp(
     String? username,
@@ -3080,7 +3236,7 @@ class MockLoginRepository extends _i1.Mock implements _i130.LoginRepository {
 /// A class which mocks [FcmApi].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockFcmApi extends _i1.Mock implements _i131.FcmApi {
+class MockFcmApi extends _i1.Mock implements _i139.FcmApi {
   @override
   _i14.Future<void> registerToken(
     String? userId,
@@ -3207,7 +3363,7 @@ class MockFcmApi extends _i1.Mock implements _i131.FcmApi {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockPreferencesRepository extends _i1.Mock
-    implements _i132.PreferencesRepository {
+    implements _i140.PreferencesRepository {
   @override
   _i14.Future<void> setSub(String? sub) => (super.noSuchMethod(
         Invocation.method(
@@ -3451,7 +3607,7 @@ class MockPreferencesRepository extends _i1.Mock
 
   @override
   _i14.Future<void> saveLastFetchTime(
-    _i124.PrefsKeys? categoryType,
+    _i132.PrefsKeys? categoryType,
     DateTime? time,
   ) =>
       (super.noSuchMethod(
@@ -3467,7 +3623,7 @@ class MockPreferencesRepository extends _i1.Mock
       ) as _i14.Future<void>);
 
   @override
-  _i14.Future<DateTime?> getLastFetchTime(_i124.PrefsKeys? categoryType) =>
+  _i14.Future<DateTime?> getLastFetchTime(_i132.PrefsKeys? categoryType) =>
       (super.noSuchMethod(
         Invocation.method(
           #getLastFetchTime,
@@ -3482,9 +3638,9 @@ class MockPreferencesRepository extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetFaecesByDateInteractor extends _i1.Mock
-    implements _i133.GetFaecesByDateInteractor {
+    implements _i141.GetFaecesByDateInteractor {
   @override
-  _i14.Future<List<_i134.UploadFeces>> execute({
+  _i14.Future<List<_i142.UploadFeces>> execute({
     DateTime? dateTime,
     DateTime? endDate,
     int? days,
@@ -3500,19 +3656,19 @@ class MockGetFaecesByDateInteractor extends _i1.Mock
           },
         ),
         returnValue:
-            _i14.Future<List<_i134.UploadFeces>>.value(<_i134.UploadFeces>[]),
+            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i134.UploadFeces>>.value(<_i134.UploadFeces>[]),
-      ) as _i14.Future<List<_i134.UploadFeces>>);
+            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
+      ) as _i14.Future<List<_i142.UploadFeces>>);
 }
 
 /// A class which mocks [GetUrineByDateInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetUrineByDateInteractor extends _i1.Mock
-    implements _i135.GetUrineByDateInteractor {
+    implements _i143.GetUrineByDateInteractor {
   @override
-  _i14.Future<List<_i134.UploadFeces>> execute({
+  _i14.Future<List<_i142.UploadFeces>> execute({
     DateTime? dateTime,
     DateTime? endDate,
     int? days,
@@ -3528,55 +3684,55 @@ class MockGetUrineByDateInteractor extends _i1.Mock
           },
         ),
         returnValue:
-            _i14.Future<List<_i134.UploadFeces>>.value(<_i134.UploadFeces>[]),
+            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i134.UploadFeces>>.value(<_i134.UploadFeces>[]),
-      ) as _i14.Future<List<_i134.UploadFeces>>);
+            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
+      ) as _i14.Future<List<_i142.UploadFeces>>);
 }
 
 /// A class which mocks [GetFecesEventsInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetFecesEventsInteractor extends _i1.Mock
-    implements _i136.GetFecesEventsInteractor {
+    implements _i144.GetFecesEventsInteractor {
   @override
-  _i14.Future<List<_i134.UploadFeces>> execute() => (super.noSuchMethod(
+  _i14.Future<List<_i142.UploadFeces>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
         returnValue:
-            _i14.Future<List<_i134.UploadFeces>>.value(<_i134.UploadFeces>[]),
+            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i134.UploadFeces>>.value(<_i134.UploadFeces>[]),
-      ) as _i14.Future<List<_i134.UploadFeces>>);
+            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
+      ) as _i14.Future<List<_i142.UploadFeces>>);
 }
 
 /// A class which mocks [GetUrineEventsInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetUrineEventsInteractor extends _i1.Mock
-    implements _i137.GetUrineEventsInteractor {
+    implements _i145.GetUrineEventsInteractor {
   @override
-  _i14.Future<List<_i134.UploadFeces>> execute() => (super.noSuchMethod(
+  _i14.Future<List<_i142.UploadFeces>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
         returnValue:
-            _i14.Future<List<_i134.UploadFeces>>.value(<_i134.UploadFeces>[]),
+            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i134.UploadFeces>>.value(<_i134.UploadFeces>[]),
-      ) as _i14.Future<List<_i134.UploadFeces>>);
+            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
+      ) as _i14.Future<List<_i142.UploadFeces>>);
 }
 
 /// A class which mocks [UploadFecesInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockUploadFecesInteractor extends _i1.Mock
-    implements _i138.UploadFecesInteractor {
+    implements _i146.UploadFecesInteractor {
   @override
-  _i14.Future<void> execute(_i134.UploadFeces? uploadFeces) =>
+  _i14.Future<void> execute(_i142.UploadFeces? uploadFeces) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -3591,9 +3747,9 @@ class MockUploadFecesInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockSaveFecesEventInteractor extends _i1.Mock
-    implements _i139.SaveFecesEventInteractor {
+    implements _i147.SaveFecesEventInteractor {
   @override
-  _i14.Future<void> execute(_i134.UploadFeces? uploadFeces) =>
+  _i14.Future<void> execute(_i142.UploadFeces? uploadFeces) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -3608,9 +3764,9 @@ class MockSaveFecesEventInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockUploadUrineInteractor extends _i1.Mock
-    implements _i140.UploadUrineInteractor {
+    implements _i148.UploadUrineInteractor {
   @override
-  _i14.Future<void> execute(_i134.UploadFeces? uploadUrine) =>
+  _i14.Future<void> execute(_i142.UploadFeces? uploadUrine) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -3625,9 +3781,9 @@ class MockUploadUrineInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockSaveUrineInteractor extends _i1.Mock
-    implements _i141.SaveUrineInteractor {
+    implements _i149.SaveUrineInteractor {
   @override
-  _i14.Future<void> execute(_i134.UploadFeces? uploadUrine) =>
+  _i14.Future<void> execute(_i142.UploadFeces? uploadUrine) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -3642,7 +3798,7 @@ class MockSaveUrineInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockDeleteFecesEventInteractor extends _i1.Mock
-    implements _i142.DeleteFecesEventInteractor {
+    implements _i150.DeleteFecesEventInteractor {
   @override
   _i14.Future<void> execute(
     String? userId,
@@ -3665,9 +3821,9 @@ class MockDeleteFecesEventInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockRemoveFecesEventInteractor extends _i1.Mock
-    implements _i143.RemoveFecesEventInteractor {
+    implements _i151.RemoveFecesEventInteractor {
   @override
-  _i14.Future<void> execute(_i134.UploadFeces? uploadFeces) =>
+  _i14.Future<void> execute(_i142.UploadFeces? uploadFeces) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -3682,7 +3838,7 @@ class MockRemoveFecesEventInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockDeleteUrineEventInteractor extends _i1.Mock
-    implements _i144.DeleteUrineEventInteractor {
+    implements _i152.DeleteUrineEventInteractor {
   @override
   _i14.Future<void> execute(
     String? userId,
@@ -3705,9 +3861,9 @@ class MockDeleteUrineEventInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockRemoveUrineEventInteractor extends _i1.Mock
-    implements _i145.RemoveUrineEventInteractor {
+    implements _i153.RemoveUrineEventInteractor {
   @override
-  _i14.Future<void> execute(_i134.UploadFeces? uploadUrine) =>
+  _i14.Future<void> execute(_i142.UploadFeces? uploadUrine) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -3722,13 +3878,13 @@ class MockRemoveUrineEventInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetUserMicronutrientsInteractor extends _i1.Mock
-    implements _i146.GetUserMicronutrientsInteractor {}
+    implements _i154.GetUserMicronutrientsInteractor {}
 
 /// A class which mocks [GetUserRdasInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetUserRdasInteractor extends _i1.Mock
-    implements _i147.GetUserRdasInteractor {
+    implements _i155.GetUserRdasInteractor {
   @override
   _i14.Future<List<_i23.UserRda>> execute() => (super.noSuchMethod(
         Invocation.method(
@@ -3745,7 +3901,7 @@ class MockGetUserRdasInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockDeleteLiquidEventInteractor extends _i1.Mock
-    implements _i148.DeleteLiquidEventInteractor {
+    implements _i156.DeleteLiquidEventInteractor {
   @override
   _i14.Future<void> execute(
     String? userId,
@@ -3768,7 +3924,7 @@ class MockDeleteLiquidEventInteractor extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockRemoveLiquidEventInteractor extends _i1.Mock
-    implements _i149.RemoveLiquidEventInteractor {
+    implements _i157.RemoveLiquidEventInteractor {
   @override
   _i14.Future<void> execute(_i85.LiquidEventComplete? liquidEventComplete) =>
       (super.noSuchMethod(

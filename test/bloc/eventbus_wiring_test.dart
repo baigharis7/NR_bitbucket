@@ -25,6 +25,12 @@ import 'package:nutrenaissance_flutter/presentation/energy_balance_detail/bloc/e
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_food_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_liquid_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/journal/bloc/journal_sport_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/routinestabs/bloc/routines_tab_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/favoritestabs/bloc/favorites_tabs_bloc.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodroutine/food_routine_event.dart';
+import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_completed.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 
 import 'bloc_test_mocks.mocks.dart';
 
@@ -1268,6 +1274,229 @@ void main() {
       await Future.delayed(const Duration(milliseconds: 100));
 
       verifyNever(mockGetTodaySports.execute());
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // RoutinesTabBloc EventBus
+  // ---------------------------------------------------------------------------
+  group('RoutinesTabBloc EventBus', () {
+    late MockGetFoodRoutinesInteractor mockGetFoodRoutines;
+    late MockGetMasterFileInteractor mockGetMasterFile;
+    late MockGetRoutinesInteractor mockGetRoutines;
+    late MockGetSupplementRoutinesInteractor mockGetSupplementRoutines;
+    late MockDeleteFoodRoutineInteractor mockDeleteFoodRoutine;
+    late MockRemoveFoodRoutineInteractor mockRemoveFoodRoutine;
+    late MockDeleteSportRoutineInteractor mockDeleteSportRoutine;
+    late MockRemoveSportRoutineInteractor mockRemoveSportRoutine;
+    late MockDeleteSupplementRoutineInteractor mockDeleteSupplementRoutine;
+    late MockRemoveSupplementRoutineInteractor mockRemoveSupplementRoutine;
+
+    setUp(() {
+      mockGetFoodRoutines = MockGetFoodRoutinesInteractor();
+      mockGetMasterFile = MockGetMasterFileInteractor();
+      mockGetRoutines = MockGetRoutinesInteractor();
+      mockGetSupplementRoutines = MockGetSupplementRoutinesInteractor();
+      mockDeleteFoodRoutine = MockDeleteFoodRoutineInteractor();
+      mockRemoveFoodRoutine = MockRemoveFoodRoutineInteractor();
+      mockDeleteSportRoutine = MockDeleteSportRoutineInteractor();
+      mockRemoveSportRoutine = MockRemoveSportRoutineInteractor();
+      mockDeleteSupplementRoutine = MockDeleteSupplementRoutineInteractor();
+      mockRemoveSupplementRoutine = MockRemoveSupplementRoutineInteractor();
+    });
+
+    RoutinesTabBloc buildBloc() => RoutinesTabBloc(
+          getFoodRoutinesInteractor: mockGetFoodRoutines,
+          getMasterFileInteractor: mockGetMasterFile,
+          getRoutinesInteractor: mockGetRoutines,
+          getSupplementRoutinesInteractor: mockGetSupplementRoutines,
+          deleteFoodRoutineInteractor: mockDeleteFoodRoutine,
+          removeFoodRoutineInteractor: mockRemoveFoodRoutine,
+          deleteSportRoutineInteractor: mockDeleteSportRoutine,
+          removeSportRoutineInteractor: mockRemoveSportRoutine,
+          deleteSupplementRoutineInteractor: mockDeleteSupplementRoutine,
+          removeSupplementRoutineInteractor: mockRemoveSupplementRoutine,
+        );
+
+    test('food event bus notification triggers meal routines re-fetch', () async {
+      when(mockGetFoodRoutines.execute()).thenAnswer((_) async => <FoodRoutineEvent>[]);
+
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verify(mockGetFoodRoutines.execute()).called(1);
+      verifyNever(mockGetRoutines.execute());
+      verifyNever(mockGetSupplementRoutines.execute());
+
+      await bloc.close();
+    });
+
+    test('sport event bus notification triggers sport routines re-fetch', () async {
+      when(mockGetRoutines.execute()).thenAnswer((_) async => <SportRoutineCompleted>[]);
+
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.sport);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verify(mockGetRoutines.execute()).called(1);
+      verifyNever(mockGetFoodRoutines.execute());
+      verifyNever(mockGetSupplementRoutines.execute());
+
+      await bloc.close();
+    });
+
+    test('supplement event bus notification triggers supplement routines re-fetch', () async {
+      when(mockGetSupplementRoutines.execute()).thenAnswer((_) async => <SupplementSimple>[]);
+
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.supplement);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verify(mockGetSupplementRoutines.execute()).called(1);
+      verifyNever(mockGetFoodRoutines.execute());
+      verifyNever(mockGetRoutines.execute());
+
+      await bloc.close();
+    });
+
+    test('water event bus notification does NOT trigger any routine re-fetch', () async {
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.water);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetFoodRoutines.execute());
+      verifyNever(mockGetRoutines.execute());
+      verifyNever(mockGetSupplementRoutines.execute());
+
+      await bloc.close();
+    });
+
+    test('close cancels event bus subscription', () async {
+      final bloc = buildBloc();
+      await bloc.close();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetFoodRoutines.execute());
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // FavoritesTabsBloc EventBus
+  // ---------------------------------------------------------------------------
+  group('FavoritesTabsBloc EventBus', () {
+    late MockGetFoodFavoritesInteractor mockGetFoodFavorites;
+    late MockDeleteFoodFavoriteInteractor mockDeleteFoodFavorite;
+    late MockRemoveFoodFavoriteFromLocalInteractor mockRemoveFoodFavorite;
+    late MockGetUserIdInteractor mockGetUserId;
+    late MockGetMasterFileInteractor mockGetMasterFile;
+    late MockGetSportFavoritesInteractor mockGetSportFavorites;
+    late MockGetSupplementFavoritesInteractor mockGetSupplementFavorites;
+    late MockDeleteSportFavoriteInteractor mockDeleteSportFavorite;
+    late MockRemoveSportFavoriteInteractor mockRemoveSportFavorite;
+    late MockDeleteSupplementFavoriteInteractor mockDeleteSupplementFavorite;
+    late MockRemoveSupplementFavoriteInteractor mockRemoveSupplementFavorite;
+
+    setUp(() {
+      mockGetFoodFavorites = MockGetFoodFavoritesInteractor();
+      mockDeleteFoodFavorite = MockDeleteFoodFavoriteInteractor();
+      mockRemoveFoodFavorite = MockRemoveFoodFavoriteFromLocalInteractor();
+      mockGetUserId = MockGetUserIdInteractor();
+      mockGetMasterFile = MockGetMasterFileInteractor();
+      mockGetSportFavorites = MockGetSportFavoritesInteractor();
+      mockGetSupplementFavorites = MockGetSupplementFavoritesInteractor();
+      mockDeleteSportFavorite = MockDeleteSportFavoriteInteractor();
+      mockRemoveSportFavorite = MockRemoveSportFavoriteInteractor();
+      mockDeleteSupplementFavorite = MockDeleteSupplementFavoriteInteractor();
+      mockRemoveSupplementFavorite = MockRemoveSupplementFavoriteInteractor();
+    });
+
+    FavoritesTabsBloc buildBloc() => FavoritesTabsBloc(
+          getFoodFavoritesInteractor: mockGetFoodFavorites,
+          deleteFoodFavoriteInteractor: mockDeleteFoodFavorite,
+          removeFoodFavoriteFromLocalInteractor: mockRemoveFoodFavorite,
+          getUserIdInteractor: mockGetUserId,
+          getMasterFileInteractor: mockGetMasterFile,
+          getSportFavoritesInteractor: mockGetSportFavorites,
+          getSupplementFavoritesInteractor: mockGetSupplementFavorites,
+          deleteSportFavoriteInteractor: mockDeleteSportFavorite,
+          removeSportFavoriteInteractor: mockRemoveSportFavorite,
+          deleteSupplementFavoriteInteractor: mockDeleteSupplementFavorite,
+          removeSupplementFavoriteInteractor: mockRemoveSupplementFavorite,
+        );
+
+    test('food event bus notification triggers food favorites re-fetch', () async {
+      when(mockGetFoodFavorites.execute()).thenAnswer((_) async => <FoodFavorite>[]);
+
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verify(mockGetFoodFavorites.execute()).called(1);
+      verifyNever(mockGetSportFavorites.execute());
+      verifyNever(mockGetSupplementFavorites.execute());
+
+      await bloc.close();
+    });
+
+    test('sport event bus notification triggers sport favorites re-fetch', () async {
+      when(mockGetSportFavorites.execute()).thenAnswer((_) async => <AddSportFavorite>[]);
+
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.sport);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verify(mockGetSportFavorites.execute()).called(1);
+      verifyNever(mockGetFoodFavorites.execute());
+      verifyNever(mockGetSupplementFavorites.execute());
+
+      await bloc.close();
+    });
+
+    test('supplement event bus notification triggers supplement favorites re-fetch', () async {
+      when(mockGetSupplementFavorites.execute()).thenAnswer((_) async => <SupplementSimple>[]);
+
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.supplement);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verify(mockGetSupplementFavorites.execute()).called(1);
+      verifyNever(mockGetFoodFavorites.execute());
+      verifyNever(mockGetSportFavorites.execute());
+
+      await bloc.close();
+    });
+
+    test('water event bus notification does NOT trigger any favorites re-fetch', () async {
+      final bloc = buildBloc();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.water);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetFoodFavorites.execute());
+      verifyNever(mockGetSportFavorites.execute());
+      verifyNever(mockGetSupplementFavorites.execute());
+
+      await bloc.close();
+    });
+
+    test('close cancels event bus subscription', () async {
+      final bloc = buildBloc();
+      await bloc.close();
+
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(mockGetFoodFavorites.execute());
     });
   });
 }
