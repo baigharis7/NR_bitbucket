@@ -491,7 +491,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     });
 
     on<FinishWaterEventAction>((event, emit) async {
-      if (state.lastTap != null && DateTime.now().difference(state.lastTap!) < const Duration(milliseconds: 500)) {
+      if (state.lastTap != null && DateTime.now().difference(state.lastTap!) < const Duration(milliseconds: 200)) {
         return;
       }
       state.lastTap = DateTime.now();

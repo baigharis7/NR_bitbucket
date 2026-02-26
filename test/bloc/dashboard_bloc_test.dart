@@ -670,5 +670,49 @@ void main() {
         },
       );
     });
+
+    group('FinishWaterEventAction debounce', () {
+      blocTest<DashboardBloc, DashboardState>(
+        'debounces taps within 200ms — second tap is ignored',
+        build: () {
+          when(mockGetUserId.execute()).thenReturn('test-user');
+          when(mockSaveWaterEvent.execute(any)).thenAnswer((_) async {});
+          when(mockGetWaterEvents.execute(dateTime: anyNamed('dateTime')))
+              .thenAnswer((_) async => []);
+          when(mockUploadWaterEvent.execute(any)).thenAnswer((_) async => true);
+          return buildBloc();
+        },
+        act: (bloc) async {
+          bloc.add(FinishWaterEventAction(qty: 0.250, onFinish: () {}));
+          await Future.delayed(const Duration(milliseconds: 50));
+          bloc.add(FinishWaterEventAction(qty: 0.250, onFinish: () {}));
+        },
+        wait: const Duration(milliseconds: 500),
+        verify: (_) {
+          verify(mockSaveWaterEvent.execute(any)).called(1);
+        },
+      );
+
+      blocTest<DashboardBloc, DashboardState>(
+        'allows second tap after 200ms debounce window',
+        build: () {
+          when(mockGetUserId.execute()).thenReturn('test-user');
+          when(mockSaveWaterEvent.execute(any)).thenAnswer((_) async {});
+          when(mockGetWaterEvents.execute(dateTime: anyNamed('dateTime')))
+              .thenAnswer((_) async => []);
+          when(mockUploadWaterEvent.execute(any)).thenAnswer((_) async => true);
+          return buildBloc();
+        },
+        act: (bloc) async {
+          bloc.add(FinishWaterEventAction(qty: 0.250, onFinish: () {}));
+          await Future.delayed(const Duration(milliseconds: 250));
+          bloc.add(FinishWaterEventAction(qty: 0.250, onFinish: () {}));
+        },
+        wait: const Duration(milliseconds: 500),
+        verify: (_) {
+          verify(mockSaveWaterEvent.execute(any)).called(2);
+        },
+      );
+    });
   });
 }
