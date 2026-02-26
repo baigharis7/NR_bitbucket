@@ -240,7 +240,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                             );
                                           },
                                       subtitle: recentFood.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${recentFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, recentFood.ingredients, context)}.',
-                                      beforeTrailingSrc: isPreselect ? null : 'assets/icon/edit_icon.png',
+                                      beforeTrailingIcon: isPreselect ? null : Icons.tune,
                                       beforeTrailingTap: isPreselect ? null : () => Navigator.pushNamed(context, UpdateMealScreen.routeName, arguments: recentFood).then((value) => bloc.add(InitializeStateAction())),
                                     ),),
                                     if (state.favRecentTab == 1 && state.foodEvent?.isFavorite != true) ...state.foodFavorites.orEmpty().map((favFood) => ItemInfoCard(
@@ -267,7 +267,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                             );
                                           },
                                       subtitle: favFood.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${favFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, favFood.ingredients, context)}.',
-                                      beforeTrailingSrc: isPreselect ? null : 'assets/icon/edit_icon.png',
+                                      beforeTrailingIcon: isPreselect ? null : Icons.tune,
                                       beforeTrailingTap: isPreselect ? null : () => Navigator.pushNamed(context, UpdateMealScreen.routeName, arguments: favFood).then((value) => bloc.add(InitializeStateAction())),
                                     ),),
                                   ],

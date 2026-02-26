@@ -226,6 +226,36 @@ void main() {
       ));
       expect(find.byType(InkWell), findsNothing);
     });
+
+    testWidgets('renders beforeTrailingIcon when provided with beforeTrailingTap', (tester) async {
+      bool tapped = false;
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: ItemInfoCard(
+            title: 'Test Item',
+            beforeTrailingIcon: Icons.tune,
+            beforeTrailingTap: () => tapped = true,
+          ),
+        ),
+      ));
+      expect(find.byIcon(Icons.tune), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.tune));
+      expect(tapped, true);
+    });
+
+    testWidgets('beforeTrailingIcon takes precedence over beforeTrailingSrc', (tester) async {
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: ItemInfoCard(
+            title: 'Test Item',
+            beforeTrailingIcon: Icons.tune,
+            beforeTrailingSrc: 'assets/icon/edit_icon.png',
+            beforeTrailingTap: () {},
+          ),
+        ),
+      ));
+      expect(find.byIcon(Icons.tune), findsOneWidget);
+    });
   });
 
   // ---------------------------------------------------------------------------

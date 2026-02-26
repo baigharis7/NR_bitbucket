@@ -224,7 +224,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                     subtitle: '${(0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt()} mg',
                                     leadingSrc: 'assets/images/goal_objectives.png',
                                     leadingTap: () {},
-                                    beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                                    beforeTrailingIcon: Icons.tune,
                                     beforeTrailingTap: () {
                                       supplementsBloc.state.supplementObj?.isRoutine = true;
                                       supplementsBloc.add(AddSupplementInfoSupplementsAction(
@@ -246,7 +246,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                     subtitle: '10 mg',
                                     leadingSrc: 'assets/images/goal_objectives.png',
                                     leadingTap: () {},
-                                    beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                                    beforeTrailingIcon: Icons.tune,
                                     beforeTrailingTap: () {
                                       supplementsBloc.state.supplementObj?.isRoutine = true;
                                       supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: Constants.COLLAGEN, unit: 'mg', amount: 10)));
@@ -289,7 +289,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                                 onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
                                             ),),),
                                     subtitle: recentSupplement.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${recentSupplement.info![0].amount.toString()} ${recentSupplement.info![0].unit}.',
-                                    beforeTrailingSrc: isPreselect ? null : 'assets/icon/edit_icon.png',
+                                    beforeTrailingIcon: isPreselect ? null : Icons.tune,
                                     beforeTrailingTap: isPreselect ? null : () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: recentSupplement).then((value) => supplementsBloc.add(InitializationSupplementsAction())),
                                   );
                                 } else {
@@ -312,7 +312,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                     subtitle: supplementFavorite.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${supplementFavorite.info![0].amount.toString()} ${supplementFavorite.info![0].unit}.',
                                     leadingSrc: isRoutine ? null : 'assets/images/favorite_icon.png',
                                     leadingTap: isRoutine ? null : () {},
-                                    beforeTrailingSrc: isRoutine ? null : 'assets/icon/edit_icon.png',
+                                    beforeTrailingIcon: isRoutine ? null : Icons.tune,
                                     beforeTrailingTap: isRoutine ? null : () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: supplementFavorite).then((value) => supplementsBloc.add(InitializationSupplementsAction())),
                                   );
                                 }
@@ -397,7 +397,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                         subtitle: '${(0.08 * (state.userProfile?.physicalCharacteristics?.weight ?? 0)).toInt()} mg',
                                         leadingSrc: 'assets/images/goal_objectives.png',
                                         leadingTap: () {},
-                                        beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                                        beforeTrailingIcon: Icons.tune,
                                         beforeTrailingTap: () {
                                           supplementsBloc.state.supplementObj?.isRoutine = true;
                                           supplementsBloc.add(AddSupplementInfoSupplementsAction(
@@ -419,7 +419,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                         subtitle: '10 mg',
                                         leadingSrc: 'assets/images/goal_objectives.png',
                                         leadingTap: () {},
-                                        beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                                        beforeTrailingIcon: Icons.tune,
                                         beforeTrailingTap: () {
                                           supplementsBloc.state.supplementObj?.isRoutine = true;
                                           supplementsBloc.add(AddSupplementInfoSupplementsAction(nutriInfo: NutriInfo(id: Constants.COLLAGEN, unit: 'mg', amount: 10)));
