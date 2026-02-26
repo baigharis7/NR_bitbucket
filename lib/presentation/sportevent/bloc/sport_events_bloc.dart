@@ -272,6 +272,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
           final sportRoutineUploadResult = await uploadRoutineInteractor.execute(event.sportRoutineCompleted);
           try {
             await saveRoutineInteractor.execute(event.sportRoutineCompleted, state.isEdit ?? false);
+            DashboardEventBus.instance.notify(DataChangedCategory.sport);
 
             _clearFields();
             event.onFinish.call();

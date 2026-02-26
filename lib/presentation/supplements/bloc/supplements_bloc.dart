@@ -287,6 +287,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
         await uploadSupplementRoutineInteractor.execute(uploadSupplementRoutine);
         try {
           await saveSupplementRoutineInteractor.execute(uploadSupplementRoutine, false);
+          DashboardEventBus.instance.notify(DataChangedCategory.supplement);
 
           _clearData();
           emit(state.copyWith(isLoading: false));

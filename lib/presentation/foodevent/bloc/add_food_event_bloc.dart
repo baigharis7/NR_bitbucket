@@ -464,6 +464,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
         if (uploadedRoutine) {
           try {
             await saveFoodRoutineInteractor.execute(event.foodRoutineEvent, state.isEdit ?? false);
+            DashboardEventBus.instance.notify(DataChangedCategory.food);
 
             _clearFields();
             emit(state.copyWith(isLoading: false, onError: null,));
