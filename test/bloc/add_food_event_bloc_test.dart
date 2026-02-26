@@ -354,5 +354,46 @@ void main() {
         expect(bloc.state.foodEvent!.isRoutine, true);
       },
     );
+
+    blocTest<AddFoodEventBloc, AddFoodEventState>(
+      'PrefillFoodForFavoriteAction sets isFavorite true and isRoutine false',
+      build: buildBloc,
+      act: (bloc) => bloc.add(PrefillFoodForFavoriteAction(
+        foodFavorite: FoodFavorite(
+          ingredients: [FoodInFavorite(id: 1, qty: 100, unit: 1, cookingMethod: 0)],
+          drinks: [],
+          mealTime: 0,
+          title: 'Chicken',
+          isRoutine: true,
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.foodEvent!.isFavorite, true);
+        expect(bloc.state.foodEvent!.isRoutine, false);
+        expect(bloc.state.foodEvent!.title, 'Chicken');
+        expect(bloc.state.foodEvent!.ingredients.length, 1);
+      },
+    );
+
+    blocTest<AddFoodEventBloc, AddFoodEventState>(
+      'PrefillFoodForFavoriteAction preserves mealTime from current state when item has none',
+      build: () {
+        final bloc = buildBloc();
+        bloc.state.foodEvent!.mealTime = 2;
+        return bloc;
+      },
+      act: (bloc) => bloc.add(PrefillFoodForFavoriteAction(
+        foodFavorite: FoodFavorite(
+          ingredients: [],
+          drinks: [],
+          mealTime: null,
+          title: 'Test',
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.foodEvent!.mealTime, 2);
+        expect(bloc.state.foodEvent!.isFavorite, true);
+      },
+    );
   });
 }

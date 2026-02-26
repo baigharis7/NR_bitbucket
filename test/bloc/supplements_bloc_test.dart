@@ -298,5 +298,42 @@ void main() {
         expect(bloc.state.supplementObj!.eventDate, DateTime(2026, 3, 15).millisecondsSinceEpoch);
       },
     );
+
+    blocTest<SupplementsBloc, SupplementsState>(
+      'PrefillSupplementForFavoriteEvent sets isFavorite true and isRoutine false',
+      build: buildBloc,
+      act: (bloc) => bloc.add(PrefillSupplementForFavoriteEvent(
+        supplement: SupplementSimple(
+          info: [NutriInfo(id: 1, unit: 'mg', amount: 500)],
+          name: 'Creatine',
+          isRoutine: true,
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.supplementObj!.isFavorite, true);
+        expect(bloc.state.supplementObj!.isRoutine, false);
+        expect(bloc.state.supplementObj!.name, 'Creatine');
+        expect(bloc.state.supplementObj!.info!.length, 1);
+      },
+    );
+
+    blocTest<SupplementsBloc, SupplementsState>(
+      'PrefillSupplementForFavoriteEvent preserves eventDate from current state',
+      build: () {
+        final bloc = buildBloc();
+        bloc.state.supplementObj!.eventDate = DateTime(2026, 3, 15).millisecondsSinceEpoch;
+        return bloc;
+      },
+      act: (bloc) => bloc.add(PrefillSupplementForFavoriteEvent(
+        supplement: SupplementSimple(
+          info: [],
+          name: 'Test',
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.supplementObj!.isFavorite, true);
+        expect(bloc.state.supplementObj!.eventDate, DateTime(2026, 3, 15).millisecondsSinceEpoch);
+      },
+    );
   });
 }

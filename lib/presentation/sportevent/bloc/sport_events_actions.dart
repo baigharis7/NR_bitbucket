@@ -147,3 +147,9 @@ class PrefillSportForRoutineAction extends SportEventsActions {
 
   PrefillSportForRoutineAction({required this.addSportFavorite});
 }
+
+class PrefillSportForFavoriteAction extends SportEventsActions {
+  final AddSportFavorite addSportFavorite;
+
+  PrefillSportForFavoriteAction({required this.addSportFavorite});
+}

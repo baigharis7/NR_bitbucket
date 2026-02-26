@@ -213,6 +213,15 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
+    on<PrefillSportForFavoriteAction>((event, emit) {
+      final item = event.addSportFavorite;
+      item.isFavorite = true;
+      item.isCreateRoutine = false;
+      item.eventDate = item.eventDate ?? state.calendarDate?.millisecondsSinceEpoch;
+      state.sportSimpleEvent = item;
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
+
     on<UpdateSportFromRoutinesTabSportEventsActions>((event, emit) {
       final item = mapToSportFavoriteFromRoutine(event.sportRoutineCompleted);
       item.isCreateRoutine = true;

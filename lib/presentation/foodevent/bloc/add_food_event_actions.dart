@@ -189,3 +189,9 @@ class PrefillFoodForRoutineAction extends AddFoodEventActions {
 
   PrefillFoodForRoutineAction({required this.foodFavorite});
 }
+
+class PrefillFoodForFavoriteAction extends AddFoodEventActions {
+  final FoodFavorite foodFavorite;
+
+  PrefillFoodForFavoriteAction({required this.foodFavorite});
+}

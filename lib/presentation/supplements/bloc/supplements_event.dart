@@ -114,3 +114,9 @@ class PrefillSupplementForRoutineEvent extends SupplementsEvent {
 
   PrefillSupplementForRoutineEvent({required this.supplement});
 }
+
+class PrefillSupplementForFavoriteEvent extends SupplementsEvent {
+  final SupplementSimple supplement;
+
+  PrefillSupplementForFavoriteEvent({required this.supplement});
+}

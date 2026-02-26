@@ -60,6 +60,8 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
           supplementsBloc.add(GetSupplementFromNavAction(supplementSimple: arguments));
         } else if (arguments is Map && arguments['preSelectRoutine'] == true) {
           supplementsBloc.add(UpdateRoutineActionSupplementsEvent(isRoutine: true));
+        } else if (arguments is Map && arguments['preSelectFavorite'] == true) {
+          supplementsBloc.add(UpdateFavoriteActionSupplementsEvent(isFavorite: true));
         }
       }
     });
@@ -143,9 +145,13 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                           state.supplementObj?.info?.orEmpty().isEmpty == true;
 
                       if (showFavRecent) {
-                        final currentTabItems = state.favRecentTab == 0
+                        final isFavorite = state.supplementObj?.isFavorite == true;
+                        final isPreselect = state.supplementObj?.isRoutine == true || isFavorite;
+                        final currentTabItems = isFavorite
                             ? state.recentSupplements.orEmpty()
-                            : state.supplementFavorites.orEmpty();
+                            : (state.favRecentTab == 0
+                                ? state.recentSupplements.orEmpty()
+                                : state.supplementFavorites.orEmpty());
 
                         return Column(children: [
                           // Fixed header
@@ -251,7 +257,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                             ],),
                           ),
                           const SizedBox(height: Dimens.height12),
-                          FavoritesRecentToggle(
+                          if (!isPreselect) FavoritesRecentToggle(
                             selectedIndex: state.favRecentTab,
                             onTap: (index) => supplementsBloc.add(SwitchFavRecentTabSupplementsAction(tabIndex: index)),
                           ),
@@ -262,16 +268,19 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                               padding: const EdgeInsets.only(bottom: 80),
                               itemCount: currentTabItems.length,
                               itemBuilder: (context, index) {
-                                if (state.favRecentTab == 0) {
+                                if (state.favRecentTab == 0 || isFavorite) {
                                   final recentSupplement = currentTabItems[index];
                                   final itemName = recentSupplement.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], recentSupplement.info![0].id ?? -1).translate(context);
-                                  final isRoutine = state.supplementObj?.isRoutine == true;
                                   return ItemInfoCard(
                                     title: itemName,
-                                    trailingSrc: isRoutine ? null : 'assets/icon/add_icon.png',
-                                    trailingIcon: isRoutine ? Icons.arrow_forward_rounded : null,
-                                    trailingTap: isRoutine
-                                        ? () => supplementsBloc.add(PrefillSupplementForRoutineEvent(supplement: recentSupplement))
+                                    trailingSrc: isPreselect ? null : 'assets/icon/add_icon.png',
+                                    trailingIcon: isPreselect ? Icons.arrow_forward_rounded : null,
+                                    trailingTap: isPreselect
+                                        ? () => supplementsBloc.add(
+                                            isFavorite
+                                                ? PrefillSupplementForFavoriteEvent(supplement: recentSupplement)
+                                                : PrefillSupplementForRoutineEvent(supplement: recentSupplement),
+                                          )
                                         : () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
                                             supplement: recentSupplement,
                                             onFinish: () => _showConfirmationDialog(
@@ -280,8 +289,8 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                                 onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
                                             ),),),
                                     subtitle: recentSupplement.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${recentSupplement.info![0].amount.toString()} ${recentSupplement.info![0].unit}.',
-                                    beforeTrailingSrc: isRoutine ? null : 'assets/icon/edit_icon.png',
-                                    beforeTrailingTap: isRoutine ? null : () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: recentSupplement).then((value) => supplementsBloc.add(InitializationSupplementsAction())),
+                                    beforeTrailingSrc: isPreselect ? null : 'assets/icon/edit_icon.png',
+                                    beforeTrailingTap: isPreselect ? null : () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: recentSupplement).then((value) => supplementsBloc.add(InitializationSupplementsAction())),
                                   );
                                 } else {
                                   final supplementFavorite = currentTabItems[index];

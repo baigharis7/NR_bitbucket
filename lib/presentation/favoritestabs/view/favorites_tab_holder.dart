@@ -91,7 +91,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
         );
         break;
       case 2: // Supplements tab - direct navigation
-        Navigator.pushNamed(context, SupplementsScreen.routeName);
+        Navigator.pushNamed(context, SupplementsScreen.routeName, arguments: {'preSelectFavorite': true});
         break;
     }
   }

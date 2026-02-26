@@ -203,6 +203,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: Dimens.height12),
+                                  if (state.foodEvent?.isRoutine != true && state.foodEvent?.isFavorite != true)
                                   FavoritesRecentToggle(
                                     selectedIndex: state.favRecentTab,
                                     onTap: (index) => bloc.add(SwitchFavRecentTabAction(tabIndex: index)),
@@ -212,59 +213,66 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               ),
                             ),
                             Expanded(
-                              child: ListView(
-                                padding: const EdgeInsets.only(bottom: 80),
-                                children: [
-                                  if (state.favRecentTab == 0) ...state.recentFoodItems.orEmpty().map((recentFood) => ItemInfoCard(
-                                    title: recentFood.title ?? NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: recentFood.ingredients, context: context),
-                                    trailingSrc: state.foodEvent?.isRoutine == true ? null : 'assets/icon/add_icon.png',
-                                    trailingIcon: state.foodEvent?.isRoutine == true ? Icons.arrow_forward_rounded : null,
-                                    color: AppColors.floralWhite,
-                                    trailingTap: state.foodEvent?.isRoutine == true
-                                      ? () => bloc.add(PrefillFoodForRoutineAction(foodFavorite: recentFood))
-                                      : () {
-                                          recentFood.eventId = DateTime.now().millisecondsSinceEpoch;
-                                          recentFood.eventDate = bloc.state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
-                                          bloc.add(FinishAddFoodEventAction(
-                                            foodEventSimple: mapToFoodEventSimpleFromFoodFavorite(recentFood),
-                                            onFinish: () => _showConfirmationDialog(
-                                                message: AppLocalizations.of(context)!.food_event_successfully_saved,
-                                                context: context,
-                                                onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
-                                            ),),
-                                          );
-                                        },
-                                    subtitle: recentFood.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${recentFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, recentFood.ingredients, context)}.',
-                                    beforeTrailingSrc: state.foodEvent?.isRoutine == true ? null : 'assets/icon/edit_icon.png',
-                                    beforeTrailingTap: state.foodEvent?.isRoutine == true ? null : () => Navigator.pushNamed(context, UpdateMealScreen.routeName, arguments: recentFood).then((value) => bloc.add(InitializeStateAction())),
-                                  ),),
-                                  if (state.favRecentTab == 1) ...state.foodFavorites.orEmpty().map((favFood) => ItemInfoCard(
-                                    title: favFood.title ?? NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: favFood.ingredients, context: context),
-                                    leadingSrc: state.foodEvent?.isRoutine == true ? null : 'assets/images/favorite_icon.png',
-                                    trailingSrc: state.foodEvent?.isRoutine == true ? null : 'assets/icon/add_icon.png',
-                                    trailingIcon: state.foodEvent?.isRoutine == true ? Icons.arrow_forward_rounded : null,
-                                    color: state.foodsFromFavorite == favFood ? AppColors.butter : AppColors.floralWhite,
-                                    leadingTap: state.foodEvent?.isRoutine == true ? null : () => bloc.add(RemoveFavoriteFoodAddFoodEventAction(foodFavorite: favFood, onFinish: () {})),
-                                    trailingTap: state.foodEvent?.isRoutine == true
-                                      ? () => bloc.add(PrefillFoodForRoutineAction(foodFavorite: favFood))
-                                      : () {
-                                          favFood.eventId = DateTime.now().millisecondsSinceEpoch;
-                                          favFood.eventDate = bloc.state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
-                                          bloc.add(FinishAddFoodEventAction(
-                                            foodEventSimple: mapToFoodEventSimpleFromFoodFavorite(favFood),
-                                            onFinish: () => _showConfirmationDialog(
-                                                message: AppLocalizations.of(context)!.food_event_successfully_saved,
-                                                context: context,
-                                                onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
-                                            ),),
-                                          );
-                                        },
-                                    subtitle: favFood.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${favFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, favFood.ingredients, context)}.',
-                                    beforeTrailingSrc: state.foodEvent?.isRoutine == true ? null : 'assets/icon/edit_icon.png',
-                                    beforeTrailingTap: state.foodEvent?.isRoutine == true ? null : () => Navigator.pushNamed(context, UpdateMealScreen.routeName, arguments: favFood).then((value) => bloc.add(InitializeStateAction())),
-                                  ),),
-                                ],
-                              ),
+                              child: Builder(builder: (context) {
+                                final isPreselect = state.foodEvent?.isRoutine == true || state.foodEvent?.isFavorite == true;
+                                return ListView(
+                                  padding: const EdgeInsets.only(bottom: 80),
+                                  children: [
+                                    if (state.favRecentTab == 0 || state.foodEvent?.isFavorite == true) ...state.recentFoodItems.orEmpty().map((recentFood) => ItemInfoCard(
+                                      title: recentFood.title ?? NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: recentFood.ingredients, context: context),
+                                      trailingSrc: isPreselect ? null : 'assets/icon/add_icon.png',
+                                      trailingIcon: isPreselect ? Icons.arrow_forward_rounded : null,
+                                      color: AppColors.floralWhite,
+                                      trailingTap: isPreselect
+                                        ? () => bloc.add(state.foodEvent?.isRoutine == true
+                                            ? PrefillFoodForRoutineAction(foodFavorite: recentFood)
+                                            : PrefillFoodForFavoriteAction(foodFavorite: recentFood))
+                                        : () {
+                                            recentFood.eventId = DateTime.now().millisecondsSinceEpoch;
+                                            recentFood.eventDate = bloc.state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+                                            bloc.add(FinishAddFoodEventAction(
+                                              foodEventSimple: mapToFoodEventSimpleFromFoodFavorite(recentFood),
+                                              onFinish: () => _showConfirmationDialog(
+                                                  message: AppLocalizations.of(context)!.food_event_successfully_saved,
+                                                  context: context,
+                                                  onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
+                                              ),),
+                                            );
+                                          },
+                                      subtitle: recentFood.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${recentFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, recentFood.ingredients, context)}.',
+                                      beforeTrailingSrc: isPreselect ? null : 'assets/icon/edit_icon.png',
+                                      beforeTrailingTap: isPreselect ? null : () => Navigator.pushNamed(context, UpdateMealScreen.routeName, arguments: recentFood).then((value) => bloc.add(InitializeStateAction())),
+                                    ),),
+                                    if (state.favRecentTab == 1 && state.foodEvent?.isFavorite != true) ...state.foodFavorites.orEmpty().map((favFood) => ItemInfoCard(
+                                      title: favFood.title ?? NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: favFood.ingredients, context: context),
+                                      leadingSrc: isPreselect ? null : 'assets/images/favorite_icon.png',
+                                      trailingSrc: isPreselect ? null : 'assets/icon/add_icon.png',
+                                      trailingIcon: isPreselect ? Icons.arrow_forward_rounded : null,
+                                      color: state.foodsFromFavorite == favFood ? AppColors.butter : AppColors.floralWhite,
+                                      leadingTap: isPreselect ? null : () => bloc.add(RemoveFavoriteFoodAddFoodEventAction(foodFavorite: favFood, onFinish: () {})),
+                                      trailingTap: isPreselect
+                                        ? () => bloc.add(state.foodEvent?.isRoutine == true
+                                            ? PrefillFoodForRoutineAction(foodFavorite: favFood)
+                                            : PrefillFoodForFavoriteAction(foodFavorite: favFood))
+                                        : () {
+                                            favFood.eventId = DateTime.now().millisecondsSinceEpoch;
+                                            favFood.eventDate = bloc.state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+                                            bloc.add(FinishAddFoodEventAction(
+                                              foodEventSimple: mapToFoodEventSimpleFromFoodFavorite(favFood),
+                                              onFinish: () => _showConfirmationDialog(
+                                                  message: AppLocalizations.of(context)!.food_event_successfully_saved,
+                                                  context: context,
+                                                  onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
+                                              ),),
+                                            );
+                                          },
+                                      subtitle: favFood.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${favFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, favFood.ingredients, context)}.',
+                                      beforeTrailingSrc: isPreselect ? null : 'assets/icon/edit_icon.png',
+                                      beforeTrailingTap: isPreselect ? null : () => Navigator.pushNamed(context, UpdateMealScreen.routeName, arguments: favFood).then((value) => bloc.add(InitializeStateAction())),
+                                    ),),
+                                  ],
+                                );
+                              }),
                             ),
                           ],
                         )
