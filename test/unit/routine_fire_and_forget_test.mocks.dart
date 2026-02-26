@@ -813,6 +813,16 @@ class MockLocalStorageRepository extends _i1.Mock
       ) as _i7.Future<List<dynamic>>);
 
   @override
+  _i7.Future<List<dynamic>> getRecentFoodEvents() => (super.noSuchMethod(
+        Invocation.method(
+          #getRecentFoodEvents,
+          [],
+        ),
+        returnValue: _i7.Future<List<dynamic>>.value(<dynamic>[]),
+        returnValueForMissingStub: _i7.Future<List<dynamic>>.value(<dynamic>[]),
+      ) as _i7.Future<List<dynamic>>);
+
+  @override
   _i7.Future<List<dynamic>> getSportsEventsOfToday({DateTime? dateTime}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -828,6 +838,26 @@ class MockLocalStorageRepository extends _i1.Mock
   _i7.Future<List<dynamic>> getWeeklySportEvents() => (super.noSuchMethod(
         Invocation.method(
           #getWeeklySportEvents,
+          [],
+        ),
+        returnValue: _i7.Future<List<dynamic>>.value(<dynamic>[]),
+        returnValueForMissingStub: _i7.Future<List<dynamic>>.value(<dynamic>[]),
+      ) as _i7.Future<List<dynamic>>);
+
+  @override
+  _i7.Future<List<dynamic>> getRecentSportEvents() => (super.noSuchMethod(
+        Invocation.method(
+          #getRecentSportEvents,
+          [],
+        ),
+        returnValue: _i7.Future<List<dynamic>>.value(<dynamic>[]),
+        returnValueForMissingStub: _i7.Future<List<dynamic>>.value(<dynamic>[]),
+      ) as _i7.Future<List<dynamic>>);
+
+  @override
+  _i7.Future<List<dynamic>> getRecentSupplementEvents() => (super.noSuchMethod(
+        Invocation.method(
+          #getRecentSupplementEvents,
           [],
         ),
         returnValue: _i7.Future<List<dynamic>>.value(<dynamic>[]),

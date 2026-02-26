@@ -3,7 +3,7 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i14;
+import 'dart:async' as _i15;
 import 'dart:io' as _i112;
 
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart' as _i2;
@@ -38,7 +38,7 @@ import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplem
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplements_ev.dart'
     as _i33;
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart'
-    as _i15;
+    as _i16;
 import 'package:nutrenaissance_flutter/data/local/models/modelsappearence/models_appearance_entity.dart'
     as _i106;
 import 'package:nutrenaissance_flutter/domain/interactor/advices/get_advice_interactor.dart'
@@ -103,8 +103,10 @@ import 'package:nutrenaissance_flutter/domain/interactor/foodevents/delete_food_
     as _i118;
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart'
     as _i79;
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_recent_food_items_interactor.dart'
+    as _i158;
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart'
-    as _i18;
+    as _i19;
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart'
     as _i117;
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart'
@@ -136,7 +138,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/upload_liq
 import 'package:nutrenaissance_flutter/domain/interactor/localstorage/erase_db_local_events_interactor.dart'
     as _i103;
 import 'package:nutrenaissance_flutter/domain/interactor/login/erase_database_interactor.dart'
-    as _i17;
+    as _i18;
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart'
     as _i65;
 import 'package:nutrenaissance_flutter/domain/interactor/login/resend_verification_code_interactor.dart'
@@ -150,7 +152,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/login/signin_interactor
 import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor.dart'
     as _i63;
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart'
-    as _i13;
+    as _i14;
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_version_interactor.dart'
     as _i68;
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/manage_master_files_interactor.dart'
@@ -184,7 +186,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_rdas_i
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart'
     as _i74;
 import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor.dart'
-    as _i16;
+    as _i17;
 import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart'
     as _i86;
 import 'package:nutrenaissance_flutter/domain/interactor/routines/delete_sport_routine_interactor.dart'
@@ -201,6 +203,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_spor
     as _i119;
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_day_calories_interactor.dart'
     as _i83;
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_recent_sport_items_interactor.dart'
+    as _i159;
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart'
     as _i108;
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_week_sports_interactor.dart'
@@ -227,6 +231,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/supplements/delete_supp
     as _i127;
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_day_supplement_events_interactor.dart'
     as _i109;
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_recent_supplement_items_interactor.dart'
+    as _i160;
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_favorites_interactor.dart'
     as _i39;
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_routines_interactor.dart'
@@ -278,7 +284,7 @@ import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorit
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart'
     as _i55;
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart'
-    as _i19;
+    as _i13;
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart'
     as _i45;
 import 'package:nutrenaissance_flutter/domain/models/foodroutine/food_routine_event.dart'
@@ -299,10 +305,16 @@ import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simp
     as _i35;
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart'
     as _i82;
+import 'package:nutrenaissance_flutter/domain/repository/foodevents/food_events_repository.dart'
+    as _i161;
 import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart'
     as _i138;
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart'
     as _i140;
+import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_events_repository.dart'
+    as _i162;
+import 'package:nutrenaissance_flutter/domain/repository/supplements/supplements_repository.dart'
+    as _i163;
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart'
     as _i132;
 import 'package:shared_preferences/shared_preferences.dart' as _i115;
@@ -503,33 +515,44 @@ class _FakeUpdatePasswordResult_16 extends _i1.SmartFake
         );
 }
 
+class _FakeFoodEventComplete_17 extends _i1.SmartFake
+    implements _i13.FoodEventComplete {
+  _FakeFoodEventComplete_17(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [GetMasterFileInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetMasterFileInteractor extends _i1.Mock
-    implements _i13.GetMasterFileInteractor {
+    implements _i14.GetMasterFileInteractor {
   @override
-  _i14.Future<dynamic>? execute(_i15.MasterFilesType? masterFileType) =>
+  _i15.Future<dynamic>? execute(_i16.MasterFilesType? masterFileType) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [masterFileType],
         ),
         returnValueForMissingStub: null,
-      ) as _i14.Future<dynamic>?);
+      ) as _i15.Future<dynamic>?);
 }
 
 /// A class which mocks [SignOutInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSignOutInteractor extends _i1.Mock implements _i16.SignOutInteractor {
+class MockSignOutInteractor extends _i1.Mock implements _i17.SignOutInteractor {
   @override
-  _i14.Future<_i2.SignOutResult> execute() => (super.noSuchMethod(
+  _i15.Future<_i2.SignOutResult> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<_i2.SignOutResult>.value(_FakeSignOutResult_0(
+        returnValue: _i15.Future<_i2.SignOutResult>.value(_FakeSignOutResult_0(
           this,
           Invocation.method(
             #execute,
@@ -537,49 +560,49 @@ class MockSignOutInteractor extends _i1.Mock implements _i16.SignOutInteractor {
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i2.SignOutResult>.value(_FakeSignOutResult_0(
+            _i15.Future<_i2.SignOutResult>.value(_FakeSignOutResult_0(
           this,
           Invocation.method(
             #execute,
             [],
           ),
         )),
-      ) as _i14.Future<_i2.SignOutResult>);
+      ) as _i15.Future<_i2.SignOutResult>);
 }
 
 /// A class which mocks [EraseDatabaseInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockEraseDatabaseInteractor extends _i1.Mock
-    implements _i17.EraseDatabaseInteractor {
+    implements _i18.EraseDatabaseInteractor {
   @override
-  _i14.Future<bool> execute() => (super.noSuchMethod(
+  _i15.Future<bool> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [GetWeekFoodEventsInteractor].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetWeekFoodEventsInteractor extends _i1.Mock
-    implements _i18.GetWeekFoodEventsInteractor {
+    implements _i19.GetWeekFoodEventsInteractor {
   @override
-  _i14.Future<List<_i19.FoodEventComplete>> execute() => (super.noSuchMethod(
+  _i15.Future<List<_i13.FoodEventComplete>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<List<_i19.FoodEventComplete>>.value(
-            <_i19.FoodEventComplete>[]),
+        returnValue: _i15.Future<List<_i13.FoodEventComplete>>.value(
+            <_i13.FoodEventComplete>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i19.FoodEventComplete>>.value(
-                <_i19.FoodEventComplete>[]),
-      ) as _i14.Future<List<_i19.FoodEventComplete>>);
+            _i15.Future<List<_i13.FoodEventComplete>>.value(
+                <_i13.FoodEventComplete>[]),
+      ) as _i15.Future<List<_i13.FoodEventComplete>>);
 }
 
 /// A class which mocks [GetWeekLiquidEventsInteractor].
@@ -588,17 +611,17 @@ class MockGetWeekFoodEventsInteractor extends _i1.Mock
 class MockGetWeekLiquidEventsInteractor extends _i1.Mock
     implements _i20.GetWeekLiquidEventsInteractor {
   @override
-  _i14.Future<List<_i19.FoodEventComplete>> execute() => (super.noSuchMethod(
+  _i15.Future<List<_i13.FoodEventComplete>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<List<_i19.FoodEventComplete>>.value(
-            <_i19.FoodEventComplete>[]),
+        returnValue: _i15.Future<List<_i13.FoodEventComplete>>.value(
+            <_i13.FoodEventComplete>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i19.FoodEventComplete>>.value(
-                <_i19.FoodEventComplete>[]),
-      ) as _i14.Future<List<_i19.FoodEventComplete>>);
+            _i15.Future<List<_i13.FoodEventComplete>>.value(
+                <_i13.FoodEventComplete>[]),
+      ) as _i15.Future<List<_i13.FoodEventComplete>>);
 }
 
 /// A class which mocks [GetWeekSportsInteractor].
@@ -607,17 +630,17 @@ class MockGetWeekLiquidEventsInteractor extends _i1.Mock
 class MockGetWeekSportsInteractor extends _i1.Mock
     implements _i21.GetWeekSportsInteractor {
   @override
-  _i14.Future<List<_i4.SportEventComplete>> execute() => (super.noSuchMethod(
+  _i15.Future<List<_i4.SportEventComplete>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<List<_i4.SportEventComplete>>.value(
+        returnValue: _i15.Future<List<_i4.SportEventComplete>>.value(
             <_i4.SportEventComplete>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i4.SportEventComplete>>.value(
+            _i15.Future<List<_i4.SportEventComplete>>.value(
                 <_i4.SportEventComplete>[]),
-      ) as _i14.Future<List<_i4.SportEventComplete>>);
+      ) as _i15.Future<List<_i4.SportEventComplete>>);
 }
 
 /// A class which mocks [GetProfileInteractor].
@@ -626,14 +649,14 @@ class MockGetWeekSportsInteractor extends _i1.Mock
 class MockGetProfileInteractor extends _i1.Mock
     implements _i22.GetProfileInteractor {
   @override
-  _i14.Future<_i23.UserProfileModel?> execute() => (super.noSuchMethod(
+  _i15.Future<_i23.UserProfileModel?> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<_i23.UserProfileModel?>.value(),
-        returnValueForMissingStub: _i14.Future<_i23.UserProfileModel?>.value(),
-      ) as _i14.Future<_i23.UserProfileModel?>);
+        returnValue: _i15.Future<_i23.UserProfileModel?>.value(),
+        returnValueForMissingStub: _i15.Future<_i23.UserProfileModel?>.value(),
+      ) as _i15.Future<_i23.UserProfileModel?>);
 }
 
 /// A class which mocks [GetFoodFavoritesInteractor].
@@ -642,16 +665,16 @@ class MockGetProfileInteractor extends _i1.Mock
 class MockGetFoodFavoritesInteractor extends _i1.Mock
     implements _i24.GetFoodFavoritesInteractor {
   @override
-  _i14.Future<List<_i25.FoodFavorite>> execute() => (super.noSuchMethod(
+  _i15.Future<List<_i25.FoodFavorite>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
         returnValue:
-            _i14.Future<List<_i25.FoodFavorite>>.value(<_i25.FoodFavorite>[]),
+            _i15.Future<List<_i25.FoodFavorite>>.value(<_i25.FoodFavorite>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i25.FoodFavorite>>.value(<_i25.FoodFavorite>[]),
-      ) as _i14.Future<List<_i25.FoodFavorite>>);
+            _i15.Future<List<_i25.FoodFavorite>>.value(<_i25.FoodFavorite>[]),
+      ) as _i15.Future<List<_i25.FoodFavorite>>);
 }
 
 /// A class which mocks [GetUserIdInteractor].
@@ -688,7 +711,7 @@ class MockGetUserIdInteractor extends _i1.Mock
 class MockDeleteFoodFavoriteInteractor extends _i1.Mock
     implements _i28.DeleteFoodFavoriteInteractor {
   @override
-  _i14.Future<bool> execute(
+  _i15.Future<bool> execute(
     String? userId,
     int? eventId,
   ) =>
@@ -700,9 +723,9 @@ class MockDeleteFoodFavoriteInteractor extends _i1.Mock
             eventId,
           ],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [RemoveFoodFavoriteFromLocalInteractor].
@@ -711,15 +734,15 @@ class MockDeleteFoodFavoriteInteractor extends _i1.Mock
 class MockRemoveFoodFavoriteFromLocalInteractor extends _i1.Mock
     implements _i29.RemoveFoodFavoriteFromLocalInteractor {
   @override
-  _i14.Future<bool> execute(_i25.FoodFavorite? foodFavorite) =>
+  _i15.Future<bool> execute(_i25.FoodFavorite? foodFavorite) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [foodFavorite],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [IsNecessaryToShowExplainingCardInteractor].
@@ -728,14 +751,14 @@ class MockRemoveFoodFavoriteFromLocalInteractor extends _i1.Mock
 class MockIsNecessaryToShowExplainingCardInteractor extends _i1.Mock
     implements _i30.IsNecessaryToShowExplainingCardInteractor {
   @override
-  _i14.Future<bool> execute(int? explainingCardId) => (super.noSuchMethod(
+  _i15.Future<bool> execute(int? explainingCardId) => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [explainingCardId],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [SaveExplainingCardInteractionInteractor].
@@ -744,14 +767,14 @@ class MockIsNecessaryToShowExplainingCardInteractor extends _i1.Mock
 class MockSaveExplainingCardInteractionInteractor extends _i1.Mock
     implements _i31.SaveExplainingCardInteractionInteractor {
   @override
-  _i14.Future<void> execute(int? explainingCardId) => (super.noSuchMethod(
+  _i15.Future<void> execute(int? explainingCardId) => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [explainingCardId],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [UploadSupplementEventInteractor].
@@ -760,15 +783,15 @@ class MockSaveExplainingCardInteractionInteractor extends _i1.Mock
 class MockUploadSupplementEventInteractor extends _i1.Mock
     implements _i32.UploadSupplementEventInteractor {
   @override
-  _i14.Future<void> execute(_i33.UploadSupplementsEv? uploadSupplementsEv) =>
+  _i15.Future<void> execute(_i33.UploadSupplementsEv? uploadSupplementsEv) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [uploadSupplementsEv],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [SaveSupplementEventInteractor].
@@ -777,7 +800,7 @@ class MockUploadSupplementEventInteractor extends _i1.Mock
 class MockSaveSupplementEventInteractor extends _i1.Mock
     implements _i34.SaveSupplementEventInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     _i35.SupplementSimple? supplementSimple,
     bool? isEdit,
   ) =>
@@ -789,9 +812,9 @@ class MockSaveSupplementEventInteractor extends _i1.Mock
             isEdit,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [UploadSupplementFavoriteInteractor].
@@ -800,15 +823,15 @@ class MockSaveSupplementEventInteractor extends _i1.Mock
 class MockUploadSupplementFavoriteInteractor extends _i1.Mock
     implements _i36.UploadSupplementFavoriteInteractor {
   @override
-  _i14.Future<void> execute(_i37.SupplementFavorite? supplementFavorite) =>
+  _i15.Future<void> execute(_i37.SupplementFavorite? supplementFavorite) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [supplementFavorite],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [SaveSupplementFavoriteInteractor].
@@ -817,7 +840,7 @@ class MockUploadSupplementFavoriteInteractor extends _i1.Mock
 class MockSaveSupplementFavoriteInteractor extends _i1.Mock
     implements _i38.SaveSupplementFavoriteInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     _i37.SupplementFavorite? supplementFavorite,
     bool? isEdit,
   ) =>
@@ -829,9 +852,9 @@ class MockSaveSupplementFavoriteInteractor extends _i1.Mock
             isEdit,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [GetSupplementFavoritesInteractor].
@@ -840,17 +863,17 @@ class MockSaveSupplementFavoriteInteractor extends _i1.Mock
 class MockGetSupplementFavoritesInteractor extends _i1.Mock
     implements _i39.GetSupplementFavoritesInteractor {
   @override
-  _i14.Future<List<_i35.SupplementSimple>> execute() => (super.noSuchMethod(
+  _i15.Future<List<_i35.SupplementSimple>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<List<_i35.SupplementSimple>>.value(
+        returnValue: _i15.Future<List<_i35.SupplementSimple>>.value(
             <_i35.SupplementSimple>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i35.SupplementSimple>>.value(
+            _i15.Future<List<_i35.SupplementSimple>>.value(
                 <_i35.SupplementSimple>[]),
-      ) as _i14.Future<List<_i35.SupplementSimple>>);
+      ) as _i15.Future<List<_i35.SupplementSimple>>);
 }
 
 /// A class which mocks [UploadSupplementRoutineInteractor].
@@ -859,16 +882,16 @@ class MockGetSupplementFavoritesInteractor extends _i1.Mock
 class MockUploadSupplementRoutineInteractor extends _i1.Mock
     implements _i40.UploadSupplementRoutineInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
           _i41.UploadSupplementRoutine? uploadSupplementRoutine) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [uploadSupplementRoutine],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [SaveSupplementRoutineInteractor].
@@ -877,7 +900,7 @@ class MockUploadSupplementRoutineInteractor extends _i1.Mock
 class MockSaveSupplementRoutineInteractor extends _i1.Mock
     implements _i42.SaveSupplementRoutineInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     _i41.UploadSupplementRoutine? supplementRoutine,
     bool? isEdit,
   ) =>
@@ -889,9 +912,9 @@ class MockSaveSupplementRoutineInteractor extends _i1.Mock
             isEdit,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [SaveFoodEventInteractor].
@@ -900,7 +923,7 @@ class MockSaveSupplementRoutineInteractor extends _i1.Mock
 class MockSaveFoodEventInteractor extends _i1.Mock
     implements _i43.SaveFoodEventInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     _i3.UploadFoodEvent? uploadFoodEvent,
     bool? isEdit,
   ) =>
@@ -912,9 +935,9 @@ class MockSaveFoodEventInteractor extends _i1.Mock
             isEdit,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [UploadFoodEventInteractor].
@@ -923,7 +946,7 @@ class MockSaveFoodEventInteractor extends _i1.Mock
 class MockUploadFoodEventInteractor extends _i1.Mock
     implements _i44.UploadFoodEventInteractor {
   @override
-  _i14.Future<_i3.UploadFoodEvent> execute(
+  _i15.Future<_i3.UploadFoodEvent> execute(
           _i45.FoodEventSimple? foodEventSimple) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -931,7 +954,7 @@ class MockUploadFoodEventInteractor extends _i1.Mock
           [foodEventSimple],
         ),
         returnValue:
-            _i14.Future<_i3.UploadFoodEvent>.value(_FakeUploadFoodEvent_1(
+            _i15.Future<_i3.UploadFoodEvent>.value(_FakeUploadFoodEvent_1(
           this,
           Invocation.method(
             #execute,
@@ -939,14 +962,14 @@ class MockUploadFoodEventInteractor extends _i1.Mock
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i3.UploadFoodEvent>.value(_FakeUploadFoodEvent_1(
+            _i15.Future<_i3.UploadFoodEvent>.value(_FakeUploadFoodEvent_1(
           this,
           Invocation.method(
             #execute,
             [foodEventSimple],
           ),
         )),
-      ) as _i14.Future<_i3.UploadFoodEvent>);
+      ) as _i15.Future<_i3.UploadFoodEvent>);
 }
 
 /// A class which mocks [UploadFoodFavoriteInteractor].
@@ -955,15 +978,15 @@ class MockUploadFoodEventInteractor extends _i1.Mock
 class MockUploadFoodFavoriteInteractor extends _i1.Mock
     implements _i46.UploadFoodFavoriteInteractor {
   @override
-  _i14.Future<bool> execute(_i25.FoodFavorite? foodFavorite) =>
+  _i15.Future<bool> execute(_i25.FoodFavorite? foodFavorite) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [foodFavorite],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [SaveFoodFavoriteInteractor].
@@ -972,7 +995,7 @@ class MockUploadFoodFavoriteInteractor extends _i1.Mock
 class MockSaveFoodFavoriteInteractor extends _i1.Mock
     implements _i47.SaveFoodFavoriteInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     _i25.FoodFavorite? foodFavorite,
     bool? isEdit,
   ) =>
@@ -984,9 +1007,9 @@ class MockSaveFoodFavoriteInteractor extends _i1.Mock
             isEdit,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [UploadFoodRoutineInteractor].
@@ -995,15 +1018,15 @@ class MockSaveFoodFavoriteInteractor extends _i1.Mock
 class MockUploadFoodRoutineInteractor extends _i1.Mock
     implements _i48.UploadFoodRoutineInteractor {
   @override
-  _i14.Future<bool> execute(_i49.FoodRoutineEvent? foodRoutineEvent) =>
+  _i15.Future<bool> execute(_i49.FoodRoutineEvent? foodRoutineEvent) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [foodRoutineEvent],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [SaveFoodRoutineInteractor].
@@ -1012,7 +1035,7 @@ class MockUploadFoodRoutineInteractor extends _i1.Mock
 class MockSaveFoodRoutineInteractor extends _i1.Mock
     implements _i50.SaveFoodRoutineInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     _i49.FoodRoutineEvent? foodRoutineEvent,
     bool? isEdit,
   ) =>
@@ -1024,9 +1047,9 @@ class MockSaveFoodRoutineInteractor extends _i1.Mock
             isEdit,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [SaveSportEventInteractor].
@@ -1035,7 +1058,7 @@ class MockSaveFoodRoutineInteractor extends _i1.Mock
 class MockSaveSportEventInteractor extends _i1.Mock
     implements _i51.SaveSportEventInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     _i4.SportEventComplete? sportEventComplete,
     bool? isEdit,
   ) =>
@@ -1047,9 +1070,9 @@ class MockSaveSportEventInteractor extends _i1.Mock
             isEdit,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [UploadSportEventsInteractor].
@@ -1058,7 +1081,7 @@ class MockSaveSportEventInteractor extends _i1.Mock
 class MockUploadSportEventsInteractor extends _i1.Mock
     implements _i52.UploadSportEventsInteractor {
   @override
-  _i14.Future<_i4.SportEventComplete> execute(
+  _i15.Future<_i4.SportEventComplete> execute(
           _i53.SportEventSimple? sportEventSimple) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1066,7 +1089,7 @@ class MockUploadSportEventsInteractor extends _i1.Mock
           [sportEventSimple],
         ),
         returnValue:
-            _i14.Future<_i4.SportEventComplete>.value(_FakeSportEventComplete_2(
+            _i15.Future<_i4.SportEventComplete>.value(_FakeSportEventComplete_2(
           this,
           Invocation.method(
             #execute,
@@ -1074,14 +1097,14 @@ class MockUploadSportEventsInteractor extends _i1.Mock
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i4.SportEventComplete>.value(_FakeSportEventComplete_2(
+            _i15.Future<_i4.SportEventComplete>.value(_FakeSportEventComplete_2(
           this,
           Invocation.method(
             #execute,
             [sportEventSimple],
           ),
         )),
-      ) as _i14.Future<_i4.SportEventComplete>);
+      ) as _i15.Future<_i4.SportEventComplete>);
 }
 
 /// A class which mocks [GetSportFavoritesInteractor].
@@ -1090,17 +1113,17 @@ class MockUploadSportEventsInteractor extends _i1.Mock
 class MockGetSportFavoritesInteractor extends _i1.Mock
     implements _i54.GetSportFavoritesInteractor {
   @override
-  _i14.Future<List<_i55.AddSportFavorite>> execute() => (super.noSuchMethod(
+  _i15.Future<List<_i55.AddSportFavorite>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<List<_i55.AddSportFavorite>>.value(
+        returnValue: _i15.Future<List<_i55.AddSportFavorite>>.value(
             <_i55.AddSportFavorite>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i55.AddSportFavorite>>.value(
+            _i15.Future<List<_i55.AddSportFavorite>>.value(
                 <_i55.AddSportFavorite>[]),
-      ) as _i14.Future<List<_i55.AddSportFavorite>>);
+      ) as _i15.Future<List<_i55.AddSportFavorite>>);
 }
 
 /// A class which mocks [UploadRoutineInteractor].
@@ -1109,16 +1132,16 @@ class MockGetSportFavoritesInteractor extends _i1.Mock
 class MockUploadRoutineInteractor extends _i1.Mock
     implements _i56.UploadRoutineInteractor {
   @override
-  _i14.Future<bool> execute(
+  _i15.Future<bool> execute(
           _i57.SportRoutineCompleted? sportRoutineCompleted) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [sportRoutineCompleted],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [SaveRoutineInteractor].
@@ -1127,7 +1150,7 @@ class MockUploadRoutineInteractor extends _i1.Mock
 class MockSaveRoutineInteractor extends _i1.Mock
     implements _i58.SaveRoutineInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     _i57.SportRoutineCompleted? sportRoutineCompleted,
     bool? isEdit,
   ) =>
@@ -1139,9 +1162,9 @@ class MockSaveRoutineInteractor extends _i1.Mock
             isEdit,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [UploadSportFavoriteInteractor].
@@ -1150,15 +1173,15 @@ class MockSaveRoutineInteractor extends _i1.Mock
 class MockUploadSportFavoriteInteractor extends _i1.Mock
     implements _i59.UploadSportFavoriteInteractor {
   @override
-  _i14.Future<bool> execute(_i55.AddSportFavorite? sportFavorite) =>
+  _i15.Future<bool> execute(_i55.AddSportFavorite? sportFavorite) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [sportFavorite],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [SaveSportFavoriteInteractor].
@@ -1167,7 +1190,7 @@ class MockUploadSportFavoriteInteractor extends _i1.Mock
 class MockSaveSportFavoriteInteractor extends _i1.Mock
     implements _i60.SaveSportFavoriteInteractor {
   @override
-  _i14.Future<bool> execute(
+  _i15.Future<bool> execute(
     _i55.AddSportFavorite? addSportFavorite,
     bool? isEdit,
   ) =>
@@ -1179,9 +1202,9 @@ class MockSaveSportFavoriteInteractor extends _i1.Mock
             isEdit,
           ],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [DeleteSportFavoriteInteractor].
@@ -1190,7 +1213,7 @@ class MockSaveSportFavoriteInteractor extends _i1.Mock
 class MockDeleteSportFavoriteInteractor extends _i1.Mock
     implements _i61.DeleteSportFavoriteInteractor {
   @override
-  _i14.Future<bool> execute(
+  _i15.Future<bool> execute(
     String? userId,
     int? eventId,
   ) =>
@@ -1202,9 +1225,9 @@ class MockDeleteSportFavoriteInteractor extends _i1.Mock
             eventId,
           ],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [RemoveSportFavoriteInteractor].
@@ -1213,15 +1236,15 @@ class MockDeleteSportFavoriteInteractor extends _i1.Mock
 class MockRemoveSportFavoriteInteractor extends _i1.Mock
     implements _i62.RemoveSportFavoriteInteractor {
   @override
-  _i14.Future<bool> execute(_i55.AddSportFavorite? addSportFavorite) =>
+  _i15.Future<bool> execute(_i55.AddSportFavorite? addSportFavorite) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [addSportFavorite],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [SignUpInteractor].
@@ -1229,7 +1252,7 @@ class MockRemoveSportFavoriteInteractor extends _i1.Mock
 /// See the documentation for Mockito's code generation for more information.
 class MockSignUpInteractor extends _i1.Mock implements _i63.SignUpInteractor {
   @override
-  _i14.Future<_i2.SignUpResult> execute(
+  _i15.Future<_i2.SignUpResult> execute(
     String? username,
     String? email,
     String? password,
@@ -1243,7 +1266,7 @@ class MockSignUpInteractor extends _i1.Mock implements _i63.SignUpInteractor {
             password,
           ],
         ),
-        returnValue: _i14.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
+        returnValue: _i15.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
           this,
           Invocation.method(
             #execute,
@@ -1255,7 +1278,7 @@ class MockSignUpInteractor extends _i1.Mock implements _i63.SignUpInteractor {
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
+            _i15.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
           this,
           Invocation.method(
             #execute,
@@ -1266,7 +1289,7 @@ class MockSignUpInteractor extends _i1.Mock implements _i63.SignUpInteractor {
             ],
           ),
         )),
-      ) as _i14.Future<_i2.SignUpResult>);
+      ) as _i15.Future<_i2.SignUpResult>);
 }
 
 /// A class which mocks [SendVerificationCodeInteractor].
@@ -1275,7 +1298,7 @@ class MockSignUpInteractor extends _i1.Mock implements _i63.SignUpInteractor {
 class MockSendVerificationCodeInteractor extends _i1.Mock
     implements _i64.SendVerificationCodeInteractor {
   @override
-  _i14.Future<_i2.SignUpResult> execute(
+  _i15.Future<_i2.SignUpResult> execute(
     String? confirmationCode,
     String? username,
   ) =>
@@ -1287,7 +1310,7 @@ class MockSendVerificationCodeInteractor extends _i1.Mock
             username,
           ],
         ),
-        returnValue: _i14.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
+        returnValue: _i15.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
           this,
           Invocation.method(
             #execute,
@@ -1298,7 +1321,7 @@ class MockSendVerificationCodeInteractor extends _i1.Mock
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
+            _i15.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
           this,
           Invocation.method(
             #execute,
@@ -1308,7 +1331,7 @@ class MockSendVerificationCodeInteractor extends _i1.Mock
             ],
           ),
         )),
-      ) as _i14.Future<_i2.SignUpResult>);
+      ) as _i15.Future<_i2.SignUpResult>);
 }
 
 /// A class which mocks [FetchUserAttributesInteractor].
@@ -1317,13 +1340,13 @@ class MockSendVerificationCodeInteractor extends _i1.Mock
 class MockFetchUserAttributesInteractor extends _i1.Mock
     implements _i65.FetchUserAttributesInteractor {
   @override
-  _i14.Future<_i2.CognitoAuthSession> execute() => (super.noSuchMethod(
+  _i15.Future<_i2.CognitoAuthSession> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
         returnValue:
-            _i14.Future<_i2.CognitoAuthSession>.value(_FakeCognitoAuthSession_4(
+            _i15.Future<_i2.CognitoAuthSession>.value(_FakeCognitoAuthSession_4(
           this,
           Invocation.method(
             #execute,
@@ -1331,14 +1354,14 @@ class MockFetchUserAttributesInteractor extends _i1.Mock
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i2.CognitoAuthSession>.value(_FakeCognitoAuthSession_4(
+            _i15.Future<_i2.CognitoAuthSession>.value(_FakeCognitoAuthSession_4(
           this,
           Invocation.method(
             #execute,
             [],
           ),
         )),
-      ) as _i14.Future<_i2.CognitoAuthSession>);
+      ) as _i15.Future<_i2.CognitoAuthSession>);
 }
 
 /// A class which mocks [SignInInteractor].
@@ -1346,7 +1369,7 @@ class MockFetchUserAttributesInteractor extends _i1.Mock
 /// See the documentation for Mockito's code generation for more information.
 class MockSignInInteractor extends _i1.Mock implements _i66.SignInInteractor {
   @override
-  _i14.Future<_i2.SignInResult> execute(
+  _i15.Future<_i2.SignInResult> execute(
     String? username,
     String? password,
   ) =>
@@ -1358,7 +1381,7 @@ class MockSignInInteractor extends _i1.Mock implements _i66.SignInInteractor {
             password,
           ],
         ),
-        returnValue: _i14.Future<_i2.SignInResult>.value(_FakeSignInResult_5(
+        returnValue: _i15.Future<_i2.SignInResult>.value(_FakeSignInResult_5(
           this,
           Invocation.method(
             #execute,
@@ -1369,7 +1392,7 @@ class MockSignInInteractor extends _i1.Mock implements _i66.SignInInteractor {
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i2.SignInResult>.value(_FakeSignInResult_5(
+            _i15.Future<_i2.SignInResult>.value(_FakeSignInResult_5(
           this,
           Invocation.method(
             #execute,
@@ -1379,7 +1402,7 @@ class MockSignInInteractor extends _i1.Mock implements _i66.SignInInteractor {
             ],
           ),
         )),
-      ) as _i14.Future<_i2.SignInResult>);
+      ) as _i15.Future<_i2.SignInResult>);
 }
 
 /// A class which mocks [SaveUsernameAndEmailInteractor].
@@ -1410,15 +1433,15 @@ class MockSaveUsernameAndEmailInteractor extends _i1.Mock
 class MockGetMasterFileVersionInteractor extends _i1.Mock
     implements _i68.GetMasterFileVersionInteractor {
   @override
-  _i14.Future<int> execute(_i15.MasterFilesType? masterFileType) =>
+  _i15.Future<int> execute(_i16.MasterFilesType? masterFileType) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [masterFileType],
         ),
-        returnValue: _i14.Future<int>.value(0),
-        returnValueForMissingStub: _i14.Future<int>.value(0),
-      ) as _i14.Future<int>);
+        returnValue: _i15.Future<int>.value(0),
+        returnValueForMissingStub: _i15.Future<int>.value(0),
+      ) as _i15.Future<int>);
 }
 
 /// A class which mocks [ManageMasterFilesInteractor].
@@ -1427,7 +1450,7 @@ class MockGetMasterFileVersionInteractor extends _i1.Mock
 class MockManageMasterFilesInteractor extends _i1.Mock
     implements _i69.ManageMasterFilesInteractor {
   @override
-  _i14.Future<_i5.MasterFilesResponse> execute(
+  _i15.Future<_i5.MasterFilesResponse> execute(
     int? cookingMethodsInfoVersion,
     int? cookingMethodsVersion,
     int? oilTypesVersion,
@@ -1465,7 +1488,7 @@ class MockManageMasterFilesInteractor extends _i1.Mock
             cookingMethodsOilsInfoVersion,
           ],
         ),
-        returnValue: _i14.Future<_i5.MasterFilesResponse>.value(
+        returnValue: _i15.Future<_i5.MasterFilesResponse>.value(
             _FakeMasterFilesResponse_6(
           this,
           Invocation.method(
@@ -1489,7 +1512,7 @@ class MockManageMasterFilesInteractor extends _i1.Mock
             ],
           ),
         )),
-        returnValueForMissingStub: _i14.Future<_i5.MasterFilesResponse>.value(
+        returnValueForMissingStub: _i15.Future<_i5.MasterFilesResponse>.value(
             _FakeMasterFilesResponse_6(
           this,
           Invocation.method(
@@ -1513,7 +1536,7 @@ class MockManageMasterFilesInteractor extends _i1.Mock
             ],
           ),
         )),
-      ) as _i14.Future<_i5.MasterFilesResponse>);
+      ) as _i15.Future<_i5.MasterFilesResponse>);
 }
 
 /// A class which mocks [SaveMasterFileInteractor].
@@ -1522,9 +1545,9 @@ class MockManageMasterFilesInteractor extends _i1.Mock
 class MockSaveMasterFileInteractor extends _i1.Mock
     implements _i70.SaveMasterFileInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     dynamic masterFileResponse,
-    _i15.MasterFilesType? masterFilesType,
+    _i16.MasterFilesType? masterFilesType,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1534,9 +1557,9 @@ class MockSaveMasterFileInteractor extends _i1.Mock
             masterFilesType,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [CheckProfileExistenceInteractor].
@@ -1545,14 +1568,14 @@ class MockSaveMasterFileInteractor extends _i1.Mock
 class MockCheckProfileExistenceInteractor extends _i1.Mock
     implements _i71.CheckProfileExistenceInteractor {
   @override
-  _i14.Future<bool> execute(String? userId) => (super.noSuchMethod(
+  _i15.Future<bool> execute(String? userId) => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [userId],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [DownloadProfileInteractor].
@@ -1561,15 +1584,15 @@ class MockCheckProfileExistenceInteractor extends _i1.Mock
 class MockDownloadProfileInteractor extends _i1.Mock
     implements _i72.DownloadProfileInteractor {
   @override
-  _i14.Future<_i23.UserProfileModel?> execute(String? email) =>
+  _i15.Future<_i23.UserProfileModel?> execute(String? email) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [email],
         ),
-        returnValue: _i14.Future<_i23.UserProfileModel?>.value(),
-        returnValueForMissingStub: _i14.Future<_i23.UserProfileModel?>.value(),
-      ) as _i14.Future<_i23.UserProfileModel?>);
+        returnValue: _i15.Future<_i23.UserProfileModel?>.value(),
+        returnValueForMissingStub: _i15.Future<_i23.UserProfileModel?>.value(),
+      ) as _i15.Future<_i23.UserProfileModel?>);
 }
 
 /// A class which mocks [GetIdTokenInteractor].
@@ -1606,15 +1629,15 @@ class MockGetIdTokenInteractor extends _i1.Mock
 class MockSaveProfileInteractor extends _i1.Mock
     implements _i74.SaveProfileInteractor {
   @override
-  _i14.Future<void> execute(_i23.UserProfileModel? profile) =>
+  _i15.Future<void> execute(_i23.UserProfileModel? profile) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [profile],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [ResendVerificationCodeInteractor].
@@ -1623,14 +1646,14 @@ class MockSaveProfileInteractor extends _i1.Mock
 class MockResendVerificationCodeInteractor extends _i1.Mock
     implements _i75.ResendVerificationCodeInteractor {
   @override
-  _i14.Future<void> execute(String? username) => (super.noSuchMethod(
+  _i15.Future<void> execute(String? username) => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [username],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [SaveUserCredentialsInteractor].
@@ -1639,15 +1662,15 @@ class MockResendVerificationCodeInteractor extends _i1.Mock
 class MockSaveUserCredentialsInteractor extends _i1.Mock
     implements _i76.SaveUserCredentialsInteractor {
   @override
-  _i14.Future<void> execute(_i2.CognitoAuthSession? session) =>
+  _i15.Future<void> execute(_i2.CognitoAuthSession? session) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [session],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [SaveUserInUsersRemoteDatabaseInteractor].
@@ -1656,14 +1679,14 @@ class MockSaveUserCredentialsInteractor extends _i1.Mock
 class MockSaveUserInUsersRemoteDatabaseInteractor extends _i1.Mock
     implements _i77.SaveUserInUsersRemoteDatabaseInteractor {
   @override
-  _i14.Future<void> execute(_i78.SimpleUser? simpleUser) => (super.noSuchMethod(
+  _i15.Future<void> execute(_i78.SimpleUser? simpleUser) => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [simpleUser],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [GetFoodEventsOfTodayInteractor].
@@ -1672,19 +1695,19 @@ class MockSaveUserInUsersRemoteDatabaseInteractor extends _i1.Mock
 class MockGetFoodEventsOfTodayInteractor extends _i1.Mock
     implements _i79.GetFoodEventsOfTodayInteractor {
   @override
-  _i14.Future<List<_i19.FoodEventComplete>> execute({DateTime? dateTime}) =>
+  _i15.Future<List<_i13.FoodEventComplete>> execute({DateTime? dateTime}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#dateTime: dateTime},
         ),
-        returnValue: _i14.Future<List<_i19.FoodEventComplete>>.value(
-            <_i19.FoodEventComplete>[]),
+        returnValue: _i15.Future<List<_i13.FoodEventComplete>>.value(
+            <_i13.FoodEventComplete>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i19.FoodEventComplete>>.value(
-                <_i19.FoodEventComplete>[]),
-      ) as _i14.Future<List<_i19.FoodEventComplete>>);
+            _i15.Future<List<_i13.FoodEventComplete>>.value(
+                <_i13.FoodEventComplete>[]),
+      ) as _i15.Future<List<_i13.FoodEventComplete>>);
 }
 
 /// A class which mocks [GetAdviceInteractor].
@@ -1693,26 +1716,26 @@ class MockGetFoodEventsOfTodayInteractor extends _i1.Mock
 class MockGetAdviceInteractor extends _i1.Mock
     implements _i80.GetAdviceInteractor {
   @override
-  _i14.Future<_i6.Advice> execute(String? userId) => (super.noSuchMethod(
+  _i15.Future<_i6.Advice> execute(String? userId) => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [userId],
         ),
-        returnValue: _i14.Future<_i6.Advice>.value(_FakeAdvice_7(
+        returnValue: _i15.Future<_i6.Advice>.value(_FakeAdvice_7(
           this,
           Invocation.method(
             #execute,
             [userId],
           ),
         )),
-        returnValueForMissingStub: _i14.Future<_i6.Advice>.value(_FakeAdvice_7(
+        returnValueForMissingStub: _i15.Future<_i6.Advice>.value(_FakeAdvice_7(
           this,
           Invocation.method(
             #execute,
             [userId],
           ),
         )),
-      ) as _i14.Future<_i6.Advice>);
+      ) as _i15.Future<_i6.Advice>);
 }
 
 /// A class which mocks [GetWaterEventsTodayInteractor].
@@ -1721,19 +1744,19 @@ class MockGetAdviceInteractor extends _i1.Mock
 class MockGetWaterEventsTodayInteractor extends _i1.Mock
     implements _i81.GetWaterEventsTodayInteractor {
   @override
-  _i14.Future<List<_i82.WaterEventMaster>> execute({DateTime? dateTime}) =>
+  _i15.Future<List<_i82.WaterEventMaster>> execute({DateTime? dateTime}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#dateTime: dateTime},
         ),
-        returnValue: _i14.Future<List<_i82.WaterEventMaster>>.value(
+        returnValue: _i15.Future<List<_i82.WaterEventMaster>>.value(
             <_i82.WaterEventMaster>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i82.WaterEventMaster>>.value(
+            _i15.Future<List<_i82.WaterEventMaster>>.value(
                 <_i82.WaterEventMaster>[]),
-      ) as _i14.Future<List<_i82.WaterEventMaster>>);
+      ) as _i15.Future<List<_i82.WaterEventMaster>>);
 }
 
 /// A class which mocks [GetDayCaloriesInteractor].
@@ -1742,15 +1765,15 @@ class MockGetWaterEventsTodayInteractor extends _i1.Mock
 class MockGetDayCaloriesInteractor extends _i1.Mock
     implements _i83.GetDayCaloriesInteractor {
   @override
-  _i14.Future<int?> execute({DateTime? dateTime}) => (super.noSuchMethod(
+  _i15.Future<int?> execute({DateTime? dateTime}) => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#dateTime: dateTime},
         ),
-        returnValue: _i14.Future<int?>.value(),
-        returnValueForMissingStub: _i14.Future<int?>.value(),
-      ) as _i14.Future<int?>);
+        returnValue: _i15.Future<int?>.value(),
+        returnValueForMissingStub: _i15.Future<int?>.value(),
+      ) as _i15.Future<int?>);
 }
 
 /// A class which mocks [GetTodayLiquidEventsInteractor].
@@ -1759,19 +1782,19 @@ class MockGetDayCaloriesInteractor extends _i1.Mock
 class MockGetTodayLiquidEventsInteractor extends _i1.Mock
     implements _i84.GetTodayLiquidEventsInteractor {
   @override
-  _i14.Future<List<_i85.LiquidEventComplete>> execute({DateTime? dateTime}) =>
+  _i15.Future<List<_i85.LiquidEventComplete>> execute({DateTime? dateTime}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#dateTime: dateTime},
         ),
-        returnValue: _i14.Future<List<_i85.LiquidEventComplete>>.value(
+        returnValue: _i15.Future<List<_i85.LiquidEventComplete>>.value(
             <_i85.LiquidEventComplete>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i85.LiquidEventComplete>>.value(
+            _i15.Future<List<_i85.LiquidEventComplete>>.value(
                 <_i85.LiquidEventComplete>[]),
-      ) as _i14.Future<List<_i85.LiquidEventComplete>>);
+      ) as _i15.Future<List<_i85.LiquidEventComplete>>);
 }
 
 /// A class which mocks [UploadProfileInteractor].
@@ -1780,14 +1803,14 @@ class MockGetTodayLiquidEventsInteractor extends _i1.Mock
 class MockUploadProfileInteractor extends _i1.Mock
     implements _i86.UploadProfileInteractor {
   @override
-  _i14.Future<_i7.UserProfileResponse> execute(
+  _i15.Future<_i7.UserProfileResponse> execute(
           _i23.UserProfileModel? profile) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [profile],
         ),
-        returnValue: _i14.Future<_i7.UserProfileResponse>.value(
+        returnValue: _i15.Future<_i7.UserProfileResponse>.value(
             _FakeUserProfileResponse_8(
           this,
           Invocation.method(
@@ -1795,7 +1818,7 @@ class MockUploadProfileInteractor extends _i1.Mock
             [profile],
           ),
         )),
-        returnValueForMissingStub: _i14.Future<_i7.UserProfileResponse>.value(
+        returnValueForMissingStub: _i15.Future<_i7.UserProfileResponse>.value(
             _FakeUserProfileResponse_8(
           this,
           Invocation.method(
@@ -1803,7 +1826,7 @@ class MockUploadProfileInteractor extends _i1.Mock
             [profile],
           ),
         )),
-      ) as _i14.Future<_i7.UserProfileResponse>);
+      ) as _i15.Future<_i7.UserProfileResponse>);
 }
 
 /// A class which mocks [UploadWaterEventInteractor].
@@ -1812,15 +1835,15 @@ class MockUploadProfileInteractor extends _i1.Mock
 class MockUploadWaterEventInteractor extends _i1.Mock
     implements _i87.UploadWaterEventInteractor {
   @override
-  _i14.Future<bool> execute(_i82.WaterEventMaster? waterEventMaster) =>
+  _i15.Future<bool> execute(_i82.WaterEventMaster? waterEventMaster) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [waterEventMaster],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [SaveWaterEventInteractor].
@@ -1829,15 +1852,15 @@ class MockUploadWaterEventInteractor extends _i1.Mock
 class MockSaveWaterEventInteractor extends _i1.Mock
     implements _i88.SaveWaterEventInteractor {
   @override
-  _i14.Future<void> execute(_i82.WaterEventMaster? waterEventMaster) =>
+  _i15.Future<void> execute(_i82.WaterEventMaster? waterEventMaster) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [waterEventMaster],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [UploadStepsInteractor].
@@ -1846,15 +1869,15 @@ class MockSaveWaterEventInteractor extends _i1.Mock
 class MockUploadStepsInteractor extends _i1.Mock
     implements _i89.UploadStepsInteractor {
   @override
-  _i14.Future<bool> execute(_i8.StepEventResponse? stepEventResponse) =>
+  _i15.Future<bool> execute(_i8.StepEventResponse? stepEventResponse) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [stepEventResponse],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [SaveStepsInteractor].
@@ -1863,15 +1886,15 @@ class MockUploadStepsInteractor extends _i1.Mock
 class MockSaveStepsInteractor extends _i1.Mock
     implements _i90.SaveStepsInteractor {
   @override
-  _i14.Future<void> execute(_i8.StepEventResponse? stepEventResponse) =>
+  _i15.Future<void> execute(_i8.StepEventResponse? stepEventResponse) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [stepEventResponse],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [GetStepsInteractor].
@@ -1880,17 +1903,17 @@ class MockSaveStepsInteractor extends _i1.Mock
 class MockGetStepsInteractor extends _i1.Mock
     implements _i91.GetStepsInteractor {
   @override
-  _i14.Future<List<_i8.StepEventResponse>> execute() => (super.noSuchMethod(
+  _i15.Future<List<_i8.StepEventResponse>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<List<_i8.StepEventResponse>>.value(
+        returnValue: _i15.Future<List<_i8.StepEventResponse>>.value(
             <_i8.StepEventResponse>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i8.StepEventResponse>>.value(
+            _i15.Future<List<_i8.StepEventResponse>>.value(
                 <_i8.StepEventResponse>[]),
-      ) as _i14.Future<List<_i8.StepEventResponse>>);
+      ) as _i15.Future<List<_i8.StepEventResponse>>);
 }
 
 /// A class which mocks [GetTodayStepInteractor].
@@ -1899,13 +1922,13 @@ class MockGetStepsInteractor extends _i1.Mock
 class MockGetTodayStepInteractor extends _i1.Mock
     implements _i92.GetTodayStepInteractor {
   @override
-  _i14.Future<_i8.StepEventResponse> execute() => (super.noSuchMethod(
+  _i15.Future<_i8.StepEventResponse> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
         returnValue:
-            _i14.Future<_i8.StepEventResponse>.value(_FakeStepEventResponse_9(
+            _i15.Future<_i8.StepEventResponse>.value(_FakeStepEventResponse_9(
           this,
           Invocation.method(
             #execute,
@@ -1913,14 +1936,14 @@ class MockGetTodayStepInteractor extends _i1.Mock
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i8.StepEventResponse>.value(_FakeStepEventResponse_9(
+            _i15.Future<_i8.StepEventResponse>.value(_FakeStepEventResponse_9(
           this,
           Invocation.method(
             #execute,
             [],
           ),
         )),
-      ) as _i14.Future<_i8.StepEventResponse>);
+      ) as _i15.Future<_i8.StepEventResponse>);
 }
 
 /// A class which mocks [GetAllEventsSortedByDateInteractor].
@@ -1929,13 +1952,13 @@ class MockGetTodayStepInteractor extends _i1.Mock
 class MockGetAllEventsSortedByDateInteractor extends _i1.Mock
     implements _i93.GetAllEventsSortedByDateInteractor {
   @override
-  _i14.Future<_i9.CalendarEvents> execute() => (super.noSuchMethod(
+  _i15.Future<_i9.CalendarEvents> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
         returnValue:
-            _i14.Future<_i9.CalendarEvents>.value(_FakeCalendarEvents_10(
+            _i15.Future<_i9.CalendarEvents>.value(_FakeCalendarEvents_10(
           this,
           Invocation.method(
             #execute,
@@ -1943,14 +1966,14 @@ class MockGetAllEventsSortedByDateInteractor extends _i1.Mock
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i9.CalendarEvents>.value(_FakeCalendarEvents_10(
+            _i15.Future<_i9.CalendarEvents>.value(_FakeCalendarEvents_10(
           this,
           Invocation.method(
             #execute,
             [],
           ),
         )),
-      ) as _i14.Future<_i9.CalendarEvents>);
+      ) as _i15.Future<_i9.CalendarEvents>);
 }
 
 /// A class which mocks [GetAllDashboardEventsSortedByDateInteractor].
@@ -1959,12 +1982,12 @@ class MockGetAllEventsSortedByDateInteractor extends _i1.Mock
 class MockGetAllDashboardEventsSortedByDateInteractor extends _i1.Mock
     implements _i94.GetAllDashboardEventsSortedByDateInteractor {
   @override
-  _i14.Future<_i10.DashboardAllCalendarEvents> execute() => (super.noSuchMethod(
+  _i15.Future<_i10.DashboardAllCalendarEvents> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<_i10.DashboardAllCalendarEvents>.value(
+        returnValue: _i15.Future<_i10.DashboardAllCalendarEvents>.value(
             _FakeDashboardAllCalendarEvents_11(
           this,
           Invocation.method(
@@ -1973,7 +1996,7 @@ class MockGetAllDashboardEventsSortedByDateInteractor extends _i1.Mock
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i10.DashboardAllCalendarEvents>.value(
+            _i15.Future<_i10.DashboardAllCalendarEvents>.value(
                 _FakeDashboardAllCalendarEvents_11(
           this,
           Invocation.method(
@@ -1981,7 +2004,7 @@ class MockGetAllDashboardEventsSortedByDateInteractor extends _i1.Mock
             [],
           ),
         )),
-      ) as _i14.Future<_i10.DashboardAllCalendarEvents>);
+      ) as _i15.Future<_i10.DashboardAllCalendarEvents>);
 }
 
 /// A class which mocks [GetTodayCreatineEventInteractor].
@@ -1990,17 +2013,17 @@ class MockGetAllDashboardEventsSortedByDateInteractor extends _i1.Mock
 class MockGetTodayCreatineEventInteractor extends _i1.Mock
     implements _i95.GetTodayCreatineEventInteractor {
   @override
-  _i14.Future<_i96.UploadSupplementEvent?> execute({DateTime? dateTime}) =>
+  _i15.Future<_i96.UploadSupplementEvent?> execute({DateTime? dateTime}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#dateTime: dateTime},
         ),
-        returnValue: _i14.Future<_i96.UploadSupplementEvent?>.value(),
+        returnValue: _i15.Future<_i96.UploadSupplementEvent?>.value(),
         returnValueForMissingStub:
-            _i14.Future<_i96.UploadSupplementEvent?>.value(),
-      ) as _i14.Future<_i96.UploadSupplementEvent?>);
+            _i15.Future<_i96.UploadSupplementEvent?>.value(),
+      ) as _i15.Future<_i96.UploadSupplementEvent?>);
 }
 
 /// A class which mocks [UploadCreatineEventInteractor].
@@ -2009,16 +2032,16 @@ class MockGetTodayCreatineEventInteractor extends _i1.Mock
 class MockUploadCreatineEventInteractor extends _i1.Mock
     implements _i97.UploadCreatineEventInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
           _i96.UploadSupplementEvent? uploadSupplementEvent) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [uploadSupplementEvent],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [SaveCreatineEventInteractor].
@@ -2027,7 +2050,7 @@ class MockUploadCreatineEventInteractor extends _i1.Mock
 class MockSaveCreatineEventInteractor extends _i1.Mock
     implements _i98.SaveCreatineEventInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     _i96.UploadSupplementEvent? uploadSupplementCreatineEvent,
     bool? isEdit,
   ) =>
@@ -2039,9 +2062,9 @@ class MockSaveCreatineEventInteractor extends _i1.Mock
             isEdit,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [GetTodayCollagenEventInteractor].
@@ -2050,17 +2073,17 @@ class MockSaveCreatineEventInteractor extends _i1.Mock
 class MockGetTodayCollagenEventInteractor extends _i1.Mock
     implements _i99.GetTodayCollagenEventInteractor {
   @override
-  _i14.Future<_i96.UploadSupplementEvent?> execute({DateTime? dateTime}) =>
+  _i15.Future<_i96.UploadSupplementEvent?> execute({DateTime? dateTime}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#dateTime: dateTime},
         ),
-        returnValue: _i14.Future<_i96.UploadSupplementEvent?>.value(),
+        returnValue: _i15.Future<_i96.UploadSupplementEvent?>.value(),
         returnValueForMissingStub:
-            _i14.Future<_i96.UploadSupplementEvent?>.value(),
-      ) as _i14.Future<_i96.UploadSupplementEvent?>);
+            _i15.Future<_i96.UploadSupplementEvent?>.value(),
+      ) as _i15.Future<_i96.UploadSupplementEvent?>);
 }
 
 /// A class which mocks [UploadCollagenEventInteractor].
@@ -2069,16 +2092,16 @@ class MockGetTodayCollagenEventInteractor extends _i1.Mock
 class MockUploadCollagenEventInteractor extends _i1.Mock
     implements _i100.UploadCollagenEventInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
           _i96.UploadSupplementEvent? uploadSupplementCollagenEvent) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [uploadSupplementCollagenEvent],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [SaveCollagenEventInteractor].
@@ -2087,7 +2110,7 @@ class MockUploadCollagenEventInteractor extends _i1.Mock
 class MockSaveCollagenEventInteractor extends _i1.Mock
     implements _i101.SaveCollagenEventInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     _i96.UploadSupplementEvent? uploadSupplementCollagenEvent,
     bool? isEdit,
   ) =>
@@ -2099,9 +2122,9 @@ class MockSaveCollagenEventInteractor extends _i1.Mock
             isEdit,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [GetRoutinesInteractor].
@@ -2110,18 +2133,18 @@ class MockSaveCollagenEventInteractor extends _i1.Mock
 class MockGetRoutinesInteractor extends _i1.Mock
     implements _i102.GetRoutinesInteractor {
   @override
-  _i14.Future<List<_i57.SportRoutineCompleted>> execute() =>
+  _i15.Future<List<_i57.SportRoutineCompleted>> execute() =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<List<_i57.SportRoutineCompleted>>.value(
+        returnValue: _i15.Future<List<_i57.SportRoutineCompleted>>.value(
             <_i57.SportRoutineCompleted>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i57.SportRoutineCompleted>>.value(
+            _i15.Future<List<_i57.SportRoutineCompleted>>.value(
                 <_i57.SportRoutineCompleted>[]),
-      ) as _i14.Future<List<_i57.SportRoutineCompleted>>);
+      ) as _i15.Future<List<_i57.SportRoutineCompleted>>);
 }
 
 /// A class which mocks [EraseDBLocalEventsInteractor].
@@ -2130,14 +2153,14 @@ class MockGetRoutinesInteractor extends _i1.Mock
 class MockEraseDBLocalEventsInteractor extends _i1.Mock
     implements _i103.EraseDBLocalEventsInteractor {
   @override
-  _i14.Future<bool> execute() => (super.noSuchMethod(
+  _i15.Future<bool> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [SynchronizeEventsInteractor].
@@ -2146,7 +2169,7 @@ class MockEraseDBLocalEventsInteractor extends _i1.Mock
 class MockSynchronizeEventsInteractor extends _i1.Mock
     implements _i104.SynchronizeEventsInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     String? userId, {
     required bool? fullSync,
   }) =>
@@ -2156,9 +2179,9 @@ class MockSynchronizeEventsInteractor extends _i1.Mock
           [userId],
           {#fullSync: fullSync},
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [ShowModelAppearanceInteractor].
@@ -2167,16 +2190,16 @@ class MockSynchronizeEventsInteractor extends _i1.Mock
 class MockShowModelAppearanceInteractor extends _i1.Mock
     implements _i105.ShowModelAppearanceInteractor {
   @override
-  _i14.Future<_i106.ModelsAppearanceEntity?> execute(int? modelAppearanceId) =>
+  _i15.Future<_i106.ModelsAppearanceEntity?> execute(int? modelAppearanceId) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [modelAppearanceId],
         ),
-        returnValue: _i14.Future<_i106.ModelsAppearanceEntity?>.value(),
+        returnValue: _i15.Future<_i106.ModelsAppearanceEntity?>.value(),
         returnValueForMissingStub:
-            _i14.Future<_i106.ModelsAppearanceEntity?>.value(),
-      ) as _i14.Future<_i106.ModelsAppearanceEntity?>);
+            _i15.Future<_i106.ModelsAppearanceEntity?>.value(),
+      ) as _i15.Future<_i106.ModelsAppearanceEntity?>);
 }
 
 /// A class which mocks [SaveModelAppearanceInteractor].
@@ -2185,14 +2208,14 @@ class MockShowModelAppearanceInteractor extends _i1.Mock
 class MockSaveModelAppearanceInteractor extends _i1.Mock
     implements _i107.SaveModelAppearanceInteractor {
   @override
-  _i14.Future<void> execute(int? modelAppearanceId) => (super.noSuchMethod(
+  _i15.Future<void> execute(int? modelAppearanceId) => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [modelAppearanceId],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [GetTodaySportsInteractor].
@@ -2201,19 +2224,19 @@ class MockSaveModelAppearanceInteractor extends _i1.Mock
 class MockGetTodaySportsInteractor extends _i1.Mock
     implements _i108.GetTodaySportsInteractor {
   @override
-  _i14.Future<List<_i4.SportEventComplete>> execute({DateTime? dateTime}) =>
+  _i15.Future<List<_i4.SportEventComplete>> execute({DateTime? dateTime}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#dateTime: dateTime},
         ),
-        returnValue: _i14.Future<List<_i4.SportEventComplete>>.value(
+        returnValue: _i15.Future<List<_i4.SportEventComplete>>.value(
             <_i4.SportEventComplete>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i4.SportEventComplete>>.value(
+            _i15.Future<List<_i4.SportEventComplete>>.value(
                 <_i4.SportEventComplete>[]),
-      ) as _i14.Future<List<_i4.SportEventComplete>>);
+      ) as _i15.Future<List<_i4.SportEventComplete>>);
 }
 
 /// A class which mocks [GetDaySupplementEventsInteractor].
@@ -2222,19 +2245,19 @@ class MockGetTodaySportsInteractor extends _i1.Mock
 class MockGetDaySupplementEventsInteractor extends _i1.Mock
     implements _i109.GetDaySupplementEventsInteractor {
   @override
-  _i14.Future<List<_i35.SupplementSimple>> execute({DateTime? dateTime}) =>
+  _i15.Future<List<_i35.SupplementSimple>> execute({DateTime? dateTime}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#dateTime: dateTime},
         ),
-        returnValue: _i14.Future<List<_i35.SupplementSimple>>.value(
+        returnValue: _i15.Future<List<_i35.SupplementSimple>>.value(
             <_i35.SupplementSimple>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i35.SupplementSimple>>.value(
+            _i15.Future<List<_i35.SupplementSimple>>.value(
                 <_i35.SupplementSimple>[]),
-      ) as _i14.Future<List<_i35.SupplementSimple>>);
+      ) as _i15.Future<List<_i35.SupplementSimple>>);
 }
 
 /// A class which mocks [Chuck].
@@ -2459,7 +2482,7 @@ class MockSharedPreferences extends _i1.Mock
       ) as List<String>?);
 
   @override
-  _i14.Future<bool> setBool(
+  _i15.Future<bool> setBool(
     String? key,
     bool? value,
   ) =>
@@ -2471,12 +2494,12 @@ class MockSharedPreferences extends _i1.Mock
             value,
           ],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 
   @override
-  _i14.Future<bool> setInt(
+  _i15.Future<bool> setInt(
     String? key,
     int? value,
   ) =>
@@ -2488,12 +2511,12 @@ class MockSharedPreferences extends _i1.Mock
             value,
           ],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 
   @override
-  _i14.Future<bool> setDouble(
+  _i15.Future<bool> setDouble(
     String? key,
     double? value,
   ) =>
@@ -2505,12 +2528,12 @@ class MockSharedPreferences extends _i1.Mock
             value,
           ],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 
   @override
-  _i14.Future<bool> setString(
+  _i15.Future<bool> setString(
     String? key,
     String? value,
   ) =>
@@ -2522,12 +2545,12 @@ class MockSharedPreferences extends _i1.Mock
             value,
           ],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 
   @override
-  _i14.Future<bool> setStringList(
+  _i15.Future<bool> setStringList(
     String? key,
     List<String>? value,
   ) =>
@@ -2539,49 +2562,49 @@ class MockSharedPreferences extends _i1.Mock
             value,
           ],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 
   @override
-  _i14.Future<bool> remove(String? key) => (super.noSuchMethod(
+  _i15.Future<bool> remove(String? key) => (super.noSuchMethod(
         Invocation.method(
           #remove,
           [key],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 
   @override
-  _i14.Future<bool> commit() => (super.noSuchMethod(
+  _i15.Future<bool> commit() => (super.noSuchMethod(
         Invocation.method(
           #commit,
           [],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 
   @override
-  _i14.Future<bool> clear() => (super.noSuchMethod(
+  _i15.Future<bool> clear() => (super.noSuchMethod(
         Invocation.method(
           #clear,
           [],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 
   @override
-  _i14.Future<void> reload() => (super.noSuchMethod(
+  _i15.Future<void> reload() => (super.noSuchMethod(
         Invocation.method(
           #reload,
           [],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [GetUserKcalInteractor].
@@ -2590,14 +2613,14 @@ class MockSharedPreferences extends _i1.Mock
 class MockGetUserKcalInteractor extends _i1.Mock
     implements _i116.GetUserKcalInteractor {
   @override
-  _i14.Future<int> execute() => (super.noSuchMethod(
+  _i15.Future<int> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<int>.value(0),
-        returnValueForMissingStub: _i14.Future<int>.value(0),
-      ) as _i14.Future<int>);
+        returnValue: _i15.Future<int>.value(0),
+        returnValueForMissingStub: _i15.Future<int>.value(0),
+      ) as _i15.Future<int>);
 }
 
 /// A class which mocks [RemoveFoodEventInteractor].
@@ -2606,15 +2629,15 @@ class MockGetUserKcalInteractor extends _i1.Mock
 class MockRemoveFoodEventInteractor extends _i1.Mock
     implements _i117.RemoveFoodEventInteractor {
   @override
-  _i14.Future<bool> execute(_i19.FoodEventComplete? foodEventComplete) =>
+  _i15.Future<bool> execute(_i13.FoodEventComplete? foodEventComplete) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [foodEventComplete],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [DeleteFoodEventInteractor].
@@ -2623,7 +2646,7 @@ class MockRemoveFoodEventInteractor extends _i1.Mock
 class MockDeleteFoodEventInteractor extends _i1.Mock
     implements _i118.DeleteFoodEventInteractor {
   @override
-  _i14.Future<bool> execute(
+  _i15.Future<bool> execute(
     String? userId,
     int? eventDate,
   ) =>
@@ -2635,9 +2658,9 @@ class MockDeleteFoodEventInteractor extends _i1.Mock
             eventDate,
           ],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [DeleteSportEventInteractor].
@@ -2646,7 +2669,7 @@ class MockDeleteFoodEventInteractor extends _i1.Mock
 class MockDeleteSportEventInteractor extends _i1.Mock
     implements _i119.DeleteSportEventInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     String? userId,
     int? eventId,
   ) =>
@@ -2658,9 +2681,9 @@ class MockDeleteSportEventInteractor extends _i1.Mock
             eventId,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [RemoveSportEventInteractor].
@@ -2669,15 +2692,15 @@ class MockDeleteSportEventInteractor extends _i1.Mock
 class MockRemoveSportEventInteractor extends _i1.Mock
     implements _i120.RemoveSportEventInteractor {
   @override
-  _i14.Future<void> execute(_i4.SportEventComplete? sportEventComplete) =>
+  _i15.Future<void> execute(_i4.SportEventComplete? sportEventComplete) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [sportEventComplete],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [DeleteSportRoutineInteractor].
@@ -2686,7 +2709,7 @@ class MockRemoveSportEventInteractor extends _i1.Mock
 class MockDeleteSportRoutineInteractor extends _i1.Mock
     implements _i121.DeleteSportRoutineInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     String? userId,
     int? eventId,
   ) =>
@@ -2698,9 +2721,9 @@ class MockDeleteSportRoutineInteractor extends _i1.Mock
             eventId,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [RemoveSportRoutineInteractor].
@@ -2709,16 +2732,16 @@ class MockDeleteSportRoutineInteractor extends _i1.Mock
 class MockRemoveSportRoutineInteractor extends _i1.Mock
     implements _i122.RemoveSportRoutineInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
           _i57.SportRoutineCompleted? sportRoutineCompleted) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [sportRoutineCompleted],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [GetFoodRoutinesInteractor].
@@ -2727,17 +2750,17 @@ class MockRemoveSportRoutineInteractor extends _i1.Mock
 class MockGetFoodRoutinesInteractor extends _i1.Mock
     implements _i123.GetFoodRoutinesInteractor {
   @override
-  _i14.Future<List<_i49.FoodRoutineEvent>> execute() => (super.noSuchMethod(
+  _i15.Future<List<_i49.FoodRoutineEvent>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<List<_i49.FoodRoutineEvent>>.value(
+        returnValue: _i15.Future<List<_i49.FoodRoutineEvent>>.value(
             <_i49.FoodRoutineEvent>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i49.FoodRoutineEvent>>.value(
+            _i15.Future<List<_i49.FoodRoutineEvent>>.value(
                 <_i49.FoodRoutineEvent>[]),
-      ) as _i14.Future<List<_i49.FoodRoutineEvent>>);
+      ) as _i15.Future<List<_i49.FoodRoutineEvent>>);
 }
 
 /// A class which mocks [DeleteFoodRoutineInteractor].
@@ -2746,15 +2769,15 @@ class MockGetFoodRoutinesInteractor extends _i1.Mock
 class MockDeleteFoodRoutineInteractor extends _i1.Mock
     implements _i124.DeleteFoodRoutineInteractor {
   @override
-  _i14.Future<void> execute(_i49.FoodRoutineEvent? foodRoutineEvent) =>
+  _i15.Future<void> execute(_i49.FoodRoutineEvent? foodRoutineEvent) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [foodRoutineEvent],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [RemoveFoodRoutineInteractor].
@@ -2763,15 +2786,15 @@ class MockDeleteFoodRoutineInteractor extends _i1.Mock
 class MockRemoveFoodRoutineInteractor extends _i1.Mock
     implements _i125.RemoveFoodRoutineInteractor {
   @override
-  _i14.Future<void> execute(_i49.FoodRoutineEvent? foodRoutineEvent) =>
+  _i15.Future<void> execute(_i49.FoodRoutineEvent? foodRoutineEvent) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [foodRoutineEvent],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [GetSupplementRoutinesInteractor].
@@ -2780,17 +2803,17 @@ class MockRemoveFoodRoutineInteractor extends _i1.Mock
 class MockGetSupplementRoutinesInteractor extends _i1.Mock
     implements _i126.GetSupplementRoutinesInteractor {
   @override
-  _i14.Future<List<_i35.SupplementSimple>> execute() => (super.noSuchMethod(
+  _i15.Future<List<_i35.SupplementSimple>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<List<_i35.SupplementSimple>>.value(
+        returnValue: _i15.Future<List<_i35.SupplementSimple>>.value(
             <_i35.SupplementSimple>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i35.SupplementSimple>>.value(
+            _i15.Future<List<_i35.SupplementSimple>>.value(
                 <_i35.SupplementSimple>[]),
-      ) as _i14.Future<List<_i35.SupplementSimple>>);
+      ) as _i15.Future<List<_i35.SupplementSimple>>);
 }
 
 /// A class which mocks [DeleteSupplementRoutineInteractor].
@@ -2799,15 +2822,15 @@ class MockGetSupplementRoutinesInteractor extends _i1.Mock
 class MockDeleteSupplementRoutineInteractor extends _i1.Mock
     implements _i127.DeleteSupplementRoutineInteractor {
   @override
-  _i14.Future<void> execute(_i35.SupplementSimple? supplement) =>
+  _i15.Future<void> execute(_i35.SupplementSimple? supplement) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [supplement],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [RemoveSupplementRoutineInteractor].
@@ -2816,15 +2839,15 @@ class MockDeleteSupplementRoutineInteractor extends _i1.Mock
 class MockRemoveSupplementRoutineInteractor extends _i1.Mock
     implements _i128.RemoveSupplementRoutineInteractor {
   @override
-  _i14.Future<void> execute(_i35.SupplementSimple? supplement) =>
+  _i15.Future<void> execute(_i35.SupplementSimple? supplement) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [supplement],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [DeleteSupplementFavoriteInteractor].
@@ -2833,15 +2856,15 @@ class MockRemoveSupplementRoutineInteractor extends _i1.Mock
 class MockDeleteSupplementFavoriteInteractor extends _i1.Mock
     implements _i129.DeleteSupplementFavoriteInteractor {
   @override
-  _i14.Future<void> execute(_i35.SupplementSimple? supplementFavorite) =>
+  _i15.Future<void> execute(_i35.SupplementSimple? supplementFavorite) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [supplementFavorite],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [RemoveSupplementFavoriteInteractor].
@@ -2850,15 +2873,15 @@ class MockDeleteSupplementFavoriteInteractor extends _i1.Mock
 class MockRemoveSupplementFavoriteInteractor extends _i1.Mock
     implements _i130.RemoveSupplementFavoriteInteractor {
   @override
-  _i14.Future<void> execute(_i35.SupplementSimple? supplementFavorite) =>
+  _i15.Future<void> execute(_i35.SupplementSimple? supplementFavorite) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [supplementFavorite],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [UpdateEventsInteractor].
@@ -2867,7 +2890,7 @@ class MockRemoveSupplementFavoriteInteractor extends _i1.Mock
 class MockUpdateEventsInteractor extends _i1.Mock
     implements _i131.UpdateEventsInteractor {
   @override
-  _i14.Future<bool> execute({
+  _i15.Future<bool> execute({
     required String? userId,
     required _i132.PrefsKeys? categoryType,
     required bool? fullSync,
@@ -2882,9 +2905,9 @@ class MockUpdateEventsInteractor extends _i1.Mock
             #fullSync: fullSync,
           },
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 }
 
 /// A class which mocks [DeleteSupplementEventInteractor].
@@ -2893,15 +2916,15 @@ class MockUpdateEventsInteractor extends _i1.Mock
 class MockDeleteSupplementEventInteractor extends _i1.Mock
     implements _i133.DeleteSupplementEventInteractor {
   @override
-  _i14.Future<void> execute(_i35.SupplementSimple? supplementEvent) =>
+  _i15.Future<void> execute(_i35.SupplementSimple? supplementEvent) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [supplementEvent],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [RemoveSupplementEventInteractor].
@@ -2910,15 +2933,15 @@ class MockDeleteSupplementEventInteractor extends _i1.Mock
 class MockRemoveSupplementEventInteractor extends _i1.Mock
     implements _i134.RemoveSupplementEventInteractor {
   @override
-  _i14.Future<void> execute(_i35.SupplementSimple? supplementEvent) =>
+  _i15.Future<void> execute(_i35.SupplementSimple? supplementEvent) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [supplementEvent],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [UploadLiquidEventInteractor].
@@ -2927,7 +2950,7 @@ class MockRemoveSupplementEventInteractor extends _i1.Mock
 class MockUploadLiquidEventInteractor extends _i1.Mock
     implements _i135.UploadLiquidEventInteractor {
   @override
-  _i14.Future<_i12.UploadLiquidEvent> execute(
+  _i15.Future<_i12.UploadLiquidEvent> execute(
           _i136.LiquidEventSimple? liquidEventSimple) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -2935,7 +2958,7 @@ class MockUploadLiquidEventInteractor extends _i1.Mock
           [liquidEventSimple],
         ),
         returnValue:
-            _i14.Future<_i12.UploadLiquidEvent>.value(_FakeUploadLiquidEvent_13(
+            _i15.Future<_i12.UploadLiquidEvent>.value(_FakeUploadLiquidEvent_13(
           this,
           Invocation.method(
             #execute,
@@ -2943,14 +2966,14 @@ class MockUploadLiquidEventInteractor extends _i1.Mock
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i12.UploadLiquidEvent>.value(_FakeUploadLiquidEvent_13(
+            _i15.Future<_i12.UploadLiquidEvent>.value(_FakeUploadLiquidEvent_13(
           this,
           Invocation.method(
             #execute,
             [liquidEventSimple],
           ),
         )),
-      ) as _i14.Future<_i12.UploadLiquidEvent>);
+      ) as _i15.Future<_i12.UploadLiquidEvent>);
 }
 
 /// A class which mocks [SaveLiquidEventInteractor].
@@ -2959,7 +2982,7 @@ class MockUploadLiquidEventInteractor extends _i1.Mock
 class MockSaveLiquidEventInteractor extends _i1.Mock
     implements _i137.SaveLiquidEventInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     _i12.UploadLiquidEvent? uploadLiquidEvent,
     bool? isEdit,
   ) =>
@@ -2971,9 +2994,9 @@ class MockSaveLiquidEventInteractor extends _i1.Mock
             isEdit,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [LoginRepository].
@@ -2981,7 +3004,7 @@ class MockSaveLiquidEventInteractor extends _i1.Mock
 /// See the documentation for Mockito's code generation for more information.
 class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
   @override
-  _i14.Future<_i2.SignUpResult> signUp(
+  _i15.Future<_i2.SignUpResult> signUp(
     String? username,
     String? email,
     String? password,
@@ -2995,7 +3018,7 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
             password,
           ],
         ),
-        returnValue: _i14.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
+        returnValue: _i15.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
           this,
           Invocation.method(
             #signUp,
@@ -3007,7 +3030,7 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
+            _i15.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
           this,
           Invocation.method(
             #signUp,
@@ -3018,10 +3041,10 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
             ],
           ),
         )),
-      ) as _i14.Future<_i2.SignUpResult>);
+      ) as _i15.Future<_i2.SignUpResult>);
 
   @override
-  _i14.Future<_i2.SignUpResult> sendVerificationCode(
+  _i15.Future<_i2.SignUpResult> sendVerificationCode(
     String? confirmationCode,
     String? username,
   ) =>
@@ -3033,7 +3056,7 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
             username,
           ],
         ),
-        returnValue: _i14.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
+        returnValue: _i15.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
           this,
           Invocation.method(
             #sendVerificationCode,
@@ -3044,7 +3067,7 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
+            _i15.Future<_i2.SignUpResult>.value(_FakeSignUpResult_3(
           this,
           Invocation.method(
             #sendVerificationCode,
@@ -3054,17 +3077,17 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
             ],
           ),
         )),
-      ) as _i14.Future<_i2.SignUpResult>);
+      ) as _i15.Future<_i2.SignUpResult>);
 
   @override
-  _i14.Future<_i2.CognitoAuthSession> fetchUserAttributes() =>
+  _i15.Future<_i2.CognitoAuthSession> fetchUserAttributes() =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchUserAttributes,
           [],
         ),
         returnValue:
-            _i14.Future<_i2.CognitoAuthSession>.value(_FakeCognitoAuthSession_4(
+            _i15.Future<_i2.CognitoAuthSession>.value(_FakeCognitoAuthSession_4(
           this,
           Invocation.method(
             #fetchUserAttributes,
@@ -3072,17 +3095,17 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i2.CognitoAuthSession>.value(_FakeCognitoAuthSession_4(
+            _i15.Future<_i2.CognitoAuthSession>.value(_FakeCognitoAuthSession_4(
           this,
           Invocation.method(
             #fetchUserAttributes,
             [],
           ),
         )),
-      ) as _i14.Future<_i2.CognitoAuthSession>);
+      ) as _i15.Future<_i2.CognitoAuthSession>);
 
   @override
-  _i14.Future<_i2.SignInResult> signIn(
+  _i15.Future<_i2.SignInResult> signIn(
     String? username,
     String? password,
   ) =>
@@ -3094,7 +3117,7 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
             password,
           ],
         ),
-        returnValue: _i14.Future<_i2.SignInResult>.value(_FakeSignInResult_5(
+        returnValue: _i15.Future<_i2.SignInResult>.value(_FakeSignInResult_5(
           this,
           Invocation.method(
             #signIn,
@@ -3105,7 +3128,7 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i2.SignInResult>.value(_FakeSignInResult_5(
+            _i15.Future<_i2.SignInResult>.value(_FakeSignInResult_5(
           this,
           Invocation.method(
             #signIn,
@@ -3115,17 +3138,17 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
             ],
           ),
         )),
-      ) as _i14.Future<_i2.SignInResult>);
+      ) as _i15.Future<_i2.SignInResult>);
 
   @override
-  _i14.Future<_i2.ResendSignUpCodeResult> resendVerificationCode(
+  _i15.Future<_i2.ResendSignUpCodeResult> resendVerificationCode(
           String? username) =>
       (super.noSuchMethod(
         Invocation.method(
           #resendVerificationCode,
           [username],
         ),
-        returnValue: _i14.Future<_i2.ResendSignUpCodeResult>.value(
+        returnValue: _i15.Future<_i2.ResendSignUpCodeResult>.value(
             _FakeResendSignUpCodeResult_14(
           this,
           Invocation.method(
@@ -3134,7 +3157,7 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<_i2.ResendSignUpCodeResult>.value(
+            _i15.Future<_i2.ResendSignUpCodeResult>.value(
                 _FakeResendSignUpCodeResult_14(
           this,
           Invocation.method(
@@ -3142,38 +3165,38 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
             [username],
           ),
         )),
-      ) as _i14.Future<_i2.ResendSignUpCodeResult>);
+      ) as _i15.Future<_i2.ResendSignUpCodeResult>);
 
   @override
-  _i14.Future<void> deleteUser() => (super.noSuchMethod(
+  _i15.Future<void> deleteUser() => (super.noSuchMethod(
         Invocation.method(
           #deleteUser,
           [],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 
   @override
-  _i14.Future<void> saveUserInUsersRemoteDatabase(
+  _i15.Future<void> saveUserInUsersRemoteDatabase(
           _i78.SimpleUser? simpleUser) =>
       (super.noSuchMethod(
         Invocation.method(
           #saveUserInUsersRemoteDatabase,
           [simpleUser],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 
   @override
-  _i14.Future<_i2.ResetPasswordResult> resetPassword(String? username) =>
+  _i15.Future<_i2.ResetPasswordResult> resetPassword(String? username) =>
       (super.noSuchMethod(
         Invocation.method(
           #resetPassword,
           [username],
         ),
-        returnValue: _i14.Future<_i2.ResetPasswordResult>.value(
+        returnValue: _i15.Future<_i2.ResetPasswordResult>.value(
             _FakeResetPasswordResult_15(
           this,
           Invocation.method(
@@ -3181,7 +3204,7 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
             [username],
           ),
         )),
-        returnValueForMissingStub: _i14.Future<_i2.ResetPasswordResult>.value(
+        returnValueForMissingStub: _i15.Future<_i2.ResetPasswordResult>.value(
             _FakeResetPasswordResult_15(
           this,
           Invocation.method(
@@ -3189,10 +3212,10 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
             [username],
           ),
         )),
-      ) as _i14.Future<_i2.ResetPasswordResult>);
+      ) as _i15.Future<_i2.ResetPasswordResult>);
 
   @override
-  _i14.Future<_i2.UpdatePasswordResult> confirmResetPassword(
+  _i15.Future<_i2.UpdatePasswordResult> confirmResetPassword(
     String? username,
     String? newPassword,
     String? confirmationCode,
@@ -3206,7 +3229,7 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
             confirmationCode,
           ],
         ),
-        returnValue: _i14.Future<_i2.UpdatePasswordResult>.value(
+        returnValue: _i15.Future<_i2.UpdatePasswordResult>.value(
             _FakeUpdatePasswordResult_16(
           this,
           Invocation.method(
@@ -3218,7 +3241,7 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
             ],
           ),
         )),
-        returnValueForMissingStub: _i14.Future<_i2.UpdatePasswordResult>.value(
+        returnValueForMissingStub: _i15.Future<_i2.UpdatePasswordResult>.value(
             _FakeUpdatePasswordResult_16(
           this,
           Invocation.method(
@@ -3230,7 +3253,7 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
             ],
           ),
         )),
-      ) as _i14.Future<_i2.UpdatePasswordResult>);
+      ) as _i15.Future<_i2.UpdatePasswordResult>);
 }
 
 /// A class which mocks [FcmApi].
@@ -3238,7 +3261,7 @@ class MockLoginRepository extends _i1.Mock implements _i138.LoginRepository {
 /// See the documentation for Mockito's code generation for more information.
 class MockFcmApi extends _i1.Mock implements _i139.FcmApi {
   @override
-  _i14.Future<void> registerToken(
+  _i15.Future<void> registerToken(
     String? userId,
     String? token,
     String? platform,
@@ -3252,22 +3275,22 @@ class MockFcmApi extends _i1.Mock implements _i139.FcmApi {
             platform,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 
   @override
-  _i14.Future<void> unregisterToken(String? token) => (super.noSuchMethod(
+  _i15.Future<void> unregisterToken(String? token) => (super.noSuchMethod(
         Invocation.method(
           #unregisterToken,
           [token],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 
   @override
-  _i14.Future<Map<String, dynamic>> post(
+  _i15.Future<Map<String, dynamic>> post(
     Uri? call,
     dynamic body,
   ) =>
@@ -3280,13 +3303,13 @@ class MockFcmApi extends _i1.Mock implements _i139.FcmApi {
           ],
         ),
         returnValue:
-            _i14.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+            _i15.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
         returnValueForMissingStub:
-            _i14.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i14.Future<Map<String, dynamic>>);
+            _i15.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i15.Future<Map<String, dynamic>>);
 
   @override
-  _i14.Future<Map<String, dynamic>> put(
+  _i15.Future<Map<String, dynamic>> put(
     Uri? call,
     dynamic body,
   ) =>
@@ -3299,25 +3322,25 @@ class MockFcmApi extends _i1.Mock implements _i139.FcmApi {
           ],
         ),
         returnValue:
-            _i14.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+            _i15.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
         returnValueForMissingStub:
-            _i14.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i14.Future<Map<String, dynamic>>);
+            _i15.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i15.Future<Map<String, dynamic>>);
 
   @override
-  _i14.Future<Map<String, dynamic>> get(Uri? call) => (super.noSuchMethod(
+  _i15.Future<Map<String, dynamic>> get(Uri? call) => (super.noSuchMethod(
         Invocation.method(
           #get,
           [call],
         ),
         returnValue:
-            _i14.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+            _i15.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
         returnValueForMissingStub:
-            _i14.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i14.Future<Map<String, dynamic>>);
+            _i15.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i15.Future<Map<String, dynamic>>);
 
   @override
-  _i14.Future<Map<String, dynamic>> delete(
+  _i15.Future<Map<String, dynamic>> delete(
     Uri? call,
     dynamic body,
   ) =>
@@ -3330,18 +3353,18 @@ class MockFcmApi extends _i1.Mock implements _i139.FcmApi {
           ],
         ),
         returnValue:
-            _i14.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+            _i15.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
         returnValueForMissingStub:
-            _i14.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i14.Future<Map<String, dynamic>>);
+            _i15.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i15.Future<Map<String, dynamic>>);
 
   @override
-  _i14.Future<String> getRaw(Uri? call) => (super.noSuchMethod(
+  _i15.Future<String> getRaw(Uri? call) => (super.noSuchMethod(
         Invocation.method(
           #getRaw,
           [call],
         ),
-        returnValue: _i14.Future<String>.value(_i27.dummyValue<String>(
+        returnValue: _i15.Future<String>.value(_i27.dummyValue<String>(
           this,
           Invocation.method(
             #getRaw,
@@ -3349,14 +3372,14 @@ class MockFcmApi extends _i1.Mock implements _i139.FcmApi {
           ),
         )),
         returnValueForMissingStub:
-            _i14.Future<String>.value(_i27.dummyValue<String>(
+            _i15.Future<String>.value(_i27.dummyValue<String>(
           this,
           Invocation.method(
             #getRaw,
             [call],
           ),
         )),
-      ) as _i14.Future<String>);
+      ) as _i15.Future<String>);
 }
 
 /// A class which mocks [PreferencesRepository].
@@ -3365,14 +3388,14 @@ class MockFcmApi extends _i1.Mock implements _i139.FcmApi {
 class MockPreferencesRepository extends _i1.Mock
     implements _i140.PreferencesRepository {
   @override
-  _i14.Future<void> setSub(String? sub) => (super.noSuchMethod(
+  _i15.Future<void> setSub(String? sub) => (super.noSuchMethod(
         Invocation.method(
           #setSub,
           [sub],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 
   @override
   String getSub() => (super.noSuchMethod(
@@ -3397,14 +3420,14 @@ class MockPreferencesRepository extends _i1.Mock
       ) as String);
 
   @override
-  _i14.Future<void> setUsername(String? userName) => (super.noSuchMethod(
+  _i15.Future<void> setUsername(String? userName) => (super.noSuchMethod(
         Invocation.method(
           #setUsername,
           [userName],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 
   @override
   String getUsername() => (super.noSuchMethod(
@@ -3429,14 +3452,14 @@ class MockPreferencesRepository extends _i1.Mock
       ) as String);
 
   @override
-  _i14.Future<void> setEmail(String? email) => (super.noSuchMethod(
+  _i15.Future<void> setEmail(String? email) => (super.noSuchMethod(
         Invocation.method(
           #setEmail,
           [email],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 
   @override
   String getEmail() => (super.noSuchMethod(
@@ -3461,14 +3484,14 @@ class MockPreferencesRepository extends _i1.Mock
       ) as String);
 
   @override
-  _i14.Future<void> setIdToken(String? idToken) => (super.noSuchMethod(
+  _i15.Future<void> setIdToken(String? idToken) => (super.noSuchMethod(
         Invocation.method(
           #setIdToken,
           [idToken],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 
   @override
   String getIdToken() => (super.noSuchMethod(
@@ -3493,14 +3516,14 @@ class MockPreferencesRepository extends _i1.Mock
       ) as String);
 
   @override
-  _i14.Future<void> setAccessToken(String? accessToken) => (super.noSuchMethod(
+  _i15.Future<void> setAccessToken(String? accessToken) => (super.noSuchMethod(
         Invocation.method(
           #setAccessToken,
           [accessToken],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 
   @override
   String getAccessToken() => (super.noSuchMethod(
@@ -3525,15 +3548,15 @@ class MockPreferencesRepository extends _i1.Mock
       ) as String);
 
   @override
-  _i14.Future<void> setRefreshToken(String? refreshToken) =>
+  _i15.Future<void> setRefreshToken(String? refreshToken) =>
       (super.noSuchMethod(
         Invocation.method(
           #setRefreshToken,
           [refreshToken],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 
   @override
   String getRefreshToken() => (super.noSuchMethod(
@@ -3558,18 +3581,18 @@ class MockPreferencesRepository extends _i1.Mock
       ) as String);
 
   @override
-  _i14.Future<void> setUserCredentials(_i2.CognitoAuthSession? session) =>
+  _i15.Future<void> setUserCredentials(_i2.CognitoAuthSession? session) =>
       (super.noSuchMethod(
         Invocation.method(
           #setUserCredentials,
           [session],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 
   @override
-  _i14.Future<void> setUsernameAndEmail(
+  _i15.Future<void> setUsernameAndEmail(
     String? username,
     String? email,
   ) =>
@@ -3581,32 +3604,32 @@ class MockPreferencesRepository extends _i1.Mock
             email,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 
   @override
-  _i14.Future<void> setUserSignedIn(bool? isSignedIn) => (super.noSuchMethod(
+  _i15.Future<void> setUserSignedIn(bool? isSignedIn) => (super.noSuchMethod(
         Invocation.method(
           #setUserSignedIn,
           [isSignedIn],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 
   @override
-  _i14.Future<bool> isUserSignedIn() => (super.noSuchMethod(
+  _i15.Future<bool> isUserSignedIn() => (super.noSuchMethod(
         Invocation.method(
           #isUserSignedIn,
           [],
         ),
-        returnValue: _i14.Future<bool>.value(false),
-        returnValueForMissingStub: _i14.Future<bool>.value(false),
-      ) as _i14.Future<bool>);
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
 
   @override
-  _i14.Future<void> saveLastFetchTime(
+  _i15.Future<void> saveLastFetchTime(
     _i132.PrefsKeys? categoryType,
     DateTime? time,
   ) =>
@@ -3618,20 +3641,20 @@ class MockPreferencesRepository extends _i1.Mock
             time,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 
   @override
-  _i14.Future<DateTime?> getLastFetchTime(_i132.PrefsKeys? categoryType) =>
+  _i15.Future<DateTime?> getLastFetchTime(_i132.PrefsKeys? categoryType) =>
       (super.noSuchMethod(
         Invocation.method(
           #getLastFetchTime,
           [categoryType],
         ),
-        returnValue: _i14.Future<DateTime?>.value(),
-        returnValueForMissingStub: _i14.Future<DateTime?>.value(),
-      ) as _i14.Future<DateTime?>);
+        returnValue: _i15.Future<DateTime?>.value(),
+        returnValueForMissingStub: _i15.Future<DateTime?>.value(),
+      ) as _i15.Future<DateTime?>);
 }
 
 /// A class which mocks [GetFaecesByDateInteractor].
@@ -3640,7 +3663,7 @@ class MockPreferencesRepository extends _i1.Mock
 class MockGetFaecesByDateInteractor extends _i1.Mock
     implements _i141.GetFaecesByDateInteractor {
   @override
-  _i14.Future<List<_i142.UploadFeces>> execute({
+  _i15.Future<List<_i142.UploadFeces>> execute({
     DateTime? dateTime,
     DateTime? endDate,
     int? days,
@@ -3656,10 +3679,10 @@ class MockGetFaecesByDateInteractor extends _i1.Mock
           },
         ),
         returnValue:
-            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
+            _i15.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
-      ) as _i14.Future<List<_i142.UploadFeces>>);
+            _i15.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
+      ) as _i15.Future<List<_i142.UploadFeces>>);
 }
 
 /// A class which mocks [GetUrineByDateInteractor].
@@ -3668,7 +3691,7 @@ class MockGetFaecesByDateInteractor extends _i1.Mock
 class MockGetUrineByDateInteractor extends _i1.Mock
     implements _i143.GetUrineByDateInteractor {
   @override
-  _i14.Future<List<_i142.UploadFeces>> execute({
+  _i15.Future<List<_i142.UploadFeces>> execute({
     DateTime? dateTime,
     DateTime? endDate,
     int? days,
@@ -3684,10 +3707,10 @@ class MockGetUrineByDateInteractor extends _i1.Mock
           },
         ),
         returnValue:
-            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
+            _i15.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
-      ) as _i14.Future<List<_i142.UploadFeces>>);
+            _i15.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
+      ) as _i15.Future<List<_i142.UploadFeces>>);
 }
 
 /// A class which mocks [GetFecesEventsInteractor].
@@ -3696,16 +3719,16 @@ class MockGetUrineByDateInteractor extends _i1.Mock
 class MockGetFecesEventsInteractor extends _i1.Mock
     implements _i144.GetFecesEventsInteractor {
   @override
-  _i14.Future<List<_i142.UploadFeces>> execute() => (super.noSuchMethod(
+  _i15.Future<List<_i142.UploadFeces>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
         returnValue:
-            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
+            _i15.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
-      ) as _i14.Future<List<_i142.UploadFeces>>);
+            _i15.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
+      ) as _i15.Future<List<_i142.UploadFeces>>);
 }
 
 /// A class which mocks [GetUrineEventsInteractor].
@@ -3714,16 +3737,16 @@ class MockGetFecesEventsInteractor extends _i1.Mock
 class MockGetUrineEventsInteractor extends _i1.Mock
     implements _i145.GetUrineEventsInteractor {
   @override
-  _i14.Future<List<_i142.UploadFeces>> execute() => (super.noSuchMethod(
+  _i15.Future<List<_i142.UploadFeces>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
         returnValue:
-            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
+            _i15.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
-      ) as _i14.Future<List<_i142.UploadFeces>>);
+            _i15.Future<List<_i142.UploadFeces>>.value(<_i142.UploadFeces>[]),
+      ) as _i15.Future<List<_i142.UploadFeces>>);
 }
 
 /// A class which mocks [UploadFecesInteractor].
@@ -3732,15 +3755,15 @@ class MockGetUrineEventsInteractor extends _i1.Mock
 class MockUploadFecesInteractor extends _i1.Mock
     implements _i146.UploadFecesInteractor {
   @override
-  _i14.Future<void> execute(_i142.UploadFeces? uploadFeces) =>
+  _i15.Future<void> execute(_i142.UploadFeces? uploadFeces) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [uploadFeces],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [SaveFecesEventInteractor].
@@ -3749,15 +3772,15 @@ class MockUploadFecesInteractor extends _i1.Mock
 class MockSaveFecesEventInteractor extends _i1.Mock
     implements _i147.SaveFecesEventInteractor {
   @override
-  _i14.Future<void> execute(_i142.UploadFeces? uploadFeces) =>
+  _i15.Future<void> execute(_i142.UploadFeces? uploadFeces) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [uploadFeces],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [UploadUrineInteractor].
@@ -3766,15 +3789,15 @@ class MockSaveFecesEventInteractor extends _i1.Mock
 class MockUploadUrineInteractor extends _i1.Mock
     implements _i148.UploadUrineInteractor {
   @override
-  _i14.Future<void> execute(_i142.UploadFeces? uploadUrine) =>
+  _i15.Future<void> execute(_i142.UploadFeces? uploadUrine) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [uploadUrine],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [SaveUrineInteractor].
@@ -3783,15 +3806,15 @@ class MockUploadUrineInteractor extends _i1.Mock
 class MockSaveUrineInteractor extends _i1.Mock
     implements _i149.SaveUrineInteractor {
   @override
-  _i14.Future<void> execute(_i142.UploadFeces? uploadUrine) =>
+  _i15.Future<void> execute(_i142.UploadFeces? uploadUrine) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [uploadUrine],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [DeleteFecesEventInteractor].
@@ -3800,7 +3823,7 @@ class MockSaveUrineInteractor extends _i1.Mock
 class MockDeleteFecesEventInteractor extends _i1.Mock
     implements _i150.DeleteFecesEventInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     String? userId,
     dynamic eventId,
   ) =>
@@ -3812,9 +3835,9 @@ class MockDeleteFecesEventInteractor extends _i1.Mock
             eventId,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [RemoveFecesEventInteractor].
@@ -3823,15 +3846,15 @@ class MockDeleteFecesEventInteractor extends _i1.Mock
 class MockRemoveFecesEventInteractor extends _i1.Mock
     implements _i151.RemoveFecesEventInteractor {
   @override
-  _i14.Future<void> execute(_i142.UploadFeces? uploadFeces) =>
+  _i15.Future<void> execute(_i142.UploadFeces? uploadFeces) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [uploadFeces],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [DeleteUrineEventInteractor].
@@ -3840,7 +3863,7 @@ class MockRemoveFecesEventInteractor extends _i1.Mock
 class MockDeleteUrineEventInteractor extends _i1.Mock
     implements _i152.DeleteUrineEventInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     String? userId,
     int? eventId,
   ) =>
@@ -3852,9 +3875,9 @@ class MockDeleteUrineEventInteractor extends _i1.Mock
             eventId,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [RemoveUrineEventInteractor].
@@ -3863,15 +3886,15 @@ class MockDeleteUrineEventInteractor extends _i1.Mock
 class MockRemoveUrineEventInteractor extends _i1.Mock
     implements _i153.RemoveUrineEventInteractor {
   @override
-  _i14.Future<void> execute(_i142.UploadFeces? uploadUrine) =>
+  _i15.Future<void> execute(_i142.UploadFeces? uploadUrine) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [uploadUrine],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [GetUserMicronutrientsInteractor].
@@ -3886,15 +3909,15 @@ class MockGetUserMicronutrientsInteractor extends _i1.Mock
 class MockGetUserRdasInteractor extends _i1.Mock
     implements _i155.GetUserRdasInteractor {
   @override
-  _i14.Future<List<_i23.UserRda>> execute() => (super.noSuchMethod(
+  _i15.Future<List<_i23.UserRda>> execute() => (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
         ),
-        returnValue: _i14.Future<List<_i23.UserRda>>.value(<_i23.UserRda>[]),
+        returnValue: _i15.Future<List<_i23.UserRda>>.value(<_i23.UserRda>[]),
         returnValueForMissingStub:
-            _i14.Future<List<_i23.UserRda>>.value(<_i23.UserRda>[]),
-      ) as _i14.Future<List<_i23.UserRda>>);
+            _i15.Future<List<_i23.UserRda>>.value(<_i23.UserRda>[]),
+      ) as _i15.Future<List<_i23.UserRda>>);
 }
 
 /// A class which mocks [DeleteLiquidEventInteractor].
@@ -3903,7 +3926,7 @@ class MockGetUserRdasInteractor extends _i1.Mock
 class MockDeleteLiquidEventInteractor extends _i1.Mock
     implements _i156.DeleteLiquidEventInteractor {
   @override
-  _i14.Future<void> execute(
+  _i15.Future<void> execute(
     String? userId,
     int? eventDate,
   ) =>
@@ -3915,9 +3938,9 @@ class MockDeleteLiquidEventInteractor extends _i1.Mock
             eventDate,
           ],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }
 
 /// A class which mocks [RemoveLiquidEventInteractor].
@@ -3926,13 +3949,713 @@ class MockDeleteLiquidEventInteractor extends _i1.Mock
 class MockRemoveLiquidEventInteractor extends _i1.Mock
     implements _i157.RemoveLiquidEventInteractor {
   @override
-  _i14.Future<void> execute(_i85.LiquidEventComplete? liquidEventComplete) =>
+  _i15.Future<void> execute(_i85.LiquidEventComplete? liquidEventComplete) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [liquidEventComplete],
         ),
-        returnValue: _i14.Future<void>.value(),
-        returnValueForMissingStub: _i14.Future<void>.value(),
-      ) as _i14.Future<void>);
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+}
+
+/// A class which mocks [GetRecentFoodItemsInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetRecentFoodItemsInteractor extends _i1.Mock
+    implements _i158.GetRecentFoodItemsInteractor {
+  @override
+  _i15.Future<List<_i25.FoodFavorite>> execute() => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+        ),
+        returnValue:
+            _i15.Future<List<_i25.FoodFavorite>>.value(<_i25.FoodFavorite>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i25.FoodFavorite>>.value(<_i25.FoodFavorite>[]),
+      ) as _i15.Future<List<_i25.FoodFavorite>>);
+}
+
+/// A class which mocks [GetRecentSportItemsInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetRecentSportItemsInteractor extends _i1.Mock
+    implements _i159.GetRecentSportItemsInteractor {
+  @override
+  _i15.Future<List<_i55.AddSportFavorite>> execute() => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+        ),
+        returnValue: _i15.Future<List<_i55.AddSportFavorite>>.value(
+            <_i55.AddSportFavorite>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i55.AddSportFavorite>>.value(
+                <_i55.AddSportFavorite>[]),
+      ) as _i15.Future<List<_i55.AddSportFavorite>>);
+}
+
+/// A class which mocks [GetRecentSupplementItemsInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetRecentSupplementItemsInteractor extends _i1.Mock
+    implements _i160.GetRecentSupplementItemsInteractor {
+  @override
+  _i15.Future<List<_i35.SupplementSimple>> execute() => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+        ),
+        returnValue: _i15.Future<List<_i35.SupplementSimple>>.value(
+            <_i35.SupplementSimple>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i35.SupplementSimple>>.value(
+                <_i35.SupplementSimple>[]),
+      ) as _i15.Future<List<_i35.SupplementSimple>>);
+}
+
+/// A class which mocks [FoodEventsRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockFoodEventsRepository extends _i1.Mock
+    implements _i161.FoodEventsRepository {
+  @override
+  _i15.Future<_i3.UploadFoodEvent> uploadFoodEvent(
+          _i45.FoodEventSimple? foodEventSimple) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #uploadFoodEvent,
+          [foodEventSimple],
+        ),
+        returnValue:
+            _i15.Future<_i3.UploadFoodEvent>.value(_FakeUploadFoodEvent_1(
+          this,
+          Invocation.method(
+            #uploadFoodEvent,
+            [foodEventSimple],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i15.Future<_i3.UploadFoodEvent>.value(_FakeUploadFoodEvent_1(
+          this,
+          Invocation.method(
+            #uploadFoodEvent,
+            [foodEventSimple],
+          ),
+        )),
+      ) as _i15.Future<_i3.UploadFoodEvent>);
+
+  @override
+  _i15.Future<void> saveFoodEvent(
+    _i3.UploadFoodEvent? uploadFoodEvent,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveFoodEvent,
+          [
+            uploadFoodEvent,
+            isEdit,
+          ],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<bool> removeFoodEvent(
+          _i13.FoodEventComplete? foodEventComplete) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeFoodEvent,
+          [foodEventComplete],
+        ),
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
+
+  @override
+  _i15.Future<bool> deleteFoodEvent(
+    String? userId,
+    int? eventDate,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #deleteFoodEvent,
+          [
+            userId,
+            eventDate,
+          ],
+        ),
+        returnValue: _i15.Future<bool>.value(false),
+        returnValueForMissingStub: _i15.Future<bool>.value(false),
+      ) as _i15.Future<bool>);
+
+  @override
+  _i15.Future<List<_i13.FoodEventComplete>> getAllFoodEvents() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAllFoodEvents,
+          [],
+        ),
+        returnValue: _i15.Future<List<_i13.FoodEventComplete>>.value(
+            <_i13.FoodEventComplete>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i13.FoodEventComplete>>.value(
+                <_i13.FoodEventComplete>[]),
+      ) as _i15.Future<List<_i13.FoodEventComplete>>);
+
+  @override
+  _i15.Future<_i13.FoodEventComplete> getLastFoodEvent() => (super.noSuchMethod(
+        Invocation.method(
+          #getLastFoodEvent,
+          [],
+        ),
+        returnValue:
+            _i15.Future<_i13.FoodEventComplete>.value(_FakeFoodEventComplete_17(
+          this,
+          Invocation.method(
+            #getLastFoodEvent,
+            [],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i15.Future<_i13.FoodEventComplete>.value(_FakeFoodEventComplete_17(
+          this,
+          Invocation.method(
+            #getLastFoodEvent,
+            [],
+          ),
+        )),
+      ) as _i15.Future<_i13.FoodEventComplete>);
+
+  @override
+  _i15.Future<List<_i13.FoodEventComplete>> getFoodEventsOfToday(
+          {DateTime? dateTime}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getFoodEventsOfToday,
+          [],
+          {#dateTime: dateTime},
+        ),
+        returnValue: _i15.Future<List<_i13.FoodEventComplete>>.value(
+            <_i13.FoodEventComplete>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i13.FoodEventComplete>>.value(
+                <_i13.FoodEventComplete>[]),
+      ) as _i15.Future<List<_i13.FoodEventComplete>>);
+
+  @override
+  _i15.Future<List<_i13.FoodEventComplete>> getWeekFoodEvents() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getWeekFoodEvents,
+          [],
+        ),
+        returnValue: _i15.Future<List<_i13.FoodEventComplete>>.value(
+            <_i13.FoodEventComplete>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i13.FoodEventComplete>>.value(
+                <_i13.FoodEventComplete>[]),
+      ) as _i15.Future<List<_i13.FoodEventComplete>>);
+
+  @override
+  _i15.Future<List<_i13.FoodEventComplete>> getRecentFoodEvents() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getRecentFoodEvents,
+          [],
+        ),
+        returnValue: _i15.Future<List<_i13.FoodEventComplete>>.value(
+            <_i13.FoodEventComplete>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i13.FoodEventComplete>>.value(
+                <_i13.FoodEventComplete>[]),
+      ) as _i15.Future<List<_i13.FoodEventComplete>>);
+}
+
+/// A class which mocks [SportEventsRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSportEventsRepository extends _i1.Mock
+    implements _i162.SportEventsRepository {
+  @override
+  _i15.Future<_i4.SportEventComplete> uploadSportEvent(
+          _i53.SportEventSimple? sportEventSimple) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #uploadSportEvent,
+          [sportEventSimple],
+        ),
+        returnValue:
+            _i15.Future<_i4.SportEventComplete>.value(_FakeSportEventComplete_2(
+          this,
+          Invocation.method(
+            #uploadSportEvent,
+            [sportEventSimple],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i15.Future<_i4.SportEventComplete>.value(_FakeSportEventComplete_2(
+          this,
+          Invocation.method(
+            #uploadSportEvent,
+            [sportEventSimple],
+          ),
+        )),
+      ) as _i15.Future<_i4.SportEventComplete>);
+
+  @override
+  _i15.Future<void> saveSportEvent(
+    _i4.SportEventComplete? sportEventComplete,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveSportEvent,
+          [
+            sportEventComplete,
+            isEdit,
+          ],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<void> removeSportEvent(
+          _i4.SportEventComplete? sportEventComplete) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeSportEvent,
+          [sportEventComplete],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<void> deleteSportEvent(
+    String? userId,
+    int? eventId,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #deleteSportEvent,
+          [
+            userId,
+            eventId,
+          ],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<List<_i4.SportEventComplete>> getTodaySportEvents(
+          {DateTime? dateTime}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getTodaySportEvents,
+          [],
+          {#dateTime: dateTime},
+        ),
+        returnValue: _i15.Future<List<_i4.SportEventComplete>>.value(
+            <_i4.SportEventComplete>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i4.SportEventComplete>>.value(
+                <_i4.SportEventComplete>[]),
+      ) as _i15.Future<List<_i4.SportEventComplete>>);
+
+  @override
+  _i15.Future<List<_i4.SportEventComplete>> getWeeklySportEvents() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getWeeklySportEvents,
+          [],
+        ),
+        returnValue: _i15.Future<List<_i4.SportEventComplete>>.value(
+            <_i4.SportEventComplete>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i4.SportEventComplete>>.value(
+                <_i4.SportEventComplete>[]),
+      ) as _i15.Future<List<_i4.SportEventComplete>>);
+
+  @override
+  _i15.Future<List<_i4.SportEventComplete>> getRecentSportEvents() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getRecentSportEvents,
+          [],
+        ),
+        returnValue: _i15.Future<List<_i4.SportEventComplete>>.value(
+            <_i4.SportEventComplete>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i4.SportEventComplete>>.value(
+                <_i4.SportEventComplete>[]),
+      ) as _i15.Future<List<_i4.SportEventComplete>>);
+
+  @override
+  _i15.Future<List<_i4.SportEventComplete>> getAllSportEvents() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAllSportEvents,
+          [],
+        ),
+        returnValue: _i15.Future<List<_i4.SportEventComplete>>.value(
+            <_i4.SportEventComplete>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i4.SportEventComplete>>.value(
+                <_i4.SportEventComplete>[]),
+      ) as _i15.Future<List<_i4.SportEventComplete>>);
+
+  @override
+  _i15.Future<int?> getDayCalories({DateTime? dateTime}) => (super.noSuchMethod(
+        Invocation.method(
+          #getDayCalories,
+          [],
+          {#dateTime: dateTime},
+        ),
+        returnValue: _i15.Future<int?>.value(),
+        returnValueForMissingStub: _i15.Future<int?>.value(),
+      ) as _i15.Future<int?>);
+}
+
+/// A class which mocks [SupplementsRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSupplementsRepository extends _i1.Mock
+    implements _i163.SupplementsRepository {
+  @override
+  _i15.Future<void> uploadCreatineEvent(
+          _i96.UploadSupplementEvent? uploadSupplementEvent) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #uploadCreatineEvent,
+          [uploadSupplementEvent],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<void> saveCreatineEvent(
+    _i96.UploadSupplementEvent? uploadSupplementCreatineEvent,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveCreatineEvent,
+          [
+            uploadSupplementCreatineEvent,
+            isEdit,
+          ],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<_i96.UploadSupplementEvent?> getTodayCreatineEvent(
+          {DateTime? dateTime}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getTodayCreatineEvent,
+          [],
+          {#dateTime: dateTime},
+        ),
+        returnValue: _i15.Future<_i96.UploadSupplementEvent?>.value(),
+        returnValueForMissingStub:
+            _i15.Future<_i96.UploadSupplementEvent?>.value(),
+      ) as _i15.Future<_i96.UploadSupplementEvent?>);
+
+  @override
+  _i15.Future<_i96.UploadSupplementEvent?> getTodayCollagenEvent(
+          {DateTime? dateTime}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getTodayCollagenEvent,
+          [],
+          {#dateTime: dateTime},
+        ),
+        returnValue: _i15.Future<_i96.UploadSupplementEvent?>.value(),
+        returnValueForMissingStub:
+            _i15.Future<_i96.UploadSupplementEvent?>.value(),
+      ) as _i15.Future<_i96.UploadSupplementEvent?>);
+
+  @override
+  _i15.Future<void> uploadCollagenEvent(
+          _i96.UploadSupplementEvent? uploadSupplementCollagenEvent) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #uploadCollagenEvent,
+          [uploadSupplementCollagenEvent],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<void> saveCollagenEvent(
+    _i96.UploadSupplementEvent? uploadSupplementCollagenEvent,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveCollagenEvent,
+          [
+            uploadSupplementCollagenEvent,
+            isEdit,
+          ],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<List<_i96.UploadSupplementEvent>> getAllCreatineEvents() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAllCreatineEvents,
+          [],
+        ),
+        returnValue: _i15.Future<List<_i96.UploadSupplementEvent>>.value(
+            <_i96.UploadSupplementEvent>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i96.UploadSupplementEvent>>.value(
+                <_i96.UploadSupplementEvent>[]),
+      ) as _i15.Future<List<_i96.UploadSupplementEvent>>);
+
+  @override
+  _i15.Future<List<_i96.UploadSupplementEvent>> getAllCollagenEvents() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAllCollagenEvents,
+          [],
+        ),
+        returnValue: _i15.Future<List<_i96.UploadSupplementEvent>>.value(
+            <_i96.UploadSupplementEvent>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i96.UploadSupplementEvent>>.value(
+                <_i96.UploadSupplementEvent>[]),
+      ) as _i15.Future<List<_i96.UploadSupplementEvent>>);
+
+  @override
+  _i15.Future<void> uploadSupplementEvent(
+          _i33.UploadSupplementsEv? uploadSupplementsEv) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #uploadSupplementEvent,
+          [uploadSupplementsEv],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<void> saveSupplementEvent(
+    _i35.SupplementSimple? supplementSimple,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveSupplementEvent,
+          [
+            supplementSimple,
+            isEdit,
+          ],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<List<_i35.SupplementSimple>> getSupplementEventsDay(
+          {DateTime? dateTime}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getSupplementEventsDay,
+          [],
+          {#dateTime: dateTime},
+        ),
+        returnValue: _i15.Future<List<_i35.SupplementSimple>>.value(
+            <_i35.SupplementSimple>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i35.SupplementSimple>>.value(
+                <_i35.SupplementSimple>[]),
+      ) as _i15.Future<List<_i35.SupplementSimple>>);
+
+  @override
+  _i15.Future<List<_i35.SupplementSimple>> getRecentSupplementEvents() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getRecentSupplementEvents,
+          [],
+        ),
+        returnValue: _i15.Future<List<_i35.SupplementSimple>>.value(
+            <_i35.SupplementSimple>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i35.SupplementSimple>>.value(
+                <_i35.SupplementSimple>[]),
+      ) as _i15.Future<List<_i35.SupplementSimple>>);
+
+  @override
+  _i15.Future<void> deleteSupplementEvent(
+          _i35.SupplementSimple? supplementEvent) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #deleteSupplementEvent,
+          [supplementEvent],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<void> removeSupplementEvent(
+          _i35.SupplementSimple? supplementEvent) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeSupplementEvent,
+          [supplementEvent],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<void> uploadSupplementFavorite(
+          _i37.SupplementFavorite? supplementFavorite) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #uploadSupplementFavorite,
+          [supplementFavorite],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<void> saveSupplementFavorite(
+    _i37.SupplementFavorite? supplementFavorite,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveSupplementFavorite,
+          [
+            supplementFavorite,
+            isEdit,
+          ],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<List<_i35.SupplementSimple>> getSupplementFavorite() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getSupplementFavorite,
+          [],
+        ),
+        returnValue: _i15.Future<List<_i35.SupplementSimple>>.value(
+            <_i35.SupplementSimple>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i35.SupplementSimple>>.value(
+                <_i35.SupplementSimple>[]),
+      ) as _i15.Future<List<_i35.SupplementSimple>>);
+
+  @override
+  _i15.Future<void> uploadSupplementRoutine(
+          _i41.UploadSupplementRoutine? uploadSupplementRoutine) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #uploadSupplementRoutine,
+          [uploadSupplementRoutine],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<void> saveSupplementRoutine(
+    _i41.UploadSupplementRoutine? supplementRoutine,
+    bool? isEdit,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveSupplementRoutine,
+          [
+            supplementRoutine,
+            isEdit,
+          ],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<List<_i35.SupplementSimple>> getSupplementRoutines() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getSupplementRoutines,
+          [],
+        ),
+        returnValue: _i15.Future<List<_i35.SupplementSimple>>.value(
+            <_i35.SupplementSimple>[]),
+        returnValueForMissingStub:
+            _i15.Future<List<_i35.SupplementSimple>>.value(
+                <_i35.SupplementSimple>[]),
+      ) as _i15.Future<List<_i35.SupplementSimple>>);
+
+  @override
+  _i15.Future<void> deleteSupplementRoutine(
+          _i35.SupplementSimple? supplement) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #deleteSupplementRoutine,
+          [supplement],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<void> removeSupplementRoutine(
+          _i35.SupplementSimple? supplement) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeSupplementRoutine,
+          [supplement],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<void> deleteSupplementFavorite(
+          _i35.SupplementSimple? supplement) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #deleteSupplementFavorite,
+          [supplement],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+
+  @override
+  _i15.Future<void> removeSupplementFavorite(
+          _i35.SupplementSimple? supplement) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeSupplementFavorite,
+          [supplement],
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
 }

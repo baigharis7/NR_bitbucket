@@ -151,6 +151,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_urine
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_urine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_recent_food_items_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_recent_food_items_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_event_interactor.dart';
@@ -245,6 +247,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/sportevents/remove_spor
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/remove_sport_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_recent_sport_items_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_recent_sport_items_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/steps/get_steps_interactor.dart';
@@ -286,6 +290,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_coll
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_collagen_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_creatine_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_creatine_event_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_recent_supplement_items_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_recent_supplement_items_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_favorite_interactor.dart';
@@ -569,9 +575,11 @@ void main() async {
   final SaveLiquidEventInteractor saveLiquidEventInteractor = SaveLiquidEventInteractorImpl(liquidEventsRepository: liquidEventsRepository);
   final UploadLiquidEventInteractor uploadLiquidEventInteractor = UploadLiquidEventInteractorImpl(liquidEventsRepository: liquidEventsRepository);
   final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor = GetWeekFoodEventsInteractorImpl(foodEventsRepository: foodEventsRepository);
+  final GetRecentFoodItemsInteractor getRecentFoodItemsInteractor = GetRecentFoodItemsInteractorImpl(foodEventsRepository: foodEventsRepository);
   final GetUserKcalInteractor getUserKcalInteractor = GetUserKcalInteractorImpl(profileRepository: profileRepository);
   final GetTodaySportsInteractor getTodaySportsInteractor = GetTodaySportsInteractorImpl(sportEventsRepository: sportEventsRepository);
   final GetWeekSportsInteractor getWeekSportsInteractor = GetWeekSportsInteractorImpl(sportEventsRepository: sportEventsRepository);
+  final GetRecentSportItemsInteractor getRecentSportItemsInteractor = GetRecentSportItemsInteractorImpl(sportEventsRepository: sportEventsRepository);
   final GetWeekLiquidEventsInteractor getWeekLiquidEventsInteractor = GetWeekLiquidEventsInteractorImpl(liquidEventsRepository: liquidEventsRepository);
   final GetTodayLiquidEventsInteractor getTodayLiquidEventsInteractor = GetTodayLiquidEventsInteractorImpl(liquidEventsRepository: liquidEventsRepository);
   final WaterEventsApi waterEventsApi = WaterEventsApi(prefsRepository, authenticationService, chuck);
@@ -678,6 +686,7 @@ void main() async {
   final UploadSupplementFavoriteInteractor uploadSupplementFavoriteInteractor = UploadSupplementFavoriteInteractorImpl(supplementsRepository: supplementsRepository);
   final SaveSupplementFavoriteInteractor saveSupplementFavoriteInteractor = SaveSupplementFavoriteInteractorImpl(supplementsRepository: supplementsRepository);
   final GetSupplementFavoritesInteractor getSupplementFavoritesInteractor = GetSupplementFavoritesInteractorImpl(supplementsRepository: supplementsRepository);
+  final GetRecentSupplementItemsInteractor getRecentSupplementItemsInteractor = GetRecentSupplementItemsInteractorImpl(supplementsRepository: supplementsRepository);
   final UploadSupplementRoutineInteractor uploadSupplementRoutineInteractor = UploadSupplementRoutineInteractorImpl(supplementsRepository: supplementsRepository);
   final SaveSupplementRoutineInteractor saveSupplementRoutineInteractor = SaveSupplementRoutineInteractorImpl(supplementsRepository: supplementsRepository);
   final GetSupplementRoutinesInteractor getSupplementRoutinesInteractor = GetSupplementRoutinesIntractorImpl(supplementsRepository: supplementsRepository);
@@ -821,6 +830,7 @@ void main() async {
     saveFoodRoutineInteractor: saveFoodRoutineInteractor,
     deleteFoodFavoriteInteractor: deleteFoodFavoriteInteractor,
     removeFoodFavoriteFromLocalInteractor: removeFoodFavoriteFromLocalInteractor,
+    getRecentFoodItemsInteractor: getRecentFoodItemsInteractor,
   );
 
   final foodEventBloc = FoodBloc(
@@ -840,6 +850,7 @@ void main() async {
     saveSportFavoriteInteractor: saveSportFavoriteInteractor,
     deleteSportFavoriteInteractor: deleteSportFavoriteInteractor,
     removeSportFavoriteInteractor: removeSportFavoriteInteractor,
+    getRecentSportItemsInteractor: getRecentSportItemsInteractor,
   );
 
   final liquidEventBloc = LiquidEventBloc(
@@ -1125,6 +1136,7 @@ void main() async {
     uploadSupplementRoutineInteractor: uploadSupplementRoutineInteractor,
     saveSupplementRoutineInteractor: saveSupplementRoutineInteractor,
     getUserIdInteractor: getUserIdInteractor,
+    getRecentSupplementItemsInteractor: getRecentSupplementItemsInteractor,
   );
 
   final supplementsDetailBloc = SupplementsDetailBloc(

@@ -45,8 +45,11 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<void> removeSportEvent(SportEventComplete sportEventComplete);
   Future<List> getFoodEventsOfToday({DateTime? dateTime});
   Future<List> getWeekFoodEvents();
+  Future<List> getRecentFoodEvents();
   Future<List> getSportsEventsOfToday({DateTime? dateTime});
   Future<List> getWeeklySportEvents();
+  Future<List> getRecentSportEvents();
+  Future<List> getRecentSupplementEvents();
   Future<List> getTodayLiquidEvents({DateTime? dateTime});
   Future<List> getWeeklyLiquidEvents();
   Future<void> saveWaterEvent(WaterEventMaster waterEventMaster);

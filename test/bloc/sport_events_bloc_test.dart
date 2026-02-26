@@ -26,6 +26,7 @@ void main() {
   late MockSaveSportFavoriteInteractor mockSaveSportFavorite;
   late MockDeleteSportFavoriteInteractor mockDeleteSportFavorite;
   late MockRemoveSportFavoriteInteractor mockRemoveSportFavorite;
+  late MockGetRecentSportItemsInteractor mockGetRecentSportItems;
 
   setUp(() {
     mockGetUserId = MockGetUserIdInteractor();
@@ -40,6 +41,7 @@ void main() {
     mockSaveSportFavorite = MockSaveSportFavoriteInteractor();
     mockDeleteSportFavorite = MockDeleteSportFavoriteInteractor();
     mockRemoveSportFavorite = MockRemoveSportFavoriteInteractor();
+    mockGetRecentSportItems = MockGetRecentSportItemsInteractor();
   });
 
   SportEventsBloc buildBloc() => SportEventsBloc(
@@ -55,6 +57,7 @@ void main() {
         saveSportFavoriteInteractor: mockSaveSportFavorite,
         deleteSportFavoriteInteractor: mockDeleteSportFavorite,
         removeSportFavoriteInteractor: mockRemoveSportFavorite,
+        getRecentSportItemsInteractor: mockGetRecentSportItems,
       );
 
   group('SportEventsBloc', () {
@@ -70,13 +73,15 @@ void main() {
     );
 
     blocTest<SportEventsBloc, SportEventsState>(
-      'InitializeStateAction loads sportsInfo and favorites',
+      'InitializeStateAction loads sportsInfo, favorites, and recent items',
       build: () {
         when(mockGetMasterFile.execute(MasterFilesType.sportsInfo))
             .thenAnswer((_) async => SportsInfoMaster(sportsInfoMaster: [
                   SportInfoMaster(id: 1, en: 'Running', es: 'Correr', mets: 8),
                 ]));
         when(mockGetSportFavorites.execute())
+            .thenAnswer((_) async => <AddSportFavorite>[]);
+        when(mockGetRecentSportItems.execute())
             .thenAnswer((_) async => <AddSportFavorite>[]);
         return buildBloc();
       },
@@ -88,6 +93,7 @@ void main() {
       verify: (bloc) {
         verify(mockGetMasterFile.execute(MasterFilesType.sportsInfo)).called(1);
         verify(mockGetSportFavorites.execute()).called(1);
+        verify(mockGetRecentSportItems.execute()).called(1);
       },
     );
 
@@ -279,6 +285,23 @@ void main() {
       verify: (bloc) {
         expect(bloc.state.sportSimpleEvent!.isFavorite, isNot(true));
         expect(bloc.state.sportSimpleEvent!.isCreateRoutine, isNot(true));
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'initial state has favRecentTab = 0 (Recent)',
+      build: buildBloc,
+      verify: (bloc) {
+        expect(bloc.state.favRecentTab, 0);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'SwitchFavRecentTabSportAction updates favRecentTab in state',
+      build: buildBloc,
+      act: (bloc) => bloc.add(SwitchFavRecentTabSportAction(tabIndex: 1)),
+      verify: (bloc) {
+        expect(bloc.state.favRecentTab, 1);
       },
     );
   });

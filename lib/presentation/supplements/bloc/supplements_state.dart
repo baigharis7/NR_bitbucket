@@ -12,6 +12,8 @@ class SupplementsState {
   SupplementsInfoMaster? supplementsInfo;
   List<SupplementSimple>? supplementFavorites;
   SupplementSimple? supplementObj;
+  List<SupplementSimple>? recentSupplements;
+  int favRecentTab;
 
   SupplementsState({
     required this.isLoading,
@@ -22,6 +24,8 @@ class SupplementsState {
     this.supplementsInfo,
     this.supplementFavorites,
     this.supplementObj,
+    this.recentSupplements,
+    this.favRecentTab = 0,
   });
 
   SupplementsState copyWith({
@@ -33,6 +37,8 @@ class SupplementsState {
     SupplementsInfoMaster? supplementsInfo,
     List<SupplementSimple>? supplementFavorites,
     SupplementSimple? supplementObj,
+    List<SupplementSimple>? recentSupplements,
+    int? favRecentTab,
   }) {
     return SupplementsState(
       isLoading: isLoading,
@@ -43,6 +49,8 @@ class SupplementsState {
       supplementsInfo: supplementsInfo ?? this.supplementsInfo,
       supplementFavorites: supplementFavorites ?? this.supplementFavorites,
       supplementObj: supplementObj ?? this.supplementObj,
+      recentSupplements: recentSupplements ?? this.recentSupplements,
+      favRecentTab: favRecentTab ?? this.favRecentTab,
     );
   }
 }

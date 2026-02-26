@@ -21,6 +21,7 @@ void main() {
   late MockUploadSupplementRoutineInteractor mockUploadSupplementRoutine;
   late MockSaveSupplementRoutineInteractor mockSaveSupplementRoutine;
   late MockGetUserIdInteractor mockGetUserId;
+  late MockGetRecentSupplementItemsInteractor mockGetRecentSupplementItems;
 
   setUp(() {
     mockGetProfile = MockGetProfileInteractor();
@@ -33,6 +34,7 @@ void main() {
     mockUploadSupplementRoutine = MockUploadSupplementRoutineInteractor();
     mockSaveSupplementRoutine = MockSaveSupplementRoutineInteractor();
     mockGetUserId = MockGetUserIdInteractor();
+    mockGetRecentSupplementItems = MockGetRecentSupplementItemsInteractor();
   });
 
   SupplementsBloc buildBloc() => SupplementsBloc(
@@ -46,6 +48,7 @@ void main() {
         uploadSupplementRoutineInteractor: mockUploadSupplementRoutine,
         saveSupplementRoutineInteractor: mockSaveSupplementRoutine,
         getUserIdInteractor: mockGetUserId,
+        getRecentSupplementItemsInteractor: mockGetRecentSupplementItems,
       );
 
   group('SupplementsBloc', () {
@@ -60,13 +63,15 @@ void main() {
     );
 
     blocTest<SupplementsBloc, SupplementsState>(
-      'InitializationSupplementsAction loads profile, supplements info, and favorites',
+      'InitializationSupplementsAction loads profile, supplements info, favorites, and recent items',
       build: () {
         when(mockGetProfile.execute())
             .thenAnswer((_) async => UserProfileModel());
         when(mockGetMasterFile.execute(MasterFilesType.supplementsInfo))
             .thenAnswer((_) async => SupplementsInfoMaster(v: 1, data: []));
         when(mockGetSupplementFavorites.execute())
+            .thenAnswer((_) async => <SupplementSimple>[]);
+        when(mockGetRecentSupplementItems.execute())
             .thenAnswer((_) async => <SupplementSimple>[]);
         when(mockGetUserId.execute()).thenReturn('user123');
         return buildBloc();
@@ -82,6 +87,7 @@ void main() {
         verify(mockGetProfile.execute()).called(1);
         verify(mockGetMasterFile.execute(MasterFilesType.supplementsInfo)).called(1);
         verify(mockGetSupplementFavorites.execute()).called(1);
+        verify(mockGetRecentSupplementItems.execute()).called(1);
         verify(mockGetUserId.execute()).called(1);
       },
     );
@@ -235,6 +241,23 @@ void main() {
       verify: (bloc) {
         expect(bloc.state.supplementObj!.isFavorite, true);
         expect(bloc.state.supplementObj!.isRoutine, false);
+      },
+    );
+
+    blocTest<SupplementsBloc, SupplementsState>(
+      'initial state has favRecentTab = 0 (Recent)',
+      build: buildBloc,
+      verify: (bloc) {
+        expect(bloc.state.favRecentTab, 0);
+      },
+    );
+
+    blocTest<SupplementsBloc, SupplementsState>(
+      'SwitchFavRecentTabSupplementsAction updates favRecentTab in state',
+      build: buildBloc,
+      act: (bloc) => bloc.add(SwitchFavRecentTabSupplementsAction(tabIndex: 1)),
+      verify: (bloc) {
+        expect(bloc.state.favRecentTab, 1);
       },
     );
   });

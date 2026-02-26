@@ -16,6 +16,8 @@ class SportEventsState {
   AddSportFavorite? sportFavoriteEvent;
   bool? isEdit;
   DateTime? calendarDate;
+  List<AddSportFavorite>? recentSports;
+  int favRecentTab;
 
   SportEventsState({
     required this.isLoading,
@@ -26,6 +28,8 @@ class SportEventsState {
     this.sportFavoriteEvent,
     this.isEdit,
     this.calendarDate,
+    this.recentSports,
+    this.favRecentTab = 0,
   });
 
   SportEventsState copyWith({
@@ -37,6 +41,8 @@ class SportEventsState {
     AddSportFavorite? sportFavoriteEvent,
     bool? isEdit,
     DateTime? calendarDate,
+    List<AddSportFavorite>? recentSports,
+    int? favRecentTab,
   }) {
     return SportEventsState(
       isLoading: isLoading,
@@ -47,6 +53,8 @@ class SportEventsState {
       sportFavoriteEvent: sportFavoriteEvent ?? this.sportFavoriteEvent,
       isEdit: isEdit ?? this.isEdit,
       calendarDate: calendarDate ?? this.calendarDate,
+      recentSports: recentSports ?? this.recentSports,
+      favRecentTab: favRecentTab ?? this.favRecentTab,
     );
   }
 

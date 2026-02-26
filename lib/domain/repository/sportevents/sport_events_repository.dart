@@ -8,6 +8,7 @@ abstract class SportEventsRepository {
   Future<void> deleteSportEvent(String userId, int eventId);
   Future<List<SportEventComplete>> getTodaySportEvents({DateTime? dateTime});
   Future<List<SportEventComplete>> getWeeklySportEvents();
+  Future<List<SportEventComplete>> getRecentSportEvents();
   Future<List<SportEventComplete>> getAllSportEvents();
   Future<int?> getDayCalories({DateTime? dateTime});
 }

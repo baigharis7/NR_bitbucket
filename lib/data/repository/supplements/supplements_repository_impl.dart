@@ -105,6 +105,12 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
   }
 
   @override
+  Future<List<SupplementSimple>> getRecentSupplementEvents() async {
+    final List events = await localStorageRepository.getRecentSupplementEvents();
+    return events.map((event) => mapToSupplementSimple(event as SupplementEventsEntity)).toList();
+  }
+
+  @override
   Future<void> saveSupplementEvent(SupplementSimple supplementSimple, bool isEdit) async {
     try {
       await localStorageRepository.saveSupplementEvent(mapToSupplementEventEntityFromSupplementSimple(supplementSimple), isEdit: isEdit);

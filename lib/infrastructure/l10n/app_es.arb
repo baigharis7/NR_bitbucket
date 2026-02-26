@@ -390,6 +390,7 @@
     "error_saving_favorite" : "Ha habido un error guardando el favorito. Prueba de nuevo",
     "food_favorites" : "Comidas favoritos",
     "favorites" : "Favoritos",
+    "recent" : "Recientes",
     "see_more" : "Ver más...",
     "add_comment" : "Añadir comentario",
     "add_favorite" : "Añadir favorito",

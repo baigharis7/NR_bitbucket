@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_file
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_recent_supplement_items_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_supplement_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_favorite_interactor.dart';
@@ -43,6 +44,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
   final UploadSupplementRoutineInteractor uploadSupplementRoutineInteractor;
   final SaveSupplementRoutineInteractor saveSupplementRoutineInteractor;
   final GetUserIdInteractor getUserIdInteractor;
+  final GetRecentSupplementItemsInteractor getRecentSupplementItemsInteractor;
 
   SupplementsBloc({
     required this.getProfileInteractor,
@@ -55,6 +57,7 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
     required this.uploadSupplementRoutineInteractor,
     required this.saveSupplementRoutineInteractor,
     required this.getUserIdInteractor,
+    required this.getRecentSupplementItemsInteractor,
   }) : super(SupplementsState(isLoading: false, supplementObj: SupplementSimple.empty())) {
 
     on<InitializationSupplementsAction>((event, emit) async {
@@ -63,8 +66,14 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
       state.userProfile = await getProfileInteractor.execute();
       state.supplementsInfo = await getMasterFileInteractor.execute(MasterFilesType.supplementsInfo);
       state.supplementFavorites = await getSupplementFavoritesInteractor.execute();
+      state.recentSupplements = await getRecentSupplementItemsInteractor.execute();
       state.supplementObj?.userId = getUserIdInteractor.execute();
       emit(state.copyWith(isLoading: false,));
+    });
+
+    on<SwitchFavRecentTabSupplementsAction>((event, emit) {
+      state.favRecentTab = event.tabIndex;
+      emit(state.copyWith(isLoading: false));
     });
 
     on<UpdateDateSupplementsAction>((event, emit) {

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/delete_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/get_sport_favorites_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_recent_sport_items_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/remove_sport_favorite_from_local_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
@@ -45,6 +46,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
   final SaveSportFavoriteInteractor saveSportFavoriteInteractor;
   final DeleteSportFavoriteInteractor deleteSportFavoriteInteractor;
   final RemoveSportFavoriteInteractor removeSportFavoriteInteractor;
+  final GetRecentSportItemsInteractor getRecentSportItemsInteractor;
 
   SportEventsBloc({
     required this.getUserIdInteractor,
@@ -59,6 +61,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
     required this.saveSportFavoriteInteractor,
     required this.deleteSportFavoriteInteractor,
     required this.removeSportFavoriteInteractor,
+    required this.getRecentSportItemsInteractor,
   }) : super(SportEventsState(
     isLoading: false,
     sportsInfo: SportsInfoMaster(sportsInfoMaster: []),
@@ -75,8 +78,14 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       state.sportsInfo = sportInfo;
       final favSports = await getSportFavoritesInteractor.execute();
       state.favSports = favSports;
+      state.recentSports = await getRecentSportItemsInteractor.execute();
 
       emit(state.copyWith(isLoading: false, onError: null));
+    });
+
+    on<SwitchFavRecentTabSportAction>((event, emit) {
+      state.favRecentTab = event.tabIndex;
+      emit(state.copyWith(isLoading: false));
     });
 
     on<UpdateCalendarDateSportEventAction>((event, emit) {

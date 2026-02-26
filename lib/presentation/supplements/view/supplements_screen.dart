@@ -23,6 +23,7 @@ import '../../common/view/confirmation_dialog.dart';
 import '../../common/view/loading_screen.dart';
 import '../../updatesupplement/view/update_supplement_screen.dart';
 import '../../widgets/dash_title_widget.dart';
+import '../../widgets/favorites_recent_toggle.dart';
 import '../../widgets/date_picker_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/item_info_card.dart';
@@ -242,13 +243,40 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                         ),
                       ],),
                     ),
-                    if (state.supplementObj?.info?.orEmpty().isEmpty == true && state.supplementFavorites.orEmpty().isNotEmpty == true) Column(children: [
+                    if (state.supplementObj?.info?.orEmpty().isEmpty == true && (state.supplementFavorites.orEmpty().isNotEmpty == true || state.recentSupplements.orEmpty().isNotEmpty == true)) Column(children: [
                       const SizedBox(height: Dimens.height12),
-                      DashTitleWidget(title: '${AppLocalizations.of(context)!.favorites} - ${AppLocalizations.of(context)!.supplement}'),
-                      ListView.builder(
+                      FavoritesRecentToggle(
+                        selectedIndex: state.favRecentTab,
+                        onTap: (index) => supplementsBloc.add(SwitchFavRecentTabSupplementsAction(tabIndex: index)),
+                      ),
+                      const SizedBox(height: Dimens.height5),
+                      if (state.favRecentTab == 0) ListView.builder(
                         shrinkWrap: true,
                         primary: false,
-                        itemCount: state.supplementFavorites?.length,
+                        itemCount: state.recentSupplements?.length ?? 0,
+                        itemBuilder: (context, index) {
+                          final recentSupplement = state.recentSupplements.orEmpty()[index];
+                          final itemName = recentSupplement.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], recentSupplement.info![0].id ?? -1).translate(context);
+                          return ItemInfoCard(
+                            title: itemName,
+                            trailingSrc: 'assets/icon/add_icon.png',
+                            trailingTap: () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(
+                                supplement: recentSupplement,
+                                onFinish: () => _showConfirmationDialog(
+                                  message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
+                                    context: context,
+                                    onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
+                                ),),),
+                            subtitle: recentSupplement.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${recentSupplement.info![0].amount.toString()} ${recentSupplement.info![0].unit}.',
+                            beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                            beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: recentSupplement).then((value) => supplementsBloc.add(InitializationSupplementsAction())),
+                          );
+                        },
+                      ),
+                      if (state.favRecentTab == 1) ListView.builder(
+                        shrinkWrap: true,
+                        primary: false,
+                        itemCount: state.supplementFavorites?.length ?? 0,
                         itemBuilder: (context, index) {
                           final supplementFavorite = state.supplementFavorites.orEmpty()[index];
                           final itemName = supplementFavorite.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite.info![0].id ?? -1).translate(context);

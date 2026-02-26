@@ -360,6 +360,18 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
+  Future<List> getRecentFoodEvents() async {
+    List allFoodEvents = await _getFoodEventsBox.then((box) {
+      return box.values.toList();
+    });
+
+    final sevenDaysAgo = DateTime.now().subtract(const Duration(days: 7)).millisecondsSinceEpoch;
+    final recent = allFoodEvents.where((foodEvent) => foodEvent.eventDate! > sevenDaysAgo).toList();
+    recent.sort((a, b) => (b.eventDate as int).compareTo(a.eventDate as int));
+    return recent;
+  }
+
+  @override
   Future<List> getSportsEventsOfToday({DateTime? dateTime}) async {
     List allSportEvents = await _getSportEventsBox.then((box) {
       return box.values.toList();
@@ -377,6 +389,18 @@ class LocalStorageImpl extends LocalStorageRepository {
 
     final mondayMidnightTime = DateTimeHelper().provideMondayAtMidnightDate().millisecondsSinceEpoch;
     return allSportEvents.where((sportEvent) => sportEvent.eventDate! > mondayMidnightTime).toList();
+  }
+
+  @override
+  Future<List> getRecentSportEvents() async {
+    List allSportEvents = await _getSportEventsBox.then((box) {
+      return box.values.toList();
+    });
+
+    final sevenDaysAgo = DateTime.now().subtract(const Duration(days: 7)).millisecondsSinceEpoch;
+    final recent = allSportEvents.where((sportEvent) => sportEvent.eventDate! > sevenDaysAgo).toList();
+    recent.sort((a, b) => (b.eventDate as int).compareTo(a.eventDate as int));
+    return recent;
   }
 
   @override
@@ -1449,6 +1473,18 @@ class LocalStorageImpl extends LocalStorageRepository {
 
     final midnightTime = dateTime == null ? DateTimeHelper().provideTodayAtMidnightDate().millisecondsSinceEpoch : DateTimeHelper.calculateMidNightMillisecondsFromDateTime(dateTime);
     return supplementsEvents.where((event) => DateTimeHelper.calculateMidNightMillisecondsFromInt(event.eventDate) == midnightTime).toList();
+  }
+
+  @override
+  Future<List> getRecentSupplementEvents() async {
+    List supplementsEvents = await _getSupplementEventsBox.then((box) {
+      return box.values.toList();
+    });
+
+    final sevenDaysAgo = DateTime.now().subtract(const Duration(days: 7)).millisecondsSinceEpoch;
+    final recent = supplementsEvents.where((event) => event.eventDate > sevenDaysAgo).toList();
+    recent.sort((a, b) => (b.eventDate as int).compareTo(a.eventDate as int));
+    return recent;
   }
 
   @override

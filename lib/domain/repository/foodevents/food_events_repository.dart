@@ -11,4 +11,5 @@ abstract class FoodEventsRepository {
   Future<FoodEventComplete> getLastFoodEvent();
   Future<List<FoodEventComplete>> getFoodEventsOfToday({DateTime? dateTime});
   Future<List<FoodEventComplete>> getWeekFoodEvents();
+  Future<List<FoodEventComplete>> getRecentFoodEvents();
 }

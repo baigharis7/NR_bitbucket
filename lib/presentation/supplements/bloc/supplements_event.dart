@@ -102,3 +102,9 @@ class FinishSupplementFavoriteSupplementsEvent extends SupplementsEvent {
 
   FinishSupplementFavoriteSupplementsEvent({required this.supplement, required this.onFinish});
 }
+
+class SwitchFavRecentTabSupplementsAction extends SupplementsEvent {
+  final int tabIndex;
+
+  SwitchFavRecentTabSupplementsAction({required this.tabIndex});
+}

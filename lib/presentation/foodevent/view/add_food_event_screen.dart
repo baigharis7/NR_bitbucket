@@ -17,6 +17,7 @@ import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_even
 import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_event_state.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_event_item.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/dash_title_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/favorites_recent_toggle.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/date_picker_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
@@ -290,10 +291,34 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               ]),
                             ),
 
-                            if (state.foodEvent!.ingredients.orEmpty().isEmpty && state.foodFavorites.orEmpty().isNotEmpty) Column(children: [
+                            if (state.foodEvent!.ingredients.orEmpty().isEmpty && (state.foodFavorites.orEmpty().isNotEmpty || state.recentFoodItems.orEmpty().isNotEmpty)) Column(children: [
                               const SizedBox(height: Dimens.height12),
-                              DashTitleWidget(title: AppLocalizations.of(context)!.favorites + ' - ' + MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime).name.orEmpty()),
-                              ...state.foodFavorites.orEmpty().map((favFood) => ItemInfoCard(
+                              FavoritesRecentToggle(
+                                selectedIndex: state.favRecentTab,
+                                onTap: (index) => bloc.add(SwitchFavRecentTabAction(tabIndex: index)),
+                              ),
+                              const SizedBox(height: Dimens.height5),
+                              if (state.favRecentTab == 0) ...state.recentFoodItems.orEmpty().map((recentFood) => ItemInfoCard(
+                                title: recentFood.title ?? NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: recentFood.ingredients, context: context),
+                                trailingSrc: 'assets/icon/add_icon.png',
+                                color: AppColors.floralWhite,
+                                trailingTap: () {
+                                  recentFood.eventId = DateTime.now().millisecondsSinceEpoch;
+                                  recentFood.eventDate = bloc.state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
+                                  bloc.add(FinishAddFoodEventAction(
+                                    foodEventSimple: mapToFoodEventSimpleFromFoodFavorite(recentFood),
+                                    onFinish: () => _showConfirmationDialog(
+                                        message: AppLocalizations.of(context)!.food_event_successfully_saved,
+                                        context: context,
+                                        onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
+                                    ),),
+                                  );
+                                },
+                                subtitle: recentFood.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${recentFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, recentFood.ingredients, context)}.',
+                                beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                                beforeTrailingTap: () => Navigator.pushNamed(context, UpdateMealScreen.routeName, arguments: recentFood).then((value) => bloc.add(InitializeStateAction())),
+                              ),),
+                              if (state.favRecentTab == 1) ...state.foodFavorites.orEmpty().map((favFood) => ItemInfoCard(
                                 title: favFood.title ?? NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: favFood.ingredients, context: context),
                                 leadingSrc: 'assets/images/favorite_icon.png',
                                 trailingSrc: 'assets/icon/add_icon.png',
@@ -310,12 +335,11 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                         onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
                                     ),),
                                   );
-                                  },
+                                },
                                 subtitle: favFood.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${favFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, favFood.ingredients, context)}.',
                                 beforeTrailingSrc: 'assets/icon/edit_icon.png',
                                 beforeTrailingTap: () => Navigator.pushNamed(context, UpdateMealScreen.routeName, arguments: favFood).then((value) => bloc.add(InitializeStateAction())),
-                              ),
-                              ),
+                              ),),
                             ],),
 
                           ],),

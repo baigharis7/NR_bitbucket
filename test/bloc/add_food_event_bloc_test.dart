@@ -29,6 +29,7 @@ void main() {
   late MockSaveFoodRoutineInteractor mockSaveFoodRoutine;
   late MockDeleteFoodFavoriteInteractor mockDeleteFoodFavorite;
   late MockRemoveFoodFavoriteFromLocalInteractor mockRemoveFoodFavoriteFromLocal;
+  late MockGetRecentFoodItemsInteractor mockGetRecentFoodItems;
 
   setUp(() {
     mockGetUserId = MockGetUserIdInteractor();
@@ -43,6 +44,7 @@ void main() {
     mockSaveFoodRoutine = MockSaveFoodRoutineInteractor();
     mockDeleteFoodFavorite = MockDeleteFoodFavoriteInteractor();
     mockRemoveFoodFavoriteFromLocal = MockRemoveFoodFavoriteFromLocalInteractor();
+    mockGetRecentFoodItems = MockGetRecentFoodItemsInteractor();
   });
 
   AddFoodEventBloc buildBloc() => AddFoodEventBloc(
@@ -58,6 +60,7 @@ void main() {
         saveFoodRoutineInteractor: mockSaveFoodRoutine,
         deleteFoodFavoriteInteractor: mockDeleteFoodFavorite,
         removeFoodFavoriteFromLocalInteractor: mockRemoveFoodFavoriteFromLocal,
+        getRecentFoodItemsInteractor: mockGetRecentFoodItems,
       );
 
   group('AddFoodEventBloc', () {
@@ -280,6 +283,33 @@ void main() {
       verify: (bloc) {
         expect(bloc.state.foodEvent!.isFavorite, isNot(true));
         expect(bloc.state.foodEvent!.isRoutine, isNot(true));
+      },
+    );
+
+    blocTest<AddFoodEventBloc, AddFoodEventState>(
+      'initial state has favRecentTab = 0 (Recent)',
+      build: buildBloc,
+      verify: (bloc) {
+        expect(bloc.state.favRecentTab, 0);
+      },
+    );
+
+    blocTest<AddFoodEventBloc, AddFoodEventState>(
+      'SwitchFavRecentTabAction updates favRecentTab in state',
+      build: buildBloc,
+      act: (bloc) => bloc.add(SwitchFavRecentTabAction(tabIndex: 1)),
+      verify: (bloc) {
+        expect(bloc.state.favRecentTab, 1);
+      },
+    );
+
+    blocTest<AddFoodEventBloc, AddFoodEventState>(
+      'SwitchFavRecentTabAction switches back to Recent tab',
+      build: buildBloc,
+      seed: () => AddFoodEventState(isLoading: false, favRecentTab: 1),
+      act: (bloc) => bloc.add(SwitchFavRecentTabAction(tabIndex: 0)),
+      verify: (bloc) {
+        expect(bloc.state.favRecentTab, 0);
       },
     );
   });

@@ -135,3 +135,9 @@ class DeleteFavSportSportEventsAction extends SportEventsActions {
 
   DeleteFavSportSportEventsAction({required this.sportFavorite, required this.onFinish});
 }
+
+class SwitchFavRecentTabSportAction extends SportEventsActions {
+  final int tabIndex;
+
+  SwitchFavRecentTabSportAction({required this.tabIndex});
+}

@@ -99,6 +99,12 @@ class FoodEventsRepositoryImpl extends FoodEventsRepository {
   }
 
   @override
+  Future<List<FoodEventComplete>> getRecentFoodEvents() async {
+    final List allEvents = await localStorageRepository.getRecentFoodEvents();
+    return mapToFoodEventCompleteList(allEvents);
+  }
+
+  @override
   Future<bool> removeFoodEvent(FoodEventComplete foodEventComplete) async {
     try {
       final removeFoodEvent = await localStorageRepository.removeFoodEvent(foodEventComplete);

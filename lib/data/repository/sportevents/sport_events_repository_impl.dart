@@ -66,6 +66,12 @@ class SportEventsRepositoryImpl extends SportEventsRepository {
   }
 
   @override
+  Future<List<SportEventComplete>> getRecentSportEvents() async {
+    final sportEvents = await localStorageRepository.getRecentSportEvents();
+    return sportEvents.map((sport) => mapToSportEventComplete(sport as SportEventEntity)).toList();
+  }
+
+  @override
   Future<List<SportEventComplete>> getAllSportEvents() async {
     final sportEvents = await localStorageRepository.getAllSportEvents();
     return sportEvents.map((entity) => mapToSportEventComplete(entity as SportEventEntity)).toList();

@@ -13,6 +13,14 @@ import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/delete_f
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/remove_food_favorite_from_local_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
+// Recent items interactors
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_recent_food_items_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_recent_sport_items_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_recent_supplement_items_interactor.dart';
+// Repository mocks for interactor unit tests
+import 'package:nutrenaissance_flutter/domain/repository/foodevents/food_events_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_events_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/supplements/supplements_repository.dart';
 // SupplementsBloc
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_event_interactor.dart';
@@ -271,5 +279,13 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<GetUserRdasInteractor>(),
   MockSpec<DeleteLiquidEventInteractor>(),
   MockSpec<RemoveLiquidEventInteractor>(),
+  // Recent items interactors
+  MockSpec<GetRecentFoodItemsInteractor>(),
+  MockSpec<GetRecentSportItemsInteractor>(),
+  MockSpec<GetRecentSupplementItemsInteractor>(),
+  // Repositories for interactor unit tests
+  MockSpec<FoodEventsRepository>(),
+  MockSpec<SportEventsRepository>(),
+  MockSpec<SupplementsRepository>(),
 ])
 void main() {}

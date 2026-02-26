@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/delete_food_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/get_food_favorites_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_recent_food_items_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/remove_food_favorite_from_local_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/save_food_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/upload_food_favorite_interactor.dart';
@@ -49,6 +50,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
   final SaveFoodRoutineInteractor saveFoodRoutineInteractor;
   final DeleteFoodFavoriteInteractor deleteFoodFavoriteInteractor;
   final RemoveFoodFavoriteFromLocalInteractor removeFoodFavoriteFromLocalInteractor;
+  final GetRecentFoodItemsInteractor getRecentFoodItemsInteractor;
 
   AddFoodEventBloc({
     required this.getUserIdInteractor,
@@ -63,6 +65,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     required this.saveFoodRoutineInteractor,
     required this.deleteFoodFavoriteInteractor,
     required this.removeFoodFavoriteFromLocalInteractor,
+    required this.getRecentFoodItemsInteractor,
   }) : super(AddFoodEventState(
     isLoading: false,
     foodNames: FoodsAndDrinksNamesMaster(
@@ -105,13 +108,16 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       }
       state.foodFavorites = await getFoodFavoritesInteractor.execute();
       state.foodFavorites = state.foodFavorites.orEmpty().where((foodFav) => foodFav.mealTime == state.foodEvent?.mealTime).toList();
-      // state.weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
-      // if (state.weeklyFoodEvents.orEmpty().isNotEmpty && state.foodFavorites.orEmpty().isNotEmpty) {
-      //   addFrequentFromWeek(state.weeklyFoodEvents.orEmpty(), state.foodFavorites.orEmpty());
-      // }
+      final allRecent = await getRecentFoodItemsInteractor.execute();
+      state.recentFoodItems = allRecent.where((item) => item.mealTime == state.foodEvent?.mealTime).toList();
 
       emit(state.copyWith(isLoading: false,));
     },);
+
+    on<SwitchFavRecentTabAction>((event, emit) {
+      state.favRecentTab = event.tabIndex;
+      emit(state.copyWith(isLoading: false));
+    });
 
     on<UpdateEventDateEventAction>((event, emit) {
       emit(state.copyWith(isLoading: true, onError: null));

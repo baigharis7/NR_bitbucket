@@ -18,6 +18,7 @@ import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_state.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/sport_event_item.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/favorites_recent_toggle.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/item_title_card.dart';
 
@@ -279,10 +280,33 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                   ],
                                 ),
                               ),
-                              if (state.sportSimpleEvent!.info.orEmpty().isEmpty && state.favSports.orEmpty().isNotEmpty) Column(children: [
+                              if (state.sportSimpleEvent!.info.orEmpty().isEmpty && (state.favSports.orEmpty().isNotEmpty || state.recentSports.orEmpty().isNotEmpty)) Column(children: [
                                 const SizedBox(height: Dimens.height12),
-                                DashTitleWidget(title: AppLocalizations.of(context)!.favorites + ' - ' + AppLocalizations.of(context)!.physical_activity),
-                                ...state.favSports.orEmpty().map((favSport) => ItemInfoCard(
+                                FavoritesRecentToggle(
+                                  selectedIndex: state.favRecentTab,
+                                  onTap: (index) => bloc.add(SwitchFavRecentTabSportAction(tabIndex: index)),
+                                ),
+                                const SizedBox(height: Dimens.height5),
+                                if (state.favRecentTab == 0) ...state.recentSports.orEmpty().map((recentSport) => ItemInfoCard(
+                                  title: recentSport.title ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: recentSport.info, context: context),
+                                  trailingSrc: 'assets/icon/add_icon.png',
+                                  color: AppColors.floralWhite,
+                                  trailingTap: () {
+                                    final sportEventSimple = mapToSportEventSimpleFromAddFavoriteSport(recentSport);
+                                    sportEventSimple.eventId = DateTime.now().millisecondsSinceEpoch;
+                                    sportEventSimple.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
+                                    bloc.add(FinishSportEventAction(
+                                        sportEventSimple: sportEventSimple,
+                                        onFinish: () => _showConfirmationDialog(
+                                            context: context,
+                                            onDismiss: () => Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate),
+                                        ),),);
+                                  },
+                                  subtitle: recentSport.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.duration}: ${recentSport.info![0].minutes} min. - ${AppLocalizations.of(context)!.intensity}: ${NutritionUtils.activityIntensityById(recentSport.info![0].intensity.orZero(), context)}.',
+                                  beforeTrailingSrc: 'assets/icon/edit_icon.png',
+                                  beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSportScreen.routeName, arguments: recentSport).then((value) => bloc.add(InitializeStateAction())),
+                                ),),
+                                if (state.favRecentTab == 1) ...state.favSports.orEmpty().map((favSport) => ItemInfoCard(
                                   title: favSport.title ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: favSport.info, context: context),
                                   leadingSrc: 'assets/images/favorite_icon.png',
                                   trailingSrc: 'assets/icon/add_icon.png',
@@ -302,8 +326,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                   subtitle: favSport.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.duration}: ${favSport.info![0].minutes} min. - ${AppLocalizations.of(context)!.intensity}: ${NutritionUtils.activityIntensityById(favSport.info![0].intensity.orZero(), context)}.',
                                   beforeTrailingSrc: 'assets/icon/edit_icon.png',
                                   beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSportScreen.routeName, arguments: favSport).then((value) => bloc.add(InitializeStateAction())),
-                                ),
-                                ),
+                                ),),
                               ],),
                             ],
                           ),

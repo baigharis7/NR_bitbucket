@@ -177,3 +177,9 @@ class FinishFoodEventAddFoodEventActions extends AddFoodEventActions {
 
   FinishFoodEventAddFoodEventActions({required this.onFinish});
 }
+
+class SwitchFavRecentTabAction extends AddFoodEventActions {
+  final int tabIndex;
+
+  SwitchFavRecentTabAction({required this.tabIndex});
+}

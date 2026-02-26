@@ -388,6 +388,7 @@
     "error_saving_favorite" : "There was an error saving the favorite. Please try again.",
     "food_favorites" : "Food favorites",
     "favorites" : "Favorites",
+    "recent" : "Recent",
     "see_more" : "See more...",
     "add_comment" : "Add comment",
     "add_favorite" : "Add favorite",
