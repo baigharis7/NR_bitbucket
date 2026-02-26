@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
@@ -31,7 +32,7 @@ class MealTimeDetailScreen extends StatefulWidget {
   State<MealTimeDetailScreen> createState() => _MealTimeDetailScreenState();
 }
 
-class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
+class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> with MidnightToastMixin {
   late MealTimeDetailsBloc bloc;
   final nutrients = [
     {"label": "Fibra", "value": "12g"},
@@ -51,6 +52,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
 
   @override
   void initState() {
+    subscribeMidnight();
     bloc = BlocProvider.of<MealTimeDetailsBloc>(context);
     // bloc.add(InitialMealTimeDetailsEventState());
 
@@ -69,6 +71,11 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    unsubscribeMidnight();
+    super.dispose();
+  }
 
   // TODO: Remove Item from db
   void _showRemoveDialog({required String description, required VoidCallback onCancel, required VoidCallback onConfirm}) {

@@ -550,7 +550,8 @@
     "search_food_hint": "Escribe para buscar alimentos",
     "search_activity_hint": "Escribe para buscar una actividad",
     "search_supplement_hint": "Escribe para buscar un suplemento",
-    "search_drink_hint": "Escribe para buscar una bebida"
+    "search_drink_hint": "Escribe para buscar una bebida",
+    "new_day_message": "¡Es un nuevo día! Vuelve para ver los datos de hoy."
 
 
 }

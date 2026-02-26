@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
@@ -33,11 +34,12 @@ class SupplementsDetailScreen extends StatefulWidget {
   State<SupplementsDetailScreen> createState() => _SupplementsDetailScreen();
 }
 
-class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
+class _SupplementsDetailScreen extends State<SupplementsDetailScreen> with MidnightToastMixin {
   late SupplementsDetailBloc supplementsDetailBloc;
 
   @override
   void initState() {
+    subscribeMidnight();
     supplementsDetailBloc = BlocProvider.of<SupplementsDetailBloc>(context);
     supplementsDetailBloc.add(InitializeSupplementsDetailEvent(eventDate: DateTime.now()));
 
@@ -56,6 +58,12 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> {
     });
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    unsubscribeMidnight();
+    super.dispose();
   }
 
   // TODO: Remove Item from db

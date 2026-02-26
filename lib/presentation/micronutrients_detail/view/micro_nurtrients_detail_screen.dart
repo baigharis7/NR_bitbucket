@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
@@ -36,7 +37,7 @@ class MicroNutrientsDetailScreen extends StatefulWidget {
 
 
 class _MicroNutrientsDetailScreenState
-    extends State<MicroNutrientsDetailScreen> with SingleTickerProviderStateMixin {
+    extends State<MicroNutrientsDetailScreen> with SingleTickerProviderStateMixin, MidnightToastMixin {
   late final MicroNutrientsDetailBloc bloc;
   bool isOpen = false;
   late AnimationController _controller;
@@ -44,6 +45,7 @@ class _MicroNutrientsDetailScreenState
 
   @override
   void initState() {
+    subscribeMidnight();
     bloc = BlocProvider.of<MicroNutrientsDetailBloc>(context);
     super.initState();
 
@@ -63,6 +65,13 @@ class _MicroNutrientsDetailScreenState
       }
     });
     bloc.add(InitializationEventAction());
+  }
+
+  @override
+  void dispose() {
+    unsubscribeMidnight();
+    _controller.dispose();
+    super.dispose();
   }
 
   List<Map<String, dynamic>> getMenuItems(BuildContext context) {

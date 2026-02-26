@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/bloc/liquid_summary_detail_bloc.dart';
@@ -28,11 +29,12 @@ class LiquidSummaryDetailScreen extends StatefulWidget {
       _LiquidSummaryDetailScreenState();
 }
 
-class _LiquidSummaryDetailScreenState extends State<LiquidSummaryDetailScreen> {
+class _LiquidSummaryDetailScreenState extends State<LiquidSummaryDetailScreen> with MidnightToastMixin {
   late LiquidSummaryDetailBloc bloc;
 
   @override
   void initState() {
+    subscribeMidnight();
     bloc = BlocProvider.of<LiquidSummaryDetailBloc>(context);
     super.initState();
 
@@ -45,6 +47,12 @@ class _LiquidSummaryDetailScreenState extends State<LiquidSummaryDetailScreen> {
         }
       }
     });
+  }
+
+  @override
+  void dispose() {
+    unsubscribeMidnight();
+    super.dispose();
   }
 
   @override

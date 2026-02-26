@@ -548,6 +548,7 @@
     "search_food_hint": "Type to search for food",
     "search_activity_hint": "Type to search for an activity",
     "search_supplement_hint": "Type to search for a supplement",
-    "search_drink_hint": "Type to search for a drink"
+    "search_drink_hint": "Type to search for a drink",
+    "new_day_message": "It's a new day! Go back to see today's data."
 
 }

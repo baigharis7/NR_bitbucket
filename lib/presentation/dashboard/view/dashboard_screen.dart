@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
@@ -22,6 +23,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart
 import 'package:nutrenaissance_flutter/presentation/barcodescanning/view/bar_code_scanning_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/floating_menu_controller.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_bloc.dart';
@@ -91,6 +93,7 @@ class _DashboardScreen extends State<DashboardScreen>
   bool isOpen = false;
   late AnimationController _controller;
   late Animation<double> _animation;
+  StreamSubscription<DateTime>? _midnightSubscription;
 
   @override
   void initState() {
@@ -101,12 +104,21 @@ class _DashboardScreen extends State<DashboardScreen>
     bloc.add(InitializeState());
     selectedDateTime = DateTime.now();
 
+    MidnightService.instance.start();
+    _midnightSubscription = MidnightService.instance.stream.listen((newDate) {
+      setState(() {
+        selectedDateTime = newDate;
+      });
+      bloc.add(InitializeState(dateTime: newDate));
+    });
+
     _controller = AnimationController(duration: Duration(milliseconds: 250), vsync: this);
     _animation = Tween<double>(begin: 0.0, end: 0.5).animate(_controller);
   }
 
   @override
   void dispose() {
+    _midnightSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
     super.dispose();
@@ -115,6 +127,7 @@ class _DashboardScreen extends State<DashboardScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      MidnightService.instance.checkNow();
       FcmService.instance.triggerSync();
     }
   }

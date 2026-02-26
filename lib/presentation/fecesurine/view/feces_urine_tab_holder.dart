@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
@@ -34,7 +35,7 @@ class FecesUrineTabHolder extends StatefulWidget {
 }
 
 class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, MidnightToastMixin {
   late FecesUrineBloc fecesUrineBloc;
   late TabController _tabController;
   int _selectedTab = 0;
@@ -48,6 +49,7 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
 
   @override
   void initState() {
+    subscribeMidnight();
     fecesUrineBloc = BlocProvider.of<FecesUrineBloc>(context);
     fecesUrineBloc.add(InitializeFecesUrineEventAction());
     _tabController = TabController(length: _tabs.length, vsync: this);
@@ -77,6 +79,7 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
 
   @override
   void dispose() {
+    unsubscribeMidnight();
     _tabController.dispose();
     super.dispose();
   }

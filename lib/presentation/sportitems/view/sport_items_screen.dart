@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportitems/bloc/sport_items_bloc.dart';
@@ -22,15 +23,23 @@ import '../../widgets/item_info_card.dart';
 import '../../widgets/remove_item_widget.dart';
 import '../../../infrastructure/utils/constants.dart';
 
-class SportItemsScreen extends StatelessWidget {
+class SportItemsScreen extends StatefulWidget {
   static const routeName = '/sport_items_screen';
 
   const SportItemsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final bloc = BlocProvider.of<SportItemsBloc>(context);
+  State<SportItemsScreen> createState() => _SportItemsScreenState();
+}
+
+class _SportItemsScreenState extends State<SportItemsScreen> with MidnightToastMixin {
+  late SportItemsBloc bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    subscribeMidnight();
+    bloc = BlocProvider.of<SportItemsBloc>(context);
     bloc.add(SportItemsInitialization());
 
     final widgetBinding = WidgetsBinding.instance;
@@ -42,21 +51,30 @@ class SportItemsScreen extends StatelessWidget {
         }
       }
     });
+  }
 
-    // TODO: Remove Item from db
-    void _showRemoveDialog({required String description, required VoidCallback onCancel, required VoidCallback onConfirm}) {
-      final mediaQuerySize = MediaQuery.of(context).size;
+  @override
+  void dispose() {
+    unsubscribeMidnight();
+    super.dispose();
+  }
 
-      showDialog(
-        context: context,
-        builder: (context) => RemoveItemWidget(
-          description: description,
-          onConfirm: onConfirm,
-          onCancel: onCancel,
-        ),
-      );
-    }
+  // TODO: Remove Item from db
+  void _showRemoveDialog({required String description, required VoidCallback onCancel, required VoidCallback onConfirm}) {
+    final mediaQuerySize = MediaQuery.of(context).size;
 
+    showDialog(
+      context: context,
+      builder: (context) => RemoveItemWidget(
+        description: description,
+        onConfirm: onConfirm,
+        onCancel: onCancel,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocProvider.value(
       value: bloc,
       child: BlocConsumer<SportItemsBloc, SportItemsState>(

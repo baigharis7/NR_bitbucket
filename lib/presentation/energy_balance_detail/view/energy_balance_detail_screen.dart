@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/energy_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
@@ -28,11 +29,12 @@ class EnergyBalanceDetailScreen extends StatefulWidget {
       _EnergyBalanceDetailScreenState();
 }
 
-class _EnergyBalanceDetailScreenState extends State<EnergyBalanceDetailScreen> {
+class _EnergyBalanceDetailScreenState extends State<EnergyBalanceDetailScreen> with MidnightToastMixin {
   late EnergyBalanceDetailBloc bloc;
 
   @override
   void initState() {
+    subscribeMidnight();
     bloc = BlocProvider.of<EnergyBalanceDetailBloc>(context);
     bloc.add(InitializeEventAction());
     super.initState();
@@ -48,6 +50,12 @@ class _EnergyBalanceDetailScreenState extends State<EnergyBalanceDetailScreen> {
         }
       }
     });
+  }
+
+  @override
+  void dispose() {
+    unsubscribeMidnight();
+    super.dispose();
   }
 
   @override

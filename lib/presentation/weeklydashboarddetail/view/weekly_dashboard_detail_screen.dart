@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/bloc/weekly_dashboard_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
@@ -24,14 +25,21 @@ class WeeklyDashboardDetailScreen extends StatefulWidget {
 }
 
 class _WeeklyDashboardDetailScreenState
-    extends State<WeeklyDashboardDetailScreen> {
+    extends State<WeeklyDashboardDetailScreen> with MidnightToastMixin {
   late WeeklyDashboardDetailBloc bloc;
 
   @override
   void initState() {
+    subscribeMidnight();
     bloc = BlocProvider.of<WeeklyDashboardDetailBloc>(context);
     bloc.add(InitialStateEventAction());
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    unsubscribeMidnight();
+    super.dispose();
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/sugar_detail/bloc/sugar_detail_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -22,10 +23,11 @@ class SugarDetailScreen extends StatefulWidget {
   State<SugarDetailScreen> createState() => _SugarDetailScreenState();
 }
 
-class _SugarDetailScreenState extends State<SugarDetailScreen> {
+class _SugarDetailScreenState extends State<SugarDetailScreen> with MidnightToastMixin {
   late SugarDetailBloc bloc;
   @override
   void initState() {
+    subscribeMidnight();
     bloc = BlocProvider.of<SugarDetailBloc>(context);
     super.initState();
 
@@ -40,6 +42,13 @@ class _SugarDetailScreenState extends State<SugarDetailScreen> {
     });
 
   }
+
+  @override
+  void dispose() {
+    unsubscribeMidnight();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(value: bloc,
