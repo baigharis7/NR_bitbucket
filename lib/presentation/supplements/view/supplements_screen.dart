@@ -290,7 +290,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                             ),),),
                                     subtitle: recentSupplement.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${recentSupplement.info![0].amount.toString()} ${recentSupplement.info![0].unit}.',
                                     beforeTrailingIcon: isPreselect ? null : Icons.tune,
-                                    beforeTrailingTap: isPreselect ? null : () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: recentSupplement).then((value) => supplementsBloc.add(InitializationSupplementsAction())),
+                                    beforeTrailingTap: isPreselect ? null : () => supplementsBloc.add(PrefillSupplementForCustomizeEvent(supplement: recentSupplement)),
                                   );
                                 } else {
                                   final supplementFavorite = currentTabItems[index];
@@ -313,7 +313,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                     leadingSrc: isRoutine ? null : 'assets/images/favorite_icon.png',
                                     leadingTap: isRoutine ? null : () {},
                                     beforeTrailingIcon: isRoutine ? null : Icons.tune,
-                                    beforeTrailingTap: isRoutine ? null : () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: supplementFavorite).then((value) => supplementsBloc.add(InitializationSupplementsAction())),
+                                    beforeTrailingTap: isRoutine ? null : () => supplementsBloc.add(PrefillSupplementForCustomizeEvent(supplement: supplementFavorite)),
                                   );
                                 }
                               },

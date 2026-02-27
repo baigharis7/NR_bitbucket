@@ -95,6 +95,15 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
       emit(state.copyWith(isLoading: false, onError: null));
     });
 
+    on<PrefillSupplementForCustomizeEvent>((event, emit) {
+      final item = event.supplement;
+      item.isFavorite = false;
+      item.isRoutine = false;
+      item.eventDate = item.eventDate ?? state.supplementObj?.eventDate;
+      state.supplementObj = item;
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
+
     on<UpdateDateSupplementsAction>((event, emit) {
       state.supplementObj?.eventDate = event.dateTime.millisecondsSinceEpoch;
 

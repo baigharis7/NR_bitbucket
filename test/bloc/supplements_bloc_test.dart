@@ -335,5 +335,22 @@ void main() {
         expect(bloc.state.supplementObj!.eventDate, DateTime(2026, 3, 15).millisecondsSinceEpoch);
       },
     );
+
+    blocTest<SupplementsBloc, SupplementsState>(
+      'PrefillSupplementForCustomizeEvent sets neither isFavorite nor isRoutine',
+      build: buildBloc,
+      act: (bloc) => bloc.add(PrefillSupplementForCustomizeEvent(
+        supplement: SupplementSimple(
+          info: [NutriInfo(id: 1, unit: 'mg', amount: 500)],
+          name: 'Creatine',
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.supplementObj!.isFavorite, false);
+        expect(bloc.state.supplementObj!.isRoutine, false);
+        expect(bloc.state.supplementObj!.name, 'Creatine');
+        expect(bloc.state.supplementObj!.info!.length, 1);
+      },
+    );
   });
 }

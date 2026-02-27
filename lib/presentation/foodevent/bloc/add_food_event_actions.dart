@@ -195,3 +195,9 @@ class PrefillFoodForFavoriteAction extends AddFoodEventActions {
 
   PrefillFoodForFavoriteAction({required this.foodFavorite});
 }
+
+class PrefillFoodForCustomizeAction extends AddFoodEventActions {
+  final FoodFavorite foodFavorite;
+
+  PrefillFoodForCustomizeAction({required this.foodFavorite});
+}

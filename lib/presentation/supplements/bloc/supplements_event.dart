@@ -120,3 +120,9 @@ class PrefillSupplementForFavoriteEvent extends SupplementsEvent {
 
   PrefillSupplementForFavoriteEvent({required this.supplement});
 }
+
+class PrefillSupplementForCustomizeEvent extends SupplementsEvent {
+  final SupplementSimple supplement;
+
+  PrefillSupplementForCustomizeEvent({required this.supplement});
+}

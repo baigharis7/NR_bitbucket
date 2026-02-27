@@ -243,7 +243,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                         },
                                     subtitle: recentSport.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.duration}: ${recentSport.info![0].minutes} min. - ${AppLocalizations.of(context)!.intensity}: ${NutritionUtils.activityIntensityById(recentSport.info![0].intensity.orZero(), context)}.',
                                     beforeTrailingIcon: isPreselect ? null : Icons.tune,
-                                    beforeTrailingTap: isPreselect ? null : () => Navigator.pushNamed(context, UpdateSportScreen.routeName, arguments: recentSport).then((value) => bloc.add(InitializeStateAction())),
+                                    beforeTrailingTap: isPreselect ? null : () => bloc.add(PrefillSportForCustomizeAction(addSportFavorite: recentSport)),
                                   );
                                 }),
                                 if (state.favRecentTab == 1 && state.sportSimpleEvent?.isFavorite != true) ...state.favSports.orEmpty().map((favSport) {
@@ -270,7 +270,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                         },
                                     subtitle: favSport.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.duration}: ${favSport.info![0].minutes} min. - ${AppLocalizations.of(context)!.intensity}: ${NutritionUtils.activityIntensityById(favSport.info![0].intensity.orZero(), context)}.',
                                     beforeTrailingIcon: isPreselect ? null : Icons.tune,
-                                    beforeTrailingTap: isPreselect ? null : () => Navigator.pushNamed(context, UpdateSportScreen.routeName, arguments: favSport).then((value) => bloc.add(InitializeStateAction())),
+                                    beforeTrailingTap: isPreselect ? null : () => bloc.add(PrefillSportForCustomizeAction(addSportFavorite: favSport)),
                                   );
                                 }),
                               ],

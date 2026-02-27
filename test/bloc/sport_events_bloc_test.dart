@@ -379,5 +379,22 @@ void main() {
         expect(bloc.state.sportSimpleEvent!.eventDate, DateTime(2026, 3, 15).millisecondsSinceEpoch);
       },
     );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'PrefillSportForCustomizeAction sets neither isFavorite nor isCreateRoutine',
+      build: buildBloc,
+      act: (bloc) => bloc.add(PrefillSportForCustomizeAction(
+        addSportFavorite: AddSportFavorite(
+          info: [AddSportFavInfo(id: 1, minutes: 30, intensity: 1)],
+          title: 'Running',
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.sportSimpleEvent!.isFavorite, false);
+        expect(bloc.state.sportSimpleEvent!.isCreateRoutine, false);
+        expect(bloc.state.sportSimpleEvent!.title, 'Running');
+        expect(bloc.state.sportSimpleEvent!.info!.length, 1);
+      },
+    );
   });
 }
