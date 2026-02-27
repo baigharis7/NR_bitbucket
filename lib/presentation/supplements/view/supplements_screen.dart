@@ -274,7 +274,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                   return ItemInfoCard(
                                     title: itemName,
                                     trailingSrc: isPreselect ? null : 'assets/icon/add_icon.png',
-                                    trailingIcon: isPreselect ? Icons.arrow_forward_rounded : null,
+                                    trailingIcon: isPreselect ? Icons.tune : null,
                                     trailingTap: isPreselect
                                         ? () => supplementsBloc.add(
                                             isFavorite
@@ -299,7 +299,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                   return ItemInfoCard(
                                     title: itemName,
                                     trailingSrc: isRoutine ? null : 'assets/icon/add_icon.png',
-                                    trailingIcon: isRoutine ? Icons.arrow_forward_rounded : null,
+                                    trailingIcon: isRoutine ? Icons.tune : null,
                                     trailingTap: isRoutine
                                         ? () => supplementsBloc.add(PrefillSupplementForRoutineEvent(supplement: supplementFavorite))
                                         : () => supplementsBloc.add(FinishSupplementFavoriteSupplementsEvent(

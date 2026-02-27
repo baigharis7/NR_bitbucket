@@ -221,7 +221,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                     if (state.favRecentTab == 0 || state.foodEvent?.isFavorite == true) ...state.recentFoodItems.orEmpty().map((recentFood) => ItemInfoCard(
                                       title: recentFood.title ?? NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: recentFood.ingredients, context: context),
                                       trailingSrc: isPreselect ? null : 'assets/icon/add_icon.png',
-                                      trailingIcon: isPreselect ? Icons.arrow_forward_rounded : null,
+                                      trailingIcon: isPreselect ? Icons.tune : null,
                                       color: AppColors.floralWhite,
                                       trailingTap: isPreselect
                                         ? () => bloc.add(state.foodEvent?.isRoutine == true
@@ -247,7 +247,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                       title: favFood.title ?? NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: favFood.ingredients, context: context),
                                       leadingSrc: isPreselect ? null : 'assets/images/favorite_icon.png',
                                       trailingSrc: isPreselect ? null : 'assets/icon/add_icon.png',
-                                      trailingIcon: isPreselect ? Icons.arrow_forward_rounded : null,
+                                      trailingIcon: isPreselect ? Icons.tune : null,
                                       color: state.foodsFromFavorite == favFood ? AppColors.butter : AppColors.floralWhite,
                                       leadingTap: isPreselect ? null : () => bloc.add(RemoveFavoriteFoodAddFoodEventAction(foodFavorite: favFood, onFinish: () {})),
                                       trailingTap: isPreselect

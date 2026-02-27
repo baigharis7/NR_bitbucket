@@ -224,7 +224,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                   return ItemInfoCard(
                                     title: recentSport.title ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: recentSport.info, context: context),
                                     trailingSrc: isPreselect ? null : 'assets/icon/add_icon.png',
-                                    trailingIcon: isPreselect ? Icons.arrow_forward_rounded : null,
+                                    trailingIcon: isPreselect ? Icons.tune : null,
                                     color: AppColors.floralWhite,
                                     trailingTap: isPreselect
                                       ? () => bloc.add(state.sportSimpleEvent?.isCreateRoutine == true
@@ -252,7 +252,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                     title: favSport.title ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: favSport.info, context: context),
                                     leadingSrc: isPreselect ? null : 'assets/images/favorite_icon.png',
                                     trailingSrc: isPreselect ? null : 'assets/icon/add_icon.png',
-                                    trailingIcon: isPreselect ? Icons.arrow_forward_rounded : null,
+                                    trailingIcon: isPreselect ? Icons.tune : null,
                                     color: state.sportFavoriteEvent == favSport ? AppColors.butter : AppColors.floralWhite,
                                     leadingTap: isPreselect ? null : () {} /*bloc.add(DeleteFavSportSportEventsAction(sportFavorite: favSport, onFinish: () {}))*/,
                                     trailingTap: isPreselect
