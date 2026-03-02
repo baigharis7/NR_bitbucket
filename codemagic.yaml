@@ -46,8 +46,6 @@ workflows:
       groups:
         - android_signing
         - ios_signing
-      vars:
-        CM_KEY_ALIAS: upload
     triggering:
       events:
         - push
