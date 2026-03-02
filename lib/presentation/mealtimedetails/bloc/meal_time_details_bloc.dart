@@ -156,7 +156,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
         try {
           await removeFoodEventInteractor.execute(event.foodEventComplete);
           DashboardEventBus.instance.notify(DataChangedCategory.food);
-          add(InitialMealTimeDetailsEventState());
+          add(SummaryInitializationMealTimeDetailsEventState());
           event.onFinish.call();
           emit(state.copyWith(isLoading: false, onError: null));
         } catch (error) {

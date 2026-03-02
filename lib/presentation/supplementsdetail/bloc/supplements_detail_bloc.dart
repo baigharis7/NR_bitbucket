@@ -97,7 +97,8 @@ class SupplementsDetailBloc extends Bloc<SupplementsDetailEvent, SupplementsDeta
         await deleteSupplementEventInteractor.execute(event.supplement);
         try {
           await removeSupplementEventInteractor.execute(event.supplement);
-          add(InitializeSupplementsDetailEvent(eventDate: state.eventDate));
+          DashboardEventBus.instance.notify(DataChangedCategory.supplement);
+          add(SummaryInitializeSupplementsDetailEvent());
           emit(state.copyWith(isLoading: false,));
         } catch(_) {
           emit(state.copyWith(isLoading: false, onError: ErrorTypes.removeSupplementEventError));
