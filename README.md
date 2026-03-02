@@ -1,6 +1,7 @@
 # NutRenaissance Flutter
 
 [![Build Status](https://img.shields.io/bitbucket/pipelines/Asdgvarela/nutrenaissance_flutter/master?style=flat-square)](https://bitbucket.org/Asdgvarela/nutrenaissance_flutter/pipelines)
+[![Codemagic build status](https://api.codemagic.io/apps/69a5b717f42ca6f7f71af78f/69a5b717f42ca6f7f71af78e/status_badge.svg)](https://codemagic.io/app/69a5b717f42ca6f7f71af78f/69a5b717f42ca6f7f71af78e/latest_build)
 
 A nutrition and wellness tracking Flutter application.
 

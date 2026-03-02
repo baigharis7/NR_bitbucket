@@ -1,0 +1,93 @@
+# Codemagic CI/CD Configuration for NutreNaissance Flutter
+#
+# SETUP REQUIRED IN CODEMAGIC UI:
+#
+# 1. Environment group "android_signing":
+#    - CM_KEYSTORE           → base64-encoded keystore (run: base64 -w 0 android/app/upload-keystore-nn.jks)
+#    - CM_KEYSTORE_PASSWORD  → keystore password (encrypted)
+#    - CM_KEY_PASSWORD       → key password (encrypted)
+#    - CM_KEY_ALIAS          → "upload" (encrypted)
+#
+# 2. Environment group "ios_signing":
+#    - Set up code signing identities (certificates + provisioning profiles)
+#      in Codemagic UI → Settings → Code signing identities
+#
+# 3. Connect your Bitbucket repository in Codemagic UI
+
+workflows:
+  # ─────────────────────────────────────────────
+  # PR Checks — runs on every pull request
+  # ─────────────────────────────────────────────
+  pr-checks:
+    name: PR Checks
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    environment:
+      flutter: 3.13.8
+    triggering:
+      events:
+        - pull_request
+      cancel_previous_builds: true
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Static analysis
+        script: flutter analyze --fatal-infos
+      - name: Run tests
+        script: flutter test --coverage
+    artifacts:
+      - coverage/**
+
+  # ─────────────────────────────────────────────
+  # Release — builds Android APK + iOS IPA on master push
+  # ─────────────────────────────────────────────
+  release:
+    name: Release Build
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      flutter: 3.13.8
+      groups:
+        - android_signing
+        - ios_signing
+      vars:
+        CM_KEY_ALIAS: upload
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: master
+          include: true
+          source: true
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+
+      - name: Run tests
+        script: flutter test
+
+      # ── Android ──
+      - name: Set up Android signing
+        script: |
+          KEYSTORE_PATH="$CM_BUILD_DIR/android/upload-keystore-nn.jks"
+          echo $CM_KEYSTORE | base64 --decode > "$KEYSTORE_PATH"
+          echo "storePassword=$CM_KEYSTORE_PASSWORD" > android/key.properties
+          echo "keyPassword=$CM_KEY_PASSWORD" >> android/key.properties
+          echo "keyAlias=$CM_KEY_ALIAS" >> android/key.properties
+          echo "storeFile=$KEYSTORE_PATH" >> android/key.properties
+
+      - name: Build Android APK
+        script: flutter build apk --release --flavor prod
+
+      # ── iOS ──
+      - name: Set up iOS code signing
+        script: xcode-project use-profiles
+
+      - name: Build iOS IPA
+        script: |
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-prod-release.apk
+      - build/ios/ipa/*.ipa
