@@ -19,7 +19,7 @@ import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../foodevent/view/add_food_event_screen.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
-import '../../widgets/date_picker_bar.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/remove_item_widget.dart';
 import '../../../infrastructure/utils/constants.dart';
 
@@ -200,12 +200,12 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> with Midnig
                             padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingLarge),
                             child: Column(
                               children: [
-                                DatePickerBar(selectedDateTime: state.selectedDateTime, onChangeDate: (dateTime) {
-                                  bloc.add(UpdateDateTimeMealTimeDetailsEvent(dateTime: dateTime));
-                                },),
+                                ScreenTopBar(
+                                  selectedDate: state.selectedDateTime,
+                                  onBack: () => Navigator.pop(context),
+                                ),
                                 const SizedBox(height: Dimens.height12),
                                 HeaderAddItemCardSection(
-                                  onBackTap: () => Navigator.pop(context),
                                   title: '${state.mealTime?.name.orEmpty()} ${AppLocalizations.of(context)!.summary}',
                                   image: 'assets/images/meal_time_${state.mealTime?.id ?? 0}.png',
                                   child: Column(children: [

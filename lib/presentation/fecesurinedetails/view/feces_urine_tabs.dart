@@ -11,7 +11,7 @@ import '../../fecesurine/bloc/feces_urine_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
-import '../../widgets/date_picker_bar.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../../infrastructure/utils/constants.dart';
 
@@ -100,13 +100,13 @@ class _FecesUrineTabsState extends State<FecesUrineTabs> with SingleTickerProvid
                 margin: const EdgeInsets.all(Dimens.marginSmall),
                 child: Column(
                   children: [
-                    DatePickerBar(selectedDateTime: state.calendarDateTime, onChangeDate: (dateTime) {
-                      fecesUrineBloc.add(UpdateCalendarDateFecesUrineEventAction(dateTime: dateTime,));
-                    },),
+                    ScreenTopBar(
+                      selectedDate: state.calendarDateTime,
+                      onBack: () => Navigator.pop(context),
+                    ),
                     const SizedBox(height: Dimens.height12),
                     HeaderAddItemCardSection(
                         title: '${AppLocalizations.of(context)!.add} ${AppLocalizations.of(context)!.faeces_urine}',
-                        onBackTap: () => Navigator.pop(context),
                         image: 'assets/images/feces_urine.png',
                         backgroundImage: 'assets/images/feces_urine_background.png',
                     ),

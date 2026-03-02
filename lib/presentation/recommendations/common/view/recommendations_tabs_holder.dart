@@ -15,6 +15,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_b
 
 import '../../../../infrastructure/utils/app_color.dart';
 import '../../../widgets/header_add_item_card_section.dart';
+import '../../../widgets/screen_top_bar.dart';
 
 class RecommendationsTabHolder extends StatefulWidget {
   static const routeName = '/recommendations_holder';
@@ -91,7 +92,9 @@ class _RecommendationsTabHolderState extends State<RecommendationsTabHolder> wit
                     Container(
                       margin: const EdgeInsets.all(Dimens.marginNormal),
                       child: Column(children: [
-                        HeaderAddItemCardSection(title: AppLocalizations.of(context)!.recommendations, onBackTap: () => Navigator.pop(context),),
+                        ScreenTopBar(selectedDate: null, onBack: () => Navigator.pop(context)),
+                        const SizedBox(height: Dimens.height12),
+                        HeaderAddItemCardSection(title: AppLocalizations.of(context)!.recommendations,),
                         const SizedBox(height: Dimens.height12),
                         TabBar(
                           controller: _tabController,

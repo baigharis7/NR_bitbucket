@@ -18,6 +18,7 @@ import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/item_title_card.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/supplement_item_widget.dart';
 import '../../../infrastructure/utils/constants.dart';
 
@@ -112,8 +113,12 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                       vertical: Dimens.paddingLarge,
                     ),
                     child: Column(children: [
+                      ScreenTopBar(
+                        selectedDate: null,
+                        onBack: () => Navigator.pop(context),
+                      ),
+                      const SizedBox(height: Dimens.height12),
                       HeaderAddItemCardSection(
-                        onBackTap: () => Navigator.pop(context),
                         title: AppLocalizations.of(context)!.update + ' ' + AppLocalizations.of(context)!.supplement,
                         image: 'assets/images/supplement.png',
                         searchHintText: AppLocalizations.of(context)!.search_supplement_hint,

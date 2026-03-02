@@ -30,7 +30,7 @@ import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../sportitems/view/sport_items_screen.dart';
 import '../../updatesport/view/update_sport_screen.dart';
 import '../../widgets/dash_title_widget.dart';
-import '../../widgets/date_picker_bar.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/item_info_card.dart';
@@ -165,18 +165,15 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                                  child: DatePickerBar(selectedDateTime: state.calendarDate, onChangeDate: (dateTime) {
-                                    bloc.add(UpdateCalendarDateSportEventAction(calendarDate: dateTime));
-                                  },),
+                                ScreenTopBar(
+                                  selectedDate: state.calendarDate,
+                                  onBack: () => Navigator.pop(context),
                                 ),
                                 const SizedBox(height: Dimens.height12),
                                 Container(
                                   margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                                   child: HeaderAddItemCardSection(
                                     title: AppLocalizations.of(context)!.add_physical_activity,
-                                    onBackTap: () => Navigator.pop(context),
                                     image: 'assets/images/sport.png',
                                     searchHintText: AppLocalizations.of(context)!.search_activity_hint,
                                     items: state.sportsInfo!.sportsInfoMaster.map((sport) => sport.translate(context)).toList(),
@@ -286,18 +283,15 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                           child: Column(
                             children: [
                               const SizedBox(height: Dimens.height12),
-                              Container(
-                                margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall,),
-                                child: DatePickerBar(selectedDateTime: state.calendarDate, onChangeDate: (dateTime) {
-                                  bloc.add(UpdateCalendarDateSportEventAction(calendarDate: dateTime));
-                                },),
+                              ScreenTopBar(
+                                selectedDate: state.calendarDate,
+                                onBack: () => Navigator.pop(context),
                               ),
                               const SizedBox(height: Dimens.height12),
                               Container(
                                 margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                                 child: HeaderAddItemCardSection(
                                   title: AppLocalizations.of(context)!.add_physical_activity,
-                                  onBackTap: () => Navigator.pop(context),
                                   image: 'assets/images/sport.png',
                                   searchHintText: AppLocalizations.of(context)!.search_activity_hint,
                                   items: state.sportsInfo!.sportsInfoMaster.map((sport) => sport.translate(context)).toList(),

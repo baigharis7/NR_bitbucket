@@ -19,6 +19,7 @@ import '../../widgets/item_title_card.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../../infrastructure/utils/constants.dart';
 
 class UpdateSportScreen extends StatefulWidget {
@@ -113,10 +114,13 @@ class _UpdateSportScreenState extends State<UpdateSportScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingLarge),
                     child: Column(
                       children: [
+                        ScreenTopBar(
+                          selectedDate: null,
+                          onBack: () => Navigator.pop(context),
+                        ),
                         const SizedBox(height: Dimens.height12),
                         HeaderAddItemCardSection(
                           title: '${AppLocalizations.of(context)!.update} ${AppLocalizations.of(context)!.physical_activity}',
-                          onBackTap: () => Navigator.pop(context),
                           image: 'assets/images/sport.png',
                           searchHintText: AppLocalizations.of(context)!.search_activity_hint,
                           items: state.sportsInfo?.sportsInfoMaster.map((sport) => sport.translate(context)).toList() ?? [],

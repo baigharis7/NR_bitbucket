@@ -18,7 +18,7 @@ import 'package:nutrenaissance_flutter/presentation/foodevent/bloc/add_food_even
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_event_item.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/dash_title_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/favorites_recent_toggle.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/date_picker_bar.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/screen_top_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/item_title_card.dart';
@@ -163,11 +163,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                                    child: DatePickerBar(selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate), onChangeDate: (dateTime) {
-                                      bloc.add(UpdateEventDateEventAction(dateTime: dateTime));
-                                    },),
+                                  ScreenTopBar(
+                                    selectedDate: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate),
+                                    onBack: () => Navigator.pop(context),
                                   ),
                                   const SizedBox(height: Dimens.height12),
                                   Container(
@@ -175,7 +173,6 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                     child: HeaderAddItemCardSection(
                                       title: '${AppLocalizations.of(context)!.add} ${MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name}',
                                       image: 'assets/images/meal_time_${state.foodEvent?.mealTime}.png',
-                                      onBackTap: () => Navigator.pop(context),
                                       searchHintText: AppLocalizations.of(context)!.search_food_hint,
                                       items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),
                                       onItemSelect: (option, focus) {
@@ -285,11 +282,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                 padding: const EdgeInsets.symmetric(vertical: Dimens.paddingLarge),
                                 child: Column(
                                   children: [
-                                    Container(
-                                      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                                      child: DatePickerBar(selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate), onChangeDate: (dateTime) {
-                                        bloc.add(UpdateEventDateEventAction(dateTime: dateTime));
-                                      },),
+                                    ScreenTopBar(
+                                      selectedDate: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate),
+                                      onBack: () => Navigator.pop(context),
                                     ),
                                     const SizedBox(height: Dimens.height12),
                                     Container(
@@ -297,7 +292,6 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                       child: HeaderAddItemCardSection(
                                         title: '${AppLocalizations.of(context)!.add} ${MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name}',
                                         image: 'assets/images/meal_time_${state.foodEvent?.mealTime}.png',
-                                        onBackTap: () => Navigator.pop(context),
                                         searchHintText: AppLocalizations.of(context)!.search_food_hint,
                                         items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),
                                         onItemSelect: (option, focus) {

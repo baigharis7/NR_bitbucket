@@ -11,6 +11,7 @@ import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../../infrastructure/utils/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -87,10 +88,10 @@ class _MicroNutrientsWeeklyScreenState extends State<MicroNutrientsWeeklyScreen>
                   padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal, vertical: Dimens.paddingLarge),
                   child: Column(
                     children: [
+                      ScreenTopBar(selectedDate: null, onBack: () => Navigator.pop(context)),
+                      const SizedBox(height: Dimens.height12),
                       HeaderAddItemCardSection(
-                        path: '',
                         title: AppLocalizations.of(context)!.weekly_evolution,
-                        onBackTap: () => Navigator.pop(context),
                       ),
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge),

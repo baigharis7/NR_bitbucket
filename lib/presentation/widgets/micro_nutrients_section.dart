@@ -17,7 +17,8 @@ class MicroNutrientsSection extends StatelessWidget {
   final List<NutrientsModel> temporaryMicronutrients;
   final List<NutrientsModel> filteredNutrientsLess15RDA;
   final List<int>? objectives;
-  const MicroNutrientsSection({super.key, required this.micronutrients, required this.temporaryMicronutrients, required this.filteredNutrientsLess15RDA, this.objectives});
+  final DateTime? selectedDate;
+  const MicroNutrientsSection({super.key, required this.micronutrients, required this.temporaryMicronutrients, required this.filteredNutrientsLess15RDA, this.objectives, this.selectedDate});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class MicroNutrientsSection extends StatelessWidget {
       children: [
         Container(
           margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
-            child: DashTitleWidget(title: AppLocalizations.of(context)!.micronutrientss, onInfoClick: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: micronutrients), style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20),)),
+            child: DashTitleWidget(title: AppLocalizations.of(context)!.micronutrientss, onInfoClick: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: {'micronutrients': micronutrients, 'selectedDate': selectedDate}), style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20),)),
         Container(
           width: double.infinity,
           margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),

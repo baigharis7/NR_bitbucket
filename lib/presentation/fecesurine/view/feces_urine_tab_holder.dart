@@ -21,7 +21,7 @@ import '../../../infrastructure/helpers/app_text_styles.dart';
 import '../../../infrastructure/helpers/date_time_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
-import '../../widgets/date_picker_bar.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/rounded_custom_button.dart';
 import '../../../infrastructure/utils/constants.dart';
 
@@ -117,13 +117,13 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
                 margin: const EdgeInsets.all(Dimens.marginSmall),
                 child: Column(
                   children: [
-                    DatePickerBar(selectedDateTime: state.calendarDateTime, onChangeDate: (dateTime) {
-                      fecesUrineBloc.add(UpdateCalendarDateFecesUrineEventAction(dateTime: dateTime,));
-                    },),
+                    ScreenTopBar(
+                      selectedDate: state.calendarDateTime,
+                      onBack: () => Navigator.pop(context),
+                    ),
                     const SizedBox(height: Dimens.height12),
                     HeaderAddItemCardSection(
                         title: '${AppLocalizations.of(context)!.faeces_urine} ${AppLocalizations.of(context)!.summary}',
-                        onBackTap: () => Navigator.pop(context),
                         image: 'assets/images/feces_urine.png',
                         backgroundImage: 'assets/images/feces_urine_background.png',
                     ),

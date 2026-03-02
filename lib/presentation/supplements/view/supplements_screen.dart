@@ -24,7 +24,7 @@ import '../../common/view/loading_screen.dart';
 import '../../updatesupplement/view/update_supplement_screen.dart';
 import '../../widgets/dash_title_widget.dart';
 import '../../widgets/favorites_recent_toggle.dart';
-import '../../widgets/date_picker_bar.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/item_info_card.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
@@ -155,16 +155,15 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
 
                         return Column(children: [
                           // Fixed header
+                          ScreenTopBar(
+                            selectedDate: DateTimeHelper.dateTimeFromMilliseconds(state.supplementObj?.eventDate),
+                            onBack: () => Navigator.pop(context),
+                          ),
+                          const SizedBox(height: Dimens.height12),
                           Container(
                             margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
                             child: Column(children: [
-                              DatePickerBar(
-                                selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.supplementObj?.eventDate),
-                                onChangeDate: (dateTime) => supplementsBloc.add(UpdateDateSupplementsAction(dateTime: dateTime)),
-                              ),
-                              const SizedBox(height: Dimens.height12),
                               HeaderAddItemCardSection(
-                                onBackTap: () => Navigator.pop(context),
                                 title: state.screenTitle ?? (AppLocalizations.of(context)!.add + ' ' + AppLocalizations.of(context)!.supplement),
                                 image: 'assets/images/supplement.png',
                                 searchHintText: AppLocalizations.of(context)!.search_supplement_hint,
@@ -328,16 +327,15 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                           child: SingleChildScrollView(
                             controller: _scrollController,
                             child: Column(children: [
+                              ScreenTopBar(
+                                selectedDate: DateTimeHelper.dateTimeFromMilliseconds(state.supplementObj?.eventDate),
+                                onBack: () => Navigator.pop(context),
+                              ),
+                              const SizedBox(height: Dimens.height12),
                               Container(
                                 margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
                                 child: Column(children: [
-                                  DatePickerBar(
-                                    selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.supplementObj?.eventDate),
-                                    onChangeDate: (dateTime) => supplementsBloc.add(UpdateDateSupplementsAction(dateTime: dateTime)),
-                                  ),
-                                  const SizedBox(height: Dimens.height12),
                                   HeaderAddItemCardSection(
-                                    onBackTap: () => Navigator.pop(context),
                                     title: state.screenTitle ?? (AppLocalizations.of(context)!.add + ' ' + AppLocalizations.of(context)!.supplement),
                                     image: 'assets/images/supplement.png',
                                     searchHintText: AppLocalizations.of(context)!.search_supplement_hint,

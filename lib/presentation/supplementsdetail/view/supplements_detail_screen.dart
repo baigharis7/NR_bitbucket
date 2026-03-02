@@ -19,7 +19,7 @@ import '../../../infrastructure/utils/constants.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../common/view/loading_screen.dart';
-import '../../widgets/date_picker_bar.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
@@ -134,13 +134,12 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> with Midni
                           vertical: Dimens.paddingLarge,
                         ),
                         child: Column(children: [
-                          DatePickerBar(
-                            selectedDateTime: state.eventDate,
-                            onChangeDate: (dateTime) => supplementsDetailBloc.add(UpdateEventsDateSupplementsDetailEvent(dateTime: dateTime)),
+                          ScreenTopBar(
+                            selectedDate: state.eventDate,
+                            onBack: () => Navigator.pop(context),
                           ),
                           const SizedBox(height: Dimens.height12),
                           HeaderAddItemCardSection(
-                            onBackTap: () => Navigator.pop(context),
                             title: '${AppLocalizations.of(context)!.supplements} ${AppLocalizations.of(context)!.summary}',
                             image: 'assets/images/supplement.png',
                           ),

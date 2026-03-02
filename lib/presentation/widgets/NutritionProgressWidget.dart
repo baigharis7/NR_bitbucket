@@ -69,7 +69,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                     InkWell(
                         onTap: () => Navigator.pushNamed(
                             context, EnergyBalanceDetailScreen.routeName,
-                            arguments: widget.energyModel),
+                            arguments: {'energyModel': widget.energyModel, 'selectedDate': widget.selectedDate}),
                         child: SizedBox(
                             width: 18,
                             height: 18,

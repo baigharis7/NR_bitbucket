@@ -16,7 +16,7 @@ import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../foodevent/view/food_event_item.dart';
-import '../../widgets/date_picker_bar.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
 
@@ -117,13 +117,12 @@ class _ItemUpdateScreenState extends State<ItemUpdateScreen> {
                     horizontal: Dimens.paddingSmall,
                     vertical: Dimens.paddingLarge),
                 child: Column(children: [
-                  DatePickerBar(
-                    selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent?.eventDate),
-                    onChangeDate: (dateTime) => itemUpdateBloc.add(UpdateEventDateItemUpdateEvent(dateTime: dateTime)),
+                  ScreenTopBar(
+                    selectedDate: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent?.eventDate),
+                    onBack: () => Navigator.pop(context),
                   ),
                   const SizedBox(height: Dimens.height12),
                   HeaderAddItemCardSection(
-                    onBackTap: () => Navigator.pop(context),
                     title: AppLocalizations.of(context)!.edit +' '+ (MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name ?? ''),
                     image: 'assets/images/meal_time_${state.foodEvent?.mealTime ?? 0}.png',
                     searchHintText: AppLocalizations.of(context)!.search_food_hint,

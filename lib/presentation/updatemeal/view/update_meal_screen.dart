@@ -25,6 +25,7 @@ import '../../foodevent/view/food_event_item.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../widgets/screen_top_bar.dart';
 
 class UpdateMealScreen extends StatefulWidget {
   static const routeName = '/update_meal_screen';
@@ -120,10 +121,14 @@ class _UpdateMealScreenState extends State<UpdateMealScreen> {
                       padding: const EdgeInsets.symmetric(vertical: Dimens.paddingLarge, horizontal: Dimens.paddingSmall),
                       child: Column(
                         children: [
+                          ScreenTopBar(
+                            selectedDate: null,
+                            onBack: () => Navigator.pop(context),
+                          ),
+                          const SizedBox(height: Dimens.height12),
                           HeaderAddItemCardSection(
                             title: '${AppLocalizations.of(context)!.update} ${MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name}',
                             image: 'assets/images/meal_time_${state.foodEvent?.mealTime}.png',
-                            onBackTap: () => Navigator.pop(context),
                             searchHintText: AppLocalizations.of(context)!.search_food_hint,
                             onFocusNodeCreated: (node) => _focusInputController = node,
                             items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),

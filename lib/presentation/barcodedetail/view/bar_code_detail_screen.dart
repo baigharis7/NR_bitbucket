@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/screen_top_bar.dart';
 
 class BarcodeDetailScreen extends StatelessWidget {
   static const routeName = '/bar_code_detail_screen';
@@ -39,8 +40,9 @@ class BarcodeDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  HeaderAddItemCardSection(
-                    onBackTap: () => Navigator.pop(context),
+                  ScreenTopBar(
+                    selectedDate: null,
+                    onBack: () => Navigator.pop(context),
                   ),
                   SizedBox(height: Dimens.height32),
                   // Product Image

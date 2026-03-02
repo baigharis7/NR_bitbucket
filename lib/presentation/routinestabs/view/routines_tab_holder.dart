@@ -25,6 +25,7 @@ import '../../common/view/loading_screen.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../../infrastructure/utils/constants.dart';
 
 class RoutinesTabHolder extends StatefulWidget {
@@ -158,7 +159,9 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
               body: SafeArea(child: Container(
                 padding: const EdgeInsets.all(Dimens.paddingLarge),
                 child: Column(children: [
-                  HeaderAddItemCardSection(title: AppLocalizations.of(context)!.routines, onBackTap: () => Navigator.pop(context),),
+                  ScreenTopBar(selectedDate: null, onBack: () => Navigator.pop(context)),
+                  const SizedBox(height: Dimens.height12),
+                  HeaderAddItemCardSection(title: AppLocalizations.of(context)!.routines,),
                   const SizedBox(height: Dimens.height12),
                   TabBar(
                     controller: _tabController,

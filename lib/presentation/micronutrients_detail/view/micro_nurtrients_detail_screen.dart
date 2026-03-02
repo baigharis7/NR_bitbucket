@@ -23,6 +23,7 @@ import '../../profile/profile/view/profile_screen.dart';
 import '../../widgets/custom_bottom_app_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/micro_nutrient_detail_widget.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/weekly_nutrient_graphic.dart';
 
 class MicroNutrientsDetailScreen extends StatefulWidget {
@@ -42,6 +43,7 @@ class _MicroNutrientsDetailScreenState
   bool isOpen = false;
   late AnimationController _controller;
   late Animation<double> _animation;
+  DateTime? _selectedDate;
 
   @override
   void initState() {
@@ -57,7 +59,11 @@ class _MicroNutrientsDetailScreenState
       if (ModalRoute.of(context)?.settings.arguments != null) {
         final infoReceived = ModalRoute.of(context)?.settings.arguments;
         if (infoReceived != null) {
-          if (infoReceived is List<NutrientsModel>?) {
+          if (infoReceived is Map) {
+            final micronutrientsList = infoReceived['micronutrients'] as List<NutrientsModel>?;
+            _selectedDate = infoReceived['selectedDate'] as DateTime?;
+            bloc.add(LoadMicroNutrientsDetails(micronutrientsList: micronutrientsList ?? []));
+          } else if (infoReceived is List<NutrientsModel>?) {
             final micronutrientsList = infoReceived as List<NutrientsModel>?;
             bloc.add(LoadMicroNutrientsDetails(micronutrientsList: micronutrientsList ?? []));
           }
@@ -126,9 +132,10 @@ class _MicroNutrientsDetailScreenState
                 padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal, vertical: Dimens.paddingLarge),
                 child: Column(
                   children: [
+                    ScreenTopBar(selectedDate: _selectedDate, onBack: () => Navigator.pop(context)),
+                    const SizedBox(height: Dimens.height12),
                     HeaderAddItemCardSection(
                       title: AppLocalizations.of(context)!.micronutrientss,
-                      onBackTap: () => Navigator.pop(context),
                     ),
                     if (state.microNutrients.orEmpty().isNotEmpty) Container(
                           margin: const EdgeInsets.symmetric(vertical: Dimens.marginLarge),

@@ -19,6 +19,7 @@ import 'package:nutrenaissance_flutter/presentation/liquidevent/view/add_liquid_
 import 'package:nutrenaissance_flutter/presentation/liquidevent/view/liquid_card.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/screen_top_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
 import '../../../infrastructure/helpers/remove_diac.dart';
@@ -189,11 +190,15 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingLarge),
                       child: Column(
                         children: [
+                          ScreenTopBar(
+                            selectedDate: null,
+                            onBack: () => Navigator.pop(context),
+                          ),
+                          const SizedBox(height: Dimens.height12),
                           HeaderAddItemCardSection(
                               title: AppLocalizations.of(context)!.add_liquid_title,
                             items: state.liquidNames!.foodsAndDrinksNames!.drinkNames!
                                 .map((item) => item.translate(context)).toList(),
-                            onBackTap: () => Navigator.pop(context),
                             searchHintText: AppLocalizations.of(context)!.search_drink_hint,
                             onItemSelect: (option, focus) {
                               // _focusInputController = focus;

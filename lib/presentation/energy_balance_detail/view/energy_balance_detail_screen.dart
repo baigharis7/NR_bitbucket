@@ -17,6 +17,7 @@ import '../../dashboard/view/dashboard_screen.dart';
 import '../../profile/profile/view/profile_screen.dart';
 import '../../widgets/custom_bottom_app_bar.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/weekly_energy_graph_widget.dart';
 
 class EnergyBalanceDetailScreen extends StatefulWidget {
@@ -31,6 +32,7 @@ class EnergyBalanceDetailScreen extends StatefulWidget {
 
 class _EnergyBalanceDetailScreenState extends State<EnergyBalanceDetailScreen> with MidnightToastMixin {
   late EnergyBalanceDetailBloc bloc;
+  DateTime? _selectedDate;
 
   @override
   void initState() {
@@ -44,7 +46,13 @@ class _EnergyBalanceDetailScreenState extends State<EnergyBalanceDetailScreen> w
       if (ModalRoute.of(context)?.settings.arguments != null) {
         final infoReceived = ModalRoute.of(context)?.settings.arguments;
         if (infoReceived != null) {
-          if (infoReceived is EnergyModel?) {
+          if (infoReceived is Map) {
+            final energyModel = infoReceived['energyModel'] as EnergyModel?;
+            _selectedDate = infoReceived['selectedDate'] as DateTime?;
+            if (energyModel != null) {
+              bloc.add(LoadEnergyBalanceEventAction(energyModel: energyModel));
+            }
+          } else if (infoReceived is EnergyModel?) {
             bloc.add(LoadEnergyBalanceEventAction(energyModel: infoReceived as EnergyModel));
           }
         }
@@ -102,9 +110,10 @@ class _EnergyBalanceDetailScreenState extends State<EnergyBalanceDetailScreen> w
                         padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingLarge),
                         child: Column(
                           children: [
+                            ScreenTopBar(selectedDate: _selectedDate, onBack: () => Navigator.pop(context)),
+                            const SizedBox(height: Dimens.height12),
                             HeaderAddItemCardSection(
                               title: AppLocalizations.of(context)!.energy_balance_title,
-                              onBackTap: () => Navigator.pop(context),
                             ),
                             EnergyBalanceDetailWidget(
                               energyModel: state.energyModel,

@@ -87,7 +87,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(Dimens.paddingLarge),
+      padding: const EdgeInsets.only(left: Dimens.paddingLarge, right: Dimens.paddingLarge, bottom: Dimens.paddingLarge, top: Dimens.paddingNormal),
       decoration: BoxDecoration(
         color: AppColors.darkJungleGreen,
         borderRadius: BorderRadius.circular(16),
@@ -103,34 +103,16 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InkWell(
-                onTap: () => widget.onBackTap?.call(),
-                child: Row(
-                  children: [
-                    const Icon(Icons.arrow_back_ios, color: Colors.white, size: 15),
-                    const Icon(Icons.home, color: Colors.white, size: 18),
-                    const SizedBox(width: 4),
-                    Text(
-                      widget.path ?? AppLocalizations.of(context)!.start,
-                      style: const TextStyle(color: Colors.white, decoration: TextDecoration.underline, decorationThickness: 2,),
-                    ),
-                  ],
-                ),
+          if (widget.image.isNotNull()) Align(
+            alignment: Alignment.topRight,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(200),
+                boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
               ),
-              if (widget.image.isNotNull()) Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(200),
-                  boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
-                ),
-                child: Image.asset(widget.image ?? 'assets/images/meal_time_0.png', height: 52, width: 52),
-              ),
-            ],
+              child: Image.asset(widget.image ?? 'assets/images/meal_time_0.png', height: 52, width: 52),
+            ),
           ),
-          if (widget.image.isNull()) const SizedBox(height: Dimens.height12),
           Text(
             widget.title ?? '',
             style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize21,),

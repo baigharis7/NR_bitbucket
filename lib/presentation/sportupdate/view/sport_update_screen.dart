@@ -16,7 +16,7 @@ import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
 import '../../sportevent/view/sport_event_item.dart';
-import '../../widgets/date_picker_bar.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
 
@@ -112,13 +112,12 @@ class _SportUpdateScreenState extends State<SportUpdateScreen> {
                         horizontal: Dimens.paddingSmall,
                         vertical: Dimens.paddingLarge),
                     child: Column(children: [
-                      DatePickerBar(
-                        selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.sportSimpleEvent?.eventDate),
-                        onChangeDate: (dateTime) => sportUpdateBloc.add(UpdateEventDateSportUpdateEvent(dateTime: dateTime)),
+                      ScreenTopBar(
+                        selectedDate: DateTimeHelper.dateTimeFromMilliseconds(state.sportSimpleEvent?.eventDate),
+                        onBack: () => Navigator.pop(context),
                       ),
                       const SizedBox(height: Dimens.height12),
                       HeaderAddItemCardSection(
-                        onBackTap: () => Navigator.pop(context),
                         title: AppLocalizations.of(context)!.edit + ' ' + AppLocalizations.of(context)!.physical_activity,
                         image: 'assets/images/sport.png',
                         searchHintText: AppLocalizations.of(context)!.search_activity_hint,

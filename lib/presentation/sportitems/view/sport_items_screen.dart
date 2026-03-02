@@ -14,7 +14,7 @@ import '../../../infrastructure/helpers/app_text_styles.dart';
 import '../../../infrastructure/helpers/date_time_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
-import '../../widgets/date_picker_bar.dart';
+import '../../widgets/screen_top_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
@@ -111,17 +111,14 @@ class _SportItemsScreenState extends State<SportItemsScreen> with MidnightToastM
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
-                                Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                                  child: DatePickerBar(selectedDateTime: state.dateTime ?? DateTime.now(), onChangeDate: (dateTime) {
-                                    bloc.add(UpdateDatetimeSportItemsEvents(dateTime: dateTime));
-                                  },),
+                                ScreenTopBar(
+                                  selectedDate: state.dateTime ?? DateTime.now(),
+                                  onBack: () => Navigator.pop(context),
                                 ),
                                 const SizedBox(height: Dimens.height12),
                                 HeaderAddItemCardSection(
                                   title: '${AppLocalizations.of(context)!.physical_activity} ${AppLocalizations.of(context)!.summary}',
                                   image: 'assets/images/sport.png',
-                                  onBackTap: () => Navigator.pop(context),
                                   child: SizedBox(
                                     width: double.infinity,
                                     child: Column(
