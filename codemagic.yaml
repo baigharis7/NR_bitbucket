@@ -3,7 +3,7 @@
 # SETUP REQUIRED IN CODEMAGIC UI:
 #
 # 1. Environment group "android_signing":
-#    - CM_KEYSTORE           → base64-encoded keystore (run: base64 -w 0 android/app/upload-keystore-nn.jks)
+#    - CM_KEYSTORE           - base64-encoded keystore (run: base64 -w 0 android/app/upload-keystore-nn.jks)
 #    - CM_KEYSTORE_PASSWORD  → keystore password (encrypted)
 #    - CM_KEY_PASSWORD       → key password (encrypted)
 #    - CM_KEY_ALIAS          → "upload" (encrypted)
@@ -15,9 +15,7 @@
 # 3. Connect your Bitbucket repository in Codemagic UI
 
 workflows:
-  # ─────────────────────────────────────────────
-  # PR Checks — runs on every pull request
-  # ─────────────────────────────────────────────
+  # PR Checks - runs on every pull request
   pr-checks:
     name: PR Checks
     max_build_duration: 30
@@ -38,9 +36,7 @@ workflows:
     artifacts:
       - coverage/**
 
-  # ─────────────────────────────────────────────
-  # Release — builds Android APK + iOS IPA on master push
-  # ─────────────────────────────────────────────
+  # Release - builds Android APK + iOS IPA on master push
   release:
     name: Release Build
     max_build_duration: 60
@@ -66,7 +62,7 @@ workflows:
       - name: Run tests
         script: flutter test
 
-      # ── Android ──
+      # Android
       - name: Set up Android signing
         script: |
           KEYSTORE_PATH="$CM_BUILD_DIR/android/upload-keystore-nn.jks"
@@ -79,7 +75,7 @@ workflows:
       - name: Build Android APK
         script: flutter build apk --release --flavor prod
 
-      # ── iOS ──
+      # iOS
       - name: Set up iOS code signing
         script: xcode-project use-profiles
 
