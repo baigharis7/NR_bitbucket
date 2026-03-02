@@ -45,7 +45,7 @@ workflows:
       flutter: 3.13.8
       groups:
         - android_signing
-        # - ios_signing  # uncomment after setting up iOS signing in Codemagic UI
+        - ios_signing
     triggering:
       events:
         - push
@@ -73,15 +73,15 @@ workflows:
       - name: Build Android APK
         script: flutter build apk --release --flavor prod
 
-      # iOS - uncomment after setting up iOS signing in Codemagic UI
-      # - name: Set up iOS code signing
-      #   script: xcode-project use-profiles
-      #
-      # - name: Build iOS IPA
-      #   script: |
-      #     flutter build ipa --release \
-      #       --export-options-plist=/Users/builder/export_options.plist
+      # iOS
+      - name: Set up iOS code signing
+        script: xcode-project use-profiles
+
+      - name: Build iOS IPA
+        script: |
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist
 
     artifacts:
       - build/app/outputs/flutter-apk/app-prod-release.apk
-      # - build/ios/ipa/*.ipa  # uncomment with iOS signing
+      - build/ios/ipa/*.ipa
