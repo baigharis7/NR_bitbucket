@@ -98,18 +98,13 @@ void main() {
     );
 
     blocTest<SupplementsDetailBloc, SupplementsDetailState>(
-      'DeleteSupplementEventAction deletes and removes on success',
+      'DeleteSupplementEventAction deletes and removes on success without triggering sync',
       build: () {
         when(mockDeleteSupplementEvent.execute(any)).thenAnswer((_) async {});
         when(mockRemoveSupplementEvent.execute(any)).thenAnswer((_) async {});
-        // These are called by the re-init triggered after delete
-        when(mockGetProfile.execute()).thenAnswer((_) async => UserProfileModel(userId: 'user123'));
-        when(mockGetMasterFile.execute(MasterFilesType.supplementsInfo))
-            .thenAnswer((_) async => SupplementsInfoMaster(v: 1, data: []));
+        // Summary event reloads from local DB only
         when(mockGetDaySupplementEvents.execute(dateTime: anyNamed('dateTime')))
             .thenAnswer((_) async => <SupplementSimple>[]);
-        when(mockUpdateEvents.execute(userId: anyNamed('userId'), categoryType: anyNamed('categoryType'), fullSync: anyNamed('fullSync')))
-            .thenAnswer((_) async => false);
         return buildBloc();
       },
       act: (bloc) => bloc.add(DeleteSupplementEventAction(
@@ -118,6 +113,12 @@ void main() {
       verify: (bloc) {
         verify(mockDeleteSupplementEvent.execute(any)).called(1);
         verify(mockRemoveSupplementEvent.execute(any)).called(1);
+        // Called twice: once from delete handler, once from event bus listener
+        verify(mockGetDaySupplementEvents.execute(dateTime: anyNamed('dateTime'))).called(2);
+        // Must NOT trigger sync — otherwise deleted item reappears
+        verifyNever(mockUpdateEvents.execute(userId: anyNamed('userId'), categoryType: anyNamed('categoryType'), fullSync: anyNamed('fullSync')));
+        verifyNever(mockGetProfile.execute());
+        verifyNever(mockGetMasterFile.execute(any));
       },
     );
 
