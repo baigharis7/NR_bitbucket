@@ -4,13 +4,13 @@
 #
 # 1. Environment group "android_signing":
 #    - CM_KEYSTORE           - base64-encoded keystore (run: base64 -w 0 android/app/upload-keystore-nn.jks)
-#    - CM_KEYSTORE_PASSWORD  → keystore password (encrypted)
-#    - CM_KEY_PASSWORD       → key password (encrypted)
-#    - CM_KEY_ALIAS          → "upload" (encrypted)
+#    - CM_KEYSTORE_PASSWORD  - keystore password (encrypted)
+#    - CM_KEY_PASSWORD       - key password (encrypted)
+#    - CM_KEY_ALIAS          - "upload" (encrypted)
 #
 # 2. Environment group "ios_signing":
 #    - Set up code signing identities (certificates + provisioning profiles)
-#      in Codemagic UI → Settings → Code signing identities
+#      in Codemagic UI - Settings - Code signing identities
 #
 # 3. Connect your Bitbucket repository in Codemagic UI
 
