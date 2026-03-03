@@ -553,7 +553,7 @@
     "new_day_message": "It's a new day! Go back to see today's data.",
     "health_sync_settings": "Health App Sync",
     "health_sync_title": "Sync with your health apps",
-    "health_sync_description": "Connect Apple Health or Health Connect to automatically import your workouts, steps, and active calories.",
+    "health_sync_description": "Connect to automatically import your workouts, steps, and active calories",
     "health_sync_connect": "Connect Now",
     "health_sync_skip": "Skip for now",
     "health_sync_enable": "Enable health data sync",
@@ -595,6 +595,8 @@
     "health_sync_hc_install_message": "You need to install the Health Connect app in order to integrate with your other health apps and/or smart devices. Please click the link below to install.",
     "health_sync_hc_install_button": "Install Health Connect",
     "health_sync_hc_connect_message": "Open Health Connect to connect your health apps and smart devices so their data can be synced with NutreNaissance.",
-    "health_sync_hc_open_button": "Open Health Connect"
+    "health_sync_hc_open_button": "Open Health Connect",
+    "health_sync_card_enabled": "Health Sync Enabled",
+    "health_sync_card_never_synced": "Never synced"
 
 }

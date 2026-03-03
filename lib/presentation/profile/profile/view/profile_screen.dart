@@ -26,7 +26,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/profile_info_card.da
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/swith_with_function_widget.dart';
-import 'package:nutrenaissance_flutter/presentation/healthsync/view/health_sync_settings_screen.dart';
+
 
 import '../../../../data/api/profile/model/upload_user_profile.dart';
 import '../../../settings/view/settings_screen.dart';
@@ -125,59 +125,6 @@ class _ProfileScreen extends State<ProfileScreen> {
                     children: [
                       Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge), child: ProfileInfoCard(userProfile: state.profile, onTapProfileUpdate: () => Navigator.pushNamed(context, GeneralQuestionsScreen.routeName).then((value) {if (value.toString() != Constants.BACK) bloc.add(SaveChangesAction());}),)),
                       const SizedBox(height: Dimens.height32),
-
-                      // Health Sync Section
-                      Container(
-                        width: double.infinity,
-                        margin: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge),
-                        padding: const EdgeInsets.all(Dimens.padding20),
-                        decoration: BoxDecoration(
-                          color: AppColors.white90Percent.withOpacity(0.6),
-                          borderRadius: const BorderRadius.all(Radius.circular(Dimens.border18)),
-                        ),
-                        child: InkWell(
-                          onTap: () => Navigator.pushNamed(context, HealthSyncSettingsScreen.routeName),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: AppColors.yellowishGreen.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Icon(Icons.watch, color: AppColors.yellowishGreen, size: 24),
-                              ),
-                              const SizedBox(width: Dimens.width12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      AppLocalizations.of(context)!.health_sync_settings,
-                                      style: AppTextStyles.merriWeather.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: Dimens.fontSize15,
-                                        color: AppColors.yellowishGreen,
-                                      ),
-                                    ),
-                                    Text(
-                                      AppLocalizations.of(context)!.health_sync_description,
-                                      style: AppTextStyles.radioCanadaBig.copyWith(
-                                        fontSize: Dimens.fontSizeSmall,
-                                        color: AppColors.battleshipGrey,
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.yellowishGreen),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: Dimens.height12),
 
                       // Combined Temp Needs, Objectives, and Important Info Section
                       Container(

@@ -3,7 +3,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
@@ -14,6 +16,8 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/healthsync/bloc/health_sync_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/healthsync/view/health_sync_settings_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_state.dart';
@@ -97,6 +101,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
       }
     });
     bloc.add(InitializeStateAction());
+    BlocProvider.of<HealthSyncBloc>(context).add(HealthSyncInitialization());
     super.initState();
   }
 
@@ -202,6 +207,8 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                     },
                                   ),
                                 ),
+                                if (state.sportSimpleEvent?.isFavorite != true && state.sportSimpleEvent?.isCreateRoutine != true)
+                                  _buildHealthSyncCard(context),
                                 const SizedBox(height: Dimens.height12),
                                 FavoritesRecentToggle(
                                     selectedIndex: state.favRecentTab,
@@ -477,6 +484,96 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
           ],);
         },
       ),
+    );
+  }
+
+  Widget _buildHealthSyncCard(BuildContext context) {
+    return BlocBuilder<HealthSyncBloc, HealthSyncState>(
+      builder: (context, healthState) {
+        final isSyncEnabled = healthState.isSyncEnabled;
+
+        final String title;
+        final String subtitle;
+        if (isSyncEnabled) {
+          title = AppLocalizations.of(context)!.health_sync_card_enabled;
+          subtitle = healthState.lastSyncTime != null
+              ? AppLocalizations.of(context)!.health_sync_last_sync(
+                  DateFormat('MMM d, yyyy HH:mm').format(healthState.lastSyncTime!),
+                )
+              : AppLocalizations.of(context)!.health_sync_card_never_synced;
+        } else {
+          title = AppLocalizations.of(context)!.health_sync_enable_link;
+          subtitle = AppLocalizations.of(context)!.health_sync_description;
+        }
+
+        return Padding(
+          padding: const EdgeInsets.only(top: Dimens.height12),
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.white90Percent.withOpacity(0.6),
+              borderRadius: const BorderRadius.all(Radius.circular(Dimens.border18)),
+            ),
+            child: InkWell(
+              onTap: () => Navigator.pushNamed(context, HealthSyncSettingsScreen.routeName),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 36,
+                    height: 36,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        const Icon(Icons.monitor_heart, color: AppColors.yellowishGreen, size: 32),
+                        if (isSyncEnabled)
+                          Positioned(
+                            right: -2,
+                            bottom: -2,
+                            child: Container(
+                              padding: const EdgeInsets.all(1),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.sync, color: AppColors.yellowishGreen, size: 14),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: Dimens.width12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: AppTextStyles.merriWeather.copyWith(
+                            fontWeight: FontWeight.w600,
+                            fontSize: Dimens.fontSize15,
+                            color: AppColors.yellowishGreen,
+                          ),
+                        ),
+                        Text(
+                          subtitle,
+                          style: AppTextStyles.radioCanadaBig.copyWith(
+                            fontSize: Dimens.fontSizeSmall,
+                            color: AppColors.battleshipGrey,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.yellowishGreen),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

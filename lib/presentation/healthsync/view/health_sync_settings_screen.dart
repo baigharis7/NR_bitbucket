@@ -156,9 +156,29 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
                           right: Dimens.paddingLarge,
                           top: Dimens.paddingLarge,
                         ),
-                        child: GeneralButton(
-                          title: AppLocalizations.of(context)!.health_sync_hc_install_button,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(Dimens.border18),
                           onTap: () => _bloc.add(HealthSyncInstallHealthConnect()),
+                          child: Container(
+                            height: Dimens.height55,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: AppColors.yellowishGreen,
+                              border: Border.all(color: AppColors.whit),
+                              borderRadius: BorderRadius.circular(Dimens.border18),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  AppLocalizations.of(context)!.health_sync_hc_install_button,
+                                  style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize19),
+                                ),
+                                const SizedBox(width: 8),
+                                const Icon(Icons.open_in_new, size: 18, color: AppColors.whit),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     if (Platform.isAndroid && state.isAvailable && state.isSyncEnabled)
@@ -169,9 +189,29 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
                           right: Dimens.paddingLarge,
                           top: Dimens.paddingLarge,
                         ),
-                        child: GeneralButton(
-                          title: AppLocalizations.of(context)!.health_sync_hc_open_button,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(Dimens.border18),
                           onTap: () => _bloc.add(HealthSyncOpenHealthConnect()),
+                          child: Container(
+                            height: Dimens.height55,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: AppColors.yellowishGreen,
+                              border: Border.all(color: AppColors.whit),
+                              borderRadius: BorderRadius.circular(Dimens.border18),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  AppLocalizations.of(context)!.health_sync_hc_open_button,
+                                  style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize19),
+                                ),
+                                const SizedBox(width: 8),
+                                const Icon(Icons.open_in_new, size: 18, color: AppColors.whit),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
 
@@ -282,14 +322,28 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
                 color: Colors.white,
               ),
               const SizedBox(width: Dimens.width12),
-              // Description text
+              // Title and description
               Expanded(
-                child: Text(
-                  AppLocalizations.of(context)!.health_sync_toggle_description,
-                  style: AppTextStyles.radioCanadaBig.copyWith(
-                    fontSize: Dimens.fontSize15,
-                    color: Colors.white,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.health_sync_enable_link,
+                      style: AppTextStyles.merriWeather.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: Dimens.fontSize15,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      AppLocalizations.of(context)!.health_sync_description,
+                      style: AppTextStyles.radioCanadaBig.copyWith(
+                        fontSize: Dimens.fontSizeSmall,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(width: Dimens.marginSmall),
