@@ -1,9 +1,9 @@
 image: ghcr.io/cirruslabs/flutter:3.13.8
 
 pipelines:
-  # Run on PRs targeting master and on pushes to master
-  pull-requests:
-    '**':
+  # Run only on merge to master
+  branches:
+    master:
       - step:
           name: Analyze & Test
           caches:
