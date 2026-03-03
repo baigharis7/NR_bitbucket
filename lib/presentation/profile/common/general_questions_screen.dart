@@ -109,11 +109,11 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
 
               Scaffold(
                 backgroundColor: Colors.transparent,
-                body: SafeArea(child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(Dimens.padding20),
-                  child: Stack(
-                      children: [
-                        Form(
+                body: SafeArea(child: Column(
+                  children: [
+                    Expanded(child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(Dimens.padding20),
+                      child: Form(
                           key: _formKey,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -125,11 +125,6 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                 width: Dimens.width242,
                               ),
                               const SizedBox(height: Dimens.height37),
-                              Text(
-                                AppLocalizations.of(context)!.body_measurements,
-                                style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeXXLarge,),
-                              ),
-                              const SizedBox(height: Dimens.heightSmall),
                               TextFormField(
                                 controller: _commonNameController,
                                 cursorColor: Colors.white,
@@ -416,21 +411,24 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: Dimens.height32),
-                                  GeneralButton(
-                                    title: AppLocalizations.of(context)!.save,
-                                    onTap: () {
-                                      if (_formKey.currentState!.validate()) {
-                                        bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName)));
-                                      }
-                                    },
-                                  )
                                 ],
                               )
                             ],
                           ),
-                        ),]
-                  ),
+                      ),
+                    )),
+                    Padding(
+                      padding: const EdgeInsets.all(Dimens.padding20),
+                      child: GeneralButton(
+                        title: AppLocalizations.of(context)!.save,
+                        onTap: () {
+                          if (_formKey.currentState!.validate()) {
+                            bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName)));
+                          }
+                        },
+                      ),
+                    ),
+                  ],
                 ),),
               )
             ],),
