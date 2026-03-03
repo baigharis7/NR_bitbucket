@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -9,6 +10,8 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/healthsync/bloc/health_sync_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/screen_top_bar.dart';
 import 'package:intl/intl.dart';
 
 /// Settings screen for health app sync configuration.
@@ -129,198 +132,123 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
             Scaffold(
               backgroundColor: Colors.transparent,
               body: SafeArea(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: Dimens.height32),
-                      // Logo
-                      Image.asset(
-                        'assets/images/logo_name_white.png',
-                        width: 200,
-                        color: Colors.white,
+                child: Column(
+                  children: [
+                    const SizedBox(height: Dimens.paddingLarge),
+
+                    // Header
+                    ScreenTopBar(
+                      title: AppLocalizations.of(context)!.health_sync_section_title,
+                      onBack: () => Navigator.pop(context),
+                    ),
+
+                    const SizedBox(height: Dimens.paddingLarge),
+
+                    // Toggle card
+                    _buildToggleCard(context, state),
+
+                    // Health Connect action button (Android only)
+                    if (Platform.isAndroid && !state.isAvailable)
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(
+                          left: Dimens.paddingLarge,
+                          right: Dimens.paddingLarge,
+                          top: Dimens.paddingLarge,
+                        ),
+                        child: GeneralButton(
+                          title: AppLocalizations.of(context)!.health_sync_hc_install_button,
+                          onTap: () => _bloc.add(HealthSyncInstallHealthConnect()),
+                        ),
                       ),
-                      const SizedBox(height: Dimens.height32),
-                      // Main content container
-                      Expanded(
+                    if (Platform.isAndroid && state.isAvailable && state.isSyncEnabled)
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(
+                          left: Dimens.paddingLarge,
+                          right: Dimens.paddingLarge,
+                          top: Dimens.paddingLarge,
+                        ),
+                        child: GeneralButton(
+                          title: AppLocalizations.of(context)!.health_sync_hc_open_button,
+                          onTap: () => _bloc.add(HealthSyncOpenHealthConnect()),
+                        ),
+                      ),
+
+                    const SizedBox(height: Dimens.paddingLarge),
+
+                    // Data types card (wraps content, scrollable if needed)
+                    Expanded(
+                      child: SingleChildScrollView(
                         child: Container(
-                          padding: const EdgeInsets.all(Dimens.padding4),
+                          margin: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: Dimens.padding20,
+                            vertical: Dimens.paddingLarge,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.floralWhite,
-                            borderRadius: BorderRadius.circular(Dimens.border11),
+                            borderRadius: BorderRadius.circular(Dimens.border15),
                           ),
-                          child: SingleChildScrollView(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: Dimens.padding20,
-                              vertical: Dimens.padding4,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Header
-                                ListTile(
-                                  titleAlignment: ListTileTitleAlignment.top,
-                                  leading: const Icon(
-                                    Icons.sync,
-                                    size: 35,
-                                    color: AppColors.peacockBlue,
-                                  ),
-                                  horizontalTitleGap: Dimens.zero,
-                                  contentPadding: EdgeInsets.zero,
-                                  title: Text(
-                                    AppLocalizations.of(context)!.health_sync_settings,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: Dimens.fontSizeXXLarge,
-                                      color: AppColors.peacockBlue,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: Dimens.height12),
-
-                                // Availability status with Install Health Connect button
-                                if (!state.isAvailable)
-                                  Container(
-                                    padding: const EdgeInsets.all(Dimens.padding10),
-                                    margin: const EdgeInsets.only(bottom: Dimens.height12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.orange.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            const Icon(
-                                              Icons.warning_amber,
-                                              color: Colors.orange,
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Expanded(
-                                              child: Text(
-                                                AppLocalizations.of(context)!.health_sync_not_available,
-                                                style: AppTextStyles.radioCanadaBig.copyWith(
-                                                  fontSize: Dimens.fontSize15,
-                                                  color: Colors.orange,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 8),
-                                        SizedBox(
-                                          width: double.infinity,
-                                          child: OutlinedButton.icon(
-                                            onPressed: () {
-                                              _bloc.add(HealthSyncInstallHealthConnect());
-                                            },
-                                            icon: const Icon(Icons.download, size: 18),
-                                            label: const Text('Install Health Connect'),
-                                            style: OutlinedButton.styleFrom(
-                                              foregroundColor: Colors.orange,
-                                              side: const BorderSide(color: Colors.orange),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                // Enable/Disable toggle
-                                _buildToggleTile(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Last sync time
+                              if (state.lastSyncTime != null) ...[
+                                _buildInfoTile(
                                   context,
-                                  title: AppLocalizations.of(context)!.health_sync_enable,
-                                  value: state.isSyncEnabled,
-                                  enabled: state.isAvailable,
-                                  onChanged: (value) {
-                                    _bloc.add(HealthSyncToggle(enable: value));
-                                  },
-                                ),
-                                const SizedBox(height: Dimens.height12),
-
-                                // Last sync time
-                                if (state.lastSyncTime != null)
-                                  _buildInfoTile(
-                                    context,
-                                    icon: Icons.access_time,
-                                    label: AppLocalizations.of(context)!.health_sync_last_sync(
-                                      DateFormat('MMM d, yyyy HH:mm').format(state.lastSyncTime!),
-                                    ),
-                                  ),
-                                const SizedBox(height: Dimens.height12),
-
-                                // Synced activities count
-                                if (state.syncedActivitiesCount != null && state.syncedActivitiesCount! > 0)
-                                  _buildInfoTile(
-                                    context,
-                                    icon: Icons.check_circle_outline,
-                                    label: AppLocalizations.of(context)!.health_sync_activities_imported(
-                                      state.syncedActivitiesCount!,
-                                    ),
-                                  ),
-                                const SizedBox(height: Dimens.height32),
-
-                                // Data types section
-                                Text(
-                                  AppLocalizations.of(context)!.health_sync_data_types,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: Dimens.fontSizeLarge,
-                                    color: AppColors.peacockBlue,
+                                  icon: Icons.access_time,
+                                  label: AppLocalizations.of(context)!.health_sync_last_sync(
+                                    DateFormat('MMM d, yyyy HH:mm').format(state.lastSyncTime!),
                                   ),
                                 ),
                                 const SizedBox(height: Dimens.height12),
-                                _buildDataTypeItem(context, Icons.fitness_center, 'Workouts'),
-                                _buildDataTypeItem(context, Icons.directions_walk, 'Steps'),
-                                _buildDataTypeItem(context, Icons.local_fire_department, 'Active Calories'),
-                                _buildDataTypeItem(context, Icons.favorite, 'Heart Rate'),
-                                _buildDataTypeItem(context, Icons.straighten, 'Distance'),
                               ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: Dimens.height32),
-                      // Sync Now button at bottom
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: state.isSyncEnabled && !state.isSyncing
-                              ? () {
-                                  _bloc.add(HealthSyncManualTrigger());
-                                }
-                              : null,
-                          icon: state.isSyncing
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
+
+                              // Synced activities count
+                              if (state.syncedActivitiesCount != null && state.syncedActivitiesCount! > 0) ...[
+                                _buildInfoTile(
+                                  context,
+                                  icon: Icons.check_circle_outline,
+                                  label: AppLocalizations.of(context)!.health_sync_activities_imported(
+                                    state.syncedActivitiesCount!,
                                   ),
-                                )
-                              : const Icon(Icons.sync),
-                          label: Text(
-                            state.isSyncing
-                                ? AppLocalizations.of(context)!.health_sync_syncing
-                                : AppLocalizations.of(context)!.health_sync_now,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.yellowishGreen,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              vertical: Dimens.padding10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                                ),
+                                const SizedBox(height: Dimens.height12),
+                              ],
+
+                              // Data type items
+                              _buildDataTypeItem(context, Icons.fitness_center, 'Workouts'),
+                              _buildDataTypeItem(context, Icons.local_fire_department, 'Active Calories'),
+                              _buildDataTypeItem(context, Icons.favorite, 'Heart Rate'),
+                              _buildDataTypeItem(context, Icons.directions_walk, 'Steps'),
+                              _buildDataTypeItem(context, Icons.straighten, 'Distance', showDivider: false),
+                            ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: Dimens.height32),
-                    ],
-                  ),
+                    ),
+
+                    // Sync Now button fixed at bottom
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: Dimens.paddingLarge,
+                        vertical: Dimens.marginSmall,
+                      ),
+                      child: GeneralButton(
+                        title: state.isSyncing
+                            ? AppLocalizations.of(context)!.health_sync_syncing
+                            : AppLocalizations.of(context)!.health_sync_now,
+                        selectedColor: state.isSyncEnabled && !state.isSyncing
+                            ? AppColors.yellowishGreen
+                            : AppColors.yellowishGreen.withOpacity(0.4),
+                        onTap: state.isSyncEnabled && !state.isSyncing
+                            ? () => _bloc.add(HealthSyncManualTrigger())
+                            : null,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -330,43 +258,80 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
     );
   }
 
-  Widget _buildToggleTile(
-    BuildContext context, {
-    required String title,
-    required bool value,
-    required bool enabled,
-    required ValueChanged<bool> onChanged,
-  }) {
+  Widget _buildToggleCard(BuildContext context, HealthSyncState state) {
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
       padding: const EdgeInsets.symmetric(
-        horizontal: Dimens.padding10,
-        vertical: Dimens.padding4,
+        horizontal: Dimens.paddingNormal,
+        vertical: Dimens.paddingNormal,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: AppColors.peacockBlue.withOpacity(0.2),
-        ),
+        color: AppColors.yellowishGreen59,
+        borderRadius: BorderRadius.circular(Dimens.border15),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(
-            child: Text(
-              title,
-              style: TextStyle(
+          Row(
+            children: [
+              // NutreNaissance logo
+              Image.asset(
+                'assets/images/logo_.png',
+                width: 36,
+                height: 36,
+                color: Colors.white,
+              ),
+              const SizedBox(width: Dimens.width12),
+              // Description text
+              Expanded(
+                child: Text(
+                  AppLocalizations.of(context)!.health_sync_toggle_description,
+                  style: AppTextStyles.radioCanadaBig.copyWith(
+                    fontSize: Dimens.fontSize15,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(width: Dimens.marginSmall),
+              // Toggle switch — disabled if HC not available
+              Switch.adaptive(
+                value: state.isSyncEnabled,
+                onChanged: state.isAvailable
+                    ? (value) => _bloc.add(HealthSyncToggle(enable: value))
+                    : null,
+                activeColor: Colors.white,
+                activeTrackColor: AppColors.mountainMeadow,
+                inactiveThumbColor: Colors.white,
+                inactiveTrackColor: Colors.white.withOpacity(0.3),
+              ),
+            ],
+          ),
+          // HC not installed callout (Android only)
+          if (Platform.isAndroid && !state.isAvailable) ...[
+            const Divider(color: Colors.white38, height: 1),
+            const SizedBox(height: Dimens.paddingNormal),
+            Text(
+              AppLocalizations.of(context)!.health_sync_hc_install_message,
+              style: AppTextStyles.radioCanadaBig.copyWith(
+                fontSize: Dimens.fontSizeNormal,
                 fontWeight: FontWeight.w600,
-                fontSize: Dimens.fontSize15,
-                color: enabled ? AppColors.peacockBlue : Colors.grey,
+                color: Colors.white,
               ),
             ),
-          ),
-          Switch(
-            value: value,
-            onChanged: enabled ? onChanged : null,
-            activeColor: AppColors.peacockBlue,
-          ),
+          ],
+          // HC installed + sync enabled — prompt to connect apps
+          if (Platform.isAndroid && state.isAvailable && state.isSyncEnabled) ...[
+            const Divider(color: Colors.white38, height: 1),
+            const SizedBox(height: Dimens.paddingNormal),
+            Text(
+              AppLocalizations.of(context)!.health_sync_hc_connect_message,
+              style: AppTextStyles.radioCanadaBig.copyWith(
+                fontSize: Dimens.fontSizeNormal,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -382,15 +347,15 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
         Icon(
           icon,
           size: 20,
-          color: AppColors.peacockBlue.withOpacity(0.7),
+          color: AppColors.yellowishGreen.withOpacity(0.7),
         ),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
             label,
-            style: TextStyle(
+            style: AppTextStyles.radioCanadaBig.copyWith(
               fontSize: Dimens.fontSizeNormal,
-              color: AppColors.peacockBlue.withOpacity(0.7),
+              color: AppColors.yellowishGreen.withOpacity(0.7),
             ),
           ),
         ),
@@ -398,40 +363,43 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
     );
   }
 
-  Widget _buildDataTypeItem(BuildContext context, IconData icon, String label) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: AppColors.peacockBlue.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              icon,
-              size: 18,
-              color: AppColors.peacockBlue,
-            ),
+  Widget _buildDataTypeItem(BuildContext context, IconData icon, String label, {bool showDivider = true}) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: Dimens.paddingNormal),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 24,
+                color: AppColors.yellowishGreen,
+              ),
+              const SizedBox(width: Dimens.width12),
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppTextStyles.merriWeather.copyWith(
+                    fontSize: Dimens.fontSizeMedium,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.yellowishGreen,
+                  ),
+                ),
+              ),
+              const Icon(
+                Icons.check,
+                size: 22,
+                color: AppColors.yellowishGreen,
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: Dimens.fontSize15,
-              color: Colors.black87,
-            ),
+        ),
+        if (showDivider)
+          Divider(
+            color: AppColors.yellowishGreen.withOpacity(0.3),
+            height: 1,
           ),
-          const Spacer(),
-          Icon(
-            Icons.check,
-            size: 18,
-            color: AppColors.peacockBlue.withOpacity(0.7),
-          ),
-        ],
-      ),
+      ],
     );
   }
 
@@ -467,13 +435,13 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
-                    color: AppColors.peacockBlue.withOpacity(0.1),
+                    color: AppColors.yellowishGreen.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.sync,
                     size: 32,
-                    color: AppColors.peacockBlue,
+                    color: AppColors.yellowishGreen,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -484,7 +452,7 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
                   style: AppTextStyles.merriWeather.copyWith(
                     fontWeight: FontWeight.w700,
                     fontSize: Dimens.fontSizeXLarge,
-                    color: AppColors.peacockBlue,
+                    color: AppColors.yellowishGreen,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -517,7 +485,7 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
                     icon: const Icon(Icons.open_in_new, size: 18),
                     label: Text(l10n.health_sync_hc_setup_open),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.peacockBlue,
+                      backgroundColor: AppColors.yellowishGreen,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -536,7 +504,7 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
                     child: Text(
                       l10n.health_sync_hc_setup_done,
                       style: TextStyle(
-                        color: AppColors.peacockBlue.withOpacity(0.7),
+                        color: AppColors.yellowishGreen.withOpacity(0.7),
                         fontSize: Dimens.fontSize15,
                       ),
                     ),
@@ -560,7 +528,7 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: AppColors.peacockBlue.withOpacity(0.1),
+              color: AppColors.yellowishGreen.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -569,7 +537,7 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
                 style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
-                  color: AppColors.peacockBlue,
+                  color: AppColors.yellowishGreen,
                 ),
               ),
             ),

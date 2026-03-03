@@ -588,6 +588,13 @@
     "health_sync_hc_setup_step2": "Tap 'App permissions'",
     "health_sync_hc_setup_step3": "Select your fitness app and allow data sharing",
     "health_sync_hc_setup_open": "Open Health Connect",
-    "health_sync_hc_setup_done": "Got it"
+    "health_sync_hc_setup_done": "Got it",
+    "health_sync_section_title": "Health Data Sync",
+    "health_sync_enable_link": "Enable Health Data Sync",
+    "health_sync_toggle_description": "Enable data synchronization with other health apps",
+    "health_sync_hc_install_message": "You need to install the Health Connect app in order to integrate with your other health apps and/or smart devices. Please click the link below to install.",
+    "health_sync_hc_install_button": "Install Health Connect",
+    "health_sync_hc_connect_message": "Open Health Connect to connect your health apps and smart devices so their data can be synced with NutreNaissance.",
+    "health_sync_hc_open_button": "Open Health Connect"
 
 }
