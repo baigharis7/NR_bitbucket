@@ -203,10 +203,10 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: Dimens.height12),
-                                if (state.sportSimpleEvent?.isCreateRoutine != true && state.sportSimpleEvent?.isFavorite != true)
-                                  FavoritesRecentToggle(
+                                FavoritesRecentToggle(
                                     selectedIndex: state.favRecentTab,
                                     onTap: (index) => bloc.add(SwitchFavRecentTabSportAction(tabIndex: index)),
+                                    showFavoritesTab: state.sportSimpleEvent?.isFavorite != true,
                                   ),
                                 const SizedBox(height: Dimens.height5),
                               ],

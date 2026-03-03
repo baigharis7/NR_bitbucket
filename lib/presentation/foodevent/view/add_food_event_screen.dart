@@ -200,10 +200,10 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: Dimens.height12),
-                                  if (state.foodEvent?.isRoutine != true && state.foodEvent?.isFavorite != true)
                                   FavoritesRecentToggle(
                                     selectedIndex: state.favRecentTab,
                                     onTap: (index) => bloc.add(SwitchFavRecentTabAction(tabIndex: index)),
+                                    showFavoritesTab: state.foodEvent?.isFavorite != true,
                                   ),
                                   const SizedBox(height: Dimens.height5),
                                 ],

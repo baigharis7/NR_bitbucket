@@ -256,9 +256,10 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                             ],),
                           ),
                           const SizedBox(height: Dimens.height12),
-                          if (!isPreselect) FavoritesRecentToggle(
+                          FavoritesRecentToggle(
                             selectedIndex: state.favRecentTab,
                             onTap: (index) => supplementsBloc.add(SwitchFavRecentTabSupplementsAction(tabIndex: index)),
+                            showFavoritesTab: !isFavorite,
                           ),
                           const SizedBox(height: Dimens.height5),
                           // Scrollable list

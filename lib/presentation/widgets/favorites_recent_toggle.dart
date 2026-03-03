@@ -6,42 +6,43 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 class FavoritesRecentToggle extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onTap;
+  final bool showFavoritesTab;
 
   const FavoritesRecentToggle({
     super.key,
     required this.selectedIndex,
     required this.onTap,
+    this.showFavoritesTab = true,
   });
 
   @override
   Widget build(BuildContext context) {
     final labels = [
       AppLocalizations.of(context)!.recent.toUpperCase(),
-      AppLocalizations.of(context)!.favorites.toUpperCase(),
+      if (showFavoritesTab) AppLocalizations.of(context)!.favorites.toUpperCase(),
     ];
 
-    const icons = [
+    final icons = [
       Icons.schedule,
-      Icons.star_rounded,
+      if (showFavoritesTab) Icons.star_rounded,
     ];
 
     return Row(
-      children: List.generate(labels.length, (index) {
-        final isSelected = selectedIndex == index;
-        final iconColor = isSelected ? Colors.white : AppColors.yellowishGreen;
-        return Expanded(
-          child: GestureDetector(
-            onTap: () => onTap(index),
-            child: Container(
-              height: 45,
-              margin: const EdgeInsets.symmetric(horizontal: Dimens.padding6),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(Dimens.border15),
-                color: isSelected ? AppColors.yellowishGreen59 : AppColors.butter59,
-              ),
+      children: [
+        ...List.generate(labels.length, (index) {
+          final isSelected = selectedIndex == index;
+          final iconColor = isSelected ? Colors.white : AppColors.yellowishGreen;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => onTap(index),
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6),
+                height: 45,
+                margin: const EdgeInsets.symmetric(horizontal: Dimens.padding6),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(Dimens.border15),
+                  color: isSelected ? AppColors.yellowishGreen59 : AppColors.butter59,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
@@ -65,9 +66,10 @@ class FavoritesRecentToggle extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+        if (!showFavoritesTab) const Expanded(child: SizedBox()),
+      ],
     );
   }
 }
