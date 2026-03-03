@@ -16,16 +16,22 @@ class ScreenTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
+    final backSize = sw * (28 / 360);
+    final iconSize = backSize * 0.5;
+    final titleFontSize = sw * (17 / 360);
+    final hPadding = sw * (16 / 360);
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: hPadding),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
             onTap: onBack,
             child: Container(
-              width: 28,
-              height: 28,
+              width: backSize,
+              height: backSize,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: const Color(0xFFD9D9D9).withOpacity(0.80),
@@ -38,10 +44,10 @@ class ScreenTopBar extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.arrow_back_ios_new,
-                size: 14,
-                color: Color(0xFF28421D),
+                size: iconSize,
+                color: const Color(0xFF28421D),
               ),
             ),
           ),
@@ -49,7 +55,7 @@ class ScreenTopBar extends StatelessWidget {
             Text(
               title!,
               style: AppTextStyles.merriWeather.copyWith(
-                fontSize: 17,
+                fontSize: titleFontSize,
                 color: Colors.white,
               ),
             )
@@ -57,7 +63,7 @@ class ScreenTopBar extends StatelessWidget {
             Text(
               DateFormat('EEE, MMM d yyyy').format(selectedDate!),
               style: AppTextStyles.merriWeather.copyWith(
-                fontSize: 17,
+                fontSize: titleFontSize,
                 color: Colors.white,
               ),
             ),
