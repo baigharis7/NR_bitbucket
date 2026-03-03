@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/item_info_card.dart'
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
+import '../../../infrastructure/utils/dimens.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../widgets/remove_item_widget.dart';
 import '../bloc/favorites_tabs_bloc.dart';
@@ -57,7 +58,9 @@ class _MealTabState extends State<MealTab> {
             return ItemInfoCard(
               onItemTap: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: favFood),
               title: itemName,
-              leadingSrc: 'assets/images/favorite_icon.png',
+              leadingIcon: Icons.star_rounded,
+              leadingIconSize: Dimens.height27,
+              leadingIconColor: AppColors.yellowishGreen,
               trailingSrc: 'assets/images/delete_icon.png',
               color: AppColors.floralWhite,
               leadingTap: () {},

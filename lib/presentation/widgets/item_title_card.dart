@@ -175,7 +175,7 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
                   GestureDetector(
                     onTap: widget.onToggleFavorite,
                     child: Icon(
-                      widget.isFavorite ? Icons.star : Icons.star_outline,
+                      widget.isFavorite ? Icons.star_rounded : Icons.star_outline_rounded,
                       size: 28,
                       color: widget.isFavorite ? AppColors.yellowishGreen : AppColors.yellowishGreen50,
                     ),
@@ -184,7 +184,7 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
                   GestureDetector(
                     onTap: widget.onToggleRoutine,
                     child: Icon(
-                      Icons.schedule,
+                      Icons.history,
                       size: 28,
                       color: widget.isRoutine ? AppColors.yellowishGreen : AppColors.yellowishGreen50,
                     ),
@@ -204,7 +204,7 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.star, size: 16, color: AppColors.yellowishGreen),
+                  const Icon(Icons.star_rounded, size: 16, color: AppColors.yellowishGreen),
                   const SizedBox(width: 6),
                   Flexible(
                     child: Text(
@@ -231,7 +231,7 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.schedule, size: 16, color: AppColors.yellowishGreen),
+                  const Icon(Icons.history, size: 16, color: AppColors.yellowishGreen),
                   const SizedBox(width: 6),
                   Flexible(
                     child: Text(

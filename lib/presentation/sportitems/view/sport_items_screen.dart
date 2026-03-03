@@ -255,8 +255,8 @@ class ActivityCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: Dimens.width12),
-          Image.asset('assets/icon/routine_icon.png',
-              width: Dimens.width25, height: Dimens.height25),
+          const Icon(Icons.history,
+              size: Dimens.width25),
           const SizedBox(width: Dimens.width12),
           InkWell(
             onTap: () => onDelete.call(),

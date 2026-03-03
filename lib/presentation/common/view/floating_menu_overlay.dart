@@ -181,7 +181,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with SingleTi
                                       visualDensity: VisualDensity.compact,
                                       horizontalTitleGap: Dimens.zero,
                                       tileColor: Colors.black,
-                                      leading: Image.asset('assets/icon/routine_icon.png', width: 22, height: 22, color: Colors.white),
+                                      leading: const Icon(Icons.history, size: 22, color: Colors.white),
                                       title: Text(AppLocalizations.of(context)!.routines, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.white),),
                                     ),
                                   ),
@@ -203,7 +203,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with SingleTi
                                           onTap: () {
 
                                           },
-                                            child: Image.asset('assets/images/favorite_icon.png', width: 22, height: 22, color: Colors.white),
+                                            child: const Icon(Icons.star_rounded, size: 22, color: Colors.white),
                                         ),
                                         title: Text(AppLocalizations.of(context)!.favorites, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.white),),
                                     ),

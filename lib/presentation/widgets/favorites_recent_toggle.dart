@@ -20,9 +20,15 @@ class FavoritesRecentToggle extends StatelessWidget {
       AppLocalizations.of(context)!.favorites.toUpperCase(),
     ];
 
+    const icons = [
+      Icons.schedule,
+      Icons.star_rounded,
+    ];
+
     return Row(
       children: List.generate(labels.length, (index) {
         final isSelected = selectedIndex == index;
+        final iconColor = isSelected ? Colors.white : AppColors.yellowishGreen;
         return Expanded(
           child: GestureDetector(
             onTap: () => onTap(index),
@@ -36,14 +42,26 @@ class FavoritesRecentToggle extends StatelessWidget {
               ),
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6),
-                child: Text(
-                  labels[index],
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: Dimens.fontSize11,
-                    color: isSelected ? Colors.white : AppColors.yellowishGreen,
-                  ),
-                  textAlign: TextAlign.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      icons[index],
+                      size: 17,
+                      color: iconColor,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      labels[index],
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: iconColor,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               ),
             ),

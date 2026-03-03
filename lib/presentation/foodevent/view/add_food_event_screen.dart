@@ -242,7 +242,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                     ),),
                                     if (state.favRecentTab == 1 && state.foodEvent?.isFavorite != true) ...state.foodFavorites.orEmpty().map((favFood) => ItemInfoCard(
                                       title: favFood.title ?? NutritionUtils.findFoodsName(foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: favFood.ingredients, context: context),
-                                      leadingSrc: isPreselect ? null : 'assets/images/favorite_icon.png',
+                                      leadingIcon: isPreselect ? null : Icons.star_rounded,
+                                      leadingIconSize: Dimens.height27,
+                                      leadingIconColor: AppColors.yellowishGreen,
                                       trailingSrc: isPreselect ? null : 'assets/icon/add_icon.png',
                                       trailingIcon: isPreselect ? Icons.tune : null,
                                       color: state.foodsFromFavorite == favFood ? AppColors.butter : AppColors.floralWhite,

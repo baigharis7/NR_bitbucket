@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_ev
 import 'package:nutrenaissance_flutter/presentation/updatesport/view/update_sport_screen.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
+import '../../../infrastructure/utils/dimens.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../common/view/confirmation_dialog.dart';
 import '../../widgets/item_info_card.dart';
@@ -58,7 +59,9 @@ class _PhysicalActivityTabState extends State<PhysicalActivityTab> {
             return ItemInfoCard(
               onItemTap: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: favSport),
               title: itemName,
-              leadingSrc: 'assets/images/favorite_icon.png',
+              leadingIcon: Icons.star_rounded,
+              leadingIconSize: Dimens.height27,
+              leadingIconColor: AppColors.yellowishGreen,
               // leadingSrc: 'assets/images/sport.png',
               trailingSrc: 'assets/images/delete_icon.png',
               color: AppColors.floralWhite,

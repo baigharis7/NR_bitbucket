@@ -47,7 +47,7 @@ class SupplementRoutinesTab extends StatelessWidget {
               return ItemInfoCard(
                 onItemTap: () {},
                 title: itemName,
-                leadingSrc: 'assets/icon/routine_icon.png',
+                leadingIcon: Icons.history,
                 leadingIconSize: Dimens.height27,
                 trailingSrc: 'assets/images/delete_icon.png',
                 color: AppColors.floralWhite,

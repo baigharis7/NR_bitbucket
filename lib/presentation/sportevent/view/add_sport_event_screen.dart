@@ -247,7 +247,9 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                   final isPreselect = state.sportSimpleEvent?.isCreateRoutine == true;
                                   return ItemInfoCard(
                                     title: favSport.title ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: favSport.info, context: context),
-                                    leadingSrc: isPreselect ? null : 'assets/images/favorite_icon.png',
+                                    leadingIcon: isPreselect ? null : Icons.star_rounded,
+                                    leadingIconSize: Dimens.height27,
+                                    leadingIconColor: AppColors.yellowishGreen,
                                     trailingSrc: isPreselect ? null : 'assets/icon/add_icon.png',
                                     trailingIcon: isPreselect ? Icons.tune : null,
                                     color: state.sportFavoriteEvent == favSport ? AppColors.butter : AppColors.floralWhite,

@@ -85,7 +85,7 @@ class _MealTimeItemScreenState extends State<MealTimeItemScreen> {
                       ListTile(
                         visualDensity: VisualDensity.compact,
                         title: const Text('Lentejas', style: AppTextStyles.h3,),
-                        trailing: Image.asset('assets/images/favorite_icon.png',color: Colors.white, height: 21, width: 21),
+                        trailing: const Icon(Icons.star_rounded, size: 21, color: Colors.white),
                       ),
                       const ListTile(visualDensity: VisualDensity.compact, title: Text('20 grams - Fried', style: AppTextStyles.subtitle2), ),
                       const Divider(height: 1, thickness: 1, color: Colors.white,),

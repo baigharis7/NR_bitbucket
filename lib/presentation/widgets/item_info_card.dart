@@ -17,6 +17,8 @@ class ItemInfoCard extends StatelessWidget {
   final Color? color;
   final VoidCallback? onItemTap;
   final double? leadingIconSize;
+  final IconData? leadingIcon;
+  final Color? leadingIconColor;
   final IconData? trailingIcon;
   final IconData? beforeTrailingIcon;
   const ItemInfoCard({
@@ -32,6 +34,8 @@ class ItemInfoCard extends StatelessWidget {
     this.color,
     this.onItemTap,
     this.leadingIconSize,
+    this.leadingIcon,
+    this.leadingIconColor,
     this.trailingIcon,
     this.beforeTrailingIcon,
   });
@@ -56,7 +60,14 @@ class ItemInfoCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              !leadingSrc.isNull() && !leadingTap.isNull() ? InkWell(onTap: () => leadingTap?.call(), child: Image.asset(leadingSrc!, width: leadingIconSize ?? 17, height: leadingIconSize ?? 17)) : SizedBox(width: leadingIconSize ?? 17, height: leadingIconSize ?? 17),
+              (!leadingSrc.isNull() || leadingIcon != null) && !leadingTap.isNull()
+                ? InkWell(
+                    onTap: () => leadingTap?.call(),
+                    child: leadingIcon != null
+                      ? Icon(leadingIcon, size: leadingIconSize ?? 17, color: leadingIconColor)
+                      : Image.asset(leadingSrc!, width: leadingIconSize ?? 17, height: leadingIconSize ?? 17),
+                  )
+                : SizedBox(width: leadingIconSize ?? 17, height: leadingIconSize ?? 17),
               const SizedBox(width: Dimens.width12),
               Expanded(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements
 import 'package:nutrenaissance_flutter/presentation/updatesupplement/view/update_supplement_screen.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
+import '../../../infrastructure/utils/dimens.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../common/view/confirmation_dialog.dart';
 import '../../widgets/item_info_card.dart';
@@ -67,7 +68,9 @@ class _SupplementsTabState extends State<SupplementsTab> {
                   onConfirm: () => favoritesTabsBloc.add(DeleteSupplementFavoriteFavoritesTabsEvent(supplementSimple: supplementFavorite)),
               ),
               subtitle: supplementFavorite.info.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${supplementFavorite.info![0].amount.toString()} ${supplementFavorite.info![0].unit}.',
-              leadingSrc: 'assets/images/favorite_icon.png',
+              leadingIcon: Icons.star_rounded,
+              leadingIconSize: Dimens.height27,
+              leadingIconColor: AppColors.yellowishGreen,
               leadingTap: () {},
               beforeTrailingSrc: 'assets/icon/edit_icon.png',
               beforeTrailingTap: () => Navigator.pushNamed(context, UpdateSupplementScreen.routeName, arguments: supplementFavorite).then((value) => favoritesTabsBloc.add(InitializeFavoritesTabsEvent())),

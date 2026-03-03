@@ -58,7 +58,7 @@ class _MealRoutinesTabState extends State<MealRoutinesTab> {
               return ItemInfoCard(
                 onItemTap: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: item).then((value) => routinesTabsBloc.add(InitializeRoutinesTabEvent())),
                 title: itemName,
-                leadingSrc: 'assets/icon/routine_icon.png',
+                leadingIcon: Icons.history,
                 leadingIconSize: Dimens.height27,
                 trailingSrc: 'assets/images/delete_icon.png',
                 color: AppColors.floralWhite,

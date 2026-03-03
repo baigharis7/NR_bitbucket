@@ -139,7 +139,7 @@ class _ItemRoutineWidgetState extends State<ItemRoutineWidget> {
                           setState(() {});
                           widget.onChangeCreateRoutine?.call(value);
                         },),
-                        trailing: Image.asset('assets/icon/routine_icon.png', height: 25, width: 25),
+                        trailing: const Icon(Icons.history, size: 25),
                       ),
                       const SizedBox(height: Dimens.height12),
                       if (_isCreateRoutine) Text(AppLocalizations.of(context)!.hour, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen)),
