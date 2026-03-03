@@ -154,6 +154,8 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
                 cursorWidth: Dimens.width1,
                 decoration: InputDecoration(
                   fillColor: Colors.white,
+                  prefixIcon: const Icon(Icons.search, color: Colors.white, size: 22),
+                  prefixIconConstraints: const BoxConstraints(minWidth: 30, minHeight: 0),
                   hintText: focusNode.hasFocus ? null : (widget.searchHintText ?? AppLocalizations.of(context)!.write_here_hint),
                   hintStyle: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeNormal, fontWeight: FontWeight.w400),
                   focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
