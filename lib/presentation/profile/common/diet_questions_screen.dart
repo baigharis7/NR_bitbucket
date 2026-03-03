@@ -23,6 +23,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/text_image_checkbox.
 import 'package:nutrenaissance_flutter/presentation/widgets/text_image_radio_button.dart';
 
 import '../../../infrastructure/utils/constants.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/text_radio_button_expansible.dart';
 
 class DietQuestionsScreen extends StatefulWidget {
@@ -238,13 +239,7 @@ class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        child: IconButton(
-                          onPressed: () => onBack(),
-                          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 24,),
-                        ),
-                      ),
+                      ScreenTopBar(title: AppLocalizations.of(context)!.diet, onBack: () => onBack()),
                       Image.asset(
                         'assets/images/logo_name_white.png',
                         width: Dimens.width242,

@@ -85,7 +85,7 @@ class _MicroNutrientsWeeklyScreenState extends State<MicroNutrientsWeeklyScreen>
                 ),
 
                 SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal, vertical: Dimens.paddingLarge),
+                  padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingLarge),
                   child: Column(
                     children: [
                       ScreenTopBar(selectedDate: null, onBack: () => Navigator.pop(context)),

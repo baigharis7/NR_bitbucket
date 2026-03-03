@@ -16,6 +16,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 import 'package:nutrenaissance_flutter/presentation/widgets/text_checkbox_box.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
+import '../../widgets/screen_top_bar.dart';
 
 // TODO: think a new name for title and take it from AppLocalizations.
 class HealthQuestionsScreen extends StatefulWidget {
@@ -89,13 +90,7 @@ class _HealthQuestionsScreen extends State<HealthQuestionsScreen> {
                     padding: const EdgeInsets.all(Dimens.padding20),
                   child: Column(
                     children: [
-                      Container(
-                        alignment: AlignmentDirectional.centerStart,
-                        child: IconButton(
-                          onPressed: () => onBack(),
-                          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 25,),
-                        ),
-                      ),
+                      ScreenTopBar(title: AppLocalizations.of(context)!.medical_history, onBack: () => onBack()),
                       Image.asset(
                         'assets/images/logo_name_white.png',
                         width: Dimens.width242,

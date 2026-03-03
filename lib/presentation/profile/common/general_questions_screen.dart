@@ -24,6 +24,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart'
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
 import '../../../infrastructure/helpers/app_text_styles.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/text_field_general_quest.dart';
 
 class GeneralQuestionsScreen extends StatefulWidget {
@@ -100,9 +101,9 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
 
               // Blur effect
               BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Container(
-                  color: AppColors.black59Percent, // Needed to activate the blur
+                  color: Colors.black.withOpacity(0), // Needed to activate the blur
                 ),
               ),
 
@@ -118,7 +119,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               const SizedBox(width: double.infinity),
-                              Container(alignment: AlignmentDirectional.centerStart, child: IconButton(onPressed: () => onBack(), icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white,))),
+                              ScreenTopBar(title: AppLocalizations.of(context)!.edit_profile, onBack: () => onBack()),
                               Image.asset(
                                 'assets/images/logo_name_white.png',
                                 width: Dimens.width242,

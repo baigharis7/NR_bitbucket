@@ -90,7 +90,7 @@ class _RecommendationsTabHolderState extends State<RecommendationsTabHolder> wit
                 child: Column(
                   children: [
                     Container(
-                      margin: const EdgeInsets.all(Dimens.marginNormal),
+                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingSmall),
                       child: Column(children: [
                         ScreenTopBar(selectedDate: null, onBack: () => Navigator.pop(context)),
                         const SizedBox(height: Dimens.height12),

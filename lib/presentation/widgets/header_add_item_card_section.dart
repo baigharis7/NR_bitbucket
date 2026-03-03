@@ -89,7 +89,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
     return Container(
       padding: const EdgeInsets.only(left: Dimens.paddingLarge, right: Dimens.paddingLarge, bottom: Dimens.paddingLarge, top: Dimens.paddingNormal),
       decoration: BoxDecoration(
-        color: AppColors.darkJungleGreen,
+        color: const Color(0xFF28421D).withOpacity(0.59),
         borderRadius: BorderRadius.circular(16),
         image: !widget.backgroundImage.isNull() ? DecorationImage(image: AssetImage(widget.backgroundImage!), fit: BoxFit.cover, opacity: 0.40,) : null,
         boxShadow: const [
@@ -103,19 +103,24 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (widget.image.isNotNull()) Align(
-            alignment: Alignment.topRight,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(200),
-                boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  widget.title ?? '',
+                  style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize21,),
+                ),
               ),
-              child: Image.asset(widget.image ?? 'assets/images/meal_time_0.png', height: 52, width: 52),
-            ),
-          ),
-          Text(
-            widget.title ?? '',
-            style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize21,),
+              if (widget.image.isNotNull()) Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(200),
+                  boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
+                ),
+                child: Image.asset(widget.image ?? 'assets/images/meal_time_0.png', height: 52, width: 52),
+              ),
+            ],
           ),
           if (widget.onItemSelect != null) const SizedBox(height: 16),
           if (widget.onItemSelect != null) TypeAheadField<String>(

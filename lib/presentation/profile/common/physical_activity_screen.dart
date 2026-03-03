@@ -16,6 +16,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 import 'package:nutrenaissance_flutter/presentation/widgets/text_radio_button_expansible.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
+import '../../widgets/screen_top_bar.dart';
 
 class PhysicalActivityScreen extends StatefulWidget {
   static const routeName = '/physical_activity';
@@ -88,7 +89,7 @@ class _PhysicalActivityScreen extends State<PhysicalActivityScreen> {
                     padding: const EdgeInsets.all(Dimens.padding20),
                   child: Column(
                     children: [
-                      Container(alignment: AlignmentDirectional.centerStart, child: IconButton(onPressed: () => onBack(), icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white,))),
+                      ScreenTopBar(title: AppLocalizations.of(context)!.physical_activity, onBack: () => onBack()),
                       Image.asset(
                         'assets/images/logo_name_white.png',
                         width: Dimens.width242,

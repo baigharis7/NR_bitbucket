@@ -129,7 +129,7 @@ class _MicroNutrientsDetailScreenState
               ),
 
               SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal, vertical: Dimens.paddingLarge),
+                padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingLarge),
                 child: Column(
                   children: [
                     ScreenTopBar(selectedDate: _selectedDate, onBack: () => Navigator.pop(context)),

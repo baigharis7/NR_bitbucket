@@ -4,11 +4,13 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.da
 
 class ScreenTopBar extends StatelessWidget {
   final DateTime? selectedDate;
+  final String? title;
   final VoidCallback onBack;
 
   const ScreenTopBar({
     super.key,
-    required this.selectedDate,
+    this.selectedDate,
+    this.title,
     required this.onBack,
   });
 
@@ -28,6 +30,13 @@ class ScreenTopBar extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xFFD9D9D9).withOpacity(0.80),
                 shape: BoxShape.circle,
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
               child: const Icon(
                 Icons.arrow_back_ios_new,
@@ -36,7 +45,15 @@ class ScreenTopBar extends StatelessWidget {
               ),
             ),
           ),
-          if (selectedDate != null)
+          if (title != null)
+            Text(
+              title!,
+              style: AppTextStyles.merriWeather.copyWith(
+                fontSize: 17,
+                color: Colors.white,
+              ),
+            )
+          else if (selectedDate != null)
             Text(
               DateFormat('EEE, MMM d yyyy').format(selectedDate!),
               style: AppTextStyles.merriWeather.copyWith(

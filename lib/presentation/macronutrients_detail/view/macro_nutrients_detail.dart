@@ -1,8 +1,10 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/macronutrients_detail/bloc/macro_nutrients_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
@@ -10,10 +12,9 @@ import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_b
 import '../../../domain/models/dashboard/nutrients_model.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../common/view/loading_screen.dart';
-import '../../dashboard/view/dashboard_screen.dart';
-import '../../profile/profile/view/profile_screen.dart';
-import '../../widgets/custom_bottom_app_bar.dart';
+import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/macro_nutrient_detail_widget.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/weekly_nutrient_graphic.dart';
 
 class MacroNutrientsDetailScreen extends StatefulWidget {
@@ -25,11 +26,13 @@ class MacroNutrientsDetailScreen extends StatefulWidget {
   State<MacroNutrientsDetailScreen> createState() => _MacroNutrientsDetailScreenState();
 }
 
-class _MacroNutrientsDetailScreenState extends State<MacroNutrientsDetailScreen> {
+class _MacroNutrientsDetailScreenState extends State<MacroNutrientsDetailScreen> with MidnightToastMixin {
   late MacroNutrientsDetailBloc bloc;
+  DateTime? _selectedDate;
 
   @override
   void initState() {
+    subscribeMidnight();
     bloc = BlocProvider.of<MacroNutrientsDetailBloc>(context);
     bloc.add(InitializeEventAction());
     super.initState();
@@ -39,7 +42,11 @@ class _MacroNutrientsDetailScreenState extends State<MacroNutrientsDetailScreen>
       if (ModalRoute.of(context)?.settings.arguments != null) {
         final infoReceived = ModalRoute.of(context)?.settings.arguments;
         if (infoReceived != null) {
-          if (infoReceived is List<NutrientsModel>?) {
+          if (infoReceived is Map) {
+            final macronutrientsList = infoReceived['macronutrients'] as List<NutrientsModel>?;
+            _selectedDate = infoReceived['selectedDate'] as DateTime?;
+            bloc.add(LoadMacroNutrientsEventAction(macronutrientsList: macronutrientsList));
+          } else if (infoReceived is List<NutrientsModel>?) {
             final macronutrientsList = infoReceived as List<NutrientsModel>?;
             bloc.add(LoadMacroNutrientsEventAction(macronutrientsList: macronutrientsList));
           }
@@ -49,124 +56,82 @@ class _MacroNutrientsDetailScreenState extends State<MacroNutrientsDetailScreen>
   }
 
   @override
+  void dispose() {
+    unsubscribeMidnight();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: bloc,
-      child: SafeArea(
-        child: BlocConsumer<MacroNutrientsDetailBloc, MacroNutrientsDetailState>(
-          listener: (ctx, state) {
-            if (state.isLoading) {
-              LoadingScreen.instance().show(
-                context: ctx,
-                text: AppLocalizations.of(ctx)!.loading,
-              );
-            } else {
-              LoadingScreen.instance().hide();
-            }
-            // if (state.onError != null) showErrorSnackBar(context, resolveError(ctx, state.onError!));
-          },
-          builder: (context, state) => Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              leading: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  // size: 18,
-                  color: Colors.black,
-                ),
-              ),
-              actions: [
-                IconButton(
-                  onPressed: () => Navigator.popAndPushNamed(
-                          context, ProfileScreen.routeName)
-                      .then((value) {}),
-                  iconSize: 35.0,
-                  icon: Image.asset(
-                    'assets/icon/profile_icon.png',
-                    color: Colors.black,
-                    height: 29,
-                    width: 29,
-                  ),
-                )
-              ],
-            ),
-            body: Column(
+      child: BlocConsumer<MacroNutrientsDetailBloc, MacroNutrientsDetailState>(
+        listener: (ctx, state) {
+          if (state.isLoading) {
+            LoadingScreen.instance().show(
+              context: ctx,
+              text: AppLocalizations.of(ctx)!.loading,
+            );
+          } else {
+            LoadingScreen.instance().hide();
+          }
+        },
+        builder: (context, state) =>
+            Stack(
               children: [
                 Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.all(Dimens.marginLarge),
-                  child: Text(bloc.getTodayMessage(
-                      AppLocalizations.of(context)!.today,
-                      Localizations.localeOf(context).languageCode,), style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: Dimens.fontSizeMedium)),
-                ),
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.symmetric(
-                      vertical: Dimens.marginXSmall,
-                      horizontal: Dimens.marginLarge),
-                  child: Text(
-                    (AppLocalizations.of(context)!.macronutrients),
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: Dimens.fontSizeMedium),
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
-                          child: WeeklyNutrientGraphic(
-                            title: AppLocalizations.of(context)!.this_week,
-                            data: state.macronutrientsWeekly ?? [],),
-                        ),
-                        ...state.macronutrients.orEmpty().map((item) {
-                          var description = '';
-                          if (item.nutrientInfoMaster.officialName == 'proteinSci') {
-                            description = AppLocalizations.of(context)!.protein;
-                          }
-                          if (item.nutrientInfoMaster.officialName == 'carbsAvailable') {
-                            description = AppLocalizations.of(context)!.carbohydrates;
-                          }
-                          if (item.nutrientInfoMaster.officialName == 'fatTotal') {
-                            description = AppLocalizations.of(context)!.fat;
-                          }
-                          // if(item.fractionToFill > 0 ) {
-                            return MacroNutrientDetailWidget(nutrientsModel: item, description: description,);
-                          // }
-                          // else {
-                          //   return Container();
-                          // }
-                        }),
-                      ],
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/background.png'),
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
+                BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    color: Colors.black.withOpacity(0),
+                  ),
+                ),
+                Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: SafeArea(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingLarge),
+                      child: Column(
+                        children: [
+                          ScreenTopBar(selectedDate: _selectedDate, onBack: () => Navigator.pop(context)),
+                          const SizedBox(height: Dimens.height12),
+                          HeaderAddItemCardSection(
+                            title: AppLocalizations.of(context)!.macronutrients,
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
+                            child: WeeklyNutrientGraphic(
+                              title: AppLocalizations.of(context)!.this_week,
+                              data: state.macronutrientsWeekly ?? [],),
+                          ),
+                          ...state.macronutrients.orEmpty().map((item) {
+                            var description = '';
+                            if (item.nutrientInfoMaster.officialName == 'proteinSci') {
+                              description = AppLocalizations.of(context)!.protein;
+                            }
+                            if (item.nutrientInfoMaster.officialName == 'carbsAvailable') {
+                              description = AppLocalizations.of(context)!.carbohydrates;
+                            }
+                            if (item.nutrientInfoMaster.officialName == 'fatTotal') {
+                              description = AppLocalizations.of(context)!.fat;
+                            }
+                            return MacroNutrientDetailWidget(nutrientsModel: item, description: description,);
+                          }),
+                        ],
+                      ),
+                    ),
+                  ),
+                  bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD),
+                ),
               ],
             ),
-            bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD)
-            // CustomBottomAppBar(initStateCallback: () => null),
-            // resizeToAvoidBottomInset: true,
-            // floatingActionButton: FloatingActionButton(
-            //   elevation: 2.0,
-            //   backgroundColor: Colors.white,
-            //   onPressed: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
-            //   child: Container(
-            //     padding: const EdgeInsets.all(Dimens.paddingSmall),
-            //     child: Image.asset(
-            //       'assets/images/logo_black.png',
-            //       fit: BoxFit.cover,
-            //       color: Colors.black,
-            //     ),
-            //   ),
-            // ),
-            // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-          ),
-        ),
       ),
     );
   }

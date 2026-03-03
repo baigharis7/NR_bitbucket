@@ -13,6 +13,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart'
 import 'package:nutrenaissance_flutter/presentation/widgets/text_checkbox_box.dart';
 import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/constants.dart';
+import '../../widgets/screen_top_bar.dart';
 import '../../widgets/text_radio_button_expansible.dart';
 import 'general_questions_screen.dart';
 
@@ -121,7 +122,7 @@ class ObjectivesProfileScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         const SizedBox(height: Dimens.height12),
-                        Container(alignment: AlignmentDirectional.centerStart, child: IconButton(onPressed: () => onBack(), icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white,))),
+                        ScreenTopBar(title: AppLocalizations.of(context)!.objectives, onBack: () => onBack()),
                         Image.asset(
                           'assets/images/logo_name_white.png',
                           width: 200,
