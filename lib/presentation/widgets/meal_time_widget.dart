@@ -49,7 +49,7 @@ class MealTimeWidget extends StatelessWidget {
                 ],),
               ),
             ),
-            InkWell(onTap: () => onClick.call(), child: Padding(padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8, right: 4), child: Icon(Icons.add_circle, size: 32, color: iconColor))),
+            InkWell(onTap: () => onClick.call(), child: Padding(padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8, right: 4), child: Icon(Icons.add_circle, size: 32, color: iconColor ?? AppColors.yellowishGreen))),
           ],),
         ),
       ),

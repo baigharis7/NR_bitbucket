@@ -376,7 +376,7 @@ class _DashboardScreen extends State<DashboardScreen>
                         name: AppLocalizations.of(context)!.physical_activity,
                         onItemClick: () => Navigator.pushNamed(context, SportItemsScreen.routeName, arguments: selectedDateTime),
                         onClick: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime),
-                        iconColor: Colors.black, backgroundColor: AppColors.floralWhite, svg: 'assets/images/sport.png',
+                        backgroundColor: AppColors.floralWhite, svg: 'assets/images/sport.png',
                       ),
                       DashTitleWidget(title: AppLocalizations.of(context)!.depositions, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
                       MealTimeWidget(
@@ -384,7 +384,6 @@ class _DashboardScreen extends State<DashboardScreen>
                         svg: 'assets/images/feces_urine.png',
                         onItemClick: () => Navigator.pushNamed(context, FecesUrineTabHolder.routeName, arguments: selectedDateTime),
                         onClick: () => Navigator.pushNamed(context, FecesUrineTabs.routeName),
-                        iconColor: Colors.black,
                         backgroundColor: Colors.transparent,
                         backgroundImage: 'assets/images/feces_urine_background.png',
                       ),
