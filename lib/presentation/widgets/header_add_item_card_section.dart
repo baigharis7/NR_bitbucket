@@ -19,7 +19,9 @@ class HeaderAddItemCardSection extends StatefulWidget {
   final String? backgroundImage;
   final String? searchHintText;
   final ValueChanged<FocusNode>? onFocusNodeCreated;
-  const HeaderAddItemCardSection({super.key, this.title, this.onBackTap, this.image, this.items, this.onItemSelect, this.path, this.child, this.backgroundImage, this.searchHintText, this.onFocusNodeCreated});
+  final IconData? icon;
+  final Color? iconColor;
+  const HeaderAddItemCardSection({super.key, this.title, this.onBackTap, this.image, this.items, this.onItemSelect, this.path, this.child, this.backgroundImage, this.searchHintText, this.onFocusNodeCreated, this.icon, this.iconColor});
 
   @override
   State<HeaderAddItemCardSection> createState() => _HeaderAddItemCardSectionState();
@@ -113,7 +115,14 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
                   style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize21,),
                 ),
               ),
-              if (widget.image.isNotNull()) Container(
+              if (widget.icon != null) Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(200),
+                  boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
+                ),
+                child: Icon(widget.icon, size: 42, color: widget.iconColor ?? Colors.white),
+              )
+              else if (widget.image.isNotNull()) Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(200),
                   boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],

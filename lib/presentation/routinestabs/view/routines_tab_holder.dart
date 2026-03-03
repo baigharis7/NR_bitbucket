@@ -161,7 +161,7 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
                 child: Column(children: [
                   ScreenTopBar(selectedDate: null, onBack: () => Navigator.pop(context)),
                   const SizedBox(height: Dimens.height12),
-                  HeaderAddItemCardSection(title: AppLocalizations.of(context)!.routines,),
+                  HeaderAddItemCardSection(title: AppLocalizations.of(context)!.routines, icon: Icons.history,),
                   const SizedBox(height: Dimens.height12),
                   TabBar(
                     controller: _tabController,

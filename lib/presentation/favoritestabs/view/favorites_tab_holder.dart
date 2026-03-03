@@ -161,6 +161,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with SingleTick
                 const SizedBox(height: Dimens.height12),
                 HeaderAddItemCardSection(
                   title: AppLocalizations.of(context)!.favorites,
+                  icon: Icons.star_rounded,
                 ),
                 const SizedBox(height: Dimens.height12),
                 TabBar(
