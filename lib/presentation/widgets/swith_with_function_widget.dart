@@ -10,6 +10,7 @@ class SwitchDashboardWidget extends StatefulWidget {
   final Function(bool) onStateChange;
   final Color? backgroundColor;
   final Color? color;
+  final EdgeInsetsGeometry? margin;
 
   const SwitchDashboardWidget({
     Key? key,
@@ -18,6 +19,7 @@ class SwitchDashboardWidget extends StatefulWidget {
     required this.onStateChange,
     this.color,
     this.backgroundColor,
+    this.margin,
   }) : super(key: key);
 
   @override
@@ -29,7 +31,7 @@ class _SwitchDashboardWidgetState extends State<SwitchDashboardWidget> {
   Widget build(BuildContext context) {
     return Card(
       color: widget.backgroundColor ?? AppColors.darkJungleGreen,
-      margin: const EdgeInsets.symmetric(
+      margin: widget.margin ?? const EdgeInsets.symmetric(
           horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Dimens.border15)),

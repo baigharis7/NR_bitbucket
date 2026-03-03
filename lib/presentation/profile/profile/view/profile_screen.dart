@@ -29,6 +29,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/swith_with_function_
 
 import '../../../../data/api/profile/model/upload_user_profile.dart';
 import '../../../settings/view/settings_screen.dart';
+import '../../../widgets/screen_top_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const routeName = '/profile';
@@ -97,53 +98,28 @@ class _ProfileScreen extends State<ProfileScreen> {
 
             Scaffold(
               backgroundColor: Colors.transparent,
-                appBar: AppBar(
-                  backgroundColor: Colors.transparent,
-                  titleSpacing: Dimens.marginNormal,
-                  elevation: 0,
-                  leading: IconButton(
-                    onPressed: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
-                    icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 25,),
-                  ),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                body: SafeArea(
+                  child: Column(
                     children: [
-                      Text(
-                        AppLocalizations.of(context)!.profile,
-                        style: const TextStyle(
-                          color: Colors.white,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: Dimens.paddingSmall),
+                        child: ScreenTopBar(
+                          title: AppLocalizations.of(context)!.profile,
+                          onBack: () {
+                            if (Navigator.canPop(context)) {
+                              Navigator.pop(context);
+                            } else {
+                              Navigator.pushNamedAndRemoveUntil(context, DashboardScreen.routeName, (route) => false);
+                            }
+                          },
+                          trailing: GestureDetector(
+                            onTap: () => Navigator.pushNamed(context, SettingsScreen.routeName),
+                            child: const Icon(Icons.settings, size: 28, color: Colors.white),
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                  actions: [
-                    IconButton(
-                      onPressed: () => Navigator.pushNamed(context, SettingsScreen.routeName),
-                      icon:const Icon(Icons.settings, size: 29, color: Colors.white),
-                    ),
-                    // PopupMenuHelper().createPopupMenuWith(
-                    //   model: [
-                    //     PopupMenuItemModel(
-                    //       value: 0,
-                    //       title: AppLocalizations.of(context)!.log_out,
-                    //       onPressed: () => bloc.add(PerformLogOutAction(goToLogin: () => Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false,))),
-                    //     ),
-                    //     PopupMenuItemModel(
-                    //       value: 1,
-                    //       title: AppLocalizations.of(context)!.data_and_privacy,
-                    //       onPressed: () => {},
-                    //     ),
-                    //     PopupMenuItemModel(
-                    //       value: 2,
-                    //       title: AppLocalizations.of(context)!.help,
-                    //       onPressed: () => {},
-                    //     ),
-                    //   ],
-                    //   buttonImage: Image.asset('assets/icon/profile_icon.png', height: 29, width: 29, color: Colors.white),
-                    // ),
-                  ],
-                ),
-                body: SingleChildScrollView(
+                      Expanded(
+                        child: SingleChildScrollView(
                   child: Column(
                     children: [
                       Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge), child: ProfileInfoCard(userProfile: state.profile, onTapProfileUpdate: () => Navigator.pushNamed(context, GeneralQuestionsScreen.routeName).then((value) {if (value.toString() != Constants.BACK) bloc.add(SaveChangesAction());}),)),
@@ -167,6 +143,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                 currentState: state.isMenstruation ?? false,
                                 backgroundColor: AppColors.floralWhite,
                                 color: AppColors.redOxide,
+                                margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                                 onStateChange: (value) {
                                   bloc.add(SetMenstruationStateAction(
                                       isMenstruation: value,
@@ -177,6 +154,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                 currentState: state.isCold ?? false,
                                 backgroundColor: AppColors.floralWhite,
                                 color: AppColors.redOxide,
+                                margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                                 onStateChange: (value) {
                                   bloc.add(SetColdStateAction(
                                       isCold: value,
@@ -211,7 +189,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(Dimens.border50)),
                                 child: Text(e.translate(context).toUpperCase(), style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeSmall, color: AppColors.peacockBlue), maxLines: 1, overflow: TextOverflow.ellipsis,))),
-                           const SizedBox(height: Dimens.height32),
+                           const SizedBox(height: Dimens.marginNormal),
                             InkWell(
                               onTap: () => Navigator.pushNamed(context, ObjectivesProfileScreen.routeName,).then((value) => null),
                               child: Row(
@@ -330,6 +308,10 @@ class _ProfileScreen extends State<ProfileScreen> {
                       //     if (value.toString() != Constants.BACK) bloc.add(SaveChangesAction());
                       //   }),
                       // ),
+                    ],
+                  ),
+                ),
+                      ),
                     ],
                   ),
                 ),

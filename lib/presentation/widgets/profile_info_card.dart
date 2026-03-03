@@ -68,7 +68,7 @@ class ProfileInfoCard extends StatelessWidget {
               children: [
                 Text(
                   AppLocalizations.of(context)!.update_data,
-                  style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeSmall, decoration: TextDecoration.underline),
+                  style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal, decoration: TextDecoration.underline),
                 ),
                 const SizedBox(width: Dimens.width5),
                 const Icon(Icons.arrow_forward_ios, size: Dimens.fontSizeSmall, color: Colors.white),

@@ -6,12 +6,14 @@ class ScreenTopBar extends StatelessWidget {
   final DateTime? selectedDate;
   final String? title;
   final VoidCallback onBack;
+  final Widget? trailing;
 
   const ScreenTopBar({
     super.key,
     this.selectedDate,
     this.title,
     required this.onBack,
+    this.trailing,
   });
 
   @override
@@ -62,6 +64,7 @@ class ScreenTopBar extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
+          trailing ?? const SizedBox(width: 28),
         ],
       ),
     );
