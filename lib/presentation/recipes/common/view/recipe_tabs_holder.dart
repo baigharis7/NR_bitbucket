@@ -13,7 +13,9 @@ import '../../../../infrastructure/helpers/app_text_styles.dart';
 import '../../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../../infrastructure/utils/dimens.dart';
 import '../../../common/view/loading_screen.dart';
+import '../../../dashboard/view/dashboard_screen.dart';
 import '../../../recommendations/recipes/view/recipes_tab.dart';
+import '../../../widgets/screen_top_bar.dart';
 
 class RecipesTabsHolder extends StatefulWidget {
   static const routeName = '/recipes_tab_holder';
@@ -95,6 +97,20 @@ class _RecipesTabsHolderState extends State<RecipesTabsHolder>
                 body: SafeArea(
                     child: Column(
                       children: [
+                        const SizedBox(height: Dimens.heightSmall),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall),
+                          child: ScreenTopBar(
+                            selectedDate: null,
+                            onBack: () {
+                              if (Navigator.canPop(context)) {
+                                Navigator.pop(context);
+                              } else {
+                                Navigator.pushNamedAndRemoveUntil(context, DashboardScreen.routeName, (route) => false);
+                              }
+                            },
+                          ),
+                        ),
                         const SizedBox(height: Dimens.heightSmall),
                   Image.asset(
                     'assets/images/logo_name_white.png',
