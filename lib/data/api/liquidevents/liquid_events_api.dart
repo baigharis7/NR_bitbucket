@@ -1,5 +1,5 @@
 import 'package:chuck_interceptor/chuck.dart';
-import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_simple.dart';
+import 'package:nutrenaissance_flutter/data/api/liquidevents/model/upload_liquid_event.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/environment/environment.dart';
@@ -10,14 +10,14 @@ class LiquidEventsApi extends ApiHelper {
       AuthenticationService authenticationService, Chuck chuck)
       : super(preferencesRepository, authenticationService, chuck);
 
-  Future<Map<String, dynamic>> uploadLiquidEvent(
-          LiquidEventSimple liquidEventSimple) =>
+  Future<Map<String, dynamic>> saveLiquidEvent(
+          UploadLiquidEvent uploadLiquidEvent) =>
       post(
         Uri.https(
           Environment().config!.baseUrl,
-          '${Environment().config!.distributionPath}/liquid-event/amplify',
+          '${Environment().config!.distributionPath}/liquid-event',
         ),
-        liquidEventSimple,
+        uploadLiquidEvent,
       );
 
   Future<Map<String, dynamic>> deleteLiquidEvent(String userId, int eventDate) =>

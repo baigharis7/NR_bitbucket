@@ -28,14 +28,14 @@ class LiquidEventsRepositoryImpl extends LiquidEventsRepository {
     final enrichedEvent = await nutrientCalculationService.enrichLiquidEvent(liquidEventSimple);
 
     // Fire background API call for DynamoDB persistence (don't block UI)
-    _syncToBackend(liquidEventSimple);
+    _syncToBackend(enrichedEvent);
 
     return enrichedEvent;
   }
 
-  void _syncToBackend(LiquidEventSimple liquidEventSimple) {
-    liquidEventsApi.uploadLiquidEvent(liquidEventSimple).catchError((error) {
-      syncQueue.enqueue('/liquid-event/amplify', liquidEventSimple);
+  void _syncToBackend(UploadLiquidEvent uploadLiquidEvent) {
+    liquidEventsApi.saveLiquidEvent(uploadLiquidEvent).catchError((error) {
+      syncQueue.enqueue('/liquid-event', uploadLiquidEvent);
       return <String, dynamic>{};
     });
   }
