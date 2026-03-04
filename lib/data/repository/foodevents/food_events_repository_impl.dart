@@ -65,14 +65,14 @@ class FoodEventsRepositoryImpl extends FoodEventsRepository {
     );
 
     // Fire background API call for DynamoDB persistence (don't block UI)
-    _syncToBackend(foodEventSimple);
+    _syncToBackend(enrichedEvent);
 
     return enrichedEvent;
   }
 
-  void _syncToBackend(FoodEventSimple foodEventSimple) {
-    foodEventsApi.uploadFoodEvent(foodEventSimple).catchError((error) {
-      syncQueue.enqueue('/food-event/amplify', foodEventSimple);
+  void _syncToBackend(UploadFoodEvent uploadFoodEvent) {
+    foodEventsApi.saveFoodEvent(uploadFoodEvent).catchError((error) {
+      syncQueue.enqueue('/food-event', uploadFoodEvent);
       return <String, dynamic>{};
     });
   }
