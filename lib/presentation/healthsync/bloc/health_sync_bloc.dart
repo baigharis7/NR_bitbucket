@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/healthsync/sync_health_
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/toggle_health_sync_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 
 part 'health_sync_event.dart';
 part 'health_sync_state.dart';
@@ -147,6 +148,10 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     try {
       final syncedActivities = await syncHealthActivitiesInteractor.execute();
       final lastSyncTime = await healthSyncRepository.getLastSyncTime();
+
+      if (syncedActivities.isNotEmpty) {
+        DashboardEventBus.instance.notify(DataChangedCategory.sport);
+      }
 
       emit(state.copyWith(
         isLoading: false,

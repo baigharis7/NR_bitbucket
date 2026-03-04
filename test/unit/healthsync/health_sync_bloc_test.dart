@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/presentation/healthsync/bloc/health_sync_bloc.dart';
 
 import '../../mocks/health_sync_mocks.dart';
@@ -284,6 +287,54 @@ void main() {
               .having((s) => s.onError, 'onError', ErrorTypes.unknownError),
         ],
       );
+
+      test('notifies DashboardEventBus with sport category when activities are synced', () async {
+        when(() => mockSyncHealthActivitiesInteractor.execute(since: any(named: 'since')))
+            .thenAnswer((_) async => [
+                  SportEventComplete(
+                    userId: 'test',
+                    eventId: 1,
+                    eventDate: DateTime.now().millisecondsSinceEpoch,
+                    sportName: 'Running',
+                    source: 'apple_health',
+                    eventKcals: 200,
+                    info: [],
+                  ),
+                ]);
+        when(() => mockHealthSyncRepository.getLastSyncTime())
+            .thenAnswer((_) async => DateTime.now());
+
+        final busEvents = <DataChangedCategory>[];
+        final sub = DashboardEventBus.instance.stream.listen(busEvents.add);
+
+        final bloc = buildBloc();
+        bloc.add(HealthSyncManualTrigger());
+        await Future.delayed(const Duration(milliseconds: 200));
+
+        expect(busEvents, contains(DataChangedCategory.sport));
+
+        await sub.cancel();
+        await bloc.close();
+      });
+
+      test('does not notify DashboardEventBus when no activities are synced', () async {
+        when(() => mockSyncHealthActivitiesInteractor.execute(since: any(named: 'since')))
+            .thenAnswer((_) async => []);
+        when(() => mockHealthSyncRepository.getLastSyncTime())
+            .thenAnswer((_) async => DateTime.now());
+
+        final busEvents = <DataChangedCategory>[];
+        final sub = DashboardEventBus.instance.stream.listen(busEvents.add);
+
+        final bloc = buildBloc();
+        bloc.add(HealthSyncManualTrigger());
+        await Future.delayed(const Duration(milliseconds: 200));
+
+        expect(busEvents, isEmpty);
+
+        await sub.cancel();
+        await bloc.close();
+      });
     });
   });
 

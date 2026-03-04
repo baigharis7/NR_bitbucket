@@ -24,6 +24,7 @@ import 'package:nutrenaissance_flutter/presentation/barcodescanning/view/bar_cod
 import 'package:nutrenaissance_flutter/presentation/common/view/floating_menu_controller.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
+import 'package:nutrenaissance_flutter/presentation/healthsync/bloc/health_sync_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_bloc.dart';
@@ -129,6 +130,7 @@ class _DashboardScreen extends State<DashboardScreen>
     if (state == AppLifecycleState.resumed) {
       MidnightService.instance.checkNow();
       FcmService.instance.triggerSync();
+      context.read<HealthSyncBloc>().add(HealthSyncManualTrigger());
     }
   }
 
