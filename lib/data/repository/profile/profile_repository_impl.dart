@@ -54,8 +54,8 @@ class ProfileRepositoryImpl extends ProfileRepository {
   }
 
   void _syncToBackend(upload.UploadUserProfile uploadProfile) {
-    profileApi.uploadProfileApi(uploadProfile).catchError((error) {
-      syncQueue.enqueue('/profile-data', uploadProfile);
+    profileApi.saveProfile(uploadProfile).catchError((error) {
+      syncQueue.enqueue('/profile', uploadProfile);
       return <String, dynamic>{};
     });
   }

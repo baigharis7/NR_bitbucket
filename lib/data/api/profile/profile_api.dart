@@ -10,11 +10,11 @@ class ProfileApi extends ApiHelper {
 
   ProfileApi(PreferencesRepository preferencesRepository, AuthenticationService authenticationService, Chuck chuck) : super(preferencesRepository, authenticationService, chuck);
 
-  Future<Map<String, dynamic>> uploadProfileApi(UploadUserProfile body) =>
+  Future<Map<String, dynamic>> saveProfile(UploadUserProfile body) =>
       post(
         Uri.https(
           Environment().config!.baseUrl,
-          '${Environment().config!.distributionPath}/profile-data',
+          '${Environment().config!.distributionPath}/profile',
         ),
         body,
       );
