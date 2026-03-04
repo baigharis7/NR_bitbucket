@@ -6,6 +6,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/healthsync/toggle_healt
 import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor.dart';
 
@@ -15,6 +16,8 @@ class MockHealthSyncRepository extends Mock implements HealthSyncRepository {}
 class MockLocalStorageRepository extends Mock implements LocalStorageRepository {}
 
 class MockPreferencesRepository extends Mock implements PreferencesRepository {}
+
+class MockSportEventsRepository extends Mock implements SportEventsRepository {}
 
 // Interactor Mocks
 class MockCheckHealthSyncStatusInteractor extends Mock

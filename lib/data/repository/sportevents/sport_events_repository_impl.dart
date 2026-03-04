@@ -35,14 +35,15 @@ class SportEventsRepositoryImpl extends SportEventsRepository {
     );
 
     // Fire background API call for DynamoDB persistence (don't block UI)
-    _syncToBackend(sportEventSimple);
+    syncToBackend(sportEventComplete);
 
     return sportEventComplete;
   }
 
-  void _syncToBackend(SportEventSimple sportEventSimple) {
-    sportEventsApi.uploadSportEvent(sportEventSimple).catchError((error) {
-      syncQueue.enqueue('/sport-event/amplify', sportEventSimple);
+  @override
+  void syncToBackend(SportEventComplete sportEventComplete) {
+    sportEventsApi.saveSportEvent(sportEventComplete).catchError((error) {
+      syncQueue.enqueue('/sport-event', sportEventComplete);
       return <String, dynamic>{};
     });
   }

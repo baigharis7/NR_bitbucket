@@ -1216,8 +1216,8 @@ void main() async {
     healthSyncRepository: healthSyncRepository,
     localStorageRepository: localStorageRepository,
     preferencesRepository: prefsRepository,
-    uploadSportEventsInteractor: uploadSportEventsInteractor,
     saveSportEventInteractor: saveSportEventInteractor,
+    sportEventsRepository: sportEventsRepository,
   );
 
   final healthSyncBloc = HealthSyncBloc(

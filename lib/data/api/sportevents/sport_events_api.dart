@@ -1,5 +1,5 @@
 import 'package:chuck_interceptor/chuck.dart';
-import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/environment/environment.dart';
@@ -9,13 +9,14 @@ class SportEventsApi extends ApiHelper {
 
   SportEventsApi(PreferencesRepository preferencesRepository, AuthenticationService authenticationService, Chuck chuck) : super(preferencesRepository, authenticationService, chuck);
 
-  Future<Map<String, dynamic>> uploadSportEvent(SportEventSimple sportEventSimple) =>
+  /// Save pre-computed sport event to DynamoDB (simple write, no server-side computation).
+  Future<Map<String, dynamic>> saveSportEvent(SportEventComplete sportEventComplete) =>
       post(
         Uri.https(
           Environment().config!.baseUrl,
-          '${Environment().config!.distributionPath}/sport-event/amplify',
+          '${Environment().config!.distributionPath}/sport-event',
         ),
-        sportEventSimple,
+        sportEventComplete,
       );
 
   Future<Map<String, dynamic>> deleteSportEvent(String userId, int eventId) =>

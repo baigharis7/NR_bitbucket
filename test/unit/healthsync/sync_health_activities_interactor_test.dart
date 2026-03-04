@@ -6,12 +6,10 @@ import 'package:nutrenaissance_flutter/domain/interactor/healthsync/sync_health_
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_activity.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_metadata.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
-import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 
 import '../../mocks/health_sync_mocks.dart';
 
 class FakeHealthActivity extends Fake implements HealthActivity {}
-class FakeSportEventSimple extends Fake implements SportEventSimple {}
 class FakeSportEventComplete extends Fake implements SportEventComplete {}
 class FakeHealthSyncMetadata extends Fake implements HealthSyncMetadata {}
 
@@ -19,14 +17,13 @@ void main() {
   late MockHealthSyncRepository mockHealthSyncRepository;
   late MockLocalStorageRepository mockLocalStorageRepository;
   late MockPreferencesRepository mockPreferencesRepository;
-  late MockUploadSportEventsInteractor mockUploadSportEventsInteractor;
   late MockSaveSportEventInteractor mockSaveSportEventInteractor;
+  late MockSportEventsRepository mockSportEventsRepository;
   late SyncHealthActivitiesInteractorImpl interactor;
   late SportsInfoEntity testSportsInfo;
 
   setUpAll(() {
     registerFallbackValue(FakeHealthActivity());
-    registerFallbackValue(FakeSportEventSimple());
     registerFallbackValue(FakeSportEventComplete());
     registerFallbackValue(FakeHealthSyncMetadata());
     registerFallbackValue(MasterFilesType.sportsInfo);
@@ -37,15 +34,15 @@ void main() {
     mockHealthSyncRepository = MockHealthSyncRepository();
     mockLocalStorageRepository = MockLocalStorageRepository();
     mockPreferencesRepository = MockPreferencesRepository();
-    mockUploadSportEventsInteractor = MockUploadSportEventsInteractor();
     mockSaveSportEventInteractor = MockSaveSportEventInteractor();
+    mockSportEventsRepository = MockSportEventsRepository();
 
     interactor = SyncHealthActivitiesInteractorImpl(
       healthSyncRepository: mockHealthSyncRepository,
       localStorageRepository: mockLocalStorageRepository,
       preferencesRepository: mockPreferencesRepository,
-      uploadSportEventsInteractor: mockUploadSportEventsInteractor,
       saveSportEventInteractor: mockSaveSportEventInteractor,
+      sportEventsRepository: mockSportEventsRepository,
     );
 
     testSportsInfo = SportsInfoEntity(
@@ -205,7 +202,7 @@ void main() {
       final result = await interactor.execute();
 
       expect(result, isEmpty);
-      verifyNever(() => mockUploadSportEventsInteractor.execute(any()));
+      verifyNever(() => mockSaveSportEventInteractor.execute(any(), any()));
     });
 
     test('processes new activities successfully', () async {
@@ -252,18 +249,17 @@ void main() {
       when(() => mockHealthSyncRepository.isAlreadySynced('new_activity_id'))
           .thenAnswer((_) async => false);
 
-      var uploadCalled = false;
       var saveCalled = false;
       var metadataSaved = false;
+      var syncToBackendCalled = false;
 
-      when(() => mockUploadSportEventsInteractor.execute(any()))
-          .thenAnswer((_) async {
-        uploadCalled = true;
-        return uploadedEvent;
-      });
       when(() => mockSaveSportEventInteractor.execute(any(), any()))
           .thenAnswer((_) async {
         saveCalled = true;
+      });
+      when(() => mockSportEventsRepository.syncToBackend(any()))
+          .thenAnswer((_) {
+        syncToBackendCalled = true;
       });
       when(() => mockHealthSyncRepository.saveHealthSyncMetadata(any()))
           .thenAnswer((_) async {
@@ -275,10 +271,10 @@ void main() {
       final result = await interactor.execute();
 
       expect(result, hasLength(1));
-      expect(result.first.eventId, 1);
       expect(result.first.source, 'apple_health');
-      expect(uploadCalled, isTrue);
+      expect(result.first.eventKcals, 500); // Preserves health platform calories
       expect(saveCalled, isTrue);
+      expect(syncToBackendCalled, isTrue);
       expect(metadataSaved, isTrue);
     });
 
@@ -381,18 +377,17 @@ void main() {
       when(() => mockHealthSyncRepository.isAlreadySynced(any()))
           .thenAnswer((_) async => false);
 
-      // First activity upload fails
+      // First activity save fails
       var callCount = 0;
-      when(() => mockUploadSportEventsInteractor.execute(any())).thenAnswer((_) async {
+      when(() => mockSaveSportEventInteractor.execute(any(), any()))
+          .thenAnswer((_) async {
         callCount++;
         if (callCount == 1) {
-          throw Exception('Upload failed for first activity');
+          throw Exception('Save failed for first activity');
         }
-        return uploadedEvent2;
       });
-
-      when(() => mockSaveSportEventInteractor.execute(any(), any()))
-          .thenAnswer((_) async {});
+      when(() => mockSportEventsRepository.syncToBackend(any()))
+          .thenAnswer((_) {});
       when(() => mockHealthSyncRepository.saveHealthSyncMetadata(any()))
           .thenAnswer((_) async {});
       when(() => mockHealthSyncRepository.setLastSyncTime(any()))
@@ -400,9 +395,10 @@ void main() {
 
       final result = await interactor.execute();
 
-      // Second activity should still be processed
+      // Second activity should still be processed despite first failing
       expect(result, hasLength(1));
-      expect(result.first.eventId, 2);
+      expect(result.first.source, 'apple_health');
+      expect(result.first.eventKcals, 200); // Preserves health platform calories
     });
   });
 }

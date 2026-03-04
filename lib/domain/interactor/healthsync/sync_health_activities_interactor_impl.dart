@@ -2,13 +2,13 @@ import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_file
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/sync_health_activities_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_activity.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_metadata.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_events_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/health_activity_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/health_activity_type_mapping.dart';
 
@@ -16,8 +16,8 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
   final HealthSyncRepository healthSyncRepository;
   final LocalStorageRepository localStorageRepository;
   final PreferencesRepository preferencesRepository;
-  final UploadSportEventsInteractor uploadSportEventsInteractor;
   final SaveSportEventInteractor saveSportEventInteractor;
+  final SportEventsRepository sportEventsRepository;
 
   /// Minimum time between syncs (15 minutes)
   static const Duration _minSyncInterval = Duration(minutes: 15);
@@ -29,8 +29,8 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     required this.healthSyncRepository,
     required this.localStorageRepository,
     required this.preferencesRepository,
-    required this.uploadSportEventsInteractor,
     required this.saveSportEventInteractor,
+    required this.sportEventsRepository,
   });
 
   @override
@@ -135,7 +135,8 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     return newActivities;
   }
 
-  /// Process a single health activity: map to sport event, upload, save locally
+  /// Process a single health activity: build sport event with health platform
+  /// calories (no METs recalculation), save locally, sync to backend.
   Future<SportEventComplete?> _processActivity(
     HealthActivity activity,
     String userId,
@@ -149,29 +150,32 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     sportId ??= HealthActivityTypeMapping.findFallbackSportId(sportsInfo);
     if (sportId == null) return null;
 
-    // Create sport event simple for upload
-    final sportEventSimple = mapHealthActivityToSportEventSimple(
+    // Build SportEventComplete directly with health platform calories
+    // (skips SportKcalCalculationService — health platform data is more accurate)
+    final sportEvent = mapHealthActivityToSportEventComplete(
       activity: activity,
       userId: userId,
+      eventId: activity.startTime.millisecondsSinceEpoch,
       sportId: sportId,
       sportsInfo: sportsInfo,
+      eventKcals: activity.caloriesBurned?.round() ?? 0,
     );
 
-    // Upload to AWS backend
-    final uploadedEvent = await uploadSportEventsInteractor.execute(sportEventSimple);
-
     // Save locally
-    await saveSportEventInteractor.execute(uploadedEvent, false);
+    await saveSportEventInteractor.execute(sportEvent, false);
+
+    // Sync to DynamoDB (fire-and-forget, same as manual entry)
+    sportEventsRepository.syncToBackend(sportEvent);
 
     // Save sync metadata for deduplication
     final metadata = HealthSyncMetadata(
       healthPlatformId: activity.healthPlatformId,
-      sportEventId: uploadedEvent.eventId,
+      sportEventId: sportEvent.eventId,
       syncedAt: DateTime.now(),
       sourceType: activity.sourceType,
     );
     await healthSyncRepository.saveHealthSyncMetadata(metadata);
 
-    return uploadedEvent;
+    return sportEvent;
   }
 }
