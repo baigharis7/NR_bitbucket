@@ -198,9 +198,13 @@ void main() {
       );
 
       blocTest<HealthSyncBloc, HealthSyncState>(
-        'emits error state when toggle fails',
+        'emits permission denied state when toggle fails',
         setUp: () {
           when(() => mockToggleHealthSyncInteractor.execute(true))
+              .thenAnswer((_) async => false);
+          when(() => mockHealthSyncRepository.hasPermissions())
+              .thenAnswer((_) async => false);
+          when(() => mockHealthSyncRepository.isHealthSyncEnabled())
               .thenAnswer((_) async => false);
         },
         build: buildBloc,
@@ -209,7 +213,9 @@ void main() {
           isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
           isA<HealthSyncState>()
               .having((s) => s.isLoading, 'isLoading', false)
-              .having((s) => s.onError, 'onError', ErrorTypes.unknownError),
+              .having((s) => s.isSyncEnabled, 'isSyncEnabled', false)
+              .having((s) => s.hasPermissions, 'hasPermissions', false)
+              .having((s) => s.permissionGranted, 'permissionGranted', false),
         ],
       );
     });

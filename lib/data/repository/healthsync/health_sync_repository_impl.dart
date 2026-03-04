@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_meta
 import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
 /// Implementation of HealthSyncRepository using the health package.
@@ -56,12 +57,14 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
         // The health plugin's hasPermissions probe is unreliable — it falls through
         // to Google Fit silently when HC is not installed.
         final result = await _platformChannel.invokeMethod<bool>('isHealthConnectAvailable');
+        CrashlyticsService.instance.log('HealthSync: isHealthConnectAvailable=$result');
         return result ?? false;
       }
 
       // iOS: HealthKit is always available on supported devices
       return true;
-    } catch (e) {
+    } catch (e, stack) {
+      CrashlyticsService.record(e, stack, context: {'method': 'isHealthSyncAvailable'});
       return false;
     }
   }
@@ -69,12 +72,15 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   @override
   Future<bool> requestPermissions() async {
     try {
+      CrashlyticsService.instance.log('HealthSync: requestAuthorization types=${_readTypes.map((t) => t.name).join(",")}');
       final authorized = await _health.requestAuthorization(
         _readTypes,
         permissions: _permissions,
       );
+      CrashlyticsService.instance.log('HealthSync: requestAuthorization result=$authorized');
       return authorized;
-    } catch (e) {
+    } catch (e, stack) {
+      CrashlyticsService.record(e, stack, context: {'method': 'requestPermissions'});
       return false;
     }
   }
@@ -86,8 +92,10 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
         _readTypes,
         permissions: _permissions,
       );
+      CrashlyticsService.instance.log('HealthSync: hasPermissions=$authorized');
       return authorized ?? false;
-    } catch (e) {
+    } catch (e, stack) {
+      CrashlyticsService.record(e, stack, context: {'method': 'hasPermissions'});
       return false;
     }
   }

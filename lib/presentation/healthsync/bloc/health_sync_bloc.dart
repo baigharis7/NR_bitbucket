@@ -6,6 +6,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/healthsync/toggle_healt
 import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 
 part 'health_sync_event.dart';
 part 'health_sync_state.dart';
@@ -40,18 +41,35 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
 
     try {
       final isAvailable = await healthSyncRepository.isHealthSyncAvailable();
+      CrashlyticsService.instance.log('HealthSync init: isAvailable=$isAvailable');
+
       final isEnabled = await healthSyncRepository.isHealthSyncEnabled();
-      final hasPermissions = await healthSyncRepository.hasPermissions();
+
+      // Only check permissions if HC is available — calling hasPermissions
+      // when HC is not installed throws on some devices.
+      bool hasPermissions = false;
+      if (isAvailable) {
+        hasPermissions = await healthSyncRepository.hasPermissions();
+      }
+      CrashlyticsService.instance.log('HealthSync init: isEnabled=$isEnabled, hasPermissions=$hasPermissions');
+
+      // Auto-disable sync if permissions were revoked externally (e.g. in HC settings)
+      if (isEnabled && !hasPermissions && isAvailable) {
+        CrashlyticsService.instance.log('HealthSync init: permissions revoked, disabling sync');
+        await healthSyncRepository.setHealthSyncEnabled(false);
+      }
+
       final lastSyncTime = await healthSyncRepository.getLastSyncTime();
 
       emit(state.copyWith(
         isLoading: false,
         isAvailable: isAvailable,
-        isSyncEnabled: isEnabled,
+        isSyncEnabled: isEnabled && hasPermissions,
         hasPermissions: hasPermissions,
         lastSyncTime: lastSyncTime,
       ));
-    } catch (e) {
+    } catch (e, stack) {
+      CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncInitialization'});
       emit(state.copyWith(
         isLoading: false,
         onError: ErrorTypes.unknownError,
@@ -66,7 +84,9 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     emit(state.copyWith(isLoading: true));
 
     try {
+      CrashlyticsService.instance.log('HealthSync: requesting permissions');
       final granted = await requestHealthPermissionsInteractor.execute();
+      CrashlyticsService.instance.log('HealthSync: permissions granted=$granted');
 
       if (granted) {
         // Also enable sync after permissions are granted
@@ -85,7 +105,8 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
           permissionGranted: false,
         ));
       }
-    } catch (e) {
+    } catch (e, stack) {
+      CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncRequestPermissions'});
       emit(state.copyWith(
         isLoading: false,
         onError: ErrorTypes.unknownError,
@@ -100,7 +121,9 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     emit(state.copyWith(isLoading: true));
 
     try {
+      CrashlyticsService.instance.log('HealthSync: toggle enable=${event.enable}');
       final success = await toggleHealthSyncInteractor.execute(event.enable);
+      CrashlyticsService.instance.log('HealthSync: toggle success=$success');
 
       if (success) {
         final lastSyncTime = await healthSyncRepository.getLastSyncTime();
@@ -112,19 +135,20 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
           lastSyncTime: lastSyncTime,
         ));
       } else {
-        // Toggle failed - likely permissions denied or Health Connect not available
-        // Re-check actual state and update UI accordingly
+        // Toggle failed — re-check actual state
         final hasPermissions = await healthSyncRepository.hasPermissions();
         final isEnabled = await healthSyncRepository.isHealthSyncEnabled();
+        CrashlyticsService.instance.log('HealthSync: toggle failed, hasPermissions=$hasPermissions, isEnabled=$isEnabled');
 
         emit(state.copyWith(
           isLoading: false,
           isSyncEnabled: isEnabled,
           hasPermissions: hasPermissions,
-          permissionGranted: event.enable ? false : null, // Signal permission was denied
+          permissionGranted: event.enable ? false : null,
         ));
       }
-    } catch (e) {
+    } catch (e, stack) {
+      CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncToggle', 'enable': '${event.enable}'});
       emit(state.copyWith(
         isLoading: false,
         onError: ErrorTypes.unknownError,
@@ -142,8 +166,10 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     ));
 
     try {
+      CrashlyticsService.instance.log('HealthSync: manual trigger started');
       final syncedActivities = await syncHealthActivitiesInteractor.execute();
       final lastSyncTime = await healthSyncRepository.getLastSyncTime();
+      CrashlyticsService.instance.log('HealthSync: synced ${syncedActivities.length} activities');
 
       if (syncedActivities.isNotEmpty) {
         DashboardEventBus.instance.notify(DataChangedCategory.sport);
@@ -156,7 +182,8 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         syncedActivitiesCount: syncedActivities.length,
         syncSuccess: true,
       ));
-    } catch (e) {
+    } catch (e, stack) {
+      CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncManualTrigger'});
       emit(state.copyWith(
         isLoading: false,
         isSyncing: false,
@@ -174,8 +201,8 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       // After returning from Play Store, re-check availability
       final isAvailable = await healthSyncRepository.isHealthSyncAvailable();
       emit(state.copyWith(isAvailable: isAvailable));
-    } catch (e) {
-      // Ignore errors - user may have cancelled or Play Store not available
+    } catch (e, stack) {
+      CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncInstallHealthConnect'});
     }
   }
 
@@ -185,8 +212,8 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
   ) async {
     try {
       await healthSyncRepository.openHealthConnect();
-    } catch (e) {
-      // Ignore errors - user may have cancelled
+    } catch (e, stack) {
+      CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncOpenHealthConnect'});
     }
   }
 }

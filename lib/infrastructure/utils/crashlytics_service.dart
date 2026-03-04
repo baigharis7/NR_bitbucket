@@ -9,7 +9,14 @@ class CrashlyticsService {
   CrashlyticsService._privateConstructor();
   static final CrashlyticsService instance = CrashlyticsService._privateConstructor();
 
-  final FirebaseCrashlytics _crashlytics = FirebaseCrashlytics.instance;
+  FirebaseCrashlytics? _crashlyticsInstance;
+  FirebaseCrashlytics get _crashlytics {
+    try {
+      return _crashlyticsInstance ??= FirebaseCrashlytics.instance;
+    } catch (_) {
+      rethrow;
+    }
+  }
 
   /// Initialize Crashlytics
   Future<void> init() async {
@@ -44,7 +51,11 @@ class CrashlyticsService {
 
   /// Log informational messages to be visible in Crashlytics
   Future<void> log(String message) async {
-    await _crashlytics.log(message);
+    try {
+      await _crashlytics.log(message);
+    } catch (_) {
+      // Firebase not initialized (e.g. in tests)
+    }
   }
 
   /// Manually record handled exceptions
@@ -59,12 +70,16 @@ class CrashlyticsService {
   }
 
   static void record(dynamic error, StackTrace? stack, {Map<String, dynamic>? context}) {
-    if (context != null) {
-      context.forEach((key, value) {
-        FirebaseCrashlytics.instance.setCustomKey(key, value.toString());
-      });
-    }
+    try {
+      if (context != null) {
+        context.forEach((key, value) {
+          FirebaseCrashlytics.instance.setCustomKey(key, value.toString());
+        });
+      }
 
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: false);
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: false);
+    } catch (_) {
+      // Firebase not initialized (e.g. in tests)
+    }
   }
 }
