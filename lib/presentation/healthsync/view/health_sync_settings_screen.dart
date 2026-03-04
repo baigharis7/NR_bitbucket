@@ -51,8 +51,9 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Re-check availability when returning from Play Store (after installing Health Connect)
-    if (state == AppLifecycleState.resumed) {
+    // Re-check availability when returning from Play Store (after installing Health Connect).
+    // Skip if the bloc is busy (toggle/permission in progress) to avoid interference.
+    if (state == AppLifecycleState.resumed && !_bloc.state.isLoading) {
       _bloc.add(HealthSyncInitialization());
     }
   }
@@ -102,10 +103,6 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
           );
         }
 
-        // Show Health Connect setup guide after enabling sync on Android
-        if (state.showHcSetupGuide == true) {
-          _showHcSetupBottomSheet(context);
-        }
       },
       builder: (context, state) {
         return Stack(
@@ -457,160 +454,4 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
     );
   }
 
-  void _showHcSetupBottomSheet(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Drag handle
-                Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-
-                // Icon
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: AppColors.yellowishGreen.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.sync,
-                    size: 32,
-                    color: AppColors.yellowishGreen,
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Title
-                Text(
-                  l10n.health_sync_hc_setup_title,
-                  style: AppTextStyles.merriWeather.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontSize: Dimens.fontSizeXLarge,
-                    color: AppColors.yellowishGreen,
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Body
-                Text(
-                  l10n.health_sync_hc_setup_body,
-                  style: AppTextStyles.radioCanadaBig.copyWith(
-                    fontSize: Dimens.fontSizeNormal,
-                    color: AppColors.battleshipGrey,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-
-                // Steps
-                _buildStep(1, l10n.health_sync_hc_setup_step1),
-                _buildStep(2, l10n.health_sync_hc_setup_step2),
-                _buildStep(3, l10n.health_sync_hc_setup_step3),
-                const SizedBox(height: 24),
-
-                // Open Health Connect button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(sheetContext);
-                      _bloc.add(HealthSyncOpenHealthConnect());
-                    },
-                    icon: const Icon(Icons.open_in_new, size: 18),
-                    label: Text(l10n.health_sync_hc_setup_open),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.yellowishGreen,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                // Got it button
-                SizedBox(
-                  width: double.infinity,
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(sheetContext),
-                    child: Text(
-                      l10n.health_sync_hc_setup_done,
-                      style: TextStyle(
-                        color: AppColors.yellowishGreen.withOpacity(0.7),
-                        fontSize: Dimens.fontSize15,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildStep(int number, String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: AppColors.yellowishGreen.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                '$number',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  color: AppColors.yellowishGreen,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                text,
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: Colors.black87,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

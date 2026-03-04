@@ -11,8 +11,6 @@ class HealthSyncState {
   final ErrorTypes? onError;
   final bool? permissionGranted;
   final bool? syncSuccess;
-  /// One-shot flag to show the Health Connect setup guide bottom sheet (Android only).
-  final bool? showHcSetupGuide;
 
   HealthSyncState({
     this.isLoading = false,
@@ -25,7 +23,6 @@ class HealthSyncState {
     this.onError,
     this.permissionGranted,
     this.syncSuccess,
-    this.showHcSetupGuide,
   });
 
   HealthSyncState copyWith({
@@ -39,7 +36,6 @@ class HealthSyncState {
     ErrorTypes? onError,
     bool? permissionGranted,
     bool? syncSuccess,
-    bool? showHcSetupGuide,
   }) {
     return HealthSyncState(
       isLoading: isLoading ?? this.isLoading,
@@ -52,7 +48,6 @@ class HealthSyncState {
       onError: onError,
       permissionGranted: permissionGranted,
       syncSuccess: syncSuccess,
-      showHcSetupGuide: showHcSetupGuide,
     );
   }
 }

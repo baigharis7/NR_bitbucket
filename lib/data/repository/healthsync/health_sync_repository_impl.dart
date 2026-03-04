@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:health/health.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:nutrenaissance_flutter/data/local/models/healthsync/health_sync_metadata_entity.dart';
@@ -36,6 +37,8 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   static final List<HealthDataAccess> _permissions =
       _readTypes.map((_) => HealthDataAccess.READ).toList();
 
+  static const _platformChannel = MethodChannel('nutrenaissance/platform');
+
   HealthSyncRepositoryImpl({
     required this.localStorageRepository,
     required this.preferencesRepository,
@@ -49,12 +52,11 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       }
 
       if (Platform.isAndroid) {
-        // Probe Health Connect availability by calling hasPermissions.
-        // Returns true/false/null if HC is installed; throws PlatformException if not.
-        await _health.hasPermissions(
-          [HealthDataType.STEPS],
-          permissions: [HealthDataAccess.READ],
-        );
+        // Use native HealthConnectClient.getSdkStatus() to check if HC is installed.
+        // The health plugin's hasPermissions probe is unreliable — it falls through
+        // to Google Fit silently when HC is not installed.
+        final result = await _platformChannel.invokeMethod<bool>('isHealthConnectAvailable');
+        return result ?? false;
       }
 
       // iOS: HealthKit is always available on supported devices
@@ -367,16 +369,20 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   @override
   Future<void> openHealthConnect() async {
     if (Platform.isAndroid) {
-      // Try to launch Health Connect app directly via its package
-      const hcPackage = 'com.google.android.apps.healthdata';
-      final launchUri = Uri.parse('https://play.google.com/store/apps/details?id=$hcPackage');
-
-      // Try the market launch URI first (opens the app if installed)
-      final marketUri = Uri.parse('market://launch?id=$hcPackage');
-      if (await canLaunchUrl(marketUri)) {
-        await launchUrl(marketUri);
-      } else {
-        await launchUrl(launchUri, mode: LaunchMode.externalApplication);
+      // Use native intent to open the Health Connect app directly
+      final opened = await _platformChannel.invokeMethod<bool>('openHealthConnect');
+      if (opened != true) {
+        // Fallback: open Play Store listing
+        const hcPackage = 'com.google.android.apps.healthdata';
+        final marketUri = Uri.parse('market://details?id=$hcPackage');
+        if (await canLaunchUrl(marketUri)) {
+          await launchUrl(marketUri);
+        } else {
+          await launchUrl(
+            Uri.parse('https://play.google.com/store/apps/details?id=$hcPackage'),
+            mode: LaunchMode.externalApplication,
+          );
+        }
       }
     }
   }

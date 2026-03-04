@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/check_health_sync_status_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/request_health_permissions_interactor.dart';
@@ -79,7 +77,6 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
           hasPermissions: true,
           isSyncEnabled: true,
           permissionGranted: true,
-          showHcSetupGuide: Platform.isAndroid ? true : null,
         ));
       } else {
         emit(state.copyWith(
@@ -113,7 +110,6 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
           isSyncEnabled: event.enable,
           hasPermissions: event.enable, // If enable succeeded, we have permissions
           lastSyncTime: lastSyncTime,
-          showHcSetupGuide: event.enable && Platform.isAndroid ? true : null,
         ));
       } else {
         // Toggle failed - likely permissions denied or Health Connect not available
