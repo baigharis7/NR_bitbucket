@@ -182,7 +182,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
 
   NutrientInfoMaster getNutrientInfo(String nutrientName) {
     NutrientInfoMaster nutrientInfo = NutrientInfoMaster(officialName: nutrientName, unit: '', en: '', es: '');
-    for (var info in state.nutrientsInfoMaster!.nutrientsInfo) {
+    for (var info in state.nutrientsInfoMaster?.nutrientsInfo ?? []) {
       if (info.officialName == nutrientName) {
         nutrientInfo = info;
       }
@@ -192,7 +192,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
 
   String getUnitForMicronutrient(String micronutrient) {
     var unit = '';
-    for (var info in state.nutrientsInfoMaster!.nutrientsInfo) {
+    for (var info in state.nutrientsInfoMaster?.nutrientsInfo ?? []) {
       if (info.officialName == micronutrient) {
         unit = info.unit;
       }

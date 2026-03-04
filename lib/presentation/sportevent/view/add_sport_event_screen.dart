@@ -51,7 +51,7 @@ class AddSportEventScreen extends StatefulWidget {
 }
 
 class _AddSportEventScreenState extends State<AddSportEventScreen> {
-  late FocusNode _sportFocusInputController;
+  FocusNode _sportFocusInputController = FocusNode();
   late SportEventsBloc bloc;
   final ScrollController _scrollController = ScrollController();
   int filteredListLength = 0;

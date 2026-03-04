@@ -58,7 +58,7 @@ class _SupplementsTabState extends State<SupplementsTab> {
           itemCount: state.favSupplements?.length ?? 0,
           itemBuilder: (context, index) {
             final supplementFavorite = state.favSupplements.orEmpty()[index];
-            final itemName = supplementFavorite.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite.info![0].id ?? -1).translate(context);
+            final itemName = supplementFavorite.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite.info![0].id ?? -1)?.translate(context) ?? '';
             return ItemInfoCard(
               title: itemName,
               trailingSrc: 'assets/images/delete_icon.png',

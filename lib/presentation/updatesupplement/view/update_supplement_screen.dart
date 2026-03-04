@@ -174,7 +174,7 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                           while (_itemKeys.length <= index) { _itemKeys.add(GlobalKey()); }
                           return SupplementItemWidget(
                               key: _itemKeys[index],
-                              title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
+                              title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1)?.translate(context) ?? '',
                               amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
                               units: nutriInfo != null ? [nutriInfo.unit] : [],
                               unit: nutriInfo?.unit,

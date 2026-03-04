@@ -43,7 +43,7 @@ class SupplementRoutinesTab extends StatelessWidget {
             itemCount: state.supplementRoutines.orEmpty().length,
             itemBuilder: (context, index) {
               final supplementRoutine = state.supplementRoutines.orEmpty()[index];
-              final itemName = supplementRoutine.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementRoutine.info![0].id ?? -1).translate(context);
+              final itemName = supplementRoutine.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementRoutine.info![0].id ?? -1)?.translate(context) ?? '';
               return ItemInfoCard(
                 onItemTap: () {},
                 title: itemName,

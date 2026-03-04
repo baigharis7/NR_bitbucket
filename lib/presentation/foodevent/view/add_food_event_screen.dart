@@ -48,7 +48,7 @@ class AddFoodEventScreen extends StatefulWidget {
 class _AddFoodEventState extends State<AddFoodEventScreen> {
   late AddFoodEventBloc bloc;
   TextEditingController _foodInputController = TextEditingController();
-  late FocusNode _focusInputController;
+  FocusNode _focusInputController = FocusNode();
   final ScrollController _scrollController = ScrollController();
   int filteredListLength = 0;
   bool _showValidation = false;

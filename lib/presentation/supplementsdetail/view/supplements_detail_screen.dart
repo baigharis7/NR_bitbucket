@@ -185,7 +185,7 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> with Midni
                             itemCount: state.supplementEvents.length,
                             itemBuilder: (context, index) {
                               final supplement = state.supplementEvents[index];
-                              final itemName = supplement.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplement.info.orEmpty()[0].id).translate(context);
+                              final itemName = supplement.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplement.info.orEmpty()[0].id)?.translate(context) ?? '';
                               return ItemInfoCard(
                                   title: itemName,
                                 trailingSrc: 'assets/images/delete_icon.png',

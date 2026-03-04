@@ -192,9 +192,11 @@ class NutritionUtils {
     return element;
   }
 
-  static SupplementInfoMaster findSupplementById(List<SupplementInfoMaster> supplements, int id) {
-    final element = supplements.firstWhere((element) => element.id == id,);
-    return element;
+  static SupplementInfoMaster? findSupplementById(List<SupplementInfoMaster> supplements, int id) {
+    for (final element in supplements) {
+      if (element.id == id) return element;
+    }
+    return null;
   }
 
   static int millisecondsToYears(int milliseconds) {

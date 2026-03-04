@@ -55,14 +55,14 @@ class WeeklyAllNutrientsBloc extends Bloc<WeeklyAllNutrientsEventActions, Weekly
     final rda = double.parse((getNutrientRda(nutrient.name) * 7).toStringAsFixed(2));
 
     var nutrientInfo = NutrientInfoMaster(officialName: nutrient.name, unit: '', en: '', es: '');
-    for (var info in state.nutrientsInfoMaster!.nutrientsInfo) {
+    for (var info in state.nutrientsInfoMaster?.nutrientsInfo ?? []) {
       if (info.officialName == nutrient.name) {
         nutrientInfo = info;
       }
     }
 
     double nutrientQuantitySoFar = 0.0;
-    for (var foodEvent in state.weeklyFoodEvents!) {
+    for (var foodEvent in state.weeklyFoodEvents ?? []) {
       for (var food in foodEvent.foodInfo!) {
         nutrientQuantitySoFar = nutrientQuantitySoFar +
             (food.params!.toJson()[nutrient.name] ?? 0.0);
@@ -73,7 +73,7 @@ class WeeklyAllNutrientsBloc extends Bloc<WeeklyAllNutrientsEventActions, Weekly
     var weeklyNutrientQuantitySoFar = (nutrientQuantitySoFar/ rda).clamp(0.0, 1.0);
 
     var unit = '';
-    for (var info in state.nutrientsInfoMaster!.nutrientsInfo) {
+    for (var info in state.nutrientsInfoMaster?.nutrientsInfo ?? []) {
       if (info.officialName == nutrient.name) {
         unit = info.unit;
       }

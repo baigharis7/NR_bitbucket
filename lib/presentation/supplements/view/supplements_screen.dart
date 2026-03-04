@@ -270,7 +270,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                               itemBuilder: (context, index) {
                                 if (state.favRecentTab == 0 || isFavorite) {
                                   final recentSupplement = currentTabItems[index];
-                                  final itemName = recentSupplement.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], recentSupplement.info![0].id ?? -1).translate(context);
+                                  final itemName = recentSupplement.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], recentSupplement.info![0].id ?? -1)?.translate(context) ?? '';
                                   return ItemInfoCard(
                                     title: itemName,
                                     trailingSrc: isPreselect ? null : 'assets/icon/add_icon.png',
@@ -294,7 +294,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                   );
                                 } else {
                                   final supplementFavorite = currentTabItems[index];
-                                  final itemName = supplementFavorite.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite.info![0].id ?? -1).translate(context);
+                                  final itemName = supplementFavorite.name ?? NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], supplementFavorite.info![0].id ?? -1)?.translate(context) ?? '';
                                   final isRoutine = state.supplementObj?.isRoutine == true;
                                   return ItemInfoCard(
                                     title: itemName,
@@ -472,7 +472,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                       return Column(
                                       children: [
                                         SupplementItemWidget(
-                                          title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1).translate(context),
+                                          title: NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], nutriInfo?.id ?? -1)?.translate(context) ?? '',
                                           amount: nutriInfo?.amount == 0 ? '' : nutriInfo?.amount.toString() ?? '',
                                           units: nutriInfo != null ? [nutriInfo.unit] : [],
                                           unit: nutriInfo?.unit,
@@ -530,7 +530,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                               }
                               // Auto-set title for single items
                               if (state.supplementObj!.info.orEmpty().length == 1 && (state.supplementObj?.name.isEmptyOrNull() == true)) {
-                                final name = NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], state.supplementObj?.info.orEmpty()[0].id ?? -1).translate(context);
+                                final name = NutritionUtils.findSupplementById(state.supplementsInfo?.data ?? [], state.supplementObj?.info.orEmpty()[0].id ?? -1)?.translate(context) ?? '';
                                 state.supplementObj?.name = name;
                               }
 
