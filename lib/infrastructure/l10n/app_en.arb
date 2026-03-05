@@ -599,6 +599,8 @@
     "health_sync_hc_connect_message": "Open Health Connect to connect your health apps and smart devices so their data can be synced with NutreNaissance.",
     "health_sync_hc_open_button": "Open Health Connect",
     "health_sync_card_enabled": "Health Sync Enabled",
-    "health_sync_card_never_synced": "Never synced"
+    "health_sync_card_never_synced": "Never synced",
+    "distance_label": "Distance",
+    "heart_rate_label": "Heart rate"
 
 }

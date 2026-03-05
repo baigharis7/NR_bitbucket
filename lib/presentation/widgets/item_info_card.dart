@@ -82,7 +82,7 @@ class ItemInfoCard extends StatelessWidget {
                   const SizedBox(height: Dimens.heightXXSmall),
                 !subtitle.isNull() ? Text(
                   subtitle!,
-                  style: const TextStyle(color: AppColors.battleshipGrey, fontWeight: FontWeight.w500, fontSize: Dimens.fontSizeXSmall),
+                  style: const TextStyle(color: AppColors.battleshipGrey, fontWeight: FontWeight.w500, fontSize: Dimens.fontSizeXSmall, height: 1.6),
                 ) : const SizedBox(),
               ],),),
               if((!beforeTrailingSrc.isNull() || beforeTrailingIcon != null) && !beforeTrailingTap.isNull()) ...[

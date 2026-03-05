@@ -164,15 +164,21 @@ class _SportItemsScreenState extends State<SportItemsScreen> with MidnightToastM
                                         // Build subtitle with extra info for synced activities
                                         String subtitle = '${AppLocalizations.of(context)!.energy}: -${activity.eventKcals} kcal. - ${(activity.info?.length ?? 0) > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : "${AppLocalizations.of(context)!.duration}: ${activity.info![0].minutes} min."}';
 
-                                        // Add distance and heart rate for synced activities if available
+                                        // Add distance and heart rate on a new line for synced activities
                                         if (isSyncedActivity && activity.info != null && activity.info!.isNotEmpty) {
                                           final info = activity.info![0];
+                                          final secondLine = <String>[];
                                           if (info.distance != null && info.distance! > 0) {
-                                            final distanceKm = (info.distance! / 1000).toStringAsFixed(1);
-                                            subtitle += ' - ${distanceKm} km';
+                                            final distanceStr = info.distance! >= 1000
+                                                ? '${(info.distance! / 1000).toStringAsFixed(1)} km'
+                                                : '${info.distance!.round()} m';
+                                            secondLine.add('${AppLocalizations.of(context)!.distance_label}: $distanceStr');
                                           }
                                           if (info.avgHeartRate != null) {
-                                            subtitle += ' - ${info.avgHeartRate} bpm';
+                                            secondLine.add('${AppLocalizations.of(context)!.heart_rate_label}: ${info.avgHeartRate} bpm');
+                                          }
+                                          if (secondLine.isNotEmpty) {
+                                            subtitle += '\n${secondLine.join(' - ')}';
                                           }
                                         }
 
@@ -182,10 +188,10 @@ class _SportItemsScreenState extends State<SportItemsScreen> with MidnightToastM
                                           leadingIcon: isSyncedActivity ? Icons.monitor_heart : null,
                                           leadingIconColor: isSyncedActivity ? AppColors.yellowishGreen : null,
                                           leadingIconSize: isSyncedActivity ? 22 : null,
-                                          trailingSrc: isSyncedActivity ? null : 'assets/images/delete_icon.png',
+                                          trailingSrc: 'assets/images/delete_icon.png',
                                           beforeTrailingSrc: isSyncedActivity ? null : 'assets/icon/edit_icon.png',
                                           beforeTrailingTap: isSyncedActivity ? null : () => Navigator.pushNamed(context, SportUpdateScreen.routeName, arguments: activity).then((value) => bloc.add(UpdateDatetimeSportItemsEvents(dateTime: state.dateTime ?? DateTime.now()))),
-                                          trailingTap: isSyncedActivity ? null : () => _showRemoveDialog(
+                                          trailingTap: () => _showRemoveDialog(
                                             description: AppLocalizations.of(context)!.remove_item(itemName),
                                             onCancel: () => Navigator.pop(context),
                                             onConfirm: () => bloc.add(DeleteSportItemSportItemsEvents(sportEventComplete: activity)),

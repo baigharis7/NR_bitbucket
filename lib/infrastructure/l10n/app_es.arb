@@ -600,6 +600,8 @@
     "health_sync_hc_connect_message": "Abre Health Connect para conectar tus apps de salud y dispositivos inteligentes y así sincronizar sus datos con NutreNaissance.",
     "health_sync_hc_open_button": "Abrir Health Connect",
     "health_sync_card_enabled": "Sincronización de salud habilitada",
-    "health_sync_card_never_synced": "Nunca sincronizado"
+    "health_sync_card_never_synced": "Nunca sincronizado",
+    "distance_label": "Distancia",
+    "heart_rate_label": "Ritmo cardíaco"
 
 }
