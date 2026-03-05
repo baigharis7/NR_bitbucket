@@ -13,11 +13,7 @@
 #    - APP_STORE_CONNECT_ISSUER_ID       - Issuer ID
 #    - APP_STORE_CONNECT_PRIVATE_KEY     - .p8 file contents
 #
-# 3. Environment group "google_play":
-#    - GCLOUD_SERVICE_ACCOUNT_CREDENTIALS - JSON key from Google Play service account
-#      (Google Play Console → Setup → API access → Service account → JSON key)
-#
-# 4. Connect your Bitbucket repository in Codemagic UI
+# 3. Connect your Bitbucket repository in Codemagic UI
 
 workflows:
   # PR Checks - runs on every pull request
@@ -50,7 +46,6 @@ workflows:
       flutter: 3.13.8
       groups:
         - android_signing
-        - google_play
     triggering:
       events:
         - push
@@ -76,11 +71,6 @@ workflows:
 
     artifacts:
       - build/app/outputs/bundle/prodRelease/app-prod-release.aab
-
-    publishing:
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
 
   # iOS Release - runs in parallel with android-release
   ios-release:
