@@ -54,20 +54,15 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> with Midnig
   void initState() {
     subscribeMidnight();
     bloc = BlocProvider.of<MealTimeDetailsBloc>(context);
-    // bloc.add(InitialMealTimeDetailsEventState());
 
-    final widgetsBinding = WidgetsBinding.instance;
-    widgetsBinding.addPostFrameCallback((callback) {
-      if (ModalRoute.of(context)?.settings.arguments != null) {
-        var infoReceived = ModalRoute.of(context)?.settings.arguments;
-        if (infoReceived != null) {
-          if (infoReceived is FoodArgumentsModel) {
-            bloc.add(UpdateFoodArgumentsModelEventState(foodArgumentsModel: infoReceived));
-          }
-        }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final infoReceived = ModalRoute.of(context)?.settings.arguments;
+      if (infoReceived is FoodArgumentsModel) {
+        bloc.add(UpdateFoodArgumentsModelEventState(foodArgumentsModel: infoReceived));
+      } else {
+        bloc.add(InitialMealTimeDetailsEventState());
       }
     });
-    bloc.add(InitialMealTimeDetailsEventState());
     super.initState();
   }
 

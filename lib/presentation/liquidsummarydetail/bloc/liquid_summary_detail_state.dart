@@ -6,6 +6,7 @@ part of 'liquid_summary_detail_bloc.dart';
 class LiquidSummaryDetailState {
   bool isLoading;
   ErrorTypes? onError;
+  DateTime? selectedDate;
   List<WaterEventMaster>? waterEvents;
   List<LiquidEventComplete>? todayLiquidEvents;
   List<FoodEventComplete>? todayFoodEvents;
@@ -14,6 +15,7 @@ class LiquidSummaryDetailState {
   LiquidSummaryDetailState({
     required this.isLoading,
     this.onError,
+    this.selectedDate,
     this.waterEvents,
     this.todayLiquidEvents,
     this.todayFoodEvents,
@@ -23,6 +25,7 @@ class LiquidSummaryDetailState {
   LiquidSummaryDetailState copyWith({
     required bool isLoading,
     ErrorTypes? onError,
+    DateTime? selectedDate,
     List<WaterEventMaster>? waterEvents,
     List<LiquidEventComplete>? todayLiquidEvents,
     List<FoodEventComplete>? todayFoodEvents,
@@ -31,6 +34,7 @@ class LiquidSummaryDetailState {
     return LiquidSummaryDetailState(
       isLoading: isLoading,
       onError: onError ?? this.onError,
+      selectedDate: selectedDate ?? this.selectedDate,
       waterEvents: waterEvents ?? this.waterEvents,
       todayLiquidEvents: todayLiquidEvents ?? this.todayLiquidEvents,
       todayFoodEvents: todayFoodEvents ?? this.todayFoodEvents,

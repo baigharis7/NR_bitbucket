@@ -176,7 +176,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.getDaySupplementEventsInteractor,
     this.fcmApi,
   }) : super(DashboardState(
-    isLoading: false,
+    isLoading: true,
     advice: '',
     waterEvents: [],
     foodEvents: [],

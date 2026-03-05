@@ -38,24 +38,19 @@ class _EnergyBalanceDetailScreenState extends State<EnergyBalanceDetailScreen> w
   void initState() {
     subscribeMidnight();
     bloc = BlocProvider.of<EnergyBalanceDetailBloc>(context);
-    bloc.add(InitializeEventAction());
     super.initState();
 
-    final widgetBinding = WidgetsBinding.instance;
-    widgetBinding.addPostFrameCallback((timeStamp) {
-      if (ModalRoute.of(context)?.settings.arguments != null) {
-        final infoReceived = ModalRoute.of(context)?.settings.arguments;
-        if (infoReceived != null) {
-          if (infoReceived is Map) {
-            final energyModel = infoReceived['energyModel'] as EnergyModel?;
-            _selectedDate = infoReceived['selectedDate'] as DateTime?;
-            if (energyModel != null) {
-              bloc.add(LoadEnergyBalanceEventAction(energyModel: energyModel));
-            }
-          } else if (infoReceived is EnergyModel?) {
-            bloc.add(LoadEnergyBalanceEventAction(energyModel: infoReceived as EnergyModel));
-          }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      bloc.add(InitializeEventAction());
+      final infoReceived = ModalRoute.of(context)?.settings.arguments;
+      if (infoReceived is Map) {
+        final energyModel = infoReceived['energyModel'] as EnergyModel?;
+        _selectedDate = infoReceived['selectedDate'] as DateTime?;
+        if (energyModel != null) {
+          bloc.add(LoadEnergyBalanceEventAction(energyModel: energyModel));
         }
+      } else if (infoReceived is EnergyModel) {
+        bloc.add(LoadEnergyBalanceEventAction(energyModel: infoReceived));
       }
     });
   }

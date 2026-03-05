@@ -51,7 +51,6 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
   void initState() {
     subscribeMidnight();
     fecesUrineBloc = BlocProvider.of<FecesUrineBloc>(context);
-    fecesUrineBloc.add(InitializeFecesUrineEventAction());
     _tabController = TabController(length: _tabs.length, vsync: this);
     _tabController.addListener(() {
       setState(() {
@@ -59,18 +58,17 @@ class _FecesUrineTabHolderState extends State<FecesUrineTabHolder>
       });
     });
 
-    final widgetsBinding = WidgetsBinding.instance;
-    widgetsBinding.addPostFrameCallback((callback) {
-      if (ModalRoute.of(context)?.settings.arguments != null) {
-        var infoReceived = ModalRoute.of(context)?.settings.arguments;
-        if (infoReceived != null) {
-          if (infoReceived is DateTime?) {
-            fecesUrineBloc.add(UpdateCalendarDateFecesUrineEventAction(dateTime: infoReceived as DateTime?,));
-          } else if (infoReceived is int?) {
-            _selectedTab = infoReceived as int;
-            _tabController.index = _selectedTab;
-          }
-        }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final infoReceived = ModalRoute.of(context)?.settings.arguments;
+      if (infoReceived is DateTime) {
+        fecesUrineBloc.add(InitializeFecesUrineEventAction());
+        fecesUrineBloc.add(UpdateCalendarDateFecesUrineEventAction(dateTime: infoReceived));
+      } else if (infoReceived is int) {
+        _selectedTab = infoReceived;
+        _tabController.index = _selectedTab;
+        fecesUrineBloc.add(InitializeFecesUrineEventAction());
+      } else {
+        fecesUrineBloc.add(InitializeFecesUrineEventAction());
       }
     });
 

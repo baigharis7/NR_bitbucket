@@ -104,23 +104,24 @@ class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
 
   @override
   void initState() {
-    final bloc = BlocProvider.of<AddFavoriteFoodBloc>(context);
-    bloc.add(InitializeStateAction());
     super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     final bloc = BlocProvider.of<AddFavoriteFoodBloc>(context);
-    final arguments = ModalRoute.of(context)!.settings.arguments;
-    if (arguments != null) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      bloc.add(InitializeStateAction());
+      final arguments = ModalRoute.of(context)?.settings.arguments;
       if (arguments is FoodEventComplete) {
         bloc.add(SetFoodsInFavoriteAction(foodsInFavorite: arguments));
       } else if (arguments is FoodFavorite) {
         bloc.add(SetFoodFavoriteToEditAction(foodFavorite: arguments));
       }
-    }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bloc = BlocProvider.of<AddFavoriteFoodBloc>(context);
     final eventHelper = EventsHelper();
+    final arguments = ModalRoute.of(context)?.settings.arguments;
 
     return BlocProvider.value(
       value: bloc,

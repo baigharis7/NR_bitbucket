@@ -34,23 +34,17 @@ class _MacroNutrientsDetailScreenState extends State<MacroNutrientsDetailScreen>
   void initState() {
     subscribeMidnight();
     bloc = BlocProvider.of<MacroNutrientsDetailBloc>(context);
-    bloc.add(InitializeEventAction());
     super.initState();
 
-    final widgetsBinding = WidgetsBinding.instance;
-    widgetsBinding.addPostFrameCallback((callback) {
-      if (ModalRoute.of(context)?.settings.arguments != null) {
-        final infoReceived = ModalRoute.of(context)?.settings.arguments;
-        if (infoReceived != null) {
-          if (infoReceived is Map) {
-            final macronutrientsList = infoReceived['macronutrients'] as List<NutrientsModel>?;
-            _selectedDate = infoReceived['selectedDate'] as DateTime?;
-            bloc.add(LoadMacroNutrientsEventAction(macronutrientsList: macronutrientsList));
-          } else if (infoReceived is List<NutrientsModel>?) {
-            final macronutrientsList = infoReceived as List<NutrientsModel>?;
-            bloc.add(LoadMacroNutrientsEventAction(macronutrientsList: macronutrientsList));
-          }
-        }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      bloc.add(InitializeEventAction());
+      final infoReceived = ModalRoute.of(context)?.settings.arguments;
+      if (infoReceived is Map) {
+        final macronutrientsList = infoReceived['macronutrients'] as List<NutrientsModel>?;
+        _selectedDate = infoReceived['selectedDate'] as DateTime?;
+        bloc.add(LoadMacroNutrientsEventAction(macronutrientsList: macronutrientsList));
+      } else if (infoReceived is List<NutrientsModel>?) {
+        bloc.add(LoadMacroNutrientsEventAction(macronutrientsList: infoReceived));
       }
     });
   }

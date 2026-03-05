@@ -41,20 +41,16 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> with Midni
   void initState() {
     subscribeMidnight();
     supplementsDetailBloc = BlocProvider.of<SupplementsDetailBloc>(context);
-    supplementsDetailBloc.add(InitializeSupplementsDetailEvent(eventDate: DateTime.now()));
 
-    final widgetsBinding = WidgetsBinding.instance;
-    widgetsBinding.addPostFrameCallback((callback) {
-      if (ModalRoute.of(context)?.settings.arguments != null) {
-        var infoReceived = ModalRoute.of(context)?.settings.arguments;
-        if (infoReceived != null) {
-          if (infoReceived is int) {
-            supplementsDetailBloc.add(InitializeSupplementsDetailEvent(eventDate: DateTimeHelper.dateTimeFromMilliseconds(infoReceived)));
-          } else if (infoReceived is DateTime) {
-            supplementsDetailBloc.add(InitializeSupplementsDetailEvent(eventDate: infoReceived));
-          }
-        }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final infoReceived = ModalRoute.of(context)?.settings.arguments;
+      DateTime eventDate = DateTime.now();
+      if (infoReceived is int) {
+        eventDate = DateTimeHelper.dateTimeFromMilliseconds(infoReceived) ?? DateTime.now();
+      } else if (infoReceived is DateTime) {
+        eventDate = infoReceived;
       }
+      supplementsDetailBloc.add(InitializeSupplementsDetailEvent(eventDate: eventDate));
     });
 
     super.initState();

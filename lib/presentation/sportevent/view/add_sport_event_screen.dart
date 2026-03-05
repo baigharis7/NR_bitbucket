@@ -81,27 +81,20 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
   void initState() {
     bloc = BlocProvider.of<SportEventsBloc>(context);
 
-
-
-    final widgetsBinding = WidgetsBinding.instance;
-    widgetsBinding.addPostFrameCallback((callback) {
-      if (ModalRoute.of(context)?.settings.arguments != null) {
-        final infoReceived = ModalRoute.of(context)!.settings.arguments;
-        if (infoReceived != null) {
-          if (infoReceived is SportArgumentsModel) {
-            bloc.add(AddSportArgumentModelEventAction(sportArgumentsModel: infoReceived));
-          } else if (infoReceived is DateTime?) {
-            bloc.add(UpdateCalendarDateSportEventAction(calendarDate: infoReceived as DateTime));
-          } else if (infoReceived is AddSportFavorite) {
-            bloc.add(UpdateSportFromFavoriteTabSportEventsActions(addSportFavorite: infoReceived));
-          } else if (infoReceived is SportRoutineCompleted) {
-            bloc.add(UpdateSportFromRoutinesTabSportEventsActions(sportRoutineCompleted: infoReceived));
-          }
-        }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      bloc.add(InitializeStateAction());
+      final infoReceived = ModalRoute.of(context)?.settings.arguments;
+      if (infoReceived is SportArgumentsModel) {
+        bloc.add(AddSportArgumentModelEventAction(sportArgumentsModel: infoReceived));
+      } else if (infoReceived is DateTime) {
+        bloc.add(UpdateCalendarDateSportEventAction(calendarDate: infoReceived));
+      } else if (infoReceived is AddSportFavorite) {
+        bloc.add(UpdateSportFromFavoriteTabSportEventsActions(addSportFavorite: infoReceived));
+      } else if (infoReceived is SportRoutineCompleted) {
+        bloc.add(UpdateSportFromRoutinesTabSportEventsActions(sportRoutineCompleted: infoReceived));
       }
+      BlocProvider.of<HealthSyncBloc>(context).add(HealthSyncInitialization());
     });
-    bloc.add(InitializeStateAction());
-    BlocProvider.of<HealthSyncBloc>(context).add(HealthSyncInitialization());
     super.initState();
   }
 

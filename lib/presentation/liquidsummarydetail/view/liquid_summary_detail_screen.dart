@@ -8,7 +8,6 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/liquidsummarydetail/bloc/liquid_summary_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 
-import '../../../domain/models/watervents/water_event_master.dart';
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
@@ -38,13 +37,12 @@ class _LiquidSummaryDetailScreenState extends State<LiquidSummaryDetailScreen> w
     bloc = BlocProvider.of<LiquidSummaryDetailBloc>(context);
     super.initState();
 
-    final widgetBinding = WidgetsBinding.instance;
-    widgetBinding.addPostFrameCallback((timeStamp) {
-      if (ModalRoute.of(context)?.settings.arguments != null) {
-        final infoReceived = ModalRoute.of(context)?.settings.arguments;
-        if (infoReceived is List<WaterEventMaster>?) {
-          bloc.add(LoadLiquidSummaryEventAction(waterEvents: infoReceived));
-        }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final infoReceived = ModalRoute.of(context)?.settings.arguments;
+      if (infoReceived is DateTime) {
+        bloc.add(LoadLiquidSummaryEventAction(selectedDate: infoReceived));
+      } else {
+        bloc.add(LoadLiquidSummaryEventAction());
       }
     });
   }

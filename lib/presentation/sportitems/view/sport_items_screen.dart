@@ -40,15 +40,13 @@ class _SportItemsScreenState extends State<SportItemsScreen> with MidnightToastM
     super.initState();
     subscribeMidnight();
     bloc = BlocProvider.of<SportItemsBloc>(context);
-    bloc.add(SportItemsInitialization());
 
-    final widgetBinding = WidgetsBinding.instance;
-    widgetBinding.addPostFrameCallback((timeStamp) {
-      final args = ModalRoute.of(context)!.settings.arguments;
-      if (args != null) {
-        if (args is DateTime) {
-          bloc.add(UpdateDatetimeSportItemsEvents(dateTime: args));
-        }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is DateTime) {
+        bloc.add(UpdateDatetimeSportItemsEvents(dateTime: args));
+      } else {
+        bloc.add(SportItemsInitialization());
       }
     });
   }

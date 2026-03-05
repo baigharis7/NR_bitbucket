@@ -32,18 +32,12 @@ class _MicroNutrientsWeeklyScreenState extends State<MicroNutrientsWeeklyScreen>
   @override
   void initState() {
     bloc = BlocProvider.of<MicroNutrientsWeeklyBloc>(context);
-    bloc.add(InitializationEventAction());
 
-    final widgetsBinding = WidgetsBinding.instance;
-    widgetsBinding.addPostFrameCallback((callback) {
-      if (ModalRoute.of(context)?.settings.arguments != null) {
-        final infoReceived = ModalRoute.of(context)?.settings.arguments;
-        if (infoReceived != null) {
-          if (infoReceived is List<NutrientsWeeklyModel>?) {
-            final micronutrientsWeeklyList = infoReceived as List<NutrientsWeeklyModel>?;
-            bloc.add(UpdateWeeklyListOfNutrients(micronutrientsWeekly: micronutrientsWeeklyList ?? []));
-          }
-        }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      bloc.add(InitializationEventAction());
+      final infoReceived = ModalRoute.of(context)?.settings.arguments;
+      if (infoReceived is List<NutrientsWeeklyModel>) {
+        bloc.add(UpdateWeeklyListOfNutrients(micronutrientsWeekly: infoReceived));
       }
     });
     super.initState();

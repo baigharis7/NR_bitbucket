@@ -4,9 +4,9 @@ part of 'liquid_summary_detail_bloc.dart';
 abstract class LiquidSummaryDetailEvent {}
 
 class LoadLiquidSummaryEventAction extends LiquidSummaryDetailEvent {
-  final List<WaterEventMaster>? waterEvents;
+  final DateTime? selectedDate;
 
-  LoadLiquidSummaryEventAction({this.waterEvents});
+  LoadLiquidSummaryEventAction({this.selectedDate});
 }
 
 class FinishWaterEventAction extends LiquidSummaryDetailEvent {

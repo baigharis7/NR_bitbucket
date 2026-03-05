@@ -73,22 +73,17 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
   void initState() {
     bloc = BlocProvider.of<AddFoodEventBloc>(context);
 
-    final widgetsBinding = WidgetsBinding.instance;
-    widgetsBinding.addPostFrameCallback((callback) {
-      if (ModalRoute.of(context)?.settings.arguments != null) {
-        var infoReceived = ModalRoute.of(context)?.settings.arguments;
-        if (infoReceived != null) {
-          if (infoReceived is FoodArgumentsModel) {
-            bloc.add(AddFoodArgumentModelEventAction(foodArgumentsModel: infoReceived));
-          } else if (infoReceived is FoodFavorite) {
-            bloc.add(UpdateFoodDataFromFavoritesAddFoodEventActions(foodFavorite: infoReceived));
-          } else if (infoReceived is FoodRoutineEvent) {
-            bloc.add(UpdateFoodRoutineFromRoutines(foodRoutineEvent: infoReceived));
-          }
-        }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      bloc.add(InitializeStateAction());
+      final infoReceived = ModalRoute.of(context)?.settings.arguments;
+      if (infoReceived is FoodArgumentsModel) {
+        bloc.add(AddFoodArgumentModelEventAction(foodArgumentsModel: infoReceived));
+      } else if (infoReceived is FoodFavorite) {
+        bloc.add(UpdateFoodDataFromFavoritesAddFoodEventActions(foodFavorite: infoReceived));
+      } else if (infoReceived is FoodRoutineEvent) {
+        bloc.add(UpdateFoodRoutineFromRoutines(foodRoutineEvent: infoReceived));
       }
     });
-    bloc.add(InitializeStateAction());
     super.initState();
   }
 

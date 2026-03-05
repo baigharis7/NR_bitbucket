@@ -46,11 +46,14 @@ class LiquidSummaryDetailBloc extends Bloc<LiquidSummaryDetailEvent, LiquidSumma
       }
     });
     on<LoadLiquidSummaryEventAction>((event, emit) async {
-      // state.waterEvents = event.waterEvents;
-      state.waterEvents = await getWaterEventsTodayInteractor.execute();
-      state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute();
+      if (event.selectedDate != null) {
+        state.selectedDate = event.selectedDate;
+      }
+      final dateTime = state.selectedDate;
+      state.waterEvents = await getWaterEventsTodayInteractor.execute(dateTime: dateTime);
+      state.todayLiquidEvents = await getLiquidEventsOfTodayInteractor.execute(dateTime: dateTime);
       state.userProfile = await getProfileInteractor.execute();
-      state.todayFoodEvents = await getFoodEventsOfTodayInteractor.execute();
+      state.todayFoodEvents = await getFoodEventsOfTodayInteractor.execute(dateTime: dateTime);
 
       emit(state.copyWith(isLoading: false));
     });
@@ -71,7 +74,7 @@ class LiquidSummaryDetailBloc extends Bloc<LiquidSummaryDetailEvent, LiquidSumma
           try {
             saveWaterEventInteractor.execute(waterEventMaster);
             DashboardEventBus.instance.notify(DataChangedCategory.water);
-            state.waterEvents = await getWaterEventsTodayInteractor.execute();
+            state.waterEvents = await getWaterEventsTodayInteractor.execute(dateTime: state.selectedDate);
             event.onFinish.call();
             emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {

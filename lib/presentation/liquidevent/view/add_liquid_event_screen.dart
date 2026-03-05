@@ -112,6 +112,8 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
     });
   }
 
+  bool _argsProcessed = false;
+
   @override
   void initState() {
     final bloc = BlocProvider.of<LiquidEventBloc>(context);
@@ -131,15 +133,14 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
 
     final bloc = BlocProvider.of<LiquidEventBloc>(context);
     final currentLanguage = Localizations.localeOf(context).languageCode;
-    final infoReceived = ModalRoute.of(context)!.settings.arguments;
-    if (infoReceived != null) {
-      if (infoReceived is LiquidEventSimple?) {
-        final liquidEventSimple = infoReceived as LiquidEventSimple?;
+    if (!_argsProcessed) {
+      _argsProcessed = true;
+      final infoReceived = ModalRoute.of(context)?.settings.arguments;
+      if (infoReceived is LiquidEventSimple) {
         bloc.add(ReceiveLiquidsInEventFromNavigationAction(
-            liquidEventSimple: liquidEventSimple!));
-      } else if (infoReceived is DateTime?) {
-        final eventDate = infoReceived as DateTime?;
-        bloc.add(ReceiveEventDateAction(dateTime: eventDate!));
+            liquidEventSimple: infoReceived));
+      } else if (infoReceived is DateTime) {
+        bloc.add(ReceiveEventDateAction(dateTime: infoReceived));
       }
     }
 

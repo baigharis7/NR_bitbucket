@@ -28,6 +28,7 @@ class AddLiquidFavoriteScreen extends StatefulWidget {
 }
 
 class _AddLiquidFavoriteScreenState extends State<AddLiquidFavoriteScreen> {
+  bool _initialized = false;
 
   void _showConfirmationDialog(BuildContext context) {
     Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
@@ -78,10 +79,13 @@ class _AddLiquidFavoriteScreenState extends State<AddLiquidFavoriteScreen> {
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<AddFavoriteLiquidBloc>(context);
-    final liquidsInFavorite = ModalRoute.of(context)!.settings.arguments as List<LiquidInFavorite>;
     final eventHelper = EventsHelper();
-    bloc.add(InitializeStateAction());
-    bloc.add(SetLiquidsInFavoriteAction(liquidsInFavorite: liquidsInFavorite));
+    if (!_initialized) {
+      _initialized = true;
+      final liquidsInFavorite = ModalRoute.of(context)!.settings.arguments as List<LiquidInFavorite>;
+      bloc.add(InitializeStateAction());
+      bloc.add(SetLiquidsInFavoriteAction(liquidsInFavorite: liquidsInFavorite));
+    }
 
     return BlocProvider.value(
       value: bloc,
