@@ -25,6 +25,7 @@ class ItemTitleCard extends StatefulWidget {
   final Function(List<int>)? onBulkDaySelect;
   final bool showTimePicker;
   final bool showRoutineValidation;
+  final String? routineLabel;
 
   const ItemTitleCard({
     super.key,
@@ -44,6 +45,7 @@ class ItemTitleCard extends StatefulWidget {
     this.onBulkDaySelect,
     this.showTimePicker = true,
     this.showRoutineValidation = false,
+    this.routineLabel,
   });
 
   @override
@@ -235,7 +237,7 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
                   const SizedBox(width: 6),
                   Flexible(
                     child: Text(
-                      AppLocalizations.of(context)!.item_saved_as_routine,
+                      widget.routineLabel ?? AppLocalizations.of(context)!.item_saved_as_routine,
                       style: const TextStyle(
                         fontSize: Dimens.fontSizeSmall,
                         color: AppColors.yellowishGreen,

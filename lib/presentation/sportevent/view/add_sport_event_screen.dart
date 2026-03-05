@@ -363,6 +363,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                       daysOfWeek: state.sportSimpleEvent?.daysOfWeek,
                                       onUpdateDayOfWeek: (dayOfWeek) {},
                                       showRoutineValidation: _showRoutineValidation,
+                                      routineLabel: AppLocalizations.of(context)!.item_saved_as_workout,
                                     ),
                                     // Item cards with connector lines
                                     ...state.sportSimpleEvent!.info.orEmpty().asMap().entries.map((entry) {

@@ -537,6 +537,8 @@
     "item_title": "Title",
     "item_saved_as_favorite": "This item will also be saved as a favorite",
     "item_saved_as_routine": "This item will also be saved as a routine",
+    "item_saved_as_workout": "This item will also be saved as a workout",
+    "workouts": "Workouts",
     "combo_name_required": "Please provide a name for your combo",
     "please_enter_amount": "Please enter the amount",
     "please_select_unit": "Please select a unit",
