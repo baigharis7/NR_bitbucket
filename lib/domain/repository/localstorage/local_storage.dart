@@ -117,4 +117,5 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<void> saveHealthSyncMetadata(HealthSyncMetadataEntity metadata);
   Future<List<HealthSyncMetadataEntity>> getHealthSyncMetadata();
   Future<bool> isHealthActivitySynced(String healthPlatformId);
+  Future<void> deleteHealthSyncMetadataBySportEventId(int sportEventId);
 }

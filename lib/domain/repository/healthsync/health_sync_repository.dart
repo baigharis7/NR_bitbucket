@@ -38,6 +38,9 @@ abstract class HealthSyncRepository {
   /// Check if a specific health platform activity has already been synced.
   Future<bool> isAlreadySynced(String healthPlatformId);
 
+  /// Delete sync metadata for a sport event so it can be re-synced.
+  Future<void> deleteSyncMetadataBySportEventId(int sportEventId);
+
   /// Enable or disable health data sync.
   Future<void> setHealthSyncEnabled(bool enabled);
 

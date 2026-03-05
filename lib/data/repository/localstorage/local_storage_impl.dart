@@ -1759,4 +1759,17 @@ class LocalStorageImpl extends LocalStorageRepository {
     return box.containsKey(healthPlatformId);
   }
 
+  @override
+  Future<void> deleteHealthSyncMetadataBySportEventId(int sportEventId) async {
+    final box = await _openHealthSyncMetadataBox();
+    final keysToDelete = <String>[];
+    for (final entry in box.toMap().entries) {
+      final entity = entry.value as HealthSyncMetadataEntity;
+      if (entity.sportEventId == sportEventId) {
+        keysToDelete.add(entry.key as String);
+      }
+    }
+    await box.deleteAll(keysToDelete);
+  }
+
 }

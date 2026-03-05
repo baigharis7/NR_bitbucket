@@ -27,6 +27,7 @@ import '../../../domain/interactor/favorites/sport/remove_sport_favorite_from_lo
 import '../../../domain/interactor/favorites/sport/save_sport_favorite_interactor.dart';
 import '../../../domain/interactor/sportevents/delete_sport_event_interactor.dart';
 import '../../../domain/interactor/sportevents/remove_sport_event_interactor.dart';
+import '../../../domain/repository/healthsync/health_sync_repository.dart';
 import '../../../domain/models/favorites/sport/add_sport_favorite.dart';
 import '../../../infrastructure/errors/error_types.dart';
 
@@ -47,6 +48,7 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
   final RemoveSportEventInteractor removeSportEventInteractor;
   final EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor;
   final SynchronizeEventsInteractor synchronizeEventsInteractor;
+  final HealthSyncRepository? healthSyncRepository;
   late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   JournalSportBloc({
@@ -66,6 +68,7 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
     required this.removeSportEventInteractor,
     required this.eraseDBLocalEventsInteractor,
     required this.synchronizeEventsInteractor,
+    this.healthSyncRepository,
   }) : super(
     JournalSportState(
       isLoading: false,
@@ -169,6 +172,11 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
         await deleteSportEventInteractor.execute(userId, event.sportEventComplete.eventDate);
           try {
             final removeFromLocalResult = await removeSportEventInteractor.execute(event.sportEventComplete);
+              // Clean up health sync metadata so the activity can be re-synced
+              final source = event.sportEventComplete.source;
+              if (source != null && source != 'manual') {
+                await healthSyncRepository?.deleteSyncMetadataBySportEventId(event.sportEventComplete.eventId);
+              }
               event.onFinish.call();
               emit(state.copyWith(isLoading: false, onError: null));
           } catch (error) {

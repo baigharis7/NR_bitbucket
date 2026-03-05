@@ -550,6 +550,10 @@ void main() async {
   syncQueueService.processQueue();
   final ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService, chuck);
   final LocalStorageRepository localStorageRepository = LocalStorageImpl();
+  final healthSyncRepository = HealthSyncRepositoryImpl(
+    localStorageRepository: localStorageRepository,
+    preferencesRepository: prefsRepository,
+  );
   final ProfileComputationService profileComputationService = ProfileComputationService(referenceDatabase);
   final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository, profileComputationService: profileComputationService, syncQueue: syncQueueService);
   final GetUserIdInteractor getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
@@ -908,6 +912,7 @@ void main() async {
     removeSportEventInteractor: removeSportEventInteractor,
     eraseDBLocalEventsInteractor: eraseDBLocalEventsInteractor,
     synchronizeEventsInteractor: synchronizeEventsInteractor,
+    healthSyncRepository: healthSyncRepository,
   );
 
   final routineBloc = RoutinesBloc(
@@ -1125,6 +1130,7 @@ void main() async {
     deleteSportEventInteractor: deleteSportEventInteractor,
     removeSportEventInteractor: removeSportEventInteractor,
     updateEventsInteractor: updateEventsInteractor,
+    healthSyncRepository: healthSyncRepository,
   );
 
   final itemUpdateBloc = ItemUpdateBloc(
@@ -1195,11 +1201,6 @@ void main() async {
   );
 
   // Health Sync
-  final healthSyncRepository = HealthSyncRepositoryImpl(
-    localStorageRepository: localStorageRepository,
-    preferencesRepository: prefsRepository,
-  );
-
   final checkHealthSyncStatusInteractor = CheckHealthSyncStatusInteractorImpl(
     healthSyncRepository: healthSyncRepository,
   );

@@ -6,6 +6,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/delete_sport_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/remove_sport_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
@@ -26,6 +27,7 @@ class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
   final DeleteSportEventInteractor deleteSportEventInteractor;
   final RemoveSportEventInteractor removeSportEventInteractor;
   final UpdateEventsInteractor updateEventsInteractor;
+  final HealthSyncRepository? healthSyncRepository;
   late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   SportItemsBloc({
@@ -35,6 +37,7 @@ class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
     required this.deleteSportEventInteractor,
     required this.removeSportEventInteractor,
     required this.updateEventsInteractor,
+    this.healthSyncRepository,
   }) : super(SportItemsState(isLoading: false)) {
     _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
       if (category == DataChangedCategory.sport) {
@@ -65,6 +68,11 @@ class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
         await deleteSportEventInteractor.execute(event.sportEventComplete.userId, event.sportEventComplete.eventId);
         try {
           await removeSportEventInteractor.execute(event.sportEventComplete);
+          // Clean up health sync metadata so the activity can be re-synced
+          final source = event.sportEventComplete.source;
+          if (source != null && source != 'manual') {
+            await healthSyncRepository?.deleteSyncMetadataBySportEventId(event.sportEventComplete.eventId);
+          }
           DashboardEventBus.instance.notify(DataChangedCategory.sport);
           state.sportEvents = await getTodaySportsInteractor.execute(dateTime: state.dateTime);
           emit(state.copyWith(isLoading: false));
