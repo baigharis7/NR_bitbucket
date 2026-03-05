@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,6 +26,9 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
   final ToggleHealthSyncInteractor toggleHealthSyncInteractor;
   final SyncHealthActivitiesInteractor syncHealthActivitiesInteractor;
 
+  static const _periodicSyncInterval = Duration(minutes: 5);
+  Timer? _periodicSyncTimer;
+
   HealthSyncBloc({
     required this.healthSyncRepository,
     required this.checkHealthSyncStatusInteractor,
@@ -38,6 +42,27 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     on<HealthSyncManualTrigger>(_onManualTrigger);
     on<HealthSyncInstallHealthConnect>(_onInstallHealthConnect);
     on<HealthSyncOpenHealthConnect>(_onOpenHealthConnect);
+  }
+
+  void _startPeriodicSync() {
+    _periodicSyncTimer?.cancel();
+    _periodicSyncTimer = Timer.periodic(_periodicSyncInterval, (_) {
+      _hsLog('HealthSync: periodic sync triggered');
+      add(HealthSyncManualTrigger());
+    });
+    _hsLog('HealthSync: periodic sync timer started (every ${_periodicSyncInterval.inMinutes}m)');
+  }
+
+  void _stopPeriodicSync() {
+    _periodicSyncTimer?.cancel();
+    _periodicSyncTimer = null;
+    _hsLog('HealthSync: periodic sync timer stopped');
+  }
+
+  @override
+  Future<void> close() {
+    _periodicSyncTimer?.cancel();
+    return super.close();
   }
 
   Future<void> _onInitialization(
@@ -68,10 +93,17 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
 
       final lastSyncTime = await healthSyncRepository.getLastSyncTime();
 
+      final syncEnabled = isEnabled && hasPermissions;
+      if (syncEnabled) {
+        _startPeriodicSync();
+      } else {
+        _stopPeriodicSync();
+      }
+
       emit(state.copyWith(
         isLoading: false,
         isAvailable: isAvailable,
-        isSyncEnabled: isEnabled && hasPermissions,
+        isSyncEnabled: syncEnabled,
         hasPermissions: hasPermissions,
         lastSyncTime: lastSyncTime,
       ));
@@ -135,6 +167,12 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       if (success) {
         final lastSyncTime = await healthSyncRepository.getLastSyncTime();
 
+        if (event.enable) {
+          _startPeriodicSync();
+        } else {
+          _stopPeriodicSync();
+        }
+
         emit(state.copyWith(
           isLoading: false,
           isSyncEnabled: event.enable,
@@ -174,7 +212,9 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
 
     try {
       _hsLog('HealthSync: manual trigger started');
-      final syncedActivities = await syncHealthActivitiesInteractor.execute();
+      final syncedActivities = await syncHealthActivitiesInteractor.execute(
+        since: DateTime.now().subtract(const Duration(days: 7)),
+      );
       final lastSyncTime = await healthSyncRepository.getLastSyncTime();
       _hsLog('HealthSync: synced ${syncedActivities.length} activities');
 

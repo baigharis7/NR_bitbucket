@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/sync_health_activities_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_activity.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_metadata.dart';
@@ -19,11 +21,16 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
   final SaveSportEventInteractor saveSportEventInteractor;
   final SportEventsRepository sportEventsRepository;
 
-  /// Minimum time between syncs (15 minutes)
-  static const Duration _minSyncInterval = Duration(minutes: 15);
+  /// Minimum time between automatic syncs (5 minutes)
+  static const Duration _minSyncInterval = Duration(minutes: 5);
 
   /// Default lookback period for first sync (7 days)
   static const Duration _defaultLookback = Duration(days: 7);
+
+  static void _log(String message) {
+    debugPrint('[HealthSync] $message');
+    CrashlyticsService.instance.log(message);
+  }
 
   SyncHealthActivitiesInteractorImpl({
     required this.healthSyncRepository,
@@ -40,17 +47,24 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     try {
       // Check if sync is enabled
       final isEnabled = await healthSyncRepository.isHealthSyncEnabled();
-      if (!isEnabled) return syncedEvents;
+      if (!isEnabled) {
+        _log('Sync aborted: sync not enabled');
+        return syncedEvents;
+      }
 
       // Check if we have permissions
       final hasPermissions = await healthSyncRepository.hasPermissions();
-      if (!hasPermissions) return syncedEvents;
+      if (!hasPermissions) {
+        _log('Sync aborted: no permissions');
+        return syncedEvents;
+      }
 
       // Check throttling - don't sync if we synced recently
       final lastSyncTime = await healthSyncRepository.getLastSyncTime();
       if (since == null && lastSyncTime != null) {
         final timeSinceLastSync = DateTime.now().difference(lastSyncTime);
         if (timeSinceLastSync < _minSyncInterval) {
+          _log('Sync throttled: last sync ${timeSinceLastSync.inMinutes}m ago');
           return syncedEvents;
         }
       }
@@ -66,32 +80,42 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
         startDate = DateTime.now().subtract(_defaultLookback);
       }
       final endDate = DateTime.now();
+      _log('Sync window: $startDate → $endDate');
 
       // Get user ID
       final userId = preferencesRepository.getSub();
-      if (userId.isEmpty) return syncedEvents;
+      if (userId.isEmpty) {
+        _log('Sync aborted: empty userId');
+        return syncedEvents;
+      }
 
       // Get sports master file for mapping
       final sportsInfo = await localStorageRepository.getMasterFile(
         MasterFilesType.sportsInfo,
       ) as SportsInfoEntity?;
-      if (sportsInfo == null) return syncedEvents;
+      if (sportsInfo == null) {
+        _log('Sync aborted: sportsInfo master file not loaded');
+        return syncedEvents;
+      }
 
       // Fetch activities from health platform
       final activities = await healthSyncRepository.fetchActivities(
         startDate: startDate,
         endDate: endDate,
       );
+      _log('Fetched ${activities.length} activities from health platform');
 
       // Fetch steps as well
       final steps = await healthSyncRepository.fetchSteps(
         startDate: startDate,
         endDate: endDate,
       );
+      _log('Fetched ${steps.length} step entries from health platform');
 
       // Combine and deduplicate
       final allActivities = [...activities, ...steps];
       final newActivities = await _deduplicateActivities(allActivities);
+      _log('After dedup: ${newActivities.length} new activities (${allActivities.length - newActivities.length} already synced)');
 
       // Process each new activity
       for (final activity in newActivities) {
@@ -102,19 +126,25 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
             sportsInfo,
           );
           if (sportEvent != null) {
+            _log('Synced: ${activity.activityType} (${activity.healthPlatformId}) → ${sportEvent.sportName}');
             syncedEvents.add(sportEvent);
+          } else {
+            _log('Skipped: ${activity.activityType} — no matching sportId');
           }
         } catch (e) {
-          // Log error but continue with other activities
+          _log('Error processing ${activity.activityType}: $e');
           continue;
         }
       }
 
       // Update last sync time
       await healthSyncRepository.setLastSyncTime(DateTime.now());
+      _log('Sync complete: ${syncedEvents.length} activities saved');
 
       return syncedEvents;
-    } catch (e) {
+    } catch (e, stack) {
+      _log('Sync failed with error: $e');
+      CrashlyticsService.record(e, stack, context: {'event': 'SyncHealthActivities'});
       return syncedEvents;
     }
   }
