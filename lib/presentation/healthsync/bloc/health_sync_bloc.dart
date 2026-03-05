@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/check_health_sync_status_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/request_health_permissions_interactor.dart';
@@ -10,6 +12,11 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.
 
 part 'health_sync_event.dart';
 part 'health_sync_state.dart';
+
+void _hsLog(String message) {
+  debugPrint('[HealthSync] $message');
+  CrashlyticsService.instance.log(message);
+}
 
 class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
   final HealthSyncRepository healthSyncRepository;
@@ -41,7 +48,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
 
     try {
       final isAvailable = await healthSyncRepository.isHealthSyncAvailable();
-      CrashlyticsService.instance.log('HealthSync init: isAvailable=$isAvailable');
+      _hsLog('HealthSync init: isAvailable=$isAvailable');
 
       final isEnabled = await healthSyncRepository.isHealthSyncEnabled();
 
@@ -51,11 +58,11 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       if (isAvailable) {
         hasPermissions = await healthSyncRepository.hasPermissions();
       }
-      CrashlyticsService.instance.log('HealthSync init: isEnabled=$isEnabled, hasPermissions=$hasPermissions');
+      _hsLog('HealthSync init: isEnabled=$isEnabled, hasPermissions=$hasPermissions');
 
       // Auto-disable sync if permissions were revoked externally (e.g. in HC settings)
       if (isEnabled && !hasPermissions && isAvailable) {
-        CrashlyticsService.instance.log('HealthSync init: permissions revoked, disabling sync');
+        _hsLog('HealthSync init: permissions revoked, disabling sync');
         await healthSyncRepository.setHealthSyncEnabled(false);
       }
 
@@ -84,9 +91,9 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     emit(state.copyWith(isLoading: true));
 
     try {
-      CrashlyticsService.instance.log('HealthSync: requesting permissions');
+      _hsLog('HealthSync: requesting permissions');
       final granted = await requestHealthPermissionsInteractor.execute();
-      CrashlyticsService.instance.log('HealthSync: permissions granted=$granted');
+      _hsLog('HealthSync: permissions granted=$granted');
 
       if (granted) {
         // Also enable sync after permissions are granted
@@ -121,9 +128,9 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     emit(state.copyWith(isLoading: true));
 
     try {
-      CrashlyticsService.instance.log('HealthSync: toggle enable=${event.enable}');
+      _hsLog('HealthSync: toggle enable=${event.enable}');
       final success = await toggleHealthSyncInteractor.execute(event.enable);
-      CrashlyticsService.instance.log('HealthSync: toggle success=$success');
+      _hsLog('HealthSync: toggle success=$success');
 
       if (success) {
         final lastSyncTime = await healthSyncRepository.getLastSyncTime();
@@ -138,7 +145,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         // Toggle failed — re-check actual state
         final hasPermissions = await healthSyncRepository.hasPermissions();
         final isEnabled = await healthSyncRepository.isHealthSyncEnabled();
-        CrashlyticsService.instance.log('HealthSync: toggle failed, hasPermissions=$hasPermissions, isEnabled=$isEnabled');
+        _hsLog('HealthSync: toggle failed, hasPermissions=$hasPermissions, isEnabled=$isEnabled');
 
         emit(state.copyWith(
           isLoading: false,
@@ -166,10 +173,10 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     ));
 
     try {
-      CrashlyticsService.instance.log('HealthSync: manual trigger started');
+      _hsLog('HealthSync: manual trigger started');
       final syncedActivities = await syncHealthActivitiesInteractor.execute();
       final lastSyncTime = await healthSyncRepository.getLastSyncTime();
-      CrashlyticsService.instance.log('HealthSync: synced ${syncedActivities.length} activities');
+      _hsLog('HealthSync: synced ${syncedActivities.length} activities');
 
       if (syncedActivities.isNotEmpty) {
         DashboardEventBus.instance.notify(DataChangedCategory.sport);
