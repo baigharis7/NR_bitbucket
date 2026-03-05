@@ -26,6 +26,7 @@ class ItemTitleCard extends StatefulWidget {
   final bool showTimePicker;
   final bool showRoutineValidation;
   final String? routineLabel;
+  final bool isEdit;
 
   const ItemTitleCard({
     super.key,
@@ -46,6 +47,7 @@ class ItemTitleCard extends StatefulWidget {
     this.showTimePicker = true,
     this.showRoutineValidation = false,
     this.routineLabel,
+    this.isEdit = false,
   });
 
   @override
@@ -195,8 +197,8 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
               ),
             ],
           ),
-          // Favorite callout
-          if (widget.isFavorite) ...[
+          // Favorite callout (only for new items, not edits)
+          if (widget.isFavorite && !widget.isEdit) ...[
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -222,8 +224,8 @@ class _ItemTitleCardState extends State<ItemTitleCard> {
               ),
             ),
           ],
-          // Routine callout
-          if (widget.isRoutine && !widget.isFavorite) ...[
+          // Routine callout (only for new items, not edits)
+          if (widget.isRoutine && !widget.isFavorite && !widget.isEdit) ...[
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),

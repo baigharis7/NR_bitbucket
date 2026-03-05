@@ -167,6 +167,7 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                           onUpdateTime: (scheduleTime) => updateSupplementBloc.add(UpdateTimeOfDaySupplementUpdateSupplementEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
                           daysOfWeek: state.supplementObj?.daysOfWeek.orEmpty(),
                           onUpdateDayOfWeek: (weekDay) => updateSupplementBloc.add(UpdateDaysOfWeekSupplementUpdateSupplementEvent(weekDay: weekDay)),
+                          isEdit: true,
                         ),
                         ...state.supplementObj!.info.orEmpty().asMap().entries.map((entry) {
                           final index = entry.key;

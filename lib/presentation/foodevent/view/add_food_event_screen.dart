@@ -357,6 +357,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                           onUpdateDayOfWeek: (dayOfWeek) {},
                                           showTimePicker: state.foodEvent?.mealTime == 3,
                                           showRoutineValidation: _showRoutineValidation,
+                                          isEdit: state.isEdit ?? false,
                                         ),
                                         // Item cards with connector lines
                                         ...state.foodEvent!.ingredients.orEmpty().asMap().entries.map((entry) {

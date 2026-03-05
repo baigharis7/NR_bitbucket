@@ -177,6 +177,7 @@ class _UpdateMealScreenState extends State<UpdateMealScreen> {
                               daysOfWeek: state.foodEvent?.daysOfWeek,
                               onUpdateDayOfWeek: (dayOfWeek) {},
                               showTimePicker: state.foodEvent?.mealTime == 3,
+                              isEdit: true,
                             ),
                             ...state.foodEvent!.ingredients.asMap().entries.map((entry) {
                               final index = entry.key;

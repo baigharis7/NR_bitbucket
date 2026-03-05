@@ -170,6 +170,7 @@ class _UpdateSportScreenState extends State<UpdateSportScreen> {
                             onUpdateTime: (scheduleTime) => updateSportBloc.add(UpdateSportScheduleTimeUpdateSportEvent(scheduleTime: DateTimeHelper.timeOfDayTo24HrString(scheduleTime))),
                             daysOfWeek: state.sportSimple?.daysOfWeek,
                             onUpdateDayOfWeek: (dayOfWeek) => updateSportBloc.add(UpdateSportDayOfWeekUpdateSportEvent(dayOfWeek: dayOfWeek)),
+                            isEdit: true,
                           ),
                           ...state.sportSimple!.info!.asMap().entries.map((entry) {
                             final index = entry.key;

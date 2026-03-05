@@ -464,6 +464,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                       daysOfWeek: state.supplementObj?.daysOfWeek,
                                       onUpdateDayOfWeek: (dayOfWeek) {},
                                       showRoutineValidation: _showRoutineValidation,
+                                      isEdit: state.isEdit ?? false,
                                     ),
                                     // Item cards with connector lines
                                     ...state.supplementObj!.info.orEmpty().asMap().entries.map((entry) {
