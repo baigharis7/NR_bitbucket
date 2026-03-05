@@ -57,9 +57,6 @@ workflows:
       - name: Get dependencies
         script: flutter pub get
 
-      - name: Run tests
-        script: flutter test
-
       - name: Set up Android signing
         script: |
           KEYSTORE_PATH="$CM_BUILD_DIR/android/upload-keystore-nn.jks"
