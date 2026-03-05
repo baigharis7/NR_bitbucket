@@ -29,6 +29,7 @@ class HealthSyncSettingsScreen extends StatefulWidget {
 class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
     with WidgetsBindingObserver {
   late HealthSyncBloc _bloc;
+  DateTime _lastActionTime = DateTime(0);
 
   @override
   void initState() {
@@ -52,9 +53,13 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // Re-check availability when returning from Play Store (after installing Health Connect).
-    // Skip if the bloc is busy (toggle/permission in progress) to avoid interference.
+    // Skip if the bloc is busy or if a toggle/permission action just completed
+    // (the HC permission dialog triggers a resume — re-init would cause duplicate notifications).
     if (state == AppLifecycleState.resumed && !_bloc.state.isLoading) {
-      _bloc.add(HealthSyncInitialization());
+      final elapsed = DateTime.now().difference(_lastActionTime);
+      if (elapsed.inSeconds > 2) {
+        _bloc.add(HealthSyncInitialization());
+      }
     }
   }
 
@@ -77,19 +82,6 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
               backgroundColor: AppColors.yellowishGreen,
               content: Text(
                 AppLocalizations.of(context)!.health_sync_success,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-          );
-        }
-
-        // Show permission denied message (separate from errors)
-        if (state.permissionGranted == false) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.orange,
-              content: Text(
-                AppLocalizations.of(context)!.health_sync_no_permission,
                 style: const TextStyle(color: Colors.white),
               ),
             ),
@@ -348,7 +340,10 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
               Switch.adaptive(
                 value: state.isSyncEnabled,
                 onChanged: state.isAvailable
-                    ? (value) => _bloc.add(HealthSyncToggle(enable: value))
+                    ? (value) {
+                        _lastActionTime = DateTime.now();
+                        _bloc.add(HealthSyncToggle(enable: value));
+                      }
                     : null,
                 activeColor: Colors.white,
                 activeTrackColor: AppColors.mountainMeadow,
