@@ -5,6 +5,7 @@ import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favorites/sport/view/add_sport_favorite_screen.dart';
@@ -163,9 +164,12 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                                 ? Column(
                               children: [
                                 ...state.todaySportEvents!.map((sportEvent) {
+                                  final isSyncedActivity = sportEvent.source != null && sportEvent.source != 'manual';
                                   return EventItemWithEditAndLike(
                                     name: sportEvent.sportName.toString(),
                                     isFavorite: bloc.isSportFavorite(sportEvent),
+                                    leadingIcon: isSyncedActivity ? Icons.monitor_heart : null,
+                                    leadingIconColor: isSyncedActivity ? AppColors.yellowishGreen : null,
                                     onEdit: () {
                                       Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: sportEvent).then((value) => bloc.add(InitializeStateAction()));
                                     },

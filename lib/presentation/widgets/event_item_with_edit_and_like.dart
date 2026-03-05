@@ -9,6 +9,8 @@ class EventItemWithEditAndLike extends StatelessWidget {
   final Function onDetail;
   final Function onDelete;
   final bool? isCentered;
+  final IconData? leadingIcon;
+  final Color? leadingIconColor;
 
   const EventItemWithEditAndLike({
     Key? key,
@@ -19,6 +21,8 @@ class EventItemWithEditAndLike extends StatelessWidget {
     required this.onDetail,
     required this.onDelete,
     this.isCentered,
+    this.leadingIcon,
+    this.leadingIconColor,
   }) : super(key: key);
 
   @override
@@ -32,6 +36,10 @@ class EventItemWithEditAndLike extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginSmall),
           child: Row(
             children: [
+              if (leadingIcon != null) ...[
+                Icon(leadingIcon, size: 22, color: leadingIconColor),
+                const SizedBox(width: Dimens.marginSmall),
+              ],
               Expanded(
                 child: Text(name, overflow: TextOverflow.clip),
               ),

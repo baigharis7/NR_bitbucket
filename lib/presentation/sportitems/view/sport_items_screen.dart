@@ -162,11 +162,6 @@ class _SportItemsScreenState extends State<SportItemsScreen> with MidnightToastM
 
                                         // Check if this is a synced activity
                                         final isSyncedActivity = activity.source != null && activity.source != 'manual';
-                                        final sourceLabel = activity.source == 'apple_health'
-                                            ? AppLocalizations.of(context)!.health_sync_source_apple
-                                            : activity.source == 'health_connect'
-                                                ? AppLocalizations.of(context)!.health_sync_source_health_connect
-                                                : null;
 
                                         // Build subtitle with extra info for synced activities
                                         String subtitle = '${AppLocalizations.of(context)!.energy}: -${activity.eventKcals} kcal. - ${(activity.info?.length ?? 0) > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : "${AppLocalizations.of(context)!.duration}: ${activity.info![0].minutes} min."}';
@@ -183,15 +178,12 @@ class _SportItemsScreenState extends State<SportItemsScreen> with MidnightToastM
                                           }
                                         }
 
-                                        // Prepend source label for synced activities
-                                        if (sourceLabel != null) {
-                                          subtitle = '$sourceLabel - $subtitle';
-                                        }
-
                                         return ItemInfoCard(
                                           title: itemName,
                                           subtitle: subtitle,
-                                          leadingSrc: isSyncedActivity ? 'assets/icon/sport_icon.png' : null,
+                                          leadingIcon: isSyncedActivity ? Icons.monitor_heart : null,
+                                          leadingIconColor: isSyncedActivity ? AppColors.yellowishGreen : null,
+                                          leadingIconSize: isSyncedActivity ? 22 : null,
                                           trailingSrc: isSyncedActivity ? null : 'assets/images/delete_icon.png',
                                           beforeTrailingSrc: isSyncedActivity ? null : 'assets/icon/edit_icon.png',
                                           beforeTrailingTap: isSyncedActivity ? null : () => Navigator.pushNamed(context, SportUpdateScreen.routeName, arguments: activity).then((value) => bloc.add(UpdateDatetimeSportItemsEvents(dateTime: state.dateTime ?? DateTime.now()))),

@@ -60,14 +60,17 @@ class ItemInfoCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              (!leadingSrc.isNull() || leadingIcon != null) && !leadingTap.isNull()
+              if (!leadingSrc.isNull() || leadingIcon != null)
+              leadingTap != null
                 ? InkWell(
                     onTap: () => leadingTap?.call(),
                     child: leadingIcon != null
                       ? Icon(leadingIcon, size: leadingIconSize ?? 17, color: leadingIconColor)
                       : Image.asset(leadingSrc!, width: leadingIconSize ?? 17, height: leadingIconSize ?? 17),
                   )
-                : SizedBox(width: leadingIconSize ?? 17, height: leadingIconSize ?? 17),
+                : (leadingIcon != null
+                    ? Icon(leadingIcon, size: leadingIconSize ?? 17, color: leadingIconColor)
+                    : Image.asset(leadingSrc!, width: leadingIconSize ?? 17, height: leadingIconSize ?? 17)),
               const SizedBox(width: Dimens.width12),
               Expanded(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
