@@ -227,15 +227,27 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
         avgHeartRate = (heartRates.reduce((a, b) => a + b) / heartRates.length).round();
       }
 
-      // Get workout type name
+      // Get workout type name and built-in energy/distance from the workout record itself
       final workoutValue = workout.value;
       String activityType = 'WORKOUT';
       if (workoutValue is WorkoutHealthValue) {
         activityType = workoutValue.workoutActivityType.name;
+
+        // Use workout's built-in energy if separate energy data wasn't found
+        if (caloriesBurned == null && workoutValue.totalEnergyBurned != null) {
+          caloriesBurned = workoutValue.totalEnergyBurned!.toDouble();
+        }
+
+        // Use workout's built-in distance if separate distance data wasn't found
+        if (distance == null && workoutValue.totalDistance != null) {
+          distance = workoutValue.totalDistance!.toDouble();
+        }
       }
 
       // Generate a unique ID from the workout properties
       final workoutId = '${workout.sourceName}_${workout.dateFrom.millisecondsSinceEpoch}_${workout.dateTo.millisecondsSinceEpoch}';
+
+      debugPrint('[HealthSync] Workout: $activityType, kcal=$caloriesBurned, dist=$distance, hr=$avgHeartRate, dur=${durationMinutes}m');
 
       activities.add(HealthActivity(
         healthPlatformId: workoutId,
@@ -339,6 +351,11 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   @override
   Future<bool> isAlreadySynced(String healthPlatformId) async {
     return await localStorageRepository.isHealthActivitySynced(healthPlatformId);
+  }
+
+  @override
+  Future<void> deleteSyncMetadataBySportEventId(int sportEventId) async {
+    await localStorageRepository.deleteHealthSyncMetadataBySportEventId(sportEventId);
   }
 
   @override
