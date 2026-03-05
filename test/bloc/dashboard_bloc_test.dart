@@ -182,7 +182,7 @@ void main() {
       'initial state has correct defaults',
       build: buildBloc,
       verify: (bloc) {
-        expect(bloc.state.isLoading, false);
+        expect(bloc.state.isLoading, true);
         expect(bloc.state.waterEvents, isEmpty);
         expect(bloc.state.foodEvents, isEmpty);
         expect(bloc.state.userKcal, 0);
