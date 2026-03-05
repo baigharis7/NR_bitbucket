@@ -21,9 +21,11 @@ SportEventSimple mapHealthActivityToSportEventSimple({
     activity.avgHeartRate?.toDouble(),
   );
 
+  // Use midnight of the start day, matching manual entry convention
+  final startDay = DateTime(activity.startTime.year, activity.startTime.month, activity.startTime.day);
   return SportEventSimple(
     userId: userId,
-    eventDate: activity.startTime.millisecondsSinceEpoch,
+    eventDate: startDay.millisecondsSinceEpoch,
     sportName: sport?.en ?? activity.activityType,
     source: activity.sourceType,
     info: [
@@ -58,10 +60,12 @@ SportEventComplete mapHealthActivityToSportEventComplete({
     activity.avgHeartRate?.toDouble(),
   );
 
+  // Use midnight of the start day, matching manual entry convention
+  final startDay = DateTime(activity.startTime.year, activity.startTime.month, activity.startTime.day);
   return SportEventComplete(
     userId: userId,
     eventId: eventId,
-    eventDate: activity.startTime.millisecondsSinceEpoch,
+    eventDate: startDay.millisecondsSinceEpoch,
     sportName: sport?.en ?? activity.activityType,
     source: activity.sourceType,
     eventKcals: eventKcals,

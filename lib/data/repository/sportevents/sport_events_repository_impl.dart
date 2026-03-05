@@ -57,7 +57,9 @@ class SportEventsRepositoryImpl extends SportEventsRepository {
   @override
   Future<List<SportEventComplete>> getTodaySportEvents({DateTime? dateTime}) async {
     final sportEvents = await localStorageRepository.getSportsEventsOfToday(dateTime: dateTime);
-    return sportEvents.map((sport) => mapToSportEventComplete(sport as SportEventEntity)).toList();
+    final events = sportEvents.map((sport) => mapToSportEventComplete(sport as SportEventEntity)).toList();
+    events.sort((a, b) => a.eventId.compareTo(b.eventId));
+    return events;
   }
 
   @override
