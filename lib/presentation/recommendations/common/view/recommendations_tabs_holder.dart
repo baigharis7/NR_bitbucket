@@ -109,6 +109,7 @@ class _RecommendationsTabHolderState extends State<RecommendationsTabHolder> wit
                             color: Colors.transparent,
                             borderRadius: BorderRadius.circular(Dimens.border15),
                           ),
+                          dividerColor: Colors.transparent,
                           labelPadding: const EdgeInsets.symmetric(horizontal: Dimens.padding6),
                           labelColor: Colors.white,
                           indicatorSize: TabBarIndicatorSize.tab,
@@ -126,8 +127,6 @@ class _RecommendationsTabHolderState extends State<RecommendationsTabHolder> wit
                             );
                           }),
                         ),
-                        const SizedBox(height: Dimens.height5),
-                        const Divider(color: AppColors.yellowishGreen, height: 2, thickness: 2,),
                       ]),
                     ),
                     // const SizedBox(height: Dimens.height12),
