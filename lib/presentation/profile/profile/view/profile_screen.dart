@@ -138,7 +138,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                             ListTile(
                               contentPadding: EdgeInsets.zero,
                               visualDensity: VisualDensity.compact,
-                              horizontalTitleGap: Dimens.zero,
+                              horizontalTitleGap: Dimens.margin6,
                               leading: Image.asset('assets/images/hour_glass.png', height: 21, width: 18),
                               title: Text(AppLocalizations.of(context)!.temporary_micronutrients, style: const TextStyle(color: AppColors.redOxide, fontWeight: FontWeight.w900, fontSize: Dimens.fontSize15,),),
                             ),
@@ -185,7 +185,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                             ListTile(
                               contentPadding: EdgeInsets.zero,
                               visualDensity: VisualDensity.compact,
-                              horizontalTitleGap: Dimens.zero,
+                              horizontalTitleGap: Dimens.margin6,
                               leading: Image.asset('assets/images/goal_objectives.png', height: 18, width: 18),
                               title: Text(AppLocalizations.of(context)!.objectives, style: const TextStyle(
                                   color: AppColors.peacockBlue, fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeLarge,),),
@@ -219,7 +219,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                             ListTile(
                               contentPadding: EdgeInsets.zero,
                               visualDensity: VisualDensity.compact,
-                              horizontalTitleGap: Dimens.zero,
+                              horizontalTitleGap: Dimens.margin6,
                               leading: const Icon(Icons.info_outline, size: 21, color: AppColors.yellowishGreen),
                               title: Text(AppLocalizations.of(context)!.imp_info, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w900, fontSize: Dimens.fontSize15,),),
                             ),
