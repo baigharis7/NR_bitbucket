@@ -100,7 +100,7 @@ workflows:
 
       - name: Fetch signing files from App Store Connect
         script: |
-          app-store-connect fetch-signing-files "com.nutrenaissance.nutrenaisanceFlutter" \
+          app-store-connect fetch-signing-files "com.nutrenaissance.nutrenaissanceFlutter" \
             --type IOS_APP_STORE \
             --create
 
