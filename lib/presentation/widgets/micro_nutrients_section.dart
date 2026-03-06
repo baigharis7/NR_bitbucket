@@ -10,7 +10,7 @@ import '../../infrastructure/utils/app_color.dart';
 import '../../infrastructure/utils/dimens.dart';
 import '../micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
 import 'dash_title_widget.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 class MicroNutrientsSection extends StatelessWidget {
   final List<NutrientsModel> micronutrients;

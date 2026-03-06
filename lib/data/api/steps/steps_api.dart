@@ -1,4 +1,4 @@
-import 'package:chuck_interceptor/chuck.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
 import 'package:nutrenaissance_flutter/data/api/steps/models/upload_step_event_response.dart';
 import 'package:nutrenaissance_flutter/infrastructure/http/api_helper.dart';
 

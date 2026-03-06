@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/forgottenpassword/bloc/forgotten_password_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/resetpassword/view/reset_password_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/generic_button.dart';

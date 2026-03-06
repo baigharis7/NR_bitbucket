@@ -6,7 +6,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.da
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 class SugarIntakeWidget extends StatelessWidget {
   final String title;

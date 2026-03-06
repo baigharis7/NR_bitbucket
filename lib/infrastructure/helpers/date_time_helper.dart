@@ -192,8 +192,8 @@ class DateTimeHelper {
 
   static Future<String> getDeviceIANATimeZone() async {
     try {
-      final String timeZone = await FlutterTimezone.getLocalTimezone(); // e.g. "Asia/Karachi"
-      return timeZone;
+      final timeZone = await FlutterTimezone.getLocalTimezone(); // e.g. "Asia/Karachi"
+      return timeZone.identifier;
     } catch (e) {
       print("Failed to get time zone: $e");
       return 'UTC';

@@ -4,7 +4,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/ani_nutri_progress_b
 
 import '../../infrastructure/utils/app_color.dart';
 import '../../infrastructure/utils/dimens.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 class RowSugarFiberWidget extends StatelessWidget {
   final double totalValue;

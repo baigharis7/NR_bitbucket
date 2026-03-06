@@ -1,5 +1,5 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:chuck_interceptor/chuck.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
 import 'dart:convert';
 
 import 'package:nutrenaissance_flutter/data/api/eventssync/events_sync_api.dart';
@@ -315,10 +315,10 @@ class LoginProviderNew extends BaseProvider {
         if (signIn.isSignedIn) {
           try {
             final fetch = await fetchUserAttributesInteractor!.execute();
-            if (!isUserConfirmedFromToken(fetch.userPoolTokens?.idToken)) {
+            if (!isUserConfirmedFromToken(fetch.userPoolTokensResult.valueOrNull?.idToken.toJson())) {
               _setNotConfirmedUserTryingToLogin(true);
             } else if (isFromVerificationCode) {
-              _onFetchUserAttributesSuccess(fetch, moveToNextScreen, saveUserInRemote: () => _saveUserInRemoteUsersDatabase(fetch.userSub.orEmpty()));
+              _onFetchUserAttributesSuccess(fetch, moveToNextScreen, saveUserInRemote: () => _saveUserInRemoteUsersDatabase(fetch.userSubResult.value.orEmpty()));
             } else {
               _onFetchUserAttributesSuccess(fetch, moveToNextScreen);
             }
@@ -375,7 +375,7 @@ class LoginProviderNew extends BaseProvider {
         if (session.isSignedIn) {
           if (!isProfileChecked) {
             try {
-              final profileExists = await checkProfileExistenceInteractor?.execute(session.userSub.orEmpty());
+              final profileExists = await checkProfileExistenceInteractor?.execute(session.userSubResult.value.orEmpty());
               _setProfileChecked(true);
               if (!profileExists!) {
                 String? email = getEmailFromToken(getIdTokenInteractor?.execute());
@@ -387,7 +387,7 @@ class LoginProviderNew extends BaseProvider {
                 }
               } else {
                 // Aquí lo de borrar los datos.
-                if (session.userSub != userId) {
+                if (session.userSubResult.value != userId) {
                   await eraseDatabaseInteractor!.execute();
                   String? email = getEmailFromToken(getIdTokenInteractor?.execute());
                   if (email.isNotNull()) {

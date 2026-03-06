@@ -8,16 +8,11 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 class CognitoAuthenticationService implements AuthenticationService {
   final AmplifyService amplifyService;
 
-  static bool _pluginAdded = false;
-
   static Future<CognitoAuthenticationService> init({AmplifyService? amplify}) async {
     if (amplify == null) {
       amplify = AmplifyService();
       if (!Amplify.isConfigured) {
-        if (!_pluginAdded) {
-          await amplify.addPlugin(AmplifyAuthCognito());
-          _pluginAdded = true;
-        }
+        await amplify.addPlugin(AmplifyAuthCognito());
         await amplify.configure(Environment().config!.cognitoConfig.orEmpty());
       }
     }
@@ -36,7 +31,7 @@ class CognitoAuthenticationService implements AuthenticationService {
     return getAuthorization().signUp(
         username: username,
         password: password,
-        options: CognitoSignUpOptions(userAttributes: {
+        options: SignUpOptions(userAttributes: {
           CognitoUserAttributeKey.givenName: username,
           CognitoUserAttributeKey.email: email,
         },),
@@ -71,7 +66,7 @@ class CognitoAuthenticationService implements AuthenticationService {
   Future<CognitoAuthSession> fetchUserAttributes() async {
 
     final authSession = await getAuthorization().fetchAuthSession(
-      options: CognitoSessionOptions(getAWSCredentials: true),
+      options: const FetchAuthSessionOptions(forceRefresh: true),
     );
     return authSession as CognitoAuthSession;
   }
@@ -89,7 +84,7 @@ class CognitoAuthenticationService implements AuthenticationService {
   }
 
   @override
-  Future<UpdatePasswordResult> confirmResetPassword(String username, String newPassword, String confirmationCode) async {
+  Future<ResetPasswordResult> confirmResetPassword(String username, String newPassword, String confirmationCode) async {
     return await getAuthorization().confirmResetPassword(username: username, newPassword: newPassword, confirmationCode: confirmationCode);
   }
 

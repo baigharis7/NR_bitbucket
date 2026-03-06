@@ -7,7 +7,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/login/provider/login_provider_new.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/generic_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 import '../../infrastructure/utils/app_color.dart';
 

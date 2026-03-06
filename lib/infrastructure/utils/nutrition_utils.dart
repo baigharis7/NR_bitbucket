@@ -10,7 +10,7 @@ import '../../domain/models/favorites/food/food_favorite.dart';
 import '../../domain/models/masterfiles/sports_info_master.dart';
 import '../../domain/models/masterfiles/supplements_info_master.dart';
 import '../../domain/models/masterfiles/units_info_master.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 class NutritionUtils {
   final GetMasterFileInteractor getMasterFileInteractor;

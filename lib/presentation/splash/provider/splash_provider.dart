@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:chuck_interceptor/chuck.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';

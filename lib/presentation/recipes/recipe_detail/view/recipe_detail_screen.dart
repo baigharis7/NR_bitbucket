@@ -1,9 +1,9 @@
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as carousel;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/recipes/upload_recipe_favorite.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
@@ -35,7 +35,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen>
     'BELIZE',
   ];
   int _current = 0;
-  CarouselController controller = CarouselController();
+  carousel.CarouselSliderController controller = carousel.CarouselSliderController();
   late TabController _tabController;
   late RecipeDetailBloc recipeDetailBloc;
   Object? infoReceived;
@@ -103,7 +103,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen>
                 preferredSize: const Size.fromHeight(Dimens.heightXXLarge),
                 child: Column(
                   children: [
-                    CarouselSlider(
+                    carousel.CarouselSlider(
                       carouselController: controller,
                       items: countryList.map((e) {
                         return Container(
@@ -138,7 +138,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen>
                           ),
                         );
                       }).toList(),
-                      options: CarouselOptions(
+                      options: carousel.CarouselOptions(
                         height: 200,
                         viewportFraction: 0.9,
                         enlargeCenterPage: true,

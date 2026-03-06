@@ -4,7 +4,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.da
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/privacy/view/policy_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/settings/bloc/settings_bloc.dart';

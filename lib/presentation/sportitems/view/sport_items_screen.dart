@@ -15,7 +15,7 @@ import '../../../infrastructure/helpers/date_time_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
 import '../../widgets/screen_top_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/general_button.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';

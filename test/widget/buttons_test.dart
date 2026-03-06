@@ -4,7 +4,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/custom_button_1.dart
 import 'package:nutrenaissance_flutter/presentation/widgets/generic_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 void main() {
   // ---------------------------------------------------------------------------

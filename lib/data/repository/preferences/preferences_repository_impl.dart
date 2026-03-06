@@ -47,10 +47,10 @@ class PreferencesRepositoryImpl extends PreferencesRepository {
 
   @override
   Future<void> setUserCredentials(CognitoAuthSession session) async {
-    setSub(session.userSub.orEmpty());
-    setIdToken(session.userPoolTokens!.idToken.orEmpty());
-    setAccessToken(session.userPoolTokens!.accessToken.orEmpty());
-    setRefreshToken(session.userPoolTokens!.refreshToken.orEmpty());
+    setSub(session.userSubResult.value.orEmpty());
+    setIdToken(session.userPoolTokensResult.value.idToken.toJson().orEmpty());
+    setAccessToken(session.userPoolTokensResult.value.accessToken.toJson().orEmpty());
+    setRefreshToken(session.userPoolTokensResult.value.refreshToken.orEmpty());
     setUserSignedIn(session.isSignedIn);
   }
 

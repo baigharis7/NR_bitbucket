@@ -5,7 +5,7 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/updatemeal/view/update_meal_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/item_info_card.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/dimens.dart';

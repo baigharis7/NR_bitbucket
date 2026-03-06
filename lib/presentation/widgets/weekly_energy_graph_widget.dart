@@ -4,7 +4,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.d
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_vertical_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 import '../../domain/models/dashboard/nutrients_weekly_model.dart';
 

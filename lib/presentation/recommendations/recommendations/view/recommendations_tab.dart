@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';

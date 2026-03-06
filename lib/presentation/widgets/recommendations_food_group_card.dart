@@ -5,7 +5,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart'
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/recommendations_item.dart';
 
 class RecommendationsFoodGroupCard extends StatelessWidget {

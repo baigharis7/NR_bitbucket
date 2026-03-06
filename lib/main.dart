@@ -9,7 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:nutrenaissance_flutter/data/api/advices/advices_api.dart';
@@ -488,7 +488,7 @@ import 'presentation/profile/common/health_questions_screen.dart';
 import 'presentation/recommendations/common/view/recommendations_tabs_holder.dart';
 import 'presentation/waterevent/view/add_water_event_screen.dart';
 
-import 'package:chuck_interceptor/chuck.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 // @pragma('vm:entry-point')

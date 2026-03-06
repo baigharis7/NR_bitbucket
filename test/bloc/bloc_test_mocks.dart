@@ -138,7 +138,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_m
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_model_appearance_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_day_supplement_events_interactor.dart';
-import 'package:chuck_interceptor/chuck.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 @GenerateNiceMocks([
@@ -228,7 +228,6 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<SaveModelAppearanceInteractor>(),
   MockSpec<GetTodaySportsInteractor>(),
   MockSpec<GetDaySupplementEventsInteractor>(),
-  MockSpec<Chuck>(),
   MockSpec<SharedPreferences>(),
   // JournalFoodBloc / JournalSportBloc
   MockSpec<GetUserKcalInteractor>(),

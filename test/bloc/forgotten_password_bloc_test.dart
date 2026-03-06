@@ -1,4 +1,4 @@
-import 'package:amplify_core/amplify_core.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -31,9 +31,9 @@ void main() {
       'ResetPasswordRequestEventAction calls resetPassword and navigates on success',
       build: () {
         when(mockLoginRepository.resetPassword(any))
-            .thenAnswer((_) async => ResetPasswordResult(
+            .thenAnswer((_) async => CognitoResetPasswordResult(
                   isPasswordReset: false,
-                  nextStep: ResetPasswordStep(updateStep: 'CONFIRM_RESET_PASSWORD_WITH_CODE'),
+                  nextStep: ResetPasswordStep(updateStep: AuthResetPasswordStep.confirmResetPasswordWithCode),
                 ));
         return buildBloc();
       },

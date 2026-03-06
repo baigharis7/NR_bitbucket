@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:chuck_interceptor/chuck.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
 import 'package:hive/hive.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sync/sync_queue_entry.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';

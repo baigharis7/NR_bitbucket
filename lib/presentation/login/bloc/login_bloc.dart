@@ -405,12 +405,12 @@ class LoginBloc extends BaseBloc<LoginActions, LoginState> {
     launchSync(
         block: () async => await fetchUserAttributesInteractor.execute(),
         onSuccess: (CognitoAuthSession session) async {
-          if (!isUserConfirmedFromToken(session.userPoolTokens?.idToken)) {
+          if (!isUserConfirmedFromToken(session.userPoolTokensResult.valueOrNull?.idToken.toJson())) {
             state.notConfirmedUserTryingToLogin = true;
             removeLoading.call();
           } else if (isFromVerificationCode) {
             await _saveUserInRemoteUsersDatabase(
-              session.userSub.orEmpty(),
+              session.userSubResult.value.orEmpty(),
                   () async => await _onFetchUserAttributesSuccess(session, moveToNextScreen, removeLoading),
               removeLoading,
             );
@@ -429,7 +429,7 @@ class LoginBloc extends BaseBloc<LoginActions, LoginState> {
           if (session.isSignedIn) {
             if (!state.isProfileChecked) {
               launchSync(
-                  block: () async => await checkProfileExistenceInteractor.execute(session.userSub.orEmpty()),
+                  block: () async => await checkProfileExistenceInteractor.execute(session.userSubResult.value.orEmpty()),
                   onSuccess: (profileExists) async {
                     state.isProfileChecked = true;
                     if (!profileExists) {
@@ -618,7 +618,7 @@ class LoginBloc extends BaseBloc<LoginActions, LoginState> {
   Future<void> _onSignInError(Object error, Function removeLoading) async {
     if (error is UserNotConfirmedException) {
       state.notConfirmedUserTryingToLogin = true;
-    } else if (error is NotAuthorizedException) {
+    } else if (error is AuthNotAuthorizedException) {
       state.errorTypes = ErrorTypes.notAuthorizedError;
     } else {
       state.errorTypes = ErrorTypes.unknownError;

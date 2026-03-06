@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/dash_title_widget.dart';
 import '../../infrastructure/helpers/app_text_styles.dart';
 import '../../infrastructure/utils/dimens.dart';

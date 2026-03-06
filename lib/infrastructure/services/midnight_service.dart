@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 /// Singleton service that detects when the local clock crosses midnight.
 /// Emits the new date (at 00:00) on a broadcast [Stream].

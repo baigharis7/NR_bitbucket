@@ -78,7 +78,7 @@ import '../../../domain/interactor/waterevents/upload_water_event_interactor.dar
 import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../../domain/models/watervents/water_event_master.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
-import 'package:chuck_interceptor/chuck.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {

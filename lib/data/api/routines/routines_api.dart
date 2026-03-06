@@ -1,4 +1,4 @@
-import 'package:chuck_interceptor/chuck.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
 import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_completed.dart';
 import 'package:nutrenaissance_flutter/infrastructure/http/api_helper.dart';
 

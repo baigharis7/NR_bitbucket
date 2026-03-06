@@ -1,4 +1,4 @@
-import 'package:chuck_interceptor/chuck.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/simple_user.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';

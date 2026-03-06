@@ -1,4 +1,4 @@
-import 'package:chuck_interceptor/chuck.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';

@@ -26,7 +26,7 @@ import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/model/aversions_ui_model.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_state.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../infrastructure/utils/constants.dart';

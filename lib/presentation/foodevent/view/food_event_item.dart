@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/model/conversion_factors_response.dart';
 import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';

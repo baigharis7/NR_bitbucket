@@ -1,4 +1,4 @@
-image: ghcr.io/cirruslabs/flutter:3.13.8
+image: ghcr.io/cirruslabs/flutter:3.32.8
 
 pipelines:
   # Run only on merge to master

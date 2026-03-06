@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/favorites_mapper.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/updatesport/view/update_sport_screen.dart';
 
 import '../../../infrastructure/utils/app_color.dart';

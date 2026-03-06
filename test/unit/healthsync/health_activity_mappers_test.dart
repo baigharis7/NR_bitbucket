@@ -41,8 +41,9 @@ void main() {
         sportsInfo: testSportsInfo,
       );
 
+      final expectedMidnight = DateTime(2024, 1, 15).millisecondsSinceEpoch;
       expect(result.userId, 'user123');
-      expect(result.eventDate, testActivity.startTime.millisecondsSinceEpoch);
+      expect(result.eventDate, expectedMidnight);
       expect(result.sportName, 'Running');
       expect(result.source, 'apple_health');
     });
@@ -151,9 +152,10 @@ void main() {
         eventKcals: 500,
       );
 
+      final expectedMidnight = DateTime(2024, 1, 15).millisecondsSinceEpoch;
       expect(result.userId, 'user123');
       expect(result.eventId, 42);
-      expect(result.eventDate, testActivity.startTime.millisecondsSinceEpoch);
+      expect(result.eventDate, expectedMidnight);
       expect(result.sportName, 'Running');
       expect(result.source, 'apple_health');
       expect(result.eventKcals, 500);

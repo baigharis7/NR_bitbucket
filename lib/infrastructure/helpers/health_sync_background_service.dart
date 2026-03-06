@@ -25,7 +25,7 @@ class HealthSyncBackgroundService {
         networkType: NetworkType.connected,
         requiresBatteryNotLow: true,
       ),
-      existingWorkPolicy: ExistingWorkPolicy.keep,
+      existingWorkPolicy: ExistingPeriodicWorkPolicy.keep,
       backoffPolicy: BackoffPolicy.linear,
       backoffPolicyDelay: const Duration(minutes: 10),
     );

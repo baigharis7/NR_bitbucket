@@ -10,7 +10,7 @@ import 'package:nutrenaissance_flutter/presentation/mealtimedetails/bloc/meal_ti
 import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/item_info_card.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrient_row.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_border_box.dart';
 import '../../../domain/models/foodevents/food_arguments_model.dart';

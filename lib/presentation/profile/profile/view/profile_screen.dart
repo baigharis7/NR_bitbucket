@@ -8,7 +8,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/diet_questions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/general_questions_screen.dart';

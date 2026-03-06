@@ -5,7 +5,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/splash/provider/splash_provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 import '../../../infrastructure/helpers/app_text_styles.dart';
 

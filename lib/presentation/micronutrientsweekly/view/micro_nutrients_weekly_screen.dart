@@ -13,7 +13,7 @@ import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/screen_top_bar.dart';
 import '../../../infrastructure/utils/constants.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 import '../../widgets/weekly_nutrient_graphic.dart';
 

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:chuck_interceptor/chuck.dart';
-import 'package:chuck_interceptor/core/chuck_http_extensions.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
+import 'package:chuck_interceptor/src/core/chuck_http_extensions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
@@ -178,7 +178,7 @@ abstract class ApiHelper {
     if (isTokenExpired(idToken)) {
       final attributes = await _authenticationService.fetchUserAttributes();
       _preferencesRepository.setUserCredentials(attributes);
-      return attributes.userPoolTokens!.idToken;
+      return attributes.userPoolTokensResult.value.idToken.toJson();
     } else {
       return idToken;
     }

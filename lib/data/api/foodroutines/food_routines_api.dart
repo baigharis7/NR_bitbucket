@@ -1,4 +1,4 @@
-import 'package:chuck_interceptor/chuck.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodroutine/food_routine_event.dart';
 
 import '../../../domain/repository/preferences/preferences_repository.dart';

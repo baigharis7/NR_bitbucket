@@ -1,4 +1,4 @@
-import 'package:chuck_interceptor/chuck.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/data/api/analysis/subjective/subjective_analysis_api.dart';
 import 'package:nutrenaissance_flutter/data/repository/analysis/subjective/subjective_analysis_repository_impl.dart';

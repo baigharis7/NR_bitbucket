@@ -1,4 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nutrenaissance_flutter/data/api/fecesurine/models/upload_feces.dart';
@@ -463,7 +464,7 @@ void main() {
     late MockGetRoutinesInteractor mockGetRoutines;
     late MockEraseDBLocalEventsInteractor mockEraseDBLocalEvents;
     late MockSynchronizeEventsInteractor mockSynchronizeEvents;
-    late MockChuck mockChuck;
+    late Chuck mockChuck;
     late MockShowModelAppearanceInteractor mockShowModelAppearance;
     late MockSaveModelAppearanceInteractor mockSaveModelAppearance;
     late MockGetTodaySportsInteractor mockGetTodaySports;
@@ -508,7 +509,7 @@ void main() {
       mockGetRoutines = MockGetRoutinesInteractor();
       mockEraseDBLocalEvents = MockEraseDBLocalEventsInteractor();
       mockSynchronizeEvents = MockSynchronizeEventsInteractor();
-      mockChuck = MockChuck();
+      mockChuck = Chuck(showNotification: false);
       mockShowModelAppearance = MockShowModelAppearanceInteractor();
       mockSaveModelAppearance = MockSaveModelAppearanceInteractor();
       mockGetTodaySports = MockGetTodaySportsInteractor();

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_master.dart';

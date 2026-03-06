@@ -243,6 +243,21 @@ class NutrientComposition extends DataClass
         freeSugar: freeSugar.present ? freeSugar.value : this.freeSugar,
         params: params ?? this.params,
       );
+  NutrientComposition copyWithCompanion(NutrientCompositionsCompanion data) {
+    return NutrientComposition(
+      foodId: data.foodId.present ? data.foodId.value : this.foodId,
+      isFood: data.isFood.present ? data.isFood.value : this.isFood,
+      group: data.group.present ? data.group.value : this.group,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+      nameEs: data.nameEs.present ? data.nameEs.value : this.nameEs,
+      recommendable: data.recommendable.present
+          ? data.recommendable.value
+          : this.recommendable,
+      freeSugar: data.freeSugar.present ? data.freeSugar.value : this.freeSugar,
+      params: data.params.present ? data.params.value : this.params,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('NutrientComposition(')
@@ -501,6 +516,15 @@ class NutrientLossEntry extends DataClass
         cookingMethodId: cookingMethodId ?? this.cookingMethodId,
         losses: losses ?? this.losses,
       );
+  NutrientLossEntry copyWithCompanion(NutrientLossesCompanion data) {
+    return NutrientLossEntry(
+      cookingMethodId: data.cookingMethodId.present
+          ? data.cookingMethodId.value
+          : this.cookingMethodId,
+      losses: data.losses.present ? data.losses.value : this.losses,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('NutrientLossEntry(')
@@ -680,6 +704,16 @@ class CookingMethodOil extends DataClass
         cookingMethodId: cookingMethodId ?? this.cookingMethodId,
         percentage: percentage ?? this.percentage,
       );
+  CookingMethodOil copyWithCompanion(CookingMethodOilsCompanion data) {
+    return CookingMethodOil(
+      cookingMethodId: data.cookingMethodId.present
+          ? data.cookingMethodId.value
+          : this.cookingMethodId,
+      percentage:
+          data.percentage.present ? data.percentage.value : this.percentage,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('CookingMethodOil(')
@@ -895,6 +929,15 @@ class SportMet extends DataClass implements Insertable<SportMet> {
         nameEs: nameEs ?? this.nameEs,
         mets: mets ?? this.mets,
       );
+  SportMet copyWithCompanion(SportMetsCompanion data) {
+    return SportMet(
+      sportId: data.sportId.present ? data.sportId.value : this.sportId,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+      nameEs: data.nameEs.present ? data.nameEs.value : this.nameEs,
+      mets: data.mets.present ? data.mets.value : this.mets,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('SportMet(')
@@ -1098,6 +1141,13 @@ class ReferenceDataVersion extends DataClass
         key: key ?? this.key,
         version: version ?? this.version,
       );
+  ReferenceDataVersion copyWithCompanion(ReferenceDataVersionsCompanion data) {
+    return ReferenceDataVersion(
+      key: data.key.present ? data.key.value : this.key,
+      version: data.version.present ? data.version.value : this.version,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('ReferenceDataVersion(')
@@ -1283,6 +1333,13 @@ class ReferenceDataBlob extends DataClass
         key: key ?? this.key,
         data: data ?? this.data,
       );
+  ReferenceDataBlob copyWithCompanion(ReferenceDataBlobsCompanion data) {
+    return ReferenceDataBlob(
+      key: data.key.present ? data.key.value : this.key,
+      data: data.data.present ? data.data.value : this.data,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('ReferenceDataBlob(')
@@ -1366,6 +1423,7 @@ class ReferenceDataBlobsCompanion extends UpdateCompanion<ReferenceDataBlob> {
 
 abstract class _$ReferenceDatabase extends GeneratedDatabase {
   _$ReferenceDatabase(QueryExecutor e) : super(e);
+  $ReferenceDatabaseManager get managers => $ReferenceDatabaseManager(this);
   late final $NutrientCompositionsTable nutrientCompositions =
       $NutrientCompositionsTable(this);
   late final $NutrientLossesTable nutrientLosses = $NutrientLossesTable(this);
@@ -1388,4 +1446,907 @@ abstract class _$ReferenceDatabase extends GeneratedDatabase {
         referenceDataVersions,
         referenceDataBlobs
       ];
+}
+
+typedef $$NutrientCompositionsTableCreateCompanionBuilder
+    = NutrientCompositionsCompanion Function({
+  Value<int> foodId,
+  required int isFood,
+  Value<String> group,
+  Value<String> nameEn,
+  Value<String> nameEs,
+  Value<int> recommendable,
+  Value<String?> freeSugar,
+  required String params,
+});
+typedef $$NutrientCompositionsTableUpdateCompanionBuilder
+    = NutrientCompositionsCompanion Function({
+  Value<int> foodId,
+  Value<int> isFood,
+  Value<String> group,
+  Value<String> nameEn,
+  Value<String> nameEs,
+  Value<int> recommendable,
+  Value<String?> freeSugar,
+  Value<String> params,
+});
+
+class $$NutrientCompositionsTableFilterComposer
+    extends Composer<_$ReferenceDatabase, $NutrientCompositionsTable> {
+  $$NutrientCompositionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get foodId => $composableBuilder(
+      column: $table.foodId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get isFood => $composableBuilder(
+      column: $table.isFood, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get group => $composableBuilder(
+      column: $table.group, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+      column: $table.nameEn, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get nameEs => $composableBuilder(
+      column: $table.nameEs, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get recommendable => $composableBuilder(
+      column: $table.recommendable, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get freeSugar => $composableBuilder(
+      column: $table.freeSugar, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get params => $composableBuilder(
+      column: $table.params, builder: (column) => ColumnFilters(column));
+}
+
+class $$NutrientCompositionsTableOrderingComposer
+    extends Composer<_$ReferenceDatabase, $NutrientCompositionsTable> {
+  $$NutrientCompositionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get foodId => $composableBuilder(
+      column: $table.foodId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get isFood => $composableBuilder(
+      column: $table.isFood, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get group => $composableBuilder(
+      column: $table.group, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+      column: $table.nameEn, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get nameEs => $composableBuilder(
+      column: $table.nameEs, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get recommendable => $composableBuilder(
+      column: $table.recommendable,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get freeSugar => $composableBuilder(
+      column: $table.freeSugar, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get params => $composableBuilder(
+      column: $table.params, builder: (column) => ColumnOrderings(column));
+}
+
+class $$NutrientCompositionsTableAnnotationComposer
+    extends Composer<_$ReferenceDatabase, $NutrientCompositionsTable> {
+  $$NutrientCompositionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get foodId =>
+      $composableBuilder(column: $table.foodId, builder: (column) => column);
+
+  GeneratedColumn<int> get isFood =>
+      $composableBuilder(column: $table.isFood, builder: (column) => column);
+
+  GeneratedColumn<String> get group =>
+      $composableBuilder(column: $table.group, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEs =>
+      $composableBuilder(column: $table.nameEs, builder: (column) => column);
+
+  GeneratedColumn<int> get recommendable => $composableBuilder(
+      column: $table.recommendable, builder: (column) => column);
+
+  GeneratedColumn<String> get freeSugar =>
+      $composableBuilder(column: $table.freeSugar, builder: (column) => column);
+
+  GeneratedColumn<String> get params =>
+      $composableBuilder(column: $table.params, builder: (column) => column);
+}
+
+class $$NutrientCompositionsTableTableManager extends RootTableManager<
+    _$ReferenceDatabase,
+    $NutrientCompositionsTable,
+    NutrientComposition,
+    $$NutrientCompositionsTableFilterComposer,
+    $$NutrientCompositionsTableOrderingComposer,
+    $$NutrientCompositionsTableAnnotationComposer,
+    $$NutrientCompositionsTableCreateCompanionBuilder,
+    $$NutrientCompositionsTableUpdateCompanionBuilder,
+    (
+      NutrientComposition,
+      BaseReferences<_$ReferenceDatabase, $NutrientCompositionsTable,
+          NutrientComposition>
+    ),
+    NutrientComposition,
+    PrefetchHooks Function()> {
+  $$NutrientCompositionsTableTableManager(
+      _$ReferenceDatabase db, $NutrientCompositionsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$NutrientCompositionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$NutrientCompositionsTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$NutrientCompositionsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> foodId = const Value.absent(),
+            Value<int> isFood = const Value.absent(),
+            Value<String> group = const Value.absent(),
+            Value<String> nameEn = const Value.absent(),
+            Value<String> nameEs = const Value.absent(),
+            Value<int> recommendable = const Value.absent(),
+            Value<String?> freeSugar = const Value.absent(),
+            Value<String> params = const Value.absent(),
+          }) =>
+              NutrientCompositionsCompanion(
+            foodId: foodId,
+            isFood: isFood,
+            group: group,
+            nameEn: nameEn,
+            nameEs: nameEs,
+            recommendable: recommendable,
+            freeSugar: freeSugar,
+            params: params,
+          ),
+          createCompanionCallback: ({
+            Value<int> foodId = const Value.absent(),
+            required int isFood,
+            Value<String> group = const Value.absent(),
+            Value<String> nameEn = const Value.absent(),
+            Value<String> nameEs = const Value.absent(),
+            Value<int> recommendable = const Value.absent(),
+            Value<String?> freeSugar = const Value.absent(),
+            required String params,
+          }) =>
+              NutrientCompositionsCompanion.insert(
+            foodId: foodId,
+            isFood: isFood,
+            group: group,
+            nameEn: nameEn,
+            nameEs: nameEs,
+            recommendable: recommendable,
+            freeSugar: freeSugar,
+            params: params,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$NutrientCompositionsTableProcessedTableManager
+    = ProcessedTableManager<
+        _$ReferenceDatabase,
+        $NutrientCompositionsTable,
+        NutrientComposition,
+        $$NutrientCompositionsTableFilterComposer,
+        $$NutrientCompositionsTableOrderingComposer,
+        $$NutrientCompositionsTableAnnotationComposer,
+        $$NutrientCompositionsTableCreateCompanionBuilder,
+        $$NutrientCompositionsTableUpdateCompanionBuilder,
+        (
+          NutrientComposition,
+          BaseReferences<_$ReferenceDatabase, $NutrientCompositionsTable,
+              NutrientComposition>
+        ),
+        NutrientComposition,
+        PrefetchHooks Function()>;
+typedef $$NutrientLossesTableCreateCompanionBuilder = NutrientLossesCompanion
+    Function({
+  Value<int> cookingMethodId,
+  required String losses,
+});
+typedef $$NutrientLossesTableUpdateCompanionBuilder = NutrientLossesCompanion
+    Function({
+  Value<int> cookingMethodId,
+  Value<String> losses,
+});
+
+class $$NutrientLossesTableFilterComposer
+    extends Composer<_$ReferenceDatabase, $NutrientLossesTable> {
+  $$NutrientLossesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get cookingMethodId => $composableBuilder(
+      column: $table.cookingMethodId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get losses => $composableBuilder(
+      column: $table.losses, builder: (column) => ColumnFilters(column));
+}
+
+class $$NutrientLossesTableOrderingComposer
+    extends Composer<_$ReferenceDatabase, $NutrientLossesTable> {
+  $$NutrientLossesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get cookingMethodId => $composableBuilder(
+      column: $table.cookingMethodId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get losses => $composableBuilder(
+      column: $table.losses, builder: (column) => ColumnOrderings(column));
+}
+
+class $$NutrientLossesTableAnnotationComposer
+    extends Composer<_$ReferenceDatabase, $NutrientLossesTable> {
+  $$NutrientLossesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get cookingMethodId => $composableBuilder(
+      column: $table.cookingMethodId, builder: (column) => column);
+
+  GeneratedColumn<String> get losses =>
+      $composableBuilder(column: $table.losses, builder: (column) => column);
+}
+
+class $$NutrientLossesTableTableManager extends RootTableManager<
+    _$ReferenceDatabase,
+    $NutrientLossesTable,
+    NutrientLossEntry,
+    $$NutrientLossesTableFilterComposer,
+    $$NutrientLossesTableOrderingComposer,
+    $$NutrientLossesTableAnnotationComposer,
+    $$NutrientLossesTableCreateCompanionBuilder,
+    $$NutrientLossesTableUpdateCompanionBuilder,
+    (
+      NutrientLossEntry,
+      BaseReferences<_$ReferenceDatabase, $NutrientLossesTable,
+          NutrientLossEntry>
+    ),
+    NutrientLossEntry,
+    PrefetchHooks Function()> {
+  $$NutrientLossesTableTableManager(
+      _$ReferenceDatabase db, $NutrientLossesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$NutrientLossesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$NutrientLossesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$NutrientLossesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> cookingMethodId = const Value.absent(),
+            Value<String> losses = const Value.absent(),
+          }) =>
+              NutrientLossesCompanion(
+            cookingMethodId: cookingMethodId,
+            losses: losses,
+          ),
+          createCompanionCallback: ({
+            Value<int> cookingMethodId = const Value.absent(),
+            required String losses,
+          }) =>
+              NutrientLossesCompanion.insert(
+            cookingMethodId: cookingMethodId,
+            losses: losses,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$NutrientLossesTableProcessedTableManager = ProcessedTableManager<
+    _$ReferenceDatabase,
+    $NutrientLossesTable,
+    NutrientLossEntry,
+    $$NutrientLossesTableFilterComposer,
+    $$NutrientLossesTableOrderingComposer,
+    $$NutrientLossesTableAnnotationComposer,
+    $$NutrientLossesTableCreateCompanionBuilder,
+    $$NutrientLossesTableUpdateCompanionBuilder,
+    (
+      NutrientLossEntry,
+      BaseReferences<_$ReferenceDatabase, $NutrientLossesTable,
+          NutrientLossEntry>
+    ),
+    NutrientLossEntry,
+    PrefetchHooks Function()>;
+typedef $$CookingMethodOilsTableCreateCompanionBuilder
+    = CookingMethodOilsCompanion Function({
+  Value<int> cookingMethodId,
+  required double percentage,
+});
+typedef $$CookingMethodOilsTableUpdateCompanionBuilder
+    = CookingMethodOilsCompanion Function({
+  Value<int> cookingMethodId,
+  Value<double> percentage,
+});
+
+class $$CookingMethodOilsTableFilterComposer
+    extends Composer<_$ReferenceDatabase, $CookingMethodOilsTable> {
+  $$CookingMethodOilsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get cookingMethodId => $composableBuilder(
+      column: $table.cookingMethodId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get percentage => $composableBuilder(
+      column: $table.percentage, builder: (column) => ColumnFilters(column));
+}
+
+class $$CookingMethodOilsTableOrderingComposer
+    extends Composer<_$ReferenceDatabase, $CookingMethodOilsTable> {
+  $$CookingMethodOilsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get cookingMethodId => $composableBuilder(
+      column: $table.cookingMethodId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get percentage => $composableBuilder(
+      column: $table.percentage, builder: (column) => ColumnOrderings(column));
+}
+
+class $$CookingMethodOilsTableAnnotationComposer
+    extends Composer<_$ReferenceDatabase, $CookingMethodOilsTable> {
+  $$CookingMethodOilsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get cookingMethodId => $composableBuilder(
+      column: $table.cookingMethodId, builder: (column) => column);
+
+  GeneratedColumn<double> get percentage => $composableBuilder(
+      column: $table.percentage, builder: (column) => column);
+}
+
+class $$CookingMethodOilsTableTableManager extends RootTableManager<
+    _$ReferenceDatabase,
+    $CookingMethodOilsTable,
+    CookingMethodOil,
+    $$CookingMethodOilsTableFilterComposer,
+    $$CookingMethodOilsTableOrderingComposer,
+    $$CookingMethodOilsTableAnnotationComposer,
+    $$CookingMethodOilsTableCreateCompanionBuilder,
+    $$CookingMethodOilsTableUpdateCompanionBuilder,
+    (
+      CookingMethodOil,
+      BaseReferences<_$ReferenceDatabase, $CookingMethodOilsTable,
+          CookingMethodOil>
+    ),
+    CookingMethodOil,
+    PrefetchHooks Function()> {
+  $$CookingMethodOilsTableTableManager(
+      _$ReferenceDatabase db, $CookingMethodOilsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CookingMethodOilsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CookingMethodOilsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CookingMethodOilsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> cookingMethodId = const Value.absent(),
+            Value<double> percentage = const Value.absent(),
+          }) =>
+              CookingMethodOilsCompanion(
+            cookingMethodId: cookingMethodId,
+            percentage: percentage,
+          ),
+          createCompanionCallback: ({
+            Value<int> cookingMethodId = const Value.absent(),
+            required double percentage,
+          }) =>
+              CookingMethodOilsCompanion.insert(
+            cookingMethodId: cookingMethodId,
+            percentage: percentage,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$CookingMethodOilsTableProcessedTableManager = ProcessedTableManager<
+    _$ReferenceDatabase,
+    $CookingMethodOilsTable,
+    CookingMethodOil,
+    $$CookingMethodOilsTableFilterComposer,
+    $$CookingMethodOilsTableOrderingComposer,
+    $$CookingMethodOilsTableAnnotationComposer,
+    $$CookingMethodOilsTableCreateCompanionBuilder,
+    $$CookingMethodOilsTableUpdateCompanionBuilder,
+    (
+      CookingMethodOil,
+      BaseReferences<_$ReferenceDatabase, $CookingMethodOilsTable,
+          CookingMethodOil>
+    ),
+    CookingMethodOil,
+    PrefetchHooks Function()>;
+typedef $$SportMetsTableCreateCompanionBuilder = SportMetsCompanion Function({
+  Value<int> sportId,
+  Value<String> nameEn,
+  Value<String> nameEs,
+  required String mets,
+});
+typedef $$SportMetsTableUpdateCompanionBuilder = SportMetsCompanion Function({
+  Value<int> sportId,
+  Value<String> nameEn,
+  Value<String> nameEs,
+  Value<String> mets,
+});
+
+class $$SportMetsTableFilterComposer
+    extends Composer<_$ReferenceDatabase, $SportMetsTable> {
+  $$SportMetsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get sportId => $composableBuilder(
+      column: $table.sportId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+      column: $table.nameEn, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get nameEs => $composableBuilder(
+      column: $table.nameEs, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get mets => $composableBuilder(
+      column: $table.mets, builder: (column) => ColumnFilters(column));
+}
+
+class $$SportMetsTableOrderingComposer
+    extends Composer<_$ReferenceDatabase, $SportMetsTable> {
+  $$SportMetsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get sportId => $composableBuilder(
+      column: $table.sportId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+      column: $table.nameEn, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get nameEs => $composableBuilder(
+      column: $table.nameEs, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get mets => $composableBuilder(
+      column: $table.mets, builder: (column) => ColumnOrderings(column));
+}
+
+class $$SportMetsTableAnnotationComposer
+    extends Composer<_$ReferenceDatabase, $SportMetsTable> {
+  $$SportMetsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get sportId =>
+      $composableBuilder(column: $table.sportId, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEs =>
+      $composableBuilder(column: $table.nameEs, builder: (column) => column);
+
+  GeneratedColumn<String> get mets =>
+      $composableBuilder(column: $table.mets, builder: (column) => column);
+}
+
+class $$SportMetsTableTableManager extends RootTableManager<
+    _$ReferenceDatabase,
+    $SportMetsTable,
+    SportMet,
+    $$SportMetsTableFilterComposer,
+    $$SportMetsTableOrderingComposer,
+    $$SportMetsTableAnnotationComposer,
+    $$SportMetsTableCreateCompanionBuilder,
+    $$SportMetsTableUpdateCompanionBuilder,
+    (SportMet, BaseReferences<_$ReferenceDatabase, $SportMetsTable, SportMet>),
+    SportMet,
+    PrefetchHooks Function()> {
+  $$SportMetsTableTableManager(_$ReferenceDatabase db, $SportMetsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SportMetsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SportMetsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SportMetsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> sportId = const Value.absent(),
+            Value<String> nameEn = const Value.absent(),
+            Value<String> nameEs = const Value.absent(),
+            Value<String> mets = const Value.absent(),
+          }) =>
+              SportMetsCompanion(
+            sportId: sportId,
+            nameEn: nameEn,
+            nameEs: nameEs,
+            mets: mets,
+          ),
+          createCompanionCallback: ({
+            Value<int> sportId = const Value.absent(),
+            Value<String> nameEn = const Value.absent(),
+            Value<String> nameEs = const Value.absent(),
+            required String mets,
+          }) =>
+              SportMetsCompanion.insert(
+            sportId: sportId,
+            nameEn: nameEn,
+            nameEs: nameEs,
+            mets: mets,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$SportMetsTableProcessedTableManager = ProcessedTableManager<
+    _$ReferenceDatabase,
+    $SportMetsTable,
+    SportMet,
+    $$SportMetsTableFilterComposer,
+    $$SportMetsTableOrderingComposer,
+    $$SportMetsTableAnnotationComposer,
+    $$SportMetsTableCreateCompanionBuilder,
+    $$SportMetsTableUpdateCompanionBuilder,
+    (SportMet, BaseReferences<_$ReferenceDatabase, $SportMetsTable, SportMet>),
+    SportMet,
+    PrefetchHooks Function()>;
+typedef $$ReferenceDataVersionsTableCreateCompanionBuilder
+    = ReferenceDataVersionsCompanion Function({
+  required String key,
+  required int version,
+  Value<int> rowid,
+});
+typedef $$ReferenceDataVersionsTableUpdateCompanionBuilder
+    = ReferenceDataVersionsCompanion Function({
+  Value<String> key,
+  Value<int> version,
+  Value<int> rowid,
+});
+
+class $$ReferenceDataVersionsTableFilterComposer
+    extends Composer<_$ReferenceDatabase, $ReferenceDataVersionsTable> {
+  $$ReferenceDataVersionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get key => $composableBuilder(
+      column: $table.key, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get version => $composableBuilder(
+      column: $table.version, builder: (column) => ColumnFilters(column));
+}
+
+class $$ReferenceDataVersionsTableOrderingComposer
+    extends Composer<_$ReferenceDatabase, $ReferenceDataVersionsTable> {
+  $$ReferenceDataVersionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get key => $composableBuilder(
+      column: $table.key, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get version => $composableBuilder(
+      column: $table.version, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ReferenceDataVersionsTableAnnotationComposer
+    extends Composer<_$ReferenceDatabase, $ReferenceDataVersionsTable> {
+  $$ReferenceDataVersionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => column);
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+}
+
+class $$ReferenceDataVersionsTableTableManager extends RootTableManager<
+    _$ReferenceDatabase,
+    $ReferenceDataVersionsTable,
+    ReferenceDataVersion,
+    $$ReferenceDataVersionsTableFilterComposer,
+    $$ReferenceDataVersionsTableOrderingComposer,
+    $$ReferenceDataVersionsTableAnnotationComposer,
+    $$ReferenceDataVersionsTableCreateCompanionBuilder,
+    $$ReferenceDataVersionsTableUpdateCompanionBuilder,
+    (
+      ReferenceDataVersion,
+      BaseReferences<_$ReferenceDatabase, $ReferenceDataVersionsTable,
+          ReferenceDataVersion>
+    ),
+    ReferenceDataVersion,
+    PrefetchHooks Function()> {
+  $$ReferenceDataVersionsTableTableManager(
+      _$ReferenceDatabase db, $ReferenceDataVersionsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ReferenceDataVersionsTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReferenceDataVersionsTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ReferenceDataVersionsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> key = const Value.absent(),
+            Value<int> version = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ReferenceDataVersionsCompanion(
+            key: key,
+            version: version,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String key,
+            required int version,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ReferenceDataVersionsCompanion.insert(
+            key: key,
+            version: version,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ReferenceDataVersionsTableProcessedTableManager
+    = ProcessedTableManager<
+        _$ReferenceDatabase,
+        $ReferenceDataVersionsTable,
+        ReferenceDataVersion,
+        $$ReferenceDataVersionsTableFilterComposer,
+        $$ReferenceDataVersionsTableOrderingComposer,
+        $$ReferenceDataVersionsTableAnnotationComposer,
+        $$ReferenceDataVersionsTableCreateCompanionBuilder,
+        $$ReferenceDataVersionsTableUpdateCompanionBuilder,
+        (
+          ReferenceDataVersion,
+          BaseReferences<_$ReferenceDatabase, $ReferenceDataVersionsTable,
+              ReferenceDataVersion>
+        ),
+        ReferenceDataVersion,
+        PrefetchHooks Function()>;
+typedef $$ReferenceDataBlobsTableCreateCompanionBuilder
+    = ReferenceDataBlobsCompanion Function({
+  required String key,
+  required String data,
+  Value<int> rowid,
+});
+typedef $$ReferenceDataBlobsTableUpdateCompanionBuilder
+    = ReferenceDataBlobsCompanion Function({
+  Value<String> key,
+  Value<String> data,
+  Value<int> rowid,
+});
+
+class $$ReferenceDataBlobsTableFilterComposer
+    extends Composer<_$ReferenceDatabase, $ReferenceDataBlobsTable> {
+  $$ReferenceDataBlobsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get key => $composableBuilder(
+      column: $table.key, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get data => $composableBuilder(
+      column: $table.data, builder: (column) => ColumnFilters(column));
+}
+
+class $$ReferenceDataBlobsTableOrderingComposer
+    extends Composer<_$ReferenceDatabase, $ReferenceDataBlobsTable> {
+  $$ReferenceDataBlobsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get key => $composableBuilder(
+      column: $table.key, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get data => $composableBuilder(
+      column: $table.data, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ReferenceDataBlobsTableAnnotationComposer
+    extends Composer<_$ReferenceDatabase, $ReferenceDataBlobsTable> {
+  $$ReferenceDataBlobsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => column);
+
+  GeneratedColumn<String> get data =>
+      $composableBuilder(column: $table.data, builder: (column) => column);
+}
+
+class $$ReferenceDataBlobsTableTableManager extends RootTableManager<
+    _$ReferenceDatabase,
+    $ReferenceDataBlobsTable,
+    ReferenceDataBlob,
+    $$ReferenceDataBlobsTableFilterComposer,
+    $$ReferenceDataBlobsTableOrderingComposer,
+    $$ReferenceDataBlobsTableAnnotationComposer,
+    $$ReferenceDataBlobsTableCreateCompanionBuilder,
+    $$ReferenceDataBlobsTableUpdateCompanionBuilder,
+    (
+      ReferenceDataBlob,
+      BaseReferences<_$ReferenceDatabase, $ReferenceDataBlobsTable,
+          ReferenceDataBlob>
+    ),
+    ReferenceDataBlob,
+    PrefetchHooks Function()> {
+  $$ReferenceDataBlobsTableTableManager(
+      _$ReferenceDatabase db, $ReferenceDataBlobsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ReferenceDataBlobsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReferenceDataBlobsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ReferenceDataBlobsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> key = const Value.absent(),
+            Value<String> data = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ReferenceDataBlobsCompanion(
+            key: key,
+            data: data,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String key,
+            required String data,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ReferenceDataBlobsCompanion.insert(
+            key: key,
+            data: data,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ReferenceDataBlobsTableProcessedTableManager = ProcessedTableManager<
+    _$ReferenceDatabase,
+    $ReferenceDataBlobsTable,
+    ReferenceDataBlob,
+    $$ReferenceDataBlobsTableFilterComposer,
+    $$ReferenceDataBlobsTableOrderingComposer,
+    $$ReferenceDataBlobsTableAnnotationComposer,
+    $$ReferenceDataBlobsTableCreateCompanionBuilder,
+    $$ReferenceDataBlobsTableUpdateCompanionBuilder,
+    (
+      ReferenceDataBlob,
+      BaseReferences<_$ReferenceDatabase, $ReferenceDataBlobsTable,
+          ReferenceDataBlob>
+    ),
+    ReferenceDataBlob,
+    PrefetchHooks Function()>;
+
+class $ReferenceDatabaseManager {
+  final _$ReferenceDatabase _db;
+  $ReferenceDatabaseManager(this._db);
+  $$NutrientCompositionsTableTableManager get nutrientCompositions =>
+      $$NutrientCompositionsTableTableManager(_db, _db.nutrientCompositions);
+  $$NutrientLossesTableTableManager get nutrientLosses =>
+      $$NutrientLossesTableTableManager(_db, _db.nutrientLosses);
+  $$CookingMethodOilsTableTableManager get cookingMethodOils =>
+      $$CookingMethodOilsTableTableManager(_db, _db.cookingMethodOils);
+  $$SportMetsTableTableManager get sportMets =>
+      $$SportMetsTableTableManager(_db, _db.sportMets);
+  $$ReferenceDataVersionsTableTableManager get referenceDataVersions =>
+      $$ReferenceDataVersionsTableTableManager(_db, _db.referenceDataVersions);
+  $$ReferenceDataBlobsTableTableManager get referenceDataBlobs =>
+      $$ReferenceDataBlobsTableTableManager(_db, _db.referenceDataBlobs);
 }

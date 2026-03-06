@@ -47,6 +47,6 @@ class LoginRepositoryImpl extends LoginRepository {
   Future<ResetPasswordResult> resetPassword(String username) => authenticationService.resetPassword(username);
 
   @override
-  Future<UpdatePasswordResult> confirmResetPassword(String username, String newPassword, String confirmationCode) => authenticationService.confirmResetPassword(username, newPassword, confirmationCode);
+  Future<ResetPasswordResult> confirmResetPassword(String username, String newPassword, String confirmationCode) => authenticationService.confirmResetPassword(username, newPassword, confirmationCode);
 
 }

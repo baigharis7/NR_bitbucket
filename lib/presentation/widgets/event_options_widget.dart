@@ -7,7 +7,7 @@ import '../../domain/models/favorites/food/meal_time.dart';
 import '../../infrastructure/helpers/app_text_styles.dart';
 import '../../infrastructure/utils/app_color.dart';
 import '../../infrastructure/utils/dimens.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 class EventOptionsWidget extends StatefulWidget{
   final String? name;

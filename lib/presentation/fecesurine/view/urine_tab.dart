@@ -5,7 +5,7 @@ import 'package:nutrenaissance_flutter/domain/models/profile/urine.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/bloc/feces_urine_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/radio_title_desc_image.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';

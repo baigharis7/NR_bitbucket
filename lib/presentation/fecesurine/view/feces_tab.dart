@@ -7,7 +7,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/fecesurine/bloc/feces_urine_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/feces_urine_chart.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/radio_title_desc_image.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_background_container.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 

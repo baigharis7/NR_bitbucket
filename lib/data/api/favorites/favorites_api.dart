@@ -1,4 +1,4 @@
-import 'package:chuck_interceptor/chuck.dart';
+import 'package:chuck_interceptor/chuck_interceptor.dart';
 import 'package:nutrenaissance_flutter/data/api/favorites/model/food/upload_food_favorite.dart';
 import 'package:nutrenaissance_flutter/data/api/favorites/model/liquid/upload_liquid_favorite.dart';
 import 'package:nutrenaissance_flutter/data/api/favorites/model/sport/upload_sport_favorite.dart';

@@ -20,9 +20,8 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   final PreferencesRepository preferencesRepository;
 
   // Lazy initialization to avoid blocking during app startup
-  HealthFactory? _healthInstance;
-  HealthFactory get _health =>
-      _healthInstance ??= HealthFactory(useHealthConnectIfAvailable: true);
+  Health? _healthInstance;
+  Health get _health => _healthInstance ??= Health();
 
   /// Health data types we want to read from the platform.
   /// Uses DISTANCE_DELTA on Android (DISTANCE_WALKING_RUNNING is iOS-only).
@@ -116,31 +115,31 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     try {
       // Fetch workout data from health platform
       final healthData = await _health.getHealthDataFromTypes(
-        startDate,
-        endDate,
-        [HealthDataType.WORKOUT],
+        types: [HealthDataType.WORKOUT],
+        startTime: startDate,
+        endTime: endDate,
       );
 
       // Also fetch associated data for enrichment
       final energyData = await _health.getHealthDataFromTypes(
-        startDate,
-        endDate,
-        [HealthDataType.ACTIVE_ENERGY_BURNED],
+        types: [HealthDataType.ACTIVE_ENERGY_BURNED],
+        startTime: startDate,
+        endTime: endDate,
       );
 
       final distanceType = Platform.isIOS
           ? HealthDataType.DISTANCE_WALKING_RUNNING
           : HealthDataType.DISTANCE_DELTA;
       final distanceData = await _health.getHealthDataFromTypes(
-        startDate,
-        endDate,
-        [distanceType],
+        types: [distanceType],
+        startTime: startDate,
+        endTime: endDate,
       );
 
       final heartRateData = await _health.getHealthDataFromTypes(
-        startDate,
-        endDate,
-        [HealthDataType.HEART_RATE],
+        types: [HealthDataType.HEART_RATE],
+        startTime: startDate,
+        endTime: endDate,
       );
 
       // Convert to HealthActivity list
@@ -162,9 +161,9 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   }) async {
     try {
       final healthData = await _health.getHealthDataFromTypes(
-        startDate,
-        endDate,
-        [HealthDataType.STEPS],
+        types: [HealthDataType.STEPS],
+        startTime: startDate,
+        endTime: endDate,
       );
 
       // Group steps by day and create activities

@@ -11,7 +11,7 @@ import 'package:nutrenaissance_flutter/presentation/energy_balance_detail/view/e
 import 'package:nutrenaissance_flutter/presentation/widgets/dash_title_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/ingested_spent_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 import 'nutrient_element_widget.dart';
 
