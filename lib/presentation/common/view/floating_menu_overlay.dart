@@ -179,7 +179,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with SingleTi
                                       onTap: () { _closeMenu(); Navigator.pushNamed(context, RoutinesTabHolder.routeName); },
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border50)),
                                       visualDensity: VisualDensity.compact,
-                                      horizontalTitleGap: Dimens.zero,
+                                      horizontalTitleGap: Dimens.margin6,
                                       tileColor: Colors.black,
                                       leading: const Icon(Icons.history, size: 22, color: Colors.white),
                                       title: Text(AppLocalizations.of(context)!.routines, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.white),),
@@ -197,7 +197,7 @@ class _FloatingMenuOverlayState extends State<FloatingMenuOverlay> with SingleTi
                                       onTap: () { _closeMenu(); Navigator.pushNamed(context, FavoritesTabHolder.routeName);},
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border50)),
                                       visualDensity: VisualDensity.compact,
-                                      horizontalTitleGap: Dimens.zero,
+                                      horizontalTitleGap: Dimens.margin6,
                                       tileColor: Colors.black,
                                         leading: InkWell(
                                           onTap: () {
