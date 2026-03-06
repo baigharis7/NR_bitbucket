@@ -1676,7 +1676,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tip_text =>
-      '<p>Based on your profile, we recommend foods to include in your diet, differentiated by color.</p>\n<ul><li><b class=blue-text>In blue</b>, foods related to your goals.</li>\n<li><b class=green-text>In green</b>, foods recommended to help you meet the minimum requirements of all micronutrients.</li>\n<li><b class=yellowish-green-text>In neutral a color</b>, foods you consume frequently.</li></ul>';
+      '<p>Based on your profile, we recommend foods to include in your diet, differentiated by color.</p>\n<ul><li><b class=blue-text>In blue</b>, foods related to your goals.</li>\n<li><b class=green-text>In green</b>, foods recommended to help you meet the minimum requirements of all micronutrients.</li>\n<li><b class=yellowish-green-text>In a neutral color</b>, foods you consume frequently.</li></ul>';
 
   @override
   String get begin => 'Begin';

@@ -2,25 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
-import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/explaining_cards_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
-import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_state.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_app_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/food_list_item.dart';
-
-import '../../../widgets/custom_bottom_navi_bar_widget.dart';
 
 class FoodListScreen extends StatefulWidget {
   final List<SimpleItem> foodItems;
-  
+
   const FoodListScreen({
     Key? key,
     required this.foodItems,
@@ -31,40 +25,6 @@ class FoodListScreen extends StatefulWidget {
 }
 
 class _FoodListScreen extends State<FoodListScreen> {
-
-  void _showInfoDialog(BuildContext context, Function onDismiss) {
-    final mediaQuerySize = MediaQuery.of(context).size;
-    showDialog(context: context, builder: (ctx) => Dialog(
-      backgroundColor: AppColors.white90Percent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border11)),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: Dimens.padding20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            ListTile(
-              minLeadingWidth: Dimens.zero,
-              contentPadding: const EdgeInsets.symmetric(horizontal: -5),
-              leading: Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: AppColors.peacockBlue,
-                ),
-                child: const Icon(Icons.info, color: Colors.white, size: 15),
-              ),
-              title: Text(
-                AppLocalizations.of(context)!.information,
-                style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize17, color: AppColors.yellowishGreen),
-              ),
-            ),
-            Text(AppLocalizations.of(context)!.food_list_explaining_card, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeNormal, color: AppColors.yellowishGreen),),
-            const SizedBox(height: Dimens.height25),
-          ],),
-      ),),);
-  }
 
   void _showDelFoodDialog({required Function onDelFood,}) {
     showDialog(context: context, builder: (context) => SimpleDialog(
@@ -135,20 +95,19 @@ class _FoodListScreen extends State<FoodListScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // if (state.showFoodListCard != null && state.showFoodListCard!) ExplainingCardsHelper().getExplainingCardWithId(
-                  //   context: context,
-                  //   explainingCardId: ExplainingCardRefs.foodList.index,
-                  //   onHideCard: () => bloc.add(HideFoodListExplainingCardAction()),
-                  // ),
-                  ListTile(
-                    onTap: () { _showInfoDialog(context, () {}); },
-                    trailing: Image.asset('assets/images/info.png', color: AppColors.yellowishGreen, height: Dimens.heightXSmall),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall),
+                    child: Text(
+                      AppLocalizations.of(context)!.food_list_explaining_card,
+                      style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeSmall, color: AppColors.yellowishGreen),
+                    ),
                   ),
+                  const SizedBox(height: Dimens.height12),
                   Text(
                     AppLocalizations.of(context)!.my_foods_list,
                     style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeMedium, color: Colors.black),
                   ),
-                  const SizedBox(height: Dimens.heightXSmall),
+                  const SizedBox(height: Dimens.height12),
                   ListView.builder(
                     shrinkWrap: true,
                     primary: false,
