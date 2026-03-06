@@ -105,32 +105,32 @@ class _SportItemsScreenState extends State<SportItemsScreen> with MidnightToastM
                     padding: const EdgeInsets.all(Dimens.padding10),
                     child: Column(
                       children: [
+                        ScreenTopBar(
+                          selectedDate: state.dateTime ?? DateTime.now(),
+                          onBack: () => Navigator.pop(context),
+                        ),
+                        const SizedBox(height: Dimens.height12),
+                        HeaderAddItemCardSection(
+                          title: '${AppLocalizations.of(context)!.physical_activity} ${AppLocalizations.of(context)!.summary}',
+                          image: 'assets/images/sport.png',
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 10),
+                                Text(
+                                  '${NutritionUtils.calculateKcal(foodEvents: state.sportEvents.orEmpty())} Kcal',
+                                  style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize28),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                         Expanded(
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
-                                ScreenTopBar(
-                                  selectedDate: state.dateTime ?? DateTime.now(),
-                                  onBack: () => Navigator.pop(context),
-                                ),
-                                const SizedBox(height: Dimens.height12),
-                                HeaderAddItemCardSection(
-                                  title: '${AppLocalizations.of(context)!.physical_activity} ${AppLocalizations.of(context)!.summary}',
-                                  image: 'assets/images/sport.png',
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    child: Column(
-                                      children: [
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          '${NutritionUtils.calculateKcal(foodEvents: state.sportEvents.orEmpty())} Kcal',
-                                          style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize28),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
                                 (state.sportEvents?.isEmpty ?? true)
                                     ? Container(
                                   margin: const EdgeInsets.all(Dimens.marginSmall),

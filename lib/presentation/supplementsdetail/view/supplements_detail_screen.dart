@@ -123,22 +123,29 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> with Midni
               body: SafeArea(
                 child: Column(
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Dimens.paddingSmall,
+                        vertical: Dimens.paddingLarge,
+                      ),
+                      child: Column(children: [
+                        ScreenTopBar(
+                          selectedDate: state.eventDate,
+                          onBack: () => Navigator.pop(context),
+                        ),
+                        const SizedBox(height: Dimens.height12),
+                        HeaderAddItemCardSection(
+                          title: '${AppLocalizations.of(context)!.supplements} ${AppLocalizations.of(context)!.summary}',
+                          image: 'assets/images/supplement.png',
+                        ),
+                      ]),
+                    ),
                     Expanded(
                       child: SingleChildScrollView(
                         padding: const EdgeInsets.symmetric(
                           horizontal: Dimens.paddingSmall,
-                          vertical: Dimens.paddingLarge,
                         ),
                         child: Column(children: [
-                          ScreenTopBar(
-                            selectedDate: state.eventDate,
-                            onBack: () => Navigator.pop(context),
-                          ),
-                          const SizedBox(height: Dimens.height12),
-                          HeaderAddItemCardSection(
-                            title: '${AppLocalizations.of(context)!.supplements} ${AppLocalizations.of(context)!.summary}',
-                            image: 'assets/images/supplement.png',
-                          ),
                           if (state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) const SizedBox(height: Dimens.height12),
                           if (state.userProfile?.objectives?.any((element) => element ==  Constants.REDUCE_RISK_OF_INJURY || element == Constants.RECOVERY_AFTER_SPORT_INJURY) ?? false) Container(
                             padding: const EdgeInsets.all(Dimens.paddingSmall),

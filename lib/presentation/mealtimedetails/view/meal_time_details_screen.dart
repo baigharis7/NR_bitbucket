@@ -190,50 +190,57 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> with Midnig
                 body: SafeArea(
                     child: Column(
                       children: [
-                        Expanded(
-                          child: SingleChildScrollView(
-                            padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingLarge),
-                            child: Column(
-                              children: [
-                                ScreenTopBar(
-                                  selectedDate: state.selectedDateTime,
-                                  onBack: () => Navigator.pop(context),
-                                ),
-                                const SizedBox(height: Dimens.height12),
-                                HeaderAddItemCardSection(
-                                  title: '${state.mealTime?.name.orEmpty()} ${AppLocalizations.of(context)!.summary}',
-                                  image: 'assets/images/meal_time_${state.mealTime?.id ?? 0}.png',
-                                  child: Column(children: [
-                                    Text('${NutritionUtils.calculateKcal(foodEvents: state.foodEvents.orEmpty())} Kcal', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize28, color: Colors.white),),
-                                    Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),child: const Divider(color: Colors.white, height: 1, thickness: 1)),
-                                    Row(children: [
-                                      ...state.macronutrients.orEmpty().map((macroNutrient) {
-                                        return Expanded(
-                                          child: Column(children: [
-                                            Text(macroNutrient.nutrientInfoMaster.translate(context), style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall, fontWeight: FontWeight.w700)),
-                                            Text('${macroNutrient.quantityConsumed.toInt()}${macroNutrient.unit}', style: const TextStyle(color: Colors.white,fontWeight: FontWeight.w600, fontSize: Dimens.fontSize21)),
-                                          ],),
-                                        );
-                                      }),
-                                    ],),
-                                    if (state.foodEvents.orEmpty().isNotEmpty) ...[
-                                      const SizedBox(height: Dimens.height12),
-                                      InkWell(
-                                        onTap: () => _showFoodLabelDialog(context, state),
-                                        child: Text(
-                                          AppLocalizations.of(context)!.food_label,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: Dimens.fontSizeNormal,
-                                            fontWeight: FontWeight.w500,
-                                            decoration: TextDecoration.underline,
-                                            decorationColor: Colors.white,
-                                          ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall, vertical: Dimens.paddingLarge),
+                          child: Column(
+                            children: [
+                              ScreenTopBar(
+                                selectedDate: state.selectedDateTime,
+                                onBack: () => Navigator.pop(context),
+                              ),
+                              const SizedBox(height: Dimens.height12),
+                              HeaderAddItemCardSection(
+                                title: '${state.mealTime?.name.orEmpty()} ${AppLocalizations.of(context)!.summary}',
+                                image: 'assets/images/meal_time_${state.mealTime?.id ?? 0}.png',
+                                child: Column(children: [
+                                  Text('${NutritionUtils.calculateKcal(foodEvents: state.foodEvents.orEmpty())} Kcal', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize28, color: Colors.white),),
+                                  Container(margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),child: const Divider(color: Colors.white, height: 1, thickness: 1)),
+                                  Row(children: [
+                                    ...state.macronutrients.orEmpty().map((macroNutrient) {
+                                      return Expanded(
+                                        child: Column(children: [
+                                          Text(macroNutrient.nutrientInfoMaster.translate(context), style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall, fontWeight: FontWeight.w700)),
+                                          Text('${macroNutrient.quantityConsumed.toInt()}${macroNutrient.unit}', style: const TextStyle(color: Colors.white,fontWeight: FontWeight.w600, fontSize: Dimens.fontSize21)),
+                                        ],),
+                                      );
+                                    }),
+                                  ],),
+                                  if (state.foodEvents.orEmpty().isNotEmpty) ...[
+                                    const SizedBox(height: Dimens.height12),
+                                    InkWell(
+                                      onTap: () => _showFoodLabelDialog(context, state),
+                                      child: Text(
+                                        AppLocalizations.of(context)!.food_label,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: Dimens.fontSizeNormal,
+                                          fontWeight: FontWeight.w500,
+                                          decoration: TextDecoration.underline,
+                                          decorationColor: Colors.white,
                                         ),
                                       ),
-                                    ],
-                                  ]),
-                                ),
+                                    ),
+                                  ],
+                                ]),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall),
+                            child: Column(
+                              children: [
                                 ...state.foodEvents.orEmpty().map((food) {
                                   final itemName = food.foodName ?? NutritionUtils.findFoodsName(context: context, foodNames: state.foodNames?.foodsAndDrinksNames?.foodNames, ingredients: food.foodInfo);
                                   return ItemInfoCard(
