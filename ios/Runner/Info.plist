@@ -59,6 +59,8 @@
 		<string>en</string>
 		<string>es</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>NutreNaissance needs access to your camera to take photos of meals and recipes.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>NutreNaissance needs access to your health data to sync your workouts, steps, and active energy data.</string>
 	<key>NSHealthUpdateUsageDescription</key>
