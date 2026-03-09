@@ -300,7 +300,7 @@ class _DashboardScreen extends State<DashboardScreen>
                         bloc.add(InitializeState(dateTime: date,));
                       }, selectedDateTime: selectedDateTime, callGetAllEvents: (day) => bloc.getEventsForDay(day)),
                       const SizedBox(height: Dimens.heightXSmall),
-                      SizedBox(height: Dimens.height350, child: NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(), selectedDate: selectedDateTime,)),
+                      NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(), selectedDate: selectedDateTime, sugarAndFiberModel: state.sugarAndFiberModel),
                       // if (state.profile?.sex?.index == SexType.female.index && (state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.menopause.index && state.profile?.femaleCharacteristics?.menstruation?.regularity != MenstruationRegularity.withoutPeriod.index)) SwitchDashboardWidget(
                       //     title: AppLocalizations.of(context)!.menstruation,
                       //     currentState: state.isMenstruation ?? false,
@@ -338,19 +338,16 @@ class _DashboardScreen extends State<DashboardScreen>
                       //   screenToMove: () => Navigator.pushNamed(context, MacroNutrientsDetailScreen.routeName, arguments: state.macronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
                       // ),
                       MicroNutrientsSection(micronutrients: state.micronutrients.orEmpty(), temporaryMicronutrients: state.temporaryMicronutrients.orEmpty(), filteredNutrientsLess15RDA: state.filteredNutrientsLess15RDA.orEmpty(), objectives: state.profile?.objectives.orEmpty().where((element) => ![Constants.COLD, Constants.DURING_MENSTRUATION, Constants.GAIN_MUSCLE, Constants.LOSE_FAT, Constants.MAINTAIN_WEIGHT].contains(element)).toList(), selectedDate: selectedDateTime),
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            SugarIntakeWidget(
-                                title: AppLocalizations.of(context)!.sugar,
-                                backgroundImage: 'assets/images/sugar_background.png',
-                                consumed: state.sugarAndFiberModel?.totalSugarConsumed,
-                                total: state.sugarAndFiberModel?.requiredSugar,
-                                linearGradient: MethodsHelper.getSugarLinearGradient(consumed: state.sugarAndFiberModel?.totalSugarConsumed, total: state.sugarAndFiberModel?.requiredSugar)),
-                            SugarIntakeWidget(title: AppLocalizations.of(context)!.fiber, backgroundImage: 'assets/images/fiber_background.png', consumed: state.sugarAndFiberModel?.totalFiberConsumed, total: state.sugarAndFiberModel?.requiredFiber, color: MethodsHelper.getAverageInPercentage(consumed: state.sugarAndFiberModel?.totalFiberConsumed, total: state.sugarAndFiberModel?.requiredFiber) < 180 ? AppColors.lightGreen : AppColors.red),
-                          ],
+                      MealTimeSection(
+                        foodEvents: state.foodEvents.orEmpty(),
+                        totalKcal: state.userKcal.orZero(),
+                        selectedDateTime: selectedDateTime!,
+                        supplementsCard: MealTimeWidget(
+                          name: AppLocalizations.of(context)!.supplements,
+                          svg: 'assets/images/supplement.png',
+                          onItemClick: () => Navigator.pushNamed(context, SupplementsDetailScreen.routeName, arguments: selectedDateTime),
+                          onClick: () => Navigator.pushNamed(context, SupplementsScreen.routeName),
+                          compact: true,
                         ),
                       ),
                       WaterIntakeWidget(
@@ -359,19 +356,6 @@ class _DashboardScreen extends State<DashboardScreen>
                         onInfoClick: () => Navigator.pushNamed(context, LiquidSummaryDetailScreen.routeName, arguments: selectedDateTime),
                         onAddWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () {})),
                         onRemoveWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () {})),
-                      ),
-                      MealTimeSection(foodEvents: state.foodEvents.orEmpty(), totalKcal: state.userKcal.orZero(), selectedDateTime: selectedDateTime!),
-                      // WeeklyRDANutrientsDashboardWidget(
-                      //   title: AppLocalizations.of(context)!.weekly_nutrients,
-                      //   nutrients: const []/*state.weeklyMicronutrients.orEmpty().take(Constants.DASHBOARD_LIST_SIZE).toList()*/,
-                      //   isEmpty: false,
-                      //   screenToMove: () => Navigator.pushNamed(context, WeeklyAllNutrientsDetailScreen.routeName, arguments: state.weeklyMicronutrients.orEmpty()).then((value) => bloc.add(InitializeState(dateTime: selectedDateTime))),
-                      // ),
-                      MealTimeWidget(
-                        name: AppLocalizations.of(context)!.supplements,
-                        svg: 'assets/images/supplement.png',
-                        onItemClick: () => Navigator.pushNamed(context, SupplementsDetailScreen.routeName, arguments: selectedDateTime),
-                        onClick: () => Navigator.pushNamed(context, SupplementsScreen.routeName),
                       ),
                       DashTitleWidget(title: AppLocalizations.of(context)!.physical_activity, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
                       MealTimeWidget(

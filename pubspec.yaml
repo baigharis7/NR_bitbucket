@@ -164,6 +164,9 @@ flutter:
         - asset: assets/fonts/radiocanadabig-regular.ttf
         - asset: assets/fonts/radiocanadabig-bold.ttf
           weight: 700
+    - family: DMSans
+      fonts:
+        - asset: assets/fonts/dmsans-regular.ttf
 
 flutter_launcher_icons:
   android: "launcher_icon"

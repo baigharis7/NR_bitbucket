@@ -50,7 +50,7 @@ class AnimatedNutrientProgressBarWidget extends StatelessWidget {
           margin: const EdgeInsets.symmetric(vertical: Dimens.marginXSmall),
           child: Text(
             title ?? '',
-            style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeSmall), maxLines: 1, overflow: TextOverflow.ellipsis
+            style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize13), textAlign: TextAlign.center,
           ),
         ),
       ],),

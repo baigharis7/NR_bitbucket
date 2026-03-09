@@ -1,18 +1,16 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_section.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/vertical_nutrient_widget.dart';
 
 import '../../domain/models/dashboard/nutrients_model.dart';
 import '../../infrastructure/utils/app_color.dart';
 import '../../infrastructure/utils/dimens.dart';
 import '../micronutrients_detail/view/micro_nurtrients_detail_screen.dart';
-import 'dash_title_widget.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
-class MicroNutrientsSection extends StatelessWidget {
+class MicroNutrientsSection extends StatefulWidget {
   final List<NutrientsModel> micronutrients;
   final List<NutrientsModel> temporaryMicronutrients;
   final List<NutrientsModel> filteredNutrientsLess15RDA;
@@ -21,34 +19,73 @@ class MicroNutrientsSection extends StatelessWidget {
   const MicroNutrientsSection({super.key, required this.micronutrients, required this.temporaryMicronutrients, required this.filteredNutrientsLess15RDA, this.objectives, this.selectedDate});
 
   @override
+  State<MicroNutrientsSection> createState() => _MicroNutrientsSectionState();
+}
+
+class _MicroNutrientsSectionState extends State<MicroNutrientsSection> {
+  bool _isExpanded = true;
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
-            child: DashTitleWidget(title: AppLocalizations.of(context)!.micronutrientss, onInfoClick: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: {'micronutrients': micronutrients, 'selectedDate': selectedDate}), style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20),)),
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
-          padding: const EdgeInsets.symmetric(vertical: Dimens.paddingXLarge),
-          decoration: const BoxDecoration(
-            // color: AppColors.lightBlue,
+        // Title bar with collapsible arrow
+        GestureDetector(
+          onTap: () => setState(() => _isExpanded = !_isExpanded),
+          child: Container(
+            margin: const EdgeInsets.only(top: Dimens.marginSmall),
+            padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.15),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.micronutrientss,
+                  style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20),
+                ),
+                const SizedBox(width: 4),
+                AnimatedRotation(
+                  turns: _isExpanded ? 0.0 : 0.5,
+                  duration: const Duration(milliseconds: 200),
+                  child: const Icon(Icons.keyboard_arrow_up, color: Colors.white, size: 22),
+                ),
+                const Spacer(),
+                InkWell(
+                  onTap: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: {'micronutrients': widget.micronutrients, 'selectedDate': widget.selectedDate}),
+                  child: SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: Image.asset('assets/images/info.png'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        // Collapsible content
+        AnimatedCrossFade(
+          firstChild: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: Dimens.paddingXLarge),
+            decoration: const BoxDecoration(
               gradient: LinearGradient(colors: [AppColors.lightBlue, AppColors.tropicalBlue], begin: Alignment.bottomCenter, end: Alignment.topCenter, stops: [0.0, 0.7],),
+            ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+              scrollDirection: Axis.horizontal,
+              child: Row(children: [
+                if (widget.micronutrients.isNotEmpty) NutrientsSection(nutrients: widget.micronutrients.take((widget.objectives?.length ?? 0) * 3).toList(), title: AppLocalizations.of(context)!.objectives, image: 'assets/images/goal_objectives.png'),
+                if (widget.temporaryMicronutrients.isNotEmpty) NutrientsSection(nutrients: widget.temporaryMicronutrients, titleColor: AppColors.redOxide, title: AppLocalizations.of(context)!.temporary_objectives, image: 'assets/images/hour_glass.png'),
+                if (widget.filteredNutrientsLess15RDA.isNotEmpty) NutrientsSection(nutrients: widget.filteredNutrientsLess15RDA.where((element) => element.nutrientInfoMaster.translateDescription(context).isNotEmptyOrNull()).take(Constants.DASHBOARD_LIST_SIZE).toList(), titleColor: AppColors.tigerOrange, title: AppLocalizations.of(context)!.micros_keep_eye_on, image: 'assets/icon/deficiency_nutrients_icon.png'),
+              ],),
+            ),
           ),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
-            scrollDirection: Axis.horizontal,
-            child: Row(children: [
-              if (micronutrients.isNotEmpty) NutrientsSection(nutrients: micronutrients.take((objectives?.length ?? 0) * 3).toList(), title: AppLocalizations.of(context)!.objectives, image: 'assets/images/goal_objectives.png'),
-              // const SizedBox(width: Dimens.width18),
-              if (temporaryMicronutrients.isNotEmpty) NutrientsSection(nutrients: temporaryMicronutrients, titleColor: AppColors.redOxide, title: AppLocalizations.of(context)!.temporary_objectives, image: 'assets/images/hour_glass.png'),
-              // const SizedBox(width: Dimens.width18),
-              if (filteredNutrientsLess15RDA.isNotEmpty) NutrientsSection(nutrients: filteredNutrientsLess15RDA.where((element) => element.nutrientInfoMaster.translateDescription(context).isNotEmptyOrNull()).take(Constants.DASHBOARD_LIST_SIZE).toList(), titleColor: AppColors.tigerOrange, title: AppLocalizations.of(context)!.micros_keep_eye_on, image: 'assets/icon/deficiency_nutrients_icon.png'),
-            ],),
-          ),
+          secondChild: const SizedBox.shrink(),
+          crossFadeState: _isExpanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+          duration: const Duration(milliseconds: 250),
         ),
       ],
     );
   }
-
 }

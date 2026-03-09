@@ -16,10 +16,62 @@ class MealTimeWidget extends StatelessWidget {
   final Color? backgroundColor;
   final Function onClick;
   final Function? onItemClick;
-  const MealTimeWidget({super.key, required this.name, this.svg, required this.onClick, this.backgroundImage, this.desc, this.iconColor, this.backgroundColor, this.onItemClick});
+  final bool compact;
+  const MealTimeWidget({super.key, required this.name, this.svg, required this.onClick, this.backgroundImage, this.desc, this.iconColor, this.backgroundColor, this.onItemClick, this.compact = false});
 
   @override
   Widget build(BuildContext context) {
+    if (compact) return _buildCompact(context);
+    return _buildFull(context);
+  }
+
+  Widget _buildCompact(BuildContext context) {
+    return InkWell(
+      onTap: () => onItemClick?.call(),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        decoration: BoxDecoration(
+          color: backgroundColor ?? AppColors.floralWhite,
+          borderRadius: BorderRadius.circular(Dimens.border20),
+          border: Border.all(color: Colors.white, width: 1),
+        ),
+        child: Row(
+          children: [
+            if (svg != null) SizedBox(height: 38, width: 38, child: Image.asset(svg!)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeMedium, color: Colors.black),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (desc.isNotNull()) Text(
+                    desc!,
+                    style: TextStyle(fontSize: Dimens.fontSizeSmall, color: iconColor ?? AppColors.battleshipGrey),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            InkWell(
+              onTap: () => onClick.call(),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: Icon(Icons.add_circle, size: 26, color: iconColor ?? AppColors.yellowishGreen),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFull(BuildContext context) {
     return InkWell(
       onTap: () => onItemClick?.call(),
       child: Card(clipBehavior: Clip.antiAlias,
@@ -32,7 +84,7 @@ class MealTimeWidget extends StatelessWidget {
           decoration: BoxDecoration(
             color: backgroundImage.isNull() ? null : Colors.white,
             image: backgroundImage != null ? DecorationImage(
-              image: AssetImage(backgroundImage!), // Your image
+              image: AssetImage(backgroundImage!),
               fit: BoxFit.cover,
               opacity: 0.35,
             ) : null,
@@ -55,5 +107,4 @@ class MealTimeWidget extends StatelessWidget {
       ),
     );
   }
-
 }

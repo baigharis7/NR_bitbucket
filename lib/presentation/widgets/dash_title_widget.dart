@@ -13,21 +13,21 @@ class DashTitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        if (title.isNotNull()) Container(
-          height: 39,
-          decoration: const BoxDecoration(color: AppColors.darkJungleGreen, borderRadius: BorderRadius.horizontal(right: Radius.circular(50))),
-          margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
-          padding: const EdgeInsets.symmetric(horizontal: Dimens.marginLarge,),
-          alignment: Alignment.center,
-          child: Text(
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
+      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.15),
+      ),
+      child: Row(
+        children: [
+          if (title.isNotNull()) Text(
             title ?? '', style: style ?? AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize19),
           ),
-        ),
-        const Spacer(),
-        if (!onInfoClick.isNull()) InkWell(onTap: () => onInfoClick?.call(), child: Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal), width: 18, height: 18, child: Image.asset('assets/images/info.png',))),
-      ],
+          const Spacer(),
+          if (!onInfoClick.isNull()) InkWell(onTap: () => onInfoClick?.call(), child: SizedBox(width: 18, height: 18, child: Image.asset('assets/images/info.png',))),
+        ],
+      ),
     );
   }
 }

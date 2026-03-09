@@ -18,9 +18,33 @@ class NutrientElementWidget extends StatelessWidget {
     double progress = (current / goal).clamp(0.0, 1.0) * 100;
     return Column(
       children: [
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: '${current.ceil()}',
+                style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize15),
+              ),
+              TextSpan(
+                text: unit,
+                style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w500, fontSize: Dimens.fontSize13),
+              ),
+              TextSpan(
+                text: ' / ',
+                style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w500, fontSize: Dimens.fontSize13),
+              ),
+              TextSpan(
+                text: '${goal.toInt()}',
+                style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize15),
+              ),
+              TextSpan(
+                text: unit,
+                style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w500, fontSize: Dimens.fontSize13),
+              ),
+            ],
+          ),
+        ),
         AnimatedNutrientProgressBarWidget(percent: progress, title: label.toUpperCase(), width: Dimens.widthNormal, height: Dimens.height12, color: progressColor,),
-        Text('${current.ceil()}', style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeXXLarge),),
-        Text('${AppLocalizations.of(context)!.from} ${goal.toInt()}$unit', style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w500, fontSize: Dimens.fontSize13, color: Colors.white70),),
       ],
     );
   }

@@ -16,8 +16,8 @@ class IngestedSpentWidget extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       SvgPicture.asset(svg, width: 28, height: 28,),
       const SizedBox(height: Dimens.height12),
-      Text(value.toString(), style: AppTextStyles.radioCanadaBig.copyWith(fontSize: 26)),
-      Text(title.toUpperCase(), textAlign: TextAlign.center, style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSize13)),
+      Text(value.toString(), style: AppTextStyles.radioCanadaBig.copyWith(fontSize: 26, fontWeight: FontWeight.w400)),
+      Text(title.toUpperCase(), textAlign: TextAlign.center, style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSize11, fontWeight: FontWeight.w400)),
     ],);
   }
 

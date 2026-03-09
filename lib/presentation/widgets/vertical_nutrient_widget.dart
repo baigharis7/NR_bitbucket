@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
@@ -24,6 +25,7 @@ class _VerticalNutrientWidgetState extends State<VerticalNutrientWidget> {
   @override
   Widget build(BuildContext context) {
     final colors = widget.nutrient.quantityConsumed > widget.nutrient.upperLimit && widget.nutrient.upperLimit > 0 ? [AppColors.rose, AppColors.persianRed] : [AppColors.lightGreen, AppColors.green];
+    final fillRatio = widget.nutrient.rda > 0 ? (widget.nutrient.quantityConsumed / widget.nutrient.rda).clamp(0.0, 1.0) : 0.0;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
       height: Dimens.heightMedium,
@@ -49,13 +51,12 @@ class _VerticalNutrientWidgetState extends State<VerticalNutrientWidget> {
                 setState(() {
                   selectedNutrient = getNutrientName(widget.nutrient.nutrientInfoMaster.translate(context)).toUpperCase();
                   selectedValue = widget.nutrient.quantityConsumed;
-                  // infoOffset = details.globalPosition;
                 });
               },
-              message: '$selectedNutrient: ${selectedValue?.toStringAsFixed(1)} ${widget.nutrient.unit}'/*"Hi Handsome Boy, you're doing development"*/,
+              message: '$selectedNutrient: ${selectedValue?.toStringAsFixed(1)} ${widget.nutrient.unit}',
               preferBelow: false,
               decoration: BoxDecoration(
-                color: Colors.black,        // background
+                color: Colors.black,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Stack(
@@ -72,23 +73,41 @@ class _VerticalNutrientWidgetState extends State<VerticalNutrientWidget> {
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       color: AppColors.black,
                     ),
-                    child: TweenAnimationBuilder<double>(
-                      tween: Tween<double>(begin: 0, end: widget.nutrient.quantityConsumed),
-                      duration: const Duration(seconds: 5),
-                      builder: (context, value, child) {
-                        return Container(
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        // Fill bar
+                        Container(
                           width: 30,
-                          height: (widget.nutrient.quantityConsumed / widget.nutrient.rda) * 84,
-                          // alignment: Alignment.bottomCenter,
+                          height: fillRatio * 84,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(colors: colors, begin: Alignment.bottomCenter, end: Alignment.topCenter,),
-                            // gradient: LinearGradient(colors: [AppColors.algaeGreen, AppColors.mediumGreen], begin: Alignment.bottomCenter, end: Alignment.topCenter,),
-                            // gradient: LinearGradient(colors: [AppColors.rose, AppColors.persianRed], begin: Alignment.bottomCenter, end: Alignment.topCenter,),
-                            // color: AppColors.peacockBlue,
                             borderRadius: const BorderRadius.all(Radius.circular(10)),
                           ),
-                        );
-                      },
+                        ),
+                        // Value label inside the bar
+                        if (fillRatio > 0.15)
+                          Positioned(
+                            bottom: (fillRatio * 84) / 2 - 8,
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: widget.nutrient.quantityConsumed >= 10
+                                        ? '${widget.nutrient.quantityConsumed.toInt()}'
+                                        : widget.nutrient.quantityConsumed.toStringAsFixed(1),
+                                    style: AppTextStyles.dmSans.copyWith(fontWeight: FontWeight.w700, fontSize: 10, color: Colors.white),
+                                  ),
+                                  TextSpan(
+                                    text: widget.nutrient.unit.orEmpty(),
+                                    style: AppTextStyles.dmSans.copyWith(fontWeight: FontWeight.w700, fontSize: 6, color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ],
