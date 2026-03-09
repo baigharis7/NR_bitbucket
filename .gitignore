@@ -62,6 +62,9 @@ Thumbs.db
 # Visual Studio Code related
 .vscode/
 
+# MCP config (contains API keys)
+.mcp.json
+
 # Flutter/Dart/Pub related
 **/doc/api/
 .dart_tool/
