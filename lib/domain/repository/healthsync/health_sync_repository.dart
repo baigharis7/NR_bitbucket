@@ -60,4 +60,10 @@ abstract class HealthSyncRepository {
   /// Open the Health Connect app (Android only).
   /// Falls back to the Play Store if the app can't be opened directly.
   Future<void> openHealthConnect();
+
+  /// Fetch today's total sleep hours from the health platform.
+  Future<double> fetchTodaySleepHours(DateTime date);
+
+  /// Fetch today's total step count from the health platform.
+  Future<int> fetchTodayStepCount(DateTime date);
 }

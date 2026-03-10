@@ -30,6 +30,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     HealthDataType.STEPS,
     HealthDataType.ACTIVE_ENERGY_BURNED,
     HealthDataType.HEART_RATE,
+    HealthDataType.SLEEP_SESSION,
     if (Platform.isIOS) HealthDataType.DISTANCE_WALKING_RUNNING,
     if (Platform.isAndroid) HealthDataType.DISTANCE_DELTA,
   ];
@@ -416,6 +417,64 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
           );
         }
       }
+    }
+  }
+
+  @override
+  Future<double> fetchTodaySleepHours(DateTime date) async {
+    try {
+      // Look for sleep sessions from the previous evening to this morning
+      final startTime = DateTime(date.year, date.month, date.day).subtract(const Duration(hours: 18));
+      final endTime = DateTime(date.year, date.month, date.day, 18);
+
+      final sleepData = await _health.getHealthDataFromTypes(
+        types: [HealthDataType.SLEEP_SESSION],
+        startTime: startTime,
+        endTime: endTime,
+      );
+
+      if (sleepData.isEmpty) return 0.0;
+
+      // Sum total sleep duration from all sessions
+      double totalHours = 0.0;
+      for (final point in sleepData) {
+        final duration = point.dateTo.difference(point.dateFrom);
+        totalHours += duration.inMinutes / 60.0;
+      }
+
+      debugPrint('[HealthSync] fetchTodaySleepHours: ${sleepData.length} sessions, total=$totalHours hours');
+      return totalHours;
+    } catch (e) {
+      debugPrint('[HealthSync] fetchTodaySleepHours ERROR: $e');
+      return 0.0;
+    }
+  }
+
+  @override
+  Future<int> fetchTodayStepCount(DateTime date) async {
+    try {
+      final startTime = DateTime(date.year, date.month, date.day);
+      final endTime = DateTime(date.year, date.month, date.day, 23, 59, 59);
+
+      final stepsData = await _health.getHealthDataFromTypes(
+        types: [HealthDataType.STEPS],
+        startTime: startTime,
+        endTime: endTime,
+      );
+
+      int totalSteps = 0;
+      for (final point in stepsData) {
+        final value = point.value;
+        if (value is NumericHealthValue) {
+          totalSteps += value.numericValue.round();
+        }
+      }
+
+      debugPrint('[HealthSync] fetchTodayStepCount: $totalSteps steps');
+      return totalSteps;
+    } catch (e) {
+      debugPrint('[HealthSync] fetchTodayStepCount ERROR: $e');
+      return 0;
     }
   }
 }

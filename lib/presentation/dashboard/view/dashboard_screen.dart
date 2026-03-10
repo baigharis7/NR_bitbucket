@@ -367,15 +367,29 @@ class _DashboardScreen extends State<DashboardScreen>
                         onAdd: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime),
                         onTap: () => Navigator.pushNamed(context, SportItemsScreen.routeName, arguments: selectedDateTime),
                       ),
-                      const SizedBox(height: 17),
-                      const SleepingHoursWidget(
-                        hoursSlept: 0,
-                        hoursGoal: 8,
-                      ),
-                      const SizedBox(height: 17),
-                      const StepsWidget(
-                        stepsTaken: 0,
-                        stepsGoal: 10000,
+                      BlocBuilder<HealthSyncBloc, HealthSyncState>(
+                        buildWhen: (prev, curr) =>
+                            prev.isSyncEnabled != curr.isSyncEnabled ||
+                            prev.todaySleepHours != curr.todaySleepHours ||
+                            prev.todayStepCount != curr.todayStepCount,
+                        builder: (context, healthState) {
+                          final widgets = <Widget>[];
+                          if (healthState.isSyncEnabled && healthState.todaySleepHours != null) {
+                            widgets.add(const SizedBox(height: 17));
+                            widgets.add(SleepingHoursWidget(
+                              hoursSlept: healthState.todaySleepHours!,
+                              hoursGoal: 8,
+                            ));
+                          }
+                          if (healthState.isSyncEnabled && healthState.todayStepCount != null) {
+                            widgets.add(const SizedBox(height: 17));
+                            widgets.add(StepsWidget(
+                              stepsTaken: healthState.todayStepCount!,
+                              stepsGoal: 10000,
+                            ));
+                          }
+                          return Column(children: widgets);
+                        },
                       ),
                       DashTitleWidget(title: AppLocalizations.of(context)!.depositions, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
                       MealTimeWidget(

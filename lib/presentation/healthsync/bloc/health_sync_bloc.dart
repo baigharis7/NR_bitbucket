@@ -100,12 +100,24 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         _stopPeriodicSync();
       }
 
+      // Fetch today's sleep/step data if sync is enabled
+      double? sleepHours;
+      int? stepCount;
+      if (syncEnabled) {
+        final today = DateTime.now();
+        sleepHours = await healthSyncRepository.fetchTodaySleepHours(today);
+        stepCount = await healthSyncRepository.fetchTodayStepCount(today);
+        _hsLog('HealthSync init: sleepHours=$sleepHours, stepCount=$stepCount');
+      }
+
       emit(state.copyWith(
         isLoading: false,
         isAvailable: isAvailable,
         isSyncEnabled: syncEnabled,
         hasPermissions: hasPermissions,
         lastSyncTime: lastSyncTime,
+        todaySleepHours: sleepHours,
+        todayStepCount: stepCount,
       ));
     } catch (e, stack) {
       CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncInitialization'});
@@ -222,12 +234,19 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         DashboardEventBus.instance.notify(DataChangedCategory.sport);
       }
 
+      // Refresh sleep/step data after sync
+      final today = DateTime.now();
+      final sleepHours = await healthSyncRepository.fetchTodaySleepHours(today);
+      final stepCount = await healthSyncRepository.fetchTodayStepCount(today);
+
       emit(state.copyWith(
         isLoading: false,
         isSyncing: false,
         lastSyncTime: lastSyncTime,
         syncedActivitiesCount: syncedActivities.length,
         syncSuccess: true,
+        todaySleepHours: sleepHours,
+        todayStepCount: stepCount,
       ));
     } catch (e, stack) {
       CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncManualTrigger'});

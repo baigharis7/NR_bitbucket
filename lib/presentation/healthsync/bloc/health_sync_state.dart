@@ -11,6 +11,8 @@ class HealthSyncState {
   final ErrorTypes? onError;
   final bool? permissionGranted;
   final bool? syncSuccess;
+  final double? todaySleepHours;
+  final int? todayStepCount;
 
   HealthSyncState({
     this.isLoading = false,
@@ -23,6 +25,8 @@ class HealthSyncState {
     this.onError,
     this.permissionGranted,
     this.syncSuccess,
+    this.todaySleepHours,
+    this.todayStepCount,
   });
 
   HealthSyncState copyWith({
@@ -36,6 +40,8 @@ class HealthSyncState {
     ErrorTypes? onError,
     bool? permissionGranted,
     bool? syncSuccess,
+    double? todaySleepHours,
+    int? todayStepCount,
   }) {
     return HealthSyncState(
       isLoading: isLoading ?? this.isLoading,
@@ -48,6 +54,8 @@ class HealthSyncState {
       onError: onError,
       permissionGranted: permissionGranted,
       syncSuccess: syncSuccess,
+      todaySleepHours: todaySleepHours ?? this.todaySleepHours,
+      todayStepCount: todayStepCount ?? this.todayStepCount,
     );
   }
 }
