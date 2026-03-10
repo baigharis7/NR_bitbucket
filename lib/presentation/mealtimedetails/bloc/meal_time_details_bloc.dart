@@ -7,9 +7,11 @@ import 'package:nutrenaissance_flutter/domain/interactor/foodevents/remove_food_
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/objectives_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/profile_computation_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
 import '../../../data/local/models/masterfiles/master_files_type.dart';
@@ -42,6 +44,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
   final RemoveFoodEventInteractor removeFoodEventInteractor;
   final UpdateEventsInteractor updateEventsInteractor;
   final PreferencesRepository preferencesRepository;
+  final ProfileComputationService profileComputationService;
   final MacroCalculationHelper _macroHelper = const MacroCalculationHelper();
   late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
@@ -55,6 +58,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
     required this.removeFoodEventInteractor,
     required this.updateEventsInteractor,
     required this.preferencesRepository,
+    required this.profileComputationService,
 }) : super(MealTimeDetailsState(isLoading: false)) {
     _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
       if (category == DataChangedCategory.food) {
@@ -71,6 +75,8 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
       state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
       state.foodNames = foodNames;
       state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames.orEmpty().toList() ?? []);
+      state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo);
+      state.objectiveNutrientsMap = await profileComputationService.getObjectiveNutrientsMap(state.profile?.objectives.orEmpty() ?? []);
       add(SummaryInitializationMealTimeDetailsEventState());
       emit(state.copyWith(isLoading: false));
 
@@ -100,6 +106,12 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
               upperLimit: 0,
             ),
       ).toList();
+
+      // Build per-objective grouped micronutrients
+      _buildGroupedMicronutrients();
+
+      // Build "other" micronutrients (non-objective, non-zero)
+      _buildOtherMicronutrients();
 
       state.macronutrients = ['proteinSci', 'carbsAvailable', 'fatTotal']
           .map(
@@ -247,6 +259,85 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
   }
 
 
+
+  void _buildGroupedMicronutrients() {
+    final map = state.objectiveNutrientsMap;
+    if (map == null) return;
+
+    final grouped = <int, List<NutrientsModel>>{};
+    for (final entry in map.entries) {
+      final objectiveId = entry.key;
+      final nutrientKeys = entry.value;
+      grouped[objectiveId] = nutrientKeys
+          .map((key) => NutrientsModel(
+                quantityConsumed: getQuantityConsumedSoFar(key),
+                nutrientInfoMaster: getNutrientInfo(key),
+                fractionToFill: 0,
+                unit: getUnitForMicronutrient(key),
+                rda: getNutrientRda(key),
+                upperLimit: 0,
+              ))
+          .where((n) => n.quantityConsumed > 0)
+          .toList();
+    }
+    state.groupedObjectiveNutrients = grouped;
+  }
+
+  void _buildOtherMicronutrients() {
+    final objectiveKeys = <String>{};
+    final map = state.objectiveNutrientsMap;
+    if (map != null) {
+      for (final keys in map.values) {
+        objectiveKeys.addAll(keys);
+      }
+    }
+
+    // Only show commonly tracked vitamins, minerals, and key fatty acids
+    const allowedKeys = {
+      'vitA', 'vitB1', 'vitB2', 'vitB3', 'vitB5', 'vitB6', 'vitB7',
+      'vitB9', 'vitB12', 'vitC', 'vitD', 'vitE',
+      'calcium', 'iron', 'magnesium', 'phosphorus', 'potassium', 'sodium',
+      'zinc', 'iodine', 'selenium', 'copper', 'manganese', 'chromium',
+      'molybdenum', 'chloride', 'fluoron',
+      'omega3', 'cholesterol',
+    };
+
+    // Collect non-zero nutrient totals from food events
+    final nutrientTotals = <String, double>{};
+    for (final foodEvent in state.foodEvents.orEmpty()) {
+      for (final food in foodEvent.foodInfo.orEmpty()) {
+        final paramsJson = food.params?.toJson() ?? {};
+        for (final entry in paramsJson.entries) {
+          if (!allowedKeys.contains(entry.key)) continue;
+          final val = (entry.value as num?)?.toDouble() ?? 0.0;
+          if (val > 0) {
+            nutrientTotals[entry.key] = (nutrientTotals[entry.key] ?? 0) + val;
+          }
+        }
+      }
+    }
+
+    // Build list: allowed, non-objective, has a display name
+    final others = <NutrientsModel>[];
+    for (final entry in nutrientTotals.entries) {
+      if (objectiveKeys.contains(entry.key)) continue;
+
+      final info = getNutrientInfo(entry.key);
+      if (info.en.isEmpty) continue;
+
+      others.add(NutrientsModel(
+        quantityConsumed: double.parse(entry.value.toStringAsFixed(2)),
+        nutrientInfoMaster: info,
+        fractionToFill: 0,
+        unit: getUnitForMicronutrient(entry.key),
+        rda: getNutrientRda(entry.key),
+        upperLimit: 0,
+      ));
+    }
+
+    others.sort((a, b) => a.nutrientInfoMaster.en.compareTo(b.nutrientInfoMaster.en));
+    state.otherMicronutrients = others;
+  }
 
   @override
   Future<void> close() {

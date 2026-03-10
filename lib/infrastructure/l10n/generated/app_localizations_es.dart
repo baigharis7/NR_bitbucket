@@ -1081,7 +1081,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get micronutrientss => 'Micronutrientes';
 
   @override
-  String get other_micronutrientss => 'Resto de micronutrientes';
+  String get other_micronutrientss => 'Otros';
+
+  @override
+  String get objectives_related => 'Relacionados con objetivos';
 
   @override
   String get other_temp_needs => 'Otras necesidades temporales';
@@ -1210,6 +1213,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get add_physical_activity => 'Agregar actividad física';
+
+  @override
+  String get activity_log => 'Registro de Actividad';
 
   @override
   String get information => 'Información';

@@ -70,6 +70,17 @@ class ProfileComputationService {
     );
   }
 
+  /// Returns the nutrient keys grouped by objective ID for the given objectives.
+  /// Returns null if reference data is not loaded.
+  Future<Map<int, List<String>>?> getObjectiveNutrientsMap(List<int> objectiveIds) async {
+    if (!await _ensureDataLoaded()) return null;
+    final map = <int, List<String>>{};
+    for (final id in objectiveIds) {
+      map[id] = _getObjectiveNutrients(id);
+    }
+    return map;
+  }
+
   // ---------------------------------------------------------------------------
   // Data loading
   // ---------------------------------------------------------------------------

@@ -17,6 +17,10 @@ class MealTimeDetailsState {
   MealTime? mealTime;
   FoodsAndDrinksNamesMaster? foodNames;
   DateTime? selectedDateTime;
+  ObjectivesInfoMaster? objectivesInfoMaster;
+  Map<int, List<String>>? objectiveNutrientsMap;
+  Map<int, List<NutrientsModel>>? groupedObjectiveNutrients;
+  List<NutrientsModel>? otherMicronutrients;
 
   MealTimeDetailsState({
     required this.isLoading,
@@ -32,6 +36,10 @@ class MealTimeDetailsState {
     this.mealTime,
     this.foodNames,
     this.selectedDateTime,
+    this.objectivesInfoMaster,
+    this.objectiveNutrientsMap,
+    this.groupedObjectiveNutrients,
+    this.otherMicronutrients,
   });
 
   MealTimeDetailsState copyWith({
@@ -63,6 +71,10 @@ class MealTimeDetailsState {
       mealTime: mealTime ?? this.mealTime,
       foodNames: foodNames ?? this.foodNames,
       selectedDateTime: selectedDateTime ?? this.selectedDateTime,
+      objectivesInfoMaster: objectivesInfoMaster ?? this.objectivesInfoMaster,
+      objectiveNutrientsMap: objectiveNutrientsMap ?? this.objectiveNutrientsMap,
+      groupedObjectiveNutrients: groupedObjectiveNutrients ?? this.groupedObjectiveNutrients,
+      otherMicronutrients: otherMicronutrients ?? this.otherMicronutrients,
     );
   }
 }

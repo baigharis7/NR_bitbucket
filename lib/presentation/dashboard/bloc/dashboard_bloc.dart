@@ -214,6 +214,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
             break;
           case DataChangedCategory.sport:
             state.weeklySportEvents = await getWeekSportsInteractor.execute();
+            state.sportEvents = await getTodaySportsInteractor.execute(dateTime: _lastSelectedDate);
             final caloriesConsumed = await getDayCaloriesInteractor.execute(dateTime: _lastSelectedDate);
             state.allCalendarEvents = await getAllDashboardEventsSortedByDateInteractor.execute();
             _recomputeEnergyModel(caloriesConsumed.orZero());
@@ -282,6 +283,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       state.waterEvents = await getWaterEventsTodayInteractor.execute(dateTime: event.dateTime);
       state.allCalendarEvents = await getAllDashboardEventsSortedByDateInteractor.execute();
       state.supplementEvents = await getDaySupplementEventsInteractor.execute(dateTime: event.dateTime);
+      state.sportEvents = await getTodaySportsInteractor.execute(dateTime: event.dateTime);
 
       state.micronutrients = state.profile?.micronutrients.orEmpty()
           .map(

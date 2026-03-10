@@ -411,5 +411,43 @@ void main() {
         expect(result.temporaryAll, isNotEmpty);
       });
     });
+
+    group('getObjectiveNutrientsMap', () {
+      test('returns null when reference data not loaded', () async {
+        final result = await service.getObjectiveNutrientsMap([1, 2]);
+        expect(result, isNull);
+      });
+
+      test('returns correct mapping for single objective', () async {
+        await _insertReferenceData();
+        final result = await service.getObjectiveNutrientsMap([1]);
+        expect(result, isNotNull);
+        expect(result!.keys, [1]);
+        expect(result[1], ['calcium', 'vitD', 'magnesium', 'phosphorus']);
+      });
+
+      test('returns correct mapping for multiple objectives', () async {
+        await _insertReferenceData();
+        final result = await service.getObjectiveNutrientsMap([1, 2]);
+        expect(result, isNotNull);
+        expect(result!.length, 2);
+        expect(result[1], ['calcium', 'vitD', 'magnesium', 'phosphorus']);
+        expect(result[2], ['iron', 'vitB12', 'vitB9', 'zinc']);
+      });
+
+      test('returns empty list for unknown objective', () async {
+        await _insertReferenceData();
+        final result = await service.getObjectiveNutrientsMap([999]);
+        expect(result, isNotNull);
+        expect(result![999], isEmpty);
+      });
+
+      test('returns empty map for empty objectives list', () async {
+        await _insertReferenceData();
+        final result = await service.getObjectiveNutrientsMap([]);
+        expect(result, isNotNull);
+        expect(result, isEmpty);
+      });
+    });
   });
 }

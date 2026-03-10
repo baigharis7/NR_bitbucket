@@ -52,6 +52,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/energy_balance_widge
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/liquids_summary_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/meal_time_section.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/activity_log_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/meal_time_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/micro_nutrients_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_widget.dart';
@@ -358,12 +359,11 @@ class _DashboardScreen extends State<DashboardScreen>
                         onAddWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () {})),
                         onRemoveWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () {})),
                       ),
-                      DashTitleWidget(title: AppLocalizations.of(context)!.physical_activity, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
-                      MealTimeWidget(
-                        name: AppLocalizations.of(context)!.physical_activity,
-                        onItemClick: () => Navigator.pushNamed(context, SportItemsScreen.routeName, arguments: selectedDateTime),
-                        onClick: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime),
-                        backgroundColor: AppColors.floralWhite, svg: 'assets/images/sport.png',
+                      const SizedBox(height: 8),
+                      ActivityLogWidget(
+                        sportEvents: state.sportEvents.orEmpty(),
+                        onAdd: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime),
+                        onTap: () => Navigator.pushNamed(context, SportItemsScreen.routeName, arguments: selectedDateTime),
                       ),
                       DashTitleWidget(title: AppLocalizations.of(context)!.depositions, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
                       MealTimeWidget(

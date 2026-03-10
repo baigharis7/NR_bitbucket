@@ -1093,6 +1093,7 @@ void main() async {
     removeFoodEventInteractor: removeFoodEventInteractor,
     updateEventsInteractor: updateEventsInteractor,
     preferencesRepository: prefsRepository,
+    profileComputationService: profileComputationService,
   );
 
   final favoritesTabsBloc = FavoritesTabsBloc(

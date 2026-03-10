@@ -86,7 +86,19 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> with Midnig
     );
   }
 
-  void _showFoodLabelDialog(BuildContext context, MealTimeDetailsState state) {
+  String _getObjectiveName(BuildContext context, MealTimeDetailsState state, int objectiveId) {
+    final allObjectives = [
+      ...?state.objectivesInfoMaster?.objectives,
+      ...?state.objectivesInfoMaster?.metabolicObjectives,
+      ...?state.objectivesInfoMaster?.bodyCompositionObjectives,
+    ];
+    for (final obj in allObjectives) {
+      if (obj.id == objectiveId) return obj.translate(context);
+    }
+    return '';
+  }
+
+  void _showMicronutrientsDialog(BuildContext context, MealTimeDetailsState state) {
     showDialog(
       context: context,
       builder: (dialogContext) => BackdropFilter(
@@ -103,40 +115,111 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> with Midnig
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const SizedBox(height: Dimens.height25),
+                      // Title
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                        child: Text(
+                          AppLocalizations.of(context)!.micronutrientss,
+                          style: const TextStyle(
+                            fontSize: Dimens.fontSize20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // Fiber & Sugar
                       ...state.fiberSugar.orEmpty().map((n) => Container(
                         margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
                         child: NutrientRow(label: n.nutrientInfoMaster.translate(context), value: '${n.quantityConsumed} ${n.unit}'),
                       )),
-                      const SizedBox(height: 20),
-                      Text(
-                        AppLocalizations.of(context)!.micronutrientss,
-                        style: const TextStyle(
-                          fontSize: Dimens.fontSizeLarge,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.white,
+                      const SizedBox(height: 16),
+                      // Objectives Related section
+                      if (state.groupedObjectiveNutrients != null && state.groupedObjectiveNutrients!.isNotEmpty) ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                          child: Text(
+                            AppLocalizations.of(context)!.objectives_related,
+                            style: TextStyle(
+                              fontSize: Dimens.fontSizeNormal,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white.withOpacity(0.7),
+                              letterSpacing: 1.2,
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      ...state.micronutrients.orEmpty().map((nutrient) => Container(
-                        margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                        child: NutrientRow(label: nutrient.nutrientInfoMaster.translate(context), value: '${nutrient.quantityConsumed} ${nutrient.unit}'),
-                      )),
+                        const SizedBox(height: 12),
+                        ...state.groupedObjectiveNutrients!.entries.where((e) => e.value.isNotEmpty).map((entry) {
+                          final objectiveName = _getObjectiveName(context, state, entry.key);
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                                child: Text(
+                                  objectiveName,
+                                  style: const TextStyle(
+                                    fontSize: Dimens.fontSizeSmall,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              ...entry.value.map((nutrient) => Container(
+                                margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                                child: NutrientRow(
+                                  label: nutrient.nutrientInfoMaster.translate(context),
+                                  value: '${nutrient.quantityConsumed} ${nutrient.unit}',
+                                ),
+                              )),
+                              const SizedBox(height: 10),
+                            ],
+                          );
+                        }),
+                      ],
+                      // Other micronutrients section
+                      if (state.otherMicronutrients != null && state.otherMicronutrients!.isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                          child: Text(
+                            AppLocalizations.of(context)!.other_micronutrientss,
+                            style: TextStyle(
+                              fontSize: Dimens.fontSizeNormal,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white.withOpacity(0.7),
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        ...state.otherMicronutrients!.map((nutrient) => Container(
+                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                          child: NutrientRow(
+                            label: nutrient.nutrientInfoMaster.translate(context),
+                            value: '${nutrient.quantityConsumed} ${nutrient.unit}',
+                          ),
+                        )),
+                      ],
+                      const SizedBox(height: 12),
                     ],
                   ),
                 ),
               ),
               Positioned(
-                top: 0,
-                right: 0,
+                top: 14,
+                right: 14,
                 child: InkWell(
                   onTap: () => Navigator.pop(dialogContext),
                   child: Container(
                     padding: const EdgeInsets.all(Dimens.padding4),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 1.5),
                     ),
-                    child: const Icon(Icons.close, size: 20, color: Colors.black),
+                    child: const Icon(Icons.close, size: 18, color: Colors.white),
                   ),
                 ),
               ),
@@ -218,15 +301,30 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> with Midnig
                                   if (state.foodEvents.orEmpty().isNotEmpty) ...[
                                     const SizedBox(height: Dimens.height12),
                                     InkWell(
-                                      onTap: () => _showFoodLabelDialog(context, state),
-                                      child: Text(
-                                        AppLocalizations.of(context)!.food_label,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: Dimens.fontSizeNormal,
-                                          fontWeight: FontWeight.w500,
-                                          decoration: TextDecoration.underline,
-                                          decorationColor: Colors.white,
+                                      onTap: () => _showMicronutrientsDialog(context, state),
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.white.withOpacity(0.6), width: 1),
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.bar_chart_rounded, color: Colors.white.withOpacity(0.9), size: 16),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              AppLocalizations.of(context)!.micronutrientss,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: Dimens.fontSizeSmall,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Icon(Icons.chevron_right, color: Colors.white.withOpacity(0.7), size: 16),
+                                          ],
                                         ),
                                       ),
                                     ),

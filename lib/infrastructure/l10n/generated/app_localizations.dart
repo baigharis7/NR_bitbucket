@@ -2021,8 +2021,14 @@ abstract class AppLocalizations {
   /// No description provided for @other_micronutrientss.
   ///
   /// In en, this message translates to:
-  /// **'Remaining'**
+  /// **'Other'**
   String get other_micronutrientss;
+
+  /// No description provided for @objectives_related.
+  ///
+  /// In en, this message translates to:
+  /// **'Objectives Related'**
+  String get objectives_related;
 
   /// No description provided for @other_temp_needs.
   ///
@@ -2269,6 +2275,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Physical Activity'**
   String get add_physical_activity;
+
+  /// No description provided for @activity_log.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity Log'**
+  String get activity_log;
 
   /// No description provided for @information.
   ///
