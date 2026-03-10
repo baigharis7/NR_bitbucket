@@ -141,7 +141,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Space below bump for logo to sit
-                SizedBox(height: _logoSize - _bumpPeek - 20),
+                SizedBox(height: _logoSize - _bumpPeek - 26),
                 // Info icon row (top-right)
                 Align(
                   alignment: Alignment.centerRight,
@@ -240,7 +240,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 14),
                 // Macronutrient bars
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
