@@ -41,7 +41,7 @@ class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
   }) : super(SportItemsState(isLoading: false)) {
     _eventBusSubscription = DashboardEventBus.instance.stream.listen((category) {
       if (category == DataChangedCategory.sport) {
-        add(SportItemsInitialization());
+        add(SportItemsLocalRefresh());
       }
     });
     on<SportItemsInitialization>((event, emit) async {
@@ -54,6 +54,11 @@ class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
         state.sportEvents = await getTodaySportsInteractor.execute(dateTime: state.dateTime);
         emit(state.copyWith(isLoading: false));
       }
+    });
+
+    on<SportItemsLocalRefresh>((event, emit) async {
+      state.sportEvents = await getTodaySportsInteractor.execute(dateTime: state.dateTime);
+      emit(state.copyWith(isLoading: false));
     });
 
     on<UpdateDatetimeSportItemsEvents>((event, emit) async {

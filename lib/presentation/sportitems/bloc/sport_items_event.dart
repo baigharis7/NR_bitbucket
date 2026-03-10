@@ -11,6 +11,8 @@ class UpdateDatetimeSportItemsEvents extends SportItemsEvents {
   UpdateDatetimeSportItemsEvents({required this.dateTime});
 }
 
+class SportItemsLocalRefresh extends SportItemsEvents {}
+
 class DeleteSportItemSportItemsEvents extends SportItemsEvents {
   final SportEventComplete sportEventComplete;
 
