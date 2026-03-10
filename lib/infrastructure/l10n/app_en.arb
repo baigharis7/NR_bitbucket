@@ -603,6 +603,10 @@
     "health_sync_card_enabled": "Health Sync Enabled",
     "health_sync_card_never_synced": "Never synced",
     "distance_label": "Distance",
-    "heart_rate_label": "Heart rate"
+    "heart_rate_label": "Heart rate",
+    "sleeping_hours": "Sleeping hours",
+    "of_target": "of",
+    "hours_last_night": "hours last night.",
+    "steps_for_today": "steps for today."
 
 }

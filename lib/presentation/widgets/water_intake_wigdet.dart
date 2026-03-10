@@ -36,12 +36,18 @@ class _WaterIntakeWidgetState extends State<WaterIntakeWidget> {
     double progress = (totalConsumedLiters / widget.totalLitersGoal).clamp(0.0, 1.0);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
+      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
       padding: const EdgeInsets.all(Dimens.paddingNormal),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: AppColors.darkJungleGreen,
+        color: const Color(0xBF0F4A2D),
         border: Border.all(color: Colors.white, width: Dimens.width1),
         borderRadius: BorderRadius.circular(Dimens.border18),
+        image: const DecorationImage(
+          image: AssetImage('assets/images/hydration_bkg.jpg'),
+          fit: BoxFit.cover,
+          opacity: 0.25,
+        ),
       ),
       child: Column(
         children: [

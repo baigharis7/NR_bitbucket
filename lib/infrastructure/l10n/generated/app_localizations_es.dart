@@ -1969,4 +1969,16 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get heart_rate_label => 'Ritmo cardíaco';
+
+  @override
+  String get sleeping_hours => 'Horas de sueño';
+
+  @override
+  String get of_target => 'de';
+
+  @override
+  String get hours_last_night => 'horas anoche.';
+
+  @override
+  String get steps_for_today => 'pasos para hoy.';
 }

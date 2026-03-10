@@ -3625,6 +3625,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Heart rate'**
   String get heart_rate_label;
+
+  /// No description provided for @sleeping_hours.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleeping hours'**
+  String get sleeping_hours;
+
+  /// No description provided for @of_target.
+  ///
+  /// In en, this message translates to:
+  /// **'of'**
+  String get of_target;
+
+  /// No description provided for @hours_last_night.
+  ///
+  /// In en, this message translates to:
+  /// **'hours last night.'**
+  String get hours_last_night;
+
+  /// No description provided for @steps_for_today.
+  ///
+  /// In en, this message translates to:
+  /// **'steps for today.'**
+  String get steps_for_today;
 }
 
 class _AppLocalizationsDelegate

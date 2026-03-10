@@ -604,6 +604,10 @@
     "health_sync_card_enabled": "Sincronización de salud habilitada",
     "health_sync_card_never_synced": "Nunca sincronizado",
     "distance_label": "Distancia",
-    "heart_rate_label": "Ritmo cardíaco"
+    "heart_rate_label": "Ritmo cardíaco",
+    "sleeping_hours": "Horas de sueño",
+    "of_target": "de",
+    "hours_last_night": "horas anoche.",
+    "steps_for_today": "pasos para hoy."
 
 }

@@ -53,6 +53,8 @@ import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.
 import 'package:nutrenaissance_flutter/presentation/widgets/liquids_summary_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/meal_time_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/activity_log_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/sleeping_hours_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/steps_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/meal_time_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/micro_nutrients_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/nutrients_dashboard_widget.dart';
@@ -351,7 +353,7 @@ class _DashboardScreen extends State<DashboardScreen>
                           compact: true,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 17),
                       WaterIntakeWidget(
                         totalLitersGoal: (state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035,
                         consumedGlasses: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty()) ~/ 0.25,
@@ -359,11 +361,21 @@ class _DashboardScreen extends State<DashboardScreen>
                         onAddWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_ADD_WATER_QUANTITY, onFinish: () {})),
                         onRemoveWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () {})),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 17),
                       ActivityLogWidget(
                         sportEvents: state.sportEvents.orEmpty(),
                         onAdd: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime),
                         onTap: () => Navigator.pushNamed(context, SportItemsScreen.routeName, arguments: selectedDateTime),
+                      ),
+                      const SizedBox(height: 17),
+                      const SleepingHoursWidget(
+                        hoursSlept: 0,
+                        hoursGoal: 8,
+                      ),
+                      const SizedBox(height: 17),
+                      const StepsWidget(
+                        stepsTaken: 0,
+                        stepsGoal: 10000,
                       ),
                       DashTitleWidget(title: AppLocalizations.of(context)!.depositions, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),
                       MealTimeWidget(
