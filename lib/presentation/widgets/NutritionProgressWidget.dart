@@ -36,8 +36,8 @@ class NutritionProgressWidget extends StatefulWidget {
 }
 
 class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
-  static const double _logoSize = 52;
-  static const double _bumpPeek = 18; // how much the bump peeks above the card top edge
+  static const double _logoSize = 60;
+  static const double _bumpPeek = 22; // how much the bump peeks above the card top edge
 
   Widget _buildDataMetric(double consumed, double total, String unit) {
     return RichText(
@@ -94,13 +94,15 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.energyModel == null) return const SizedBox.shrink();
     final double totalConsumed = double.parse(
         (widget.energyModel!.rawKcalTaken - widget.energyModel!.spentKcal)
             .toString());
     final double remaining = double.parse(
         (widget.energyModel!.totalKcal - totalConsumed).toString());
-    final double percent =
-        (totalConsumed / widget.energyModel!.totalKcal.orZero());
+    final double percent = widget.energyModel!.totalKcal > 0
+        ? (totalConsumed / widget.energyModel!.totalKcal)
+        : 0.0;
     final double percentage = percent * 100;
     final colors = (percentage >= Constants.PERCENTAGE_110 &&
             percentage <= Constants.PERCENTAGE_115)
@@ -126,7 +128,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
               painter: _BumpCardPainter(
                 color: const Color(0xFF28421D).withOpacity(0.76),
                 borderRadius: Dimens.border15,
-                bumpRadius: (_logoSize / 2) + 6,
+                bumpHalfWidth: (_logoSize / 2) + 14,
                 bumpPeek: _bumpPeek,
                 horizontalMargin: Dimens.marginNormal,
               ),
@@ -139,12 +141,29 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Space below bump for logo to sit
-                SizedBox(height: _logoSize - _bumpPeek + 4),
-                // Sugar / Fiber row with info icon
+                SizedBox(height: _logoSize - _bumpPeek - 20),
+                // Info icon row (top-right)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: InkWell(
+                      onTap: () => Navigator.pushNamed(
+                          context, EnergyBalanceDetailScreen.routeName,
+                          arguments: {'energyModel': widget.energyModel, 'selectedDate': widget.selectedDate}),
+                      child: SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: Image.asset('assets/images/info.png'),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                // Sugar / Fiber row - center aligned
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         child: _buildSugarFiberColumn(
@@ -163,24 +182,10 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                           progressColor: MethodsHelper.getAverageInPercentage(consumed: fiberConsumed, total: fiberTotal) < 180 ? AppColors.lightGreen : AppColors.red,
                         ),
                       ),
-                      // Info icon aligned with fiber data
-                      Padding(
-                        padding: const EdgeInsets.only(left: 6, top: 2),
-                        child: InkWell(
-                          onTap: () => Navigator.pushNamed(
-                              context, EnergyBalanceDetailScreen.routeName,
-                              arguments: {'energyModel': widget.energyModel, 'selectedDate': widget.selectedDate}),
-                          child: SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: Image.asset('assets/images/info.png'),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 2),
                 // Consumed / Donut / Burned row
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
@@ -235,7 +240,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 20),
                 // Macronutrient bars
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
@@ -273,7 +278,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
           ),
           // Logo centered in the bump
           Positioned(
-            top: -_bumpPeek,
+            top: -_bumpPeek + 14,
             left: 0,
             right: 0,
             child: Center(
@@ -286,19 +291,19 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
   }
 }
 
-/// Paints a rounded rectangle card with a circular bump at the top center.
-/// The bump seamlessly merges with the card body.
+/// Paints a rounded rectangle card with a smooth bezier curve tab at the top center.
+/// Matches the Figma SVG shape: a curved notch that rises to hold the logo.
 class _BumpCardPainter extends CustomPainter {
   final Color color;
   final double borderRadius;
-  final double bumpRadius;
+  final double bumpHalfWidth;
   final double bumpPeek;
   final double horizontalMargin;
 
   _BumpCardPainter({
     required this.color,
     required this.borderRadius,
-    required this.bumpRadius,
+    required this.bumpHalfWidth,
     required this.bumpPeek,
     required this.horizontalMargin,
   });
@@ -308,35 +313,74 @@ class _BumpCardPainter extends CustomPainter {
     final paint = Paint()..color = color;
     final cardLeft = horizontalMargin;
     final cardRight = size.width - horizontalMargin;
-    final cardWidth = cardRight - cardLeft;
     final cx = size.width / 2;
 
-    // Card top is where the rectangular part starts (below the bump peek area)
+    // Card top edge (where the flat part of the rectangle starts)
     final cardTop = bumpPeek;
+    final cardBottom = size.height;
 
-    // Bump circle center: positioned so the circle peeks above cardTop by bumpPeek
-    // Circle bottom = bumpCenterY + bumpRadius should align roughly with cardTop + some overlap
-    final bumpCenterY = cardTop + bumpRadius - bumpPeek;
+    // Bezier control point ratios derived from the Figma SVG path
+    // Left curve: from (cx - halfW, cardTop) up to (cx, 0)
+    // Right curve: from (cx, 0) down to (cx + halfW, cardTop)
+    final hw = bumpHalfWidth;
 
     final path = Path();
 
-    // Start with the rounded rect card body
-    path.addRRect(RRect.fromRectAndRadius(
-      Rect.fromLTWH(cardLeft, cardTop, cardWidth, size.height - cardTop),
-      Radius.circular(borderRadius),
-    ));
+    // Start at top-left corner (after border radius)
+    path.moveTo(cardLeft + borderRadius, cardTop);
 
-    // Add the bump circle at top center
-    path.addOval(Rect.fromCircle(center: Offset(cx, bumpCenterY), radius: bumpRadius));
+    // Top edge left side → approach the bump
+    path.lineTo(cx - hw, cardTop);
 
-    // Fill mode merges overlapping shapes
+    // Left side of bump: curve up to peak
+    path.cubicTo(
+      cx - hw * 0.73, cardTop - bumpPeek * 0.62,  // cp1
+      cx - hw * 0.38, cardTop - bumpPeek,           // cp2
+      cx, cardTop - bumpPeek,                        // peak center
+    );
+
+    // Right side of bump: curve down from peak
+    path.cubicTo(
+      cx + hw * 0.38, cardTop - bumpPeek,           // cp1
+      cx + hw * 0.73, cardTop - bumpPeek * 0.62,    // cp2
+      cx + hw, cardTop,                               // back to card top
+    );
+
+    // Top edge right side
+    path.lineTo(cardRight - borderRadius, cardTop);
+
+    // Top-right corner
+    path.quadraticBezierTo(cardRight, cardTop, cardRight, cardTop + borderRadius);
+
+    // Right edge
+    path.lineTo(cardRight, cardBottom - borderRadius);
+
+    // Bottom-right corner
+    path.quadraticBezierTo(cardRight, cardBottom, cardRight - borderRadius, cardBottom);
+
+    // Bottom edge
+    path.lineTo(cardLeft + borderRadius, cardBottom);
+
+    // Bottom-left corner
+    path.quadraticBezierTo(cardLeft, cardBottom, cardLeft, cardBottom - borderRadius);
+
+    // Left edge
+    path.lineTo(cardLeft, cardTop + borderRadius);
+
+    // Top-left corner
+    path.quadraticBezierTo(cardLeft, cardTop, cardLeft + borderRadius, cardTop);
+
+    path.close();
+
     canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(covariant _BumpCardPainter oldDelegate) =>
-      color != oldDelegate.color ||
-      borderRadius != oldDelegate.borderRadius ||
-      bumpRadius != oldDelegate.bumpRadius ||
-      bumpPeek != oldDelegate.bumpPeek;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    if (oldDelegate is! _BumpCardPainter) return true;
+    return color != oldDelegate.color ||
+        borderRadius != oldDelegate.borderRadius ||
+        bumpHalfWidth != oldDelegate.bumpHalfWidth ||
+        bumpPeek != oldDelegate.bumpPeek;
+  }
 }

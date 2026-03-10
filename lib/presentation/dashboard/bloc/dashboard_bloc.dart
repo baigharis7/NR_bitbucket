@@ -717,7 +717,8 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     double kcalQuantitySoFar = 0.0;
     for (var foodEvent in state.foodEvents!) {
       for (var food in foodEvent.foodInfo!) {
-        kcalQuantitySoFar = kcalQuantitySoFar + (food.params!.toJson()[kcalName] ?? 0.0);
+        final kcalValue = food.params!.toJson()[kcalName] ?? 0.0;
+        kcalQuantitySoFar = kcalQuantitySoFar + kcalValue;
       }
     }
     return kcalQuantitySoFar.toInt() + getTodayKcalFromLiquids(state.todayLiquidEvents!);

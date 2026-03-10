@@ -35,17 +35,19 @@ class _WaterIntakeWidgetState extends State<WaterIntakeWidget> {
     double totalConsumedLiters = widget.consumedGlasses * glassVolume;
     double progress = (totalConsumedLiters / widget.totalLitersGoal).clamp(0.0, 1.0);
 
-    return Column(
-      children: [
-        // Collapsible title bar
-        GestureDetector(
-          onTap: () => setState(() => _isExpanded = !_isExpanded),
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
-            padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.paddingSmall),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.15),
-            ),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
+      padding: const EdgeInsets.all(Dimens.paddingNormal),
+      decoration: BoxDecoration(
+        color: AppColors.darkJungleGreen,
+        border: Border.all(color: Colors.white, width: Dimens.width1),
+        borderRadius: BorderRadius.circular(Dimens.border18),
+      ),
+      child: Column(
+        children: [
+          // Title row inside the card
+          GestureDetector(
+            onTap: () => setState(() => _isExpanded = !_isExpanded),
             child: Row(
               children: [
                 Text(
@@ -70,82 +72,63 @@ class _WaterIntakeWidgetState extends State<WaterIntakeWidget> {
               ],
             ),
           ),
-        ),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
-          padding: const EdgeInsets.all(Dimens.paddingNormal),
-          decoration: BoxDecoration(
-            color: AppColors.darkJungleGreen,
-            border: Border.all(color: Colors.white, width: Dimens.width1),
-            borderRadius: BorderRadius.circular(Dimens.border18),
-          ),
-          child: Column(
-            children: [
-              // Glasses - always visible
-              Wrap(
-                runSpacing: 8,
-                children: List.generate(totalGlasses, (index) {
-                  bool isFilled = index < widget.consumedGlasses;
-                  return InkWell(
-                    onTap: () {
-                      if (!isFilled) {
-                        widget.onAddWater.call();
-                      } else {
-                        widget.onRemoveWater.call();
-                      }
-                    },
-                    child: Container(
-                      width: Dimens.widthSmall,
-                      height: Dimens.width55,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(isFilled
-                              ? 'assets/images/filled_glass.png'
-                              : 'assets/images/empty_glass.png'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child: !isFilled
-                          ? const Center(
-                        child: Icon(Icons.add, size: 18, color: Colors.white),
-                      )
-                          : null,
+          const SizedBox(height: 10),
+          // Glasses - always visible
+          Wrap(
+            runSpacing: 8,
+            children: List.generate(totalGlasses, (index) {
+              bool isFilled = index < widget.consumedGlasses;
+              return InkWell(
+                onTap: () {
+                  if (!isFilled) {
+                    widget.onAddWater.call();
+                  } else {
+                    widget.onRemoveWater.call();
+                  }
+                },
+                child: Container(
+                  width: Dimens.widthSmall,
+                  height: Dimens.width55,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(isFilled
+                          ? 'assets/images/filled_glass.png'
+                          : 'assets/images/empty_glass.png'),
+                      fit: BoxFit.cover,
                     ),
-                  );
-                }),
-              ),
-              // Collapsible bottom section (progress bar + data metrics)
-              AnimatedCrossFade(
-                firstChild: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
-                      child: AnimatedNutrientProgressBarWidget(percent: progress * 100, height: Dimens.heightXXSmall,),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${totalConsumedLiters.toStringAsFixed(2)} L.',
-                          style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeXLarge),
-                        ),
-                        Text(
-                          '${AppLocalizations.of(context)!.from} ${widget.totalLitersGoal.toStringAsFixed(2)} ${AppLocalizations.of(context)!.liters}.',
-                          style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSize13, color: Colors.white70),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
+                  child: !isFilled
+                      ? const Center(
+                    child: Icon(Icons.add, size: 18, color: Colors.white),
+                  )
+                      : null,
                 ),
-                secondChild: const SizedBox.shrink(),
-                crossFadeState: _isExpanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-                duration: const Duration(milliseconds: 250),
+              );
+            }),
+          ),
+          // Progress bar + data metrics - always visible
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: Dimens.marginSmall),
+            child: AnimatedNutrientProgressBarWidget(percent: progress * 100, height: Dimens.heightXXSmall,),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${totalConsumedLiters.toStringAsFixed(2)} L.',
+                style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeXLarge),
+              ),
+              Text(
+                '${AppLocalizations.of(context)!.from} ${widget.totalLitersGoal.toStringAsFixed(2)} ${AppLocalizations.of(context)!.liters}.',
+                style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSize13, color: Colors.white70),
               ),
             ],
           ),
-        ),
-      ],
+          // Intelligence metrics section (collapsible) - placeholder for future content
+          // The arrow next to "Hydration" will expand/collapse this section once intelligence metrics are added
+        ],
+      ),
     );
   }
 }
