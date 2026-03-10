@@ -350,6 +350,7 @@ class _DashboardScreen extends State<DashboardScreen>
                           compact: true,
                         ),
                       ),
+                      const SizedBox(height: 8),
                       WaterIntakeWidget(
                         totalLitersGoal: (state.profile?.physicalCharacteristics?.weight ?? 0) * 0.035,
                         consumedGlasses: EventsHelper().getWaterIntakeAddition(state.waterEvents, state.todayLiquidEvents.orEmpty(), state.foodEvents.orEmpty()) ~/ 0.25,

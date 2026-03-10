@@ -61,14 +61,6 @@ class _WaterIntakeWidgetState extends State<WaterIntakeWidget> {
                   child: const Icon(Icons.keyboard_arrow_up, color: Colors.white, size: 22),
                 ),
                 const Spacer(),
-                if (!widget.onInfoClick.isNull()) InkWell(
-                  onTap: () => widget.onInfoClick?.call(),
-                  child: SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: Image.asset('assets/images/info.png'),
-                  ),
-                ),
               ],
             ),
           ),

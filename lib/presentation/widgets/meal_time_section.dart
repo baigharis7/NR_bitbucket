@@ -70,7 +70,7 @@ class _MealTimeSectionState extends State<MealTimeSection> {
                   child: _MealTimeGridCard(
                     name: meal.name.orEmpty(),
                     image: 'assets/images/meal_time_${meal.id.orZero()}.png',
-                    desc: '$kcal / ${widget.totalKcal} kcal.',
+                    desc: '$kcal kcal.',
                     onTap: () => Navigator.pushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: meal, selectedDateTime: widget.selectedDateTime)),
                     onAdd: () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: meal, selectedDateTime: widget.selectedDateTime)),
                   ),
@@ -78,8 +78,13 @@ class _MealTimeSectionState extends State<MealTimeSection> {
               }),
               if (widget.supplementsCard != null)
                 SizedBox(
-                  width: (MediaQuery.of(context).size.width - Dimens.marginNormal * 2 - 8) / 2,
-                  child: widget.supplementsCard!,
+                  width: double.infinity,
+                  child: Center(
+                    child: SizedBox(
+                      width: (MediaQuery.of(context).size.width - Dimens.marginNormal * 2 - 8) / 2 + 40,
+                      child: widget.supplementsCard!,
+                    ),
+                  ),
                 ),
             ],
           ),
