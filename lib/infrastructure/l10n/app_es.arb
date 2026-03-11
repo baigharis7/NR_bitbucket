@@ -608,6 +608,7 @@
     "sleeping_hours": "Horas de sueño",
     "of_target": "de",
     "hours_last_night": "horas anoche.",
-    "steps_for_today": "pasos para hoy."
+    "steps_for_today": "pasos para hoy.",
+    "no_activity_recorded": "No se registró actividad."
 
 }

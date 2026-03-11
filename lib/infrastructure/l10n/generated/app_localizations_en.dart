@@ -1960,4 +1960,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get steps_for_today => 'steps for today.';
+
+  @override
+  String get no_activity_recorded => 'No activity recorded.';
 }

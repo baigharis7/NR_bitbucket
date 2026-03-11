@@ -10,6 +10,9 @@ class ActivityLogWidget extends StatelessWidget {
   final List<SportEventComplete> sportEvents;
   final VoidCallback onAdd;
   final VoidCallback onTap;
+  final bool showHealthSyncPrompt;
+  final VoidCallback? onHealthSyncTap;
+  final VoidCallback? onHealthSyncDismiss;
   static const int _maxItems = 3;
 
   const ActivityLogWidget({
@@ -17,6 +20,9 @@ class ActivityLogWidget extends StatelessWidget {
     required this.sportEvents,
     required this.onAdd,
     required this.onTap,
+    this.showHealthSyncPrompt = false,
+    this.onHealthSyncTap,
+    this.onHealthSyncDismiss,
   });
 
   @override
@@ -73,7 +79,70 @@ class ActivityLogWidget extends StatelessWidget {
                 return _buildActivityItem(context, event, isLast: index == recentEvents.length - 1);
               }),
             ],
+            if (recentEvents.isEmpty) ...[
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Divider(color: Colors.black26, height: 12),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  AppLocalizations.of(context)!.no_activity_recorded,
+                  style: TextStyle(
+                    fontSize: Dimens.fontSizeMedium,
+                    color: AppColors.yellowishGreen,
+                  ),
+                ),
+              ),
+            ],
+            if (showHealthSyncPrompt) ...[
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Divider(color: Colors.black26, height: 12),
+              ),
+              _buildHealthSyncPrompt(context),
+            ],
             const SizedBox(height: 12),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHealthSyncPrompt(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onHealthSyncTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        child: Row(
+          children: [
+            Image.asset(
+              'assets/icon/steps_icon.png',
+              width: 28,
+              height: 28,
+              color: AppColors.yellowishGreen,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                AppLocalizations.of(context)!.health_sync_enable_link,
+                style: TextStyle(
+                  fontSize: Dimens.fontSizeMedium,
+                  color: AppColors.yellowishGreen,
+                  decoration: TextDecoration.underline,
+                  decorationColor: AppColors.yellowishGreen,
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: onHealthSyncDismiss,
+              child: Icon(
+                Icons.cancel_outlined,
+                size: 24,
+                color: AppColors.battleshipGrey,
+              ),
+            ),
           ],
         ),
       ),

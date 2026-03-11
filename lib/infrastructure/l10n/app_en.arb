@@ -607,6 +607,7 @@
     "sleeping_hours": "Sleeping hours",
     "of_target": "of",
     "hours_last_night": "hours last night.",
-    "steps_for_today": "steps for today."
+    "steps_for_today": "steps for today.",
+    "no_activity_recorded": "No activity recorded."
 
 }

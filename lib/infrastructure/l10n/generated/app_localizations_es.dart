@@ -1981,4 +1981,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get steps_for_today => 'pasos para hoy.';
+
+  @override
+  String get no_activity_recorded => 'No se registró actividad.';
 }

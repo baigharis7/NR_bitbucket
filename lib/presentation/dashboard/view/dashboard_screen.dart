@@ -25,6 +25,7 @@ import 'package:nutrenaissance_flutter/presentation/common/view/floating_menu_co
 import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:nutrenaissance_flutter/presentation/healthsync/bloc/health_sync_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/healthsync/view/health_sync_settings_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_bloc.dart';
@@ -95,6 +96,7 @@ class _DashboardScreen extends State<DashboardScreen>
   DateTime? selectedDateTime;
   late DashboardBloc bloc;
   bool isOpen = false;
+  bool _healthSyncPromptDismissed = false;
   late AnimationController _controller;
   late Animation<double> _animation;
   StreamSubscription<DateTime>? _midnightSubscription;
@@ -362,10 +364,18 @@ class _DashboardScreen extends State<DashboardScreen>
                         onRemoveWater: () => bloc.add(FinishWaterEventAction(qty: Constants.DEFAULT_REMOVE_WATER_QUANTITY, onFinish: () {})),
                       ),
                       const SizedBox(height: 17),
-                      ActivityLogWidget(
-                        sportEvents: state.sportEvents.orEmpty(),
-                        onAdd: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime),
-                        onTap: () => Navigator.pushNamed(context, SportItemsScreen.routeName, arguments: selectedDateTime),
+                      BlocBuilder<HealthSyncBloc, HealthSyncState>(
+                        buildWhen: (prev, curr) => prev.isSyncEnabled != curr.isSyncEnabled,
+                        builder: (context, healthState) {
+                          return ActivityLogWidget(
+                            sportEvents: state.sportEvents.orEmpty(),
+                            onAdd: () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime),
+                            onTap: () => Navigator.pushNamed(context, SportItemsScreen.routeName, arguments: selectedDateTime),
+                            showHealthSyncPrompt: !healthState.isSyncEnabled && !_healthSyncPromptDismissed,
+                            onHealthSyncTap: () => Navigator.pushNamed(context, HealthSyncSettingsScreen.routeName),
+                            onHealthSyncDismiss: () => setState(() => _healthSyncPromptDismissed = true),
+                          );
+                        },
                       ),
                       BlocBuilder<HealthSyncBloc, HealthSyncState>(
                         buildWhen: (prev, curr) =>

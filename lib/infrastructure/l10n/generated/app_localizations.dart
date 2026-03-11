@@ -3649,6 +3649,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'steps for today.'**
   String get steps_for_today;
+
+  /// No description provided for @no_activity_recorded.
+  ///
+  /// In en, this message translates to:
+  /// **'No activity recorded.'**
+  String get no_activity_recorded;
 }
 
 class _AppLocalizationsDelegate
