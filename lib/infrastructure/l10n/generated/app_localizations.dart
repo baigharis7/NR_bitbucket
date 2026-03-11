@@ -3655,6 +3655,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No activity recorded.'**
   String get no_activity_recorded;
+
+  /// No description provided for @no_routines_scheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'No routines scheduled.'**
+  String get no_routines_scheduled;
+
+  /// No description provided for @activity_diary.
+  ///
+  /// In en, this message translates to:
+  /// **'Routine diary'**
+  String get activity_diary;
+
+  /// No description provided for @logged.
+  ///
+  /// In en, this message translates to:
+  /// **'LOGGED'**
+  String get logged;
+
+  /// No description provided for @programmed.
+  ///
+  /// In en, this message translates to:
+  /// **'PROGRAMMED'**
+  String get programmed;
+
+  /// No description provided for @empty_record.
+  ///
+  /// In en, this message translates to:
+  /// **'No data recorded'**
+  String get empty_record;
+
+  /// No description provided for @activities_programmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Activities programmed'**
+  String get activities_programmed;
+
+  /// No description provided for @remaining_kcal.
+  ///
+  /// In en, this message translates to:
+  /// **'REMAINING KCAL.'**
+  String get remaining_kcal;
+
+  /// No description provided for @burned_kcal.
+  ///
+  /// In en, this message translates to:
+  /// **'BURNED KCAL.'**
+  String get burned_kcal;
+
+  /// No description provided for @routine_label.
+  ///
+  /// In en, this message translates to:
+  /// **'ROUTINE'**
+  String get routine_label;
 }
 
 class _AppLocalizationsDelegate

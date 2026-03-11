@@ -1984,4 +1984,31 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get no_activity_recorded => 'No se registró actividad.';
+
+  @override
+  String get no_routines_scheduled => 'No hay rutinas programadas.';
+
+  @override
+  String get activity_diary => 'Diario de rutinas';
+
+  @override
+  String get logged => 'REGISTRADO';
+
+  @override
+  String get programmed => 'PROGRAMADO';
+
+  @override
+  String get empty_record => 'Sin datos registrados';
+
+  @override
+  String get activities_programmed => 'Actividades programadas';
+
+  @override
+  String get remaining_kcal => 'KCAL. RESTANTES';
+
+  @override
+  String get burned_kcal => 'KCAL. QUEMADAS';
+
+  @override
+  String get routine_label => 'RUTINA';
 }

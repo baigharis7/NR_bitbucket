@@ -25,6 +25,7 @@ import 'package:nutrenaissance_flutter/presentation/common/view/floating_menu_co
 import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:nutrenaissance_flutter/presentation/healthsync/bloc/health_sync_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/routinestabs/bloc/routines_tab_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/healthsync/view/health_sync_settings_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
@@ -48,6 +49,7 @@ import 'package:nutrenaissance_flutter/presentation/supplementsdetail/view/suppl
 import 'package:nutrenaissance_flutter/presentation/widgets/NutritionProgressWidget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/card_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
+import 'package:nutrenaissance_flutter/presentation/calendar/view/calendar_pane_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/dashboard_calendar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/energy_balance_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/fill_horizontal_bar.dart';
@@ -282,17 +284,53 @@ class _DashboardScreen extends State<DashboardScreen>
                   IconButton(
                     alignment: Alignment.centerLeft,
                     visualDensity: VisualDensity.compact,
-                    onPressed: () => showDialog(context: context, builder: (context) => SimpleDialog(alignment: Alignment.topCenter,
-                      insetPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge, vertical: Dimens.padding5Large +5),
-                      contentPadding: EdgeInsets.zero,
-                      children: [
-                        DashboardCalendarWidget(currentLanguage: currentLanguage, focused: selectedDateTime, callGetAllEvents: (day) => bloc.getEventsForDay(day), selectedDateForEventsLoading: (date) {
-                          selectedDateTime = date;
-                          Navigator.pop(context);
-                          bloc.add(InitializeState(dateTime: date, onFinish: () {}));
-                        },),
-                      ],
-                    ),), icon: SvgPicture.asset('assets/svg/calendar.svg',),),
+                    onPressed: () {
+                      final energyModel = state.energyModel;
+                      final remaining = energyModel != null ? (energyModel.totalKcal - energyModel.rawKcalTaken) : 0;
+                      final burned = energyModel?.spentKcal ?? 0;
+                      final weight = state.profile?.physicalCharacteristics?.weight ?? 0;
+                      final totalWater = weight * 0.035;
+                      final waterPercent = totalWater > 0
+                          ? EventsHelper().getWaterFractionToFillFromEvents(
+                              state.waterEvents,
+                              state.todayLiquidEvents.orEmpty(),
+                              state.foodEvents.orEmpty(),
+                              totalWater)
+                          : 0.0;
+                      final routinesState = context.read<RoutinesTabBloc>().state;
+                      final programmedWeekdays = <int>{};
+                      for (final r in routinesState.mealRoutines ?? []) {
+                        programmedWeekdays.addAll(r.daysOfWeek ?? []);
+                      }
+                      for (final r in routinesState.sportRoutines ?? []) {
+                        programmedWeekdays.addAll(r.daysOfWeek ?? []);
+                      }
+                      for (final r in routinesState.supplementRoutines ?? []) {
+                        programmedWeekdays.addAll(r.daysOfWeek ?? []);
+                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => CalendarPaneScreen(
+                            initialDate: selectedDateTime ?? DateTime.now(),
+                            allCalendarEvents: state.allCalendarEvents,
+                            eventsHelper: EventsHelper(),
+                            remainingKcal: remaining,
+                            burnedKcal: burned,
+                            waterIntakePercent: waterPercent,
+                            programmedWeekdays: programmedWeekdays,
+                            mealRoutines: routinesState.mealRoutines,
+                            sportRoutines: routinesState.sportRoutines,
+                            supplementRoutines: routinesState.supplementRoutines,
+                            onDateSelected: (date) {
+                              selectedDateTime = date;
+                              bloc.add(InitializeState(dateTime: date, onFinish: () {}));
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    icon: SvgPicture.asset('assets/svg/calendar.svg',),),
                 ],
               ),
               body: SafeArea(

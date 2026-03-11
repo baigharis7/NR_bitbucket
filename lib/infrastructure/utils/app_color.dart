@@ -65,4 +65,12 @@ class AppColors {
   static const carbonGrey = Color(0xFF5D5D5D);
   static const silverSand40Percent = Color(0x66C1C1C1);
   static const deepAquamarine = Color(0xFF3D8762);
+
+  // Calendar pane
+  static const calendarGreen = Color(0xFF0F4A2D);
+  static const calendarGreen72 = Color(0xB80F4A2D);
+  static const calendarRedDot = Color(0xFFF76C5E);
+  static const calendarGreyDot = Color(0xFF828282);
+  static const calendarDayGrey = Color(0xFF6D6E72);
+  static const white75Percent = Color(0xBFFFFFFF);
 }

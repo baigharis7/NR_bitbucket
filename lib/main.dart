@@ -1124,6 +1124,8 @@ void main() async {
     removeSupplementRoutineInteractor: removeSupplementRoutineInteractor,
   );
 
+  routinesTabBloc.add(InitializeRoutinesTabEvent());
+
   final sportItemsBloc = SportItemsBloc(
     getUserIdInteractor: getUserIdInteractor,
     getMasterFileInteractor: getMasterFileInteractor,

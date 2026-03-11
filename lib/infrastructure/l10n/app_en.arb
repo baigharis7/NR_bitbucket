@@ -608,6 +608,15 @@
     "of_target": "of",
     "hours_last_night": "hours last night.",
     "steps_for_today": "steps for today.",
-    "no_activity_recorded": "No activity recorded."
+    "no_activity_recorded": "No activity recorded.",
+    "no_routines_scheduled": "No routines scheduled.",
+    "activity_diary": "Routine diary",
+    "logged": "LOGGED",
+    "programmed": "PROGRAMMED",
+    "empty_record": "No data recorded",
+    "activities_programmed": "Activities programmed",
+    "remaining_kcal": "REMAINING KCAL.",
+    "burned_kcal": "BURNED KCAL.",
+    "routine_label": "ROUTINE"
 
 }
