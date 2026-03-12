@@ -141,7 +141,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Space below bump for logo to sit
-                SizedBox(height: _logoSize - _bumpPeek - 26),
+                SizedBox(height: _logoSize - _bumpPeek - 32),
                 // Info icon row (top-right)
                 Align(
                   alignment: Alignment.centerRight,
@@ -185,8 +185,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 2),
-                // Consumed / Donut / Burned row
+                // Consumed / Donut / Burned row (overlaps sugar/fiber slightly)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
                   child: Row(
@@ -240,7 +239,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
                 // Macronutrient bars
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
