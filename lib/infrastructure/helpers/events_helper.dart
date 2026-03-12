@@ -100,6 +100,57 @@ class EventsHelper {
     return double.parse(amount.toStringAsFixed(2));
     }
 
+  /// Consumed kcal for a given day from calendar events (food energyKcal + liquid eventKcals).
+  int getConsumedKcalForDay(DashboardAllCalendarEvents? events, DateTime date) {
+    if (events == null) return 0;
+    double kcal = 0;
+    for (final food in events.foodEvents ?? <FoodEventComplete>[]) {
+      if (food.eventDate != null &&
+          _dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, food.eventDate!)) {
+        for (final info in food.foodInfo ?? <FoodInfo>[]) {
+          kcal += info.params?.energyKcal ?? 0;
+        }
+      }
+    }
+    for (final liq in events.liquidEvents ?? <LiquidEventComplete>[]) {
+      if (liq.eventDate != null &&
+          _dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, liq.eventDate!)) {
+        kcal += liq.eventKcals ?? 0;
+      }
+    }
+    return kcal.toInt();
+  }
+
+  /// Burned kcal for a given day from sport events.
+  int getBurnedKcalForDay(DashboardAllCalendarEvents? events, DateTime date) {
+    if (events == null) return 0;
+    int burned = 0;
+    for (final sport in events.sportEvents ?? <SportEventComplete>[]) {
+      if (_dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, sport.eventDate)) {
+        burned += sport.eventKcals ?? 0;
+      }
+    }
+    return burned;
+  }
+
+  /// Water intake fraction for a given day from calendar events.
+  double getWaterFractionForDay(DashboardAllCalendarEvents? events, DateTime date, double? totalWater) {
+    if (events == null || (totalWater ?? 0) <= 0) return 0;
+    final dayWater = (events.waterEvents ?? [])
+        .where((w) => w.eventDate != null &&
+            _dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, w.eventDate!))
+        .toList();
+    final dayLiquids = (events.liquidEvents ?? <LiquidEventComplete>[])
+        .where((l) => l.eventDate != null &&
+            _dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, l.eventDate!))
+        .toList();
+    final dayFoods = (events.foodEvents ?? <FoodEventComplete>[])
+        .where((f) => f.eventDate != null &&
+            _dateTimeHelper.isSameGivenDateAndMillisecondsDate(date, f.eventDate!))
+        .toList();
+    return getWaterFractionToFillFromEvents(dayWater, dayLiquids, dayFoods, totalWater);
+  }
+
   double getWaterFractionToFillFromEvents(List<WaterEventMaster>? waterEvents, List<LiquidEventComplete> liquidTodayEvents, List<FoodEventComplete> foodEvents, double? totalRequired) {
     // if (waterEvents != null && waterEvents.isNotEmpty) {
       return _getFractionToFillWater(getWaterIntakeAddition(waterEvents, liquidTodayEvents, foodEvents), totalRequired.orZero());

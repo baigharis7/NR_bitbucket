@@ -21,9 +21,8 @@ class CalendarPaneScreen extends StatefulWidget {
   final DashboardAllCalendarEvents? allCalendarEvents;
   final Function(DateTime) onDateSelected;
   final EventsHelper eventsHelper;
-  final double? waterIntakePercent;
-  final int? remainingKcal;
-  final int? burnedKcal;
+  final int? totalKcal;
+  final double? totalWater;
   final Set<int>? programmedWeekdays;
   final List<FoodRoutineEvent>? mealRoutines;
   final List<SportRoutineCompleted>? sportRoutines;
@@ -35,9 +34,8 @@ class CalendarPaneScreen extends StatefulWidget {
     this.allCalendarEvents,
     required this.onDateSelected,
     required this.eventsHelper,
-    this.waterIntakePercent,
-    this.remainingKcal,
-    this.burnedKcal,
+    this.totalKcal,
+    this.totalWater,
     this.programmedWeekdays,
     this.mealRoutines,
     this.sportRoutines,
@@ -848,9 +846,10 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
   // ──────────────────────────────────────────────────────────────────────────
 
   Widget _buildSummary(AppLocalizations l10n) {
-    final remaining = widget.remainingKcal ?? 0;
-    final burned = widget.burnedKcal ?? 0;
-    final hydrationPercent = ((widget.waterIntakePercent ?? 0) * 100).round();
+    final consumed = widget.eventsHelper.getConsumedKcalForDay(widget.allCalendarEvents, _selectedDay);
+    final remaining = (widget.totalKcal ?? 0) - consumed;
+    final burned = widget.eventsHelper.getBurnedKcalForDay(widget.allCalendarEvents, _selectedDay);
+    final hydrationPercent = (widget.eventsHelper.getWaterFractionForDay(widget.allCalendarEvents, _selectedDay, widget.totalWater) * 100).round();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -23,9 +23,8 @@ void main() {
   Widget buildTestWidget({
     DateTime? initialDate,
     DashboardAllCalendarEvents? allCalendarEvents,
-    double? waterIntakePercent,
-    int? remainingKcal,
-    int? burnedKcal,
+    int? totalKcal,
+    double? totalWater,
     Set<int>? programmedWeekdays,
     List<FoodRoutineEvent>? mealRoutines,
     List<SportRoutineCompleted>? sportRoutines,
@@ -48,9 +47,8 @@ void main() {
         allCalendarEvents:
             allCalendarEvents ?? DashboardAllCalendarEvents.empty(),
         eventsHelper: EventsHelper(),
-        waterIntakePercent: waterIntakePercent,
-        remainingKcal: remainingKcal,
-        burnedKcal: burnedKcal,
+        totalKcal: totalKcal,
+        totalWater: totalWater,
         programmedWeekdays: programmedWeekdays,
         mealRoutines: mealRoutines,
         sportRoutines: sportRoutines,
@@ -264,7 +262,7 @@ void main() {
 
     testWidgets('renders summary with remaining kcal value', (tester) async {
       setTestSurface(tester);
-      await tester.pumpWidget(buildTestWidget(remainingKcal: 1500));
+      await tester.pumpWidget(buildTestWidget(totalKcal: 1500));
       await tester.pumpAndSettle();
 
       expect(find.text('1500'), findsOneWidget);
@@ -273,7 +271,17 @@ void main() {
 
     testWidgets('renders summary with burned kcal value', (tester) async {
       setTestSurface(tester);
-      await tester.pumpWidget(buildTestWidget(burnedKcal: 350));
+      final events = DashboardAllCalendarEvents(
+        foodEvents: [],
+        sportEvents: [makeSportEvent(sportName: 'Run', eventKcals: 350)],
+        liquidEvents: [],
+        waterEvents: [],
+        creatineEvent: [],
+        collagenEvent: [],
+        faecesEvents: [],
+        urineEvents: [],
+      );
+      await tester.pumpWidget(buildTestWidget(allCalendarEvents: events));
       await tester.pumpAndSettle();
 
       expect(find.text('350'), findsOneWidget);

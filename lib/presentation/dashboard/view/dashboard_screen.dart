@@ -285,18 +285,8 @@ class _DashboardScreen extends State<DashboardScreen>
                     alignment: Alignment.centerLeft,
                     visualDensity: VisualDensity.compact,
                     onPressed: () {
-                      final energyModel = state.energyModel;
-                      final remaining = energyModel != null ? (energyModel.totalKcal - energyModel.rawKcalTaken) : 0;
-                      final burned = energyModel?.spentKcal ?? 0;
                       final weight = state.profile?.physicalCharacteristics?.weight ?? 0;
                       final totalWater = weight * 0.035;
-                      final waterPercent = totalWater > 0
-                          ? EventsHelper().getWaterFractionToFillFromEvents(
-                              state.waterEvents,
-                              state.todayLiquidEvents.orEmpty(),
-                              state.foodEvents.orEmpty(),
-                              totalWater)
-                          : 0.0;
                       final routinesState = context.read<RoutinesTabBloc>().state;
                       final programmedWeekdays = <int>{};
                       for (final r in routinesState.mealRoutines ?? []) {
@@ -315,9 +305,8 @@ class _DashboardScreen extends State<DashboardScreen>
                             initialDate: selectedDateTime ?? DateTime.now(),
                             allCalendarEvents: state.allCalendarEvents,
                             eventsHelper: EventsHelper(),
-                            remainingKcal: remaining,
-                            burnedKcal: burned,
-                            waterIntakePercent: waterPercent,
+                            totalKcal: state.energyModel?.totalKcal,
+                            totalWater: totalWater,
                             programmedWeekdays: programmedWeekdays,
                             mealRoutines: routinesState.mealRoutines,
                             sportRoutines: routinesState.sportRoutines,
