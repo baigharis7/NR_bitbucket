@@ -12,6 +12,8 @@ import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simp
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:flutter_svg/svg.dart';
 
 class CalendarPaneScreen extends StatefulWidget {
@@ -137,96 +139,99 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
     final l10n = AppLocalizations.of(context)!;
     final currentLanguage = Localizations.localeOf(context).languageCode;
 
-    return Stack(
-      children: [
-        // Blurred background
-        Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/background.png'),
-              fit: BoxFit.cover,
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      bottomNavigationBar: const CustomBottomNaviBarWidget(
+        activePosition: Constants.DASHBOARD,
+      ),
+      body: Stack(
+        children: [
+          // Blurred background
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/background.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              child: Container(color: AppColors.white75Percent),
             ),
           ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-            child: Container(color: Colors.transparent),
-          ),
-        ),
-        Scaffold(
-          backgroundColor: AppColors.white75Percent,
-          body: SafeArea(
+          SafeArea(
             child: Column(
-              children: [
-                // ── Header ──
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 12),
-                  child: Row(
-                    children: [
-                      SvgPicture.asset('assets/svg/calendar.svg',
-                          width: 28,
-                          height: 28,
-                          colorFilter: const ColorFilter.mode(
-                              AppColors.calendarGreen, BlendMode.srcIn)),
-                      const SizedBox(width: 10),
-                      Text(
-                        l10n.calendar,
-                        style: AppTextStyles.merriWeather.copyWith(
-                          fontSize: 20,
-                          color: AppColors.calendarGreen,
-                        ),
-                      ),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: const Icon(Icons.close,
-                            size: 28, color: AppColors.calendarGreen),
-                      ),
-                    ],
+          children: [
+            // ── Header ──
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 20, vertical: 12),
+              child: Row(
+                children: [
+                  SvgPicture.asset('assets/svg/calendar.svg',
+                      width: 28,
+                      height: 28,
+                      colorFilter: const ColorFilter.mode(
+                          AppColors.calendarGreen, BlendMode.srcIn)),
+                  const SizedBox(width: 10),
+                  Text(
+                    l10n.calendar,
+                    style: AppTextStyles.merriWeather.copyWith(
+                      fontSize: 20,
+                      color: AppColors.calendarGreen,
+                    ),
                   ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Divider(
-                      color: AppColors.calendarGreen, thickness: 0.5),
-                ),
-
-                // ── Today button (left) + Month / Year selectors (right) ──
-                const SizedBox(height: 8),
-                _buildMonthYearHeader(l10n, currentLanguage),
-                const SizedBox(height: 6),
-
-                // ── Day-of-week headers ──
-                _buildDayOfWeekHeaders(currentLanguage),
-                const SizedBox(height: 6),
-
-                // ── Calendar grid ──
-                _buildCalendarGrid(),
-                const SizedBox(height: 10),
-
-                // ── Legend (centered, bigger) ──
-                _buildLegend(l10n),
-                const SizedBox(height: 6),
-
-                // ── Divider ──
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Divider(
-                      color: AppColors.calendarGreen, thickness: 0.5),
-                ),
-
-                // ── Routine diary (only scrollable part) ──
-                Expanded(
-                  child: _buildRoutineDiary(l10n, currentLanguage),
-                ),
-
-                // ── Summary (fixed at bottom) ──
-                _buildSummary(l10n),
-              ],
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close,
+                        size: 28, color: AppColors.calendarGreen),
+                  ),
+                ],
+              ),
             ),
-          ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Divider(
+                  color: AppColors.calendarGreen, thickness: 0.5),
+            ),
+
+            // ── Today button (left) + Month / Year selectors (right) ──
+            const SizedBox(height: 8),
+            _buildMonthYearHeader(l10n, currentLanguage),
+            const SizedBox(height: 6),
+
+            // ── Day-of-week headers ──
+            _buildDayOfWeekHeaders(currentLanguage),
+            const SizedBox(height: 6),
+
+            // ── Calendar grid ──
+            _buildCalendarGrid(),
+            const SizedBox(height: 10),
+
+            // ── Legend (centered, bigger) ──
+            _buildLegend(l10n),
+            const SizedBox(height: 6),
+
+            // ── Divider ──
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Divider(
+                  color: AppColors.calendarGreen, thickness: 0.5),
+            ),
+
+            // ── Routine diary (only scrollable part) ──
+            Expanded(
+              child: _buildRoutineDiary(l10n, currentLanguage),
+            ),
+
+            // ── Summary (fixed at bottom) ──
+            _buildSummary(l10n),
+          ],
         ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 
