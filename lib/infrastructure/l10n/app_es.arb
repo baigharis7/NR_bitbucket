@@ -616,8 +616,8 @@
     "programmed": "PROGRAMADO",
     "empty_record": "Sin datos registrados",
     "activities_programmed": "Actividades programadas",
-    "remaining_kcal": "KCAL. RESTANTES",
-    "burned_kcal": "KCAL. QUEMADAS",
+    "remaining_kcal": "KCAL RESTANTES",
+    "burned_kcal": "KCAL GASTADAS",
     "routine_label": "RUTINA"
 
 }

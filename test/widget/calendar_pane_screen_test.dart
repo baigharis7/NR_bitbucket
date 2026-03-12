@@ -266,7 +266,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('1500'), findsOneWidget);
-      expect(find.text('REMAINING KCAL.'), findsOneWidget);
+      expect(find.text('REMAINING KCAL'), findsOneWidget);
     });
 
     testWidgets('renders summary with burned kcal value', (tester) async {
@@ -285,7 +285,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('350'), findsOneWidget);
-      expect(find.text('BURNED KCAL.'), findsOneWidget);
+      expect(find.text('KCAL SPENT'), findsOneWidget);
     });
 
     testWidgets('renders summary icons', (tester) async {
