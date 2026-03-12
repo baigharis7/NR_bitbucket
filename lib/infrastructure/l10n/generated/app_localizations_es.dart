@@ -2004,10 +2004,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get activities_programmed => 'Actividades programadas';
 
   @override
-  String get remaining_kcal => 'KCAL. RESTANTES';
+  String get remaining_kcal => 'KCAL RESTANTES';
 
   @override
-  String get burned_kcal => 'KCAL. QUEMADAS';
+  String get burned_kcal => 'KCAL GASTADAS';
 
   @override
   String get routine_label => 'RUTINA';

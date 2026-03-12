@@ -3695,13 +3695,13 @@ abstract class AppLocalizations {
   /// No description provided for @remaining_kcal.
   ///
   /// In en, this message translates to:
-  /// **'REMAINING KCAL.'**
+  /// **'REMAINING KCAL'**
   String get remaining_kcal;
 
   /// No description provided for @burned_kcal.
   ///
   /// In en, this message translates to:
-  /// **'BURNED KCAL.'**
+  /// **'KCAL SPENT'**
   String get burned_kcal;
 
   /// No description provided for @routine_label.
