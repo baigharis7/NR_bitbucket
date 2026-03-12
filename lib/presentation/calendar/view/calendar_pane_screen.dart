@@ -257,6 +257,7 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
             onTap: isAlreadyToday
                 ? null
                 : () {
+                    widget.onDateSelected(today);
                     setState(() {
                       _selectedDay = today;
                       _focusedMonth = DateTime(today.year, today.month);
@@ -462,6 +463,7 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
 
     return GestureDetector(
       onTap: () {
+        widget.onDateSelected(date);
         setState(() {
           _selectedDay = date;
           if (isOutside) {
