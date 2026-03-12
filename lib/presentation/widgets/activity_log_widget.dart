@@ -117,10 +117,9 @@ class ActivityLogWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         child: Row(
           children: [
-            Image.asset(
-              'assets/icon/steps_icon.png',
-              width: 28,
-              height: 28,
+            Icon(
+              Icons.monitor_heart,
+              size: 28,
               color: AppColors.yellowishGreen,
             ),
             const SizedBox(width: 10),
