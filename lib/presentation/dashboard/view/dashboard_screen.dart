@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart';
+import 'package:nutrenaissance_flutter/domain/models/calendar/dashboard_all_calendar_events.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
@@ -298,12 +299,34 @@ class _DashboardScreen extends State<DashboardScreen>
                       for (final r in routinesState.supplementRoutines ?? []) {
                         programmedWeekdays.addAll(r.daysOfWeek ?? []);
                       }
+                      // Merge fresh today's water events with historical ones
+                      final freshCalendarEvents = state.allCalendarEvents != null
+                          ? () {
+                              final now = DateTime.now();
+                              final historicalWater = (state.allCalendarEvents!.waterEvents ?? [])
+                                  .where((w) {
+                                    if (w.eventDate == null) return true;
+                                    final d = DateTime.fromMillisecondsSinceEpoch(w.eventDate!);
+                                    return !(d.year == now.year && d.month == now.month && d.day == now.day);
+                                  }).toList();
+                              return DashboardAllCalendarEvents(
+                                foodEvents: state.allCalendarEvents!.foodEvents,
+                                sportEvents: state.allCalendarEvents!.sportEvents,
+                                liquidEvents: state.allCalendarEvents!.liquidEvents,
+                                waterEvents: [...historicalWater, ...state.waterEvents ?? []],
+                                creatineEvent: state.allCalendarEvents!.creatineEvent,
+                                collagenEvent: state.allCalendarEvents!.collagenEvent,
+                                faecesEvents: state.allCalendarEvents!.faecesEvents,
+                                urineEvents: state.allCalendarEvents!.urineEvents,
+                              );
+                            }()
+                          : null;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => CalendarPaneScreen(
                             initialDate: selectedDateTime ?? DateTime.now(),
-                            allCalendarEvents: state.allCalendarEvents,
+                            allCalendarEvents: freshCalendarEvents,
                             eventsHelper: EventsHelper(),
                             totalKcal: state.energyModel?.totalKcal,
                             totalWater: totalWater,
