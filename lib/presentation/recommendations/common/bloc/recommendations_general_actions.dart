@@ -51,6 +51,3 @@ class HideRecipeExplainingCardAction extends RecommendationsGeneralActions {
   HideRecipeExplainingCardAction();
 }
 
-class UpdateProfileAction extends RecommendationsGeneralActions {
-
-}

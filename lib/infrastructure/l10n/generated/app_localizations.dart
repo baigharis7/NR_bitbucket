@@ -3155,7 +3155,7 @@ abstract class AppLocalizations {
   /// No description provided for @tip_text.
   ///
   /// In en, this message translates to:
-  /// **'<p>Based on your profile, we recommend foods to include in your diet, differentiated by color.</p>\n<ul><li><b class=blue-text>In blue</b>, foods related to your goals.</li>\n<li><b class=green-text>In green</b>, foods recommended to help you meet the minimum requirements of all micronutrients.</li>\n<li><b class=yellowish-green-text>In a neutral color</b>, foods you consume frequently.</li></ul>'**
+  /// **'<p>Based on your profile, we recommend foods to include in your diet, differentiated by color.</p>\n<ul><li><b class=blue-text>In blue</b>, foods related to your goals.</li>\n<li><b class=green-text>In green</b>, foods recommended to help you meet the minimum requirements of all micronutrients.</li>\n<li><b class=yellowish-green-text>In a neutral color</b>, foods you consume frequently.</li></ul>\n<p>Select a food to add it to your list.</p>'**
   String get tip_text;
 
   /// No description provided for @begin.

@@ -2,10 +2,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_exclusions_interactor.dart';
-import 'package:nutrenaissance_flutter/domain/interactor/profile/upload_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for_foods_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
@@ -18,11 +18,10 @@ import 'package:nutrenaissance_flutter/domain/models/recommendations/recommendat
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/recipes_helper.dart';
-import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/recommendation_computation_service.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_state.dart';
 
-import '../../../../data/api/profile/model/user_profile_response.dart';
 import '../../../../domain/interactor/profile/get_profile_interactor.dart';
 import '../../../../domain/interactor/profile/save_profile_entity_interactor.dart';
 
@@ -35,8 +34,12 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
   final GetRecipesForFoodsInteractor getRecipesForFoodsInteractor;
   final GetUserExclusionsInteractor getUserExclusionsInteractor;
   final GetProfileInteractor getProfileInteractor;
-  final UploadProfileInteractor uploadProfileInteractor;
   final SaveProfileInteractor saveProfileInteractor;
+  final RecommendationComputationService recommendationComputationService;
+  final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor;
+
+  // O(1) food name lookup map (built once on init)
+  Map<int, FoodItemMaster>? _foodNameMap;
 
   RecommendationsGeneralBloc({
     required this.getRecommendationInteractor,
@@ -47,8 +50,9 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
     required this.getRecipesForFoodsInteractor,
     required this.getUserExclusionsInteractor,
     required this.getProfileInteractor,
-    required this.uploadProfileInteractor,
     required this.saveProfileInteractor,
+    required this.recommendationComputationService,
+    required this.getWeekFoodEventsInteractor,
   }) : super(RecommendationsGeneralState(
     isLoading: false,
     onError: null,
@@ -61,49 +65,95 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
     recipesListAll: [],
     exclusions: [],
     foodAndDrinksNames: [],
-    // foodIds: [],
     recommendationGroups: RecommendationGroupsMaster(recommendationGroups: []),
     recommendation: Recommendation(foodList: [], userNutrients: [], nutrientsInDeficit: []),
     needToSearchRecipes: true,
   ),) {
     on<InitialStateAction>((event, emit) async {
-      emit(state.copyWith(isLoading: true, onError: null));
-      /*if (state.recommendationGroups!.recommendationGroups.isEmpty) */state.recommendationGroups = await getMasterFileInteractor.execute(MasterFilesType.recommendationGroups);
-      state.profile = await getProfileInteractor.execute();
-      state.foodItems = getFoodItemFromIds(state.profile?.recommededIds.orEmpty() ?? []);
-      if (state.foodAndDrinksNames.orEmpty().isEmpty) {
-        final foodAndDrinksMasterFile = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames) as FoodsAndDrinksNamesMaster;
-        state.foodAndDrinksNames = foodAndDrinksMasterFile.foodsAndDrinksNames!.foodNames?..addAll(foodAndDrinksMasterFile.foodsAndDrinksNames!.drinkNames!.toList());
+      // Skip re-computation if results are already cached (not just placeholders)
+      if (state.recommendation != null && state.recommendationFoodsItems?.isNotEmpty == true) {
+        return;
       }
-      /*if (state.exclusions!.isEmpty) */state.exclusions = await getUserExclusionsInteractor.execute();
 
-      // if (state.recommendationFoodsItems!.isEmpty) {
-        try {
-          state.recommendation = await getRecommendationInteractor.execute(getUserIdInteractor.execute(),);
-          // state.recommendation = recommendation;
-          // state.recommendationFoodsItems = [];
-          state.recommendationFoodsItems = state.recommendation!.foodList
-              .map((groupRecommendation) =>
-              RecommendationsFoodItem(
-                recommendationGroup: findRecommendationGroup(groupRecommendation.recGroup,),
-                objFoods: getRecommendationFoodInfo(groupRecommendation.objFoods,),
-                deficitFoods: getRecommendationFoodInfo(groupRecommendation.deficitFoods,),
-                // frequentFoods: getRecommendationFoodInfo([]),
-                usualHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualHealthyFoods.orEmpty()),
-                usualUnHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualUnhealthyFoods.orEmpty()),
-              ),).toList();
-          state.showRecommendationCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.recommendations.index);
-          state.showRecipesCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.recipes.index);
-          state.showFoodListCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.foodList.index);
+      emit(state.copyWith(isLoading: false, onError: null));
 
-          emit(state.copyWith(isLoading: false, onError: null));
-        } catch (error) {
-          state.recommendation = null;
-          emit(state.copyWith(isLoading: false, onError: ErrorTypes.recommendationError));
+      // Load recommendation groups first (fast, from Hive) to show skeleton
+      state.recommendationGroups = await getMasterFileInteractor.execute(MasterFilesType.recommendationGroups)! as RecommendationGroupsMaster;
+
+      // Emit placeholder group headers immediately (empty food lists)
+      // so the UI shows collapsed groups while the rest loads
+      state.recommendationFoodsItems = state.recommendationGroups!.recommendationGroups
+          .map((group) => RecommendationsFoodItem(
+                recommendationGroup: group,
+                objFoods: [],
+                deficitFoods: [],
+              ))
+          .toList();
+      emit(state.copyWith(isLoading: false, onError: null));
+
+      // Load remaining data in parallel
+      final results = await Future.wait([
+        getProfileInteractor.execute(),
+        getUserExclusionsInteractor.execute(),
+        _loadFoodAndDrinksNames(),
+      ]);
+
+      state.profile = results[0] as dynamic;
+      state.exclusions = results[1] as List<int>;
+      state.foodItems = getFoodItemFromIds(state.profile?.recommededIds.orEmpty() ?? []);
+
+      // Build O(1) lookup map for food names
+      _foodNameMap = {};
+      for (final food in state.foodAndDrinksNames ?? []) {
+        if (food.id != null) _foodNameMap![food.id!] = food;
+      }
+
+      try {
+        // Try local computation first
+        final weekFoodEvents = await getWeekFoodEventsInteractor.execute();
+        Recommendation? recommendation = await recommendationComputationService.compute(
+          profile: state.profile!,
+          weekFoodEvents: weekFoodEvents,
+          recommendationGroups: state.recommendationGroups!,
+        );
+
+        if (recommendation == null) {
+          // Fall back to API — show loading only for network call
+          emit(state.copyWith(isLoading: true));
+          recommendation = await getRecommendationInteractor.execute(
+            getUserIdInteractor.execute(),
+          );
         }
-      // } else {
-      //   emit(state.copyWith(isLoading: false, onError: null));
-      // }
+
+        state.recommendation = recommendation;
+        state.recommendationFoodsItems = recommendation!.foodList
+            .map((groupRecommendation) =>
+            RecommendationsFoodItem(
+              recommendationGroup: findRecommendationGroup(groupRecommendation.recGroup),
+              objFoods: getRecommendationFoodInfo(groupRecommendation.objFoods),
+              deficitFoods: getRecommendationFoodInfo(groupRecommendation.deficitFoods),
+              usualHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualHealthyFoods.orEmpty()),
+              usualUnHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualUnhealthyFoods.orEmpty()),
+            )).toList();
+
+        // Ensure saved foods appear in their group's dropdown
+        _ensureSavedFoodsVisible();
+
+        // Parallelize explaining card checks
+        final cardResults = await Future.wait([
+          isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.recommendations.index),
+          isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.recipes.index),
+          isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.foodList.index),
+        ]);
+        state.showRecommendationCard = cardResults[0];
+        state.showRecipesCard = cardResults[1];
+        state.showFoodListCard = cardResults[2];
+
+        emit(state.copyWith(isLoading: false, onError: null));
+      } catch (error) {
+        state.recommendation = null;
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.recommendationError));
+      }
     });
 
     on<EmptyRecommendationAction>((event, emit) {
@@ -116,6 +166,10 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
           : state.foodItems!.add(event.foodItem);
 
       state.needToSearchRecipes = true;
+
+      // Auto-save picks locally (fire-and-forget)
+      _saveRecommendedIdsLocally();
+
       emit(state.copyWith(isLoading: false, onError: null,));
     });
 
@@ -129,6 +183,9 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
     on<OnDeleteFoodIdFromList>((event, emit) {
       emit(state.copyWith(isLoading: true, onError: null));
       state.foodItems!.remove(event.foodItem);
+
+      // Auto-save picks locally (fire-and-forget)
+      _saveRecommendedIdsLocally();
 
       emit(state.copyWith(isLoading: false, onError: null));
     });
@@ -183,103 +240,112 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
 
       emit(state.copyWith(isLoading: false, onError: null,));
     });
+  }
 
-    on<UpdateProfileAction>((event, emit) async {
-      emit(state.copyWith(isLoading: true));
-      // FemaleCharacteristics? femaleCharacteristics;
-      // if (state.profile!.sex == SexType.female) {
-      //   femaleCharacteristics = FemaleCharacteristics(
-      //     menstruation: Menstruation(
-      //       regularity: state.profile!.femaleCharacteristics!.menstruation!.regularity,
-      //       daysOfCycle: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.daysOfCycle,
-      //       lastStartDate: state.profile!.femaleCharacteristics!.menstruation!.regularity == MenstruationRegularity.irregular.index ? null : state.profile!.femaleCharacteristics!.menstruation!.lastStartDate,
-      //     ),
-      //   );
-      // } else {
-      //   femaleCharacteristics = null;
-      // }
-      //
-      // UserProfileModel profile = UserProfileModel(
-      //     userId: getUserIdInteractor.execute(),
-      //     commonName: state.profile!.commonName.orEmpty(),
-      //     birthDate: state.profile!.birthDate,
-      //     sex: state.profile!.sex,
-      //     occupationActivityFactor: state.profile!.occupationActivityFactor ?? 1.2,
-      //     physicalCharacteristics: PhysicalCharacteristics(
-      //       height: state.profile!.physicalCharacteristics!.height,
-      //       weight: state.profile!.physicalCharacteristics!.weight,
-      //       unit: state.profile?.physicalCharacteristics?.unit,
-      //       bodyFat: state.profile!.physicalCharacteristics!.bodyFat,
-      //       waistMeasurement: state.profile!.physicalCharacteristics!.waistMeasurement,),
-      //     femaleCharacteristics: femaleCharacteristics,
-      //     medicalSituation: MedicalSituation(
-      //       commonDiseases: state.profile!.medicalSituation!.commonDiseases,
-      //       otherDiseases: [], // Añadir a pantalla
-      //       // underPharmaceuticalTreatment: isUnderTreatment,
-      //     ),
-      //     foodAversions: state.profile!.foodAversions,
-      //     dietType: state.profile!.dietType ?? 0,
-      //     exclusions: Exclusions(exclusions: state.profile!.exclusions!.exclusions),
-      //     intolerances: state.profile!.intolerances,
-      //     // symptoms: , // Añadir cuando esté implementado
-      //     guts: 0,
-      //     objectives: state.profile!.objectives,
-      //     feces: state.profile?.feces ?? -1,
-      //     urine: state.profile?.urine ?? -1,
-      //     recommededIds: state.profile?.recommededIds.orEmpty()
-      // );
-      state.profile?.recommededIds = state.foodItems.orEmpty().map((e) => e.id).toList();
-      UserProfileResponse userProfileResponse;
-      try {
-        userProfileResponse = await uploadProfileInteractor.execute(state.profile!);
-        if (userProfileResponse.uploadSuccess) {
-          state.profile?.micronutrients = userProfileResponse.micronutrients;
-          state.profile?.userRdas = UserRdas(
-            userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul, upperLimit: userRda.upperLimit)).toList(),
-          );
-          state.profile?.kcal = userProfileResponse.kcal;
-          try {
-            await saveProfileInteractor.execute(state.profile!);
-            emit(state.copyWith(isLoading: false, onError: null));
-          } catch (error) {
-            emit(state.copyWith(isLoading: false, onError: ErrorTypes.savingProfileError));
-          }
-        } else {
-          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingProfileError));
-        }
-      } catch (error) {
-        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadingProfileError));
+  /// Ensures foods in the user's saved list appear in their recommendation
+  /// group dropdown, even if the computation excluded them (e.g. already eaten).
+  void _ensureSavedFoodsVisible() {
+    final savedFoods = state.foodItems.orEmpty();
+    if (savedFoods.isEmpty || state.recommendationFoodsItems == null) return;
+
+    // Collect all food IDs already in recommendation lists
+    final existingIds = <int>{};
+    for (final item in state.recommendationFoodsItems!) {
+      for (final f in item.objFoods) {
+        if (f.foodItemMaster.id != null) existingIds.add(f.foodItemMaster.id!);
       }
-    },);
+      for (final f in item.deficitFoods) {
+        if (f.foodItemMaster.id != null) existingIds.add(f.foodItemMaster.id!);
+      }
+      for (final f in (item.usualHealthyFoods ?? [])) {
+        if (f.foodInfo.foodItemMaster.id != null) existingIds.add(f.foodInfo.foodItemMaster.id!);
+      }
+      for (final f in (item.usualUnHealthyFoods ?? [])) {
+        if (f.foodInfo.foodItemMaster.id != null) existingIds.add(f.foodInfo.foodItemMaster.id!);
+      }
+    }
+
+    // For each saved food not already visible, add it to its group's objFoods
+    for (final savedItem in savedFoods) {
+      if (existingIds.contains(savedItem.id)) continue;
+
+      final food = findFood(savedItem.id);
+      if (food.id == null) continue;
+
+      // Find the recommendation group for this food
+      final foodGroup = food.group ?? '';
+      if (foodGroup.isEmpty) continue;
+
+      for (final recItem in state.recommendationFoodsItems!) {
+        if (recItem.recommendationGroup.groups.contains(foodGroup)) {
+          recItem.objFoods.add(RecommendationFoodInfo(
+            foodItemMaster: food,
+            foodNutrients: [],
+          ));
+          break;
+        }
+      }
+    }
+  }
+
+  /// Loads food & drink names master file if not already loaded.
+  Future<void> _loadFoodAndDrinksNames() async {
+    if (state.foodAndDrinksNames.orEmpty().isEmpty) {
+      final foodAndDrinksMasterFile = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames) as FoodsAndDrinksNamesMaster;
+      state.foodAndDrinksNames = foodAndDrinksMasterFile.foodsAndDrinksNames!.foodNames?..addAll(foodAndDrinksMasterFile.foodsAndDrinksNames!.drinkNames!.toList());
+    }
+  }
+
+  /// Saves recommended food IDs to local Hive profile (no API upload).
+  void _saveRecommendedIdsLocally() {
+    if (state.profile != null) {
+      state.profile!.recommededIds = state.foodItems.orEmpty().map((e) => e.id).toList();
+      saveProfileInteractor.execute(state.profile!).catchError((_) {});
+    }
   }
 
   RecommendationGroup findRecommendationGroup(int groupId) {
     return state.recommendationGroups!.recommendationGroups.firstWhere((recommendationGroup) => recommendationGroup.id == groupId);
   }
 
+  /// Returns the recommendation group for a food, or null if not found.
+  RecommendationGroup? findFoodGroup(int foodId) {
+    final food = findFood(foodId);
+    final foodGroup = food.group ?? '';
+    if (foodGroup.isEmpty || state.recommendationGroups == null) return null;
+    for (final recGroup in state.recommendationGroups!.recommendationGroups) {
+      if (recGroup.groups.contains(foodGroup)) {
+        return recGroup;
+      }
+    }
+    return null;
+  }
+
+  /// Returns the category color for a food based on which recommendation list it belongs to.
+  /// Blue = objective foods, Green = deficit foods, YellowishGreen = usual foods.
+  int findFoodCategoryType(int foodId) {
+    for (final item in state.recommendationFoodsItems ?? []) {
+      if (item.objFoods.any((f) => f.foodItemMaster.id == foodId)) return 0; // blue
+      if (item.deficitFoods.any((f) => f.foodItemMaster.id == foodId)) return 1; // green
+      if ((item.usualUnHealthyFoods ?? []).any((f) => f.foodInfo.foodItemMaster.id == foodId)) return 2; // yellowishGreen
+      if ((item.usualHealthyFoods ?? []).any((f) => f.foodInfo.foodItemMaster.id == foodId)) return 3; // yellowishGreen
+    }
+    return -1; // not found
+  }
+
   FoodItemMaster findFood(int foodId) {
+    // Use O(1) map lookup if available, fall back to linear scan
+    if (_foodNameMap != null) {
+      return _foodNameMap![foodId] ?? FoodItemMaster();
+    }
     return state.foodAndDrinksNames!.firstWhere((food) => food.id == foodId, orElse: () => FoodItemMaster());
   }
 
   List<RecommendationFoodInfo> getRecommendationFoodInfo(List<int> foodList) {
-    // List<RecommendationFoodInfo> list = [];
-    // for (int foodId in foodList) {
-    //   FoodItemMaster foodItemMaster = findFood(foodId);
-    //   if (!foodItemMaster.id.isNull()) {
-    //     list.add(RecommendationFoodInfo(
-    //           foodItemMaster: findFood(foodId),
-    //           foodNutrients: /** DUMMY, must receive from backend */[],
-    //         ),);
-    //   }
-    // }
-
-
-    final list = foodList.map((foodId) => RecommendationFoodInfo(
+    return foodList.map((foodId) => RecommendationFoodInfo(
       foodItemMaster: findFood(foodId),
-      foodNutrients: /** DUMMY, must receive from backend */[],
-    ),).toList();
-
-    return list;
+      foodNutrients: [],
+    )).toList();
   }
 
   List<RecipeMaster> getRecipesForMealTime(int mealTime) {
@@ -293,22 +359,6 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
   }
 
   bool areRecipesForMealTime(int mealTime) => state.recipesList!.any((recipe) => recipe.meal.contains(mealTime));
-
-  // List<List<FoodItemMaster>> getIngredientsNames(List<RecipeMaster> recipeMasterList, List<int> foodIds) {
-  //   final ingredientsList = recipeMasterList.map((recipe) => recipe.ingredients).toList();
-  //   final List<List<FoodItemMaster>> ingredientsFoodItemMaster = [];
-  //   for (var ingredients in ingredientsList) {
-  //     final List<FoodItemMaster> ingredientsItems = [];
-  //     for (var ingredient in ingredients) {
-  //       if (foodIds.contains(ingredient.id)) {
-  //         final foodItemMaster = getFoodNameByFoodId(ingredient.id);
-  //         if (!ingredientsItems.contains(foodItemMaster)) ingredientsItems.add(foodItemMaster);
-  //       }
-  //     }
-  //     ingredientsFoodItemMaster.add([...ingredientsItems]);
-  //   }
-  //   return ingredientsFoodItemMaster;
-  // }
 
   List<FoodItemMaster> getIngredientsInfo(List<RecipeIngredient> ingredients) {
     List<FoodItemMaster> listOfIngredientInfo = [];
@@ -324,6 +374,9 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
   }
 
   FoodItemMaster getFoodNameByFoodId(int foodId) {
+    if (_foodNameMap != null) {
+      return _foodNameMap![foodId] ?? FoodItemMaster.empty();
+    }
     return state.foodAndDrinksNames!.firstWhere((foodItemMaster) => foodItemMaster.id == foodId, orElse: () => FoodItemMaster.empty());
   }
 
@@ -333,7 +386,7 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
       var foodItem = UsualFoodsItem(
           foodInfo: RecommendationFoodInfo(
             foodItemMaster: findFood(usualFoodItem.foodId),
-            foodNutrients: /** DUMMY, must receive from backend */[],
+            foodNutrients: [],
           ),
           alternativeUsualHealthyFoods: getRecommendationFoodInfo(usualFoodItem.alternativeUsualHealthyFood.orEmpty()),
           alternativeUsualUnHealthyFoods: getRecommendationFoodInfo(usualFoodItem.alternativeUsualUnhealthyFoods.orEmpty()),

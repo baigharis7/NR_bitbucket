@@ -23,6 +23,17 @@ class NutrientCompositions extends Table {
   TextColumn get freeSugar => text().nullable()();
   TextColumn get params => text()(); // JSON Map<String, double>
 
+  // Recommendation metadata (needed for local food recommendation engine)
+  IntColumn get recGroup => integer().withDefault(const Constant(0))();
+  RealColumn get exchangePortion => real().withDefault(const Constant(0.0))();
+  TextColumn get allergiesExclusions => text().withDefault(const Constant(''))();
+  TextColumn get intolerances => text().withDefault(const Constant(''))();
+  TextColumn get diseases => text().withDefault(const Constant(''))();
+  IntColumn get guts => integer().withDefault(const Constant(0))();
+  IntColumn get rarity => integer().withDefault(const Constant(0))();
+  IntColumn get novaClassification => integer().withDefault(const Constant(1))();
+  IntColumn get included => integer().withDefault(const Constant(0))();
+
   @override
   Set<Column> get primaryKey => {foodId};
 }
@@ -96,7 +107,7 @@ class ReferenceDatabase extends _$ReferenceDatabase {
   ReferenceDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -104,6 +115,23 @@ class ReferenceDatabase extends _$ReferenceDatabase {
     onUpgrade: (Migrator m, int from, int to) async {
       if (from < 2) {
         await m.createTable(referenceDataBlobs);
+      }
+      if (from < 3) {
+        // Add recommendation metadata columns to NutrientCompositions.
+        // Data will be populated on next refreshIfNeeded() call.
+        await m.addColumn(nutrientCompositions, nutrientCompositions.recGroup);
+        await m.addColumn(nutrientCompositions, nutrientCompositions.exchangePortion);
+        await m.addColumn(nutrientCompositions, nutrientCompositions.allergiesExclusions);
+        await m.addColumn(nutrientCompositions, nutrientCompositions.intolerances);
+        await m.addColumn(nutrientCompositions, nutrientCompositions.diseases);
+        await m.addColumn(nutrientCompositions, nutrientCompositions.guts);
+        await m.addColumn(nutrientCompositions, nutrientCompositions.rarity);
+        await m.addColumn(nutrientCompositions, nutrientCompositions.novaClassification);
+        await m.addColumn(nutrientCompositions, nutrientCompositions.included);
+        // Force re-download of nutrients data so the new columns get populated
+        await (delete(referenceDataVersions)
+              ..where((t) => t.key.equals('nutrients')))
+            .go();
       }
     },
   );

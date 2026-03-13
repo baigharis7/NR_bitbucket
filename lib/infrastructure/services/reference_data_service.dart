@@ -111,6 +111,21 @@ class ReferenceDataService {
       final cleanParams = params.map((k, v) =>
           MapEntry(k, v is num ? v.toDouble() : 0.0));
 
+      // Parse exchangePortion — can be a number or a range string like "100-150"
+      double exchangePortion = 0.0;
+      final rawPortion = map['exchangePortionDaily'] ?? map['exchangePortion'];
+      if (rawPortion != null) {
+        final portionStr = rawPortion.toString();
+        if (portionStr.contains('-')) {
+          final parts = portionStr.split('-');
+          final lo = double.tryParse(parts[0]) ?? 0.0;
+          final hi = double.tryParse(parts[1]) ?? 0.0;
+          exchangePortion = (lo + hi) / 2;
+        } else {
+          exchangePortion = double.tryParse(portionStr) ?? 0.0;
+        }
+      }
+
       return NutrientCompositionsCompanion(
         foodId: Value(int.tryParse(map['id'].toString()) ?? 0),
         isFood: Value(int.tryParse(map['isFood'].toString()) ?? 0),
@@ -120,6 +135,15 @@ class ReferenceDataService {
         recommendable: Value(int.tryParse(map['recommendable'].toString()) ?? 0),
         freeSugar: Value(map['freeSugar']?.toString()),
         params: Value(jsonEncode(cleanParams)),
+        recGroup: Value(int.tryParse(map['rec_group']?.toString() ?? '') ?? 0),
+        exchangePortion: Value(exchangePortion),
+        allergiesExclusions: Value(map['allergiesExclusions']?.toString() ?? ''),
+        intolerances: Value(map['intolerances']?.toString() ?? ''),
+        diseases: Value(map['diseases']?.toString() ?? ''),
+        guts: Value(int.tryParse(map['guts']?.toString() ?? '') ?? 0),
+        rarity: Value(int.tryParse(map['rarity']?.toString() ?? '') ?? 0),
+        novaClassification: Value(int.tryParse(map['novaClassification']?.toString() ?? '') ?? 1),
+        included: Value(int.tryParse(map['included']?.toString() ?? '') ?? 0),
       );
     }).toList();
 

@@ -59,6 +59,7 @@ import 'package:nutrenaissance_flutter/data/local/models/sync/sync_queue_entry.d
 import 'package:nutrenaissance_flutter/infrastructure/services/nutrient_calculation_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/reference_data_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/profile_computation_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/recommendation_computation_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/sport_kcal_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 import 'package:nutrenaissance_flutter/data/local/models/recipes/recipe_favorite_entity.dart';
@@ -1052,6 +1053,7 @@ void main() async {
     saveLiquidFavoriteInteractor: saveLiquidFavoriteInteractor,
     uploadLiquidFavoriteInteractor: uploadLiquidFavoriteInteractor,
   );
+  final recommendationComputationService = RecommendationComputationService(referenceDatabase);
   final recommendationsGeneralBloc = RecommendationsGeneralBloc(
     getRecommendationInteractor: getRecommendationInteractor,
     getUserIdInteractor: getUserIdInteractor,
@@ -1061,8 +1063,9 @@ void main() async {
     getRecipesForFoodsInteractor: getRecipesForFoodsInteractor,
     getUserExclusionsInteractor: getUserExclusionsInteractor,
     getProfileInteractor: getProfileInteractor,
-    uploadProfileInteractor: uploadProfileInteractor,
     saveProfileInteractor: saveProfileInteractor,
+    recommendationComputationService: recommendationComputationService,
+    getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
   );
 
   final recipeTabBloc = RecipeTabBloc(

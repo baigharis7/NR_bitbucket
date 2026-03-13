@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/recommendations/recommendations_food_item.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
-import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/recommendations_item.dart';
 
 class RecommendationsFoodGroupCard extends StatefulWidget {
@@ -49,7 +48,7 @@ class _RecommendationsFoodGroupCardState extends State<RecommendationsFoodGroupC
                 Expanded(
                   child: Text(
                     widget.recommendationsFoodItem.recommendationGroup.translate(context),
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeSmall, color: _isExpanded ? Colors.white : AppColors.yellowishGreen),
+                    style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeNormal, color: _isExpanded ? Colors.white : AppColors.yellowishGreen),
                     overflow: TextOverflow.clip,
                   ),
                 ),
@@ -82,40 +81,11 @@ class _RecommendationsFoodGroupCardState extends State<RecommendationsFoodGroupC
           bottomRight: Radius.circular(Dimens.border15),
         ),
       ),
-      padding: const EdgeInsets.only(top: Dimens.paddingNormal),
+      padding: const EdgeInsets.symmetric(vertical: Dimens.paddingSmall),
       child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal),
-            child: Row(
-              children: [
-                const Expanded(flex: 2, child: SizedBox.shrink()),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      AppLocalizations.of(context)!.alternatives,
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeXSmall, color: AppColors.yellowishGreen),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      AppLocalizations.of(context)!.add,
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSizeXSmall, color: AppColors.yellowishGreen),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: Dimens.height5),
-          ...widget.recommendationsFoodItem.objFoods.take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
-            final bool isCheckBoxChecked = widget.isChecked.call(food.foodItemMaster.id);
+          ...widget.recommendationsFoodItem.objFoods.where((f) => f.foodItemMaster.id != null).map((food) {
+            final bool isCheckBoxChecked = widget.isChecked.call(food.foodItemMaster.id!);
             return RecommendationsItem(
               foodItemMaster: food.foodItemMaster,
               alternativeUsualHealthyFoods: const [],
@@ -126,9 +96,8 @@ class _RecommendationsFoodGroupCardState extends State<RecommendationsFoodGroupC
               checkBoxColor: AppColors.peacockBlue,
             );
           }),
-          if (widget.recommendationsFoodItem.deficitFoods.isNotEmpty) const SizedBox(height: Dimens.height5),
-          ...widget.recommendationsFoodItem.deficitFoods.take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
-            final bool isCheckBoxChecked = widget.isChecked.call(food.foodItemMaster.id);
+          ...widget.recommendationsFoodItem.deficitFoods.where((f) => f.foodItemMaster.id != null).map((food) {
+            final bool isCheckBoxChecked = widget.isChecked.call(food.foodItemMaster.id!);
             return RecommendationsItem(
               foodItemMaster: food.foodItemMaster,
               alternativeUsualHealthyFoods: const [],
@@ -139,9 +108,8 @@ class _RecommendationsFoodGroupCardState extends State<RecommendationsFoodGroupC
               checkBoxColor: AppColors.green,
             );
           }),
-          if (widget.recommendationsFoodItem.usualUnHealthyFoods.orEmpty().isNotEmpty) const SizedBox(height: Dimens.height5),
-          ...widget.recommendationsFoodItem.usualUnHealthyFoods.orEmpty().take(Constants.RECOMMENDATION_LIST_SIZE).map((food) {
-            final bool isCheckBoxChecked = widget.isChecked.call(food.foodInfo.foodItemMaster.id);
+          ...(widget.recommendationsFoodItem.usualUnHealthyFoods ?? []).where((f) => f.foodInfo.foodItemMaster.id != null).map((food) {
+            final bool isCheckBoxChecked = widget.isChecked.call(food.foodInfo.foodItemMaster.id!);
             return RecommendationsItem(
               foodItemMaster: food.foodInfo.foodItemMaster,
               onAlternativeAdd: (recommendationFoodInfo) => widget.onAdd.call(recommendationFoodInfo?.foodItemMaster),
@@ -152,7 +120,7 @@ class _RecommendationsFoodGroupCardState extends State<RecommendationsFoodGroupC
               isAlternativeChecked: (id) => widget.isChecked.call(id),
             );
           }),
-          const SizedBox(height: Dimens.paddingNormal),
+          const SizedBox(height: Dimens.paddingSmall),
         ],
       ),
     );

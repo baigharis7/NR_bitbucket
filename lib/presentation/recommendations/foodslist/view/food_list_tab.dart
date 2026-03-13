@@ -10,7 +10,7 @@ import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.d
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_state.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/food_list_item.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/remove_item_widget.dart';
 
 class FoodListScreen extends StatefulWidget {
   final List<SimpleItem> foodItems;
@@ -26,48 +26,104 @@ class FoodListScreen extends StatefulWidget {
 
 class _FoodListScreen extends State<FoodListScreen> {
 
-  void _showDelFoodDialog({required Function onDelFood,}) {
-    showDialog(context: context, builder: (context) => SimpleDialog(
-      backgroundColor: AppColors.mountainMeadowLight,
-      contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingNormal),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: const BorderSide(color: AppColors.mountainMeadow, width: 2)),
-      children: [
-        SizedBox(child: IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.cancel_outlined, color: AppColors.mountainMeadow,), alignment: Alignment.centerRight), width: double.infinity),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall, vertical: Dimens.marginSmall),
-          child: Column(
-            children: [
-              Text(AppLocalizations.of(context)!.remove_food, style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.mountainMeadow,
-                  fontSize: Dimens.fontSizeNormal), textAlign: TextAlign.center),
-              const SizedBox(height: Dimens.heightXSmall),
-              Container(
-                  width: double.infinity,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXXLarge, vertical: Dimens.paddingNormal),
-                          decoration: const BoxDecoration(color: AppColors.mountainMeadow,shape: BoxShape.rectangle, borderRadius: BorderRadiusDirectional.only(topStart: Radius.circular(5), bottomStart: Radius.circular(5))),
-                          child: Text(AppLocalizations.of(context)!.keep, style: const TextStyle(color: Colors.white),),),
+  void _showRemoveDialog({required String foodName, required VoidCallback onConfirm}) {
+    showDialog(
+      context: context,
+      builder: (context) => RemoveItemWidget(
+        description: foodName,
+        onConfirm: onConfirm,
+        onCancel: () => Navigator.pop(context),
+      ),
+    );
+  }
+
+  Widget _buildFoodCard({
+    required String foodName,
+    String? foodGroupName,
+    required Color color,
+    required VoidCallback onDelete,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        horizontal: Dimens.marginNormal,
+        vertical: 4,
+      ),
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(Dimens.border15),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 1),
+          ),
+        ],
+      ),
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            Container(
+              width: 7,
+              color: color,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: Dimens.paddingNormal,
+                  horizontal: Dimens.paddingNormal,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            foodName,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                            style: AppTextStyles.merriWeather.copyWith(
+                              fontWeight: FontWeight.w300,
+                              fontSize: Dimens.fontSizeNormal,
+                              color: color,
+                            ),
+                          ),
+                          if (foodGroupName != null) ...[
+                            const SizedBox(height: 3),
+                            Text(
+                              foodGroupName,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: AppTextStyles.merriWeather.copyWith(
+                                fontWeight: FontWeight.w300,
+                                fontSize: Dimens.fontSize13,
+                                color: color.withOpacity(0.6),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
-                      const SizedBox(width: 2,),
-                      InkWell(
-                        onTap: () { onDelFood.call(); Navigator.pop(context); },
-                        child: Container(padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingNormal),
-                          decoration: const BoxDecoration(color: AppColors.mountainMeadow,shape: BoxShape.rectangle, borderRadius: BorderRadiusDirectional.only(topEnd: Radius.circular(5), bottomEnd: Radius.circular(5))),
-                          child: Text(AppLocalizations.of(context)!.remove, style: const TextStyle(color: Colors.white),),),
+                    ),
+                    const SizedBox(width: Dimens.marginSmall),
+                    GestureDetector(
+                      onTap: onDelete,
+                      child: Image.asset(
+                        'assets/images/delete_icon.png',
+                        width: 24,
+                        height: 24,
+                        color: color,
                       ),
-                    ],),
-                  alignment: Alignment.centerRight,
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: Dimens.heightXSmall),
-            ],),
-        )
-      ],
-    ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -99,13 +155,16 @@ class _FoodListScreen extends State<FoodListScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall),
                     child: Text(
                       AppLocalizations.of(context)!.food_list_explaining_card,
-                      style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeSmall, color: AppColors.yellowishGreen),
+                      style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize13, color: AppColors.yellowishGreen),
                     ),
                   ),
                   const SizedBox(height: Dimens.height12),
-                  Text(
-                    AppLocalizations.of(context)!.my_foods_list,
-                    style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeMedium, color: Colors.black),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingSmall),
+                    child: Text(
+                      AppLocalizations.of(context)!.my_foods_list,
+                      style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeMedium, color: AppColors.yellowishGreen),
+                    ),
                   ),
                   const SizedBox(height: Dimens.height12),
                   ListView.builder(
@@ -114,11 +173,23 @@ class _FoodListScreen extends State<FoodListScreen> {
                     itemCount: state.foodItems?.length ?? 0,
                     itemBuilder: (context, index) {
                       final foodItem = state.foodItems.orEmpty()[index];
-                      return FoodListItem(
-                        foodName: bloc.findFood(foodItem.id).translate(context),
-                        // onDelete: () => bloc.add(OnDeleteFoodIdFromList(foodItem: foodItem)),
+                      final foodName = bloc.findFood(foodItem.id).translate(context);
+                      final foodGroup = bloc.findFoodGroup(foodItem.id);
+                      final categoryType = bloc.findFoodCategoryType(foodItem.id);
+                      final color = categoryType == 0
+                          ? AppColors.peacockBlue
+                          : categoryType == 1
+                              ? AppColors.green
+                              : AppColors.yellowishGreen;
+                      return _buildFoodCard(
+                        foodName: foodName,
+                        foodGroupName: foodGroup?.translate(context),
+                        color: color,
                         onDelete: () {
-                          _showDelFoodDialog(onDelFood: () => bloc.add(OnDeleteFoodIdFromList(foodItem: foodItem)));
+                          _showRemoveDialog(
+                            foodName: foodName,
+                            onConfirm: () => bloc.add(OnDeleteFoodIdFromList(foodItem: foodItem)),
+                          );
                         },
                       );
                     },),

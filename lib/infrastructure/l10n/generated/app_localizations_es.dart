@@ -1701,7 +1701,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tip_text =>
-      '<p>Según tu perfil, te recomendamos alimentos para incluir en tu dieta, diferenciados por color.</p>\n<ul><li><b class=blue-text>En azul</b>, alimentos relacionados con tus objetivos.</li>\n<li><b class=green-text>En verde</b>, alimentos recomendados para ayudarte a cubrir los requerimientos mínimos de todos los micronutrientes.</li>\n<li><b class=yellowish-green-text>En color neutro</b>, alimentos que consumes frecuentemente.</li></ul>';
+      '<p>Según tu perfil, te recomendamos alimentos para incluir en tu dieta, diferenciados por color.</p>\n<ul><li><b class=blue-text>En azul</b>, alimentos relacionados con tus objetivos.</li>\n<li><b class=green-text>En verde</b>, alimentos recomendados para ayudarte a cubrir los requerimientos mínimos de todos los micronutrientes.</li>\n<li><b class=yellowish-green-text>En color neutro</b>, alimentos que consumes frecuentemente.</li></ul>\n<p>Selecciona un alimento para añadirlo a tu lista.</p>';
 
   @override
   String get begin => 'Comenzar';

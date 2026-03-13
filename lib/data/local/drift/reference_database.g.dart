@@ -59,9 +59,96 @@ class $NutrientCompositionsTable extends NutrientCompositions
   late final GeneratedColumn<String> params = GeneratedColumn<String>(
       'params', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _recGroupMeta =
+      const VerificationMeta('recGroup');
   @override
-  List<GeneratedColumn> get $columns =>
-      [foodId, isFood, group, nameEn, nameEs, recommendable, freeSugar, params];
+  late final GeneratedColumn<int> recGroup = GeneratedColumn<int>(
+      'rec_group', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _exchangePortionMeta =
+      const VerificationMeta('exchangePortion');
+  @override
+  late final GeneratedColumn<double> exchangePortion = GeneratedColumn<double>(
+      'exchange_portion', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0.0));
+  static const VerificationMeta _allergiesExclusionsMeta =
+      const VerificationMeta('allergiesExclusions');
+  @override
+  late final GeneratedColumn<String> allergiesExclusions =
+      GeneratedColumn<String>('allergies_exclusions', aliasedName, false,
+          type: DriftSqlType.string,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(''));
+  static const VerificationMeta _intolerancesMeta =
+      const VerificationMeta('intolerances');
+  @override
+  late final GeneratedColumn<String> intolerances = GeneratedColumn<String>(
+      'intolerances', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _diseasesMeta =
+      const VerificationMeta('diseases');
+  @override
+  late final GeneratedColumn<String> diseases = GeneratedColumn<String>(
+      'diseases', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _gutsMeta = const VerificationMeta('guts');
+  @override
+  late final GeneratedColumn<int> guts = GeneratedColumn<int>(
+      'guts', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _rarityMeta = const VerificationMeta('rarity');
+  @override
+  late final GeneratedColumn<int> rarity = GeneratedColumn<int>(
+      'rarity', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _novaClassificationMeta =
+      const VerificationMeta('novaClassification');
+  @override
+  late final GeneratedColumn<int> novaClassification = GeneratedColumn<int>(
+      'nova_classification', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(1));
+  static const VerificationMeta _includedMeta =
+      const VerificationMeta('included');
+  @override
+  late final GeneratedColumn<int> included = GeneratedColumn<int>(
+      'included', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  @override
+  List<GeneratedColumn> get $columns => [
+        foodId,
+        isFood,
+        group,
+        nameEn,
+        nameEs,
+        recommendable,
+        freeSugar,
+        params,
+        recGroup,
+        exchangePortion,
+        allergiesExclusions,
+        intolerances,
+        diseases,
+        guts,
+        rarity,
+        novaClassification,
+        included
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -111,6 +198,50 @@ class $NutrientCompositionsTable extends NutrientCompositions
     } else if (isInserting) {
       context.missing(_paramsMeta);
     }
+    if (data.containsKey('rec_group')) {
+      context.handle(_recGroupMeta,
+          recGroup.isAcceptableOrUnknown(data['rec_group']!, _recGroupMeta));
+    }
+    if (data.containsKey('exchange_portion')) {
+      context.handle(
+          _exchangePortionMeta,
+          exchangePortion.isAcceptableOrUnknown(
+              data['exchange_portion']!, _exchangePortionMeta));
+    }
+    if (data.containsKey('allergies_exclusions')) {
+      context.handle(
+          _allergiesExclusionsMeta,
+          allergiesExclusions.isAcceptableOrUnknown(
+              data['allergies_exclusions']!, _allergiesExclusionsMeta));
+    }
+    if (data.containsKey('intolerances')) {
+      context.handle(
+          _intolerancesMeta,
+          intolerances.isAcceptableOrUnknown(
+              data['intolerances']!, _intolerancesMeta));
+    }
+    if (data.containsKey('diseases')) {
+      context.handle(_diseasesMeta,
+          diseases.isAcceptableOrUnknown(data['diseases']!, _diseasesMeta));
+    }
+    if (data.containsKey('guts')) {
+      context.handle(
+          _gutsMeta, guts.isAcceptableOrUnknown(data['guts']!, _gutsMeta));
+    }
+    if (data.containsKey('rarity')) {
+      context.handle(_rarityMeta,
+          rarity.isAcceptableOrUnknown(data['rarity']!, _rarityMeta));
+    }
+    if (data.containsKey('nova_classification')) {
+      context.handle(
+          _novaClassificationMeta,
+          novaClassification.isAcceptableOrUnknown(
+              data['nova_classification']!, _novaClassificationMeta));
+    }
+    if (data.containsKey('included')) {
+      context.handle(_includedMeta,
+          included.isAcceptableOrUnknown(data['included']!, _includedMeta));
+    }
     return context;
   }
 
@@ -136,6 +267,24 @@ class $NutrientCompositionsTable extends NutrientCompositions
           .read(DriftSqlType.string, data['${effectivePrefix}free_sugar']),
       params: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}params'])!,
+      recGroup: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}rec_group'])!,
+      exchangePortion: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}exchange_portion'])!,
+      allergiesExclusions: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}allergies_exclusions'])!,
+      intolerances: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}intolerances'])!,
+      diseases: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}diseases'])!,
+      guts: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}guts'])!,
+      rarity: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}rarity'])!,
+      novaClassification: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}nova_classification'])!,
+      included: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}included'])!,
     );
   }
 
@@ -155,6 +304,15 @@ class NutrientComposition extends DataClass
   final int recommendable;
   final String? freeSugar;
   final String params;
+  final int recGroup;
+  final double exchangePortion;
+  final String allergiesExclusions;
+  final String intolerances;
+  final String diseases;
+  final int guts;
+  final int rarity;
+  final int novaClassification;
+  final int included;
   const NutrientComposition(
       {required this.foodId,
       required this.isFood,
@@ -163,7 +321,16 @@ class NutrientComposition extends DataClass
       required this.nameEs,
       required this.recommendable,
       this.freeSugar,
-      required this.params});
+      required this.params,
+      required this.recGroup,
+      required this.exchangePortion,
+      required this.allergiesExclusions,
+      required this.intolerances,
+      required this.diseases,
+      required this.guts,
+      required this.rarity,
+      required this.novaClassification,
+      required this.included});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -177,6 +344,15 @@ class NutrientComposition extends DataClass
       map['free_sugar'] = Variable<String>(freeSugar);
     }
     map['params'] = Variable<String>(params);
+    map['rec_group'] = Variable<int>(recGroup);
+    map['exchange_portion'] = Variable<double>(exchangePortion);
+    map['allergies_exclusions'] = Variable<String>(allergiesExclusions);
+    map['intolerances'] = Variable<String>(intolerances);
+    map['diseases'] = Variable<String>(diseases);
+    map['guts'] = Variable<int>(guts);
+    map['rarity'] = Variable<int>(rarity);
+    map['nova_classification'] = Variable<int>(novaClassification);
+    map['included'] = Variable<int>(included);
     return map;
   }
 
@@ -192,6 +368,15 @@ class NutrientComposition extends DataClass
           ? const Value.absent()
           : Value(freeSugar),
       params: Value(params),
+      recGroup: Value(recGroup),
+      exchangePortion: Value(exchangePortion),
+      allergiesExclusions: Value(allergiesExclusions),
+      intolerances: Value(intolerances),
+      diseases: Value(diseases),
+      guts: Value(guts),
+      rarity: Value(rarity),
+      novaClassification: Value(novaClassification),
+      included: Value(included),
     );
   }
 
@@ -207,6 +392,16 @@ class NutrientComposition extends DataClass
       recommendable: serializer.fromJson<int>(json['recommendable']),
       freeSugar: serializer.fromJson<String?>(json['freeSugar']),
       params: serializer.fromJson<String>(json['params']),
+      recGroup: serializer.fromJson<int>(json['recGroup']),
+      exchangePortion: serializer.fromJson<double>(json['exchangePortion']),
+      allergiesExclusions:
+          serializer.fromJson<String>(json['allergiesExclusions']),
+      intolerances: serializer.fromJson<String>(json['intolerances']),
+      diseases: serializer.fromJson<String>(json['diseases']),
+      guts: serializer.fromJson<int>(json['guts']),
+      rarity: serializer.fromJson<int>(json['rarity']),
+      novaClassification: serializer.fromJson<int>(json['novaClassification']),
+      included: serializer.fromJson<int>(json['included']),
     );
   }
   @override
@@ -221,6 +416,15 @@ class NutrientComposition extends DataClass
       'recommendable': serializer.toJson<int>(recommendable),
       'freeSugar': serializer.toJson<String?>(freeSugar),
       'params': serializer.toJson<String>(params),
+      'recGroup': serializer.toJson<int>(recGroup),
+      'exchangePortion': serializer.toJson<double>(exchangePortion),
+      'allergiesExclusions': serializer.toJson<String>(allergiesExclusions),
+      'intolerances': serializer.toJson<String>(intolerances),
+      'diseases': serializer.toJson<String>(diseases),
+      'guts': serializer.toJson<int>(guts),
+      'rarity': serializer.toJson<int>(rarity),
+      'novaClassification': serializer.toJson<int>(novaClassification),
+      'included': serializer.toJson<int>(included),
     };
   }
 
@@ -232,7 +436,16 @@ class NutrientComposition extends DataClass
           String? nameEs,
           int? recommendable,
           Value<String?> freeSugar = const Value.absent(),
-          String? params}) =>
+          String? params,
+          int? recGroup,
+          double? exchangePortion,
+          String? allergiesExclusions,
+          String? intolerances,
+          String? diseases,
+          int? guts,
+          int? rarity,
+          int? novaClassification,
+          int? included}) =>
       NutrientComposition(
         foodId: foodId ?? this.foodId,
         isFood: isFood ?? this.isFood,
@@ -242,6 +455,15 @@ class NutrientComposition extends DataClass
         recommendable: recommendable ?? this.recommendable,
         freeSugar: freeSugar.present ? freeSugar.value : this.freeSugar,
         params: params ?? this.params,
+        recGroup: recGroup ?? this.recGroup,
+        exchangePortion: exchangePortion ?? this.exchangePortion,
+        allergiesExclusions: allergiesExclusions ?? this.allergiesExclusions,
+        intolerances: intolerances ?? this.intolerances,
+        diseases: diseases ?? this.diseases,
+        guts: guts ?? this.guts,
+        rarity: rarity ?? this.rarity,
+        novaClassification: novaClassification ?? this.novaClassification,
+        included: included ?? this.included,
       );
   NutrientComposition copyWithCompanion(NutrientCompositionsCompanion data) {
     return NutrientComposition(
@@ -255,6 +477,23 @@ class NutrientComposition extends DataClass
           : this.recommendable,
       freeSugar: data.freeSugar.present ? data.freeSugar.value : this.freeSugar,
       params: data.params.present ? data.params.value : this.params,
+      recGroup: data.recGroup.present ? data.recGroup.value : this.recGroup,
+      exchangePortion: data.exchangePortion.present
+          ? data.exchangePortion.value
+          : this.exchangePortion,
+      allergiesExclusions: data.allergiesExclusions.present
+          ? data.allergiesExclusions.value
+          : this.allergiesExclusions,
+      intolerances: data.intolerances.present
+          ? data.intolerances.value
+          : this.intolerances,
+      diseases: data.diseases.present ? data.diseases.value : this.diseases,
+      guts: data.guts.present ? data.guts.value : this.guts,
+      rarity: data.rarity.present ? data.rarity.value : this.rarity,
+      novaClassification: data.novaClassification.present
+          ? data.novaClassification.value
+          : this.novaClassification,
+      included: data.included.present ? data.included.value : this.included,
     );
   }
 
@@ -268,14 +507,39 @@ class NutrientComposition extends DataClass
           ..write('nameEs: $nameEs, ')
           ..write('recommendable: $recommendable, ')
           ..write('freeSugar: $freeSugar, ')
-          ..write('params: $params')
+          ..write('params: $params, ')
+          ..write('recGroup: $recGroup, ')
+          ..write('exchangePortion: $exchangePortion, ')
+          ..write('allergiesExclusions: $allergiesExclusions, ')
+          ..write('intolerances: $intolerances, ')
+          ..write('diseases: $diseases, ')
+          ..write('guts: $guts, ')
+          ..write('rarity: $rarity, ')
+          ..write('novaClassification: $novaClassification, ')
+          ..write('included: $included')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(
-      foodId, isFood, group, nameEn, nameEs, recommendable, freeSugar, params);
+      foodId,
+      isFood,
+      group,
+      nameEn,
+      nameEs,
+      recommendable,
+      freeSugar,
+      params,
+      recGroup,
+      exchangePortion,
+      allergiesExclusions,
+      intolerances,
+      diseases,
+      guts,
+      rarity,
+      novaClassification,
+      included);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -287,7 +551,16 @@ class NutrientComposition extends DataClass
           other.nameEs == this.nameEs &&
           other.recommendable == this.recommendable &&
           other.freeSugar == this.freeSugar &&
-          other.params == this.params);
+          other.params == this.params &&
+          other.recGroup == this.recGroup &&
+          other.exchangePortion == this.exchangePortion &&
+          other.allergiesExclusions == this.allergiesExclusions &&
+          other.intolerances == this.intolerances &&
+          other.diseases == this.diseases &&
+          other.guts == this.guts &&
+          other.rarity == this.rarity &&
+          other.novaClassification == this.novaClassification &&
+          other.included == this.included);
 }
 
 class NutrientCompositionsCompanion
@@ -300,6 +573,15 @@ class NutrientCompositionsCompanion
   final Value<int> recommendable;
   final Value<String?> freeSugar;
   final Value<String> params;
+  final Value<int> recGroup;
+  final Value<double> exchangePortion;
+  final Value<String> allergiesExclusions;
+  final Value<String> intolerances;
+  final Value<String> diseases;
+  final Value<int> guts;
+  final Value<int> rarity;
+  final Value<int> novaClassification;
+  final Value<int> included;
   const NutrientCompositionsCompanion({
     this.foodId = const Value.absent(),
     this.isFood = const Value.absent(),
@@ -309,6 +591,15 @@ class NutrientCompositionsCompanion
     this.recommendable = const Value.absent(),
     this.freeSugar = const Value.absent(),
     this.params = const Value.absent(),
+    this.recGroup = const Value.absent(),
+    this.exchangePortion = const Value.absent(),
+    this.allergiesExclusions = const Value.absent(),
+    this.intolerances = const Value.absent(),
+    this.diseases = const Value.absent(),
+    this.guts = const Value.absent(),
+    this.rarity = const Value.absent(),
+    this.novaClassification = const Value.absent(),
+    this.included = const Value.absent(),
   });
   NutrientCompositionsCompanion.insert({
     this.foodId = const Value.absent(),
@@ -319,6 +610,15 @@ class NutrientCompositionsCompanion
     this.recommendable = const Value.absent(),
     this.freeSugar = const Value.absent(),
     required String params,
+    this.recGroup = const Value.absent(),
+    this.exchangePortion = const Value.absent(),
+    this.allergiesExclusions = const Value.absent(),
+    this.intolerances = const Value.absent(),
+    this.diseases = const Value.absent(),
+    this.guts = const Value.absent(),
+    this.rarity = const Value.absent(),
+    this.novaClassification = const Value.absent(),
+    this.included = const Value.absent(),
   })  : isFood = Value(isFood),
         params = Value(params);
   static Insertable<NutrientComposition> custom({
@@ -330,6 +630,15 @@ class NutrientCompositionsCompanion
     Expression<int>? recommendable,
     Expression<String>? freeSugar,
     Expression<String>? params,
+    Expression<int>? recGroup,
+    Expression<double>? exchangePortion,
+    Expression<String>? allergiesExclusions,
+    Expression<String>? intolerances,
+    Expression<String>? diseases,
+    Expression<int>? guts,
+    Expression<int>? rarity,
+    Expression<int>? novaClassification,
+    Expression<int>? included,
   }) {
     return RawValuesInsertable({
       if (foodId != null) 'food_id': foodId,
@@ -340,6 +649,16 @@ class NutrientCompositionsCompanion
       if (recommendable != null) 'recommendable': recommendable,
       if (freeSugar != null) 'free_sugar': freeSugar,
       if (params != null) 'params': params,
+      if (recGroup != null) 'rec_group': recGroup,
+      if (exchangePortion != null) 'exchange_portion': exchangePortion,
+      if (allergiesExclusions != null)
+        'allergies_exclusions': allergiesExclusions,
+      if (intolerances != null) 'intolerances': intolerances,
+      if (diseases != null) 'diseases': diseases,
+      if (guts != null) 'guts': guts,
+      if (rarity != null) 'rarity': rarity,
+      if (novaClassification != null) 'nova_classification': novaClassification,
+      if (included != null) 'included': included,
     });
   }
 
@@ -351,7 +670,16 @@ class NutrientCompositionsCompanion
       Value<String>? nameEs,
       Value<int>? recommendable,
       Value<String?>? freeSugar,
-      Value<String>? params}) {
+      Value<String>? params,
+      Value<int>? recGroup,
+      Value<double>? exchangePortion,
+      Value<String>? allergiesExclusions,
+      Value<String>? intolerances,
+      Value<String>? diseases,
+      Value<int>? guts,
+      Value<int>? rarity,
+      Value<int>? novaClassification,
+      Value<int>? included}) {
     return NutrientCompositionsCompanion(
       foodId: foodId ?? this.foodId,
       isFood: isFood ?? this.isFood,
@@ -361,6 +689,15 @@ class NutrientCompositionsCompanion
       recommendable: recommendable ?? this.recommendable,
       freeSugar: freeSugar ?? this.freeSugar,
       params: params ?? this.params,
+      recGroup: recGroup ?? this.recGroup,
+      exchangePortion: exchangePortion ?? this.exchangePortion,
+      allergiesExclusions: allergiesExclusions ?? this.allergiesExclusions,
+      intolerances: intolerances ?? this.intolerances,
+      diseases: diseases ?? this.diseases,
+      guts: guts ?? this.guts,
+      rarity: rarity ?? this.rarity,
+      novaClassification: novaClassification ?? this.novaClassification,
+      included: included ?? this.included,
     );
   }
 
@@ -391,6 +728,33 @@ class NutrientCompositionsCompanion
     if (params.present) {
       map['params'] = Variable<String>(params.value);
     }
+    if (recGroup.present) {
+      map['rec_group'] = Variable<int>(recGroup.value);
+    }
+    if (exchangePortion.present) {
+      map['exchange_portion'] = Variable<double>(exchangePortion.value);
+    }
+    if (allergiesExclusions.present) {
+      map['allergies_exclusions'] = Variable<String>(allergiesExclusions.value);
+    }
+    if (intolerances.present) {
+      map['intolerances'] = Variable<String>(intolerances.value);
+    }
+    if (diseases.present) {
+      map['diseases'] = Variable<String>(diseases.value);
+    }
+    if (guts.present) {
+      map['guts'] = Variable<int>(guts.value);
+    }
+    if (rarity.present) {
+      map['rarity'] = Variable<int>(rarity.value);
+    }
+    if (novaClassification.present) {
+      map['nova_classification'] = Variable<int>(novaClassification.value);
+    }
+    if (included.present) {
+      map['included'] = Variable<int>(included.value);
+    }
     return map;
   }
 
@@ -404,7 +768,16 @@ class NutrientCompositionsCompanion
           ..write('nameEs: $nameEs, ')
           ..write('recommendable: $recommendable, ')
           ..write('freeSugar: $freeSugar, ')
-          ..write('params: $params')
+          ..write('params: $params, ')
+          ..write('recGroup: $recGroup, ')
+          ..write('exchangePortion: $exchangePortion, ')
+          ..write('allergiesExclusions: $allergiesExclusions, ')
+          ..write('intolerances: $intolerances, ')
+          ..write('diseases: $diseases, ')
+          ..write('guts: $guts, ')
+          ..write('rarity: $rarity, ')
+          ..write('novaClassification: $novaClassification, ')
+          ..write('included: $included')
           ..write(')'))
         .toString();
   }
@@ -1458,6 +1831,15 @@ typedef $$NutrientCompositionsTableCreateCompanionBuilder
   Value<int> recommendable,
   Value<String?> freeSugar,
   required String params,
+  Value<int> recGroup,
+  Value<double> exchangePortion,
+  Value<String> allergiesExclusions,
+  Value<String> intolerances,
+  Value<String> diseases,
+  Value<int> guts,
+  Value<int> rarity,
+  Value<int> novaClassification,
+  Value<int> included,
 });
 typedef $$NutrientCompositionsTableUpdateCompanionBuilder
     = NutrientCompositionsCompanion Function({
@@ -1469,6 +1851,15 @@ typedef $$NutrientCompositionsTableUpdateCompanionBuilder
   Value<int> recommendable,
   Value<String?> freeSugar,
   Value<String> params,
+  Value<int> recGroup,
+  Value<double> exchangePortion,
+  Value<String> allergiesExclusions,
+  Value<String> intolerances,
+  Value<String> diseases,
+  Value<int> guts,
+  Value<int> rarity,
+  Value<int> novaClassification,
+  Value<int> included,
 });
 
 class $$NutrientCompositionsTableFilterComposer
@@ -1503,6 +1894,36 @@ class $$NutrientCompositionsTableFilterComposer
 
   ColumnFilters<String> get params => $composableBuilder(
       column: $table.params, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get recGroup => $composableBuilder(
+      column: $table.recGroup, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get exchangePortion => $composableBuilder(
+      column: $table.exchangePortion,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get allergiesExclusions => $composableBuilder(
+      column: $table.allergiesExclusions,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get intolerances => $composableBuilder(
+      column: $table.intolerances, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get diseases => $composableBuilder(
+      column: $table.diseases, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get guts => $composableBuilder(
+      column: $table.guts, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get rarity => $composableBuilder(
+      column: $table.rarity, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get novaClassification => $composableBuilder(
+      column: $table.novaClassification,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get included => $composableBuilder(
+      column: $table.included, builder: (column) => ColumnFilters(column));
 }
 
 class $$NutrientCompositionsTableOrderingComposer
@@ -1538,6 +1959,37 @@ class $$NutrientCompositionsTableOrderingComposer
 
   ColumnOrderings<String> get params => $composableBuilder(
       column: $table.params, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get recGroup => $composableBuilder(
+      column: $table.recGroup, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get exchangePortion => $composableBuilder(
+      column: $table.exchangePortion,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get allergiesExclusions => $composableBuilder(
+      column: $table.allergiesExclusions,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get intolerances => $composableBuilder(
+      column: $table.intolerances,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get diseases => $composableBuilder(
+      column: $table.diseases, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get guts => $composableBuilder(
+      column: $table.guts, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get rarity => $composableBuilder(
+      column: $table.rarity, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get novaClassification => $composableBuilder(
+      column: $table.novaClassification,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get included => $composableBuilder(
+      column: $table.included, builder: (column) => ColumnOrderings(column));
 }
 
 class $$NutrientCompositionsTableAnnotationComposer
@@ -1572,6 +2024,33 @@ class $$NutrientCompositionsTableAnnotationComposer
 
   GeneratedColumn<String> get params =>
       $composableBuilder(column: $table.params, builder: (column) => column);
+
+  GeneratedColumn<int> get recGroup =>
+      $composableBuilder(column: $table.recGroup, builder: (column) => column);
+
+  GeneratedColumn<double> get exchangePortion => $composableBuilder(
+      column: $table.exchangePortion, builder: (column) => column);
+
+  GeneratedColumn<String> get allergiesExclusions => $composableBuilder(
+      column: $table.allergiesExclusions, builder: (column) => column);
+
+  GeneratedColumn<String> get intolerances => $composableBuilder(
+      column: $table.intolerances, builder: (column) => column);
+
+  GeneratedColumn<String> get diseases =>
+      $composableBuilder(column: $table.diseases, builder: (column) => column);
+
+  GeneratedColumn<int> get guts =>
+      $composableBuilder(column: $table.guts, builder: (column) => column);
+
+  GeneratedColumn<int> get rarity =>
+      $composableBuilder(column: $table.rarity, builder: (column) => column);
+
+  GeneratedColumn<int> get novaClassification => $composableBuilder(
+      column: $table.novaClassification, builder: (column) => column);
+
+  GeneratedColumn<int> get included =>
+      $composableBuilder(column: $table.included, builder: (column) => column);
 }
 
 class $$NutrientCompositionsTableTableManager extends RootTableManager<
@@ -1612,6 +2091,15 @@ class $$NutrientCompositionsTableTableManager extends RootTableManager<
             Value<int> recommendable = const Value.absent(),
             Value<String?> freeSugar = const Value.absent(),
             Value<String> params = const Value.absent(),
+            Value<int> recGroup = const Value.absent(),
+            Value<double> exchangePortion = const Value.absent(),
+            Value<String> allergiesExclusions = const Value.absent(),
+            Value<String> intolerances = const Value.absent(),
+            Value<String> diseases = const Value.absent(),
+            Value<int> guts = const Value.absent(),
+            Value<int> rarity = const Value.absent(),
+            Value<int> novaClassification = const Value.absent(),
+            Value<int> included = const Value.absent(),
           }) =>
               NutrientCompositionsCompanion(
             foodId: foodId,
@@ -1622,6 +2110,15 @@ class $$NutrientCompositionsTableTableManager extends RootTableManager<
             recommendable: recommendable,
             freeSugar: freeSugar,
             params: params,
+            recGroup: recGroup,
+            exchangePortion: exchangePortion,
+            allergiesExclusions: allergiesExclusions,
+            intolerances: intolerances,
+            diseases: diseases,
+            guts: guts,
+            rarity: rarity,
+            novaClassification: novaClassification,
+            included: included,
           ),
           createCompanionCallback: ({
             Value<int> foodId = const Value.absent(),
@@ -1632,6 +2129,15 @@ class $$NutrientCompositionsTableTableManager extends RootTableManager<
             Value<int> recommendable = const Value.absent(),
             Value<String?> freeSugar = const Value.absent(),
             required String params,
+            Value<int> recGroup = const Value.absent(),
+            Value<double> exchangePortion = const Value.absent(),
+            Value<String> allergiesExclusions = const Value.absent(),
+            Value<String> intolerances = const Value.absent(),
+            Value<String> diseases = const Value.absent(),
+            Value<int> guts = const Value.absent(),
+            Value<int> rarity = const Value.absent(),
+            Value<int> novaClassification = const Value.absent(),
+            Value<int> included = const Value.absent(),
           }) =>
               NutrientCompositionsCompanion.insert(
             foodId: foodId,
@@ -1642,6 +2148,15 @@ class $$NutrientCompositionsTableTableManager extends RootTableManager<
             recommendable: recommendable,
             freeSugar: freeSugar,
             params: params,
+            recGroup: recGroup,
+            exchangePortion: exchangePortion,
+            allergiesExclusions: allergiesExclusions,
+            intolerances: intolerances,
+            diseases: diseases,
+            guts: guts,
+            rarity: rarity,
+            novaClassification: novaClassification,
+            included: included,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

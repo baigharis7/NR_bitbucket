@@ -11,7 +11,6 @@ import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.d
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_state.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/recommendations_food_group_card.dart';
 
 class RecommendationsTab extends StatefulWidget {
@@ -56,9 +55,15 @@ class _RecommendationsTabState extends State<RecommendationsTab> {
                   Html(
                     data: AppLocalizations.of(context)!.tip_text,
                     style: {
+                      'body': Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.only(left: Dimens.paddingSmall, right: Dimens.paddingSmall),
+                      ),
                       'p': Style(
-                        fontSize: FontSize(Dimens.fontSizeSmall),
+                        fontFamily: 'MerriWeather',
+                        fontSize: FontSize(Dimens.fontSize13),
                         color: AppColors.yellowishGreen,
+                        margin: Margins.only(top: 0, bottom: Dimens.marginSmall),
                       ),
                       '.blue-text': Style(
                         color: AppColors.peacockBlue,
@@ -70,13 +75,16 @@ class _RecommendationsTabState extends State<RecommendationsTab> {
                         color: AppColors.yellowishGreen,
                       ),
                       'ul': Style(
+                        fontFamily: 'MerriWeather',
                         color: AppColors.yellowishGreen,
-                        margin: Margins.only(blockEnd: Dimens.marginSmall),
-                        fontSize: FontSize(Dimens.fontSizeSmall),
+                        margin: Margins.only(top: 0, bottom: Dimens.marginSmall),
+                        padding: HtmlPaddings.only(left: Dimens.paddingNormal),
+                        fontSize: FontSize(Dimens.fontSize13),
                       ),
                       'li': Style(
+                        fontFamily: 'MerriWeather',
                         color: AppColors.yellowishGreen,
-                        fontSize: FontSize(Dimens.fontSizeSmall),
+                        fontSize: FontSize(Dimens.fontSize13),
                       ),
                     },
                   ),
@@ -99,7 +107,6 @@ class _RecommendationsTabState extends State<RecommendationsTab> {
                 ],
               ),
             ),
-            bottomNavigationBar: Container(margin: const EdgeInsets.all(Dimens.marginSmall), child: GeneralButton(title: AppLocalizations.of(context)!.save, onTap: () => bloc.add(UpdateProfileAction()))),
           );
           },
       ),
