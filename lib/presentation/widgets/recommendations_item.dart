@@ -5,7 +5,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.da
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/square_checkbox.dart';
+
 
 import '../../domain/models/recommendations/recommendations_food_item.dart';
 
@@ -142,7 +142,7 @@ class _RecommendationsItemState extends State<RecommendationsItem> {
 
     return Container(
       margin: const EdgeInsets.symmetric(
-        horizontal: Dimens.marginNormal,
+        horizontal: Dimens.paddingSmall,
         vertical: 3,
       ),
       clipBehavior: Clip.antiAlias,
@@ -169,8 +169,8 @@ class _RecommendationsItemState extends State<RecommendationsItem> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  vertical: Dimens.paddingSmall,
-                  horizontal: Dimens.paddingNormal,
+                  vertical: 10,
+                  horizontal: Dimens.paddingSmall,
                 ),
                 child: Row(
                   children: [
@@ -218,14 +218,15 @@ class _RecommendationsItemState extends State<RecommendationsItem> {
                         ),
                       ),
                     ],
-                    // Checkbox
+                    // Add / check button
                     const SizedBox(width: Dimens.marginSmall),
-                    SquareCheckbox(
-                      height: Dimens.height25,
-                      width: Dimens.width25,
-                      color: color,
-                      isChecked: widget.isChecked,
-                      onChanged: () => widget.onAdd.call(),
+                    GestureDetector(
+                      onTap: () => widget.onAdd.call(),
+                      child: Icon(
+                        widget.isChecked ? Icons.check_circle : Icons.add_circle_outline,
+                        color: widget.isChecked ? AppColors.green : color,
+                        size: 24,
+                      ),
                     ),
                   ],
                 ),

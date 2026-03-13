@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_recent_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
@@ -9,12 +10,16 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_int
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_exclusions_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for_foods_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/get_food_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/recommendation_groups_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/recommendations/recommendations_food_item.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/recommendation_computation_service.dart';
+import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_state.dart';
 
@@ -30,9 +35,15 @@ class _MockGetProfileInteractor extends Mock implements GetProfileInteractor {}
 class _MockSaveProfileInteractor extends Mock implements SaveProfileInteractor {}
 class _MockRecommendationComputationService extends Mock implements RecommendationComputationService {}
 class _MockGetWeekFoodEventsInteractor extends Mock implements GetWeekFoodEventsInteractor {}
+class _MockGetRecentFoodEventsInteractor extends Mock implements GetRecentFoodEventsInteractor {}
+class _MockGetFoodFavoritesInteractor extends Mock implements GetFoodFavoritesInteractor {}
 
 /// Helper to build a RecommendationsGeneralBloc with all required mocks.
-RecommendationsGeneralBloc _buildBloc() {
+RecommendationsGeneralBloc _buildBloc({
+  GetWeekFoodEventsInteractor? weekFoodEventsInteractor,
+  GetRecentFoodEventsInteractor? recentFoodEventsInteractor,
+  GetFoodFavoritesInteractor? foodFavoritesInteractor,
+}) {
   return RecommendationsGeneralBloc(
     getRecommendationInteractor: _MockGetRecommendationInteractor(),
     getUserIdInteractor: _MockGetUserIdInteractor(),
@@ -44,7 +55,9 @@ RecommendationsGeneralBloc _buildBloc() {
     getProfileInteractor: _MockGetProfileInteractor(),
     saveProfileInteractor: _MockSaveProfileInteractor(),
     recommendationComputationService: _MockRecommendationComputationService(),
-    getWeekFoodEventsInteractor: _MockGetWeekFoodEventsInteractor(),
+    getWeekFoodEventsInteractor: weekFoodEventsInteractor ?? _MockGetWeekFoodEventsInteractor(),
+    getRecentFoodEventsInteractor: recentFoodEventsInteractor ?? _MockGetRecentFoodEventsInteractor(),
+    getFoodFavoritesInteractor: foodFavoritesInteractor ?? _MockGetFoodFavoritesInteractor(),
   );
 }
 
@@ -622,6 +635,317 @@ void main() {
 
       final result = bloc.getRecommendationFoodInfo([1]);
       expect(result[0].foodNutrients, isEmpty);
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // LoadRecentFoodsAction tests
+  // ---------------------------------------------------------------
+  group('LoadRecentFoodsAction', () {
+    test('loads recent food events into state', () async {
+      final mockRecentEvents = _MockGetRecentFoodEventsInteractor();
+      final events = [
+        FoodEventComplete(
+          eventDate: 20260313,
+          mealType: 0,
+          foodInfo: [
+            FoodInfo('grains', 1, 'Oats', 'Avena', 1, null, null, null),
+            FoodInfo('fruits', 2, 'Apple', 'Manzana', 1, null, null, null),
+          ],
+        ),
+        FoodEventComplete(
+          eventDate: 20260312,
+          mealType: 1,
+          foodInfo: [
+            FoodInfo('grains', 1, 'Oats', 'Avena', 1, null, null, null),
+          ],
+        ),
+      ];
+      when(() => mockRecentEvents.execute()).thenAnswer((_) async => events);
+
+      final bloc = _buildBloc(recentFoodEventsInteractor: mockRecentEvents);
+      // Reset to null so the guard allows loading
+      bloc.emit(RecommendationsGeneralState(isLoading: false, recentFoodEvents: null));
+      bloc.add(LoadRecentFoodsAction());
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      expect(bloc.state.recentFoodEvents, isNotNull);
+      expect(bloc.state.recentFoodEvents!.length, 2);
+    });
+
+    test('sets empty list on error', () async {
+      final mockRecentEvents = _MockGetRecentFoodEventsInteractor();
+      when(() => mockRecentEvents.execute()).thenThrow(Exception('test error'));
+
+      final bloc = _buildBloc(recentFoodEventsInteractor: mockRecentEvents);
+      bloc.emit(RecommendationsGeneralState(isLoading: false, recentFoodEvents: null));
+      bloc.add(LoadRecentFoodsAction());
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      expect(bloc.state.recentFoodEvents, isNotNull);
+      expect(bloc.state.recentFoodEvents, isEmpty);
+    });
+
+    test('does not reload if already loaded', () async {
+      final mockRecentEvents = _MockGetRecentFoodEventsInteractor();
+      when(() => mockRecentEvents.execute()).thenAnswer((_) async => []);
+
+      final bloc = _buildBloc(recentFoodEventsInteractor: mockRecentEvents);
+      bloc.emit(RecommendationsGeneralState(isLoading: false, recentFoodEvents: null));
+      bloc.add(LoadRecentFoodsAction());
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      // Second call should be a no-op (recentFoodEvents is now non-null)
+      bloc.add(LoadRecentFoodsAction());
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verify(() => mockRecentEvents.execute()).called(1);
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // LoadFavoritesAction tests
+  // ---------------------------------------------------------------
+  group('LoadFavoritesAction', () {
+    test('loads food favorites into state', () async {
+      final mockFavorites = _MockGetFoodFavoritesInteractor();
+      final favorites = [
+        FoodFavorite(
+          ingredients: [
+            FoodInFavorite(id: 10, name_en: 'Chicken', qty: 100, unit: 1, cookingMethod: 0),
+            FoodInFavorite(id: 20, name_en: 'Rice', qty: 200, unit: 1, cookingMethod: 0),
+          ],
+          drinks: [],
+          mealTime: 1,
+        ),
+      ];
+      when(() => mockFavorites.execute()).thenAnswer((_) async => favorites);
+
+      final bloc = _buildBloc(foodFavoritesInteractor: mockFavorites);
+      bloc.emit(RecommendationsGeneralState(isLoading: false, foodFavorites: null));
+      bloc.add(LoadFavoritesAction());
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      expect(bloc.state.foodFavorites, isNotNull);
+      expect(bloc.state.foodFavorites!.length, 1);
+      expect(bloc.state.foodFavorites![0].ingredients.length, 2);
+    });
+
+    test('sets empty list on error', () async {
+      final mockFavorites = _MockGetFoodFavoritesInteractor();
+      when(() => mockFavorites.execute()).thenThrow(Exception('test error'));
+
+      final bloc = _buildBloc(foodFavoritesInteractor: mockFavorites);
+      bloc.emit(RecommendationsGeneralState(isLoading: false, foodFavorites: null));
+      bloc.add(LoadFavoritesAction());
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      expect(bloc.state.foodFavorites, isNotNull);
+      expect(bloc.state.foodFavorites, isEmpty);
+    });
+
+    test('does not reload if already loaded', () async {
+      final mockFavorites = _MockGetFoodFavoritesInteractor();
+      when(() => mockFavorites.execute()).thenAnswer((_) async => []);
+
+      final bloc = _buildBloc(foodFavoritesInteractor: mockFavorites);
+      bloc.emit(RecommendationsGeneralState(isLoading: false, foodFavorites: null));
+      bloc.add(LoadFavoritesAction());
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      // Second call should be a no-op (foodFavorites is now non-null)
+      bloc.add(LoadFavoritesAction());
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      verify(() => mockFavorites.execute()).called(1);
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // Recents food counting logic (pure unit test)
+  // ---------------------------------------------------------------
+  group('Recents food counting logic', () {
+    test('counts unique foods across multiple events', () {
+      final events = [
+        FoodEventComplete(foodInfo: [
+          FoodInfo('grains', 1, 'Oats', 'Avena', 1, null, null, null),
+          FoodInfo('fruits', 2, 'Apple', 'Manzana', 1, null, null, null),
+        ]),
+        FoodEventComplete(foodInfo: [
+          FoodInfo('grains', 1, 'Oats', 'Avena', 1, null, null, null),
+          FoodInfo('veggies', 3, 'Broccoli', 'Brocoli', 1, null, null, null),
+        ]),
+        FoodEventComplete(foodInfo: [
+          FoodInfo('grains', 1, 'Oats', 'Avena', 1, null, null, null),
+        ]),
+      ];
+
+      final foodCounts = <int, int>{};
+      for (final event in events) {
+        for (final food in event.foodInfo ?? <FoodInfo>[]) {
+          if (food.id == null) continue;
+          foodCounts[food.id!] = (foodCounts[food.id!] ?? 0) + 1;
+        }
+      }
+
+      expect(foodCounts[1], 3); // Oats eaten 3 times
+      expect(foodCounts[2], 1); // Apple eaten once
+      expect(foodCounts[3], 1); // Broccoli eaten once
+      expect(foodCounts.length, 3); // 3 unique foods
+    });
+
+    test('sorts by count descending', () {
+      final counts = {'Oats': 5, 'Apple': 2, 'Rice': 8, 'Chicken': 1};
+      final sorted = counts.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
+
+      expect(sorted[0].key, 'Rice');
+      expect(sorted[1].key, 'Oats');
+      expect(sorted[2].key, 'Apple');
+      expect(sorted[3].key, 'Chicken');
+    });
+
+    test('skips foods with null id', () {
+      final events = [
+        FoodEventComplete(foodInfo: [
+          FoodInfo('grains', null, 'Unknown', 'Desconocido', 1, null, null, null),
+          FoodInfo('fruits', 2, 'Apple', 'Manzana', 1, null, null, null),
+        ]),
+      ];
+
+      final foodCounts = <int, int>{};
+      for (final event in events) {
+        for (final food in event.foodInfo ?? <FoodInfo>[]) {
+          if (food.id == null) continue;
+          foodCounts[food.id!] = (foodCounts[food.id!] ?? 0) + 1;
+        }
+      }
+
+      expect(foodCounts.length, 1);
+      expect(foodCounts.containsKey(2), true);
+    });
+
+    test('handles events with null foodInfo', () {
+      final events = [
+        FoodEventComplete(foodInfo: null),
+        FoodEventComplete(foodInfo: [
+          FoodInfo('fruits', 2, 'Apple', 'Manzana', 1, null, null, null),
+        ]),
+      ];
+
+      final foodCounts = <int, int>{};
+      for (final event in events) {
+        for (final food in event.foodInfo ?? <FoodInfo>[]) {
+          if (food.id == null) continue;
+          foodCounts[food.id!] = (foodCounts[food.id!] ?? 0) + 1;
+        }
+      }
+
+      expect(foodCounts.length, 1);
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // Favorites deduplication logic (pure unit test)
+  // ---------------------------------------------------------------
+  group('Favorites deduplication logic', () {
+    test('collects unique foods from multiple favorites', () {
+      final favorites = [
+        FoodFavorite(
+          ingredients: [
+            FoodInFavorite(id: 10, name_en: 'Chicken', qty: 100, unit: 1, cookingMethod: 0),
+            FoodInFavorite(id: 20, name_en: 'Rice', qty: 200, unit: 1, cookingMethod: 0),
+          ],
+          drinks: [
+            FoodInFavorite(id: 30, name_en: 'Water', qty: 250, unit: 1, cookingMethod: 0),
+          ],
+          mealTime: 1,
+        ),
+        FoodFavorite(
+          ingredients: [
+            FoodInFavorite(id: 10, name_en: 'Chicken', qty: 150, unit: 1, cookingMethod: 1),
+            FoodInFavorite(id: 40, name_en: 'Salmon', qty: 100, unit: 1, cookingMethod: 0),
+          ],
+          drinks: [],
+          mealTime: 2,
+        ),
+      ];
+
+      final uniqueFoods = <int, FoodInFavorite>{};
+      for (final fav in favorites) {
+        for (final ingredient in fav.ingredients) {
+          uniqueFoods.putIfAbsent(ingredient.id, () => ingredient);
+        }
+        for (final drink in fav.drinks) {
+          uniqueFoods.putIfAbsent(drink.id, () => drink);
+        }
+      }
+
+      expect(uniqueFoods.length, 4); // Chicken, Rice, Water, Salmon
+      expect(uniqueFoods.containsKey(10), true);
+      expect(uniqueFoods.containsKey(20), true);
+      expect(uniqueFoods.containsKey(30), true);
+      expect(uniqueFoods.containsKey(40), true);
+    });
+
+    test('keeps first occurrence when food appears in multiple favorites', () {
+      final favorites = [
+        FoodFavorite(
+          ingredients: [
+            FoodInFavorite(id: 10, name_en: 'Chicken Grilled', qty: 100, unit: 1, cookingMethod: 0),
+          ],
+          drinks: [],
+          mealTime: 1,
+        ),
+        FoodFavorite(
+          ingredients: [
+            FoodInFavorite(id: 10, name_en: 'Chicken Boiled', qty: 200, unit: 1, cookingMethod: 2),
+          ],
+          drinks: [],
+          mealTime: 2,
+        ),
+      ];
+
+      final uniqueFoods = <int, FoodInFavorite>{};
+      for (final fav in favorites) {
+        for (final ingredient in fav.ingredients) {
+          uniqueFoods.putIfAbsent(ingredient.id, () => ingredient);
+        }
+      }
+
+      expect(uniqueFoods.length, 1);
+      expect(uniqueFoods[10]!.name_en, 'Chicken Grilled'); // first occurrence kept
+    });
+
+    test('handles empty favorites list', () {
+      final favorites = <FoodFavorite>[];
+
+      final uniqueFoods = <int, FoodInFavorite>{};
+      for (final fav in favorites) {
+        for (final ingredient in fav.ingredients) {
+          uniqueFoods.putIfAbsent(ingredient.id, () => ingredient);
+        }
+      }
+
+      expect(uniqueFoods, isEmpty);
+    });
+
+    test('handles favorites with empty ingredients and drinks', () {
+      final favorites = [
+        FoodFavorite(ingredients: [], drinks: [], mealTime: 0),
+      ];
+
+      final uniqueFoods = <int, FoodInFavorite>{};
+      for (final fav in favorites) {
+        for (final ingredient in fav.ingredients) {
+          uniqueFoods.putIfAbsent(ingredient.id, () => ingredient);
+        }
+        for (final drink in fav.drinks) {
+          uniqueFoods.putIfAbsent(drink.id, () => drink);
+        }
+      }
+
+      expect(uniqueFoods, isEmpty);
     });
   });
 }

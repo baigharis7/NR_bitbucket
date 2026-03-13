@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/get_food_favorites_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_recent_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
@@ -9,6 +11,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_exclus
 import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for_foods_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/recommendation_groups_master.dart';
@@ -37,6 +41,8 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
   final SaveProfileInteractor saveProfileInteractor;
   final RecommendationComputationService recommendationComputationService;
   final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor;
+  final GetRecentFoodEventsInteractor getRecentFoodEventsInteractor;
+  final GetFoodFavoritesInteractor getFoodFavoritesInteractor;
 
   // O(1) food name lookup map (built once on init)
   Map<int, FoodItemMaster>? _foodNameMap;
@@ -53,6 +59,8 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
     required this.saveProfileInteractor,
     required this.recommendationComputationService,
     required this.getWeekFoodEventsInteractor,
+    required this.getRecentFoodEventsInteractor,
+    required this.getFoodFavoritesInteractor,
   }) : super(RecommendationsGeneralState(
     isLoading: false,
     onError: null,
@@ -67,6 +75,8 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
     foodAndDrinksNames: [],
     recommendationGroups: RecommendationGroupsMaster(recommendationGroups: []),
     recommendation: Recommendation(foodList: [], userNutrients: [], nutrientsInDeficit: []),
+    recentFoodEvents: [],
+    foodFavorites: [],
     needToSearchRecipes: true,
   ),) {
     on<InitialStateAction>((event, emit) async {
@@ -91,15 +101,20 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
           .toList();
       emit(state.copyWith(isLoading: false, onError: null));
 
-      // Load remaining data in parallel
+      // Load remaining data in parallel (including recents & favorites
+      // to avoid concurrent event handler state conflicts)
       final results = await Future.wait([
         getProfileInteractor.execute(),
         getUserExclusionsInteractor.execute(),
         _loadFoodAndDrinksNames(),
+        _loadRecentFoodEvents(),
+        _loadFoodFavorites(),
       ]);
 
       state.profile = results[0] as dynamic;
       state.exclusions = results[1] as List<int>;
+      state.recentFoodEvents = results[3] as List<FoodEventComplete>;
+      state.foodFavorites = results[4] as List<FoodFavorite>;
       state.foodItems = getFoodItemFromIds(state.profile?.recommededIds.orEmpty() ?? []);
 
       // Build O(1) lookup map for food names
@@ -240,6 +255,36 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
 
       emit(state.copyWith(isLoading: false, onError: null,));
     });
+
+    // Recents & favorites are now loaded inside InitialStateAction to avoid
+    // concurrent event handler state conflicts. Keep handlers as no-op fallbacks.
+    on<LoadRecentFoodsAction>((event, emit) async {
+      if (state.recentFoodEvents != null) return;
+      state.recentFoodEvents = await _loadRecentFoodEvents();
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
+
+    on<LoadFavoritesAction>((event, emit) async {
+      if (state.foodFavorites != null) return;
+      state.foodFavorites = await _loadFoodFavorites();
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
+  }
+
+  Future<List<FoodEventComplete>> _loadRecentFoodEvents() async {
+    try {
+      return await getRecentFoodEventsInteractor.execute();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<List<FoodFavorite>> _loadFoodFavorites() async {
+    try {
+      return await getFoodFavoritesInteractor.execute();
+    } catch (_) {
+      return [];
+    }
   }
 
   /// Ensures foods in the user's saved list appear in their recommendation

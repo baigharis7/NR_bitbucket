@@ -155,6 +155,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_urine
 import 'package:nutrenaissance_flutter/domain/interactor/fecesurine/upload_urine_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_recent_food_events_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_recent_food_events_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_recent_food_items_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_recent_food_items_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
@@ -430,6 +432,7 @@ import 'package:nutrenaissance_flutter/presentation/recipes/common/view/recipe_t
 import 'package:nutrenaissance_flutter/presentation/recipes/recipe_detail/bloc/recipe_detail_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/recipes/recipe_detail/view/recipe_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/recommendations/common/bloc/recommendations_general_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/resetpassword/bloc/reset_password_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/resetpassword/view/reset_password_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/routines/bloc/routines_bloc.dart';
@@ -595,6 +598,7 @@ void main() async {
   final UploadLiquidEventInteractor uploadLiquidEventInteractor = UploadLiquidEventInteractorImpl(liquidEventsRepository: liquidEventsRepository);
   final GetWeekFoodEventsInteractor getWeekFoodEventsInteractor = GetWeekFoodEventsInteractorImpl(foodEventsRepository: foodEventsRepository);
   final GetRecentFoodItemsInteractor getRecentFoodItemsInteractor = GetRecentFoodItemsInteractorImpl(foodEventsRepository: foodEventsRepository);
+  final GetRecentFoodEventsInteractor getRecentFoodEventsInteractor = GetRecentFoodEventsInteractorImpl(foodEventsRepository: foodEventsRepository);
   final GetUserKcalInteractor getUserKcalInteractor = GetUserKcalInteractorImpl(profileRepository: profileRepository);
   final GetTodaySportsInteractor getTodaySportsInteractor = GetTodaySportsInteractorImpl(sportEventsRepository: sportEventsRepository);
   final GetWeekSportsInteractor getWeekSportsInteractor = GetWeekSportsInteractorImpl(sportEventsRepository: sportEventsRepository);
@@ -1066,7 +1070,11 @@ void main() async {
     saveProfileInteractor: saveProfileInteractor,
     recommendationComputationService: recommendationComputationService,
     getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
+    getRecentFoodEventsInteractor: getRecentFoodEventsInteractor,
+    getFoodFavoritesInteractor: getFoodFavoritesInteractor,
   );
+  // Pre-load recommendations data in background so Tips tab is instant
+  recommendationsGeneralBloc.add(InitialStateAction());
 
   final recipeTabBloc = RecipeTabBloc(
       getUserIdInteractor: getUserIdInteractor,

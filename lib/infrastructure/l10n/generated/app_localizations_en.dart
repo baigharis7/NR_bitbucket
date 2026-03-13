@@ -1993,4 +1993,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get routine_label => 'ROUTINE';
+
+  @override
+  String get recent_foods_explaining =>
+      'Foods you have eaten in the last 7 days.';
+
+  @override
+  String get no_recent_foods => 'No food events recorded in the last 7 days.';
+
+  @override
+  String get favorites_explaining => 'Your saved favorite meals and foods.';
+
+  @override
+  String get no_favorites => 'No favorites saved yet.';
+
+  @override
+  String times_eaten(Object count) {
+    return '$count times';
+  }
+
+  @override
+  String get add_to_list => 'Add to list';
 }

@@ -3715,6 +3715,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ROUTINE'**
   String get routine_label;
+
+  /// No description provided for @recent_foods_explaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Foods you have eaten in the last 7 days.'**
+  String get recent_foods_explaining;
+
+  /// No description provided for @no_recent_foods.
+  ///
+  /// In en, this message translates to:
+  /// **'No food events recorded in the last 7 days.'**
+  String get no_recent_foods;
+
+  /// No description provided for @favorites_explaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Your saved favorite meals and foods.'**
+  String get favorites_explaining;
+
+  /// No description provided for @no_favorites.
+  ///
+  /// In en, this message translates to:
+  /// **'No favorites saved yet.'**
+  String get no_favorites;
+
+  /// No description provided for @times_eaten.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} times'**
+  String times_eaten(Object count);
+
+  /// No description provided for @add_to_list.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to list'**
+  String get add_to_list;
 }
 
 class _AppLocalizationsDelegate

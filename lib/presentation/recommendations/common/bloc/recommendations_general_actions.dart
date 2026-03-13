@@ -51,3 +51,11 @@ class HideRecipeExplainingCardAction extends RecommendationsGeneralActions {
   HideRecipeExplainingCardAction();
 }
 
+class LoadRecentFoodsAction extends RecommendationsGeneralActions {
+  LoadRecentFoodsAction();
+}
+
+class LoadFavoritesAction extends RecommendationsGeneralActions {
+  LoadFavoritesAction();
+}
+

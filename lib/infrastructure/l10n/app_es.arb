@@ -619,6 +619,12 @@
     "activities_programmed": "Actividades programadas",
     "remaining_kcal": "KCAL RESTANTES",
     "burned_kcal": "KCAL GASTADAS",
-    "routine_label": "RUTINA"
+    "routine_label": "RUTINA",
+    "recent_foods_explaining": "Alimentos que has comido en los últimos 7 días.",
+    "no_recent_foods": "No hay eventos de comida registrados en los últimos 7 días.",
+    "favorites_explaining": "Tus comidas y alimentos favoritos guardados.",
+    "no_favorites": "No hay favoritos guardados aún.",
+    "times_eaten": "{count} veces",
+    "add_to_list": "Añadir a la lista"
 
 }

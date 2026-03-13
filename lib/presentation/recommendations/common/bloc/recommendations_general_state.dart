@@ -1,4 +1,6 @@
 import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/recommendation_groups_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/recipes/recipes_master.dart';
@@ -25,6 +27,8 @@ class RecommendationsGeneralState {
   List<int>? exclusions;
   bool? showRecipesCard;
   bool? needToSearchRecipes;
+  List<FoodEventComplete>? recentFoodEvents;
+  List<FoodFavorite>? foodFavorites;
 
   RecommendationsGeneralState({
     required this.isLoading,
@@ -42,6 +46,8 @@ class RecommendationsGeneralState {
     this.exclusions,
     this.showRecipesCard,
     this.needToSearchRecipes,
+    this.recentFoodEvents,
+    this.foodFavorites,
   });
 
   RecommendationsGeneralState copyWith({
@@ -60,6 +66,8 @@ class RecommendationsGeneralState {
     List<RecipeMaster>? recipesListAll,
     List<int>? exclusions,
     bool? needToSearchRecipes,
+    List<FoodEventComplete>? recentFoodEvents,
+    List<FoodFavorite>? foodFavorites,
   }) {
     return RecommendationsGeneralState(
       isLoading: isLoading,
@@ -77,6 +85,8 @@ class RecommendationsGeneralState {
       recipesListAll: recipesListAll ?? this.recipesListAll,
       exclusions: exclusions ?? this.exclusions,
       needToSearchRecipes: needToSearchRecipes ?? this.needToSearchRecipes,
+      recentFoodEvents: recentFoodEvents ?? this.recentFoodEvents,
+      foodFavorites: foodFavorites ?? this.foodFavorites,
     );
   }
 

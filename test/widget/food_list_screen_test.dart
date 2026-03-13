@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_necessary_to_show_explaining_card_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_recent_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
@@ -12,6 +13,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_int
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_exclusions_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recipes/get_recipes_for_foods_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/favorites/food/get_food_favorites_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/recommendations/get_recommendation_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/common/simple_item.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
@@ -35,6 +37,8 @@ class _MockGetProfileInteractor extends Mock implements GetProfileInteractor {}
 class _MockSaveProfileInteractor extends Mock implements SaveProfileInteractor {}
 class _MockRecommendationComputationService extends Mock implements RecommendationComputationService {}
 class _MockGetWeekFoodEventsInteractor extends Mock implements GetWeekFoodEventsInteractor {}
+class _MockGetRecentFoodEventsInteractor extends Mock implements GetRecentFoodEventsInteractor {}
+class _MockGetFoodFavoritesInteractor extends Mock implements GetFoodFavoritesInteractor {}
 
 void main() {
   // ---------------------------------------------------------------
@@ -70,6 +74,8 @@ void main() {
       saveProfileInteractor: _MockSaveProfileInteractor(),
       recommendationComputationService: _MockRecommendationComputationService(),
       getWeekFoodEventsInteractor: _MockGetWeekFoodEventsInteractor(),
+      getRecentFoodEventsInteractor: _MockGetRecentFoodEventsInteractor(),
+      getFoodFavoritesInteractor: _MockGetFoodFavoritesInteractor(),
     );
 
     bloc.emit(RecommendationsGeneralState(
