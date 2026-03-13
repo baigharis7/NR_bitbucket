@@ -10,8 +10,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/upload_user_profile.dart';
 import 'package:nutrenaissance_flutter/domain/models/calendar/dashboard_all_calendar_events.dart';
 import 'package:nutrenaissance_flutter/domain/models/explainingcards/explaining_card_model.dart';
-import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
-import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
@@ -22,7 +20,6 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/nutrition_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/barcodescanning/view/bar_code_scanning_screen.dart';
-import 'package:nutrenaissance_flutter/presentation/common/view/floating_menu_controller.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:nutrenaissance_flutter/presentation/healthsync/bloc/health_sync_bloc.dart';
@@ -93,15 +90,12 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreen extends State<DashboardScreen>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+    with WidgetsBindingObserver {
 
   // StepCount? _stepCountValue;
   DateTime? selectedDateTime;
   late DashboardBloc bloc;
-  bool isOpen = false;
   bool _healthSyncPromptDismissed = false;
-  late AnimationController _controller;
-  late Animation<double> _animation;
   StreamSubscription<DateTime>? _midnightSubscription;
 
   @override
@@ -121,15 +115,12 @@ class _DashboardScreen extends State<DashboardScreen>
       bloc.add(InitializeState(dateTime: newDate));
     });
 
-    _controller = AnimationController(duration: Duration(milliseconds: 250), vsync: this);
-    _animation = Tween<double>(begin: 0.0, end: 0.5).animate(_controller);
   }
 
   @override
   void dispose() {
     _midnightSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
-    _controller.dispose();
     super.dispose();
   }
 
@@ -142,28 +133,6 @@ class _DashboardScreen extends State<DashboardScreen>
     }
   }
 
-  void toggleMenu() {
-    setState(() {
-      isOpen = !isOpen;
-      if (isOpen) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-    });
-  }
-
-  List<Map<String, dynamic>> getMenuItems(BuildContext context) {
-    final List<Map<String, dynamic>> menuItems = [
-      ...MealTime.getAllMealTimes().map((e) => {'label': e.name, 'id': e.id, 'icon': 'assets/images/meal_time_${e.id.orZero()}.png', 'onTap': () => Navigator.pushNamed(context, AddFoodEventScreen.routeName, arguments: FoodArgumentsModel(mealTime: e, selectedDateTime: selectedDateTime ?? DateTime.now()))}),
-      // {'label': 'Actividad física', 'icon': Icons.fitness_center},
-      {'label': AppLocalizations.of(context)!.supplements, 'icon': 'assets/images/supplement.png', 'onTap': () => Navigator.pushNamed(context, SupplementsScreen.routeName)},
-      {'label': AppLocalizations.of(context)!.physical_activity, 'icon': 'assets/images/sport.png', 'onTap': () => Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime)},
-      {'label': AppLocalizations.of(context)!.faeces_urine, 'icon': 'assets/images/feces_urine.png', 'onTap': () => Navigator.pushNamed(context, FecesUrineTabs.routeName)},
-    ];
-
-    return menuItems;
-  }
 
   Future<void> _updateDataDialog({required Function onUpdateClick}) async {
     await showModalBottomSheet(showDragHandle: true, isDismissible: false, enableDrag: false, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(Dimens.borderXLarge), topRight: Radius.circular(Dimens.borderXLarge))),context: context,
@@ -657,21 +626,7 @@ class _DashboardScreen extends State<DashboardScreen>
                   ),
                 ),
               ),
-              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD,),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () => FloatingMenuController().show(context, getMenuItems(context)),
-                backgroundColor: Colors.transparent,
-                clipBehavior: Clip.hardEdge,
-                child: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  decoration: const BoxDecoration(gradient: LinearGradient(colors: [AppColors.greenCyan, AppColors.bluishGreen], begin: Alignment.bottomCenter, end: Alignment.topCenter, stops: [0.0, 0.7])),
-                  child: RotationTransition(
-                    turns: _animation,
-                    child: const Icon(Icons.add),
-                  ),
-                ),
-              ),
+              bottomNavigationBar: CustomBottomNaviBarWidget(activePosition: Constants.DASHBOARD, selectedDateTime: selectedDateTime),
               // CustomBottomAppBar(initStateCallback: () => bloc.add(InitializeState())),
               // resizeToAvoidBottomInset: true,
               // floatingActionButton: FloatingActionButton(

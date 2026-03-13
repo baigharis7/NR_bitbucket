@@ -3,12 +3,12 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_arguments_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
-import 'package:nutrenaissance_flutter/presentation/common/view/floating_menu_controller.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/routinestabs/bloc/routines_tab_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/routinestabs/view/meal_routines_tab.dart';
@@ -36,12 +36,17 @@ class RoutinesTabHolder extends StatefulWidget {
   State<RoutinesTabHolder> createState() => _RoutinesTabHolderState();
 }
 
-class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTickerProviderStateMixin {
+class _RoutinesTabHolderState extends State<RoutinesTabHolder> with TickerProviderStateMixin {
   String? title;
   late TabController _tabController;
   int _selectedTab = 0;
   List<String> _tabs = ['', '', ''];
   late RoutinesTabBloc routinesTabsBloc;
+
+  late AnimationController _mealMenuAnimController;
+  OverlayEntry? _mealScrimEntry;
+  OverlayEntry? _mealMenuEntry;
+  bool _mealMenuOpen = false;
 
   @override
   void didChangeDependencies() {
@@ -59,6 +64,10 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
         _selectedTab = _tabController.index;
       });
     });
+    _mealMenuAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
 
     super.initState();
   }
@@ -66,18 +75,16 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
   @override
   void dispose() {
     _tabController.dispose();
+    _mealMenuAnimController.dispose();
+    _mealScrimEntry?.remove();
+    _mealMenuEntry?.remove();
     super.dispose();
   }
 
   void _onFabPressed() {
     switch (_selectedTab) {
       case 0: // Meal tab - show overlay with meal time options
-        FloatingMenuController().show(
-          context,
-          _getMealTimeMenuItems(context),
-          showFavoritesRoutinesButtons: false,
-          centered: true,
-        );
+        _toggleMealMenu();
         break;
       case 1: // Physical Activity tab - direct navigation
         Navigator.pushNamed(
@@ -85,7 +92,7 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
           AddSportEventScreen.routeName,
           arguments: SportArgumentsModel(
             selectedDateTime: DateTime.now(),
-            preSelectRoutine: true, // Pre-select routine option
+            preSelectRoutine: true,
           ),
         );
         break;
@@ -102,7 +109,6 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
   List<Map<String, dynamic>> _getMealTimeMenuItems(BuildContext context) {
     return MealTime.getAllMealTimes().map((e) => {
       'label': e.name,
-      'id': e.id,
       'icon': 'assets/images/meal_time_${e.id.orZero()}.png',
       'onTap': () => Navigator.pushNamed(
         context,
@@ -110,10 +116,117 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
         arguments: FoodArgumentsModel(
           mealTime: e,
           selectedDateTime: DateTime.now(),
-          preSelectRoutine: true, // Pre-select routine option
+          preSelectRoutine: true,
         ),
       ),
     }).toList();
+  }
+
+  void _toggleMealMenu() {
+    if (_mealMenuOpen) {
+      _closeMealMenu();
+    } else {
+      _openMealMenu();
+    }
+  }
+
+  void _openMealMenu() {
+    final items = _getMealTimeMenuItems(context);
+
+    setState(() {
+      _mealMenuOpen = true;
+      _mealMenuAnimController.forward();
+    });
+
+    _mealScrimEntry = OverlayEntry(
+      builder: (_) => GestureDetector(
+        onTap: _closeMealMenu,
+        behavior: HitTestBehavior.opaque,
+        child: const SizedBox.expand(),
+      ),
+    );
+
+    _mealMenuEntry = OverlayEntry(
+      builder: (_) => Positioned(
+        left: 0,
+        right: 0,
+        bottom: 65 + 8 + MediaQuery.of(context).padding.bottom,
+        child: FadeTransition(
+          opacity: CurvedAnimation(
+            parent: _mealMenuAnimController,
+            curve: Curves.easeInOut,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.95),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x40000000),
+                  offset: Offset(0, 2),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (int i = 0; i < items.length; i += 2)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: i + 2 < items.length ? 8 : 0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _MealMenuItem(
+                            label: items[i]['label'] as String,
+                            icon: items[i]['icon'] as String,
+                            onTap: () {
+                              _closeMealMenu();
+                              (items[i]['onTap'] as VoidCallback)();
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        if (i + 1 < items.length)
+                          Expanded(
+                            child: _MealMenuItem(
+                              label: items[i + 1]['label'] as String,
+                              icon: items[i + 1]['icon'] as String,
+                              onTap: () {
+                                _closeMealMenu();
+                                (items[i + 1]['onTap'] as VoidCallback)();
+                              },
+                            ),
+                          )
+                        else
+                          const Expanded(child: SizedBox()),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final overlay = Overlay.of(context);
+    overlay.insertAll([_mealScrimEntry!, _mealMenuEntry!]);
+  }
+
+  void _closeMealMenu() {
+    if (!_mealMenuOpen) return;
+    setState(() {
+      _mealMenuOpen = false;
+    });
+    _mealMenuAnimController.reverse().then((_) {
+      _mealScrimEntry?.remove();
+      _mealScrimEntry = null;
+      _mealMenuEntry?.remove();
+      _mealMenuEntry = null;
+    });
   }
 
   @override
@@ -208,6 +321,58 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with SingleTicker
                 ),
               ),),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+const _kNavColor = Color(0xFF28421D);
+
+class _MealMenuItem extends StatelessWidget {
+  final String label;
+  final String icon;
+  final VoidCallback onTap;
+
+  const _MealMenuItem({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _kNavColor.withOpacity(0.15)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: AppTextStyles.merriWeather.copyWith(
+                  color: _kNavColor,
+                  fontSize: Dimens.fontSizeSmall,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Image.asset(icon, width: 32, height: 32),
           ],
         ),
       ),

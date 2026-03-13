@@ -302,6 +302,12 @@ abstract class AppLocalizations {
   /// **'Home'**
   String get start;
 
+  /// No description provided for @menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menu;
+
   /// No description provided for @weekly_evolution.
   ///
   /// In en, this message translates to:
@@ -1691,7 +1697,7 @@ abstract class AppLocalizations {
   /// No description provided for @faeces_urine.
   ///
   /// In en, this message translates to:
-  /// **'Faeces and urine'**
+  /// **'Faeces and Urine'**
   String get faeces_urine;
 
   /// No description provided for @evolution_14_days.

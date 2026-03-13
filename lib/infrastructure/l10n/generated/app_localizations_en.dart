@@ -112,6 +112,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get start => 'Home';
 
   @override
+  String get menu => 'Menu';
+
+  @override
   String get weekly_evolution => 'Weekly evolution';
 
   @override
@@ -892,7 +895,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calendar => 'Calendar';
 
   @override
-  String get faeces_urine => 'Faeces and urine';
+  String get faeces_urine => 'Faeces and Urine';
 
   @override
   String get evolution_14_days => 'Evolution of the last 14 days';

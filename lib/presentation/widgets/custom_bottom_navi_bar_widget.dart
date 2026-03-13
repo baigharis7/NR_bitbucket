@@ -4,7 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/favorites_tab_holder.dart';
@@ -62,7 +61,60 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
     _menuEntry?.remove();
     _plusScrimEntry?.remove();
     _plusMenuEntry?.remove();
+    _plusBtnOverlay?.remove();
     super.dispose();
+  }
+
+  // ── Shared plus-button overlay (sits on top of any menu) ──────────
+  OverlayEntry? _plusBtnOverlay;
+
+  OverlayEntry _buildPlusButtonOverlay({
+    required double bottomPadding,
+    AnimationController? animController,
+    required VoidCallback onTap,
+  }) {
+    final icon = animController != null
+        ? RotationTransition(
+            turns: Tween<double>(begin: 0, end: 0.125).animate(
+              CurvedAnimation(parent: animController, curve: Curves.easeInOut),
+            ),
+            child: const Icon(Icons.add, color: Colors.white, size: 32),
+          )
+        : const Icon(Icons.add, color: Colors.white, size: 32);
+
+    return OverlayEntry(
+      builder: (_) => Positioned(
+        bottom: bottomPadding + 15,
+        left: 0,
+        right: 0,
+        child: Center(
+          child: GestureDetector(
+            onTap: onTap,
+            child: Container(
+              width: 72,
+              height: 72,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [AppColors.greenCyan, AppColors.bluishGreen],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  stops: [0.0, 0.7],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x5015A95F),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: icon,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   // ── + button overlay panel ─────────────────────────────────────────
@@ -150,23 +202,17 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.95),
               borderRadius: BorderRadius.circular(20),
-              boxShadow: const [
-                BoxShadow(
-                  color: AppColors.black25Percent,
-                  offset: Offset(0, 2),
-                  blurRadius: 8,
-                ),
-              ],
             ),
             margin: const EdgeInsets.symmetric(horizontal: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 38),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Food section label
                 Text(
                   l10n.food,
-                  style: AppTextStyles.merriWeather.copyWith(
+                  style: const TextStyle(
+                    fontFamily: 'Roboto',
                     color: _kNavColor,
                     fontSize: Dimens.fontSizeLarge,
                     fontWeight: FontWeight.w600,
@@ -184,7 +230,7 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
                 ),
                 const SizedBox(height: 16),
                 // Divider
-                Divider(color: _kNavColor.withOpacity(0.1), height: 1),
+                Divider(color: _kNavColor.withOpacity(0.3), height: 1),
                 const SizedBox(height: 16),
                 // Other items in a row
                 Row(
@@ -202,8 +248,14 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
       ),
     );
 
+    _plusBtnOverlay = _buildPlusButtonOverlay(
+      bottomPadding: bottomPadding,
+      animController: _plusAnimController,
+      onTap: _closePlusMenu,
+    );
+
     final overlay = Overlay.of(context);
-    overlay.insertAll([_plusScrimEntry!, _plusMenuEntry!]);
+    overlay.insertAll([_plusScrimEntry!, _plusMenuEntry!, _plusBtnOverlay!]);
   }
 
   void _closePlusMenu() {
@@ -216,6 +268,8 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
       _plusScrimEntry = null;
       _plusMenuEntry?.remove();
       _plusMenuEntry = null;
+      _plusBtnOverlay?.remove();
+      _plusBtnOverlay = null;
     });
   }
 
@@ -266,32 +320,21 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.95),
               borderRadius: BorderRadius.circular(20),
-              boxShadow: const [
-                BoxShadow(
-                  color: AppColors.black25Percent,
-                  offset: Offset(0, 2),
-                  blurRadius: 8,
-                ),
-              ],
             ),
             margin: const EdgeInsets.symmetric(horizontal: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 38),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _MenuGridItem(
-                      icon: Icons.person_outline,
-                      label: l10n.profile,
-                      onTap: () => _navigateFromMenu(ProfileScreen.routeName),
-                    ),
                     _MenuGridItem(
                       icon: Icons.history,
                       label: l10n.routines,
                       onTap: () => _navigateFromMenu(RoutinesTabHolder.routeName),
                     ),
+                    const SizedBox(width: 24),
                     _MenuGridItem(
                       icon: Icons.star_outline_rounded,
                       label: l10n.favorites,
@@ -303,20 +346,20 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _MenuGridItem(
-                      icon: Icons.lightbulb_outline,
+                    _MenuSvgItem(
+                      svgAsset: 'assets/images/tips.svg',
                       label: l10n.tips,
                       onTap: () => _navigateFromMenu(RecommendationsTabHolder.routeName),
                     ),
-                    _MenuGridItem(
-                      icon: Icons.bar_chart_rounded,
-                      label: 'Progress',
-                      onTap: () => _closeMenu(),
-                    ),
-                    _MenuGridItem(
-                      icon: Icons.menu_book_rounded,
+                    _MenuSvgItem(
+                      svgAsset: 'assets/images/recipes.svg',
                       label: l10n.recipes,
                       onTap: () => _navigateFromMenu(RecipesTabsHolder.routeName),
+                    ),
+                    _MenuSvgItem(
+                      svgAsset: 'assets/images/profile.svg',
+                      label: l10n.profile,
+                      onTap: () => _navigateFromMenu(ProfileScreen.routeName),
                     ),
                   ],
                 ),
@@ -327,8 +370,13 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
       ),
     );
 
+    _plusBtnOverlay = _buildPlusButtonOverlay(
+      bottomPadding: bottomPadding,
+      onTap: _closeMenu,
+    );
+
     final overlay = Overlay.of(context);
-    overlay.insertAll([_scrimEntry!, _menuEntry!]);
+    overlay.insertAll([_scrimEntry!, _menuEntry!, _plusBtnOverlay!]);
   }
 
   void _closeMenu() {
@@ -341,6 +389,8 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
       _scrimEntry = null;
       _menuEntry?.remove();
       _menuEntry = null;
+      _plusBtnOverlay?.remove();
+      _plusBtnOverlay = null;
     });
   }
 
@@ -404,11 +454,12 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
                           const SizedBox(height: 2),
                           Text(
                             l10n.start,
-                            style: AppTextStyles.merriWeather.copyWith(
+                            style: TextStyle(
+                              fontFamily: 'Roboto',
                               color: widget.activePosition == 0
                                   ? _kNavColor
                                   : AppColors.cloudyGrey,
-                              fontSize: Dimens.fontSizeSmall,
+                              fontSize: 13,
                             ),
                           ),
                         ],
@@ -435,9 +486,10 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
                           const SizedBox(height: 2),
                           Text(
                             l10n.menu,
-                            style: AppTextStyles.merriWeather.copyWith(
+                            style: const TextStyle(
+                              fontFamily: 'Roboto',
                               color: _kNavColor,
-                              fontSize: Dimens.fontSizeSmall,
+                              fontSize: 13,
                             ),
                           ),
                         ],
@@ -449,8 +501,8 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
             ),
           ),
 
-          // Center + button
-          Positioned(
+          // Center + button (hidden when overlay button is showing)
+          if (!_plusOpen && !_menuOpen) Positioned(
             top: -22,
             left: 0,
             right: 0,
@@ -590,22 +642,62 @@ class _MenuGridItem extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: Colors.white,
                 border: Border.all(color: _kNavColor.withOpacity(0.3), width: 1.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
-              child: Icon(icon, color: _kNavColor, size: 30),
+              child: Icon(icon, color: _kNavColor.withOpacity(0.8), size: 36),
             ),
             const SizedBox(height: 8),
             Text(
               label,
-              style: AppTextStyles.merriWeather.copyWith(
+              style: const TextStyle(
+                fontFamily: 'Roboto',
                 color: _kNavColor,
-                fontSize: Dimens.fontSizeSmall,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MenuSvgItem extends StatelessWidget {
+  final String svgAsset;
+  final String label;
+  final VoidCallback onTap;
+
+  const _MenuSvgItem({
+    required this.svgAsset,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: 100,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: 40,
+              width: 40,
+              child: SvgPicture.asset(
+                svgAsset,
+                colorFilter: const ColorFilter.mode(_kNavColor, BlendMode.srcIn),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                fontFamily: 'Roboto',
+                color: _kNavColor,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
@@ -638,30 +730,24 @@ class _PlusGridItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 56,
-              height: 56,
+              width: 60,
+              height: 60,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white,
                 border: Border.all(color: _kNavColor.withOpacity(0.3), width: 1.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
               child: Center(
-                child: Image.asset(assetIcon, width: 32, height: 32),
+                child: Image.asset(assetIcon, width: 38, height: 38),
               ),
             ),
             const SizedBox(height: 6),
             Text(
               label,
-              style: AppTextStyles.merriWeather.copyWith(
+              style: const TextStyle(
+                fontFamily: 'Roboto',
                 color: _kNavColor,
-                fontSize: Dimens.fontSizeSmall,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
