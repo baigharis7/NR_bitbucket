@@ -1,126 +1,675 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/meal_time.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_arguments_model.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
+import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/favoritestabs/view/favorites_tab_holder.dart';
+import 'package:nutrenaissance_flutter/presentation/fecesurinedetails/view/feces_urine_tabs.dart';
+import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/recipes/common/view/recipe_tabs_holder.dart';
+import 'package:nutrenaissance_flutter/presentation/recommendations/common/view/recommendations_tabs_holder.dart';
+import 'package:nutrenaissance_flutter/presentation/routinestabs/view/routines_tab_holder.dart';
+import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements_screen.dart';
 import '../../infrastructure/utils/app_color.dart';
 import '../../infrastructure/utils/dimens.dart';
-import '../dashboard/view/dashboard_screen.dart';
-import '../journal/view/journal_screen.dart';
-import '../recipes/common/view/recipe_tabs_holder.dart';
-import '../recommendations/common/view/recommendations_tabs_holder.dart';
+
+const _kNavColor = Color(0xFF28421D);
 
 class CustomBottomNaviBarWidget extends StatefulWidget {
   final int activePosition;
-  const CustomBottomNaviBarWidget({super.key, required this.activePosition});
+  final DateTime? selectedDateTime;
+
+  const CustomBottomNaviBarWidget({
+    super.key,
+    required this.activePosition,
+    this.selectedDateTime,
+  });
 
   @override
-  State<CustomBottomNaviBarWidget> createState() => _CustomBottomNaviBarWidgetState();
+  State<CustomBottomNaviBarWidget> createState() =>
+      _CustomBottomNaviBarWidgetState();
 }
 
-class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget> {
-  // int currentPosition = 0;
+class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
+    with TickerProviderStateMixin {
+  late AnimationController _menuAnimController;
+  late AnimationController _plusAnimController;
+
+  @override
+  void initState() {
+    super.initState();
+    _menuAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _plusAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
+
+  @override
+  void dispose() {
+    _menuAnimController.dispose();
+    _plusAnimController.dispose();
+    _scrimEntry?.remove();
+    _menuEntry?.remove();
+    _plusScrimEntry?.remove();
+    _plusMenuEntry?.remove();
+    super.dispose();
+  }
+
+  // ── + button overlay panel ─────────────────────────────────────────
+  bool _plusOpen = false;
+  OverlayEntry? _plusScrimEntry;
+  OverlayEntry? _plusMenuEntry;
+
+
+  void _onPlusTap() {
+    if (_plusOpen) {
+      _closePlusMenu();
+    } else {
+      _openPlusMenu();
+    }
+  }
+
+  void _openPlusMenu() {
+    // Close the hamburger menu if open
+    _closeMenu();
+
+    final l10n = AppLocalizations.of(context)!;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final selectedDateTime = widget.selectedDateTime ?? DateTime.now();
+
+    final mealItems = MealTime.getAllMealTimes().map((e) => {
+      'label': e.name,
+      'icon': 'assets/images/meal_time_${e.id.orZero()}.png',
+      'onTap': () {
+        _closePlusMenu();
+        Navigator.pushNamed(
+          context,
+          AddFoodEventScreen.routeName,
+          arguments: FoodArgumentsModel(
+            mealTime: e,
+            selectedDateTime: selectedDateTime,
+          ),
+        );
+      },
+    }).toList();
+
+    final otherItems = [
+      {
+        'label': l10n.supplements,
+        'icon': 'assets/images/supplement.png',
+        'onTap': () { _closePlusMenu(); Navigator.pushNamed(context, SupplementsScreen.routeName); },
+      },
+      {
+        'label': l10n.physical_activity,
+        'icon': 'assets/images/sport.png',
+        'onTap': () { _closePlusMenu(); Navigator.pushNamed(context, AddSportEventScreen.routeName, arguments: selectedDateTime); },
+      },
+      {
+        'label': l10n.faeces_urine,
+        'icon': 'assets/images/feces_urine.png',
+        'onTap': () { _closePlusMenu(); Navigator.pushNamed(context, FecesUrineTabs.routeName); },
+      },
+    ];
+
+    setState(() {
+      _plusOpen = true;
+      _plusAnimController.forward();
+    });
+
+    // Scrim to dismiss on tap
+    _plusScrimEntry = OverlayEntry(
+      builder: (_) => GestureDetector(
+        onTap: _closePlusMenu,
+        behavior: HitTestBehavior.opaque,
+        child: const SizedBox.expand(),
+      ),
+    );
+
+    // Menu panel positioned above the navbar
+    _plusMenuEntry = OverlayEntry(
+      builder: (_) => Positioned(
+        left: 0,
+        right: 0,
+        bottom: 65 + 8 + bottomPadding,
+        child: FadeTransition(
+          opacity: CurvedAnimation(
+            parent: _plusAnimController,
+            curve: Curves.easeInOut,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.95),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: const [
+                BoxShadow(
+                  color: AppColors.black25Percent,
+                  offset: Offset(0, 2),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Food section label
+                Text(
+                  l10n.food,
+                  style: AppTextStyles.merriWeather.copyWith(
+                    color: _kNavColor,
+                    fontSize: Dimens.fontSizeLarge,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // Meal time items in a row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: mealItems.map((item) => _PlusGridItem(
+                    label: item['label'] as String,
+                    assetIcon: item['icon'] as String,
+                    onTap: item['onTap'] as VoidCallback,
+                  )).toList(),
+                ),
+                const SizedBox(height: 16),
+                // Divider
+                Divider(color: _kNavColor.withOpacity(0.1), height: 1),
+                const SizedBox(height: 16),
+                // Other items in a row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: otherItems.map((item) => _PlusGridItem(
+                    label: item['label'] as String,
+                    assetIcon: item['icon'] as String,
+                    onTap: item['onTap'] as VoidCallback,
+                  )).toList(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final overlay = Overlay.of(context);
+    overlay.insertAll([_plusScrimEntry!, _plusMenuEntry!]);
+  }
+
+  void _closePlusMenu() {
+    if (!_plusOpen) return;
+    setState(() {
+      _plusOpen = false;
+    });
+    _plusAnimController.reverse().then((_) {
+      _plusScrimEntry?.remove();
+      _plusScrimEntry = null;
+      _plusMenuEntry?.remove();
+      _plusMenuEntry = null;
+    });
+  }
+
+  // ── Menu panel ────────────────────────────────────────────────────────
+  bool _menuOpen = false;
+  OverlayEntry? _scrimEntry;
+  OverlayEntry? _menuEntry;
+
+  void _toggleMenu() {
+    if (_menuOpen) {
+      _closeMenu();
+    } else {
+      _openMenu();
+    }
+  }
+
+  void _openMenu() {
+    // Close the plus menu if open
+    _closePlusMenu();
+
+    final l10n = AppLocalizations.of(context)!;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
+    setState(() {
+      _menuOpen = true;
+      _menuAnimController.forward();
+    });
+
+    _scrimEntry = OverlayEntry(
+      builder: (_) => GestureDetector(
+        onTap: _closeMenu,
+        behavior: HitTestBehavior.opaque,
+        child: const SizedBox.expand(),
+      ),
+    );
+
+    _menuEntry = OverlayEntry(
+      builder: (_) => Positioned(
+        left: 0,
+        right: 0,
+        bottom: 65 + 8 + bottomPadding,
+        child: FadeTransition(
+          opacity: CurvedAnimation(
+            parent: _menuAnimController,
+            curve: Curves.easeInOut,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.95),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: const [
+                BoxShadow(
+                  color: AppColors.black25Percent,
+                  offset: Offset(0, 2),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _MenuGridItem(
+                      icon: Icons.person_outline,
+                      label: l10n.profile,
+                      onTap: () => _navigateFromMenu(ProfileScreen.routeName),
+                    ),
+                    _MenuGridItem(
+                      icon: Icons.history,
+                      label: l10n.routines,
+                      onTap: () => _navigateFromMenu(RoutinesTabHolder.routeName),
+                    ),
+                    _MenuGridItem(
+                      icon: Icons.star_outline_rounded,
+                      label: l10n.favorites,
+                      onTap: () => _navigateFromMenu(FavoritesTabHolder.routeName),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _MenuGridItem(
+                      icon: Icons.lightbulb_outline,
+                      label: l10n.tips,
+                      onTap: () => _navigateFromMenu(RecommendationsTabHolder.routeName),
+                    ),
+                    _MenuGridItem(
+                      icon: Icons.bar_chart_rounded,
+                      label: 'Progress',
+                      onTap: () => _closeMenu(),
+                    ),
+                    _MenuGridItem(
+                      icon: Icons.menu_book_rounded,
+                      label: l10n.recipes,
+                      onTap: () => _navigateFromMenu(RecipesTabsHolder.routeName),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final overlay = Overlay.of(context);
+    overlay.insertAll([_scrimEntry!, _menuEntry!]);
+  }
+
+  void _closeMenu() {
+    if (!_menuOpen) return;
+    setState(() {
+      _menuOpen = false;
+    });
+    _menuAnimController.reverse().then((_) {
+      _scrimEntry?.remove();
+      _scrimEntry = null;
+      _menuEntry?.remove();
+      _menuEntry = null;
+    });
+  }
+
+  void _navigateFromMenu(String routeName) {
+    _closeMenu();
+    if (ModalRoute.of(context)?.settings.name != routeName) {
+      Navigator.pushNamedAndRemoveUntil(context, routeName, (route) => false);
+    }
+  }
+
+  // ── Build ────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    return Container(
-      clipBehavior: Clip.hardEdge,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        boxShadow: [BoxShadow(
-          color: AppColors.black25Percent,
-          offset: Offset(-3, -3),
-          blurRadius: 5
-        )]
-      ),
-      child: BottomNavigationBar(
-        selectedItemColor: AppColors.darkJungleGreen,
-        currentIndex: widget.activePosition,
-        // currentIndex: currentPosition,
-        showUnselectedLabels: true,
-        unselectedItemColor: AppColors.cloudyGrey,
-        type: BottomNavigationBarType.fixed,
-        unselectedFontSize: Dimens.fontSizeSmall,
-        selectedFontSize: Dimens.fontSizeSmall,
-        iconSize: 20,
-        items: [
-          BottomNavigationBarItem(icon: SizedBox(height: 35, child: SvgPicture.asset('assets/images/start.svg', colorFilter: const ColorFilter.mode(AppColors.cloudyGrey, BlendMode.srcIn),)), label: AppLocalizations.of(context)!.start, activeIcon: SizedBox(height: 35,
-            child: SvgPicture.asset(
-              'assets/images/start.svg',
-              colorFilter: const ColorFilter.mode(AppColors.darkJungleGreen, BlendMode.srcIn),
+    final l10n = AppLocalizations.of(context)!;
+
+    return SizedBox(
+      height: 65,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // The bar with notch cutout around the + button
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _NotchedBarPainter(
+                color: Colors.white.withOpacity(0.95),
+                notchRadius: 42,
+                cornerRadius: 20,
+              ),
+              child: Row(
+                children: [
+                  // Dashboard
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        _closeMenu();
+                        _closePlusMenu();
+                        if (ModalRoute.of(context)?.settings.name !=
+                            DashboardScreen.routeName) {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            DashboardScreen.routeName,
+                            (route) => false,
+                          );
+                        }
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 28,
+                            child: SvgPicture.asset(
+                              'assets/images/start.svg',
+                              colorFilter: ColorFilter.mode(
+                                widget.activePosition == 0
+                                    ? _kNavColor
+                                    : AppColors.cloudyGrey,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            l10n.start,
+                            style: AppTextStyles.merriWeather.copyWith(
+                              color: widget.activePosition == 0
+                                  ? _kNavColor
+                                  : AppColors.cloudyGrey,
+                              fontSize: Dimens.fontSizeSmall,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Space for center button
+                  const SizedBox(width: 80),
+
+                  // Menu
+                  Expanded(
+                    child: InkWell(
+                      onTap: _toggleMenu,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AnimatedIcon(
+                            icon: AnimatedIcons.menu_close,
+                            progress: _menuAnimController,
+                            color: _kNavColor,
+                            size: 26,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            l10n.menu,
+                            style: AppTextStyles.merriWeather.copyWith(
+                              color: _kNavColor,
+                              fontSize: Dimens.fontSizeSmall,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ), tooltip: AppLocalizations.of(context)!.start,),
-          // BottomNavigationBarItem(icon: SizedBox(height: 35, child: SvgPicture.asset('assets/images/diary.svg', colorFilter: const ColorFilter.mode(AppColors.cloudyGrey, BlendMode.srcIn),)), label: AppLocalizations.of(context)!.diary, activeIcon: SizedBox(height: 35,
-          //   child: SvgPicture.asset(
-          //     'assets/images/diary.svg',
-          //     colorFilter: const ColorFilter.mode(AppColors.darkJungleGreen, BlendMode.srcIn),
-          //   ),
-          // ), tooltip: AppLocalizations.of(context)!.diary,),
-          BottomNavigationBarItem(icon: SizedBox(height: 35, child: SvgPicture.asset('assets/images/tips.svg', colorFilter: const ColorFilter.mode(AppColors.cloudyGrey, BlendMode.srcIn),)), label: AppLocalizations.of(context)!.tips, activeIcon: SizedBox(height: 35,
-            child: SvgPicture.asset(
-              'assets/images/tips.svg',
-              colorFilter: const ColorFilter.mode(AppColors.darkJungleGreen, BlendMode.srcIn),
+          ),
+
+          // Center + button
+          Positioned(
+            top: -22,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: GestureDetector(
+                onTap: _onPlusTap,
+                child: Container(
+                  width: 72,
+                  height: 72,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [AppColors.greenCyan, AppColors.bluishGreen],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      stops: [0.0, 0.7],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0x5015A95F),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: AnimatedRotation(
+                    turns: _plusOpen ? 0.125 : 0, // 45 degrees = + becomes ×
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    child: const Icon(Icons.add, color: Colors.white, size: 32),
+                  ),
+                ),
+              ),
             ),
-          ), tooltip: AppLocalizations.of(context)!.tips,),
-          BottomNavigationBarItem(icon: SizedBox(height: 35, child: SvgPicture.asset('assets/images/recipes.svg', colorFilter: const ColorFilter.mode(AppColors.cloudyGrey, BlendMode.srcIn),)), label: AppLocalizations.of(context)!.recipes, activeIcon: SizedBox(height: 35,
-            child: SvgPicture.asset(
-              'assets/images/recipes.svg',
-              colorFilter: const ColorFilter.mode(AppColors.darkJungleGreen, BlendMode.srcIn),
-            ),
-          ), tooltip: AppLocalizations.of(context)!.recipes,),
-          BottomNavigationBarItem(icon: SizedBox(height: 35, child: SvgPicture.asset('assets/images/profile.svg', colorFilter: const ColorFilter.mode(AppColors.cloudyGrey, BlendMode.srcIn),)), label: AppLocalizations.of(context)!.profile, activeIcon: SizedBox(height: 35,
-            child: SvgPicture.asset(
-              'assets/images/profile.svg',
-              colorFilter: const ColorFilter.mode(AppColors.darkJungleGreen, BlendMode.srcIn),
-            ),
-          ), tooltip: AppLocalizations.of(context)!.profile,),
+          ),
         ],
-        onTap: (value) {
-          // currentPosition = value;
-          // ToastHelper().showToast(text: value.toString());
-          // setState(() {});
-          switch(value) {
-            case 0: {
-              if (ModalRoute.of(context)!.settings.name != DashboardScreen.routeName) {
-                // Navigator.popAndPushNamed(context, DashboardScreen.routeName).then((value) {});
-                Navigator.pushNamedAndRemoveUntil(context, DashboardScreen.routeName, (route) => false,).then((value) => {});
-              }
-            }
-            break;
+      ),
+    );
+  }
+}
 
-            // case 1: {
-            //   if (ModalRoute.of(context)!.settings.name != JournalScreen.routeName) {
-            //     // Navigator.popAndPushNamed(context, JournalScreen.routeName).then((value) {});
-            //     Navigator.pushNamedAndRemoveUntil(context, JournalScreen.routeName, (route) => false,).then((value) => {});
-            //   }
-            // }
-            // break;
+class _NotchedBarPainter extends CustomPainter {
+  final Color color;
+  final double notchRadius;
+  final double cornerRadius;
 
-            case 1: {
-              if (ModalRoute.of(context)!.settings.name != RecommendationsTabHolder.routeName) {
-                // Navigator.popAndPushNamed(context, RecommendationsTabHolder.routeName).then((value) {});
-                Navigator.pushNamedAndRemoveUntil(context, RecommendationsTabHolder.routeName, (route) => false,).then((value) => {});
-              }
-            }
-            break;
+  _NotchedBarPainter({
+    required this.color,
+    required this.notchRadius,
+    required this.cornerRadius,
+  });
 
-            case 2: {
-              if (ModalRoute.of(context)!.settings.name != RecipesTabsHolder.routeName) {
-                // Navigator.popAndPushNamed(context, RecipesTabsHolder.routeName).then((value) {});
-                Navigator.pushNamedAndRemoveUntil(context, RecipesTabsHolder.routeName, (route) => false,).then((value) => {});
-              }
-            }
-            break;
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
 
-            case 3: {
-              if (ModalRoute.of(context)!.settings.name != ProfileScreen.routeName) {
-                // Navigator.popAndPushNamed(context, RecipesTabsHolder.routeName).then((value) {});
-                Navigator.pushNamedAndRemoveUntil(context, ProfileScreen.routeName, (route) => false,).then((value) => {});
-              }
-            }
-            break;
-          }
-        },
+    final shadowPaint = Paint()
+      ..color = AppColors.black25Percent
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
+
+    final centerX = size.width / 2;
+    // Button: 72x72, bump rises above bar top
+    const bumpPeek = 26.0;
+    // Half-width of the bump area — narrower to hug tighter
+    const bumpHalfWidth = 39.0;
+
+    final path = Path();
+
+    // Start from top-left with corner radius
+    path.moveTo(0, cornerRadius);
+    path.quadraticBezierTo(0, 0, cornerRadius, 0);
+
+    // Top edge left side → approach the bump
+    path.lineTo(centerX - bumpHalfWidth, 0);
+
+    // Left side of bump: smooth cubic bezier curving up (same style as _BumpCardPainter)
+    path.cubicTo(
+      centerX - bumpHalfWidth * 0.73, -bumpPeek * 0.62,  // cp1
+      centerX - bumpHalfWidth * 0.38, -bumpPeek,           // cp2
+      centerX, -bumpPeek,                                    // peak center
+    );
+
+    // Right side of bump: smooth cubic bezier curving back down
+    path.cubicTo(
+      centerX + bumpHalfWidth * 0.38, -bumpPeek,           // cp1
+      centerX + bumpHalfWidth * 0.73, -bumpPeek * 0.62,    // cp2
+      centerX + bumpHalfWidth, 0,                            // back to bar top
+    );
+
+    // Line to top-right corner
+    path.lineTo(size.width - cornerRadius, 0);
+    path.quadraticBezierTo(size.width, 0, size.width, cornerRadius);
+
+    // Down right side, across bottom, up left side
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+
+    // Draw shadow first, then fill
+    canvas.drawPath(path.shift(const Offset(0, -2)), shadowPaint);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _NotchedBarPainter oldDelegate) =>
+      color != oldDelegate.color ||
+      notchRadius != oldDelegate.notchRadius ||
+      cornerRadius != oldDelegate.cornerRadius;
+}
+
+class _MenuGridItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _MenuGridItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: 100,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                border: Border.all(color: _kNavColor.withOpacity(0.3), width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Icon(icon, color: _kNavColor, size: 30),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: AppTextStyles.merriWeather.copyWith(
+                color: _kNavColor,
+                fontSize: Dimens.fontSizeSmall,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PlusGridItem extends StatelessWidget {
+  final String label;
+  final String assetIcon;
+  final VoidCallback onTap;
+
+  const _PlusGridItem({
+    required this.label,
+    required this.assetIcon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: 80,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                border: Border.all(color: _kNavColor.withOpacity(0.3), width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Image.asset(assetIcon, width: 32, height: 32),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: AppTextStyles.merriWeather.copyWith(
+                color: _kNavColor,
+                fontSize: Dimens.fontSizeSmall,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
