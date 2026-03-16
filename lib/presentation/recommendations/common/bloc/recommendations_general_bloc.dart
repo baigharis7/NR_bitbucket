@@ -142,14 +142,19 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
 
         state.recommendation = recommendation;
         state.recommendationFoodsItems = recommendation!.foodList
-            .map((groupRecommendation) =>
-            RecommendationsFoodItem(
-              recommendationGroup: findRecommendationGroup(groupRecommendation.recGroup),
-              objFoods: getRecommendationFoodInfo(groupRecommendation.objFoods),
-              deficitFoods: getRecommendationFoodInfo(groupRecommendation.deficitFoods),
-              usualHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualHealthyFoods.orEmpty()),
-              usualUnHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualUnhealthyFoods.orEmpty()),
-            )).toList();
+            .map((groupRecommendation) {
+              final objFoodIds = groupRecommendation.objFoods.toSet();
+              final dedupedDeficitFoods = groupRecommendation.deficitFoods
+                  .where((id) => !objFoodIds.contains(id))
+                  .toList();
+              return RecommendationsFoodItem(
+                recommendationGroup: findRecommendationGroup(groupRecommendation.recGroup),
+                objFoods: getRecommendationFoodInfo(groupRecommendation.objFoods),
+                deficitFoods: getRecommendationFoodInfo(dedupedDeficitFoods),
+                usualHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualHealthyFoods.orEmpty()),
+                usualUnHealthyFoods: getRecommendationOfUsualFoods(groupRecommendation.usualFoods.usualUnhealthyFoods.orEmpty()),
+              );
+            }).toList();
 
         // Ensure saved foods appear in their group's dropdown
         _ensureSavedFoodsVisible();
