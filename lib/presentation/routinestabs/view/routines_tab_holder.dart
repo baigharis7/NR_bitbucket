@@ -311,7 +311,7 @@ class _RoutinesTabHolderState extends State<RoutinesTabHolder> with TickerProvid
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
+                    margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge, bottom: 30),
                     child: GeneralButton(
                       title: AppLocalizations.of(context)!.add,
                       onTap: _onFabPressed,

@@ -414,7 +414,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                               ),
                             ),
                             if (state.foodEvent!.ingredients.orEmpty().isNotEmpty) Container(
-                              margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall, vertical: Dimens.marginSmall),
+                              margin: const EdgeInsets.fromLTRB(Dimens.marginSmall, Dimens.marginSmall, Dimens.marginSmall, 30),
                               child: GeneralButton(onTap: () {
                                       if(state.foodEvent!.ingredients.isEmpty) {
                                         if (!state.foodsFromFavorite.isNull()) {

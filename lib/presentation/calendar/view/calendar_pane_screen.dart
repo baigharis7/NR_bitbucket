@@ -975,7 +975,7 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
         ),
         Container(
           color: Colors.white.withValues(alpha: 0.50),
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 37),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

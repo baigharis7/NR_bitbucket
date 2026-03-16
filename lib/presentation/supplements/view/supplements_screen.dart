@@ -519,7 +519,7 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                           ),
                         ),
                         if (state.supplementObj?.info?.orEmpty().isNotEmpty == true) Container(
-                          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginSmall),
+                          margin: const EdgeInsets.fromLTRB(Dimens.marginNormal, Dimens.marginSmall, Dimens.marginNormal, 30),
                           child: GeneralButton(
                             onTap: () {
                               // Validate amounts

@@ -89,7 +89,7 @@ class _FecesScreenState extends State<FecesScreen> {
               ),
             ),
             bottomNavigationBar: Container(
-              margin: const EdgeInsets.all(Dimens.marginNormal),
+              margin: const EdgeInsets.fromLTRB(Dimens.marginNormal, Dimens.marginNormal, Dimens.marginNormal, 30),
               child: GeneralButton(
                 title: AppLocalizations.of(context)!.save,
                 onTap: () => fecesUrineBloc.add(UploadFecesEventAction(

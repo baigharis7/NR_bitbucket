@@ -142,7 +142,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
               ],),),
             ),
             Container(
-              margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge, bottom: Dimens.marginSmall),
+              margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge, bottom: 30),
               child: GeneralButton(
                 title: AppLocalizations.of(context)!.add,
                 onTap: () => Navigator.pushNamed(context, AddSportEventScreen.routeName).then((value) => Navigator.pop(context)),

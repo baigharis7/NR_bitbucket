@@ -91,7 +91,7 @@ class _UrineScreenState extends State<UrineScreen> {
             ),
           ),
           bottomNavigationBar: Container(
-            margin: const EdgeInsets.all(Dimens.marginNormal),
+            margin: const EdgeInsets.fromLTRB(Dimens.marginNormal, Dimens.marginNormal, Dimens.marginNormal, 30),
             child: GeneralButton(
               title: AppLocalizations.of(context)!.save,
               onTap: () => fecesUrineBloc.add(UploadUrineEventAction(onFinish: () => _showConfirmationDialog(

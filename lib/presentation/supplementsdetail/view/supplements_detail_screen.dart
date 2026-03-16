@@ -208,7 +208,7 @@ class _SupplementsDetailScreen extends State<SupplementsDetailScreen> with Midni
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge, bottom: Dimens.marginSmall),
+                      margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge, bottom: 30),
                       child: GeneralButton(
                         title: AppLocalizations.of(context)!.add,
                         onTap: () => Navigator.popAndPushNamed(context, SupplementsScreen.routeName),

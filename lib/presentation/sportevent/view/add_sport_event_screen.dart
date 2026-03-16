@@ -408,7 +408,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                         ),
                       ),
                       if (state.sportSimpleEvent?.info?.orEmpty().isNotEmpty == true) Container(
-                        margin: const EdgeInsets.all(Dimens.marginLarge),
+                        margin: const EdgeInsets.fromLTRB(Dimens.marginLarge, Dimens.marginLarge, Dimens.marginLarge, 30),
                         child: GeneralButton(onTap: () {
                             if (bloc.validateSportList() ?? true) {
                               setState(() { _showValidation = true; });
