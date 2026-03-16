@@ -183,7 +183,7 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
       builder: (_) => GestureDetector(
         onTap: _closePlusMenu,
         behavior: HitTestBehavior.opaque,
-        child: const SizedBox.expand(),
+        child: Container(color: Colors.black.withOpacity(0.3)),
       ),
     );
 
@@ -302,7 +302,7 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
       builder: (_) => GestureDetector(
         onTap: _closeMenu,
         behavior: HitTestBehavior.opaque,
-        child: const SizedBox.expand(),
+        child: Container(color: Colors.black.withOpacity(0.3)),
       ),
     );
 
@@ -571,40 +571,49 @@ class _NotchedBarPainter extends CustomPainter {
     // Half-width of the bump area — narrower to hug tighter
     const bumpHalfWidth = 39.0;
 
+    // Shadow path: rounded top corners with bump (for the shadow outline)
+    final shadowPath = Path();
+    shadowPath.moveTo(0, cornerRadius);
+    shadowPath.quadraticBezierTo(0, 0, cornerRadius, 0);
+    shadowPath.lineTo(centerX - bumpHalfWidth, 0);
+    shadowPath.cubicTo(
+      centerX - bumpHalfWidth * 0.73, -bumpPeek * 0.62,
+      centerX - bumpHalfWidth * 0.38, -bumpPeek,
+      centerX, -bumpPeek,
+    );
+    shadowPath.cubicTo(
+      centerX + bumpHalfWidth * 0.38, -bumpPeek,
+      centerX + bumpHalfWidth * 0.73, -bumpPeek * 0.62,
+      centerX + bumpHalfWidth, 0,
+    );
+    shadowPath.lineTo(size.width - cornerRadius, 0);
+    shadowPath.quadraticBezierTo(size.width, 0, size.width, cornerRadius);
+    shadowPath.lineTo(size.width, size.height);
+    shadowPath.lineTo(0, size.height);
+    shadowPath.close();
+
+    // Fill path: full rectangle with bump (no rounded corners — avoids
+    // transparent corner gaps that show the dark background behind)
     final path = Path();
-
-    // Start from top-left with corner radius
-    path.moveTo(0, cornerRadius);
-    path.quadraticBezierTo(0, 0, cornerRadius, 0);
-
-    // Top edge left side → approach the bump
+    path.moveTo(0, 0);
     path.lineTo(centerX - bumpHalfWidth, 0);
-
-    // Left side of bump: smooth cubic bezier curving up (same style as _BumpCardPainter)
     path.cubicTo(
-      centerX - bumpHalfWidth * 0.73, -bumpPeek * 0.62,  // cp1
-      centerX - bumpHalfWidth * 0.38, -bumpPeek,           // cp2
-      centerX, -bumpPeek,                                    // peak center
+      centerX - bumpHalfWidth * 0.73, -bumpPeek * 0.62,
+      centerX - bumpHalfWidth * 0.38, -bumpPeek,
+      centerX, -bumpPeek,
     );
-
-    // Right side of bump: smooth cubic bezier curving back down
     path.cubicTo(
-      centerX + bumpHalfWidth * 0.38, -bumpPeek,           // cp1
-      centerX + bumpHalfWidth * 0.73, -bumpPeek * 0.62,    // cp2
-      centerX + bumpHalfWidth, 0,                            // back to bar top
+      centerX + bumpHalfWidth * 0.38, -bumpPeek,
+      centerX + bumpHalfWidth * 0.73, -bumpPeek * 0.62,
+      centerX + bumpHalfWidth, 0,
     );
-
-    // Line to top-right corner
-    path.lineTo(size.width - cornerRadius, 0);
-    path.quadraticBezierTo(size.width, 0, size.width, cornerRadius);
-
-    // Down right side, across bottom, up left side
+    path.lineTo(size.width, 0);
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);
     path.close();
 
-    // Draw shadow first, then fill
-    canvas.drawPath(path.shift(const Offset(0, -2)), shadowPaint);
+    // Draw rounded shadow first, then the full fill
+    canvas.drawPath(shadowPath.shift(const Offset(0, -2)), shadowPaint);
     canvas.drawPath(path, paint);
   }
 
@@ -636,8 +645,8 @@ class _MenuGridItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 64,
-              height: 64,
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white,
