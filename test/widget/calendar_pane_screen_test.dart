@@ -592,7 +592,7 @@ void main() {
     });
 
     testWidgets(
-        'logged food event hides matching programmed food routine but keeps others',
+        'logged food event hides matching programmed food routine but keeps unlogged sport',
         (tester) async {
       setTestSurface(tester);
       final todayWeekday = today.weekday;
@@ -639,8 +639,61 @@ void main() {
       // Morning Oats shows as LOGGED (not duplicated as PROGRAMMED)
       expect(find.text('Morning Oats'), findsOneWidget);
       expect(find.text('LOGGED'), findsOneWidget);
-      // Yoga still shows as PROGRAMMED
+      // Yoga hasn't fired yet, still shows as PROGRAMMED
       expect(find.text('Yoga'), findsOneWidget);
+      expect(find.text('PROGRAMMED'), findsOneWidget);
+    });
+
+    testWidgets(
+        'logged sport event hides matching programmed sport routine',
+        (tester) async {
+      setTestSurface(tester);
+      final todayWeekday = today.weekday;
+      final yogaMillis = DateTime(today.year, today.month, today.day, 7)
+          .millisecondsSinceEpoch;
+      final events = DashboardAllCalendarEvents(
+        foodEvents: [],
+        sportEvents: [makeSportEvent(sportName: 'Yoga', eventDate: yogaMillis)],
+        liquidEvents: [],
+        waterEvents: [],
+        creatineEvent: [],
+        collagenEvent: [],
+        faecesEvents: [],
+        urineEvents: [],
+        supplementEvents: [],
+      );
+
+      await tester.pumpWidget(buildTestWidget(
+        allCalendarEvents: events,
+        programmedWeekdays: {todayWeekday},
+        sportRoutines: [
+          SportRoutineCompleted(
+            userId: 'test',
+            eventId: 1,
+            eventDate: todayMillis,
+            sportName: 'Yoga',
+            info: [],
+            daysOfWeek: [todayWeekday],
+            scheduleTime: '07:00',
+          ),
+          SportRoutineCompleted(
+            userId: 'test',
+            eventId: 2,
+            eventDate: todayMillis,
+            sportName: 'Evening Run',
+            info: [],
+            daysOfWeek: [todayWeekday],
+            scheduleTime: '18:00',
+          ),
+        ],
+      ));
+      await tester.pumpAndSettle();
+
+      // Yoga: logged event replaces programmed routine
+      expect(find.text('Yoga'), findsOneWidget);
+      expect(find.text('LOGGED'), findsOneWidget);
+      // Evening Run: hasn't fired yet
+      expect(find.text('Evening Run'), findsOneWidget);
       expect(find.text('PROGRAMMED'), findsOneWidget);
     });
 
