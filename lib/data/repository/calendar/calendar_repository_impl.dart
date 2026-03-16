@@ -52,6 +52,7 @@ class CalendarRepositoryImpl extends CalendarRepository {
     final collagenEvents = await supplementsRepository.getAllCollagenEvents()..sort((a, b) => (a.eventId!).compareTo(b.eventId!),);
     final faecesEvents = await fecesUrineRepository.getFecesEvents()..sort((a, b) => (a.eventId).compareTo(b.eventId),);
     final urineEvents = await fecesUrineRepository.getUrineEvents()..sort((a, b) => (a.eventId).compareTo(b.eventId),);
+    final supplementEvents = await supplementsRepository.getAllSupplementEvents()..sort((a, b) => (a.eventDate ?? 0).compareTo(b.eventDate ?? 0));
 
     return DashboardAllCalendarEvents(
       foodEvents: foodEvents,
@@ -62,6 +63,7 @@ class CalendarRepositoryImpl extends CalendarRepository {
       collagenEvent: collagenEvents,
       faecesEvents: faecesEvents,
       urineEvents: urineEvents,
+      supplementEvents: supplementEvents,
     );
   }
 

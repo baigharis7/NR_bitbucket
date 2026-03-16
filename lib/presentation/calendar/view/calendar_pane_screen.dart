@@ -73,14 +73,23 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
 
   bool _isToday(DateTime date) => _isSameDay(date, DateTime.now());
 
-  /// Returns only food and sport events (routines) for the given day.
+  /// Returns food, sport, and supplement events for the given day.
   List<dynamic> _getRoutineEventsForDay(DateTime date) {
     if (widget.allCalendarEvents == null) return [];
     final allEvents = widget.eventsHelper.foundEventsFromGivenDate(
         widget.allCalendarEvents!, date);
-    return allEvents
+    final routineEvents = allEvents
         .where((e) => e is FoodEventComplete || e is SportEventComplete)
         .toList();
+    // Supplement events aren't in foundEventsFromGivenDate, filter separately
+    final supplementEvents = widget.allCalendarEvents!.supplementEvents ?? [];
+    for (final s in supplementEvents) {
+      if (s.eventDate != null && _isSameDay(date,
+          DateTime.fromMillisecondsSinceEpoch(s.eventDate!))) {
+        routineEvents.add(s);
+      }
+    }
+    return routineEvents;
   }
 
   /// Returns whether any events at all exist for the given day (for calendar dots).
@@ -132,6 +141,60 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
       }
     }
     return items;
+  }
+
+  /// Returns programmed routines that don't have a matching logged event.
+  List<_ProgrammedRoutineItem> _getUnloggedProgrammedRoutines(
+      DateTime date, List<dynamic> loggedEvents) {
+    final allProgrammed = _getProgrammedRoutinesForDay(date);
+    if (loggedEvents.isEmpty) return allProgrammed;
+
+    // Count logged food (by name+mealType), sport (by name), supplement (by name)
+    final loggedFoods = <String, int>{};
+    final loggedSports = <String, int>{};
+    final loggedSupplements = <String, int>{};
+    for (final e in loggedEvents) {
+      if (e is FoodEventComplete) {
+        final key =
+            '${(e.foodName ?? '').toLowerCase()}|${e.mealType ?? 0}';
+        loggedFoods[key] = (loggedFoods[key] ?? 0) + 1;
+      } else if (e is SportEventComplete) {
+        final key = (e.sportName ?? '').toLowerCase();
+        loggedSports[key] = (loggedSports[key] ?? 0) + 1;
+      } else if (e is SupplementSimple) {
+        final key = (e.name ?? '').toLowerCase();
+        loggedSupplements[key] = (loggedSupplements[key] ?? 0) + 1;
+      }
+    }
+
+    return allProgrammed.where((p) {
+      if (p.type == _RoutineType.food) {
+        final key = '${p.title.toLowerCase()}|${p.mealType}';
+        final count = loggedFoods[key] ?? 0;
+        if (count > 0) {
+          loggedFoods[key] = count - 1;
+          return false; // matched to a logged event
+        }
+        return true;
+      } else if (p.type == _RoutineType.sport) {
+        final key = p.title.toLowerCase();
+        final count = loggedSports[key] ?? 0;
+        if (count > 0) {
+          loggedSports[key] = count - 1;
+          return false;
+        }
+        return true;
+      } else if (p.type == _RoutineType.supplement) {
+        final key = p.title.toLowerCase();
+        final count = loggedSupplements[key] ?? 0;
+        if (count > 0) {
+          loggedSupplements[key] = count - 1;
+          return false;
+        }
+        return true;
+      }
+      return true;
+    }).toList();
   }
 
   @override
@@ -574,21 +637,41 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
           ? (a.eventDate ?? 0)
           : a is SportEventComplete
               ? a.eventDate
-              : 0;
+              : a is SupplementSimple
+                  ? (a.eventDate ?? 0)
+                  : 0;
       final bDate = b is FoodEventComplete
           ? (b.eventDate ?? 0)
           : b is SportEventComplete
               ? b.eventDate
-              : 0;
+              : b is SupplementSimple
+                  ? (b.eventDate ?? 0)
+                  : 0;
       return aDate.compareTo(bDate);
     });
 
-    // For days with no logged events, show programmed routines
-    final programmedRoutines = routineEvents.isEmpty
-        ? _getProgrammedRoutinesForDay(_selectedDay)
-        : <_ProgrammedRoutineItem>[];
+    // Show programmed routines that don't yet have a matching logged event
+    final programmedRoutines =
+        _getUnloggedProgrammedRoutines(_selectedDay, routineEvents);
 
-    final hasContent = routineEvents.isNotEmpty || programmedRoutines.isNotEmpty;
+    // Build a unified list of diary entries (logged + programmed), sorted by time
+    final diaryEntries = <_DiaryEntry>[];
+    for (final e in routineEvents) {
+      final millis = e is FoodEventComplete
+          ? (e.eventDate ?? 0)
+          : e is SportEventComplete
+              ? e.eventDate
+              : e is SupplementSimple
+                  ? (e.eventDate ?? 0)
+                  : 0;
+      diaryEntries.add(_DiaryEntry(logged: e, sortMinutes: _millisToMinutes(millis)));
+    }
+    for (final p in programmedRoutines) {
+      diaryEntries.add(_DiaryEntry(programmed: p, sortMinutes: _timeStrToMinutes(p.time)));
+    }
+    diaryEntries.sort((a, b) => a.sortMinutes.compareTo(b.sortMinutes));
+
+    final hasContent = diaryEntries.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -636,13 +719,14 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
                     child: ListView.builder(
                       controller: _diaryScrollController,
                       padding: EdgeInsets.zero,
-                      itemCount: routineEvents.length + programmedRoutines.length,
+                      itemCount: diaryEntries.length,
                       itemBuilder: (ctx, i) {
-                        if (i < routineEvents.length) {
-                          return _buildRoutineItem(routineEvents[i], l10n);
+                        final entry = diaryEntries[i];
+                        if (entry.logged != null) {
+                          return _buildRoutineItem(entry.logged!, l10n);
                         }
                         return _buildProgrammedRoutineItem(
-                            programmedRoutines[i - routineEvents.length], l10n);
+                            entry.programmed!, l10n);
                       },
                     ),
                   ),
@@ -652,11 +736,24 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
     );
   }
 
+  int _millisToMinutes(int millis) {
+    final dt = DateTime.fromMillisecondsSinceEpoch(millis);
+    return dt.hour * 60 + dt.minute;
+  }
+
+  int _timeStrToMinutes(String? time) {
+    if (time == null || time.isEmpty) return 9999;
+    final parts = time.split(':');
+    if (parts.length < 2) return 9999;
+    return (int.tryParse(parts[0]) ?? 0) * 60 + (int.tryParse(parts[1]) ?? 0);
+  }
+
   Widget _buildRoutineItem(dynamic event, AppLocalizations l10n) {
     String title = '';
     String subtitle = '';
 
     bool isFoodEvent = false;
+    bool isSupplementEvent = false;
     int mealType = 0;
 
     if (event is FoodEventComplete) {
@@ -674,6 +771,10 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
                   : event.info![0].name_en ?? '')
               : '');
       subtitle = 'WORKOUT - ${_formatEventTime(event.eventDate)}';
+    } else if (event is SupplementSimple) {
+      isSupplementEvent = true;
+      title = event.name ?? '';
+      subtitle = 'SUPPLEMENT - ${_formatEventTime(event.eventDate)}';
     }
 
     return Column(
@@ -691,11 +792,17 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
                         width: 40,
                         height: 40,
                       )
-                    : Image.asset(
-                        'assets/images/sport.png',
-                        width: 40,
-                        height: 40,
-                      ),
+                    : isSupplementEvent
+                        ? Image.asset(
+                            'assets/images/supplement.png',
+                            width: 40,
+                            height: 40,
+                          )
+                        : Image.asset(
+                            'assets/images/sport.png',
+                            width: 40,
+                            height: 40,
+                          ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -1198,4 +1305,12 @@ class _ProgrammedRoutineItem {
     this.time,
     this.mealType = 0,
   });
+}
+
+class _DiaryEntry {
+  final dynamic logged;
+  final _ProgrammedRoutineItem? programmed;
+  final int sortMinutes;
+
+  const _DiaryEntry({this.logged, this.programmed, required this.sortMinutes});
 }

@@ -105,6 +105,12 @@ class SupplementsRepositoryImpl extends SupplementsRepository {
   }
 
   @override
+  Future<List<SupplementSimple>> getAllSupplementEvents() async {
+    final List events = await localStorageRepository.getAllSupplementEvents();
+    return events.map((event) => mapToSupplementSimple(event as SupplementEventsEntity)).toList();
+  }
+
+  @override
   Future<List<SupplementSimple>> getRecentSupplementEvents() async {
     final List events = await localStorageRepository.getRecentSupplementEvents();
     return events.map((event) => mapToSupplementSimple(event as SupplementEventsEntity)).toList();

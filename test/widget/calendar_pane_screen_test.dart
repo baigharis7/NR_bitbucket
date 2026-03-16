@@ -552,5 +552,219 @@ void main() {
       expect(find.text('Creatine'), findsOneWidget);
       expect(find.textContaining('SUPPLEMENT'), findsOneWidget);
     });
+
+    testWidgets(
+        'shows programmed routines alongside logged events for the same day',
+        (tester) async {
+      setTestSurface(tester);
+      final todayWeekday = today.weekday;
+      // One food event is logged, but a supplement routine is still programmed
+      final events = DashboardAllCalendarEvents(
+        foodEvents: [makeFoodEvent(foodName: 'Chicken Salad', mealType: 1)],
+        sportEvents: [],
+        liquidEvents: [],
+        waterEvents: [],
+        creatineEvent: [],
+        collagenEvent: [],
+        faecesEvents: [],
+        urineEvents: [],
+        supplementEvents: [],
+      );
+
+      await tester.pumpWidget(buildTestWidget(
+        allCalendarEvents: events,
+        programmedWeekdays: {todayWeekday},
+        supplementRoutines: [
+          SupplementSimple(
+            name: 'Vitamin D',
+            daysOfWeek: [todayWeekday],
+            scheduleTime: '09:00',
+          ),
+        ],
+      ));
+      await tester.pumpAndSettle();
+
+      // Both should be visible
+      expect(find.text('Chicken Salad'), findsOneWidget);
+      expect(find.text('LOGGED'), findsOneWidget);
+      expect(find.text('Vitamin D'), findsOneWidget);
+      expect(find.text('PROGRAMMED'), findsOneWidget);
+    });
+
+    testWidgets(
+        'logged food event hides matching programmed food routine but keeps others',
+        (tester) async {
+      setTestSurface(tester);
+      final todayWeekday = today.weekday;
+      final events = DashboardAllCalendarEvents(
+        foodEvents: [makeFoodEvent(foodName: 'Morning Oats', mealType: 0)],
+        sportEvents: [],
+        liquidEvents: [],
+        waterEvents: [],
+        creatineEvent: [],
+        collagenEvent: [],
+        faecesEvents: [],
+        urineEvents: [],
+        supplementEvents: [],
+      );
+
+      await tester.pumpWidget(buildTestWidget(
+        allCalendarEvents: events,
+        programmedWeekdays: {todayWeekday},
+        mealRoutines: [
+          FoodRoutineEvent(
+            userId: 'test',
+            eventDate: todayMillis,
+            foodName: 'Morning Oats',
+            comment: null,
+            mealType: 0,
+            daysOfWeek: [todayWeekday],
+            time: '08:00',
+          ),
+        ],
+        sportRoutines: [
+          SportRoutineCompleted(
+            userId: 'test',
+            eventId: 1,
+            eventDate: todayMillis,
+            sportName: 'Yoga',
+            info: [],
+            daysOfWeek: [todayWeekday],
+            scheduleTime: '07:00',
+          ),
+        ],
+      ));
+      await tester.pumpAndSettle();
+
+      // Morning Oats shows as LOGGED (not duplicated as PROGRAMMED)
+      expect(find.text('Morning Oats'), findsOneWidget);
+      expect(find.text('LOGGED'), findsOneWidget);
+      // Yoga still shows as PROGRAMMED
+      expect(find.text('Yoga'), findsOneWidget);
+      expect(find.text('PROGRAMMED'), findsOneWidget);
+    });
+
+    testWidgets('logged supplement event shows as LOGGED with title',
+        (tester) async {
+      setTestSurface(tester);
+      final events = DashboardAllCalendarEvents(
+        foodEvents: [],
+        sportEvents: [],
+        liquidEvents: [],
+        waterEvents: [],
+        creatineEvent: [],
+        collagenEvent: [],
+        faecesEvents: [],
+        urineEvents: [],
+        supplementEvents: [
+          SupplementSimple(
+            userId: 'test',
+            eventId: 100,
+            eventDate: todayMillis,
+            name: 'Vitamin A',
+            info: [],
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(buildTestWidget(allCalendarEvents: events));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Vitamin A'), findsOneWidget);
+      expect(find.textContaining('SUPPLEMENT'), findsOneWidget);
+      expect(find.text('LOGGED'), findsOneWidget);
+    });
+
+    testWidgets(
+        'logged supplement hides matching programmed supplement routine',
+        (tester) async {
+      setTestSurface(tester);
+      final todayWeekday = today.weekday;
+      final events = DashboardAllCalendarEvents(
+        foodEvents: [],
+        sportEvents: [],
+        liquidEvents: [],
+        waterEvents: [],
+        creatineEvent: [],
+        collagenEvent: [],
+        faecesEvents: [],
+        urineEvents: [],
+        supplementEvents: [
+          SupplementSimple(
+            userId: 'test',
+            eventId: 100,
+            eventDate: todayMillis,
+            name: 'Vitamin A',
+            info: [],
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(buildTestWidget(
+        allCalendarEvents: events,
+        programmedWeekdays: {todayWeekday},
+        supplementRoutines: [
+          SupplementSimple(
+            name: 'Vitamin A',
+            daysOfWeek: [todayWeekday],
+            scheduleTime: '08:00',
+          ),
+          SupplementSimple(
+            name: 'Vitamin B2',
+            daysOfWeek: [todayWeekday],
+            scheduleTime: '09:00',
+          ),
+        ],
+      ));
+      await tester.pumpAndSettle();
+
+      // Vitamin A: only LOGGED (not also PROGRAMMED)
+      expect(find.text('Vitamin A'), findsOneWidget);
+      expect(find.text('LOGGED'), findsOneWidget);
+      // Vitamin B2: still PROGRAMMED
+      expect(find.text('Vitamin B2'), findsOneWidget);
+      expect(find.text('PROGRAMMED'), findsOneWidget);
+    });
+
+    testWidgets('mixed logged and programmed items are sorted by time',
+        (tester) async {
+      setTestSurface(tester);
+      final todayWeekday = today.weekday;
+      // Logged food event at 14:00
+      final lunchMillis = DateTime(today.year, today.month, today.day, 14)
+          .millisecondsSinceEpoch;
+      final events = DashboardAllCalendarEvents(
+        foodEvents: [
+          makeFoodEvent(
+              foodName: 'Lunch', mealType: 1, eventDate: lunchMillis),
+        ],
+        sportEvents: [],
+        liquidEvents: [],
+        waterEvents: [],
+        creatineEvent: [],
+        collagenEvent: [],
+        faecesEvents: [],
+        urineEvents: [],
+        supplementEvents: [],
+      );
+
+      await tester.pumpWidget(buildTestWidget(
+        allCalendarEvents: events,
+        programmedWeekdays: {todayWeekday},
+        supplementRoutines: [
+          SupplementSimple(
+            name: 'Morning Vitamin',
+            daysOfWeek: [todayWeekday],
+            scheduleTime: '07:00',
+          ),
+        ],
+      ));
+      await tester.pumpAndSettle();
+
+      // Morning Vitamin (07:00 programmed) should appear above Lunch (14:00 logged)
+      final vitaminPos = tester.getTopLeft(find.text('Morning Vitamin'));
+      final lunchPos = tester.getTopLeft(find.text('Lunch'));
+      expect(vitaminPos.dy, lessThan(lunchPos.dy));
+    });
   });
 }

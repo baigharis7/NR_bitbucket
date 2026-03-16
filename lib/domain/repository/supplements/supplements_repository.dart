@@ -18,6 +18,7 @@ abstract class SupplementsRepository {
   Future<void> uploadSupplementEvent(UploadSupplementsEv uploadSupplementsEv);
   Future<void> saveSupplementEvent(SupplementSimple supplementSimple, bool isEdit);
   Future<List<SupplementSimple>> getSupplementEventsDay({DateTime? dateTime});
+  Future<List<SupplementSimple>> getAllSupplementEvents();
   Future<List<SupplementSimple>> getRecentSupplementEvents();
   Future<void> deleteSupplementEvent(SupplementSimple supplementEvent);
   Future<void> removeSupplementEvent(SupplementSimple supplementEvent);

@@ -1478,6 +1478,12 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
+  Future<List> getAllSupplementEvents() async {
+    final box = await _getSupplementEventsBox;
+    return box.values.toList();
+  }
+
+  @override
   Future<List> getRecentSupplementEvents() async {
     List supplementsEvents = await _getSupplementEventsBox.then((box) {
       return box.values.toList();

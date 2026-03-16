@@ -3,6 +3,7 @@ import '../../../data/api/supplements/model/upload_supplement_event.dart';
 import '../foodevents/food_event_complete.dart';
 import '../liquidevents/liquid_event_complete.dart';
 import '../sportevents/sport_event_complete.dart';
+import '../supplements/supplement_simple.dart';
 import '../watervents/water_event_master.dart';
 
 class DashboardAllCalendarEvents {
@@ -14,6 +15,7 @@ class DashboardAllCalendarEvents {
   final List<UploadSupplementEvent>? collagenEvent;
   final List<UploadFeces>? faecesEvents;
   final List<UploadFeces>? urineEvents;
+  final List<SupplementSimple>? supplementEvents;
 
   DashboardAllCalendarEvents({
     this.foodEvents,
@@ -24,6 +26,7 @@ class DashboardAllCalendarEvents {
     this.collagenEvent,
     this.faecesEvents,
     this.urineEvents,
+    this.supplementEvents,
   });
 
   DashboardAllCalendarEvents.empty({
@@ -35,5 +38,6 @@ class DashboardAllCalendarEvents {
     this.collagenEvent = const [],
     this.faecesEvents = const [],
     this.urineEvents = const [],
+    this.supplementEvents = const [],
   });
 }

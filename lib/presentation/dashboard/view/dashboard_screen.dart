@@ -287,6 +287,7 @@ class _DashboardScreen extends State<DashboardScreen>
                                 collagenEvent: state.allCalendarEvents!.collagenEvent,
                                 faecesEvents: state.allCalendarEvents!.faecesEvents,
                                 urineEvents: state.allCalendarEvents!.urineEvents,
+                                supplementEvents: state.allCalendarEvents!.supplementEvents,
                               );
                             }()
                           : null;
