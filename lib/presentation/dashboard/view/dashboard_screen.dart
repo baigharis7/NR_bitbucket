@@ -411,6 +411,7 @@ class _DashboardScreen extends State<DashboardScreen>
                             widgets.add(SleepingHoursWidget(
                               hoursSlept: healthState.todaySleepHours!,
                               hoursGoal: 8,
+                              sex: state.profile?.sex,
                             ));
                           }
                           if (healthState.todayStepCount != null) {

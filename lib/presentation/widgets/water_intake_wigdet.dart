@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/health_impact_calculator.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
+import 'package:nutrenaissance_flutter/presentation/healthmetrics/health_metric_detail_sheet.dart';
 import '../../infrastructure/helpers/app_text_styles.dart';
 import '../../infrastructure/utils/dimens.dart';
 import 'ani_nutri_progress_bar_widget.dart';
+import 'health_impact_metrics_row.dart';
 
 class WaterIntakeWidget extends StatefulWidget {
   final double totalLitersGoal;
@@ -123,8 +125,11 @@ class _WaterIntakeWidgetState extends State<WaterIntakeWidget> {
               ),
             ],
           ),
-          // Intelligence metrics section (collapsible) - placeholder for future content
-          // The arrow next to "Hydration" will expand/collapse this section once intelligence metrics are added
+          const SizedBox(height: 8),
+          HealthImpactMetricsRow(
+            metrics: HealthImpactCalculator.calculateHydrationMetrics(widget.consumedGlasses),
+            onMetricTap: (metric) => HealthMetricDetailSheet.show(context, metric),
+          ),
         ],
       ),
     );

@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/health_impact_calculator.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
+import 'package:nutrenaissance_flutter/presentation/healthmetrics/health_metric_detail_sheet.dart';
 import 'ani_nutri_progress_bar_widget.dart';
+import 'health_impact_metrics_row.dart';
 
 class SleepingHoursWidget extends StatelessWidget {
   final double hoursSlept;
   final double hoursGoal;
   final VoidCallback? onTap;
+  final SexType? sex;
 
   const SleepingHoursWidget({
     super.key,
     required this.hoursSlept,
     required this.hoursGoal,
     this.onTap,
+    this.sex,
   });
 
   @override
@@ -85,6 +90,11 @@ class SleepingHoursWidget extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 8),
+            HealthImpactMetricsRow(
+              metrics: HealthImpactCalculator.calculateSleepMetrics(hoursSlept, sex),
+              onMetricTap: (metric) => HealthMetricDetailSheet.show(context, metric),
             ),
           ],
         ),

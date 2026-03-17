@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/health_impact_calculator.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
+import 'package:nutrenaissance_flutter/presentation/healthmetrics/health_metric_detail_sheet.dart';
 import 'ani_nutri_progress_bar_widget.dart';
+import 'health_impact_metrics_row.dart';
 
 class StepsWidget extends StatelessWidget {
   final int stepsTaken;
@@ -18,19 +20,13 @@ class StepsWidget extends StatelessWidget {
   });
 
   String _formatNumber(int value) {
-    if (value >= 1000) {
-      final thousands = value / 1000;
-      return thousands.toStringAsFixed(thousands.truncateToDouble() == thousands ? 0 : 2);
+    final str = value.toString();
+    final buffer = StringBuffer();
+    for (int i = 0; i < str.length; i++) {
+      if (i > 0 && (str.length - i) % 3 == 0) buffer.write(',');
+      buffer.write(str[i]);
     }
-    return value.toString();
-  }
-
-  String _formatGoal(int value) {
-    if (value >= 1000) {
-      final thousands = (value / 1000).toStringAsFixed(2);
-      return thousands;
-    }
-    return value.toString();
+    return buffer.toString();
   }
 
   @override
@@ -90,13 +86,18 @@ class StepsWidget extends StatelessWidget {
                 ),
                 const Spacer(),
                 Text(
-                  '${AppLocalizations.of(context)!.of_target} ${_formatGoal(stepsGoal)} ${AppLocalizations.of(context)!.steps_for_today}',
+                  '${AppLocalizations.of(context)!.of_target} ${_formatNumber(stepsGoal)} ${AppLocalizations.of(context)!.steps_for_today}',
                   style: AppTextStyles.radioCanadaBig.copyWith(
                     fontSize: Dimens.fontSize13,
                     color: Colors.white70,
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 8),
+            HealthImpactMetricsRow(
+              metrics: HealthImpactCalculator.calculateStepsMetrics(stepsTaken),
+              onMetricTap: (metric) => HealthMetricDetailSheet.show(context, metric),
             ),
           ],
         ),

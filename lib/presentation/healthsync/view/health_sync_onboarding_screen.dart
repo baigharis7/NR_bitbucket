@@ -204,6 +204,7 @@ class _HealthSyncOnboardingScreenState extends State<HealthSyncOnboardingScreen>
       {'icon': Icons.local_fire_department, 'label': 'Calories'},
       {'icon': Icons.favorite, 'label': 'Heart Rate'},
       {'icon': Icons.straighten, 'label': 'Distance'},
+      {'icon': Icons.bedtime, 'label': 'Sleep'},
     ];
 
     return Wrap(
