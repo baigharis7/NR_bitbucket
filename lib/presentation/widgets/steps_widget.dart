@@ -87,7 +87,7 @@ class StepsWidget extends StatelessWidget {
                 const Spacer(),
                 Text(
                   '${AppLocalizations.of(context)!.of_target} ${_formatNumber(stepsGoal)} ${AppLocalizations.of(context)!.steps_for_today}',
-                  style: AppTextStyles.radioCanadaBig.copyWith(
+                  style: AppTextStyles.dmSans.copyWith(
                     fontSize: Dimens.fontSize13,
                     color: Colors.white70,
                   ),

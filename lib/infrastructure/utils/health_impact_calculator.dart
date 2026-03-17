@@ -10,26 +10,25 @@ class HealthImpactCalculator {
   // Physical Endurance:    Low 0→15%, Mid 15→30%, Optimal 30%
 
   static List<HealthImpactMetric> calculateStepsMetrics(int steps) {
-    final cardio = _interpolate(
-      value: steps.toDouble(),
-      lowUpper: 5000,
-      midUpper: 10000,
-      midValue: 13,
-      optimalValue: 25,
-    );
-    final endurance = _interpolate(
-      value: steps.toDouble(),
-      lowUpper: 5000,
-      midUpper: 10000,
-      midValue: 15,
-      optimalValue: 30,
-    );
+    final double cardio;
+    final double endurance;
+
+    if (steps >= 10000) {
+      cardio = 25;
+      endurance = 30;
+    } else if (steps >= 5000) {
+      cardio = 13;
+      endurance = 15;
+    } else {
+      cardio = 0;
+      endurance = 0;
+    }
 
     return [
       HealthImpactMetric(
         type: HealthMetricType.cardiovascularHealth,
-        label: 'Cardiovascular H.',
-        sublabel: 'IMPROVEMENT',
+        label: 'Cardiovascular Health',
+        sublabel: 'RESTING HR',
         percentage: cardio,
         isPositive: true,
         isNeutral: cardio == 0,
@@ -37,7 +36,7 @@ class HealthImpactCalculator {
       HealthImpactMetric(
         type: HealthMetricType.physicalEndurance,
         label: 'Physical Endurance',
-        sublabel: 'IMPROVEMENT',
+        sublabel: 'AEROBIC CAPACITY',
         percentage: endurance,
         isPositive: true,
         isNeutral: endurance == 0,
@@ -47,39 +46,43 @@ class HealthImpactCalculator {
 
   // ── Sleep ──────────────────────────────────────────────────────────
   // Ranges: Low <6h, Mid 6-7h, Optimal ≥7h
-  // Concentration & Focus: Low 25→15% decline, Mid 15→0%, Optimal 0%
-  // Muscle Regeneration:   Low 35→15% decline, Mid 15→0%, Optimal 0%
+  // Concentration & Focus: Low ↓25%, Mid ↓15%, Optimal 100%
+  // Muscle Regeneration:   Low ↓35%, Mid ↓15%, Optimal 100%
 
   static List<HealthImpactMetric> calculateSleepMetrics(
     double hours, [
     SexType? sex,
   ]) {
-    final concentration = _interpolateSleepDecline(
-      hours: hours,
-      lowDecline: 25,
-      midDecline: 15,
-    );
-    final muscle = _interpolateSleepDecline(
-      hours: hours,
-      lowDecline: 35,
-      midDecline: 15,
-    );
+    final optimalThreshold = sex == SexType.female ? 9.0 : 7.0;
+    final double concentration;
+    final double muscle;
+
+    if (hours >= optimalThreshold) {
+      concentration = 100;
+      muscle = 100;
+    } else if (hours >= 6) {
+      concentration = 15;
+      muscle = 15;
+    } else {
+      concentration = 25;
+      muscle = 35;
+    }
 
     return [
       HealthImpactMetric(
         type: HealthMetricType.concentrationFocus,
-        label: 'Mental Clarity',
-        sublabel: 'COGNITION',
+        label: 'Concentration & Focus',
+        sublabel: 'WORKING MEMORY',
         percentage: concentration,
-        isPositive: concentration == 0,
+        isPositive: hours >= optimalThreshold,
         isNeutral: false,
       ),
       HealthImpactMetric(
         type: HealthMetricType.muscleRegeneration,
-        label: 'Muscle Recovery',
-        sublabel: 'REGENERATION',
+        label: 'Muscle Regeneration',
+        sublabel: 'TISSUE REPAIR',
         percentage: muscle,
-        isPositive: muscle == 0,
+        isPositive: hours >= optimalThreshold,
         isNeutral: false,
       ),
     ];
@@ -92,33 +95,29 @@ class HealthImpactCalculator {
   // Kidney Health:         Low 0→30%, Mid 30→65%, Optimal 65%
 
   static List<HealthImpactMetric> calculateHydrationMetrics(int glasses) {
-    final cramps = _interpolate(
-      value: glasses.toDouble(),
-      lowUpper: 6,
-      midUpper: 10,
-      midValue: 40,
-      optimalValue: 65,
-    );
-    final collagen = _interpolate(
-      value: glasses.toDouble(),
-      lowUpper: 6,
-      midUpper: 10,
-      midValue: 17,
-      optimalValue: 32,
-    );
-    final kidney = _interpolate(
-      value: glasses.toDouble(),
-      lowUpper: 6,
-      midUpper: 10,
-      midValue: 30,
-      optimalValue: 65,
-    );
+    final double cramps;
+    final double collagen;
+    final double kidney;
+
+    if (glasses >= 10) {
+      cramps = 65;
+      collagen = 32;
+      kidney = 65;
+    } else if (glasses >= 6) {
+      cramps = 40;
+      collagen = 17;
+      kidney = 30;
+    } else {
+      cramps = 0;
+      collagen = 0;
+      kidney = 0;
+    }
 
     return [
       HealthImpactMetric(
         type: HealthMetricType.goodbyeCramps,
-        label: 'Goodbye Cramps',
-        sublabel: 'LESS RISK OF CRAMPS',
+        label: 'No Cramps',
+        sublabel: 'MUSCLE CRAMPS',
         percentage: cramps,
         isPositive: true,
         isNeutral: cramps == 0,
@@ -126,15 +125,15 @@ class HealthImpactCalculator {
       HealthImpactMetric(
         type: HealthMetricType.collagenElasticity,
         label: 'Skin Care',
-        sublabel: 'SKIN IMPROVEMENT',
+        sublabel: 'SKIN HYDRATION',
         percentage: collagen,
         isPositive: true,
         isNeutral: collagen == 0,
       ),
       HealthImpactMetric(
         type: HealthMetricType.kidneyHealth,
-        label: 'Kidney Health',
-        sublabel: 'DETOX',
+        label: 'Kidneys',
+        sublabel: 'STONE RISK',
         percentage: kidney,
         isPositive: true,
         isNeutral: kidney == 0,

@@ -84,7 +84,7 @@ class SleepingHoursWidget extends StatelessWidget {
                 const Spacer(),
                 Text(
                   '${AppLocalizations.of(context)!.of_target} ${hoursGoal.toStringAsFixed(0)} ${AppLocalizations.of(context)!.hours_last_night}',
-                  style: AppTextStyles.radioCanadaBig.copyWith(
+                  style: AppTextStyles.dmSans.copyWith(
                     fontSize: Dimens.fontSize13,
                     color: Colors.white70,
                   ),

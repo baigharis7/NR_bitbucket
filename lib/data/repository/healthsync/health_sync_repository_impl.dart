@@ -532,9 +532,9 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   @override
   Future<double> fetchTodaySleepHours(DateTime date) async {
     try {
-      // Look for sleep sessions from the previous evening to this morning
-      final startTime = DateTime(date.year, date.month, date.day).subtract(const Duration(hours: 18));
-      final endTime = DateTime(date.year, date.month, date.day, 18);
+      // Look for sleep sessions from 6PM the previous day to noon the following day
+      final startTime = DateTime(date.year, date.month, date.day).subtract(const Duration(hours: 6));
+      final endTime = DateTime(date.year, date.month, date.day, 12);
 
       final sleepData = await _health.getHealthDataFromTypes(
         types: [HealthDataType.SLEEP_SESSION],

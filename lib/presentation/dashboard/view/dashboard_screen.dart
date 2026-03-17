@@ -402,26 +402,28 @@ class _DashboardScreen extends State<DashboardScreen>
                       ),
                       BlocBuilder<HealthSyncBloc, HealthSyncState>(
                         buildWhen: (prev, curr) =>
+                            prev.isSyncEnabled != curr.isSyncEnabled ||
                             prev.todaySleepHours != curr.todaySleepHours ||
                             prev.todayStepCount != curr.todayStepCount,
                         builder: (context, healthState) {
-                          final widgets = <Widget>[];
-                          if (healthState.todaySleepHours != null) {
-                            widgets.add(const SizedBox(height: 17));
-                            widgets.add(SleepingHoursWidget(
-                              hoursSlept: healthState.todaySleepHours!,
-                              hoursGoal: 8,
-                              sex: state.profile?.sex,
-                            ));
+                          if (!healthState.isSyncEnabled) {
+                            return const SizedBox.shrink();
                           }
-                          if (healthState.todayStepCount != null) {
-                            widgets.add(const SizedBox(height: 17));
-                            widgets.add(StepsWidget(
-                              stepsTaken: healthState.todayStepCount!,
-                              stepsGoal: 10000,
-                            ));
-                          }
-                          return Column(children: widgets);
+                          return Column(
+                            children: [
+                              const SizedBox(height: 17),
+                              SleepingHoursWidget(
+                                hoursSlept: healthState.todaySleepHours ?? 0,
+                                hoursGoal: 8,
+                                sex: state.profile?.sex,
+                              ),
+                              const SizedBox(height: 17),
+                              StepsWidget(
+                                stepsTaken: healthState.todayStepCount ?? 0,
+                                stepsGoal: 10000,
+                              ),
+                            ],
+                          );
                         },
                       ),
                       DashTitleWidget(title: AppLocalizations.of(context)!.depositions, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20)),

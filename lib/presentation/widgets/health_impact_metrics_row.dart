@@ -51,9 +51,11 @@ class HealthImpactMarkerWidget extends StatelessWidget {
     this.onTap,
   });
 
+  static const _arrowColor = Colors.white;
+
   @override
   Widget build(BuildContext context) {
-    final color = metric.isNeutral
+    final circleColor = metric.isNeutral
         ? AppColors.battleshipGrey
         : metric.isPositive
             ? AppColors.mountainMeadow
@@ -71,14 +73,15 @@ class HealthImpactMarkerWidget extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               metric.label,
-              style: AppTextStyles.radioCanadaBig.copyWith(
-                fontSize: Dimens.fontSizeSmall,
+              style: AppTextStyles.merriWeather.copyWith(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
                 color: Colors.white,
               ),
               textAlign: TextAlign.center,
@@ -86,46 +89,45 @@ class HealthImpactMarkerWidget extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (arrowIcon != null)
-                  Icon(arrowIcon, size: 14, color: color),
-                if (metric.isNeutral)
-                  Container(
-                    width: 8,
-                    height: 8,
-                    margin: const EdgeInsets.only(right: 4),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: color,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (arrowIcon != null)
+                    Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: circleColor,
+                      ),
+                      child: Icon(arrowIcon, size: 12, color: _arrowColor),
+                    ),
+                  if (metric.isNeutral)
+                    Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: circleColor,
+                      ),
+                      child: const Icon(Icons.remove, size: 12, color: _arrowColor),
+                    ),
+                  const SizedBox(width: 8),
+                  Text(
+                    percentText,
+                    style: AppTextStyles.radioCanadaBig.copyWith(
+                      fontSize: Dimens.fontSize28,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
                     ),
                   ),
-                Text(
-                  percentText,
-                  style: AppTextStyles.radioCanadaBig.copyWith(
-                    fontSize: Dimens.fontSize17,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Icon(Icons.chevron_right, size: 16, color: Colors.white54),
-              ],
-            ),
-            const SizedBox(height: 2),
-            Text(
-              metric.sublabel,
-              style: AppTextStyles.dmSans.copyWith(
-                fontSize: Dimens.fontSize8,
-                fontWeight: FontWeight.w600,
-                color: color,
-                letterSpacing: 0.5,
+                  const SizedBox(width: 4),
+                  const Icon(Icons.chevron_right, size: 22, color: Colors.white),
+                ],
               ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
