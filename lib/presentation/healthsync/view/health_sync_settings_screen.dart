@@ -10,6 +10,8 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/healthsync/bloc/health_sync_bloc.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/custom_bottom_navi_bar_widget.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/screen_top_bar.dart';
 import 'package:intl/intl.dart';
@@ -132,6 +134,8 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
             Scaffold(
               backgroundColor: Colors.transparent,
               body: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 90),
                 child: Column(
                   children: [
                     const SizedBox(height: Dimens.paddingLarge),
@@ -292,6 +296,8 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
                   ],
                 ),
               ),
+              ),
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
             ),
           ],
         );

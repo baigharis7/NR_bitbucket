@@ -16,6 +16,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 import 'package:nutrenaissance_flutter/presentation/widgets/text_checkbox_box.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/screen_top_bar.dart';
 
 // TODO: think a new name for title and take it from AppLocalizations.
@@ -87,7 +88,7 @@ class _HealthQuestionsScreen extends State<HealthQuestionsScreen> {
                 backgroundColor: Colors.transparent,
                 body: SafeArea(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(Dimens.padding20),
+                    padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 90),
                   child: Column(
                     children: [
                       ScreenTopBar(title: AppLocalizations.of(context)!.medical_history, onBack: () => onBack()),
@@ -128,6 +129,7 @@ class _HealthQuestionsScreen extends State<HealthQuestionsScreen> {
                   ),
                 ),
                 ),
+                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
               ),
             ],),
           );

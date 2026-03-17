@@ -121,6 +121,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                       ),
                       Expanded(
                         child: SingleChildScrollView(
+                          padding: const EdgeInsets.only(bottom: 90),
                   child: Column(
                     children: [
                       Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge), child: ProfileInfoCard(userProfile: state.profile, onTapProfileUpdate: () => Navigator.pushNamed(context, GeneralQuestionsScreen.routeName).then((value) {if (value.toString() != Constants.BACK) bloc.add(SaveChangesAction());}),)),

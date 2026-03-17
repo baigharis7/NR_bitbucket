@@ -12,6 +12,8 @@ import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/text_checkbox_box.dart';
 import '../../../infrastructure/utils/app_color.dart';
+import '../../../infrastructure/utils/constants.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/text_radio_button_expansible.dart';
 import 'general_questions_screen.dart';
 
@@ -117,7 +119,9 @@ class _ObjectivesScreenState extends State<ObjectivesScreen> {
             Scaffold(
               backgroundColor: Colors.transparent,
               body: SafeArea(
-                child: Container(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 90),
+                  child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
                   child: Column(
                     children: [
@@ -207,6 +211,8 @@ class _ObjectivesScreenState extends State<ObjectivesScreen> {
                   ),
                 ),
               ),
+              ),
+              bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
             ),
           ],
         );

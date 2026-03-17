@@ -23,6 +23,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/text_image_checkbox.
 import 'package:nutrenaissance_flutter/presentation/widgets/text_image_radio_button.dart';
 
 import '../../../infrastructure/utils/constants.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/screen_top_bar.dart';
 import '../../widgets/text_radio_button_expansible.dart';
 
@@ -234,7 +235,7 @@ class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
                   backgroundColor: Colors.transparent,
                   body: SafeArea(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(Dimens.padding20),
+                      padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 90),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -318,7 +319,9 @@ class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
                       ),
                     ],
                   ),
-                ),),),
+                ),),
+                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
+                ),
             ],),
           );
         },
