@@ -43,6 +43,9 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     on<HealthSyncOpenHealthConnect>(_onOpenHealthConnect);
     on<HealthSyncLoadForDate>(_onLoadForDate);
     on<HealthSyncUpdatePermissions>(_onUpdatePermissions);
+
+    // Load persisted state immediately so the dashboard has correct values.
+    add(HealthSyncInitialization());
   }
 
   void _startPeriodicSync() {
