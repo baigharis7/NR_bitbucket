@@ -124,7 +124,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       emit(state.copyWith(
         isLoading: false,
         isAvailable: isAvailable,
-        isSyncEnabled: syncEnabled,
+        isSyncEnabled: isEnabled,
         hasPermissions: hasPermissions,
         lastSyncTime: lastSyncTime,
         todaySleepHours: sleepHours,

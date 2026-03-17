@@ -1807,14 +1807,14 @@ class LocalStorageImpl extends LocalStorageRepository {
   @override
   Future<void> saveSleepEvent(SleepEventEntity sleepEvent) async {
     final box = await _openSleepEventsBox();
-    // Key by eventDate so one record per day (upserts on re-sync)
-    await box.put(sleepEvent.eventDate, sleepEvent);
+    // Key by eventDate string so one record per day (upserts on re-sync)
+    await box.put(sleepEvent.eventDate.toString(), sleepEvent);
   }
 
   @override
   Future<SleepEventEntity?> getSleepEventByDate(int eventDate) async {
     final box = await _openSleepEventsBox();
-    final value = box.get(eventDate);
+    final value = box.get(eventDate.toString());
     return value is SleepEventEntity ? value : null;
   }
 }
