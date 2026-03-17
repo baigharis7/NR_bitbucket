@@ -30,6 +30,7 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
     with WidgetsBindingObserver {
   late HealthSyncBloc _bloc;
   DateTime _lastActionTime = DateTime(0);
+  bool _permissionDialogShown = false;
 
   @override
   void initState() {
@@ -93,6 +94,16 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
             context,
             AppLocalizations.of(context)!.health_sync_error,
           );
+        }
+
+        if (state.needsPermissionUpdate && !_permissionDialogShown) {
+          _permissionDialogShown = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _showPermissionUpdateDialog(context);
+          });
+        }
+        if (!state.needsPermissionUpdate) {
+          _permissionDialogShown = false;
         }
 
       },
@@ -407,6 +418,56 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
           ),
         ),
       ],
+    );
+  }
+
+  void _showPermissionUpdateDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1A2E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Updated Permissions Needed',
+          style: AppTextStyles.merriWeather.copyWith(
+            fontSize: Dimens.fontSize17,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Text(
+          'We\'ve added new health data types (like Sleep tracking). '
+          'Please grant the updated permissions to continue syncing all your health data.',
+          style: AppTextStyles.radioCanadaBig.copyWith(
+            fontSize: Dimens.fontSizeNormal,
+            color: Colors.white70,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(
+              'Later',
+              style: AppTextStyles.radioCanadaBig.copyWith(
+                color: Colors.white54,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              _bloc.add(HealthSyncUpdatePermissions());
+            },
+            child: Text(
+              'Update Permissions',
+              style: AppTextStyles.radioCanadaBig.copyWith(
+                color: AppColors.mountainMeadow,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

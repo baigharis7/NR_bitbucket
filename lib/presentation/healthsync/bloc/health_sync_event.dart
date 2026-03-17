@@ -30,3 +30,6 @@ class HealthSyncLoadForDate extends HealthSyncEvent {
 
   HealthSyncLoadForDate({required this.date});
 }
+
+/// Re-request permissions after an app update added new health data types.
+class HealthSyncUpdatePermissions extends HealthSyncEvent {}

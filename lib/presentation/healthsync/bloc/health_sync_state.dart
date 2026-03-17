@@ -6,6 +6,7 @@ class HealthSyncState {
   final bool hasPermissions;
   final bool isSyncEnabled;
   final bool isSyncing;
+  final bool needsPermissionUpdate;
   final DateTime? lastSyncTime;
   final int? syncedActivitiesCount;
   final ErrorTypes? onError;
@@ -20,6 +21,7 @@ class HealthSyncState {
     this.hasPermissions = false,
     this.isSyncEnabled = false,
     this.isSyncing = false,
+    this.needsPermissionUpdate = false,
     this.lastSyncTime,
     this.syncedActivitiesCount,
     this.onError,
@@ -37,6 +39,7 @@ class HealthSyncState {
     bool? hasPermissions,
     bool? isSyncEnabled,
     bool? isSyncing,
+    bool? needsPermissionUpdate,
     DateTime? lastSyncTime,
     int? syncedActivitiesCount,
     ErrorTypes? onError,
@@ -53,6 +56,7 @@ class HealthSyncState {
       hasPermissions: hasPermissions ?? this.hasPermissions,
       isSyncEnabled: isSyncEnabled ?? this.isSyncEnabled,
       isSyncing: isSyncing ?? this.isSyncing,
+      needsPermissionUpdate: needsPermissionUpdate ?? this.needsPermissionUpdate,
       lastSyncTime: lastSyncTime ?? this.lastSyncTime,
       syncedActivitiesCount: syncedActivitiesCount ?? this.syncedActivitiesCount,
       onError: onError,

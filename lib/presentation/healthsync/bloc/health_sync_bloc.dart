@@ -42,6 +42,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     on<HealthSyncInstallHealthConnect>(_onInstallHealthConnect);
     on<HealthSyncOpenHealthConnect>(_onOpenHealthConnect);
     on<HealthSyncLoadForDate>(_onLoadForDate);
+    on<HealthSyncUpdatePermissions>(_onUpdatePermissions);
   }
 
   void _startPeriodicSync() {
@@ -121,11 +122,16 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         _hsLog('HealthSync init: sleepHours=$sleepHours, stepCount=$stepCount');
       }
 
+      // If sync is enabled but permissions are missing, the user needs to
+      // re-grant permissions (e.g. after an app update added new data types).
+      final needsUpdate = isEnabled && isAvailable && !hasPermissions;
+
       emit(state.copyWith(
         isLoading: false,
         isAvailable: isAvailable,
         isSyncEnabled: isEnabled,
         hasPermissions: hasPermissions,
+        needsPermissionUpdate: needsUpdate,
         lastSyncTime: lastSyncTime,
         todaySleepHours: sleepHours,
         todayStepCount: stepCount,
@@ -286,6 +292,40 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       ));
     } catch (e, stack) {
       CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncLoadForDate'});
+    }
+  }
+
+  /// Re-request permissions after an app update added new health data types.
+  Future<void> _onUpdatePermissions(
+    HealthSyncUpdatePermissions event,
+    Emitter<HealthSyncState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      _hsLog('HealthSync: re-requesting permissions for updated data types');
+      final granted = await healthSyncRepository.requestPermissions();
+      _hsLog('HealthSync: permission update granted=$granted');
+
+      if (granted) {
+        // Re-run init to pick up the new permissions and fetch data
+        emit(state.copyWith(
+          isLoading: false,
+          hasPermissions: true,
+          needsPermissionUpdate: false,
+        ));
+        add(HealthSyncInitialization());
+      } else {
+        emit(state.copyWith(
+          isLoading: false,
+          needsPermissionUpdate: true,
+        ));
+      }
+    } catch (e, stack) {
+      CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncUpdatePermissions'});
+      emit(state.copyWith(
+        isLoading: false,
+        onError: ErrorTypes.unknownError,
+      ));
     }
   }
 
