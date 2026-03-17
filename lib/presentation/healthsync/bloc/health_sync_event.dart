@@ -23,3 +23,10 @@ class HealthSyncInstallHealthConnect extends HealthSyncEvent {}
 
 /// Open the Health Connect app directly (Android only).
 class HealthSyncOpenHealthConnect extends HealthSyncEvent {}
+
+/// Load saved sleep/step data for a specific date from local storage.
+class HealthSyncLoadForDate extends HealthSyncEvent {
+  final DateTime date;
+
+  HealthSyncLoadForDate({required this.date});
+}

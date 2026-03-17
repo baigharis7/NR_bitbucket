@@ -32,6 +32,8 @@ class EventsSyncApi extends ApiHelper {
     'supplementEvents',
     'supplementFavorites',
     'supplementRoutines',
+    'sleepEvents',
+    'stepEvents',
   ];
 
   /// Internal helper to send POST requests

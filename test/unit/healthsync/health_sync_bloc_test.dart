@@ -35,11 +35,27 @@ void main() {
     );
   }
 
-  /// Stubs for sleep/step data fetching used when sync is enabled
+  /// Stubs for fetching + saving sleep/step data (used when sync is enabled)
   void stubSleepStepData({double sleepHours = 7.5, int stepCount = 5000}) {
     when(() => mockHealthSyncRepository.fetchTodaySleepHours(any()))
         .thenAnswer((_) async => sleepHours);
     when(() => mockHealthSyncRepository.fetchTodayStepCount(any()))
+        .thenAnswer((_) async => stepCount);
+    when(() => mockHealthSyncRepository.saveSleepEvent(
+          date: any(named: 'date'),
+          sleepHours: any(named: 'sleepHours'),
+        )).thenAnswer((_) async {});
+    when(() => mockHealthSyncRepository.saveStepEvent(
+          date: any(named: 'date'),
+          stepCount: any(named: 'stepCount'),
+        )).thenAnswer((_) async {});
+  }
+
+  /// Stubs for loading saved data from Hive (used on init fallback)
+  void stubSavedData({double? sleepHours, int? stepCount}) {
+    when(() => mockHealthSyncRepository.getSavedSleepHours(any()))
+        .thenAnswer((_) async => sleepHours);
+    when(() => mockHealthSyncRepository.getSavedStepCount(any()))
         .thenAnswer((_) async => stepCount);
   }
 
@@ -56,6 +72,7 @@ void main() {
               .thenAnswer((_) async => true);
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => DateTime(2024, 1, 15, 10, 30));
+          stubSavedData();
           stubSleepStepData();
         },
         build: buildBloc,
@@ -100,6 +117,7 @@ void main() {
               .thenAnswer((_) async => false);
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => null);
+          stubSavedData();
         },
         build: buildBloc,
         act: (bloc) => bloc.add(HealthSyncInitialization()),
@@ -114,7 +132,7 @@ void main() {
       );
 
       blocTest<HealthSyncBloc, HealthSyncState>(
-        'fetches sleep/step data when sync is enabled',
+        'fetches sleep/step data and saves when sync is enabled',
         setUp: () {
           when(() => mockHealthSyncRepository.isHealthSyncAvailable())
               .thenAnswer((_) async => true);
@@ -124,6 +142,7 @@ void main() {
               .thenAnswer((_) async => true);
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => DateTime(2024, 1, 15));
+          stubSavedData();
           stubSleepStepData(sleepHours: 7.5, stepCount: 8000);
         },
         build: buildBloc,
@@ -135,30 +154,20 @@ void main() {
               .having((s) => s.todaySleepHours, 'todaySleepHours', 7.5)
               .having((s) => s.todayStepCount, 'todayStepCount', 8000),
         ],
-      );
-
-      blocTest<HealthSyncBloc, HealthSyncState>(
-        'does not fetch sleep/step data when sync is disabled',
-        setUp: () {
-          when(() => mockHealthSyncRepository.isHealthSyncAvailable())
-              .thenAnswer((_) async => false);
-          when(() => mockHealthSyncRepository.isHealthSyncEnabled())
-              .thenAnswer((_) async => false);
-          when(() => mockHealthSyncRepository.hasPermissions())
-              .thenAnswer((_) async => false);
-          when(() => mockHealthSyncRepository.getLastSyncTime())
-              .thenAnswer((_) async => null);
-        },
-        build: buildBloc,
-        act: (bloc) => bloc.add(HealthSyncInitialization()),
         verify: (_) {
-          verifyNever(() => mockHealthSyncRepository.fetchTodaySleepHours(any()));
-          verifyNever(() => mockHealthSyncRepository.fetchTodayStepCount(any()));
+          verify(() => mockHealthSyncRepository.saveSleepEvent(
+                date: any(named: 'date'),
+                sleepHours: any(named: 'sleepHours'),
+              )).called(1);
+          verify(() => mockHealthSyncRepository.saveStepEvent(
+                date: any(named: 'date'),
+                stepCount: any(named: 'stepCount'),
+              )).called(1);
         },
       );
 
       blocTest<HealthSyncBloc, HealthSyncState>(
-        'sleep/step data is null when sync is disabled',
+        'loads saved data when sync is disabled (widgets remain visible)',
         setUp: () {
           when(() => mockHealthSyncRepository.isHealthSyncAvailable())
               .thenAnswer((_) async => true);
@@ -168,6 +177,59 @@ void main() {
               .thenAnswer((_) async => false);
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => null);
+          stubSavedData(sleepHours: 6.5, stepCount: 3000);
+        },
+        build: buildBloc,
+        act: (bloc) => bloc.add(HealthSyncInitialization()),
+        expect: () => [
+          isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
+          isA<HealthSyncState>()
+              .having((s) => s.isSyncEnabled, 'isSyncEnabled', false)
+              .having((s) => s.todaySleepHours, 'todaySleepHours', 6.5)
+              .having((s) => s.todayStepCount, 'todayStepCount', 3000),
+        ],
+        verify: (_) {
+          verifyNever(() => mockHealthSyncRepository.fetchTodaySleepHours(any()));
+          verifyNever(() => mockHealthSyncRepository.fetchTodayStepCount(any()));
+        },
+      );
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'does not auto-disable sync when permissions are revoked',
+        setUp: () {
+          when(() => mockHealthSyncRepository.isHealthSyncAvailable())
+              .thenAnswer((_) async => true);
+          when(() => mockHealthSyncRepository.isHealthSyncEnabled())
+              .thenAnswer((_) async => true);
+          when(() => mockHealthSyncRepository.hasPermissions())
+              .thenAnswer((_) async => false);
+          when(() => mockHealthSyncRepository.getLastSyncTime())
+              .thenAnswer((_) async => DateTime(2024, 1, 15));
+          stubSavedData(sleepHours: 7.0, stepCount: 5000);
+        },
+        build: buildBloc,
+        act: (bloc) => bloc.add(HealthSyncInitialization()),
+        verify: (_) {
+          // Should NOT call setHealthSyncEnabled(false)
+          verifyNever(() => mockHealthSyncRepository.setHealthSyncEnabled(false));
+          // Should still load saved data
+          verify(() => mockHealthSyncRepository.getSavedSleepHours(any())).called(1);
+          verify(() => mockHealthSyncRepository.getSavedStepCount(any())).called(1);
+        },
+      );
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'sleep/step data is null when no saved data and sync disabled',
+        setUp: () {
+          when(() => mockHealthSyncRepository.isHealthSyncAvailable())
+              .thenAnswer((_) async => true);
+          when(() => mockHealthSyncRepository.isHealthSyncEnabled())
+              .thenAnswer((_) async => false);
+          when(() => mockHealthSyncRepository.hasPermissions())
+              .thenAnswer((_) async => false);
+          when(() => mockHealthSyncRepository.getLastSyncTime())
+              .thenAnswer((_) async => null);
+          stubSavedData(sleepHours: null, stepCount: null);
         },
         build: buildBloc,
         act: (bloc) => bloc.add(HealthSyncInitialization()),
@@ -373,7 +435,7 @@ void main() {
       );
 
       blocTest<HealthSyncBloc, HealthSyncState>(
-        'refreshes sleep/step data after successful sync',
+        'saves sleep/step data after successful sync',
         setUp: () {
           when(() => mockSyncHealthActivitiesInteractor.execute(since: any(named: 'since')))
               .thenAnswer((_) async => []);
@@ -392,6 +454,16 @@ void main() {
               .having((s) => s.todayStepCount, 'todayStepCount', 12000)
               .having((s) => s.syncSuccess, 'syncSuccess', true),
         ],
+        verify: (_) {
+          verify(() => mockHealthSyncRepository.saveSleepEvent(
+                date: any(named: 'date'),
+                sleepHours: any(named: 'sleepHours'),
+              )).called(1);
+          verify(() => mockHealthSyncRepository.saveStepEvent(
+                date: any(named: 'date'),
+                stepCount: any(named: 'stepCount'),
+              )).called(1);
+        },
       );
 
       test('notifies DashboardEventBus with sport category when activities are synced', () async {
@@ -443,6 +515,60 @@ void main() {
         await sub.cancel();
         await bloc.close();
       });
+    });
+
+    group('HealthSyncLoadForDate', () {
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'loads saved data for a specific date',
+        setUp: () {
+          when(() => mockHealthSyncRepository.getSavedSleepHours(any()))
+              .thenAnswer((_) async => 8.0);
+          when(() => mockHealthSyncRepository.getSavedStepCount(any()))
+              .thenAnswer((_) async => 15000);
+        },
+        build: buildBloc,
+        act: (bloc) => bloc.add(HealthSyncLoadForDate(date: DateTime(2024, 3, 10))),
+        expect: () => [
+          isA<HealthSyncState>()
+              .having((s) => s.todaySleepHours, 'todaySleepHours', 8.0)
+              .having((s) => s.todayStepCount, 'todayStepCount', 15000),
+        ],
+      );
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'clears data when date has no saved data',
+        seed: () => HealthSyncState(todaySleepHours: 7.5, todayStepCount: 10000),
+        setUp: () {
+          when(() => mockHealthSyncRepository.getSavedSleepHours(any()))
+              .thenAnswer((_) async => null);
+          when(() => mockHealthSyncRepository.getSavedStepCount(any()))
+              .thenAnswer((_) async => null);
+        },
+        build: buildBloc,
+        act: (bloc) => bloc.add(HealthSyncLoadForDate(date: DateTime(2024, 1, 1))),
+        expect: () => [
+          isA<HealthSyncState>()
+              .having((s) => s.todaySleepHours, 'todaySleepHours', null)
+              .having((s) => s.todayStepCount, 'todayStepCount', null),
+        ],
+      );
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'handles partial data (sleep but no steps)',
+        setUp: () {
+          when(() => mockHealthSyncRepository.getSavedSleepHours(any()))
+              .thenAnswer((_) async => 5.5);
+          when(() => mockHealthSyncRepository.getSavedStepCount(any()))
+              .thenAnswer((_) async => null);
+        },
+        build: buildBloc,
+        act: (bloc) => bloc.add(HealthSyncLoadForDate(date: DateTime(2024, 2, 15))),
+        expect: () => [
+          isA<HealthSyncState>()
+              .having((s) => s.todaySleepHours, 'todaySleepHours', 5.5)
+              .having((s) => s.todayStepCount, 'todayStepCount', null),
+        ],
+      );
     });
   });
 
@@ -516,6 +642,30 @@ void main() {
 
       expect(newState.todaySleepHours, 6.0);
       expect(newState.todayStepCount, 5000);
+    });
+
+    test('copyWith clears sleep hours with clearSleepHours flag', () {
+      final state = HealthSyncState(todaySleepHours: 7.5, todayStepCount: 10000);
+      final newState = state.copyWith(clearSleepHours: true);
+
+      expect(newState.todaySleepHours, null);
+      expect(newState.todayStepCount, 10000); // Unchanged
+    });
+
+    test('copyWith clears step count with clearStepCount flag', () {
+      final state = HealthSyncState(todaySleepHours: 7.5, todayStepCount: 10000);
+      final newState = state.copyWith(clearStepCount: true);
+
+      expect(newState.todaySleepHours, 7.5); // Unchanged
+      expect(newState.todayStepCount, null);
+    });
+
+    test('copyWith clears both with both flags', () {
+      final state = HealthSyncState(todaySleepHours: 7.5, todayStepCount: 10000);
+      final newState = state.copyWith(clearSleepHours: true, clearStepCount: true);
+
+      expect(newState.todaySleepHours, null);
+      expect(newState.todayStepCount, null);
     });
   });
 }

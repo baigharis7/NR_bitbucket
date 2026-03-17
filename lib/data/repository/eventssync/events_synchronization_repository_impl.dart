@@ -1,4 +1,6 @@
 import 'package:nutrenaissance_flutter/data/api/eventssync/events_sync_api.dart';
+import 'package:nutrenaissance_flutter/data/local/models/sleepevents/sleep_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart';
 import 'package:nutrenaissance_flutter/data/api/eventssync/model/events_synchronization_response.dart';
 import 'package:nutrenaissance_flutter/domain/repository/eventssync/events_synchronization_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
@@ -84,6 +86,8 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
       'supplementEvents': allEventsIds.supplementEvents.map((e) => e.toString()).toList(),
       'supplementFavorites': allEventsIds.supplementFavorites.map((e) => e.toString()).toList(),
       'supplementRoutines': allEventsIds.supplementRoutines.map((e) => e.toString()).toList(),
+      'sleepEvents': allEventsIds.sleepEvents.map((e) => e.toString()).toList(),
+      'stepEvents': allEventsIds.stepEvents.map((e) => e.toString()).toList(),
     };
   }
 
@@ -197,6 +201,27 @@ class EventsSynchronizationRequestRepositoryImpl extends EventsSynchronizationRe
       changedCategories.add(DataChangedCategory.supplement);
       for (var supplementRoutine in eventsSynchronizationResponse.supplementRoutines) {
         await localStorageRepository.saveSupplementRoutine(mapToSupplementEventEntityFromRoutine(supplementRoutine));
+      }
+    }
+
+    if (eventsSynchronizationResponse.sleepEvents.isNotEmpty) {
+      for (var sleepEvent in eventsSynchronizationResponse.sleepEvents) {
+        await localStorageRepository.saveSleepEvent(SleepEventEntity(
+          userId: sleepEvent.userId,
+          eventDate: sleepEvent.eventDate!,
+          eventId: sleepEvent.eventId!,
+          sleepMinutes: sleepEvent.sleepMinutes!,
+        ));
+      }
+    }
+
+    if (eventsSynchronizationResponse.stepEvents.isNotEmpty) {
+      for (var stepEvent in eventsSynchronizationResponse.stepEvents) {
+        await localStorageRepository.saveSteps(StepsEntity(
+          eventId: stepEvent.eventId,
+          initialSteps: stepEvent.initialSteps,
+          actualSteps: stepEvent.actualSteps,
+        ));
       }
     }
 

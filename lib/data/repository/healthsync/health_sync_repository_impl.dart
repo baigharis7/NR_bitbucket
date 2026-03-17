@@ -4,7 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:health/health.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:nutrenaissance_flutter/data/api/sleepevents/models/upload_sleep_event.dart';
+import 'package:nutrenaissance_flutter/data/api/sleepevents/sleep_events_api.dart';
+import 'package:nutrenaissance_flutter/data/api/steps/models/upload_step_event_response.dart';
+import 'package:nutrenaissance_flutter/data/api/steps/steps_api.dart';
 import 'package:nutrenaissance_flutter/data/local/models/healthsync/health_sync_metadata_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/sleepevents/sleep_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_activity.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_metadata.dart';
 import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
@@ -18,6 +25,9 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 class HealthSyncRepositoryImpl implements HealthSyncRepository {
   final LocalStorageRepository localStorageRepository;
   final PreferencesRepository preferencesRepository;
+  final SleepEventsApi sleepEventsApi;
+  final StepsApi stepsApi;
+  final SyncQueueService syncQueue;
 
   // Lazy initialization to avoid blocking during app startup
   Health? _healthInstance;
@@ -44,6 +54,9 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   HealthSyncRepositoryImpl({
     required this.localStorageRepository,
     required this.preferencesRepository,
+    required this.sleepEventsApi,
+    required this.stepsApi,
+    required this.syncQueue,
   });
 
   @override
@@ -418,6 +431,102 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
         }
       }
     }
+  }
+
+  /// Midnight millis for a date — used as eventDate and eventId (one record per day).
+  static int _midnightMillis(DateTime date) =>
+      DateTime(date.year, date.month, date.day).millisecondsSinceEpoch;
+
+  Future<String> _getUserId() async {
+    final profile = await localStorageRepository.getProfile();
+    return profile?.userId ?? '';
+  }
+
+  // ── Sleep ──────────────────────────────────────────────────────────────
+
+  @override
+  Future<void> saveSleepEvent({
+    required DateTime date,
+    required double sleepHours,
+  }) async {
+    final midnight = _midnightMillis(date);
+    final userId = await _getUserId();
+    final sleepMinutes = (sleepHours * 60).round();
+
+    // Save to Hive
+    final entity = SleepEventEntity(
+      userId: userId,
+      eventDate: midnight,
+      eventId: midnight,
+      sleepMinutes: sleepMinutes,
+    );
+    await localStorageRepository.saveSleepEvent(entity);
+
+    // Fire-and-forget to DynamoDB
+    final uploadModel = UploadSleepEvent(
+      userId: userId,
+      eventId: midnight,
+      eventDate: midnight,
+      sleepMinutes: sleepMinutes,
+    );
+    sleepEventsApi.uploadSleepEvent(uploadModel).catchError((error) {
+      syncQueue.enqueue('/sleep-event', uploadModel);
+    });
+  }
+
+  @override
+  Future<double?> getSavedSleepHours(DateTime date) async {
+    final entity = await localStorageRepository.getSleepEventByDate(_midnightMillis(date));
+    if (entity == null) return null;
+    return entity.sleepMinutes / 60.0;
+  }
+
+  // ── Steps ──────────────────────────────────────────────────────────────
+
+  @override
+  Future<void> saveStepEvent({
+    required DateTime date,
+    required int stepCount,
+  }) async {
+    final midnight = _midnightMillis(date);
+    final userId = await _getUserId();
+
+    // Save to Hive (reuses existing StepsEntity)
+    final entity = StepsEntity(
+      eventId: midnight,
+      initialSteps: 0,
+      actualSteps: stepCount,
+    );
+    await localStorageRepository.saveSteps(entity);
+
+    // Fire-and-forget to DynamoDB (reuses existing /steps-count endpoint)
+    final uploadModel = UploadStepEventResponse(
+      userId: userId,
+      eventId: midnight,
+      initialSteps: 0,
+      actualSteps: stepCount,
+    );
+    stepsApi.uploadSteps(uploadModel).catchError((error) {
+      syncQueue.enqueue('/steps-count', uploadModel);
+    });
+  }
+
+  @override
+  Future<int?> getSavedStepCount(DateTime date) async {
+    final step = await localStorageRepository.getTodayStep();
+    // getTodayStep returns a StepsEntity keyed by midnight timestamp
+    final midnight = _midnightMillis(date);
+    if (step.eventId != midnight) {
+      // No step data for the requested date — check all step events
+      final allSteps = await localStorageRepository.getTodaySteps();
+      for (final s in allSteps) {
+        if (s is StepsEntity && s.eventId == midnight) {
+          return s.actualSteps;
+        }
+      }
+      return null;
+    }
+    return step.actualSteps;
   }
 
   @override

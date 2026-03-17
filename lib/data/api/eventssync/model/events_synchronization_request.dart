@@ -17,6 +17,8 @@ class EventsSynchronizationRequest {
   List<int> supplementEvents;
   List<int> supplementFavorites;
   List<int> supplementRoutines;
+  List<int> sleepEvents;
+  List<int> stepEvents;
 
   EventsSynchronizationRequest({
     required this.foodEvents,
@@ -37,6 +39,8 @@ class EventsSynchronizationRequest {
     required this.supplementEvents,
     required this.supplementFavorites,
     required this.supplementRoutines,
+    required this.sleepEvents,
+    required this.stepEvents,
   });
 
 }

@@ -7,6 +7,7 @@ import 'package:nutrenaissance_flutter/data/local/models/favorites/liquid/liquid
 import 'package:nutrenaissance_flutter/data/local/models/favorites/sport/sport_favorite_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/fecesurine/upload_feces_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/healthsync/health_sync_metadata_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/sleepevents/sleep_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodevents/food_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/foodroutines/food_routine_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/liquidevents/liquid_event_entity.dart';
@@ -94,6 +95,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Box? _modelAppearanceBox;
   Box? _cookingMethodsOilsInfoBox;
   Box? _healthSyncMetadataBox;
+  Box? _sleepEventsBox;
 
   Future<Box> _openProfileBox() async => openBox(_profileBox, UserProfileEntity.boxName);
   Future<Box> _openFoodEventsBox() async => openBox(_foodEventsBox, FoodEventEntity.boxName);
@@ -175,6 +177,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<Box> get _getCreatineEventsBox async => await _openCreatineEventsBox();
   Future<Box> get _getCollagenEventsBox async => await _openCollagenEventsBox();
   Future<Box> get _getModelAppearanceBox async => await _openModelAppearanceBox();
+  Future<Box> get _getSleepEventsBox async => await _openSleepEventsBox();
 
   @override
   Future<void> saveProfile(UserProfileEntity profileEntity) async {
@@ -766,6 +769,14 @@ class LocalStorageImpl extends LocalStorageRepository {
     final supplementRoutines = <int>[];
     supplementRoutinesMap.forEach((key, value) => supplementRoutines.add((value as SupplementEventsEntity).eventId));
 
+    final sleepEventsMap = await _getSleepEventsBox.then((box) => box.toMap());
+    final sleepEvents = <int>[];
+    sleepEventsMap.forEach((key, value) => sleepEvents.add((value as SleepEventEntity).eventId));
+
+    final stepEventsMap = await _getUserStepsInfoBox.then((box) => box.toMap());
+    final stepEvents = <int>[];
+    stepEventsMap.forEach((key, value) => stepEvents.add((value as StepsEntity).eventId!));
+
     return EventsSynchronizationRequest(
       foodEvents: foodEvents,
       foodRoutines: foodRoutines,
@@ -785,6 +796,8 @@ class LocalStorageImpl extends LocalStorageRepository {
       supplementEvents: supplementEvents,
       supplementFavorites: supplementFavorites,
       supplementRoutines: supplementRoutines,
+      sleepEvents: sleepEvents,
+      stepEvents: stepEvents,
     );
   }
 
@@ -880,6 +893,16 @@ class LocalStorageImpl extends LocalStorageRepository {
         final map = await _getSupplementRoutinesBox.then((box) => box.toMap());
         return map.values
             .map((e) => (e as SupplementEventsEntity).eventId)
+            .toList();
+      case 'sleepEvents':
+        final map = await _getSleepEventsBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as SleepEventEntity).eventId)
+            .toList();
+      case 'stepEvents':
+        final map = await _getUserStepsInfoBox.then((box) => box.toMap());
+        return map.values
+            .map((e) => (e as StepsEntity).eventId!)
             .toList();
       default:
         throw ArgumentError('Invalid category type: $categoryType');
@@ -1778,4 +1801,20 @@ class LocalStorageImpl extends LocalStorageRepository {
     await box.deleteAll(keysToDelete);
   }
 
+  Future<Box> _openSleepEventsBox() async =>
+      openBox(_sleepEventsBox, SleepEventEntity.boxName);
+
+  @override
+  Future<void> saveSleepEvent(SleepEventEntity sleepEvent) async {
+    final box = await _openSleepEventsBox();
+    // Key by eventDate so one record per day (upserts on re-sync)
+    await box.put(sleepEvent.eventDate, sleepEvent);
+  }
+
+  @override
+  Future<SleepEventEntity?> getSleepEventByDate(int eventDate) async {
+    final box = await _openSleepEventsBox();
+    final value = box.get(eventDate);
+    return value is SleepEventEntity ? value : null;
+  }
 }

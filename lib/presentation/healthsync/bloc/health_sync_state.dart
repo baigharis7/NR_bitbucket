@@ -29,6 +29,8 @@ class HealthSyncState {
     this.todayStepCount,
   });
 
+  /// [clearSleepHours] / [clearStepCount] allow explicitly setting to null
+  /// when switching to a date with no saved data.
   HealthSyncState copyWith({
     bool? isLoading,
     bool? isAvailable,
@@ -42,6 +44,8 @@ class HealthSyncState {
     bool? syncSuccess,
     double? todaySleepHours,
     int? todayStepCount,
+    bool clearSleepHours = false,
+    bool clearStepCount = false,
   }) {
     return HealthSyncState(
       isLoading: isLoading ?? this.isLoading,
@@ -54,8 +58,8 @@ class HealthSyncState {
       onError: onError,
       permissionGranted: permissionGranted,
       syncSuccess: syncSuccess,
-      todaySleepHours: todaySleepHours ?? this.todaySleepHours,
-      todayStepCount: todayStepCount ?? this.todayStepCount,
+      todaySleepHours: clearSleepHours ? null : (todaySleepHours ?? this.todaySleepHours),
+      todayStepCount: clearStepCount ? null : (todayStepCount ?? this.todayStepCount),
     );
   }
 }

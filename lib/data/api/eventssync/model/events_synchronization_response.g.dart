@@ -65,6 +65,12 @@ EventsSynchronizationResponse _$EventsSynchronizationResponseFromJson(
           ?.map((e) =>
               UploadSupplementRoutine.fromJson(e as Map<String, dynamic>))
           .toList() ?? [],
+      sleepEvents: (json['sleepEvents'] as List<dynamic>?)
+          ?.map((e) => UploadSleepEvent.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+      stepEvents: (json['stepEvents'] as List<dynamic>?)
+          ?.map((e) => UploadStepEventResponse.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
     );
 
 Map<String, dynamic> _$EventsSynchronizationResponseToJson(
@@ -94,4 +100,6 @@ Map<String, dynamic> _$EventsSynchronizationResponseToJson(
           instance.supplementFavorites.map((e) => e.toJson()).toList(),
       'supplementRoutines':
           instance.supplementRoutines.map((e) => e.toJson()).toList(),
+      'sleepEvents': instance.sleepEvents.map((e) => e.toJson()).toList(),
+      'stepEvents': instance.stepEvents.map((e) => e.toJson()).toList(),
     };

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/check_health_sync_status_interactor.dart';
@@ -42,6 +41,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     on<HealthSyncManualTrigger>(_onManualTrigger);
     on<HealthSyncInstallHealthConnect>(_onInstallHealthConnect);
     on<HealthSyncOpenHealthConnect>(_onOpenHealthConnect);
+    on<HealthSyncLoadForDate>(_onLoadForDate);
   }
 
   void _startPeriodicSync() {
@@ -65,6 +65,15 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     return super.close();
   }
 
+  /// Fetch sleep/step from Health Connect for a date and save to Hive + DynamoDB.
+  Future<({double sleepHours, int stepCount})> _fetchAndSave(DateTime date) async {
+    final sleepHours = await healthSyncRepository.fetchTodaySleepHours(date);
+    final stepCount = await healthSyncRepository.fetchTodayStepCount(date);
+    await healthSyncRepository.saveSleepEvent(date: date, sleepHours: sleepHours);
+    await healthSyncRepository.saveStepEvent(date: date, stepCount: stepCount);
+    return (sleepHours: sleepHours, stepCount: stepCount);
+  }
+
   Future<void> _onInitialization(
     HealthSyncInitialization event,
     Emitter<HealthSyncState> emit,
@@ -85,11 +94,9 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       }
       _hsLog('HealthSync init: isEnabled=$isEnabled, hasPermissions=$hasPermissions');
 
-      // Auto-disable sync if permissions were revoked externally (e.g. in HC settings)
-      if (isEnabled && !hasPermissions && isAvailable) {
-        _hsLog('HealthSync init: permissions revoked, disabling sync');
-        await healthSyncRepository.setHealthSyncEnabled(false);
-      }
+      // Note: We no longer auto-disable sync when permissions are revoked.
+      // Instead we fall back to saved data so the dashboard widgets remain
+      // visible even if Health Connect temporarily loses permissions.
 
       final lastSyncTime = await healthSyncRepository.getLastSyncTime();
 
@@ -100,13 +107,17 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         _stopPeriodicSync();
       }
 
-      // Fetch today's sleep/step data if sync is enabled
-      double? sleepHours;
-      int? stepCount;
+      final today = DateTime.now();
+
+      // Load previously saved data first (survives sync toggle-off).
+      double? sleepHours = await healthSyncRepository.getSavedSleepHours(today);
+      int? stepCount = await healthSyncRepository.getSavedStepCount(today);
+
+      // Fetch fresh data from Health Connect if sync is active.
       if (syncEnabled) {
-        final today = DateTime.now();
-        sleepHours = await healthSyncRepository.fetchTodaySleepHours(today);
-        stepCount = await healthSyncRepository.fetchTodayStepCount(today);
+        final fresh = await _fetchAndSave(today);
+        sleepHours = fresh.sleepHours;
+        stepCount = fresh.stepCount;
         _hsLog('HealthSync init: sleepHours=$sleepHours, stepCount=$stepCount');
       }
 
@@ -234,10 +245,9 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         DashboardEventBus.instance.notify(DataChangedCategory.sport);
       }
 
-      // Refresh sleep/step data after sync
+      // Fetch today's sleep/step data, save to Hive + DynamoDB
       final today = DateTime.now();
-      final sleepHours = await healthSyncRepository.fetchTodaySleepHours(today);
-      final stepCount = await healthSyncRepository.fetchTodayStepCount(today);
+      final fresh = await _fetchAndSave(today);
 
       emit(state.copyWith(
         isLoading: false,
@@ -245,8 +255,8 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         lastSyncTime: lastSyncTime,
         syncedActivitiesCount: syncedActivities.length,
         syncSuccess: true,
-        todaySleepHours: sleepHours,
-        todayStepCount: stepCount,
+        todaySleepHours: fresh.sleepHours,
+        todayStepCount: fresh.stepCount,
       ));
     } catch (e, stack) {
       CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncManualTrigger'});
@@ -255,6 +265,27 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         isSyncing: false,
         onError: ErrorTypes.unknownError,
       ));
+    }
+  }
+
+  /// Load saved sleep/step data for a specific date from Hive.
+  Future<void> _onLoadForDate(
+    HealthSyncLoadForDate event,
+    Emitter<HealthSyncState> emit,
+  ) async {
+    try {
+      final sleepHours = await healthSyncRepository.getSavedSleepHours(event.date);
+      final stepCount = await healthSyncRepository.getSavedStepCount(event.date);
+      _hsLog('HealthSync loadForDate: ${event.date}, sleep=$sleepHours, steps=$stepCount');
+
+      emit(state.copyWith(
+        todaySleepHours: sleepHours,
+        todayStepCount: stepCount,
+        clearSleepHours: sleepHours == null,
+        clearStepCount: stepCount == null,
+      ));
+    } catch (e, stack) {
+      CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncLoadForDate'});
     }
   }
 

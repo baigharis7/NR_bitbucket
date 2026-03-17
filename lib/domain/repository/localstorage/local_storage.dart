@@ -1,5 +1,6 @@
 import 'package:nutrenaissance_flutter/data/api/eventssync/model/events_synchronization_request.dart';
 import 'package:nutrenaissance_flutter/data/local/models/healthsync/health_sync_metadata_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/sleepevents/sleep_event_entity.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
 import 'package:nutrenaissance_flutter/data/local/local_storage_helper.dart';
 import 'package:nutrenaissance_flutter/data/local/models/fecesurine/upload_feces_event_entity.dart';
@@ -119,4 +120,8 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<List<HealthSyncMetadataEntity>> getHealthSyncMetadata();
   Future<bool> isHealthActivitySynced(String healthPlatformId);
   Future<void> deleteHealthSyncMetadataBySportEventId(int sportEventId);
+
+  // Sleep Events (from Health Connect)
+  Future<void> saveSleepEvent(SleepEventEntity sleepEvent);
+  Future<SleepEventEntity?> getSleepEventByDate(int eventDate);
 }

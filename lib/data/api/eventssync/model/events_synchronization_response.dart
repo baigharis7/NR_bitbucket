@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:nutrenaissance_flutter/data/api/foodevents/model/upload_food_event.dart';
+import 'package:nutrenaissance_flutter/data/api/sleepevents/models/upload_sleep_event.dart';
+import 'package:nutrenaissance_flutter/data/api/steps/models/upload_step_event_response.dart';
 import 'package:nutrenaissance_flutter/data/api/liquidevents/model/upload_liquid_event.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/supplement_favorite.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/model/upload_supplement_event.dart';
@@ -41,6 +43,8 @@ class EventsSynchronizationResponse {
   List<UploadSupplementsEv> supplementEvents;
   List<SupplementFavorite> supplementFavorites;
   List<UploadSupplementRoutine> supplementRoutines;
+  List<UploadSleepEvent> sleepEvents;
+  List<UploadStepEventResponse> stepEvents;
 
   EventsSynchronizationResponse({
     required this.foodEvents,
@@ -61,6 +65,8 @@ class EventsSynchronizationResponse {
     required this.supplementEvents,
     required this.supplementFavorites,
     required this.supplementRoutines,
+    required this.sleepEvents,
+    required this.stepEvents,
   });
 
   factory EventsSynchronizationResponse.fromJson(Map<String, dynamic> json) => _$EventsSynchronizationResponseFromJson(json);

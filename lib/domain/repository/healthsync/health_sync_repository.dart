@@ -66,4 +66,22 @@ abstract class HealthSyncRepository {
 
   /// Fetch today's total step count from the health platform.
   Future<int> fetchTodayStepCount(DateTime date);
+
+  /// Save sleep hours for a date to Hive + DynamoDB.
+  Future<void> saveSleepEvent({
+    required DateTime date,
+    required double sleepHours,
+  });
+
+  /// Load saved sleep hours for a specific date from Hive.
+  Future<double?> getSavedSleepHours(DateTime date);
+
+  /// Save step count for a date to Hive + DynamoDB (reuses StepsEntity).
+  Future<void> saveStepEvent({
+    required DateTime date,
+    required int stepCount,
+  });
+
+  /// Load saved step count for a specific date from Hive.
+  Future<int?> getSavedStepCount(DateTime date);
 }

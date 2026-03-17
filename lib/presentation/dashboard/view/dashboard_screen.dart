@@ -113,6 +113,7 @@ class _DashboardScreen extends State<DashboardScreen>
         selectedDateTime = newDate;
       });
       bloc.add(InitializeState(dateTime: newDate));
+      context.read<HealthSyncBloc>().add(HealthSyncLoadForDate(date: newDate));
     });
 
   }
@@ -307,6 +308,7 @@ class _DashboardScreen extends State<DashboardScreen>
                             onDateSelected: (date) {
                               selectedDateTime = date;
                               bloc.add(InitializeState(dateTime: date, onFinish: () {}));
+                              context.read<HealthSyncBloc>().add(HealthSyncLoadForDate(date: date));
                             },
                           ),
                         ),
@@ -323,6 +325,7 @@ class _DashboardScreen extends State<DashboardScreen>
                       WeekCalendarWidget(onDateClick: (date) {
                         selectedDateTime = date;
                         bloc.add(InitializeState(dateTime: date,));
+                        context.read<HealthSyncBloc>().add(HealthSyncLoadForDate(date: date));
                       }, selectedDateTime: selectedDateTime, callGetAllEvents: (day) => bloc.getEventsForDay(day)),
                       const SizedBox(height: Dimens.heightXSmall),
                       NutritionProgressWidget(energyModel: state.energyModel, nutrientsList: state.macronutrients.orEmpty(), selectedDate: selectedDateTime, sugarAndFiberModel: state.sugarAndFiberModel),
@@ -399,19 +402,18 @@ class _DashboardScreen extends State<DashboardScreen>
                       ),
                       BlocBuilder<HealthSyncBloc, HealthSyncState>(
                         buildWhen: (prev, curr) =>
-                            prev.isSyncEnabled != curr.isSyncEnabled ||
                             prev.todaySleepHours != curr.todaySleepHours ||
                             prev.todayStepCount != curr.todayStepCount,
                         builder: (context, healthState) {
                           final widgets = <Widget>[];
-                          if (healthState.isSyncEnabled && healthState.todaySleepHours != null) {
+                          if (healthState.todaySleepHours != null) {
                             widgets.add(const SizedBox(height: 17));
                             widgets.add(SleepingHoursWidget(
                               hoursSlept: healthState.todaySleepHours!,
                               hoursGoal: 8,
                             ));
                           }
-                          if (healthState.isSyncEnabled && healthState.todayStepCount != null) {
+                          if (healthState.todayStepCount != null) {
                             widgets.add(const SizedBox(height: 17));
                             widgets.add(StepsWidget(
                               stepsTaken: healthState.todayStepCount!,

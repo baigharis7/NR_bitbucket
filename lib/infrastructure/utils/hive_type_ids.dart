@@ -84,5 +84,6 @@ class HiveTypeIds {
   static const cookingMethodOilInfoEntity = 81;
   static const syncQueueEntry = 82;
   static const healthSyncMetadataEntity = 83;
+  static const sleepEventEntity = 84;
 
 }

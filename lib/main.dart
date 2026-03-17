@@ -88,7 +88,9 @@ import 'package:nutrenaissance_flutter/data/repository/recommendations/recommend
 import 'package:nutrenaissance_flutter/data/repository/routines/routines_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/sportevents/sport_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/healthsync/health_sync_repository_impl.dart';
+import 'package:nutrenaissance_flutter/data/api/sleepevents/sleep_events_api.dart';
 import 'package:nutrenaissance_flutter/data/local/models/healthsync/health_sync_metadata_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/sleepevents/sleep_event_entity.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/health_sync_background_service.dart';
 import 'package:nutrenaissance_flutter/data/repository/steps/steps_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/supplements/supplements_repository_impl.dart';
@@ -554,9 +556,14 @@ void main() async {
   syncQueueService.processQueue();
   final ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService, chuck);
   final LocalStorageRepository localStorageRepository = LocalStorageImpl();
+  final SleepEventsApi sleepEventsApi = SleepEventsApi(prefsRepository, authenticationService, chuck);
+  final StepsApi stepsApiForHealthSync = StepsApi(prefsRepository, authenticationService, chuck);
   final healthSyncRepository = HealthSyncRepositoryImpl(
     localStorageRepository: localStorageRepository,
     preferencesRepository: prefsRepository,
+    sleepEventsApi: sleepEventsApi,
+    stepsApi: stepsApiForHealthSync,
+    syncQueue: syncQueueService,
   );
   final ProfileComputationService profileComputationService = ProfileComputationService(referenceDatabase);
   final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository, profileComputationService: profileComputationService, syncQueue: syncQueueService);
@@ -1581,4 +1588,5 @@ void initLocalStorage() async {
   Hive.registerAdapter(CookingMethodOilInfoEntityAdapter());
   Hive.registerAdapter(SyncQueueEntryAdapter());
   Hive.registerAdapter(HealthSyncMetadataEntityAdapter());
+  Hive.registerAdapter(SleepEventEntityAdapter());
 }
