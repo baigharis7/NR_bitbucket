@@ -405,9 +405,10 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return SizedBox(
-      height: 65,
+      height: 65 + bottomPadding,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -419,84 +420,87 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
                 notchRadius: 42,
                 cornerRadius: 20,
               ),
-              child: Row(
-                children: [
-                  // Dashboard
-                  Expanded(
-                    child: InkWell(
-                      onTap: () {
-                        _closeMenu();
-                        _closePlusMenu();
-                        if (ModalRoute.of(context)?.settings.name !=
-                            DashboardScreen.routeName) {
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            DashboardScreen.routeName,
-                            (route) => false,
-                          );
-                        }
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: 28,
-                            child: SvgPicture.asset(
-                              'assets/images/start.svg',
-                              colorFilter: ColorFilter.mode(
-                                widget.activePosition == 0
-                                    ? _kNavColor
-                                    : AppColors.cloudyGrey,
-                                BlendMode.srcIn,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: bottomPadding),
+                child: Row(
+                  children: [
+                    // Dashboard
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          _closeMenu();
+                          _closePlusMenu();
+                          if (ModalRoute.of(context)?.settings.name !=
+                              DashboardScreen.routeName) {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              DashboardScreen.routeName,
+                              (route) => false,
+                            );
+                          }
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height: 28,
+                              child: SvgPicture.asset(
+                                'assets/images/start.svg',
+                                colorFilter: ColorFilter.mode(
+                                  widget.activePosition == 0
+                                      ? _kNavColor
+                                      : AppColors.cloudyGrey,
+                                  BlendMode.srcIn,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            l10n.start,
-                            style: TextStyle(
-                              fontFamily: 'Roboto',
-                              color: widget.activePosition == 0
-                                  ? _kNavColor
-                                  : AppColors.cloudyGrey,
-                              fontSize: 13,
+                            const SizedBox(height: 2),
+                            Text(
+                              l10n.start,
+                              style: TextStyle(
+                                fontFamily: 'Roboto',
+                                color: widget.activePosition == 0
+                                    ? _kNavColor
+                                    : AppColors.cloudyGrey,
+                                fontSize: 13,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
 
-                  // Space for center button
-                  const SizedBox(width: 80),
+                    // Space for center button
+                    const SizedBox(width: 80),
 
-                  // Menu
-                  Expanded(
-                    child: InkWell(
-                      onTap: _toggleMenu,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          AnimatedIcon(
-                            icon: AnimatedIcons.menu_close,
-                            progress: _menuAnimController,
-                            color: _kNavColor,
-                            size: 26,
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            l10n.menu,
-                            style: const TextStyle(
-                              fontFamily: 'Roboto',
+                    // Menu
+                    Expanded(
+                      child: InkWell(
+                        onTap: _toggleMenu,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            AnimatedIcon(
+                              icon: AnimatedIcons.menu_close,
+                              progress: _menuAnimController,
                               color: _kNavColor,
-                              fontSize: 13,
+                              size: 26,
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 2),
+                            Text(
+                              l10n.menu,
+                              style: const TextStyle(
+                                fontFamily: 'Roboto',
+                                color: _kNavColor,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
