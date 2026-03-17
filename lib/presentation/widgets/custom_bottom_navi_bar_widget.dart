@@ -178,12 +178,18 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
       _plusAnimController.forward();
     });
 
-    // Scrim to dismiss on tap
+    // Scrim to dismiss on tap — stops above the navbar
     _plusScrimEntry = OverlayEntry(
-      builder: (_) => GestureDetector(
-        onTap: _closePlusMenu,
-        behavior: HitTestBehavior.opaque,
-        child: Container(color: Colors.black.withOpacity(0.3)),
+      builder: (_) => Positioned(
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 65 + bottomPadding,
+        child: GestureDetector(
+          onTap: _closePlusMenu,
+          behavior: HitTestBehavior.opaque,
+          child: Container(color: Colors.black.withOpacity(0.3)),
+        ),
       ),
     );
 
@@ -299,10 +305,16 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
     });
 
     _scrimEntry = OverlayEntry(
-      builder: (_) => GestureDetector(
-        onTap: _closeMenu,
-        behavior: HitTestBehavior.opaque,
-        child: Container(color: Colors.black.withOpacity(0.3)),
+      builder: (_) => Positioned(
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 65 + bottomPadding,
+        child: GestureDetector(
+          onTap: _closeMenu,
+          behavior: HitTestBehavior.opaque,
+          child: Container(color: Colors.black.withOpacity(0.3)),
+        ),
       ),
     );
 
