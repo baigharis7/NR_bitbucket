@@ -3751,6 +3751,456 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add to list'**
   String get add_to_list;
+
+  /// No description provided for @metric_cardiovascular_health.
+  ///
+  /// In en, this message translates to:
+  /// **'Cardiovascular Health'**
+  String get metric_cardiovascular_health;
+
+  /// No description provided for @metric_physical_endurance.
+  ///
+  /// In en, this message translates to:
+  /// **'Physical Endurance'**
+  String get metric_physical_endurance;
+
+  /// No description provided for @metric_concentration_focus.
+  ///
+  /// In en, this message translates to:
+  /// **'Concentration & Focus'**
+  String get metric_concentration_focus;
+
+  /// No description provided for @metric_muscle_regeneration.
+  ///
+  /// In en, this message translates to:
+  /// **'Muscle Regeneration'**
+  String get metric_muscle_regeneration;
+
+  /// No description provided for @metric_cramps.
+  ///
+  /// In en, this message translates to:
+  /// **'Cramps'**
+  String get metric_cramps;
+
+  /// No description provided for @metric_skin_care.
+  ///
+  /// In en, this message translates to:
+  /// **'Skin Care'**
+  String get metric_skin_care;
+
+  /// No description provided for @metric_kidneys.
+  ///
+  /// In en, this message translates to:
+  /// **'Kidneys'**
+  String get metric_kidneys;
+
+  /// No description provided for @metric_sublabel_resting_hr.
+  ///
+  /// In en, this message translates to:
+  /// **'RESTING HR'**
+  String get metric_sublabel_resting_hr;
+
+  /// No description provided for @metric_sublabel_aerobic_capacity.
+  ///
+  /// In en, this message translates to:
+  /// **'AEROBIC CAPACITY'**
+  String get metric_sublabel_aerobic_capacity;
+
+  /// No description provided for @metric_sublabel_working_memory.
+  ///
+  /// In en, this message translates to:
+  /// **'WORKING MEMORY'**
+  String get metric_sublabel_working_memory;
+
+  /// No description provided for @metric_sublabel_tissue_repair.
+  ///
+  /// In en, this message translates to:
+  /// **'TISSUE REPAIR'**
+  String get metric_sublabel_tissue_repair;
+
+  /// No description provided for @metric_sublabel_muscle_cramps.
+  ///
+  /// In en, this message translates to:
+  /// **'MUSCLE CRAMPS'**
+  String get metric_sublabel_muscle_cramps;
+
+  /// No description provided for @metric_sublabel_skin_hydration.
+  ///
+  /// In en, this message translates to:
+  /// **'SKIN HYDRATION'**
+  String get metric_sublabel_skin_hydration;
+
+  /// No description provided for @metric_sublabel_stone_risk.
+  ///
+  /// In en, this message translates to:
+  /// **'STONE RISK'**
+  String get metric_sublabel_stone_risk;
+
+  /// No description provided for @metric_indicator_cardiovascular.
+  ///
+  /// In en, this message translates to:
+  /// **'Resting HR (beats/min)'**
+  String get metric_indicator_cardiovascular;
+
+  /// No description provided for @metric_indicator_endurance.
+  ///
+  /// In en, this message translates to:
+  /// **'VO₂ max (ml/kg/min) — Aerobic Capacity'**
+  String get metric_indicator_endurance;
+
+  /// No description provided for @metric_indicator_concentration.
+  ///
+  /// In en, this message translates to:
+  /// **'Cognitive Function / Working Memory'**
+  String get metric_indicator_concentration;
+
+  /// No description provided for @metric_indicator_regeneration.
+  ///
+  /// In en, this message translates to:
+  /// **'Tissue Repair (%) / Growth Hormone (GH)'**
+  String get metric_indicator_regeneration;
+
+  /// No description provided for @metric_indicator_cramps.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequency of Muscle Cramps'**
+  String get metric_indicator_cramps;
+
+  /// No description provided for @metric_indicator_collagen.
+  ///
+  /// In en, this message translates to:
+  /// **'Skin Hydration (%) / Collagen Fragmentation'**
+  String get metric_indicator_collagen;
+
+  /// No description provided for @metric_indicator_kidney.
+  ///
+  /// In en, this message translates to:
+  /// **'Urinary Volume (L/day) / Stone Risk'**
+  String get metric_indicator_kidney;
+
+  /// No description provided for @metric_desc_cardiovascular.
+  ///
+  /// In en, this message translates to:
+  /// **'Every step trains your heart like a muscle. Regular walking improves cardiovascular efficiency and significantly reduces your resting heart rate (HR) — a clear sign that your heart works better and with less effort. Fewer beats, less cardiac wear, and a lower risk of heart attack.'**
+  String get metric_desc_cardiovascular;
+
+  /// No description provided for @metric_desc_endurance.
+  ///
+  /// In en, this message translates to:
+  /// **'VO₂ max measures your aerobic capacity — how much oxygen your muscles can use during intense exercise. The higher it is, the better your performance and the lower your fatigue. Walking more increases your VO₂ max: the heart pumps more blood, the lungs absorb more oxygen, and muscles build more mitochondria — the cellular \"power plants.\" The result is a body that is more efficient at using oxygen and generating energy.'**
+  String get metric_desc_endurance;
+
+  /// No description provided for @metric_desc_concentration.
+  ///
+  /// In en, this message translates to:
+  /// **'During sleep, the brain\'s glymphatic system clears toxins and consolidates memories. Sleep deprivation reduces key neurotransmitters (acetylcholine, noradrenaline), impairing concentration and decision-making. With 7–8 hours, your mind operates at 100%: sharp focus, strong memory, and rapid learning — with no \"brain fog.\"'**
+  String get metric_desc_concentration;
+
+  /// No description provided for @metric_desc_regeneration.
+  ///
+  /// In en, this message translates to:
+  /// **'During deep sleep, the pituitary gland releases the largest daily pulse of growth hormone (GH). GH activates protein synthesis, rebuilding muscles, strengthening skin, and slowing cellular aging. With adequate sleep, you wake up renewed: recovered muscles, firmer skin, and a strong immune system. It is your natural \"nightly maintenance.\"'**
+  String get metric_desc_regeneration;
+
+  /// No description provided for @metric_desc_cramps.
+  ///
+  /// In en, this message translates to:
+  /// **'Dehydration disrupts the electrolyte balance (sodium, potassium, and magnesium) essential for controlled muscle contraction. Staying well hydrated helps prevent involuntary spasms. With adequate water and proper mineral balance, muscle electrical signals function correctly and cramps are reduced by up to 65%.'**
+  String get metric_desc_cramps;
+
+  /// No description provided for @metric_desc_collagen.
+  ///
+  /// In en, this message translates to:
+  /// **'Real anti-aging — without expensive creams. Hydrating from within strengthens the extracellular matrix and protects collagen, the structural \"scaffold\" that gives your skin firmness, elasticity, and structure. With adequate water, collagen remains intact, fibers do not fragment, and skin appears firmer, more luminous, and with less noticeable wrinkles. Visible results in 3–4 weeks.'**
+  String get metric_desc_collagen;
+
+  /// No description provided for @metric_desc_kidney.
+  ///
+  /// In en, this message translates to:
+  /// **'Your kidneys filter 180 liters of blood every day. Drinking enough water produces dilute urine (> 2 L), facilitates waste elimination, and prevents the formation of kidney stones (mineral crystallization), reducing their risk by up to 65%. Clearer urine = healthier kidneys.'**
+  String get metric_desc_kidney;
+
+  /// No description provided for @metric_optimal_cardiovascular.
+  ///
+  /// In en, this message translates to:
+  /// **'Resting HR: 60–100 bpm (normal)\n50–60 bpm (athlete)'**
+  String get metric_optimal_cardiovascular;
+
+  /// No description provided for @metric_optimal_endurance.
+  ///
+  /// In en, this message translates to:
+  /// **'VO₂ max: 35–40 ml/kg/min (good)\n> 40 ml/kg/min (excellent)'**
+  String get metric_optimal_endurance;
+
+  /// No description provided for @metric_optimal_concentration.
+  ///
+  /// In en, this message translates to:
+  /// **'100% cognition'**
+  String get metric_optimal_concentration;
+
+  /// No description provided for @metric_optimal_regeneration.
+  ///
+  /// In en, this message translates to:
+  /// **'100% repair'**
+  String get metric_optimal_regeneration;
+
+  /// No description provided for @metric_optimal_cramps.
+  ///
+  /// In en, this message translates to:
+  /// **'< 1 cramp/month'**
+  String get metric_optimal_cramps;
+
+  /// No description provided for @metric_optimal_collagen.
+  ///
+  /// In en, this message translates to:
+  /// **'Hydration: > 40%\nElasticity: > 35%\nCollagen: Intact'**
+  String get metric_optimal_collagen;
+
+  /// No description provided for @metric_optimal_kidney.
+  ///
+  /// In en, this message translates to:
+  /// **'Urinary Volume: > 2 L/day'**
+  String get metric_optimal_kidney;
+
+  /// No description provided for @metric_bib_cardiovascular.
+  ///
+  /// In en, this message translates to:
+  /// **'American Heart Association 2025'**
+  String get metric_bib_cardiovascular;
+
+  /// No description provided for @metric_bib_endurance.
+  ///
+  /// In en, this message translates to:
+  /// **'Journal of Applied Physiology 2024'**
+  String get metric_bib_endurance;
+
+  /// No description provided for @metric_bib_concentration.
+  ///
+  /// In en, this message translates to:
+  /// **'Nature Neuroscience 2024'**
+  String get metric_bib_concentration;
+
+  /// No description provided for @metric_bib_regeneration.
+  ///
+  /// In en, this message translates to:
+  /// **'J. Clinical Endocrinology 2024'**
+  String get metric_bib_regeneration;
+
+  /// No description provided for @metric_bib_cramps.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical Journal of Sports Medicine 2024'**
+  String get metric_bib_cramps;
+
+  /// No description provided for @metric_bib_collagen.
+  ///
+  /// In en, this message translates to:
+  /// **'Dermatology Research RCT 2024'**
+  String get metric_bib_collagen;
+
+  /// No description provided for @metric_bib_kidney.
+  ///
+  /// In en, this message translates to:
+  /// **'JAMA Network Open 2024'**
+  String get metric_bib_kidney;
+
+  /// No description provided for @metric_optimal_value_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Optimal Value'**
+  String get metric_optimal_value_title;
+
+  /// No description provided for @metric_reference_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get metric_reference_title;
+
+  /// No description provided for @steps_low_range.
+  ///
+  /// In en, this message translates to:
+  /// **'< 5,000 steps'**
+  String get steps_low_range;
+
+  /// No description provided for @steps_mid_range.
+  ///
+  /// In en, this message translates to:
+  /// **'5,000–10,000 steps'**
+  String get steps_mid_range;
+
+  /// No description provided for @steps_optimal_range.
+  ///
+  /// In en, this message translates to:
+  /// **'≥ 10,000 steps'**
+  String get steps_optimal_range;
+
+  /// No description provided for @steps_cardio_low_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Heart is overworked'**
+  String get steps_cardio_low_desc;
+
+  /// No description provided for @steps_cardio_mid_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate improvement'**
+  String get steps_cardio_mid_desc;
+
+  /// No description provided for @steps_cardio_optimal_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Athlete-level efficiency'**
+  String get steps_cardio_optimal_desc;
+
+  /// No description provided for @steps_endurance_low_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'I tire out fast'**
+  String get steps_endurance_low_desc;
+
+  /// No description provided for @steps_endurance_mid_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate improvement'**
+  String get steps_endurance_mid_desc;
+
+  /// No description provided for @steps_endurance_optimal_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Endurance all day long'**
+  String get steps_endurance_optimal_desc;
+
+  /// No description provided for @sleep_low_range.
+  ///
+  /// In en, this message translates to:
+  /// **'< 6 hours'**
+  String get sleep_low_range;
+
+  /// No description provided for @sleep_mid_range.
+  ///
+  /// In en, this message translates to:
+  /// **'6–7 hours'**
+  String get sleep_mid_range;
+
+  /// No description provided for @sleep_optimal_range_male.
+  ///
+  /// In en, this message translates to:
+  /// **'≥ 7 hours'**
+  String get sleep_optimal_range_male;
+
+  /// No description provided for @sleep_optimal_range_female.
+  ///
+  /// In en, this message translates to:
+  /// **'≥ 9 hours'**
+  String get sleep_optimal_range_female;
+
+  /// No description provided for @sleep_concentration_low_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Brain fog, can\'t focus'**
+  String get sleep_concentration_low_desc;
+
+  /// No description provided for @sleep_concentration_mid_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'I function but not at 100%'**
+  String get sleep_concentration_mid_desc;
+
+  /// No description provided for @sleep_concentration_optimal_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear mind, laser focus'**
+  String get sleep_concentration_optimal_desc;
+
+  /// No description provided for @sleep_regeneration_low_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'I never recover, always sore'**
+  String get sleep_regeneration_low_desc;
+
+  /// No description provided for @sleep_regeneration_mid_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'I recover but slowly'**
+  String get sleep_regeneration_mid_desc;
+
+  /// No description provided for @sleep_regeneration_optimal_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'I wake up fresh and new'**
+  String get sleep_regeneration_optimal_desc;
+
+  /// No description provided for @hydration_low_range.
+  ///
+  /// In en, this message translates to:
+  /// **'< 6 glasses'**
+  String get hydration_low_range;
+
+  /// No description provided for @hydration_mid_range.
+  ///
+  /// In en, this message translates to:
+  /// **'6–9 glasses'**
+  String get hydration_mid_range;
+
+  /// No description provided for @hydration_optimal_range.
+  ///
+  /// In en, this message translates to:
+  /// **'≥ 10 glasses'**
+  String get hydration_optimal_range;
+
+  /// No description provided for @hydration_cramps_low_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequent cramps'**
+  String get hydration_cramps_low_desc;
+
+  /// No description provided for @hydration_cramps_mid_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Occasional cramp'**
+  String get hydration_cramps_mid_desc;
+
+  /// No description provided for @hydration_cramps_optimal_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'No cramps'**
+  String get hydration_cramps_optimal_desc;
+
+  /// No description provided for @hydration_collagen_low_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Dry and dull skin'**
+  String get hydration_collagen_low_desc;
+
+  /// No description provided for @hydration_collagen_mid_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Visible improvement'**
+  String get hydration_collagen_mid_desc;
+
+  /// No description provided for @hydration_collagen_optimal_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Radiant skin'**
+  String get hydration_collagen_optimal_desc;
+
+  /// No description provided for @hydration_kidney_low_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Kidneys under strain'**
+  String get hydration_kidney_low_desc;
+
+  /// No description provided for @hydration_kidney_mid_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate protection'**
+  String get hydration_kidney_mid_desc;
+
+  /// No description provided for @hydration_kidney_optimal_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Optimal detox'**
+  String get hydration_kidney_optimal_desc;
 }
 
 class _AppLocalizationsDelegate

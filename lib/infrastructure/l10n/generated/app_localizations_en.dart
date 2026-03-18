@@ -2014,4 +2014,243 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get add_to_list => 'Add to list';
+
+  @override
+  String get metric_cardiovascular_health => 'Cardiovascular Health';
+
+  @override
+  String get metric_physical_endurance => 'Physical Endurance';
+
+  @override
+  String get metric_concentration_focus => 'Concentration & Focus';
+
+  @override
+  String get metric_muscle_regeneration => 'Muscle Regeneration';
+
+  @override
+  String get metric_cramps => 'Cramps';
+
+  @override
+  String get metric_skin_care => 'Skin Care';
+
+  @override
+  String get metric_kidneys => 'Kidneys';
+
+  @override
+  String get metric_sublabel_resting_hr => 'RESTING HR';
+
+  @override
+  String get metric_sublabel_aerobic_capacity => 'AEROBIC CAPACITY';
+
+  @override
+  String get metric_sublabel_working_memory => 'WORKING MEMORY';
+
+  @override
+  String get metric_sublabel_tissue_repair => 'TISSUE REPAIR';
+
+  @override
+  String get metric_sublabel_muscle_cramps => 'MUSCLE CRAMPS';
+
+  @override
+  String get metric_sublabel_skin_hydration => 'SKIN HYDRATION';
+
+  @override
+  String get metric_sublabel_stone_risk => 'STONE RISK';
+
+  @override
+  String get metric_indicator_cardiovascular => 'Resting HR (beats/min)';
+
+  @override
+  String get metric_indicator_endurance =>
+      'VO₂ max (ml/kg/min) — Aerobic Capacity';
+
+  @override
+  String get metric_indicator_concentration =>
+      'Cognitive Function / Working Memory';
+
+  @override
+  String get metric_indicator_regeneration =>
+      'Tissue Repair (%) / Growth Hormone (GH)';
+
+  @override
+  String get metric_indicator_cramps => 'Frequency of Muscle Cramps';
+
+  @override
+  String get metric_indicator_collagen =>
+      'Skin Hydration (%) / Collagen Fragmentation';
+
+  @override
+  String get metric_indicator_kidney => 'Urinary Volume (L/day) / Stone Risk';
+
+  @override
+  String get metric_desc_cardiovascular =>
+      'Every step trains your heart like a muscle. Regular walking improves cardiovascular efficiency and significantly reduces your resting heart rate (HR) — a clear sign that your heart works better and with less effort. Fewer beats, less cardiac wear, and a lower risk of heart attack.';
+
+  @override
+  String get metric_desc_endurance =>
+      'VO₂ max measures your aerobic capacity — how much oxygen your muscles can use during intense exercise. The higher it is, the better your performance and the lower your fatigue. Walking more increases your VO₂ max: the heart pumps more blood, the lungs absorb more oxygen, and muscles build more mitochondria — the cellular \"power plants.\" The result is a body that is more efficient at using oxygen and generating energy.';
+
+  @override
+  String get metric_desc_concentration =>
+      'During sleep, the brain\'s glymphatic system clears toxins and consolidates memories. Sleep deprivation reduces key neurotransmitters (acetylcholine, noradrenaline), impairing concentration and decision-making. With 7–8 hours, your mind operates at 100%: sharp focus, strong memory, and rapid learning — with no \"brain fog.\"';
+
+  @override
+  String get metric_desc_regeneration =>
+      'During deep sleep, the pituitary gland releases the largest daily pulse of growth hormone (GH). GH activates protein synthesis, rebuilding muscles, strengthening skin, and slowing cellular aging. With adequate sleep, you wake up renewed: recovered muscles, firmer skin, and a strong immune system. It is your natural \"nightly maintenance.\"';
+
+  @override
+  String get metric_desc_cramps =>
+      'Dehydration disrupts the electrolyte balance (sodium, potassium, and magnesium) essential for controlled muscle contraction. Staying well hydrated helps prevent involuntary spasms. With adequate water and proper mineral balance, muscle electrical signals function correctly and cramps are reduced by up to 65%.';
+
+  @override
+  String get metric_desc_collagen =>
+      'Real anti-aging — without expensive creams. Hydrating from within strengthens the extracellular matrix and protects collagen, the structural \"scaffold\" that gives your skin firmness, elasticity, and structure. With adequate water, collagen remains intact, fibers do not fragment, and skin appears firmer, more luminous, and with less noticeable wrinkles. Visible results in 3–4 weeks.';
+
+  @override
+  String get metric_desc_kidney =>
+      'Your kidneys filter 180 liters of blood every day. Drinking enough water produces dilute urine (> 2 L), facilitates waste elimination, and prevents the formation of kidney stones (mineral crystallization), reducing their risk by up to 65%. Clearer urine = healthier kidneys.';
+
+  @override
+  String get metric_optimal_cardiovascular =>
+      'Resting HR: 60–100 bpm (normal)\n50–60 bpm (athlete)';
+
+  @override
+  String get metric_optimal_endurance =>
+      'VO₂ max: 35–40 ml/kg/min (good)\n> 40 ml/kg/min (excellent)';
+
+  @override
+  String get metric_optimal_concentration => '100% cognition';
+
+  @override
+  String get metric_optimal_regeneration => '100% repair';
+
+  @override
+  String get metric_optimal_cramps => '< 1 cramp/month';
+
+  @override
+  String get metric_optimal_collagen =>
+      'Hydration: > 40%\nElasticity: > 35%\nCollagen: Intact';
+
+  @override
+  String get metric_optimal_kidney => 'Urinary Volume: > 2 L/day';
+
+  @override
+  String get metric_bib_cardiovascular => 'American Heart Association 2025';
+
+  @override
+  String get metric_bib_endurance => 'Journal of Applied Physiology 2024';
+
+  @override
+  String get metric_bib_concentration => 'Nature Neuroscience 2024';
+
+  @override
+  String get metric_bib_regeneration => 'J. Clinical Endocrinology 2024';
+
+  @override
+  String get metric_bib_cramps => 'Clinical Journal of Sports Medicine 2024';
+
+  @override
+  String get metric_bib_collagen => 'Dermatology Research RCT 2024';
+
+  @override
+  String get metric_bib_kidney => 'JAMA Network Open 2024';
+
+  @override
+  String get metric_optimal_value_title => 'Optimal Value';
+
+  @override
+  String get metric_reference_title => 'Reference';
+
+  @override
+  String get steps_low_range => '< 5,000 steps';
+
+  @override
+  String get steps_mid_range => '5,000–10,000 steps';
+
+  @override
+  String get steps_optimal_range => '≥ 10,000 steps';
+
+  @override
+  String get steps_cardio_low_desc => 'Heart is overworked';
+
+  @override
+  String get steps_cardio_mid_desc => 'Moderate improvement';
+
+  @override
+  String get steps_cardio_optimal_desc => 'Athlete-level efficiency';
+
+  @override
+  String get steps_endurance_low_desc => 'I tire out fast';
+
+  @override
+  String get steps_endurance_mid_desc => 'Moderate improvement';
+
+  @override
+  String get steps_endurance_optimal_desc => 'Endurance all day long';
+
+  @override
+  String get sleep_low_range => '< 6 hours';
+
+  @override
+  String get sleep_mid_range => '6–7 hours';
+
+  @override
+  String get sleep_optimal_range_male => '≥ 7 hours';
+
+  @override
+  String get sleep_optimal_range_female => '≥ 9 hours';
+
+  @override
+  String get sleep_concentration_low_desc => 'Brain fog, can\'t focus';
+
+  @override
+  String get sleep_concentration_mid_desc => 'I function but not at 100%';
+
+  @override
+  String get sleep_concentration_optimal_desc => 'Clear mind, laser focus';
+
+  @override
+  String get sleep_regeneration_low_desc => 'I never recover, always sore';
+
+  @override
+  String get sleep_regeneration_mid_desc => 'I recover but slowly';
+
+  @override
+  String get sleep_regeneration_optimal_desc => 'I wake up fresh and new';
+
+  @override
+  String get hydration_low_range => '< 6 glasses';
+
+  @override
+  String get hydration_mid_range => '6–9 glasses';
+
+  @override
+  String get hydration_optimal_range => '≥ 10 glasses';
+
+  @override
+  String get hydration_cramps_low_desc => 'Frequent cramps';
+
+  @override
+  String get hydration_cramps_mid_desc => 'Occasional cramp';
+
+  @override
+  String get hydration_cramps_optimal_desc => 'No cramps';
+
+  @override
+  String get hydration_collagen_low_desc => 'Dry and dull skin';
+
+  @override
+  String get hydration_collagen_mid_desc => 'Visible improvement';
+
+  @override
+  String get hydration_collagen_optimal_desc => 'Radiant skin';
+
+  @override
+  String get hydration_kidney_low_desc => 'Kidneys under strain';
+
+  @override
+  String get hydration_kidney_mid_desc => 'Moderate protection';
+
+  @override
+  String get hydration_kidney_optimal_desc => 'Optimal detox';
 }

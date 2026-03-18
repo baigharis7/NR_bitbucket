@@ -93,8 +93,8 @@ class SleepingHoursWidget extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             HealthImpactMetricsRow(
-              metrics: HealthImpactCalculator.calculateSleepMetrics(hoursSlept, sex),
-              onMetricTap: (metric) => HealthMetricDetailSheet.show(context, metric),
+              metrics: HealthImpactCalculator.calculateSleepMetrics(hoursSlept, AppLocalizations.of(context)!, sex),
+              onMetricTap: (metric) => HealthMetricDetailSheet.show(context, metric, sex),
             ),
           ],
         ),

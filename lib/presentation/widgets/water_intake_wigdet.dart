@@ -127,7 +127,7 @@ class _WaterIntakeWidgetState extends State<WaterIntakeWidget> {
           ),
           const SizedBox(height: 8),
           HealthImpactMetricsRow(
-            metrics: HealthImpactCalculator.calculateHydrationMetrics(widget.consumedGlasses),
+            metrics: HealthImpactCalculator.calculateHydrationMetrics(widget.consumedGlasses, AppLocalizations.of(context)!),
             onMetricTap: (metric) => HealthMetricDetailSheet.show(context, metric),
           ),
         ],

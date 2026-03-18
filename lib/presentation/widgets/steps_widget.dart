@@ -96,7 +96,7 @@ class StepsWidget extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             HealthImpactMetricsRow(
-              metrics: HealthImpactCalculator.calculateStepsMetrics(stepsTaken),
+              metrics: HealthImpactCalculator.calculateStepsMetrics(stepsTaken, AppLocalizations.of(context)!),
               onMetricTap: (metric) => HealthMetricDetailSheet.show(context, metric),
             ),
           ],

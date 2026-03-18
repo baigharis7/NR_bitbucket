@@ -2037,4 +2037,245 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get add_to_list => 'Añadir a la lista';
+
+  @override
+  String get metric_cardiovascular_health => 'Salud Cardiovascular';
+
+  @override
+  String get metric_physical_endurance => 'Resistencia Física';
+
+  @override
+  String get metric_concentration_focus => 'Concentración y Enfoque';
+
+  @override
+  String get metric_muscle_regeneration => 'Regeneración Muscular';
+
+  @override
+  String get metric_cramps => 'Calambres';
+
+  @override
+  String get metric_skin_care => 'Cuidado de Piel';
+
+  @override
+  String get metric_kidneys => 'Riñones';
+
+  @override
+  String get metric_sublabel_resting_hr => 'FC EN REPOSO';
+
+  @override
+  String get metric_sublabel_aerobic_capacity => 'CAPACIDAD AERÓBICA';
+
+  @override
+  String get metric_sublabel_working_memory => 'MEMORIA DE TRABAJO';
+
+  @override
+  String get metric_sublabel_tissue_repair => 'REPARACIÓN TEJIDOS';
+
+  @override
+  String get metric_sublabel_muscle_cramps => 'CALAMBRES MUSCULARES';
+
+  @override
+  String get metric_sublabel_skin_hydration => 'HIDRATACIÓN CUTÁNEA';
+
+  @override
+  String get metric_sublabel_stone_risk => 'RIESGO CÁLCULOS';
+
+  @override
+  String get metric_indicator_cardiovascular => 'FC en reposo (latidos/min)';
+
+  @override
+  String get metric_indicator_endurance =>
+      'VO₂ máximo (ml/kg/min) — Capacidad aeróbica';
+
+  @override
+  String get metric_indicator_concentration =>
+      'Función cognitiva / Memoria de trabajo';
+
+  @override
+  String get metric_indicator_regeneration =>
+      'Reparación de tejidos (%) / Hormona de Crecimiento (GH)';
+
+  @override
+  String get metric_indicator_cramps => 'Frecuencia de calambres musculares';
+
+  @override
+  String get metric_indicator_collagen =>
+      'Hidratación cutánea (%) / Fragmentación de colágeno';
+
+  @override
+  String get metric_indicator_kidney =>
+      'Volumen urinario (L/día) / Riesgo de cálculos';
+
+  @override
+  String get metric_desc_cardiovascular =>
+      'Cada paso entrena tu corazón como un músculo. Caminar con regularidad mejora la eficiencia cardiovascular y reduce significativamente tu frecuencia cardíaca en reposo (FC), una señal clara de que tu corazón trabaja mejor y con menos esfuerzo. Menos latidos, menos desgaste cardíaco y menor riesgo de infarto.';
+
+  @override
+  String get metric_desc_endurance =>
+      'El VO₂ máx mide tu capacidad aeróbica, es decir, cuánto oxígeno pueden utilizar tus músculos durante el ejercicio intenso. Cuanto mayor es, mejor es tu rendimiento y menor la fatiga. Caminar más aumenta tu VO₂ máx: el corazón bombea más sangre, los pulmones captan más oxígeno y los músculos crean más mitocondrias, las \"centrales energéticas\" celulares. El resultado es un cuerpo más eficiente usando oxígeno y produciendo energía.';
+
+  @override
+  String get metric_desc_concentration =>
+      'Durante el sueño, el sistema glinfático del cerebro elimina toxinas y consolida memorias. La privación de sueño reduce neurotransmisores clave (acetilcolina, noradrenalina) afectando concentración y toma de decisiones. Con 7–8 horas, tu mente funciona al 100%: enfoque claro, buena memoria y aprendizaje rápido, sin \"niebla mental\".';
+
+  @override
+  String get metric_desc_regeneration =>
+      'Durante el sueño profundo, la hipófisis libera el mayor pulso diario de hormona de crecimiento (GH). La GH activa la síntesis proteica, reconstruyendo músculos, fortaleciendo la piel y ralentizando el envejecimiento celular. Con un sueño adecuado, te despiertas renovado: músculos recuperados, piel más firme y sistema inmune fuerte. Es tu \"mantenimiento nocturno\" natural.';
+
+  @override
+  String get metric_desc_cramps =>
+      'La deshidratación altera el equilibrio electrolítico (sodio, potasio y magnesio) esenciales para la contracción muscular controlada. Mantenerse bien hidratado ayuda a prevenir espasmos involuntarios. Con suficiente agua y un balance mineral adecuado, las señales eléctricas musculares funcionan correctamente y los calambres se reducen hasta en un 65%.';
+
+  @override
+  String get metric_desc_collagen =>
+      'Anti-aging real sin cremas costosas. Hidratarse desde dentro fortalece la matriz extracelular y protege el colágeno, el \"andamio\" que le da firmeza, elasticidad y estructura a tu piel. Con suficiente agua, el colágeno se mantiene intacto, las fibras no se fragmentan y la piel luce más firme, luminosa y con arrugas menos marcadas. Resultados notables en 3–4 semanas.';
+
+  @override
+  String get metric_desc_kidney =>
+      'Tus riñones filtran 180 litros de sangre al día. Beber suficiente agua produce orina diluida (> 2 L), facilita la eliminación de desechos y previene la formación de cálculos (cristalización de minerales), reduciendo su riesgo hasta en un 65%. Orina más clara = riñones más felices.';
+
+  @override
+  String get metric_optimal_cardiovascular =>
+      'FC en reposo: 60–100 lpm (normal)\n50–60 lpm (atleta)';
+
+  @override
+  String get metric_optimal_endurance =>
+      'VO₂ máx: 35–40 ml/kg/min (bueno)\n> 40 ml/kg/min (excelente)';
+
+  @override
+  String get metric_optimal_concentration => '100% función cognitiva';
+
+  @override
+  String get metric_optimal_regeneration => '100% regeneración';
+
+  @override
+  String get metric_optimal_cramps => '< 1 calambre/mes';
+
+  @override
+  String get metric_optimal_collagen =>
+      'Hidratación: > 40%\nElasticidad: > 35%\nColágeno: Intacto';
+
+  @override
+  String get metric_optimal_kidney =>
+      'Volumen urinario: > 2 L/día (óptimo)\n1.5–2 L/día (aceptable)';
+
+  @override
+  String get metric_bib_cardiovascular => 'American Heart Association 2025';
+
+  @override
+  String get metric_bib_endurance => 'Journal of Applied Physiology 2024';
+
+  @override
+  String get metric_bib_concentration => 'Nature Neuroscience 2024';
+
+  @override
+  String get metric_bib_regeneration => 'J. Clinical Endocrinology 2024';
+
+  @override
+  String get metric_bib_cramps => 'Clinical Journal of Sports Medicine 2024';
+
+  @override
+  String get metric_bib_collagen => 'Dermatology Research RCT 2024';
+
+  @override
+  String get metric_bib_kidney => 'JAMA Network Open 2024';
+
+  @override
+  String get metric_optimal_value_title => 'Valor Óptimo';
+
+  @override
+  String get metric_reference_title => 'Referencia';
+
+  @override
+  String get steps_low_range => '< 5k pasos';
+
+  @override
+  String get steps_mid_range => '5–10k pasos';
+
+  @override
+  String get steps_optimal_range => '≥ 10k pasos';
+
+  @override
+  String get steps_cardio_low_desc => 'El corazón trabaja de más';
+
+  @override
+  String get steps_cardio_mid_desc => 'Mejora moderada';
+
+  @override
+  String get steps_cardio_optimal_desc => 'Eficiencia de atleta';
+
+  @override
+  String get steps_endurance_low_desc => 'Me fatigo rápido';
+
+  @override
+  String get steps_endurance_mid_desc => 'Mejora moderada';
+
+  @override
+  String get steps_endurance_optimal_desc => 'Aguante todo el día';
+
+  @override
+  String get sleep_low_range => '< 6h';
+
+  @override
+  String get sleep_mid_range => '6–7h';
+
+  @override
+  String get sleep_optimal_range_male => '≥ 7h';
+
+  @override
+  String get sleep_optimal_range_female => '≥ 9h';
+
+  @override
+  String get sleep_concentration_low_desc => 'Niebla mental, no me concentro';
+
+  @override
+  String get sleep_concentration_mid_desc => 'Funciono pero no al 100%';
+
+  @override
+  String get sleep_concentration_optimal_desc => 'Mente clara, enfoque láser';
+
+  @override
+  String get sleep_regeneration_low_desc => 'No me recupero, siempre roto';
+
+  @override
+  String get sleep_regeneration_mid_desc => 'Recupero pero lento';
+
+  @override
+  String get sleep_regeneration_optimal_desc => 'Me despierto nuevo';
+
+  @override
+  String get hydration_low_range => '< 6 vasos';
+
+  @override
+  String get hydration_mid_range => '6–9 vasos';
+
+  @override
+  String get hydration_optimal_range => '≥ 10 vasos';
+
+  @override
+  String get hydration_cramps_low_desc => 'Calambres frecuentes';
+
+  @override
+  String get hydration_cramps_mid_desc => 'Algún calambre';
+
+  @override
+  String get hydration_cramps_optimal_desc => 'Sin calambres';
+
+  @override
+  String get hydration_collagen_low_desc => 'Piel seca y apagada';
+
+  @override
+  String get hydration_collagen_mid_desc => 'Mejoría visible';
+
+  @override
+  String get hydration_collagen_optimal_desc => 'Piel radiante';
+
+  @override
+  String get hydration_kidney_low_desc => 'Riñones forzados';
+
+  @override
+  String get hydration_kidney_mid_desc => 'Protección moderada';
+
+  @override
+  String get hydration_kidney_optimal_desc => 'Detox óptima';
 }

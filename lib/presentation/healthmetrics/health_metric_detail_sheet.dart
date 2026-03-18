@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/health_impact_metric.dart';
+import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
@@ -12,12 +14,13 @@ class HealthMetricDetailSheet {
   static OverlayEntry? _plusBtnOverlay;
   static AnimationController? _animController;
 
-  static void show(BuildContext context, HealthImpactMetric metric) {
+  static void show(BuildContext context, HealthImpactMetric metric, [SexType? sex]) {
     if (_menuEntry != null) return;
 
     final bottomPadding = MediaQuery.of(context).padding.bottom;
     final screenHeight = MediaQuery.of(context).size.height;
-    final info = _getMetricInfo(metric.type);
+    final l10n = AppLocalizations.of(context)!;
+    final info = _getMetricInfo(metric.type, l10n, sex);
 
     final tier = _getCurrentTier(metric);
     final tierColor = tier == _Tier.optimal
@@ -218,7 +221,7 @@ class HealthMetricDetailSheet {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Optimal Value',
+                        l10n.metric_optimal_value_title,
                         style: AppTextStyles.merriWeather.copyWith(
                           fontWeight: FontWeight.w600,
                           fontSize: Dimens.fontSizeNormal,
@@ -253,7 +256,7 @@ class HealthMetricDetailSheet {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Reference',
+                        l10n.metric_reference_title,
                         style: AppTextStyles.merriWeather.copyWith(
                           fontWeight: FontWeight.w600,
                           fontSize: Dimens.fontSizeNormal,
@@ -422,128 +425,122 @@ class _MetricInfo {
   });
 }
 
-_MetricInfo _getMetricInfo(HealthMetricType type) {
+_MetricInfo _getMetricInfo(HealthMetricType type, AppLocalizations l10n, [SexType? sex]) {
+  final sleepOptimalRange = sex == SexType.female
+      ? l10n.sleep_optimal_range_female
+      : l10n.sleep_optimal_range_male;
+
   switch (type) {
     case HealthMetricType.cardiovascularHealth:
-      return const _MetricInfo(
-        indicator: 'Resting HR (beats/min)',
-        optimalValue:
-            'Resting HR: 60–100 bpm (normal)\n50–60 bpm (athlete)',
-        bibliography: 'American Heart Association 2025',
-        description:
-            'Every step trains your heart like a muscle. Regular walking improves cardiovascular efficiency and significantly reduces your resting heart rate (HR) — a clear sign that your heart works better and with less effort. Fewer beats, less cardiac wear, and a lower risk of heart attack.',
-        lowRange: '< 5,000 steps',
-        lowDescription: 'Heart is overworked',
+      return _MetricInfo(
+        indicator: l10n.metric_indicator_cardiovascular,
+        optimalValue: l10n.metric_optimal_cardiovascular,
+        bibliography: l10n.metric_bib_cardiovascular,
+        description: l10n.metric_desc_cardiovascular,
+        lowRange: l10n.steps_low_range,
+        lowDescription: l10n.steps_cardio_low_desc,
         lowPercentage: '0%',
-        midRange: '5,000–10,000 steps',
-        midDescription: 'Moderate improvement',
+        midRange: l10n.steps_mid_range,
+        midDescription: l10n.steps_cardio_mid_desc,
         midPercentage: '↑ 13%',
-        optimalRange: '≥ 10,000 steps',
-        optimalDescription: 'Athlete-level efficiency',
+        optimalRange: l10n.steps_optimal_range,
+        optimalDescription: l10n.steps_cardio_optimal_desc,
         optimalPercentage: '↑ 25%',
       );
     case HealthMetricType.physicalEndurance:
-      return const _MetricInfo(
-        indicator: 'VO₂ max (ml/kg/min) — Aerobic Capacity',
-        optimalValue:
-            'VO₂ max: 35–40 ml/kg/min (good)\n> 40 ml/kg/min (excellent)',
-        bibliography: 'Journal of Applied Physiology 2024',
-        description:
-            'VO₂ max measures your aerobic capacity — how much oxygen your muscles can use during intense exercise. The higher it is, the better your performance and the lower your fatigue. Walking more increases your VO₂ max: the heart pumps more blood, the lungs absorb more oxygen, and muscles build more mitochondria — the cellular "power plants." The result is a body that is more efficient at using oxygen and generating energy.',
-        lowRange: '< 5,000 steps',
-        lowDescription: 'I tire out fast',
+      return _MetricInfo(
+        indicator: l10n.metric_indicator_endurance,
+        optimalValue: l10n.metric_optimal_endurance,
+        bibliography: l10n.metric_bib_endurance,
+        description: l10n.metric_desc_endurance,
+        lowRange: l10n.steps_low_range,
+        lowDescription: l10n.steps_endurance_low_desc,
         lowPercentage: '0%',
-        midRange: '5,000–10,000 steps',
-        midDescription: 'Moderate improvement',
+        midRange: l10n.steps_mid_range,
+        midDescription: l10n.steps_endurance_mid_desc,
         midPercentage: '↑ 15%',
-        optimalRange: '≥ 10,000 steps',
-        optimalDescription: 'Endurance all day long',
+        optimalRange: l10n.steps_optimal_range,
+        optimalDescription: l10n.steps_endurance_optimal_desc,
         optimalPercentage: '↑ 30%',
       );
     case HealthMetricType.concentrationFocus:
-      return const _MetricInfo(
-        indicator: 'Cognitive Function / Working Memory',
-        optimalValue: '100% cognition',
-        bibliography: 'Nature Neuroscience 2024',
-        description:
-            'During sleep, the brain\'s glymphatic system clears toxins and consolidates memories. Sleep deprivation reduces key neurotransmitters (acetylcholine, noradrenaline), impairing concentration and decision-making. With 7–8 hours, your mind operates at 100%: sharp focus, strong memory, and rapid learning — with no "brain fog."',
-        lowRange: '< 6 hours',
-        lowDescription: 'Brain fog, can\'t focus',
+      return _MetricInfo(
+        indicator: l10n.metric_indicator_concentration,
+        optimalValue: l10n.metric_optimal_concentration,
+        bibliography: l10n.metric_bib_concentration,
+        description: l10n.metric_desc_concentration,
+        lowRange: l10n.sleep_low_range,
+        lowDescription: l10n.sleep_concentration_low_desc,
         lowPercentage: '↓ 25%',
-        midRange: '6–7 hours',
-        midDescription: 'I function but not at 100%',
+        midRange: l10n.sleep_mid_range,
+        midDescription: l10n.sleep_concentration_mid_desc,
         midPercentage: '↓ 15%',
-        optimalRange: '≥ 7 hours',
-        optimalDescription: 'Clear mind, laser focus',
+        optimalRange: sleepOptimalRange,
+        optimalDescription: l10n.sleep_concentration_optimal_desc,
         optimalPercentage: '100%',
       );
     case HealthMetricType.muscleRegeneration:
-      return const _MetricInfo(
-        indicator: 'Tissue Repair (%) / Growth Hormone (GH)',
-        optimalValue: '100% repair',
-        bibliography: 'J. Clinical Endocrinology 2024',
-        description:
-            'During deep sleep, the pituitary gland releases the largest daily pulse of growth hormone (GH). GH activates protein synthesis, rebuilding muscles, strengthening skin, and slowing cellular aging. With adequate sleep, you wake up renewed: recovered muscles, firmer skin, and a strong immune system. It is your natural "nightly maintenance."',
-        lowRange: '< 6 hours',
-        lowDescription: 'I never recover, always sore',
+      return _MetricInfo(
+        indicator: l10n.metric_indicator_regeneration,
+        optimalValue: l10n.metric_optimal_regeneration,
+        bibliography: l10n.metric_bib_regeneration,
+        description: l10n.metric_desc_regeneration,
+        lowRange: l10n.sleep_low_range,
+        lowDescription: l10n.sleep_regeneration_low_desc,
         lowPercentage: '↓ 35%',
-        midRange: '6–7 hours',
-        midDescription: 'I recover but slowly',
+        midRange: l10n.sleep_mid_range,
+        midDescription: l10n.sleep_regeneration_mid_desc,
         midPercentage: '↓ 15%',
-        optimalRange: '≥ 7 hours',
-        optimalDescription: 'I wake up fresh and new',
+        optimalRange: sleepOptimalRange,
+        optimalDescription: l10n.sleep_regeneration_optimal_desc,
         optimalPercentage: '100%',
       );
     case HealthMetricType.goodbyeCramps:
-      return const _MetricInfo(
-        indicator: 'Frequency of Muscle Cramps',
-        optimalValue: '< 1 cramp/month',
-        bibliography: 'Clinical Journal of Sports Medicine 2024',
-        description:
-            'Dehydration disrupts the electrolyte balance (sodium, potassium, and magnesium) essential for controlled muscle contraction. Staying well hydrated helps prevent involuntary spasms. With adequate water and proper mineral balance, muscle electrical signals function correctly and cramps are reduced by up to 65%.',
-        lowRange: '< 6 glasses',
-        lowDescription: 'Frequent cramps',
+      return _MetricInfo(
+        indicator: l10n.metric_indicator_cramps,
+        optimalValue: l10n.metric_optimal_cramps,
+        bibliography: l10n.metric_bib_cramps,
+        description: l10n.metric_desc_cramps,
+        lowRange: l10n.hydration_low_range,
+        lowDescription: l10n.hydration_cramps_low_desc,
         lowPercentage: '0%',
-        midRange: '6–9 glasses',
-        midDescription: 'Occasional cramp',
+        midRange: l10n.hydration_mid_range,
+        midDescription: l10n.hydration_cramps_mid_desc,
         midPercentage: '↓ 40%',
-        optimalRange: '≥ 10 glasses',
-        optimalDescription: 'No cramps',
+        optimalRange: l10n.hydration_optimal_range,
+        optimalDescription: l10n.hydration_cramps_optimal_desc,
         optimalPercentage: '↓ 65%',
       );
     case HealthMetricType.collagenElasticity:
-      return const _MetricInfo(
-        indicator: 'Skin Hydration (%) / Collagen Fragmentation',
-        optimalValue:
-            'Hydration: > 40%\nElasticity: > 35%\nCollagen: Intact',
-        bibliography: 'Dermatology Research RCT 2024',
-        description:
-            'Real anti-aging — without expensive creams. Hydrating from within strengthens the extracellular matrix and protects collagen, the structural "scaffold" that gives your skin firmness, elasticity, and structure. With adequate water, collagen remains intact, fibers do not fragment, and skin appears firmer, more luminous, and with less noticeable wrinkles. Visible results in 3–4 weeks.',
-        lowRange: '< 6 glasses',
-        lowDescription: 'Dry and dull skin',
+      return _MetricInfo(
+        indicator: l10n.metric_indicator_collagen,
+        optimalValue: l10n.metric_optimal_collagen,
+        bibliography: l10n.metric_bib_collagen,
+        description: l10n.metric_desc_collagen,
+        lowRange: l10n.hydration_low_range,
+        lowDescription: l10n.hydration_collagen_low_desc,
         lowPercentage: '0%',
-        midRange: '6–9 glasses',
-        midDescription: 'Visible improvement',
+        midRange: l10n.hydration_mid_range,
+        midDescription: l10n.hydration_collagen_mid_desc,
         midPercentage: '↑ 17%',
-        optimalRange: '≥ 10 glasses',
-        optimalDescription: 'Radiant skin',
+        optimalRange: l10n.hydration_optimal_range,
+        optimalDescription: l10n.hydration_collagen_optimal_desc,
         optimalPercentage: '↑ 32%',
       );
     case HealthMetricType.kidneyHealth:
-      return const _MetricInfo(
-        indicator: 'Urinary Volume (L/day) / Stone Risk',
-        optimalValue: 'Urinary Volume: > 2 L/day',
-        bibliography: 'JAMA Network Open 2024',
-        description:
-            'Your kidneys filter 180 liters of blood every day. Drinking enough water produces dilute urine (> 2 L), facilitates waste elimination, and prevents the formation of kidney stones (mineral crystallization), reducing their risk by up to 65%. Clearer urine = healthier kidneys.',
-        lowRange: '< 6 glasses',
-        lowDescription: 'Kidneys under strain',
+      return _MetricInfo(
+        indicator: l10n.metric_indicator_kidney,
+        optimalValue: l10n.metric_optimal_kidney,
+        bibliography: l10n.metric_bib_kidney,
+        description: l10n.metric_desc_kidney,
+        lowRange: l10n.hydration_low_range,
+        lowDescription: l10n.hydration_kidney_low_desc,
         lowPercentage: '0%',
-        midRange: '6–9 glasses',
-        midDescription: 'Moderate protection',
+        midRange: l10n.hydration_mid_range,
+        midDescription: l10n.hydration_kidney_mid_desc,
         midPercentage: '↑ 30%',
-        optimalRange: '≥ 10 glasses',
-        optimalDescription: 'Optimal detox',
+        optimalRange: l10n.hydration_optimal_range,
+        optimalDescription: l10n.hydration_kidney_optimal_desc,
         optimalPercentage: '↑ 65%',
       );
   }

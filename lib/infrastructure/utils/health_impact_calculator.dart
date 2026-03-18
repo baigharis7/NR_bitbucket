@@ -1,5 +1,6 @@
 import 'package:nutrenaissance_flutter/domain/models/dashboard/health_impact_metric.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 
 class HealthImpactCalculator {
   HealthImpactCalculator._();
@@ -9,7 +10,7 @@ class HealthImpactCalculator {
   // Cardiovascular Health: Low 0→13%, Mid 13→25%, Optimal 25%
   // Physical Endurance:    Low 0→15%, Mid 15→30%, Optimal 30%
 
-  static List<HealthImpactMetric> calculateStepsMetrics(int steps) {
+  static List<HealthImpactMetric> calculateStepsMetrics(int steps, AppLocalizations l10n) {
     final double cardio;
     final double endurance;
 
@@ -27,16 +28,16 @@ class HealthImpactCalculator {
     return [
       HealthImpactMetric(
         type: HealthMetricType.cardiovascularHealth,
-        label: 'Cardiovascular Health',
-        sublabel: 'RESTING HR',
+        label: l10n.metric_cardiovascular_health,
+        sublabel: l10n.metric_sublabel_resting_hr,
         percentage: cardio,
         isPositive: true,
         isNeutral: cardio == 0,
       ),
       HealthImpactMetric(
         type: HealthMetricType.physicalEndurance,
-        label: 'Physical Endurance',
-        sublabel: 'AEROBIC CAPACITY',
+        label: l10n.metric_physical_endurance,
+        sublabel: l10n.metric_sublabel_aerobic_capacity,
         percentage: endurance,
         isPositive: true,
         isNeutral: endurance == 0,
@@ -50,7 +51,8 @@ class HealthImpactCalculator {
   // Muscle Regeneration:   Low ↓35%, Mid ↓15%, Optimal 100%
 
   static List<HealthImpactMetric> calculateSleepMetrics(
-    double hours, [
+    double hours,
+    AppLocalizations l10n, [
     SexType? sex,
   ]) {
     final optimalThreshold = sex == SexType.female ? 9.0 : 7.0;
@@ -71,16 +73,16 @@ class HealthImpactCalculator {
     return [
       HealthImpactMetric(
         type: HealthMetricType.concentrationFocus,
-        label: 'Concentration & Focus',
-        sublabel: 'WORKING MEMORY',
+        label: l10n.metric_concentration_focus,
+        sublabel: l10n.metric_sublabel_working_memory,
         percentage: concentration,
         isPositive: hours >= optimalThreshold,
         isNeutral: false,
       ),
       HealthImpactMetric(
         type: HealthMetricType.muscleRegeneration,
-        label: 'Muscle Regeneration',
-        sublabel: 'TISSUE REPAIR',
+        label: l10n.metric_muscle_regeneration,
+        sublabel: l10n.metric_sublabel_tissue_repair,
         percentage: muscle,
         isPositive: hours >= optimalThreshold,
         isNeutral: false,
@@ -94,7 +96,7 @@ class HealthImpactCalculator {
   // Collagen & Elasticity: Low 0→17%, Mid 17→32%, Optimal 32%
   // Kidney Health:         Low 0→30%, Mid 30→65%, Optimal 65%
 
-  static List<HealthImpactMetric> calculateHydrationMetrics(int glasses) {
+  static List<HealthImpactMetric> calculateHydrationMetrics(int glasses, AppLocalizations l10n) {
     final double cramps;
     final double collagen;
     final double kidney;
@@ -116,24 +118,24 @@ class HealthImpactCalculator {
     return [
       HealthImpactMetric(
         type: HealthMetricType.goodbyeCramps,
-        label: 'Cramps',
-        sublabel: 'MUSCLE CRAMPS',
+        label: l10n.metric_cramps,
+        sublabel: l10n.metric_sublabel_muscle_cramps,
         percentage: cramps,
         isPositive: true,
         isNeutral: cramps == 0,
       ),
       HealthImpactMetric(
         type: HealthMetricType.collagenElasticity,
-        label: 'Skin Care',
-        sublabel: 'SKIN HYDRATION',
+        label: l10n.metric_skin_care,
+        sublabel: l10n.metric_sublabel_skin_hydration,
         percentage: collagen,
         isPositive: true,
         isNeutral: collagen == 0,
       ),
       HealthImpactMetric(
         type: HealthMetricType.kidneyHealth,
-        label: 'Kidneys',
-        sublabel: 'STONE RISK',
+        label: l10n.metric_kidneys,
+        sublabel: l10n.metric_sublabel_stone_risk,
         percentage: kidney,
         isPositive: true,
         isNeutral: kidney == 0,
