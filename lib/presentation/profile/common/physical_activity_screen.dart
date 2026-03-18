@@ -16,6 +16,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_butto
 import 'package:nutrenaissance_flutter/presentation/widgets/text_radio_button_expansible.dart';
 
 import '../../../infrastructure/utils/app_color.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/screen_top_bar.dart';
 
 class PhysicalActivityScreen extends StatefulWidget {
@@ -86,7 +87,7 @@ class _PhysicalActivityScreen extends State<PhysicalActivityScreen> {
                 Scaffold(
                   backgroundColor: Colors.transparent,
                   body: SafeArea(child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(Dimens.padding20),
+                    padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 90),
                   child: Column(
                     children: [
                       ScreenTopBar(title: AppLocalizations.of(context)!.physical_activity, onBack: () => onBack()),
@@ -128,7 +129,9 @@ class _PhysicalActivityScreen extends State<PhysicalActivityScreen> {
                     ],
                   ),
                 ),
-                  ),),
+                  ),
+                  bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
+                ),
               ],
             ),
           );

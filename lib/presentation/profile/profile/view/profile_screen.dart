@@ -121,7 +121,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                       ),
                       Expanded(
                         child: SingleChildScrollView(
-                          padding: const EdgeInsets.only(bottom: 90),
+                          padding: const EdgeInsets.only(bottom: 0),
                   child: Column(
                     children: [
                       Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXLarge), child: ProfileInfoCard(userProfile: state.profile, onTapProfileUpdate: () => Navigator.pushNamed(context, GeneralQuestionsScreen.routeName).then((value) {if (value.toString() != Constants.BACK) bloc.add(SaveChangesAction());}),)),
@@ -129,7 +129,7 @@ class _ProfileScreen extends State<ProfileScreen> {
 
                       // Combined Temp Needs, Objectives, and Important Info Section
                       Container(
-                        padding: const EdgeInsets.all(Dimens.padding20),
+                        padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 100),
                         decoration: const BoxDecoration(
                           color: AppColors.white70Percent,
                         ),

@@ -86,9 +86,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     double fontScale = constraints.maxWidth * 0.0025;
 
                     return SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(
-                        vertical: height * 0.02,
-                        horizontal: width * 0.06,
+                      padding: EdgeInsets.fromLTRB(
+                        width * 0.06,
+                        height * 0.02,
+                        width * 0.06,
+                        90,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
