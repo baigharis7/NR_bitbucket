@@ -1012,28 +1012,8 @@ class LocalStorageImpl extends LocalStorageRepository {
 
   @override
   Future<void> saveSteps(StepsEntity stepsEntity, {bool? isEdit = false}) async {
-    try {
-      await stepsEntity.save();
-    } catch(error) {
-      try {
-        _getUserStepsInfoBox.then((box) {
-            final stepEventsMap = box.toMap();
-            if (stepEventsMap.isNotEmpty) {
-              stepEventsMap.forEach((key, value) {
-                if ((value as StepsEntity).eventId == stepsEntity.eventId) {
-                  box.put(key, stepsEntity);
-                } else {
-                  box.add(stepsEntity);
-                }
-              });
-            } else {
-              box.add(stepsEntity);
-            }
-        },);
-      } catch (error) {
-        rethrow;
-      }
-    }
+    final box = await _getUserStepsInfoBox;
+    await box.put(stepsEntity.eventId.toString(), stepsEntity);
   }
 
   @override
