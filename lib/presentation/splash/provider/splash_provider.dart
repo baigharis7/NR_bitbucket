@@ -82,6 +82,7 @@ class SplashProvider extends ChangeNotifier {
         maxCallsCount: 1000,
       );
 
+      // TODO: These services are already created in main() — pass them in via constructor instead of duplicating
       profileApi = ProfileApi(prefsRepository, authenticationService, chuck);
       localStorageRepository = LocalStorageImpl();
       final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
