@@ -25,6 +25,7 @@ import '../../common/view/loading_screen.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/general_button.dart';
 import '../../widgets/header_add_item_card_section.dart';
+import '../../dashboard/view/dashboard_screen.dart';
 import '../../widgets/screen_top_bar.dart';
 import '../../../infrastructure/utils/constants.dart';
 
@@ -269,7 +270,13 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with TickerProv
             body: SafeArea(child: Container(
               padding: const EdgeInsets.all(Dimens.paddingLarge),
               child: Column(children: [
-                ScreenTopBar(selectedDate: null, onBack: () => Navigator.pop(context)),
+                ScreenTopBar(selectedDate: null, onBack: () {
+                  if (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  } else {
+                    Navigator.pushNamedAndRemoveUntil(context, DashboardScreen.routeName, (route) => false);
+                  }
+                }),
                 const SizedBox(height: Dimens.height12),
                 HeaderAddItemCardSection(
                   title: AppLocalizations.of(context)!.favorites,
