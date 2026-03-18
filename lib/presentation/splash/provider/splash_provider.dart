@@ -57,43 +57,48 @@ class SplashProvider extends ChangeNotifier {
   SplashProvider();
 
   void init({required Function toLogin, required Function toDashboard}) async {
-    final authenticationService = await CognitoAuthenticationService.init();
-    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    try {
+      final authenticationService = await CognitoAuthenticationService.init();
+      final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    Chuck chuck = Chuck(
-      showNotification: true,
-      showInspectorOnShake: true,
-      darkTheme: false,
-      maxCallsCount: 1000,
-    );
+      Chuck chuck = Chuck(
+        showNotification: true,
+        showInspectorOnShake: true,
+        darkTheme: false,
+        maxCallsCount: 1000,
+      );
 
-    final Preferences prefs = PreferencesImpl(sharedPreferences);
-    final PreferencesRepository prefsRepository = PreferencesRepositoryImpl(prefs: prefs);
-    profileApi = ProfileApi(prefsRepository, authenticationService, chuck);
-    localStorageRepository = LocalStorageImpl();
-    final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
-    final syncQueueService = SyncQueueService(prefsRepository, authenticationService, chuck, syncQueueBox);
-    final referenceDatabase = await openReferenceDatabase();
-    final profileComputationService = ProfileComputationService(referenceDatabase);
-    profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository, profileComputationService: profileComputationService, syncQueue: syncQueueService);
-    getProfileInteractor = GetProfileInteractorImpl(profileRepository: profileRepository);
-    eraseDBLocalEventsInteractor = EraseDBLocalEventsInteractorImpl(localStorageRepository: localStorageRepository);
-    eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService, chuck);
-    eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
-    synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
-    getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
-    fcmApi = FcmApi(prefsRepository, authenticationService, chuck);
+      final Preferences prefs = PreferencesImpl(sharedPreferences);
+      final PreferencesRepository prefsRepository = PreferencesRepositoryImpl(prefs: prefs);
+      profileApi = ProfileApi(prefsRepository, authenticationService, chuck);
+      localStorageRepository = LocalStorageImpl();
+      final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
+      final syncQueueService = SyncQueueService(prefsRepository, authenticationService, chuck, syncQueueBox);
+      final referenceDatabase = await openReferenceDatabase();
+      final profileComputationService = ProfileComputationService(referenceDatabase);
+      profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository, profileComputationService: profileComputationService, syncQueue: syncQueueService);
+      getProfileInteractor = GetProfileInteractorImpl(profileRepository: profileRepository);
+      eraseDBLocalEventsInteractor = EraseDBLocalEventsInteractorImpl(localStorageRepository: localStorageRepository);
+      eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService, chuck);
+      eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
+      synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
+      getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
+      fcmApi = FcmApi(prefsRepository, authenticationService, chuck);
 
-    final profile = await getProfileInteractor.execute();
-    getIdTokenInteractor = GetIdTokenInteractorImpl(
-        preferencesRepository: PreferencesRepositoryImpl(
-            prefs: PreferencesImpl(
-                await SharedPreferences.getInstance(),
-            ),
-        ),
-    );
-    idToken = getIdTokenInteractor!.execute();
-    nextScreen(toLogin, toDashboard, profile, prefsRepository);
+      final profile = await getProfileInteractor.execute();
+      getIdTokenInteractor = GetIdTokenInteractorImpl(
+          preferencesRepository: PreferencesRepositoryImpl(
+              prefs: PreferencesImpl(
+                  await SharedPreferences.getInstance(),
+              ),
+          ),
+      );
+      idToken = getIdTokenInteractor!.execute();
+      nextScreen(toLogin, toDashboard, profile, prefsRepository);
+    } catch (e) {
+      debugPrint('SplashProvider.init() failed: $e');
+      toLogin.call();
+    }
   }
 
   void nextScreen(Function toLogin, Function toDashboard, UserProfileModel? profile, PreferencesRepository preferencesRepository) async {
