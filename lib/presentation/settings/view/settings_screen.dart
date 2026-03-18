@@ -76,8 +76,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
             body: SafeArea(
               child: Container(
-                width: width,
-                height: height,
                 decoration: const BoxDecoration(
                   color: AppColors.floralWhite,
                 ),
@@ -85,90 +83,88 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   builder: (context, constraints) {
                     double fontScale = constraints.maxWidth * 0.0025;
 
-                    return SingleChildScrollView(
-                      padding: EdgeInsets.fromLTRB(
-                        width * 0.06,
-                        height * 0.02,
-                        width * 0.06,
-                        90,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Fixed header
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(width * 0.06, height * 0.02, width * 0.06, 0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Icon(Icons.settings, size: Dimens.height37 * fontScale, color: AppColors.yellowishGreen),
-                                  const SizedBox(width: Dimens.width12),
-                                  Text(
-                                    AppLocalizations.of(context)!.settings,
-                                    style: AppTextStyles.merriWeather.copyWith(fontSize: 20 * fontScale, color: Colors.black,),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.settings, size: Dimens.height37 * fontScale, color: AppColors.yellowishGreen),
+                                      const SizedBox(width: Dimens.width12),
+                                      Text(
+                                        AppLocalizations.of(context)!.settings,
+                                        style: AppTextStyles.merriWeather.copyWith(fontSize: 20 * fontScale, color: Colors.black,),
+                                      ),
+                                    ],
+                                  ),
+                                  IconButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    icon: Icon(Icons.close, size: Dimens.height30 * fontScale, color: AppColors.yellowishGreen),
                                   ),
                                 ],
                               ),
-                              IconButton(
-                                onPressed: () => Navigator.pop(context),
-                                icon: Icon(Icons.close, size: Dimens.height30 * fontScale, color: AppColors.yellowishGreen),
-                              ),
+                              const SizedBox(height: Dimens.height12),
+                              const Divider(color: AppColors.yellowishGreen, thickness: 1,),
                             ],
                           ),
-                          const SizedBox(height: Dimens.height12),
-                          const Divider(color: AppColors.yellowishGreen, thickness: 1,),
-                          SizedBox(height: height * 0.03),
-                          _menuTile(AppLocalizations.of(context)!.log_out, onTap: () => settingsBloc.add(SettingsLogOut(goToLogin: () => Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false,))),),
-                          SizedBox(height: height * 0.03),
-                          Text(AppLocalizations.of(context)!.health_sync_section_title,
-                            style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize19 * fontScale, color: AppColors.yellowishGreen),
-                          ),
-                          const SizedBox(height: Dimens.height12),
-                          _menuTile(AppLocalizations.of(context)!.health_sync_enable_link, onTap: () => Navigator.pushNamed(context, HealthSyncSettingsScreen.routeName),),
-                          SizedBox(height: height * 0.03),
-                          Text(AppLocalizations.of(context)!.feedback_support,
-                            style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize19 * fontScale, color: AppColors.yellowishGreen),
-                          ),
-                          const SizedBox(height: Dimens.height12),
-                          _menuTile(AppLocalizations.of(context)!.whatsapp_contact, onTap: () {
-                            openWhatsApp(
-                              Constants.WHATSAPP_CHAT_CONTACT,      // Phone number with country code
-                              AppLocalizations.of(context)!.whatsapp_chat_text,
-                            );
-                          },),
-                          _menuTile(AppLocalizations.of(context)!.feedback_form),
-                          SizedBox(height: height * 0.03),
-                          Text(AppLocalizations.of(context)!.legal_text,
-                            style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize19 * fontScale, color: AppColors.yellowishGreen),
-                          ),
-                          const SizedBox(height: Dimens.height12),
-                          // _menuTile(AppLocalizations.of(context)!.legal_advise),
-                          _menuTile(AppLocalizations.of(context)!.privacy_polic, onTap: () => Navigator.pushNamed(context, PolicyScreen.routeName),),
-                          // _menuTile(AppLocalizations.of(context)!.cookies_policy, onTap: () => Navigator.pushNamed(context, PolicyScreen.routeName),),
-                          SizedBox(height: height * 0.08),
-                          Center(
+                        ),
+                        // Scrollable menu options
+                        Expanded(
+                          child: SingleChildScrollView(
+                            padding: EdgeInsets.symmetric(horizontal: width * 0.06),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.asset(
-                                      'assets/images/logo_name_white.png',
-                                      width: 200,
-                                      color: AppColors.yellowishGreen,
-                                    ),
-                                    // const Spacer(),
-                                    // Text(
-                                    //   "NutreNaissance",
-                                    //   style: TextStyle(
-                                    //     fontSize: 14 * fontScale,
-                                    //     fontWeight: FontWeight.w500,
-                                    //     color: Colors.black87,
-                                    //   ),
-                                    // ),
-                                  ],
-                                ),
+                                const SizedBox(height: Dimens.height12),
+                                _menuTile(AppLocalizations.of(context)!.log_out, onTap: () => settingsBloc.add(SettingsLogOut(goToLogin: () => Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false,))),),
                                 const SizedBox(height: Dimens.height25),
+                                Text(AppLocalizations.of(context)!.health_sync_section_title,
+                                  style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize19 * fontScale, color: AppColors.yellowishGreen),
+                                ),
+                                const SizedBox(height: Dimens.height12),
+                                _menuTile(AppLocalizations.of(context)!.health_sync_enable_link, onTap: () => Navigator.pushNamed(context, HealthSyncSettingsScreen.routeName),),
+                                const SizedBox(height: Dimens.height25),
+                                Text(AppLocalizations.of(context)!.feedback_support,
+                                  style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize19 * fontScale, color: AppColors.yellowishGreen),
+                                ),
+                                const SizedBox(height: Dimens.height12),
+                                _menuTile(AppLocalizations.of(context)!.whatsapp_contact, onTap: () {
+                                  openWhatsApp(
+                                    Constants.WHATSAPP_CHAT_CONTACT,
+                                    AppLocalizations.of(context)!.whatsapp_chat_text,
+                                  );
+                                },),
+                                _menuTile(AppLocalizations.of(context)!.feedback_form),
+                                const SizedBox(height: Dimens.height25),
+                                Text(AppLocalizations.of(context)!.legal_text,
+                                  style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize19 * fontScale, color: AppColors.yellowishGreen),
+                                ),
+                                const SizedBox(height: Dimens.height12),
+                                _menuTile(AppLocalizations.of(context)!.privacy_polic, onTap: () => Navigator.pushNamed(context, PolicyScreen.routeName),),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Fixed footer — logo + copyright
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 40),
+                          child: Center(
+                            child: Column(
+                              children: [
+                                Image.asset(
+                                  'assets/images/logo_name_white.png',
+                                  width: 200,
+                                  color: AppColors.yellowishGreen,
+                                ),
+                                const SizedBox(height: Dimens.height12),
                                 Text(
                                   AppLocalizations.of(context)!.all_rights_reserved,
                                   style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize15 * fontScale, color: AppColors.yellowishGreen),
@@ -176,8 +172,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     );
                   },
                 ),

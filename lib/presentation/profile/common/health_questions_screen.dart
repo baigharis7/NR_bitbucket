@@ -17,6 +17,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/text_checkbox_box.da
 
 import '../../../infrastructure/utils/app_color.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
+import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/screen_top_bar.dart';
 
 // TODO: think a new name for title and take it from AppLocalizations.
@@ -87,47 +88,54 @@ class _HealthQuestionsScreen extends State<HealthQuestionsScreen> {
               Scaffold(
                 backgroundColor: Colors.transparent,
                 body: SafeArea(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 90),
                   child: Column(
                     children: [
-                      ScreenTopBar(title: AppLocalizations.of(context)!.medical_history, onBack: () => onBack()),
-                      Image.asset(
-                        'assets/images/logo_name_white.png',
-                        width: Dimens.width242,
-                      ),
-                      const SizedBox(height: Dimens.heightSmall),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingXXLarge),
-                        decoration: BoxDecoration(
-                          color: AppColors.white85Percent,
-                          borderRadius: BorderRadius.circular(Dimens.border18),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                          Text(
-                            AppLocalizations.of(ctx)!.medical_history,
-                            style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen),
-                          ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 0),
+                        child: Column(children: [
+                          ScreenTopBar(onBack: () => onBack()),
                           const SizedBox(height: Dimens.height12),
-                          ...state.commonDiseases.orEmpty().map((commonDisease) {
-                            return TextCheckboxBox(
-                              title: commonDisease.name.orEmpty(),
-                              checkboxValue: state.profile!.medicalSituation!
-                                  .commonDiseases!.contains(commonDisease.id),
-                              onChangedCheckbox: () =>
-                                  bloc.add(ManageCommonDiseaseAction(commonDiseaseId: commonDisease.id!)),
-                              overflow: TextOverflow.clip,
-                            );
-                          }).toList(),
-                        ],),
+                          HeaderAddItemCardSection(title: AppLocalizations.of(context)!.medical_history),
+                          const SizedBox(height: Dimens.height12),
+                        ]),
                       ),
-                      const SizedBox(height: Dimens.height32),
-                      GeneralButton(title: AppLocalizations.of(context)!.save, onTap: () => Navigator.pop(context),),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingXXLarge),
+                          decoration: BoxDecoration(
+                            color: AppColors.white85Percent,
+                            borderRadius: BorderRadius.circular(Dimens.border18),
+                          ),
+                          margin: const EdgeInsets.symmetric(horizontal: Dimens.padding20),
+                          child: Scrollbar(
+                            thumbVisibility: true,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                ...state.commonDiseases.orEmpty().map((commonDisease) {
+                                  return TextCheckboxBox(
+                                    title: commonDisease.name.orEmpty(),
+                                    checkboxValue: state.profile!.medicalSituation!
+                                        .commonDiseases!.contains(commonDisease.id),
+                                    onChangedCheckbox: () =>
+                                        bloc.add(ManageCommonDiseaseAction(commonDiseaseId: commonDisease.id!)),
+                                    overflow: TextOverflow.clip,
+                                  );
+                                }).toList(),
+                              ],),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: Dimens.height12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: Dimens.padding20),
+                        child: GeneralButton(title: AppLocalizations.of(context)!.save, onTap: () => Navigator.pop(context),),
+                      ),
+                      const SizedBox(height: 30),
                     ],
                   ),
-                ),
                 ),
                 bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
               ),

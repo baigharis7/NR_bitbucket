@@ -13,7 +13,7 @@ import 'package:nutrenaissance_flutter/presentation/profile/common/aversions_scr
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_state.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/diet_questions_header.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/header_add_item_card_section.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/generic_button.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
@@ -234,37 +234,25 @@ class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
                 Scaffold(
                   backgroundColor: Colors.transparent,
                   body: SafeArea(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 90),
+                    child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 0),
+                        child: Column(children: [
+                          ScreenTopBar(onBack: () => onBack()),
+                          const SizedBox(height: Dimens.height12),
+                          HeaderAddItemCardSection(title: AppLocalizations.of(context)!.diet),
+                          const SizedBox(height: Dimens.height12),
+                        ]),
+                      ),
+                      Expanded(
+                        child: Scrollbar(
+                          thumbVisibility: true,
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.symmetric(horizontal: Dimens.padding20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      ScreenTopBar(title: AppLocalizations.of(context)!.diet, onBack: () => onBack()),
-                      Image.asset(
-                        'assets/images/logo_name_white.png',
-                        width: Dimens.width242,
-                      ),
-                      const SizedBox(height: Dimens.heightSmall),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(Dimens.paddingXLarge),
-                        decoration: BoxDecoration(color: AppColors.white85Percent, borderRadius: BorderRadius.circular(Dimens.border18)),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppLocalizations.of(ctx)!.diet,
-                              style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen),
-                            ),
-                            const SizedBox(height: Dimens.height12),
-                            Text(
-                              AppLocalizations.of(ctx)!.diet_specification,
-                              style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeSmall, color: AppColors.yellowishGreen),
-                            ),
-                          ],
-                        ),
-                      ),
                       const SizedBox(height: Dimens.heightXSmall),
                       Container(
                           decoration: BoxDecoration(
@@ -319,8 +307,13 @@ class _DietQuestionsScreenState extends State<DietQuestionsScreen> {
                       ),
                     ],
                   ),
-                ),),
-                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
+                ),
+                ),
+                ),
+                    ],
+                  ),
+                  ),
+                  bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
                 ),
             ],),
           );

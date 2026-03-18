@@ -17,6 +17,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/text_radio_button_ex
 
 import '../../../infrastructure/utils/app_color.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
+import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/screen_top_bar.dart';
 
 class PhysicalActivityScreen extends StatefulWidget {
@@ -86,49 +87,64 @@ class _PhysicalActivityScreen extends State<PhysicalActivityScreen> {
 
                 Scaffold(
                   backgroundColor: Colors.transparent,
-                  body: SafeArea(child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 90),
-                  child: Column(
+                  body: SafeArea(child: Column(
                     children: [
-                      ScreenTopBar(title: AppLocalizations.of(context)!.physical_activity, onBack: () => onBack()),
-                      Image.asset(
-                        'assets/images/logo_name_white.png',
-                        width: Dimens.width242,
-                      ),
-                      const SizedBox(height: Dimens.heightSmall),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingXLarge, vertical: Dimens.paddingXXLarge),
-                        decoration: BoxDecoration(
-                          color: AppColors.white85Percent,
-                          borderRadius: BorderRadius.circular(Dimens.border18),),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                          Text(
-                            AppLocalizations.of(context)!.physical_activity,
-                            style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize19, color: AppColors.yellowishGreen),
-                          ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 0),
+                        child: Column(children: [
+                          ScreenTopBar(onBack: () => onBack()),
                           const SizedBox(height: Dimens.height12),
-                          Text(
-                            AppLocalizations.of(context)!.activity_type,
-                            style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeSmall, color: AppColors.yellowishGreen),
-                          ),
+                          HeaderAddItemCardSection(title: AppLocalizations.of(context)!.physical_activity, image: 'assets/images/sport.png'),
                           const SizedBox(height: Dimens.height12),
-                          ...state.activityTypes!.map((activityType) {
-                            return TextRadioButtonExpansible(
-                              title: activityType.typeName.orEmpty(),
-                              explanation: activityType.explanation.orEmpty(),
-                              isSelected: state.profile!.occupationActivityFactor == activityType.physicalActivityFactor,
-                              onPressed: () => bloc.add(SetActivityTypeAction(activityType: activityType.physicalActivityFactor!)),
-                            );
-                          }),
-                        ],),
+                        ]),
                       ),
-                      const SizedBox(height: Dimens.height32),
-                      GeneralButton(title: AppLocalizations.of(context)!.save, onTap: () => Navigator.pop(context)),
+                      Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: Dimens.padding20),
+                          padding: const EdgeInsets.fromLTRB(Dimens.paddingXLarge, Dimens.paddingLarge, Dimens.paddingXLarge, Dimens.paddingLarge),
+                          decoration: BoxDecoration(
+                            color: AppColors.white85Percent,
+                            borderRadius: BorderRadius.circular(Dimens.border18),),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context)!.activity_type,
+                                style: AppTextStyles.merriWeather.copyWith(fontSize: 14, color: AppColors.yellowishGreen),
+                              ),
+                              const SizedBox(height: Dimens.height12),
+                              Expanded(
+                                child: Scrollbar(
+                                  thumbVisibility: true,
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        ...state.activityTypes!.map((activityType) {
+                                          return TextRadioButtonExpansible(
+                                            title: activityType.typeName.orEmpty(),
+                                            explanation: activityType.explanation.orEmpty(),
+                                            isSelected: state.profile!.occupationActivityFactor == activityType.physicalActivityFactor,
+                                            onPressed: () => bloc.add(SetActivityTypeAction(activityType: activityType.physicalActivityFactor!)),
+                                          );
+                                        }),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: Dimens.height12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: Dimens.padding20),
+                        child: GeneralButton(title: AppLocalizations.of(context)!.save, onTap: () => Navigator.pop(context)),
+                      ),
+                      const SizedBox(height: 30),
                     ],
                   ),
-                ),
                   ),
                   bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
                 ),

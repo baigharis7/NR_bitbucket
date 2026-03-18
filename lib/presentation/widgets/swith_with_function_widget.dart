@@ -43,8 +43,13 @@ class _SwitchDashboardWidgetState extends State<SwitchDashboardWidget> {
             Text(widget.title,
                 style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize13, color: widget.color),),
             Switch.adaptive(
-              inactiveTrackColor: Colors.white,
-              thumbColor: MaterialStateProperty.resolveWith<Color?>((states) {
+              inactiveTrackColor: Colors.grey.shade300,
+              inactiveThumbColor: Colors.white,
+              trackOutlineColor: WidgetStateProperty.resolveWith<Color?>((states) {
+                if (states.contains(WidgetState.selected)) return null;
+                return Colors.grey.shade400;
+              }),
+              thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
                 if (widget.currentState == true) {
                   return widget.color ?? AppColors.mountainMeadow;
                 } else {

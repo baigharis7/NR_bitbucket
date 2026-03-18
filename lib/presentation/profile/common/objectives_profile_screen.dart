@@ -14,6 +14,7 @@ import 'package:nutrenaissance_flutter/presentation/widgets/text_checkbox_box.da
 import '../../../infrastructure/utils/app_color.dart';
 import '../../../infrastructure/utils/constants.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
+import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/screen_top_bar.dart';
 import '../../widgets/text_radio_button_expansible.dart';
 import 'general_questions_screen.dart';
@@ -118,20 +119,18 @@ class ObjectivesProfileScreen extends StatelessWidget {
               Scaffold(
                 backgroundColor: Colors.transparent,
                 body: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 90),
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
                     child: Column(
                       children: [
                         const SizedBox(height: Dimens.height12),
-                        ScreenTopBar(title: AppLocalizations.of(context)!.objectives, onBack: () => onBack()),
-                        Image.asset(
-                          'assets/images/logo_name_white.png',
-                          width: 200,
-                          color: Colors.white,
+                        ScreenTopBar(onBack: () => onBack()),
+                        const SizedBox(height: Dimens.height12),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                          child: HeaderAddItemCardSection(title: AppLocalizations.of(context)!.objectives, image: 'assets/images/goal_objectives.png'),
                         ),
-                        const SizedBox(height: Dimens.height32),
+                        const SizedBox(height: Dimens.height12),
                         Expanded(
                           child: Container(
                             padding: const EdgeInsets.all(Dimens.padding4),
@@ -139,21 +138,13 @@ class ObjectivesProfileScreen extends StatelessWidget {
                               color: AppColors.floralWhite,
                                 borderRadius: BorderRadius.circular(Dimens.border11),
                             ),
-                            child: SingleChildScrollView(
-                              padding: const EdgeInsets.symmetric(horizontal: Dimens.padding20, vertical: Dimens.padding4),
+                            child: Scrollbar(
+                              thumbVisibility: true,
+                              child: SingleChildScrollView(
+                              padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, Dimens.padding4),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  ListTile(
-                                    titleAlignment: ListTileTitleAlignment.top,
-                                    leading: Image.asset('assets/images/goal_objectives.png', height: 35, width: 35),
-                                      horizontalTitleGap: Dimens.zero,
-                                      contentPadding: EdgeInsets.zero,
-                                      title: Text(AppLocalizations.of(context)!.goals,
-                                        style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeXXLarge, color: AppColors.peacockBlue),
-                                      ),
-                                  ),
-                                  const SizedBox(height: Dimens.height12),
                                   Text(AppLocalizations.of(context)!.metabolic_objectives,
                                     style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeLarge, color: AppColors.peacockBlue),
                                   ),
@@ -165,7 +156,7 @@ class ObjectivesProfileScreen extends StatelessWidget {
                                         overflow: TextOverflow.clip,
                                       ),
                                   ).toList(),
-                                  const SizedBox(height: Dimens.height32),
+                                  const SizedBox(height: Dimens.height12),
                                   Text(AppLocalizations.of(context)!.body_composition_objectives,
                                     style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeLarge, color: AppColors.peacockBlue),
                                   ),
@@ -177,7 +168,7 @@ class ObjectivesProfileScreen extends StatelessWidget {
                                         onPressed: () => bloc.add(AddRadioObjectiveToListAction(id: objective.id)),
                                       ),
                                   ).toList(),
-                                  const SizedBox(height: Dimens.height32),
+                                  const SizedBox(height: Dimens.height12),
                                   Text(AppLocalizations.of(context)!.other_objectives,
                                     style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeLarge, color: AppColors.peacockBlue),
                                   ),
@@ -192,24 +183,27 @@ class ObjectivesProfileScreen extends StatelessWidget {
                                 ],
                               ),
                             ),
+                            ),
                           ),
                         ),
-                        const SizedBox(height: Dimens.height32),
-                        GeneralButton(
-                          onTap: () {
-                            if (state.profile!.objectives!.isNotEmpty) {
-                              bloc.add(SaveChangesAction());
-                              onBack();
-                            } else {
-                              showObjectivesErrorDialog(context);
-                            }
-                          },
+                        const SizedBox(height: Dimens.height12),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
+                          child: GeneralButton(
+                            onTap: () {
+                              if (state.profile!.objectives!.isNotEmpty) {
+                                bloc.add(SaveChangesAction());
+                                onBack();
+                              } else {
+                                showObjectivesErrorDialog(context);
+                              }
+                            },
+                          ),
                         ),
-                        const SizedBox(height: Dimens.height32),
+                        const SizedBox(height: 30),
                       ],
                     ),
                   ),
-                ),
                 ),
                 bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
               ),

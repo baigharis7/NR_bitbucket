@@ -129,7 +129,7 @@ class _ProfileScreen extends State<ProfileScreen> {
 
                       // Combined Temp Needs, Objectives, and Important Info Section
                       Container(
-                        padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 100),
+                        padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 40),
                         decoration: const BoxDecoration(
                           color: AppColors.white70Percent,
                         ),

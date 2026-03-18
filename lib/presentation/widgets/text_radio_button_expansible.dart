@@ -63,13 +63,13 @@ class TextRadioButtonExpansible extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: Dimens.heightXXSmall),
-              if (isSelected && explanation != '') Text(
+              if (explanation != '') Text(
                 explanation,
                 maxLines: 3,
                 overflow: TextOverflow.clip,
                 style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize11, color: AppColors.yellowishGreen),
               ),
-              if (isSelected && explanation != '') const SizedBox(height: Dimens.heightXXSmall),
+              if (explanation != '') const SizedBox(height: Dimens.heightXXSmall),
             ],),
           ),
           const Divider(color: AppColors.cloudyGrey, height: 1, thickness: 1,),

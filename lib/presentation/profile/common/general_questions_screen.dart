@@ -24,6 +24,8 @@ import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart'
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
 import '../../../infrastructure/helpers/app_text_styles.dart';
+import '../../widgets/custom_bottom_navi_bar_widget.dart';
+import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/screen_top_bar.dart';
 import '../../widgets/text_field_general_quest.dart';
 
@@ -111,20 +113,25 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                 backgroundColor: Colors.transparent,
                 body: SafeArea(child: Column(
                   children: [
-                    Expanded(child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(Dimens.padding20),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 0),
+                      child: Column(children: [
+                        ScreenTopBar(onBack: () => onBack()),
+                        const SizedBox(height: Dimens.height12),
+                        HeaderAddItemCardSection(title: AppLocalizations.of(context)!.edit_profile, icon: Icons.person, iconColor: Colors.white),
+                        const SizedBox(height: Dimens.height12),
+                      ]),
+                    ),
+                    Expanded(child: Scrollbar(
+                      thumbVisibility: true,
+                      child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: Dimens.padding20),
                       child: Form(
                           key: _formKey,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               const SizedBox(width: double.infinity),
-                              ScreenTopBar(title: AppLocalizations.of(context)!.edit_profile, onBack: () => onBack()),
-                              Image.asset(
-                                'assets/images/logo_name_white.png',
-                                width: Dimens.width242,
-                              ),
-                              const SizedBox(height: Dimens.height37),
                               TextFormField(
                                 controller: _commonNameController,
                                 cursorColor: Colors.white,
@@ -416,9 +423,10 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                             ],
                           ),
                       ),
+                    ),
                     )),
                     Padding(
-                      padding: const EdgeInsets.all(Dimens.padding20),
+                      padding: const EdgeInsets.symmetric(horizontal: Dimens.padding20),
                       child: GeneralButton(
                         title: AppLocalizations.of(context)!.save,
                         onTap: () {
@@ -428,8 +436,10 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                         },
                       ),
                     ),
+                    const SizedBox(height: 30),
                   ],
                 ),),
+                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
               )
             ],),
           );
