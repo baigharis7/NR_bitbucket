@@ -420,8 +420,8 @@ import 'package:nutrenaissance_flutter/presentation/nutrients_detail/bloc/weekly
 import 'package:nutrenaissance_flutter/presentation/nutrients_detail/view/weekly_all_nutrients_detail_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/privacy/view/policy_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/privacypolicy/privacy_policy.dart';
+import 'package:nutrenaissance_flutter/presentation/profile/common/aversions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/diet_questions_screen.dart';
-import 'package:nutrenaissance_flutter/presentation/profile/common/food_list_aversions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/general_questions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/objectives_profile_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/objectives_screen.dart';
@@ -489,7 +489,6 @@ import 'domain/interactor/supplements/remove_supplement_routine_interactor.dart'
 import 'domain/interactor/supplements/remove_supplement_routine_interactor_impl.dart';
 import 'domain/interactor/supplements/save_supplement_routine_interactor.dart';
 import 'firebase_options.dart';
-import 'presentation/profile/common/aversions_screen.dart';
 import 'presentation/profile/common/health_questions_screen.dart';
 import 'presentation/recommendations/common/view/recommendations_tabs_holder.dart';
 import 'presentation/waterevent/view/add_water_event_screen.dart';
@@ -1378,7 +1377,6 @@ void main() async {
           AddLiquidFavoriteScreen.routeName: (_) => const AddLiquidFavoriteScreen(),
           CreateNewLiquidFavoriteScreen.routeName: (_) => const CreateNewLiquidFavoriteScreen(),
           AversionsScreen.routeName: (_) => const AversionsScreen(),
-          FoodListAversionsScreen.routeName: (_) => const FoodListAversionsScreen(),
           GeneralQuestionsScreen.routeName: (_) => const GeneralQuestionsScreen(),
           HealthQuestionsScreen.routeName: (_) => const HealthQuestionsScreen(),
           DietQuestionsScreen.routeName: (_) => const DietQuestionsScreen(),
