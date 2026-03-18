@@ -15,6 +15,7 @@ import 'package:nutrenaissance_flutter/presentation/recommendations/common/view/
 import 'package:nutrenaissance_flutter/presentation/routinestabs/view/routines_tab_holder.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/view/add_sport_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/supplements/view/supplements_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/healthmetrics/health_metric_detail_sheet.dart';
 import '../../infrastructure/utils/app_color.dart';
 import '../../infrastructure/utils/dimens.dart';
 
@@ -132,8 +133,9 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
   }
 
   void _openPlusMenu() {
-    // Close the hamburger menu if open
+    // Close the hamburger menu and health metric popup if open
     _closeMenu();
+    HealthMetricDetailSheet.hide();
 
     final l10n = AppLocalizations.of(context)!;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
@@ -293,8 +295,9 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
   }
 
   void _openMenu() {
-    // Close the plus menu if open
+    // Close the plus menu and health metric popup if open
     _closePlusMenu();
+    HealthMetricDetailSheet.hide();
 
     final l10n = AppLocalizations.of(context)!;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
@@ -442,6 +445,7 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
                         onTap: () {
                           _closeMenu();
                           _closePlusMenu();
+                          HealthMetricDetailSheet.hide();
                           if (ModalRoute.of(context)?.settings.name !=
                               DashboardScreen.routeName) {
                             Navigator.pushNamedAndRemoveUntil(

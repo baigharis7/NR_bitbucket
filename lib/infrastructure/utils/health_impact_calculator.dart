@@ -116,7 +116,7 @@ class HealthImpactCalculator {
     return [
       HealthImpactMetric(
         type: HealthMetricType.goodbyeCramps,
-        label: 'No Cramps',
+        label: 'Cramps',
         sublabel: 'MUSCLE CRAMPS',
         percentage: cramps,
         isPositive: true,

@@ -53,20 +53,76 @@ class HealthImpactMarkerWidget extends StatelessWidget {
 
   static const _arrowColor = Colors.white;
 
+  /// Returns the arrow direction and color based on metric type and current tier.
+  /// Color: green = optimal, orange = mid, red = low, grey = neutral/zero.
+  static ({IconData icon, Color color}) _getArrowInfo(HealthImpactMetric m) {
+    // Determine tier color
+    final tierColor = _getTierColor(m);
+
+    switch (m.type) {
+      // Steps, Collagen, Kidney: 0% = grey dash, otherwise up arrow
+      case HealthMetricType.cardiovascularHealth:
+      case HealthMetricType.physicalEndurance:
+      case HealthMetricType.collagenElasticity:
+      case HealthMetricType.kidneyHealth:
+        if (m.isNeutral || m.percentage == 0) {
+          return (icon: Icons.remove, color: AppColors.battleshipGrey);
+        }
+        return (icon: Icons.arrow_upward, color: tierColor);
+
+      // Sleep: optimal = green up, otherwise down arrow
+      case HealthMetricType.concentrationFocus:
+      case HealthMetricType.muscleRegeneration:
+        if (m.isPositive) {
+          return (icon: Icons.arrow_upward, color: AppColors.mountainMeadow);
+        }
+        return (icon: Icons.arrow_downward, color: tierColor);
+
+      // Cramps: 0% = grey dash, otherwise down arrow (reduction metric)
+      case HealthMetricType.goodbyeCramps:
+        if (m.isNeutral || m.percentage == 0) {
+          return (icon: Icons.remove, color: AppColors.battleshipGrey);
+        }
+        return (icon: Icons.arrow_downward, color: tierColor);
+    }
+  }
+
+  /// Returns the tier color: green for optimal, orange for mid, red for low.
+  static Color _getTierColor(HealthImpactMetric m) {
+    switch (m.type) {
+      case HealthMetricType.cardiovascularHealth:
+      case HealthMetricType.physicalEndurance:
+      case HealthMetricType.goodbyeCramps:
+      case HealthMetricType.collagenElasticity:
+      case HealthMetricType.kidneyHealth:
+        if (m.isNeutral || m.percentage == 0) return AppColors.errorRed;
+        const optimalValues = {
+          HealthMetricType.cardiovascularHealth: 25.0,
+          HealthMetricType.physicalEndurance: 30.0,
+          HealthMetricType.goodbyeCramps: 65.0,
+          HealthMetricType.collagenElasticity: 32.0,
+          HealthMetricType.kidneyHealth: 65.0,
+        };
+        return m.percentage >= optimalValues[m.type]!
+            ? AppColors.mountainMeadow
+            : Colors.orange;
+
+      case HealthMetricType.concentrationFocus:
+      case HealthMetricType.muscleRegeneration:
+        if (m.isPositive) return AppColors.mountainMeadow;
+        const midValues = {
+          HealthMetricType.concentrationFocus: 15.0,
+          HealthMetricType.muscleRegeneration: 15.0,
+        };
+        return m.percentage <= midValues[m.type]!
+            ? Colors.orange
+            : AppColors.errorRed;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final circleColor = metric.isNeutral
-        ? AppColors.battleshipGrey
-        : metric.isPositive
-            ? AppColors.mountainMeadow
-            : AppColors.errorRed;
-
-    final arrowIcon = metric.isNeutral
-        ? null
-        : metric.isPositive
-            ? Icons.arrow_upward
-            : Icons.arrow_downward;
-
+    final arrow = _getArrowInfo(metric);
     final percentText = '${metric.percentage.round()}%';
 
     return GestureDetector(
@@ -95,26 +151,15 @@ class HealthImpactMarkerWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (arrowIcon != null)
-                    Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: circleColor,
-                      ),
-                      child: Icon(arrowIcon, size: 12, color: _arrowColor),
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: arrow.color,
                     ),
-                  if (metric.isNeutral)
-                    Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: circleColor,
-                      ),
-                      child: const Icon(Icons.remove, size: 12, color: _arrowColor),
-                    ),
+                    child: Icon(arrow.icon, size: 12, color: _arrowColor),
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     percentText,
