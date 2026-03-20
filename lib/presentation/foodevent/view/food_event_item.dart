@@ -281,10 +281,27 @@ class _FoodEventItemState extends State<FoodEventItem> {
               Text(AppLocalizations.of(context)!.conversion_factor, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal)),
               Row(
                 children: [
-                  Switch.adaptive(value: ingredient.conversionFactor == 1, onChanged: (isChecked) {
-                    ingredient.conversionFactor = isChecked ? 1 : 0;
-                    widget.onConversionFactorChange.call(ingredient);
-                  },),
+                  Switch.adaptive(
+                    value: ingredient.conversionFactor == 1,
+                    inactiveTrackColor: Colors.grey.shade300,
+                    inactiveThumbColor: Colors.white,
+                    trackOutlineColor: WidgetStateProperty.resolveWith<Color?>((states) {
+                      if (states.contains(WidgetState.selected)) return null;
+                      return Colors.grey.shade400;
+                    }),
+                    thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
+                      if (states.contains(WidgetState.selected)) {
+                        return AppColors.mountainMeadow;
+                      }
+                      return Colors.white;
+                    }),
+                    activeColor: Colors.white,
+                    applyCupertinoTheme: true,
+                    onChanged: (isChecked) {
+                      ingredient.conversionFactor = isChecked ? 1 : 0;
+                      widget.onConversionFactorChange.call(ingredient);
+                    },
+                  ),
                   Text(AppLocalizations.of(context)!.cooked, style: const TextStyle(fontSize: Dimens.fontSizeLarge, fontWeight: FontWeight.w400)),
                   if (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && widget.cookingMethodsInfoMaster.cookingMethodsInfo.orEmpty().isNotEmpty) ...[
                     const SizedBox(width: Dimens.paddingSmall),
