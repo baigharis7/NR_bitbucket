@@ -32,7 +32,16 @@ import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_comp
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 
+import 'package:mockito/mockito.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/profile_computation_service.dart';
+
 import 'bloc_test_mocks.mocks.dart';
+
+class _MockProfileComputationService extends Mock
+    implements ProfileComputationService {
+  @override
+  Future<Map<int, List<String>>?> getObjectiveNutrientsMap(List<int> objectiveIds) async => null;
+}
 
 final _stubNutrientsInfo = NutrientsInfoMaster(nutrientsInfo: [
   NutrientInfoMaster(officialName: 'proteinSci', unit: 'g', en: 'Protein', es: 'Proteína'),
@@ -654,6 +663,7 @@ void main() {
           removeFoodEventInteractor: mockRemoveFoodEvent,
           updateEventsInteractor: mockUpdateEvents,
           preferencesRepository: mockPreferencesRepo,
+          profileComputationService: _MockProfileComputationService(),
         );
 
     void stubAllInteractors() {

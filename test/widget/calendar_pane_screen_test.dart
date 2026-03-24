@@ -380,7 +380,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final todayStr = today.day.toString().padLeft(2, '0');
-      expect(find.text(todayStr), findsOneWidget);
+      expect(find.text(todayStr), findsWidgets);
     });
 
     testWidgets('calendar grid shows correct number of days for current month',

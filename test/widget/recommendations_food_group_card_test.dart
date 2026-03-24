@@ -7,7 +7,6 @@ import 'package:nutrenaissance_flutter/domain/models/recommendations/recommendat
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/recommendations_food_group_card.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/recommendations_item.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/square_checkbox.dart';
 
 void main() {
   // ---------------------------------------------------------------
@@ -211,11 +210,8 @@ void main() {
       await tester.tap(find.text('Grains'));
       await tester.pumpAndSettle();
 
-      // Tap the checkbox (InkWell inside SquareCheckbox)
-      final checkbox = find.byType(SquareCheckbox);
-      expect(checkbox, findsOneWidget);
-      final inkwell = find.descendant(of: checkbox, matching: find.byType(InkWell));
-      await tester.tap(inkwell);
+      // Tap the add icon (add_circle_outline)
+      await tester.tap(find.byIcon(Icons.add_circle_outline));
       await tester.pumpAndSettle();
 
       expect(addedFood, isNotNull);
@@ -223,7 +219,7 @@ void main() {
       expect(addedFood!.en, 'Rice');
     });
 
-    testWidgets('renders SquareCheckbox for each food item when expanded', (tester) async {
+    testWidgets('renders add icon for each food item when expanded', (tester) async {
       final item = RecommendationsFoodItem(
         recommendationGroup: _group(en: 'Test'),
         objFoods: [
@@ -239,7 +235,7 @@ void main() {
       await tester.tap(find.text('Test'));
       await tester.pumpAndSettle();
 
-      expect(find.byType(SquareCheckbox), findsNWidgets(3));
+      expect(find.byIcon(Icons.add_circle_outline), findsNWidgets(3));
     });
 
     testWidgets('handles null usualUnHealthyFoods gracefully', (tester) async {

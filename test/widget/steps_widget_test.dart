@@ -86,24 +86,24 @@ void main() {
       expect(find.text('500'), findsOneWidget);
     });
 
-    testWidgets('formats step count in thousands correctly', (tester) async {
+    testWidgets('formats step count in thousands with commas', (tester) async {
       await tester.pumpWidget(buildTestWidget(
         stepsTaken: 5000,
         stepsGoal: 10000,
       ));
       await tester.pumpAndSettle();
 
-      expect(find.text('5'), findsOneWidget);
+      expect(find.text('5,000'), findsOneWidget);
     });
 
-    testWidgets('formats non-round thousands with decimals', (tester) async {
+    testWidgets('formats non-round thousands with commas', (tester) async {
       await tester.pumpWidget(buildTestWidget(
         stepsTaken: 5500,
         stepsGoal: 10000,
       ));
       await tester.pumpAndSettle();
 
-      expect(find.text('5.50'), findsOneWidget);
+      expect(find.text('5,500'), findsOneWidget);
     });
 
     testWidgets('displays zero steps', (tester) async {

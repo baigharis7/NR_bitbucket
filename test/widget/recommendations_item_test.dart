@@ -6,7 +6,6 @@ import 'package:nutrenaissance_flutter/domain/models/recommendations/recommendat
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/recommendations_item.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/square_checkbox.dart';
 
 void main() {
   // ---------------------------------------------------------------
@@ -85,39 +84,38 @@ void main() {
       expect(find.byType(IntrinsicHeight), findsOneWidget);
     });
 
-    testWidgets('shows SquareCheckbox', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        foodItemMaster: _food(id: 1),
-        isChecked: true,
-      ));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(SquareCheckbox), findsOneWidget);
-    });
-
-    testWidgets('SquareCheckbox receives correct isChecked=true', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        foodItemMaster: _food(id: 1),
-        isChecked: true,
-      ));
-      await tester.pumpAndSettle();
-
-      final checkbox = tester.widget<SquareCheckbox>(find.byType(SquareCheckbox));
-      expect(checkbox.isChecked, isTrue);
-    });
-
-    testWidgets('SquareCheckbox receives correct isChecked=false', (tester) async {
+    testWidgets('shows add_circle_outline icon when unchecked', (tester) async {
       await tester.pumpWidget(buildTestWidget(
         foodItemMaster: _food(id: 1),
         isChecked: false,
       ));
       await tester.pumpAndSettle();
 
-      final checkbox = tester.widget<SquareCheckbox>(find.byType(SquareCheckbox));
-      expect(checkbox.isChecked, isFalse);
+      expect(find.byIcon(Icons.add_circle_outline), findsOneWidget);
     });
 
-    testWidgets('calls onAdd when checkbox is tapped', (tester) async {
+    testWidgets('shows check_circle icon when isChecked=true', (tester) async {
+      await tester.pumpWidget(buildTestWidget(
+        foodItemMaster: _food(id: 1),
+        isChecked: true,
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.check_circle), findsOneWidget);
+    });
+
+    testWidgets('shows add_circle_outline icon when isChecked=false', (tester) async {
+      await tester.pumpWidget(buildTestWidget(
+        foodItemMaster: _food(id: 1),
+        isChecked: false,
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.add_circle_outline), findsOneWidget);
+      expect(find.byIcon(Icons.check_circle), findsNothing);
+    });
+
+    testWidgets('calls onAdd when add icon is tapped', (tester) async {
       bool addCalled = false;
       await tester.pumpWidget(buildTestWidget(
         foodItemMaster: _food(id: 1),
@@ -125,9 +123,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      final checkbox = find.byType(SquareCheckbox);
-      final inkwell = find.descendant(of: checkbox, matching: find.byType(InkWell));
-      await tester.tap(inkwell);
+      await tester.tap(find.byIcon(Icons.add_circle_outline));
       await tester.pumpAndSettle();
 
       expect(addCalled, isTrue);
@@ -267,27 +263,29 @@ void main() {
       expect(find.byIcon(Icons.check_circle), findsNothing);
     });
 
-    testWidgets('SquareCheckbox receives the provided checkBoxColor', (tester) async {
+    testWidgets('add icon uses provided checkBoxColor', (tester) async {
       await tester.pumpWidget(buildTestWidget(
         foodItemMaster: _food(id: 1),
+        isChecked: false,
         checkBoxColor: AppColors.peacockBlue,
       ));
       await tester.pumpAndSettle();
 
-      final checkbox = tester.widget<SquareCheckbox>(find.byType(SquareCheckbox));
-      expect(checkbox.color, AppColors.peacockBlue);
+      final icon = tester.widget<Icon>(find.byIcon(Icons.add_circle_outline));
+      expect(icon.color, AppColors.peacockBlue);
     });
 
-    testWidgets('SquareCheckbox uses default color when checkBoxColor is null', (tester) async {
+    testWidgets('add icon uses default color when checkBoxColor is null', (tester) async {
       await tester.pumpWidget(buildTestWidget(
         foodItemMaster: _food(id: 1),
+        isChecked: false,
         checkBoxColor: null,
       ));
       await tester.pumpAndSettle();
 
-      final checkbox = tester.widget<SquareCheckbox>(find.byType(SquareCheckbox));
-      // The default color passed is `widget.checkBoxColor ?? AppColors.yellowishGreen`
-      expect(checkbox.color, AppColors.yellowishGreen);
+      final icon = tester.widget<Icon>(find.byIcon(Icons.add_circle_outline));
+      // The default color is `widget.checkBoxColor ?? AppColors.yellowishGreen`
+      expect(icon.color, AppColors.yellowishGreen);
     });
 
     testWidgets('food name has maxLines: 2 and TextOverflow.ellipsis', (tester) async {

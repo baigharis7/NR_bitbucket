@@ -23,7 +23,16 @@ import 'package:nutrenaissance_flutter/presentation/mealtimedetails/bloc/meal_ti
 import 'package:nutrenaissance_flutter/presentation/sportitems/bloc/sport_items_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/supplementsdetail/bloc/supplements_detail_bloc.dart';
 
+import 'package:mockito/mockito.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/profile_computation_service.dart';
+
 import 'bloc_test_mocks.mocks.dart';
+
+class _MockProfileComputationService extends Mock
+    implements ProfileComputationService {
+  @override
+  Future<Map<int, List<String>>?> getObjectiveNutrientsMap(List<int> objectiveIds) async => null;
+}
 
 /// Tests that verify date filtering works correctly across all event categories.
 /// Each category must query data for the selected date, not always "today".
@@ -258,6 +267,7 @@ void main() {
           removeFoodEventInteractor: mockRemoveFoodEvent,
           updateEventsInteractor: mockUpdateEvents,
           preferencesRepository: mockPreferencesRepository,
+          profileComputationService: _MockProfileComputationService(),
         );
 
     void stubDefaults() {
