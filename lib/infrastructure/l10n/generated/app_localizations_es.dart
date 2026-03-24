@@ -1049,6 +1049,41 @@ class AppLocalizationsEs extends AppLocalizations {
       'Su orina se ha guardado con éxito!';
 
   @override
+  String get saved_title => '¡Guardado!';
+
+  @override
+  String get confirmation_edit_hint_breakfast =>
+      'Puedes modificar este elemento desde el \"Resumen del Desayuno\".';
+
+  @override
+  String get confirmation_edit_hint_lunch =>
+      'Puedes modificar este elemento desde el \"Resumen de la Comida\".';
+
+  @override
+  String get confirmation_edit_hint_dinner =>
+      'Puedes modificar este elemento desde el \"Resumen de la Cena\".';
+
+  @override
+  String get confirmation_edit_hint_snack =>
+      'Puedes modificar este elemento desde el \"Resumen del Snack\".';
+
+  @override
+  String get confirmation_edit_hint_sport =>
+      'Puedes modificar este elemento desde el \"Resumen del Deporte\".';
+
+  @override
+  String get confirmation_edit_hint_supplement =>
+      'Puedes modificar este elemento desde el \"Resumen del Suplemento\".';
+
+  @override
+  String get confirmation_edit_hint_feces =>
+      'Puedes modificar este elemento desde el \"Resumen de las Heces\".';
+
+  @override
+  String get confirmation_edit_hint_urine =>
+      'Puedes modificar este elemento desde el \"Resumen de la Orina\".';
+
+  @override
   String get remove_food => '¿Quieres eliminar este alimento de tu lista?';
 
   @override

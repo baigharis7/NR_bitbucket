@@ -1039,6 +1039,41 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your Urine has been successfully saved!';
 
   @override
+  String get saved_title => 'Saved!';
+
+  @override
+  String get confirmation_edit_hint_breakfast =>
+      'You can modify this item from the \"Breakfast Summary\".';
+
+  @override
+  String get confirmation_edit_hint_lunch =>
+      'You can modify this item from the \"Lunch Summary\".';
+
+  @override
+  String get confirmation_edit_hint_dinner =>
+      'You can modify this item from the \"Dinner Summary\".';
+
+  @override
+  String get confirmation_edit_hint_snack =>
+      'You can modify this item from the \"Snack Summary\".';
+
+  @override
+  String get confirmation_edit_hint_sport =>
+      'You can modify this item from the \"Sport Summary\".';
+
+  @override
+  String get confirmation_edit_hint_supplement =>
+      'You can modify this item from the \"Supplement Summary\".';
+
+  @override
+  String get confirmation_edit_hint_feces =>
+      'You can modify this item from the \"Faeces Summary\".';
+
+  @override
+  String get confirmation_edit_hint_urine =>
+      'You can modify this item from the \"Urine Summary\".';
+
+  @override
   String get remove_food => 'Do you want to remove this food from your list?';
 
   @override

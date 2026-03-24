@@ -50,20 +50,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   void _showConfirmationDialog(BuildContext context) {
-    Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
-    final mediaQuerySize = MediaQuery.of(context).size;
+    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
 
-    showDialog(
-      context: context,
-      builder: (ctx) => Container(
-        height: mediaQuerySize.height,
-        width: mediaQuerySize.width,
-        color: const Color.fromARGB(148, 104, 96, 96),
-        child: ConfirmationDialog(
-          message: AppLocalizations.of(context)!.password_save_successfully,
-        ),
-      ),
-    ).then(
+    showDialog(context: context, builder: (ctx) => ConfirmationDialog(
+      message: AppLocalizations.of(context)!.password_save_successfully,
+    ),).then(
       (value) => Navigator.pushNamedAndRemoveUntil(
         context,
         LoginScreen.routeName,

@@ -44,14 +44,10 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
   int filteredListLength = 0;
 
   void _showConfirmationDialog(BuildContext context, Function onFinish) {
-    Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
-    final mediaQuerySize = MediaQuery.of(context).size;
+    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
 
-    showDialog(context: context, builder: (ctx) => Container(
-      height: mediaQuerySize.height,
-      width: mediaQuerySize.width,
-      color: const Color.fromARGB(148, 104, 96, 96),
-      child: ConfirmationDialog(message: AppLocalizations.of(context)!.favorite_saved),
+    showDialog(context: context, builder: (ctx) => ConfirmationDialog(
+      message: AppLocalizations.of(context)!.favorite_saved,
     ),).then((value) {
       Navigator.pop(context);
       onFinish.call();

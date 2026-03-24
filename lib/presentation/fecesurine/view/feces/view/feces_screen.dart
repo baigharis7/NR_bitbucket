@@ -37,18 +37,15 @@ class _FecesScreenState extends State<FecesScreen> {
 
   // TODO: si esto permanece se puede convertir en un widget en un momento.
   void _showConfirmationDialog({String? message, required BuildContext context, Function? onDismiss}) {
-    Future.delayed(const Duration(seconds: 1), () => Navigator.pop(context));
-    final mediaQuerySize = MediaQuery.of(context).size;
+    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
 
-    showDialog(context: context, builder: (ctx) => Container(
-      height: mediaQuerySize.height,
-      width: mediaQuerySize.width,
-      color: const Color.fromARGB(148, 104, 96, 96),
-      child: ConfirmationDialog(message: message ?? AppLocalizations.of(context)!.feces_event_successfully_saved),
+    showDialog(context: context, builder: (ctx) => ConfirmationDialog(
+      message: message ?? AppLocalizations.of(context)!.feces_event_successfully_saved,
+      iconAsset: 'assets/images/feces_urine.png',
+      hint: AppLocalizations.of(context)!.confirmation_edit_hint_feces,
     ),).then((value) {
       onDismiss?.call();
-    }
-    );
+    });
   }
 
   @override

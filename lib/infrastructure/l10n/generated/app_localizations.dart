@@ -1958,6 +1958,60 @@ abstract class AppLocalizations {
   /// **'Your Urine has been successfully saved!'**
   String get urine_event_successfully_saved;
 
+  /// No description provided for @saved_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved!'**
+  String get saved_title;
+
+  /// No description provided for @confirmation_edit_hint_breakfast.
+  ///
+  /// In en, this message translates to:
+  /// **'You can modify this item from the \"Breakfast Summary\".'**
+  String get confirmation_edit_hint_breakfast;
+
+  /// No description provided for @confirmation_edit_hint_lunch.
+  ///
+  /// In en, this message translates to:
+  /// **'You can modify this item from the \"Lunch Summary\".'**
+  String get confirmation_edit_hint_lunch;
+
+  /// No description provided for @confirmation_edit_hint_dinner.
+  ///
+  /// In en, this message translates to:
+  /// **'You can modify this item from the \"Dinner Summary\".'**
+  String get confirmation_edit_hint_dinner;
+
+  /// No description provided for @confirmation_edit_hint_snack.
+  ///
+  /// In en, this message translates to:
+  /// **'You can modify this item from the \"Snack Summary\".'**
+  String get confirmation_edit_hint_snack;
+
+  /// No description provided for @confirmation_edit_hint_sport.
+  ///
+  /// In en, this message translates to:
+  /// **'You can modify this item from the \"Sport Summary\".'**
+  String get confirmation_edit_hint_sport;
+
+  /// No description provided for @confirmation_edit_hint_supplement.
+  ///
+  /// In en, this message translates to:
+  /// **'You can modify this item from the \"Supplement Summary\".'**
+  String get confirmation_edit_hint_supplement;
+
+  /// No description provided for @confirmation_edit_hint_feces.
+  ///
+  /// In en, this message translates to:
+  /// **'You can modify this item from the \"Faeces Summary\".'**
+  String get confirmation_edit_hint_feces;
+
+  /// No description provided for @confirmation_edit_hint_urine.
+  ///
+  /// In en, this message translates to:
+  /// **'You can modify this item from the \"Urine Summary\".'**
+  String get confirmation_edit_hint_urine;
+
   /// No description provided for @remove_food.
   ///
   /// In en, this message translates to:
