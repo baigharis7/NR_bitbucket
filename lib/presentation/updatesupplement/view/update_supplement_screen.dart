@@ -13,6 +13,7 @@ import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
 import '../../../infrastructure/utils/nutrition_utils.dart';
+import '../../common/view/confirmation_dialog.dart';
 import '../../common/view/loading_screen.dart';
 import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/item_title_card.dart';
@@ -36,6 +37,17 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
   FocusNode _supplementFocusInputController = FocusNode();
   bool _showValidation = false;
   final List<GlobalKey> _itemKeys = [];
+
+  void _showConfirmationDialog(BuildContext context) {
+    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
+
+    showDialog(context: context, builder: (ctx) => ConfirmationDialog(
+      title: AppLocalizations.of(context)!.updated_title,
+      message: AppLocalizations.of(context)!.supplement_event_successfully_updated,
+      iconAsset: 'assets/images/supplement.png',
+      hint: AppLocalizations.of(context)!.confirmation_edit_hint_supplement,
+    ),).then((value) => Navigator.pop(context));
+  }
 
   @override
   void initState() {
@@ -232,7 +244,7 @@ class _UpdateSupplementFavoriteState extends State<UpdateSupplementScreen> {
                             }
                             setState(() { _showValidation = false; });
                             if (state.supplementObj!.name.isNotEmptyOrNull()) {
-                              updateSupplementBloc.add(SavingUpdateSupplement(onFinish: () => Navigator.pop(context)));
+                              updateSupplementBloc.add(SavingUpdateSupplement(onFinish: () => _showConfirmationDialog(context)));
                             }
                           },
                         ),

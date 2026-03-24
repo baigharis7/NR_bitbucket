@@ -222,5 +222,30 @@ class DateTimeHelper {
     return DateFormat('MMM yyyy').format(date);
   }
 
+  /// Returns the next upcoming DateTime for a given set of weekdays (1=Mon..7=Sun)
+  /// and a time string like "07:30". If today matches a scheduled day and the time
+  /// hasn't passed yet, returns today. Otherwise returns the next matching day.
+  static DateTime? nextRoutineOccurrence(List<int>? daysOfWeek, String? timeString) {
+    if (daysOfWeek == null || daysOfWeek.isEmpty) return null;
+    final time = timeOfDayFrom24HrString(timeString);
+    final now = DateTime.now();
+    for (int offset = 0; offset < 8; offset++) {
+      final candidate = now.add(Duration(days: offset));
+      if (daysOfWeek.contains(candidate.weekday)) {
+        final candidateDateTime = DateTime(candidate.year, candidate.month, candidate.day, time.hour, time.minute);
+        if (candidateDateTime.isAfter(now)) return candidateDateTime;
+      }
+    }
+    return null;
+  }
 
+  /// Formats a DateTime as a human-readable date string, e.g. "Monday, March 24"
+  static String formatReadableDate(DateTime date, String locale) {
+    return DateFormat.MMMMEEEEd(locale).format(date);
+  }
+
+  /// Formats a TimeOfDay-like time from a DateTime, e.g. "07:30"
+  static String formatReadableTime(DateTime date) {
+    return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+  }
 }

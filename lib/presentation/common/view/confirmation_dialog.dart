@@ -6,14 +6,24 @@ import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localiz
 
 class ConfirmationDialog extends StatelessWidget {
   final String message;
+  final String? title;
   final String? hint;
+  final String? subtitle;
   final String? iconAsset;
+  final IconData? iconData;
+  final bool showFavoriteTag;
+  final bool showRoutineTag;
 
   const ConfirmationDialog({
     Key? key,
     required this.message,
+    this.title,
     this.hint,
+    this.subtitle,
     this.iconAsset,
+    this.iconData,
+    this.showFavoriteTag = false,
+    this.showRoutineTag = false,
   }) : super(key: key);
 
   @override
@@ -24,10 +34,7 @@ class ConfirmationDialog extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (iconAsset != null)
-            Image.asset(iconAsset!, height: 52, width: 52)
-          else
-            const Icon(Icons.check_circle_outline, size: 52, color: Colors.white),
+          _buildIcon(),
           const SizedBox(height: Dimens.height25),
           Container(
             width: double.infinity,
@@ -39,7 +46,7 @@ class ConfirmationDialog extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  AppLocalizations.of(context)!.saved_title,
+                  title ?? AppLocalizations.of(context)!.saved_title,
                   style: AppTextStyles.merriWeather.copyWith(
                     fontSize: Dimens.fontSizeXXLarge,
                     color: AppColors.yellowishGreen,
@@ -54,6 +61,53 @@ class ConfirmationDialog extends StatelessWidget {
                     color: AppColors.yellowishGreen,
                   ),
                 ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: Dimens.heightXSmall),
+                  Text(
+                    subtitle!,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.merriWeather.copyWith(
+                      fontSize: 14.0,
+                      color: AppColors.yellowishGreen80,
+                    ),
+                  ),
+                ],
+                if (showFavoriteTag) ...[
+                  const SizedBox(height: Dimens.heightXSmall),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.star_rounded, size: 20, color: AppColors.yellowishGreen),
+                      const SizedBox(width: 6),
+                      Text(
+                        AppLocalizations.of(context)!.also_saved_as_favorite,
+                        style: AppTextStyles.merriWeather.copyWith(
+                          fontSize: 14.0,
+                          color: AppColors.yellowishGreen,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+                if (showRoutineTag) ...[
+                  const SizedBox(height: Dimens.heightXSmall),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.history, size: 20, color: AppColors.yellowishGreen),
+                      const SizedBox(width: 6),
+                      Text(
+                        AppLocalizations.of(context)!.also_saved_as_routine,
+                        style: AppTextStyles.merriWeather.copyWith(
+                          fontSize: 14.0,
+                          color: AppColors.yellowishGreen,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
                 if (hint != null) ...[
                   const SizedBox(height: Dimens.heightXSmall),
                   Text(
@@ -72,5 +126,23 @@ class ConfirmationDialog extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildIcon() {
+    if (iconData != null) {
+      return Container(
+        width: 56,
+        height: 56,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(iconData, size: 36, color: AppColors.yellowishGreen),
+      );
+    }
+    if (iconAsset != null) {
+      return Image.asset(iconAsset!, height: 52, width: 52);
+    }
+    return const Icon(Icons.check_circle_outline, size: 52, color: Colors.white);
   }
 }

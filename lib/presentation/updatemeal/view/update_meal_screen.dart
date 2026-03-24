@@ -20,6 +20,7 @@ import '../../../infrastructure/helpers/events_helper.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/constants.dart';
 import '../../../infrastructure/utils/dimens.dart';
+import '../../common/view/confirmation_dialog.dart';
 import '../../common/view/loading_screen.dart';
 import '../../foodevent/view/food_event_item.dart';
 import '../../widgets/general_button.dart';
@@ -40,6 +41,29 @@ class _UpdateMealScreenState extends State<UpdateMealScreen> {
   FocusNode _focusInputController = FocusNode();
   bool _showValidation = false;
   final List<GlobalKey> _itemKeys = [];
+
+  String _mealTimeIcon(int? mealTimeId) => 'assets/images/meal_time_${mealTimeId ?? 0}.png';
+
+  String _mealTimeHint(BuildContext context, int? mealTimeId) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (mealTimeId ?? 0) {
+      case 1: return l10n.confirmation_edit_hint_lunch;
+      case 2: return l10n.confirmation_edit_hint_dinner;
+      case 3: return l10n.confirmation_edit_hint_snack;
+      default: return l10n.confirmation_edit_hint_breakfast;
+    }
+  }
+
+  void _showConfirmationDialog(BuildContext context, {required int? mealTimeId}) {
+    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
+
+    showDialog(context: context, builder: (ctx) => ConfirmationDialog(
+      title: AppLocalizations.of(context)!.updated_title,
+      message: AppLocalizations.of(context)!.food_event_successfully_updated,
+      iconAsset: _mealTimeIcon(mealTimeId),
+      hint: _mealTimeHint(context, mealTimeId),
+    ),).then((value) => Navigator.pop(context));
+  }
 
   @override
   void dispose() {
@@ -249,7 +273,7 @@ class _UpdateMealScreenState extends State<UpdateMealScreen> {
                       }
                       setState(() { _showValidation = false; });
                       if (state.foodEvent?.title.isNotEmptyOrNull() == true) {
-                        updateMealBloc.add(SaveUpdateMealUpdateMealEvent(onFinish: () => Navigator.pop(context)));
+                        updateMealBloc.add(SaveUpdateMealUpdateMealEvent(onFinish: () => _showConfirmationDialog(context, mealTimeId: state.foodEvent?.mealTime)));
                       }
                     },
                     ),

@@ -1052,6 +1052,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get saved_title => '¡Guardado!';
 
   @override
+  String get updated_title => '¡Actualizado!';
+
+  @override
+  String get food_event_successfully_updated =>
+      'Tu comida se ha actualizado con éxito!';
+
+  @override
+  String get sport_event_successfully_updated =>
+      'Tu ejercicio se ha actualizado con éxito!';
+
+  @override
+  String get supplement_event_successfully_updated =>
+      'Tu suplemento se ha actualizado con éxito!';
+
+  @override
   String get confirmation_edit_hint_breakfast =>
       'Puedes modificar este elemento desde el \"Resumen del Desayuno\".';
 
@@ -1082,6 +1097,25 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get confirmation_edit_hint_urine =>
       'Puedes modificar este elemento desde el \"Resumen de la Orina\".';
+
+  @override
+  String get confirmation_edit_hint_favorites =>
+      'Puedes modificar este favorito desde \"Favoritos\".';
+
+  @override
+  String get confirmation_edit_hint_routines =>
+      'Puedes modificar esta rutina desde \"Rutinas\".';
+
+  @override
+  String get also_saved_as_favorite => 'También guardado como favorito';
+
+  @override
+  String get also_saved_as_routine => 'También guardado como rutina';
+
+  @override
+  String routine_next_log(Object date, Object time) {
+    return 'Este elemento se registrará el $date a las $time.';
+  }
 
   @override
   String get remove_food => '¿Quieres eliminar este alimento de tu lista?';

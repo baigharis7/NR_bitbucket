@@ -1964,6 +1964,30 @@ abstract class AppLocalizations {
   /// **'Saved!'**
   String get saved_title;
 
+  /// No description provided for @updated_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated!'**
+  String get updated_title;
+
+  /// No description provided for @food_event_successfully_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your food has been successfully updated!'**
+  String get food_event_successfully_updated;
+
+  /// No description provided for @sport_event_successfully_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your sport has been successfully updated!'**
+  String get sport_event_successfully_updated;
+
+  /// No description provided for @supplement_event_successfully_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your supplement has been successfully updated!'**
+  String get supplement_event_successfully_updated;
+
   /// No description provided for @confirmation_edit_hint_breakfast.
   ///
   /// In en, this message translates to:
@@ -2011,6 +2035,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can modify this item from the \"Urine Summary\".'**
   String get confirmation_edit_hint_urine;
+
+  /// No description provided for @confirmation_edit_hint_favorites.
+  ///
+  /// In en, this message translates to:
+  /// **'You can modify this favorite from \"Favorites\".'**
+  String get confirmation_edit_hint_favorites;
+
+  /// No description provided for @confirmation_edit_hint_routines.
+  ///
+  /// In en, this message translates to:
+  /// **'You can modify this routine from \"Routines\".'**
+  String get confirmation_edit_hint_routines;
+
+  /// No description provided for @also_saved_as_favorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Also saved as a favorite'**
+  String get also_saved_as_favorite;
+
+  /// No description provided for @also_saved_as_routine.
+  ///
+  /// In en, this message translates to:
+  /// **'Also saved as a routine'**
+  String get also_saved_as_routine;
+
+  /// No description provided for @routine_next_log.
+  ///
+  /// In en, this message translates to:
+  /// **'This item will be logged on {date} at {time}.'**
+  String routine_next_log(Object date, Object time);
 
   /// No description provided for @remove_food.
   ///

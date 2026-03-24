@@ -69,13 +69,16 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
     super.initState();
   }
 
-  void _showConfirmationDialog({String? message, required BuildContext context, required Function onDismiss}) {
+  void _showConfirmationDialog({String? message, required BuildContext context, required Function onDismiss, bool showFavoriteTag = false, bool showRoutineTag = false, String? subtitle, String? hint}) {
     Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: message ?? AppLocalizations.of(context)!.supplement_event_successfully_saved,
       iconAsset: 'assets/images/supplement.png',
-      hint: AppLocalizations.of(context)!.confirmation_edit_hint_supplement,
+      hint: hint ?? AppLocalizations.of(context)!.confirmation_edit_hint_supplement,
+      showFavoriteTag: showFavoriteTag,
+      showRoutineTag: showRoutineTag,
+      subtitle: subtitle,
     ),).then((value) {
       onDismiss.call();
     });
@@ -543,8 +546,9 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
 
                                 if (state.supplementObj?.isFavorite == true) {
                                   supplementsBloc.add(FinishSupplementFavorite(onFinish: () => _showConfirmationDialog(
-                                    message: '${AppLocalizations.of(context)!.supplement_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.supplement_favorite_successfully_saved}',
+                                    message: AppLocalizations.of(context)!.supplement_event_successfully_saved,
                                     context: context,
+                                    showFavoriteTag: true,
                                     onDismiss: () => Navigator.popAndPushNamed(context, SupplementsDetailScreen.routeName, arguments: state.supplementObj?.eventDate),
                                   ),),);
                                 } else if (state.supplementObj?.isRoutine == true) {
@@ -553,9 +557,15 @@ class _SupplementsScreenState extends State<SupplementsScreen> {
                                     _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                     return;
                                   }
+                                  final nextDate = DateTimeHelper.nextRoutineOccurrence(state.supplementObj?.daysOfWeek, state.supplementObj?.scheduleTime);
+                                  final locale = Localizations.localeOf(context).languageCode;
+                                  final routineSubtitle = nextDate != null ? AppLocalizations.of(context)!.routine_next_log(DateTimeHelper.formatReadableDate(nextDate, locale), DateTimeHelper.formatReadableTime(nextDate)) : null;
                                   supplementsBloc.add(FinishSupplementRoutineSupplementsEvent(onFinish: () => _showConfirmationDialog(
                                     message: AppLocalizations.of(context)!.supplement_routine_successfully_saved,
                                     context: context,
+                                    showRoutineTag: true,
+                                    subtitle: routineSubtitle,
+                                    hint: AppLocalizations.of(context)!.confirmation_edit_hint_routines,
                                     onDismiss: () => Navigator.pop(context),
                                   ),),);
                                 } else {

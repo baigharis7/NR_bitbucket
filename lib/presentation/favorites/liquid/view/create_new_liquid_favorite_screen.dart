@@ -37,6 +37,8 @@ class _CreateNewLiquidFavoriteScreenState extends State<CreateNewLiquidFavoriteS
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: AppLocalizations.of(context)!.liquid_event_successfully_saved,
+      iconData: Icons.star_rounded,
+      hint: AppLocalizations.of(context)!.confirmation_edit_hint_favorites,
     ),).then((value) =>
         Navigator.pop(context),
     );

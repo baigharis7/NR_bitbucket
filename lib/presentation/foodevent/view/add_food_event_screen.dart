@@ -69,13 +69,16 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
     }
   }
 
-  void _showConfirmationDialog({String? message, required BuildContext context, Function? onDismiss}) {
+  void _showConfirmationDialog({String? message, required BuildContext context, Function? onDismiss, bool showFavoriteTag = false, bool showRoutineTag = false, String? subtitle, String? hint}) {
     Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: message ?? AppLocalizations.of(context)!.food_event_successfully_saved,
       iconAsset: _mealTimeIcon(),
-      hint: _mealTimeHint(context),
+      hint: hint ?? _mealTimeHint(context),
+      showFavoriteTag: showFavoriteTag,
+      showRoutineTag: showRoutineTag,
+      subtitle: subtitle,
     ),).then((value) {
       onDismiss?.call();
     });
@@ -464,8 +467,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
 
                                           if (state.foodEvent?.isFavorite ?? false) {
                                             bloc.add(FinishFoodAsFavoriteEventAction(foodFavorite: state.foodEvent!, onFinish: () => _showConfirmationDialog(
-                                              message: '${AppLocalizations.of(context)!.food_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.food_favorite_successfully_saved}',
+                                              message: AppLocalizations.of(context)!.food_event_successfully_saved,
                                                 context: context,
+                                                showFavoriteTag: true,
                                                 onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
                                             ),),);
                                           }
@@ -478,9 +482,15 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                             state.foodEvent?.userId = '';
                                             state.foodEvent?.eventDate = state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
                                             final foodEventRoutine = mapToFoodRoutineEventFromFoodFavorite(state.foodEvent!);
+                                            final nextDate = DateTimeHelper.nextRoutineOccurrence(state.foodEvent?.daysOfWeek, state.foodEvent?.time);
+                                            final locale = Localizations.localeOf(context).languageCode;
+                                            final routineSubtitle = nextDate != null ? AppLocalizations.of(context)!.routine_next_log(DateTimeHelper.formatReadableDate(nextDate, locale), DateTimeHelper.formatReadableTime(nextDate)) : null;
                                             bloc.add(FinishAddFoodRoutineEventAction(foodRoutineEvent: foodEventRoutine, onFinish: () => _showConfirmationDialog(
                                               message: AppLocalizations.of(context)!.food_routine_successfully_saved,
                                                 context: context,
+                                                showRoutineTag: true,
+                                                subtitle: routineSubtitle,
+                                                hint: AppLocalizations.of(context)!.confirmation_edit_hint_routines,
                                                 onDismiss: () => Navigator.pop(context),
                                             ),),);
                                           } else {

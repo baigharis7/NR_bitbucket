@@ -47,6 +47,8 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: AppLocalizations.of(context)!.favorite_saved,
+      iconData: Icons.star_rounded,
+      hint: AppLocalizations.of(context)!.confirmation_edit_hint_favorites,
     ),).then((value) =>
         bloc.add(InitializeStateAction()),
     );

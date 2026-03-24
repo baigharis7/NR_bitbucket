@@ -13,6 +13,7 @@ import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/events_helper.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/utils/dimens.dart';
+import '../../common/view/confirmation_dialog.dart';
 import '../../common/view/loading_screen.dart';
 import '../../sportevent/view/sport_event_item.dart';
 import '../../widgets/item_title_card.dart';
@@ -35,6 +36,17 @@ class _UpdateSportScreenState extends State<UpdateSportScreen> {
   FocusNode _focusInputController = FocusNode();
   bool _showValidation = false;
   final List<GlobalKey> _itemKeys = [];
+
+  void _showConfirmationDialog(BuildContext context) {
+    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
+
+    showDialog(context: context, builder: (ctx) => ConfirmationDialog(
+      title: AppLocalizations.of(context)!.updated_title,
+      message: AppLocalizations.of(context)!.sport_event_successfully_updated,
+      iconAsset: 'assets/images/sport.png',
+      hint: AppLocalizations.of(context)!.confirmation_edit_hint_sport,
+    ),).then((value) => Navigator.pop(context));
+  }
 
   @override
   void dispose() {
@@ -231,7 +243,7 @@ class _UpdateSportScreenState extends State<UpdateSportScreen> {
                           }
                           setState(() { _showValidation = false; });
                           if (state.sportSimple?.title.isNotEmptyOrNull() == true) {
-                            updateSportBloc.add(SaveUpdateSportUpdateSportEvent(onFinish: () => Navigator.pop(context)));
+                            updateSportBloc.add(SaveUpdateSportUpdateSportEvent(onFinish: () => _showConfirmationDialog(context)));
                           }
                         },),
                       ),

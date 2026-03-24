@@ -58,13 +58,16 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
   bool _showValidation = false;
   bool _showRoutineValidation = false;
 
-  void _showConfirmationDialog({String? message, required BuildContext context, required Function onDismiss}) {
+  void _showConfirmationDialog({String? message, required BuildContext context, required Function onDismiss, bool showFavoriteTag = false, bool showRoutineTag = false, String? subtitle, String? hint}) {
     Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: message ?? AppLocalizations.of(context)!.sport_event_successfully_saved,
       iconAsset: 'assets/images/sport.png',
-      hint: AppLocalizations.of(context)!.confirmation_edit_hint_sport,
+      hint: hint ?? AppLocalizations.of(context)!.confirmation_edit_hint_sport,
+      showFavoriteTag: showFavoriteTag,
+      showRoutineTag: showRoutineTag,
+      subtitle: subtitle,
     ),).then((value) {
       onDismiss.call();
     });
@@ -431,8 +434,9 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                   state.sportSimpleEvent?.eventId = state.sportSimpleEvent?.eventId ?? DateTime.now().millisecondsSinceEpoch;
                                   state.sportSimpleEvent?.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
                                   bloc.add(FinishSportFavouriteAddSportAction(sportFavorite: state.sportSimpleEvent!, onFinish: () => _showConfirmationDialog(
-                                    message: '${AppLocalizations.of(context)!.sport_event_successfully_saved}\n${AppLocalizations.of(context)!.and}\n${AppLocalizations.of(context)!.sport_favorite_successfully_saved}',
+                                    message: AppLocalizations.of(context)!.sport_event_successfully_saved,
                                       context: context,
+                                      showFavoriteTag: true,
                                       onDismiss: () => Navigator.popAndPushNamed(context, SportItemsScreen.routeName, arguments: state.calendarDate),
                                   ),),);
                                 }
@@ -446,9 +450,15 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
                                   state.sportSimpleEvent?.eventDate = state.calendarDate?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
 
                                   final sportRoutineCompleted = mapAddFavSportToSportRoutineCompleted(state.sportSimpleEvent!);
+                                  final nextDate = DateTimeHelper.nextRoutineOccurrence(state.sportSimpleEvent?.daysOfWeek, state.sportSimpleEvent?.scheduleTime);
+                                  final locale = Localizations.localeOf(context).languageCode;
+                                  final routineSubtitle = nextDate != null ? AppLocalizations.of(context)!.routine_next_log(DateTimeHelper.formatReadableDate(nextDate, locale), DateTimeHelper.formatReadableTime(nextDate)) : null;
                                   bloc.add(FinishSportRoutineAddSportAction(sportRoutineCompleted: sportRoutineCompleted, onFinish: () => _showConfirmationDialog(
                                     message: AppLocalizations.of(context)!.sport_routine_successfully_saved,
                                       context: context,
+                                      showRoutineTag: true,
+                                      subtitle: routineSubtitle,
+                                      hint: AppLocalizations.of(context)!.confirmation_edit_hint_routines,
                                       onDismiss: () => Navigator.pop(context),
                                   ),),);
                                 } else {

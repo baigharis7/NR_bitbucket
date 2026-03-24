@@ -46,7 +46,8 @@ class _CreateNewSportFavoriteScreenState extends State<CreateNewSportFavoriteScr
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: AppLocalizations.of(context)!.sport_event_successfully_saved,
-      iconAsset: 'assets/images/sport.png',
+      iconData: Icons.star_rounded,
+      hint: AppLocalizations.of(context)!.confirmation_edit_hint_favorites,
     ),).then((value) => Navigator.pop(context));
   }
 

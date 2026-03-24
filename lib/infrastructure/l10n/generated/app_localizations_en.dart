@@ -1042,6 +1042,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saved_title => 'Saved!';
 
   @override
+  String get updated_title => 'Updated!';
+
+  @override
+  String get food_event_successfully_updated =>
+      'Your food has been successfully updated!';
+
+  @override
+  String get sport_event_successfully_updated =>
+      'Your sport has been successfully updated!';
+
+  @override
+  String get supplement_event_successfully_updated =>
+      'Your supplement has been successfully updated!';
+
+  @override
   String get confirmation_edit_hint_breakfast =>
       'You can modify this item from the \"Breakfast Summary\".';
 
@@ -1072,6 +1087,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get confirmation_edit_hint_urine =>
       'You can modify this item from the \"Urine Summary\".';
+
+  @override
+  String get confirmation_edit_hint_favorites =>
+      'You can modify this favorite from \"Favorites\".';
+
+  @override
+  String get confirmation_edit_hint_routines =>
+      'You can modify this routine from \"Routines\".';
+
+  @override
+  String get also_saved_as_favorite => 'Also saved as a favorite';
+
+  @override
+  String get also_saved_as_routine => 'Also saved as a routine';
+
+  @override
+  String routine_next_log(Object date, Object time) {
+    return 'This item will be logged on $date at $time.';
+  }
 
   @override
   String get remove_food => 'Do you want to remove this food from your list?';
