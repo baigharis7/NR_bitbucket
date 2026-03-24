@@ -3,6 +3,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/healthsync/check_health
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/request_health_permissions_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/sync_health_activities_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/toggle_health_sync_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
@@ -37,3 +39,9 @@ class MockUploadSportEventsInteractor extends Mock
 
 class MockSaveSportEventInteractor extends Mock
     implements SaveSportEventInteractor {}
+
+class MockGetTodaySportsInteractor extends Mock
+    implements GetTodaySportsInteractor {}
+
+class MockGetMasterFileInteractor extends Mock
+    implements GetMasterFileInteractor {}

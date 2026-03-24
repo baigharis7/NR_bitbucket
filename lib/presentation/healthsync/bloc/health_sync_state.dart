@@ -14,6 +14,7 @@ class HealthSyncState {
   final bool? syncSuccess;
   final double? todaySleepHours;
   final int? todayStepCount;
+  final int estimatedStepCount;
 
   HealthSyncState({
     this.isLoading = false,
@@ -29,6 +30,7 @@ class HealthSyncState {
     this.syncSuccess,
     this.todaySleepHours,
     this.todayStepCount,
+    this.estimatedStepCount = 0,
   });
 
   /// [clearSleepHours] / [clearStepCount] allow explicitly setting to null
@@ -47,6 +49,7 @@ class HealthSyncState {
     bool? syncSuccess,
     double? todaySleepHours,
     int? todayStepCount,
+    int? estimatedStepCount,
     bool clearSleepHours = false,
     bool clearStepCount = false,
   }) {
@@ -64,6 +67,7 @@ class HealthSyncState {
       syncSuccess: syncSuccess,
       todaySleepHours: clearSleepHours ? null : (todaySleepHours ?? this.todaySleepHours),
       todayStepCount: clearStepCount ? null : (todayStepCount ?? this.todayStepCount),
+      estimatedStepCount: estimatedStepCount ?? this.estimatedStepCount,
     );
   }
 }

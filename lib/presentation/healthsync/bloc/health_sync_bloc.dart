@@ -1,14 +1,19 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/check_health_sync_status_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/request_health_permissions_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/sync_health_activities_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/toggle_health_sync_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/step_estimation_utils.dart';
 
 part 'health_sync_event.dart';
 part 'health_sync_state.dart';
@@ -24,9 +29,12 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
   final RequestHealthPermissionsInteractor requestHealthPermissionsInteractor;
   final ToggleHealthSyncInteractor toggleHealthSyncInteractor;
   final SyncHealthActivitiesInteractor syncHealthActivitiesInteractor;
+  final GetTodaySportsInteractor getTodaySportsInteractor;
+  final GetMasterFileInteractor getMasterFileInteractor;
 
   static const _periodicSyncInterval = Duration(minutes: 5);
   Timer? _periodicSyncTimer;
+  StreamSubscription<DataChangedCategory>? _eventBusSubscription;
 
   HealthSyncBloc({
     required this.healthSyncRepository,
@@ -34,6 +42,8 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     required this.requestHealthPermissionsInteractor,
     required this.toggleHealthSyncInteractor,
     required this.syncHealthActivitiesInteractor,
+    required this.getTodaySportsInteractor,
+    required this.getMasterFileInteractor,
   }) : super(HealthSyncState()) {
     on<HealthSyncInitialization>(_onInitialization);
     on<HealthSyncRequestPermissions>(_onRequestPermissions);
@@ -43,6 +53,12 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     on<HealthSyncOpenHealthConnect>(_onOpenHealthConnect);
     on<HealthSyncLoadForDate>(_onLoadForDate);
     on<HealthSyncUpdatePermissions>(_onUpdatePermissions);
+    on<HealthSyncRecalculateEstimatedSteps>(_onRecalculateEstimatedSteps);
+
+    // Recalculate estimated steps when sport events change.
+    _eventBusSubscription = DashboardEventBus.instance.stream
+        .where((cat) => cat == DataChangedCategory.sport)
+        .listen((_) => add(HealthSyncRecalculateEstimatedSteps()));
 
     // Load persisted state immediately so the dashboard has correct values.
     add(HealthSyncInitialization());
@@ -66,6 +82,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
   @override
   Future<void> close() {
     _periodicSyncTimer?.cancel();
+    _eventBusSubscription?.cancel();
     return super.close();
   }
 
@@ -129,6 +146,9 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       // re-grant permissions (e.g. after an app update added new data types).
       final needsUpdate = isEnabled && isAvailable && !hasPermissions;
 
+      // Calculate estimated steps from manual sport events
+      final estimatedSteps = await _calculateEstimatedSteps(today);
+
       emit(state.copyWith(
         isLoading: false,
         isAvailable: isAvailable,
@@ -138,6 +158,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         lastSyncTime: lastSyncTime,
         todaySleepHours: sleepHours,
         todayStepCount: stepCount,
+        estimatedStepCount: estimatedSteps,
       ));
     } catch (e, stack) {
       CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncInitialization'});
@@ -257,6 +278,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       // Fetch today's sleep/step data, save to Hive + DynamoDB
       final today = DateTime.now();
       final fresh = await _fetchAndSave(today);
+      final estimatedSteps = await _calculateEstimatedSteps(today);
 
       emit(state.copyWith(
         isLoading: false,
@@ -266,6 +288,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         syncSuccess: true,
         todaySleepHours: fresh.sleepHours,
         todayStepCount: fresh.stepCount,
+        estimatedStepCount: estimatedSteps,
       ));
     } catch (e, stack) {
       CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncManualTrigger'});
@@ -285,11 +308,13 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     try {
       final sleepHours = await healthSyncRepository.getSavedSleepHours(event.date);
       final stepCount = await healthSyncRepository.getSavedStepCount(event.date);
-      _hsLog('HealthSync loadForDate: ${event.date}, sleep=$sleepHours, steps=$stepCount');
+      final estimatedSteps = await _calculateEstimatedSteps(event.date);
+      _hsLog('HealthSync loadForDate: ${event.date}, sleep=$sleepHours, steps=$stepCount, estimated=$estimatedSteps');
 
       emit(state.copyWith(
         todaySleepHours: sleepHours,
         todayStepCount: stepCount,
+        estimatedStepCount: estimatedSteps,
         clearSleepHours: sleepHours == null,
         clearStepCount: stepCount == null,
       ));
@@ -355,5 +380,29 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
     } catch (e, stack) {
       CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncOpenHealthConnect'});
     }
+  }
+
+  /// Calculate estimated steps from manual sport events for a given date.
+  Future<int> _calculateEstimatedSteps(DateTime date) async {
+    try {
+      final sportsInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
+      if (sportsInfo is! SportsInfoMaster) return 0;
+
+      final sportEvents = await getTodaySportsInteractor.execute(dateTime: date);
+      return estimateStepsFromSportEvents(sportEvents, sportsInfo);
+    } catch (e, stack) {
+      CrashlyticsService.record(e, stack, context: {'event': 'CalculateEstimatedSteps'});
+      return 0;
+    }
+  }
+
+  Future<void> _onRecalculateEstimatedSteps(
+    HealthSyncRecalculateEstimatedSteps event,
+    Emitter<HealthSyncState> emit,
+  ) async {
+    final date = event.date ?? DateTime.now();
+    final estimated = await _calculateEstimatedSteps(date);
+    _hsLog('HealthSync: estimated steps from sport events = $estimated');
+    emit(state.copyWith(estimatedStepCount: estimated));
   }
 }

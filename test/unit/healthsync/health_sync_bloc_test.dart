@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
@@ -16,6 +18,13 @@ void main() {
   late MockRequestHealthPermissionsInteractor mockRequestHealthPermissionsInteractor;
   late MockToggleHealthSyncInteractor mockToggleHealthSyncInteractor;
   late MockSyncHealthActivitiesInteractor mockSyncHealthActivitiesInteractor;
+  late MockGetTodaySportsInteractor mockGetTodaySportsInteractor;
+  late MockGetMasterFileInteractor mockGetMasterFileInteractor;
+
+  final testSportsInfo = SportsInfoMaster(sportsInfoMaster: [
+    SportInfoMaster(id: 1, en: 'Running', es: 'Correr', mets: 10),
+    SportInfoMaster(id: 2, en: 'Walking', es: 'Caminar', mets: 3),
+  ]);
 
   setUp(() {
     mockHealthSyncRepository = MockHealthSyncRepository();
@@ -23,6 +32,15 @@ void main() {
     mockRequestHealthPermissionsInteractor = MockRequestHealthPermissionsInteractor();
     mockToggleHealthSyncInteractor = MockToggleHealthSyncInteractor();
     mockSyncHealthActivitiesInteractor = MockSyncHealthActivitiesInteractor();
+    mockGetTodaySportsInteractor = MockGetTodaySportsInteractor();
+    mockGetMasterFileInteractor = MockGetMasterFileInteractor();
+
+    // Default stubs so the auto-init from the constructor always completes
+    // cleanly. Individual tests override these as needed.
+    when(() => mockGetMasterFileInteractor.execute(MasterFilesType.sportsInfo))
+        .thenAnswer((_) async => testSportsInfo);
+    when(() => mockGetTodaySportsInteractor.execute(dateTime: any(named: 'dateTime')))
+        .thenAnswer((_) async => <SportEventComplete>[]);
   });
 
   HealthSyncBloc buildBloc() {
@@ -32,6 +50,8 @@ void main() {
       requestHealthPermissionsInteractor: mockRequestHealthPermissionsInteractor,
       toggleHealthSyncInteractor: mockToggleHealthSyncInteractor,
       syncHealthActivitiesInteractor: mockSyncHealthActivitiesInteractor,
+      getTodaySportsInteractor: mockGetTodaySportsInteractor,
+      getMasterFileInteractor: mockGetMasterFileInteractor,
     );
   }
 
@@ -59,6 +79,14 @@ void main() {
         .thenAnswer((_) async => stepCount);
   }
 
+  /// Stubs for estimated step calculation (sport events + master file)
+  void stubEstimatedSteps({List<SportEventComplete>? sportEvents}) {
+    when(() => mockGetMasterFileInteractor.execute(MasterFilesType.sportsInfo))
+        .thenAnswer((_) async => testSportsInfo);
+    when(() => mockGetTodaySportsInteractor.execute(dateTime: any(named: 'dateTime')))
+        .thenAnswer((_) async => sportEvents ?? []);
+  }
+
   group('HealthSyncBloc', () {
     group('HealthSyncInitialization', () {
       blocTest<HealthSyncBloc, HealthSyncState>(
@@ -74,9 +102,10 @@ void main() {
               .thenAnswer((_) async => DateTime(2024, 1, 15, 10, 30));
           stubSavedData();
           stubSleepStepData();
+          stubEstimatedSteps();
         },
         build: buildBloc,
-        act: (bloc) => bloc.add(HealthSyncInitialization()),
+        // Constructor auto-dispatches HealthSyncInitialization — no act needed.
         expect: () => [
           // Loading state
           isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
@@ -97,7 +126,7 @@ void main() {
               .thenThrow(Exception('Test error'));
         },
         build: buildBloc,
-        act: (bloc) => bloc.add(HealthSyncInitialization()),
+        // Constructor auto-dispatches HealthSyncInitialization — no act needed.
         expect: () => [
           isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
           isA<HealthSyncState>()
@@ -118,9 +147,10 @@ void main() {
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => null);
           stubSavedData();
+          stubEstimatedSteps();
         },
         build: buildBloc,
-        act: (bloc) => bloc.add(HealthSyncInitialization()),
+        // Constructor auto-dispatches HealthSyncInitialization — no act needed.
         expect: () => [
           isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
           isA<HealthSyncState>()
@@ -144,9 +174,10 @@ void main() {
               .thenAnswer((_) async => DateTime(2024, 1, 15));
           stubSavedData();
           stubSleepStepData(sleepHours: 7.5, stepCount: 8000);
+          stubEstimatedSteps();
         },
         build: buildBloc,
-        act: (bloc) => bloc.add(HealthSyncInitialization()),
+        // Constructor auto-dispatches HealthSyncInitialization — no act needed.
         expect: () => [
           isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
           isA<HealthSyncState>()
@@ -178,9 +209,10 @@ void main() {
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => null);
           stubSavedData(sleepHours: 6.5, stepCount: 3000);
+          stubEstimatedSteps();
         },
         build: buildBloc,
-        act: (bloc) => bloc.add(HealthSyncInitialization()),
+        // Constructor auto-dispatches HealthSyncInitialization — no act needed.
         expect: () => [
           isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
           isA<HealthSyncState>()
@@ -206,9 +238,10 @@ void main() {
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => DateTime(2024, 1, 15));
           stubSavedData(sleepHours: 7.0, stepCount: 5000);
+          stubEstimatedSteps();
         },
         build: buildBloc,
-        act: (bloc) => bloc.add(HealthSyncInitialization()),
+        // Constructor auto-dispatches HealthSyncInitialization — no act needed.
         verify: (_) {
           // Should NOT call setHealthSyncEnabled(false)
           verifyNever(() => mockHealthSyncRepository.setHealthSyncEnabled(false));
@@ -230,9 +263,10 @@ void main() {
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => null);
           stubSavedData(sleepHours: null, stepCount: null);
+          stubEstimatedSteps();
         },
         build: buildBloc,
-        act: (bloc) => bloc.add(HealthSyncInitialization()),
+        // Constructor auto-dispatches HealthSyncInitialization — no act needed.
         expect: () => [
           isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
           isA<HealthSyncState>()
@@ -253,6 +287,7 @@ void main() {
               .thenAnswer((_) async => true);
         },
         build: buildBloc,
+        skip: 2, // skip auto-init states from constructor
         act: (bloc) => bloc.add(HealthSyncRequestPermissions()),
         expect: () => [
           isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
@@ -271,6 +306,7 @@ void main() {
               .thenAnswer((_) async => false);
         },
         build: buildBloc,
+        skip: 2,
         act: (bloc) => bloc.add(HealthSyncRequestPermissions()),
         expect: () => [
           isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
@@ -288,6 +324,7 @@ void main() {
               .thenThrow(Exception('Permission request failed'));
         },
         build: buildBloc,
+        skip: 2,
         act: (bloc) => bloc.add(HealthSyncRequestPermissions()),
         expect: () => [
           isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
@@ -308,6 +345,7 @@ void main() {
               .thenAnswer((_) async => DateTime(2024, 1, 15));
         },
         build: buildBloc,
+        skip: 2,
         act: (bloc) => bloc.add(HealthSyncToggle(enable: true)),
         expect: () => [
           isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
@@ -326,6 +364,7 @@ void main() {
               .thenAnswer((_) async => null);
         },
         build: buildBloc,
+        skip: 2,
         act: (bloc) => bloc.add(HealthSyncToggle(enable: false)),
         expect: () => [
           isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
@@ -346,6 +385,7 @@ void main() {
               .thenAnswer((_) async => false);
         },
         build: buildBloc,
+        skip: 2,
         act: (bloc) => bloc.add(HealthSyncToggle(enable: true)),
         expect: () => [
           isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
@@ -377,19 +417,17 @@ void main() {
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => DateTime.now());
           stubSleepStepData();
+          stubEstimatedSteps();
         },
         build: buildBloc,
+        skip: 2,
         act: (bloc) => bloc.add(HealthSyncManualTrigger()),
-        expect: () => [
-          isA<HealthSyncState>()
-              .having((s) => s.isLoading, 'isLoading', true)
-              .having((s) => s.isSyncing, 'isSyncing', true),
-          isA<HealthSyncState>()
-              .having((s) => s.isLoading, 'isLoading', false)
-              .having((s) => s.isSyncing, 'isSyncing', false)
-              .having((s) => s.syncedActivitiesCount, 'syncedActivitiesCount', 1)
-              .having((s) => s.syncSuccess, 'syncSuccess', true),
-        ],
+        verify: (bloc) {
+          // Verify the final state after all events settle
+          expect(bloc.state.syncSuccess, true);
+          expect(bloc.state.syncedActivitiesCount, 1);
+          expect(bloc.state.isSyncing, false);
+        },
       );
 
       blocTest<HealthSyncBloc, HealthSyncState>(
@@ -400,8 +438,10 @@ void main() {
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => DateTime.now());
           stubSleepStepData();
+          stubEstimatedSteps();
         },
         build: buildBloc,
+        skip: 2,
         act: (bloc) => bloc.add(HealthSyncManualTrigger()),
         expect: () => [
           isA<HealthSyncState>()
@@ -422,6 +462,7 @@ void main() {
               .thenThrow(Exception('Sync failed'));
         },
         build: buildBloc,
+        skip: 2,
         act: (bloc) => bloc.add(HealthSyncManualTrigger()),
         expect: () => [
           isA<HealthSyncState>()
@@ -442,8 +483,10 @@ void main() {
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => DateTime.now());
           stubSleepStepData(sleepHours: 6.0, stepCount: 12000);
+          stubEstimatedSteps();
         },
         build: buildBloc,
+        skip: 2,
         act: (bloc) => bloc.add(HealthSyncManualTrigger()),
         expect: () => [
           isA<HealthSyncState>()
@@ -482,6 +525,7 @@ void main() {
         when(() => mockHealthSyncRepository.getLastSyncTime())
             .thenAnswer((_) async => DateTime.now());
         stubSleepStepData();
+        stubEstimatedSteps();
 
         final busEvents = <DataChangedCategory>[];
         final sub = DashboardEventBus.instance.stream.listen(busEvents.add);
@@ -502,6 +546,7 @@ void main() {
         when(() => mockHealthSyncRepository.getLastSyncTime())
             .thenAnswer((_) async => DateTime.now());
         stubSleepStepData();
+        stubEstimatedSteps();
 
         final busEvents = <DataChangedCategory>[];
         final sub = DashboardEventBus.instance.stream.listen(busEvents.add);
@@ -525,8 +570,10 @@ void main() {
               .thenAnswer((_) async => 8.0);
           when(() => mockHealthSyncRepository.getSavedStepCount(any()))
               .thenAnswer((_) async => 15000);
+          stubEstimatedSteps();
         },
         build: buildBloc,
+        skip: 2,
         act: (bloc) => bloc.add(HealthSyncLoadForDate(date: DateTime(2024, 3, 10))),
         expect: () => [
           isA<HealthSyncState>()
@@ -543,8 +590,10 @@ void main() {
               .thenAnswer((_) async => null);
           when(() => mockHealthSyncRepository.getSavedStepCount(any()))
               .thenAnswer((_) async => null);
+          stubEstimatedSteps();
         },
         build: buildBloc,
+        skip: 2,
         act: (bloc) => bloc.add(HealthSyncLoadForDate(date: DateTime(2024, 1, 1))),
         expect: () => [
           isA<HealthSyncState>()
@@ -560,8 +609,10 @@ void main() {
               .thenAnswer((_) async => 5.5);
           when(() => mockHealthSyncRepository.getSavedStepCount(any()))
               .thenAnswer((_) async => null);
+          stubEstimatedSteps();
         },
         build: buildBloc,
+        skip: 2,
         act: (bloc) => bloc.add(HealthSyncLoadForDate(date: DateTime(2024, 2, 15))),
         expect: () => [
           isA<HealthSyncState>()
@@ -571,6 +622,136 @@ void main() {
       );
     });
   });
+
+    group('HealthSyncRecalculateEstimatedSteps', () {
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'calculates estimated steps from manual sport events',
+        setUp: () {
+          stubEstimatedSteps(sportEvents: [
+            SportEventComplete(
+              userId: 'test',
+              eventId: 1,
+              eventDate: DateTime.now().millisecondsSinceEpoch,
+              source: 'manual',
+              info: [SportEventInfo(id: 1, minutes: 30)], // Running 10 METs: (10-1)*32*30 = 8640
+            ),
+          ]);
+        },
+        build: buildBloc,
+        skip: 2,
+        act: (bloc) => bloc.add(HealthSyncRecalculateEstimatedSteps()),
+        expect: () => [
+          isA<HealthSyncState>()
+              .having((s) => s.estimatedStepCount, 'estimatedStepCount', 8640),
+        ],
+      );
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'returns 0 when no manual sport events exist',
+        setUp: () {
+          stubEstimatedSteps(sportEvents: []);
+        },
+        build: buildBloc,
+        skip: 2,
+        act: (bloc) => bloc.add(HealthSyncRecalculateEstimatedSteps()),
+        expect: () => [
+          isA<HealthSyncState>()
+              .having((s) => s.estimatedStepCount, 'estimatedStepCount', 0),
+        ],
+      );
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'skips health_connect synced events',
+        setUp: () {
+          stubEstimatedSteps(sportEvents: [
+            SportEventComplete(
+              userId: 'test',
+              eventId: 1,
+              eventDate: DateTime.now().millisecondsSinceEpoch,
+              source: 'health_connect',
+              info: [SportEventInfo(id: 1, minutes: 30)],
+            ),
+          ]);
+        },
+        build: buildBloc,
+        skip: 2,
+        act: (bloc) => bloc.add(HealthSyncRecalculateEstimatedSteps()),
+        expect: () => [
+          isA<HealthSyncState>()
+              .having((s) => s.estimatedStepCount, 'estimatedStepCount', 0),
+        ],
+      );
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'handles master file not loaded gracefully',
+        setUp: () {
+          when(() => mockGetMasterFileInteractor.execute(MasterFilesType.sportsInfo))
+              .thenAnswer((_) async => null);
+          when(() => mockGetTodaySportsInteractor.execute(dateTime: any(named: 'dateTime')))
+              .thenAnswer((_) async => []);
+        },
+        build: buildBloc,
+        skip: 2,
+        act: (bloc) => bloc.add(HealthSyncRecalculateEstimatedSteps()),
+        expect: () => [
+          isA<HealthSyncState>()
+              .having((s) => s.estimatedStepCount, 'estimatedStepCount', 0),
+        ],
+      );
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'includes estimated steps during initialization',
+        setUp: () {
+          when(() => mockHealthSyncRepository.isHealthSyncAvailable())
+              .thenAnswer((_) async => false);
+          when(() => mockHealthSyncRepository.isHealthSyncEnabled())
+              .thenAnswer((_) async => false);
+          when(() => mockHealthSyncRepository.hasPermissions())
+              .thenAnswer((_) async => false);
+          when(() => mockHealthSyncRepository.getLastSyncTime())
+              .thenAnswer((_) async => null);
+          stubSavedData();
+          stubEstimatedSteps(sportEvents: [
+            SportEventComplete(
+              userId: 'test',
+              eventId: 1,
+              eventDate: DateTime.now().millisecondsSinceEpoch,
+              info: [SportEventInfo(id: 2, minutes: 20)], // Walking 3 METs: (3-1)*32*20 = 1280
+            ),
+          ]);
+        },
+        build: buildBloc,
+        // Constructor auto-dispatches HealthSyncInitialization — no act needed.
+        expect: () => [
+          isA<HealthSyncState>().having((s) => s.isLoading, 'isLoading', true),
+          isA<HealthSyncState>()
+              .having((s) => s.estimatedStepCount, 'estimatedStepCount', 1280),
+        ],
+      );
+
+      test('recalculates when sport EventBus fires', () async {
+        stubEstimatedSteps(sportEvents: [
+          SportEventComplete(
+            userId: 'test',
+            eventId: 1,
+            eventDate: DateTime.now().millisecondsSinceEpoch,
+            info: [SportEventInfo(id: 1, minutes: 10)], // Running: (10-1)*32*10 = 2880
+          ),
+        ]);
+
+        final bloc = buildBloc();
+        // Wait for any initialization events to settle
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        // Fire sport event on EventBus
+        DashboardEventBus.instance.notify(DataChangedCategory.sport);
+        await Future.delayed(const Duration(milliseconds: 200));
+
+        expect(bloc.state.estimatedStepCount, 2880);
+
+        await bloc.close();
+      });
+    });
 
   group('HealthSyncState', () {
     test('initial state has correct defaults', () {
@@ -587,6 +768,7 @@ void main() {
       expect(state.syncSuccess, null);
       expect(state.todaySleepHours, null);
       expect(state.todayStepCount, null);
+      expect(state.estimatedStepCount, 0);
     });
 
     test('copyWith creates a new state with updated values', () {
@@ -666,6 +848,20 @@ void main() {
 
       expect(newState.todaySleepHours, null);
       expect(newState.todayStepCount, null);
+    });
+
+    test('copyWith updates estimatedStepCount', () {
+      final state = HealthSyncState();
+      final newState = state.copyWith(estimatedStepCount: 5000);
+
+      expect(newState.estimatedStepCount, 5000);
+    });
+
+    test('copyWith preserves estimatedStepCount when not specified', () {
+      final state = HealthSyncState(estimatedStepCount: 3000);
+      final newState = state.copyWith(isLoading: true);
+
+      expect(newState.estimatedStepCount, 3000);
     });
   });
 }

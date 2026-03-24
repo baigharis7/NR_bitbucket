@@ -404,24 +404,33 @@ class _DashboardScreen extends State<DashboardScreen>
                         buildWhen: (prev, curr) =>
                             prev.isSyncEnabled != curr.isSyncEnabled ||
                             prev.todaySleepHours != curr.todaySleepHours ||
-                            prev.todayStepCount != curr.todayStepCount,
+                            prev.todayStepCount != curr.todayStepCount ||
+                            prev.estimatedStepCount != curr.estimatedStepCount,
                         builder: (context, healthState) {
-                          if (!healthState.isSyncEnabled) {
+                          final totalSteps = (healthState.todayStepCount ?? 0) + healthState.estimatedStepCount;
+                          final showSleep = healthState.isSyncEnabled;
+                          final showSteps = healthState.isSyncEnabled || totalSteps > 0;
+
+                          if (!showSleep && !showSteps) {
                             return const SizedBox.shrink();
                           }
                           return Column(
                             children: [
-                              const SizedBox(height: 17),
-                              SleepingHoursWidget(
-                                hoursSlept: healthState.todaySleepHours ?? 0,
-                                hoursGoal: 8,
-                                sex: state.profile?.sex,
-                              ),
-                              const SizedBox(height: 17),
-                              StepsWidget(
-                                stepsTaken: healthState.todayStepCount ?? 0,
-                                stepsGoal: 10000,
-                              ),
+                              if (showSleep) ...[
+                                const SizedBox(height: 17),
+                                SleepingHoursWidget(
+                                  hoursSlept: healthState.todaySleepHours ?? 0,
+                                  hoursGoal: 8,
+                                  sex: state.profile?.sex,
+                                ),
+                              ],
+                              if (showSteps) ...[
+                                const SizedBox(height: 17),
+                                StepsWidget(
+                                  stepsTaken: totalSteps,
+                                  stepsGoal: 10000,
+                                ),
+                              ],
                             ],
                           );
                         },

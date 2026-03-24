@@ -33,3 +33,9 @@ class HealthSyncLoadForDate extends HealthSyncEvent {
 
 /// Re-request permissions after an app update added new health data types.
 class HealthSyncUpdatePermissions extends HealthSyncEvent {}
+
+/// Recalculate estimated steps from manual sport events.
+class HealthSyncRecalculateEstimatedSteps extends HealthSyncEvent {
+  final DateTime? date;
+  HealthSyncRecalculateEstimatedSteps({this.date});
+}

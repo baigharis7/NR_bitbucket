@@ -1247,6 +1247,8 @@ void main() async {
     requestHealthPermissionsInteractor: requestHealthPermissionsInteractor,
     toggleHealthSyncInteractor: toggleHealthSyncInteractor,
     syncHealthActivitiesInteractor: syncHealthActivitiesInteractor,
+    getTodaySportsInteractor: getTodaySportsInteractor,
+    getMasterFileInteractor: getMasterFileInteractor,
   );
 
   // Initialize WorkManager for background health sync (non-blocking)
