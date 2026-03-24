@@ -206,7 +206,9 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
             parent: _plusAnimController,
             curve: Curves.easeInOut,
           ),
-          child: Container(
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.95),
               borderRadius: BorderRadius.circular(20),
@@ -251,6 +253,7 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
                 ),
               ],
             ),
+          ),
           ),
         ),
       ),
@@ -331,7 +334,9 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
             parent: _menuAnimController,
             curve: Curves.easeInOut,
           ),
-          child: Container(
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.95),
               borderRadius: BorderRadius.circular(20),
@@ -380,6 +385,7 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
                 ),
               ],
             ),
+          ),
           ),
         ),
       ),
