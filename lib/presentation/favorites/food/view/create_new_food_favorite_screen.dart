@@ -44,7 +44,7 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
   int filteredListLength = 0;
 
   void _showConfirmationDialog(BuildContext context, Function onFinish) {
-    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
+    Future.delayed(const Duration(seconds: 2), () => Navigator.pop(context));
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: AppLocalizations.of(context)!.favorite_saved,

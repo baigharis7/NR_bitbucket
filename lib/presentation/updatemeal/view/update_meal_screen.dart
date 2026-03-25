@@ -55,7 +55,7 @@ class _UpdateMealScreenState extends State<UpdateMealScreen> {
   }
 
   void _showConfirmationDialog(BuildContext context, {required int? mealTimeId}) {
-    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
+    Future.delayed(const Duration(seconds: 2), () => Navigator.pop(context));
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       title: AppLocalizations.of(context)!.updated_title,

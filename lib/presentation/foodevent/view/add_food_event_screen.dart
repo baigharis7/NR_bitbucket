@@ -70,7 +70,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
   }
 
   void _showConfirmationDialog({String? message, required BuildContext context, Function? onDismiss, bool showFavoriteTag = false, bool showRoutineTag = false, String? subtitle, String? hint}) {
-    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
+    Future.delayed(const Duration(seconds: 2), () => Navigator.pop(context));
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: message ?? AppLocalizations.of(context)!.food_event_successfully_saved,

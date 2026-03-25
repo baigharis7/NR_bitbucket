@@ -67,7 +67,7 @@ class ConfirmationDialog extends StatelessWidget {
                     subtitle!,
                     textAlign: TextAlign.center,
                     style: AppTextStyles.merriWeather.copyWith(
-                      fontSize: 14.0,
+                      fontSize: Dimens.fontSize15,
                       color: AppColors.yellowishGreen80,
                     ),
                   ),
@@ -83,7 +83,7 @@ class ConfirmationDialog extends StatelessWidget {
                       Text(
                         AppLocalizations.of(context)!.also_saved_as_favorite,
                         style: AppTextStyles.merriWeather.copyWith(
-                          fontSize: 14.0,
+                          fontSize: Dimens.fontSize15,
                           color: AppColors.yellowishGreen,
                         ),
                       ),
@@ -101,7 +101,7 @@ class ConfirmationDialog extends StatelessWidget {
                       Text(
                         AppLocalizations.of(context)!.also_saved_as_routine,
                         style: AppTextStyles.merriWeather.copyWith(
-                          fontSize: 14.0,
+                          fontSize: Dimens.fontSize15,
                           color: AppColors.yellowishGreen,
                         ),
                       ),
@@ -114,7 +114,7 @@ class ConfirmationDialog extends StatelessWidget {
                     hint!,
                     textAlign: TextAlign.center,
                     style: AppTextStyles.merriWeather.copyWith(
-                      fontSize: 14.0,
+                      fontSize: Dimens.fontSize15,
                       color: AppColors.yellowishGreen80,
                     ),
                   ),
@@ -131,18 +131,18 @@ class ConfirmationDialog extends StatelessWidget {
   Widget _buildIcon() {
     if (iconData != null) {
       return Container(
-        width: 56,
-        height: 56,
+        width: 65,
+        height: 65,
         decoration: const BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
         ),
-        child: Icon(iconData, size: 36, color: AppColors.yellowishGreen),
+        child: Icon(iconData, size: 40, color: AppColors.yellowishGreen),
       );
     }
     if (iconAsset != null) {
-      return Image.asset(iconAsset!, height: 52, width: 52);
+      return Image.asset(iconAsset!, height: 65, width: 65);
     }
-    return const Icon(Icons.check_circle_outline, size: 52, color: Colors.white);
+    return const Icon(Icons.check_circle_outline, size: 65, color: Colors.white);
   }
 }

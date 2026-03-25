@@ -36,7 +36,7 @@ class AddFoodFavoriteScreen extends StatefulWidget {
 
 class _AddFoodFavoriteScreenState extends State<AddFoodFavoriteScreen> {
   void _showConfirmationDialog(BuildContext context) {
-    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
+    Future.delayed(const Duration(seconds: 2), () => Navigator.pop(context));
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: AppLocalizations.of(context)!.favorite_saved,

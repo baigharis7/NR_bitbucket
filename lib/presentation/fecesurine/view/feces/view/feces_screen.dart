@@ -37,7 +37,7 @@ class _FecesScreenState extends State<FecesScreen> {
 
   // TODO: si esto permanece se puede convertir en un widget en un momento.
   void _showConfirmationDialog({String? message, required BuildContext context, Function? onDismiss}) {
-    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
+    Future.delayed(const Duration(seconds: 2), () => Navigator.pop(context));
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: message ?? AppLocalizations.of(context)!.feces_event_successfully_saved,

@@ -39,7 +39,7 @@ class _AddLiquidEventScreenState extends State<AddLiquidEventScreen> {
   int filteredListLength = 0;
 
   void _showConfirmationDialog(BuildContext context) {
-    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
+    Future.delayed(const Duration(seconds: 2), () => Navigator.pop(context));
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: AppLocalizations.of(context)!.liquid_event_successfully_saved,

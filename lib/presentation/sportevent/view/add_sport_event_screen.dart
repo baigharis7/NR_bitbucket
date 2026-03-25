@@ -59,7 +59,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
   bool _showRoutineValidation = false;
 
   void _showConfirmationDialog({String? message, required BuildContext context, required Function onDismiss, bool showFavoriteTag = false, bool showRoutineTag = false, String? subtitle, String? hint}) {
-    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
+    Future.delayed(const Duration(seconds: 2), () => Navigator.pop(context));
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: message ?? AppLocalizations.of(context)!.sport_event_successfully_saved,

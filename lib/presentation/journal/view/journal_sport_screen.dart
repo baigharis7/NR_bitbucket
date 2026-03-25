@@ -56,7 +56,7 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
   }
 
   void _showConfirmationDialog(BuildContext context) {
-    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
+    Future.delayed(const Duration(seconds: 2), () => Navigator.pop(context));
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: AppLocalizations.of(context)!.sport_event_successfully_saved,

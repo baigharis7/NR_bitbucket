@@ -41,7 +41,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   bool isFocusedDayDate = false;
 
   void _showConfirmationDialog(BuildContext context) {
-    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
+    Future.delayed(const Duration(seconds: 2), () => Navigator.pop(context));
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: AppLocalizations.of(context)!.removed_food,

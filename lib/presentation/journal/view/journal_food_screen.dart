@@ -43,7 +43,7 @@ class _JournalFoodScreenState extends State<JournalFoodScreen> {
   Function deepEq = const DeepCollectionEquality().equals;
 
   void _showConfirmationDialog(BuildContext context) {
-    Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context));
+    Future.delayed(const Duration(seconds: 2), () => Navigator.pop(context));
 
     showDialog(context: context, builder: (ctx) => ConfirmationDialog(
       message: AppLocalizations.of(context)!.favorite_saved,
