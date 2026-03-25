@@ -243,7 +243,7 @@ class _UpdateMealScreenState extends State<UpdateMealScreen> {
                                     _focusInputController.requestFocus();
                                   },
                                   title: Text(AppLocalizations.of(context)!.add_more),
-                                  trailing: const Icon(Icons.add_circle, color: AppColors.yellowishGreen),
+                                  trailing: Stack(alignment: Alignment.center, children: [Container(width: 26 * 0.85, height: 26 * 0.85, decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle)), const Icon(Icons.add_circle, color: AppColors.yellowishGreen)]),
                                 ),
                               ),
                             ),

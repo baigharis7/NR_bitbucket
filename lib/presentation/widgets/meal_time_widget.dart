@@ -62,12 +62,26 @@ class MealTimeWidget extends StatelessWidget {
               onTap: () => onClick.call(),
               child: Padding(
                 padding: const EdgeInsets.only(left: 4),
-                child: Icon(Icons.add_circle, size: 26, color: iconColor ?? AppColors.yellowishGreen),
+                child: _buildPlusIcon(26),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPlusIcon(double size) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          width: size * 0.85,
+          height: size * 0.85,
+          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+        ),
+        Icon(Icons.add_circle, size: size, color: iconColor ?? AppColors.yellowishGreen),
+      ],
     );
   }
 
@@ -101,7 +115,7 @@ class MealTimeWidget extends StatelessWidget {
                 ],),
               ),
             ),
-            InkWell(onTap: () => onClick.call(), child: Padding(padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8, right: 4), child: Icon(Icons.add_circle, size: 32, color: iconColor ?? AppColors.yellowishGreen))),
+            InkWell(onTap: () => onClick.call(), child: Padding(padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8, right: 4), child: _buildPlusIcon(32))),
           ],),
         ),
       ),

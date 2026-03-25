@@ -159,9 +159,19 @@ class _MealTimeGridCard extends StatelessWidget {
             ),
             InkWell(
               onTap: onAdd,
-              child: const Padding(
-                padding: EdgeInsets.only(left: 4),
-                child: Icon(Icons.add_circle, size: 26, color: AppColors.yellowishGreen),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      width: 26 * 0.85,
+                      height: 26 * 0.85,
+                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                    ),
+                    const Icon(Icons.add_circle, size: 26, color: AppColors.yellowishGreen),
+                  ],
+                ),
               ),
             ),
           ],

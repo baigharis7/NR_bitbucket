@@ -134,8 +134,6 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
             Scaffold(
               backgroundColor: Colors.transparent,
               body: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 90),
                 child: Column(
                   children: [
                     const SizedBox(height: Dimens.paddingLarge),
@@ -275,11 +273,12 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
                       ),
                     ),
 
-                    // Sync Now button fixed at bottom
+                    // Sync Now button pinned at bottom
                     Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: Dimens.paddingLarge,
-                        vertical: Dimens.marginSmall,
+                      margin: const EdgeInsets.only(
+                        left: Dimens.paddingLarge,
+                        right: Dimens.paddingLarge,
+                        bottom: Dimens.paddingLarge,
                       ),
                       child: GeneralButton(
                         title: state.isSyncing
@@ -295,7 +294,6 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
                     ),
                   ],
                 ),
-              ),
               ),
               bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
             ),

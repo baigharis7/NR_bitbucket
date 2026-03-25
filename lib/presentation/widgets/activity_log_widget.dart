@@ -62,7 +62,17 @@ class ActivityLogWidget extends StatelessWidget {
                   ),
                   InkWell(
                     onTap: onAdd,
-                    child: const Icon(Icons.add_circle, size: 32, color: AppColors.yellowishGreen),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: 32 * 0.85,
+                          height: 32 * 0.85,
+                          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                        ),
+                        const Icon(Icons.add_circle, size: 32, color: AppColors.yellowishGreen),
+                      ],
+                    ),
                   ),
                 ],
               ),
