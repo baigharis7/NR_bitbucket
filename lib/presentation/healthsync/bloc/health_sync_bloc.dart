@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/check_health_sync_status_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/health_sync_background_service.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/request_health_permissions_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/sync_health_activities_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/toggle_health_sync_interactor.dart';
@@ -121,9 +122,19 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
 
       final lastSyncTime = await healthSyncRepository.getLastSyncTime();
 
-      final syncEnabled = isEnabled && hasPermissions;
-      if (syncEnabled) {
+      // Trust the user's stored preference as source of truth.  On Android,
+      // hasPermissions() is unreliable after app restarts and may return
+      // false even when permissions are still granted.  Start the periodic
+      // sync whenever the user chose to enable sync — data fetches already
+      // handle permission failures gracefully by returning empty results.
+      if (isEnabled && isAvailable) {
         _startPeriodicSync();
+        // Re-register the WorkManager background task in case it was lost
+        // after an app update or device restart.  Fire-and-forget — failure
+        // here (e.g. missing platform plugin) should not block init.
+        HealthSyncBackgroundService.registerPeriodicSync().catchError((e) {
+          _hsLog('HealthSync init: background service registration failed: $e');
+        });
       } else {
         _stopPeriodicSync();
       }
@@ -134,12 +145,18 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       double? sleepHours = await healthSyncRepository.getSavedSleepHours(today);
       int? stepCount = await healthSyncRepository.getSavedStepCount(today);
 
-      // Fetch fresh data from Health Connect if sync is active.
-      if (syncEnabled) {
-        final fresh = await _fetchAndSave(today);
-        sleepHours = fresh.sleepHours;
-        stepCount = fresh.stepCount;
-        _hsLog('HealthSync init: sleepHours=$sleepHours, stepCount=$stepCount');
+      // Fetch fresh data from Health Connect if sync is enabled.
+      // Even if hasPermissions is false, attempt the fetch — HC may still
+      // allow reads and the call fails gracefully with empty results.
+      if (isEnabled && isAvailable) {
+        try {
+          final fresh = await _fetchAndSave(today);
+          sleepHours = fresh.sleepHours;
+          stepCount = fresh.stepCount;
+          _hsLog('HealthSync init: sleepHours=$sleepHours, stepCount=$stepCount');
+        } catch (e) {
+          _hsLog('HealthSync init: fetch failed (permissions likely revoked), using saved data');
+        }
       }
 
       // If sync is enabled but permissions are missing, the user needs to

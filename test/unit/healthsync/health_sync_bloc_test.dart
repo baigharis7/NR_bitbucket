@@ -238,6 +238,9 @@ void main() {
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => DateTime(2024, 1, 15));
           stubSavedData(sleepHours: 7.0, stepCount: 5000);
+          // Sync is now attempted even when hasPermissions is false,
+          // because HC's hasPermissions check is unreliable on Android.
+          stubSleepStepData(sleepHours: 7.0, stepCount: 5000);
           stubEstimatedSteps();
         },
         build: buildBloc,
