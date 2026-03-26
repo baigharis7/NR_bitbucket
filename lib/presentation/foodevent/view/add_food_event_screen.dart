@@ -27,6 +27,8 @@ import '../../../domain/models/favorites/food/food_favorite.dart';
 import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../domain/models/foodevents/food_arguments_model.dart';
 import '../../../domain/models/foodroutine/food_routine_event.dart';
+import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/foodscanner/view/food_scanner_screen.dart';
 import '../../../infrastructure/errors/error_resolver.dart';
 import '../../../infrastructure/helpers/snack_bar_helper.dart';
 import '../../../infrastructure/mappers/food_event_mappers.dart';
@@ -184,6 +186,27 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                       title: '${AppLocalizations.of(context)!.add} ${MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name}',
                                       image: 'assets/images/meal_time_${state.foodEvent?.mealTime}.png',
                                       searchHintText: AppLocalizations.of(context)!.search_food_hint,
+                                      onScanTap: () async {
+                                        final scannerBloc = context.read<FoodScannerBloc>();
+                                        final foodList = state.foodNames?.foodsAndDrinksNames?.foodNames;
+                                        if (foodList != null) {
+                                          scannerBloc.initializeMatcher(foodList);
+                                        }
+                                        final result = await Navigator.push<List<FoodInFavorite>>(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => BlocProvider.value(
+                                              value: scannerBloc,
+                                              child: FoodScannerScreen(mealType: state.foodEvent?.mealTime ?? 0),
+                                            ),
+                                          ),
+                                        );
+                                        if (result != null && result.isNotEmpty) {
+                                          for (final food in result) {
+                                            bloc.add(AddFoodFromEventAction(foodInEvent: food));
+                                          }
+                                        }
+                                      },
                                       items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),
                                       onItemSelect: (option, focus) {
                                         _focusInputController = focus;

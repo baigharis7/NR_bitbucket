@@ -44,6 +44,8 @@ import 'package:nutrenaissance_flutter/data/local/models/recipes/recipe_favorite
     as _i32;
 import 'package:nutrenaissance_flutter/data/local/models/routines/sport_routine_entity.dart'
     as _i31;
+import 'package:nutrenaissance_flutter/data/local/models/sleepevents/sleep_event_entity.dart'
+    as _i39;
 import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart'
     as _i24;
 import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart'
@@ -77,7 +79,7 @@ import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_mast
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart'
     as _i18;
 import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart'
-    as _i39;
+    as _i40;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -1421,6 +1423,16 @@ class MockLocalStorageRepository extends _i1.Mock
       ) as _i7.Future<List<dynamic>>);
 
   @override
+  _i7.Future<List<dynamic>> getAllSupplementEvents() => (super.noSuchMethod(
+        Invocation.method(
+          #getAllSupplementEvents,
+          [],
+        ),
+        returnValue: _i7.Future<List<dynamic>>.value(<dynamic>[]),
+        returnValueForMissingStub: _i7.Future<List<dynamic>>.value(<dynamic>[]),
+      ) as _i7.Future<List<dynamic>>);
+
+  @override
   _i7.Future<void> removeSupplementEvent(
           _i35.SupplementEventsEntity? supplementEventsEntity) =>
       (super.noSuchMethod(
@@ -1674,6 +1686,28 @@ class MockLocalStorageRepository extends _i1.Mock
       ) as _i7.Future<void>);
 
   @override
+  _i7.Future<void> saveSleepEvent(_i39.SleepEventEntity? sleepEvent) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveSleepEvent,
+          [sleepEvent],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<_i39.SleepEventEntity?> getSleepEventByDate(int? eventDate) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getSleepEventByDate,
+          [eventDate],
+        ),
+        returnValue: _i7.Future<_i39.SleepEventEntity?>.value(),
+        returnValueForMissingStub: _i7.Future<_i39.SleepEventEntity?>.value(),
+      ) as _i7.Future<_i39.SleepEventEntity?>);
+
+  @override
   _i7.Future<_i5.Box<dynamic>> openBox(
     _i5.Box<dynamic>? box,
     String? boxName,
@@ -1713,7 +1747,7 @@ class MockLocalStorageRepository extends _i1.Mock
 /// A class which mocks [SyncQueueService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSyncQueueService extends _i1.Mock implements _i39.SyncQueueService {
+class MockSyncQueueService extends _i1.Mock implements _i40.SyncQueueService {
   @override
   int get pendingCount => (super.noSuchMethod(
         Invocation.getter(#pendingCount),

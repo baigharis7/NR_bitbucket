@@ -4329,6 +4329,20 @@ class MockSupplementsRepository extends _i1.Mock
       ) as _i14.Future<List<_i34.SupplementSimple>>);
 
   @override
+  _i14.Future<List<_i34.SupplementSimple>> getAllSupplementEvents() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAllSupplementEvents,
+          [],
+        ),
+        returnValue: _i14.Future<List<_i34.SupplementSimple>>.value(
+            <_i34.SupplementSimple>[]),
+        returnValueForMissingStub:
+            _i14.Future<List<_i34.SupplementSimple>>.value(
+                <_i34.SupplementSimple>[]),
+      ) as _i14.Future<List<_i34.SupplementSimple>>);
+
+  @override
   _i14.Future<List<_i34.SupplementSimple>> getRecentSupplementEvents() =>
       (super.noSuchMethod(
         Invocation.method(

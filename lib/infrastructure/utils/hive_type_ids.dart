@@ -85,5 +85,6 @@ class HiveTypeIds {
   static const syncQueueEntry = 82;
   static const healthSyncMetadataEntity = 83;
   static const sleepEventEntity = 84;
+  static const scannedFoodEntity = 85;
 
 }

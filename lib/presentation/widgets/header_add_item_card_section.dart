@@ -21,7 +21,8 @@ class HeaderAddItemCardSection extends StatefulWidget {
   final ValueChanged<FocusNode>? onFocusNodeCreated;
   final IconData? icon;
   final Color? iconColor;
-  const HeaderAddItemCardSection({super.key, this.title, this.onBackTap, this.image, this.items, this.onItemSelect, this.path, this.child, this.backgroundImage, this.searchHintText, this.onFocusNodeCreated, this.icon, this.iconColor});
+  final VoidCallback? onScanTap;
+  const HeaderAddItemCardSection({super.key, this.title, this.onBackTap, this.image, this.items, this.onItemSelect, this.path, this.child, this.backgroundImage, this.searchHintText, this.onFocusNodeCreated, this.icon, this.iconColor, this.onScanTap});
 
   @override
   State<HeaderAddItemCardSection> createState() => _HeaderAddItemCardSectionState();
@@ -115,19 +116,38 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
                   style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize21,),
                 ),
               ),
-              if (widget.icon != null) Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(200),
-                  boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
-                ),
-                child: Icon(widget.icon, size: 42, color: widget.iconColor ?? Colors.white),
-              )
-              else if (widget.image.isNotNull()) Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(200),
-                  boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
-                ),
-                child: Image.asset(widget.image ?? 'assets/images/meal_time_0.png', height: 52, width: 52),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (widget.onScanTap != null) GestureDetector(
+                    onTap: widget.onScanTap,
+                    child: Container(
+                      width: 42,
+                      height: 42,
+                      margin: const EdgeInsets.only(right: 10),
+                      decoration: BoxDecoration(
+                        color: AppColors.mountainMeadow.withOpacity(0.85),
+                        shape: BoxShape.circle,
+                        boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 3))],
+                      ),
+                      child: const Icon(Icons.camera_alt, color: Colors.white, size: 22),
+                    ),
+                  ),
+                  if (widget.icon != null) Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(200),
+                      boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
+                    ),
+                    child: Icon(widget.icon, size: 42, color: widget.iconColor ?? Colors.white),
+                  )
+                  else if (widget.image.isNotNull()) Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(200),
+                      boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
+                    ),
+                    child: Image.asset(widget.image ?? 'assets/images/meal_time_0.png', height: 52, width: 52),
+                  ),
+                ],
               ),
             ],
           ),

@@ -28,6 +28,12 @@ import 'package:nutrenaissance_flutter/data/api/sportevents/sport_events_api.dar
 import 'package:nutrenaissance_flutter/data/api/steps/steps_api.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/supplemets_api.dart';
 import 'package:nutrenaissance_flutter/data/api/waterevents/water_events_api.dart';
+import 'package:nutrenaissance_flutter/data/api/foodscanner/open_food_facts_barcode_provider.dart';
+import 'package:nutrenaissance_flutter/data/local/models/scannedfoods/scanned_food_entity.dart';
+import 'package:nutrenaissance_flutter/data/repository/scannedfoods/scanned_food_repository.dart';
+import 'package:nutrenaissance_flutter/data/repository/scannedfoods/scanned_food_repository_impl.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/food_fuzzy_matcher.dart';
+import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_bloc.dart';
 import 'package:nutrenaissance_flutter/data/local/models/analysis/subjective/subjective_analysis_result_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/explainingcards/explaining_card_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/favorites/food/food_favorite_entity.dart';
@@ -550,6 +556,7 @@ void main() async {
   // Fetch reference data in the background (nutrients, nutrient loss, sport METs)
   _fetchReferenceData(referenceDataApi, referenceDataService);
   final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
+  await Hive.openBox<ScannedFoodEntity>(ScannedFoodEntity.boxName);
   final SyncQueueService syncQueueService = SyncQueueService(prefsRepository, authenticationService, chuck, syncQueueBox);
   // Retry any pending API calls from previous sessions
   syncQueueService.processQueue();
@@ -845,6 +852,10 @@ void main() async {
     getProfileInteractor: getProfileInteractor,
     getFoodEventsOfTodayInteractor: getFoodEventsOfTodayInteractor,
   );
+
+  // -- Food Scanner --
+  final ScannedFoodRepository scannedFoodRepository =
+      ScannedFoodRepositoryImpl(referenceDatabase);
 
   final addFoodEventBloc = AddFoodEventBloc(
     getUserIdInteractor: getUserIdInteractor,
@@ -1317,6 +1328,14 @@ void main() async {
         BlocProvider<UpdateSportBloc>(create: (context) => updateSportBloc,),
         BlocProvider<SettingsBloc>(create: (context) => settingsBloc,),
         BlocProvider<HealthSyncBloc>(create: (context) => healthSyncBloc,),
+        BlocProvider<FoodScannerBloc>(create: (context) {
+          // FuzzyMatcher is initialized lazily when the scanner screen
+          // is opened — call bloc.initializeMatcher(masterFoods) there.
+          return FoodScannerBloc(
+            barcodeProvider: OpenFoodFactsBarcodeProvider(),
+            scannedFoodRepository: scannedFoodRepository,
+          );
+        }),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),
         // ChangeNotifierProvider<LoginProvider>(create: (_) => loginProvider),
         // ChangeNotifierProvider<RegistryProvider>(create: (_) => registryProvider),
@@ -1589,4 +1608,5 @@ void initLocalStorage() async {
   Hive.registerAdapter(SyncQueueEntryAdapter());
   Hive.registerAdapter(HealthSyncMetadataEntityAdapter());
   Hive.registerAdapter(SleepEventEntityAdapter());
+  Hive.registerAdapter(ScannedFoodEntityAdapter());
 }
