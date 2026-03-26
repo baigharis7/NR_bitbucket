@@ -2,6 +2,9 @@
     package="com.nutrenaissance.flutter">
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- Camera for food scanning -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
     <!-- Health Connect permissions -->
     <uses-permission android:name="android.permission.health.READ_EXERCISE" />
     <uses-permission android:name="android.permission.health.READ_STEPS" />

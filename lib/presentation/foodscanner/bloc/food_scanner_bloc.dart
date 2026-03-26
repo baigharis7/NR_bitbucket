@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nutrenaissance_flutter/data/api/foodscanner/claude_vision_provider.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/data/local/models/scannedfoods/scanned_food_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/scannedfoods/scanned_food_repository.dart';
@@ -15,6 +17,7 @@ class FoodScannerBloc
     extends BaseBloc<FoodScannerAction, FoodScannerState> {
   final BarcodeNutritionProvider barcodeProvider;
   final ScannedFoodRepository scannedFoodRepository;
+  final ClaudeVisionProvider? claudeVisionProvider;
   FoodFuzzyMatcher? _fuzzyMatcher;
 
   /// Provide the master food list so the fuzzy matcher can be initialized.
@@ -35,6 +38,7 @@ class FoodScannerBloc
   FoodScannerBloc({
     required this.barcodeProvider,
     required this.scannedFoodRepository,
+    this.claudeVisionProvider,
   }) : super(const FoodScannerState()) {
     on<OnVisualFoodDetectedAction>(_onVisualFoodDetected);
     on<OnBarcodeDetectedAction>(_onBarcodeDetected);
@@ -42,6 +46,7 @@ class FoodScannerBloc
     on<LogSelectedFoodsAction>(_onLogSelected);
     on<EditNextSelectedFoodAction>(_onEditNext);
     on<FoodEditedAction>(_onFoodEdited);
+    on<CapturePhotoAction>(_onCapturePhoto);
     on<ResetScannerAction>(_onReset);
   }
 
@@ -255,6 +260,45 @@ class FoodScannerBloc
       editingIndex: () => null,
       editedFoods: edited,
     ));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Capture photo → Claude Vision
+  // ---------------------------------------------------------------------------
+
+  Future<void> _onCapturePhoto(
+    CapturePhotoAction action,
+    Emitter<FoodScannerState> emit,
+  ) async {
+    if (claudeVisionProvider == null) {
+      emit(state.copyWith(
+        errorMessage: () => 'Visual recognition not configured',
+      ));
+      return;
+    }
+
+    emit(state.copyWith(isProcessing: true, errorMessage: () => null));
+
+    final results = await claudeVisionProvider!
+        .identifyFoods(Uint8List.fromList(action.imageBytes));
+
+    if (results.isEmpty) {
+      emit(state.copyWith(
+        isProcessing: false,
+        errorMessage: () => 'No food detected in the image',
+      ));
+      return;
+    }
+
+    // Convert VisualFoodResult → DetectedFoodCandidate and dispatch
+    final candidates = results
+        .map((r) => DetectedFoodCandidate(
+              name: r.name,
+              estimatedGrams: r.estimatedGrams,
+            ))
+        .toList();
+
+    add(OnVisualFoodDetectedAction(candidates: candidates));
   }
 
   // ---------------------------------------------------------------------------

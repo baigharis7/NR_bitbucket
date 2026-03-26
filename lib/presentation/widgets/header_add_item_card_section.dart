@@ -116,43 +116,27 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
                   style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize21,),
                 ),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (widget.onScanTap != null) GestureDetector(
-                    onTap: widget.onScanTap,
-                    child: Container(
-                      width: 42,
-                      height: 42,
-                      margin: const EdgeInsets.only(right: 10),
-                      decoration: BoxDecoration(
-                        color: AppColors.mountainMeadow.withOpacity(0.85),
-                        shape: BoxShape.circle,
-                        boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 3))],
-                      ),
-                      child: const Icon(Icons.camera_alt, color: Colors.white, size: 22),
-                    ),
-                  ),
-                  if (widget.icon != null) Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(200),
-                      boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
-                    ),
-                    child: Icon(widget.icon, size: 42, color: widget.iconColor ?? Colors.white),
-                  )
-                  else if (widget.image.isNotNull()) Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(200),
-                      boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
-                    ),
-                    child: Image.asset(widget.image ?? 'assets/images/meal_time_0.png', height: 52, width: 52),
-                  ),
-                ],
+              if (widget.icon != null) Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(200),
+                  boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
+                ),
+                child: Icon(widget.icon, size: 42, color: widget.iconColor ?? Colors.white),
+              )
+              else if (widget.image.isNotNull()) Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(200),
+                  boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 6))],
+                ),
+                child: Image.asset(widget.image ?? 'assets/images/meal_time_0.png', height: 52, width: 52),
               ),
             ],
           ),
           if (widget.onItemSelect != null) const SizedBox(height: 16),
-          if (widget.onItemSelect != null) TypeAheadField<String>(
+          if (widget.onItemSelect != null) Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(child: TypeAheadField<String>(
             key: _inputKey,
             controller: _foodInputController,
             focusNode: _focusInputController,
@@ -294,6 +278,24 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
             hideOnEmpty: true,
             hideOnLoading: true,
             debounceDuration: const Duration(milliseconds: 200),
+          )),
+              if (widget.onScanTap != null) Padding(
+                padding: const EdgeInsets.only(left: 10, bottom: 4),
+                child: GestureDetector(
+                  onTap: widget.onScanTap,
+                  child: Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: AppColors.yellowishGreen,
+                      shape: BoxShape.circle,
+                      boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 3))],
+                    ),
+                    child: const Icon(Icons.center_focus_strong, color: Colors.white, size: 20),
+                  ),
+                ),
+              ),
+            ],
           ),
           if (widget.child != null) widget.child!,
         ],

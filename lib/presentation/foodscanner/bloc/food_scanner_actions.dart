@@ -36,6 +36,14 @@ class FoodEditedAction extends FoodScannerAction {
   FoodEditedAction({required this.index});
 }
 
+/// User taps the capture button — triggers Claude Vision identification.
+class CapturePhotoAction extends FoodScannerAction {
+  /// JPEG image bytes from the camera.
+  final List<int> imageBytes;
+
+  CapturePhotoAction({required this.imageBytes});
+}
+
 /// Reset scanner to initial state (clear results).
 class ResetScannerAction extends FoodScannerAction {}
 

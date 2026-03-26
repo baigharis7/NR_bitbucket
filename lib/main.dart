@@ -28,6 +28,7 @@ import 'package:nutrenaissance_flutter/data/api/sportevents/sport_events_api.dar
 import 'package:nutrenaissance_flutter/data/api/steps/steps_api.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/supplemets_api.dart';
 import 'package:nutrenaissance_flutter/data/api/waterevents/water_events_api.dart';
+import 'package:nutrenaissance_flutter/data/api/foodscanner/claude_vision_provider.dart';
 import 'package:nutrenaissance_flutter/data/api/foodscanner/open_food_facts_barcode_provider.dart';
 import 'package:nutrenaissance_flutter/data/local/models/scannedfoods/scanned_food_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/scannedfoods/scanned_food_repository.dart';
@@ -1331,9 +1332,16 @@ void main() async {
         BlocProvider<FoodScannerBloc>(create: (context) {
           // FuzzyMatcher is initialized lazily when the scanner screen
           // is opened — call bloc.initializeMatcher(masterFoods) there.
+          //
+          // Claude Vision API key: pass via --dart-define=CLAUDE_API_KEY=sk-...
+          // or set it directly here for development.
+          const claudeApiKey = String.fromEnvironment('CLAUDE_API_KEY');
           return FoodScannerBloc(
             barcodeProvider: OpenFoodFactsBarcodeProvider(),
             scannedFoodRepository: scannedFoodRepository,
+            claudeVisionProvider: claudeApiKey.isNotEmpty
+                ? ClaudeVisionProvider(apiKey: claudeApiKey)
+                : null,
           );
         }),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),

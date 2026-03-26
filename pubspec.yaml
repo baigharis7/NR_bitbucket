@@ -69,6 +69,8 @@ dependencies:
   health: ^13.1.4
   workmanager: ^0.9.0+3
   permission_handler: ^12.0.1
+  camera: ^0.11.0+2
+  google_mlkit_barcode_scanning: ^0.12.0
   # Passio Nutrition AI SDK — uncomment once SDK key is configured:
   # nutrition_ai: ^3.2.0
 
