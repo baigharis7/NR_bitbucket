@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:nutrenaissance_flutter/infrastructure/services/nutrient_mapper_service.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodscanner/visual_food_provider.dart';
 
 /// Identifies foods in an image using Claude Vision API.
 ///
 /// Sends the image to Claude with a structured prompt and parses the
 /// JSON response into a list of [VisualFoodResult].
-class ClaudeVisionProvider {
+class ClaudeVisionProvider implements VisualFoodProvider {
   static const _apiUrl = 'https://api.anthropic.com/v1/messages';
   static const _model = 'claude-sonnet-4-20250514';
 
@@ -21,10 +21,7 @@ class ClaudeVisionProvider {
   })  : _apiKey = apiKey,
         _client = client ?? http.Client();
 
-  /// Identify foods in the given image bytes.
-  ///
-  /// Returns a list of detected foods with names and estimated portions.
-  /// Returns empty list on error or if no food is detected.
+  @override
   Future<List<VisualFoodResult>> identifyFoods(Uint8List imageBytes) async {
     try {
       final base64Image = base64Encode(imageBytes);
@@ -113,12 +110,4 @@ If no food is visible, return: []''';
       return [];
     }
   }
-}
-
-/// A food detected by Claude Vision.
-class VisualFoodResult {
-  final String name;
-  final double? estimatedGrams;
-
-  VisualFoodResult({required this.name, this.estimatedGrams});
 }

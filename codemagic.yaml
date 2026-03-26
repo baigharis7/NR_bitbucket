@@ -13,7 +13,10 @@
 #    - APP_STORE_CONNECT_ISSUER_ID       - Issuer ID
 #    - APP_STORE_CONNECT_PRIVATE_KEY     - .p8 file contents
 #
-# 3. Connect your Bitbucket repository in Codemagic UI
+# 3. Environment group "api_keys":
+#    - LOGMEAL_API_TOKEN    - LogMeal API token for food scanning (encrypted)
+#
+# 4. Connect your Bitbucket repository in Codemagic UI
 
 workflows:
   # PR Checks - runs on every pull request
@@ -46,6 +49,7 @@ workflows:
       flutter: 3.32.8
       groups:
         - android_signing
+        - api_keys
     triggering:
       events:
         - push
@@ -66,8 +70,12 @@ workflows:
           echo "keyAlias=$CM_KEY_ALIAS" >> android/key.properties
           echo "storeFile=$KEYSTORE_PATH" >> android/key.properties
 
+      - name: Generate env.json
+        script: |
+          echo "{\"LOGMEAL_API_TOKEN\": \"$LOGMEAL_API_TOKEN\", \"CLAUDE_API_KEY\": \"\"}" > env.json
+
       - name: Build Android AAB
-        script: flutter build appbundle --release --flavor prod
+        script: flutter build appbundle --release --flavor prod --dart-define-from-file=env.json
 
     artifacts:
       - build/app/outputs/bundle/prodRelease/app-prod-release.aab
@@ -83,6 +91,7 @@ workflows:
       flutter: 3.32.8
       groups:
         - ios_signing
+        - api_keys
     triggering:
       events:
         - push
@@ -112,9 +121,14 @@ workflows:
       - name: Set up iOS code signing
         script: xcode-project use-profiles
 
+      - name: Generate env.json
+        script: |
+          echo "{\"LOGMEAL_API_TOKEN\": \"$LOGMEAL_API_TOKEN\", \"CLAUDE_API_KEY\": \"\"}" > env.json
+
       - name: Build iOS IPA
         script: |
           flutter build ipa --release \
+            --dart-define-from-file=env.json \
             --export-options-plist=/Users/builder/export_options.plist
 
     artifacts:

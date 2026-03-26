@@ -65,6 +65,9 @@ Thumbs.db
 # MCP config (contains API keys)
 .mcp.json
 
+# Environment config (contains API keys)
+env.json
+
 # Flutter/Dart/Pub related
 **/doc/api/
 .dart_tool/
