@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nutrenaissance_flutter/data/api/foodscanner/logmeal_provider.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/visual_food_provider.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/data/local/models/scannedfoods/scanned_food_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/scannedfoods/scanned_food_repository.dart';
@@ -279,27 +282,50 @@ class FoodScannerBloc
 
     emit(state.copyWith(isProcessing: true, errorMessage: () => null));
 
-    final results = await visualFoodProvider!
-        .identifyFoods(Uint8List.fromList(action.imageBytes));
+    try {
+      final results = await visualFoodProvider!
+          .identifyFoods(Uint8List.fromList(action.imageBytes));
 
-    if (results.isEmpty) {
+      if (results.isEmpty) {
+        emit(state.copyWith(
+          isProcessing: false,
+          errorMessage: () => 'No food detected in the image',
+        ));
+        return;
+      }
+
+      // Convert VisualFoodResult → DetectedFoodCandidate and dispatch
+      final candidates = results
+          .map((r) => DetectedFoodCandidate(
+                name: r.name,
+                estimatedGrams: r.estimatedGrams,
+                estimatedKcal: r.estimatedKcal,
+              ))
+          .toList();
+
+      add(OnVisualFoodDetectedAction(candidates: candidates));
+    } on LogMealException catch (e, stack) {
+      debugPrint('[FoodScanner] LogMeal error: $e');
+      CrashlyticsService.record(e, stack, context: {
+        'statusCode': e.statusCode.toString(),
+        'responseBody': e.responseBody.length > 500
+            ? e.responseBody.substring(0, 500)
+            : e.responseBody,
+      });
       emit(state.copyWith(
         isProcessing: false,
-        errorMessage: () => 'No food detected in the image',
+        errorMessage: () => 'Scan failed (${e.statusCode}): ${e.responseBody}',
       ));
-      return;
+    } catch (e, stack) {
+      debugPrint('[FoodScanner] Unexpected error: $e');
+      CrashlyticsService.record(e, stack, context: {
+        'source': 'food_scanner_capture',
+      });
+      emit(state.copyWith(
+        isProcessing: false,
+        errorMessage: () => 'Scan error: $e',
+      ));
     }
-
-    // Convert VisualFoodResult → DetectedFoodCandidate and dispatch
-    final candidates = results
-        .map((r) => DetectedFoodCandidate(
-              name: r.name,
-              estimatedGrams: r.estimatedGrams,
-              estimatedKcal: r.estimatedKcal,
-            ))
-        .toList();
-
-    add(OnVisualFoodDetectedAction(candidates: candidates));
   }
 
   // ---------------------------------------------------------------------------
