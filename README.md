@@ -77,6 +77,48 @@ flutter build apk --release --flavor prod
 flutter build ipa --release
 ```
 
+## Food Scanning
+
+The app includes a food scanner that combines **visual food recognition** and **barcode scanning** to log meals quickly.
+
+### How It Works
+
+- **Visual recognition**: User taps the capture button → photo is sent to a cloud API → detected foods are fuzzy-matched against the app's ~1800-food database for full 117-nutrient profiles.
+- **Barcode scanning**: ML Kit detects barcodes in real-time from the camera stream (on-device, no API needed) → product is looked up via OpenFoodFacts → fuzzy-matched or stored as a custom food.
+
+### Providers
+
+Visual food recognition uses a swappable provider interface (`VisualFoodProvider`):
+
+| Provider | Status | How to enable |
+|----------|--------|---------------|
+| **LogMeal** | Primary | Set `LOGMEAL_API_TOKEN` in `env.json` |
+| **Claude Vision** | Backup | Set `CLAUDE_API_KEY` in `env.json` |
+
+Barcode lookup uses a swappable provider interface (`BarcodeNutritionProvider`):
+
+| Provider | Status |
+|----------|--------|
+| **OpenFoodFacts** | Active (free, no key needed) |
+| **Passio.ai** | Backup (placeholder, requires SDK key) |
+
+### API Keys Setup
+
+1. Copy `env.json` at the project root (gitignored):
+   ```json
+   {
+     "LOGMEAL_API_TOKEN": "your-logmeal-token",
+     "CLAUDE_API_KEY": ""
+   }
+   ```
+2. Pass it when running or building:
+   ```bash
+   flutter run --flavor prod --dart-define-from-file=env.json
+   flutter build apk --release --flavor prod --dart-define-from-file=env.json
+   ```
+
+If no keys are set, the capture button is functional but visual recognition will show a "not configured" error. Barcode scanning works without any keys.
+
 ## CI/CD
 
 The project uses two CI systems: **Bitbucket Pipelines** for validation and **Codemagic** for release builds.
@@ -101,7 +143,15 @@ On every **merge to master**, two workflows run in parallel:
 - **Android Release** — builds a signed APK (`app-prod-release.apk`)
 - **iOS Release** — builds a signed IPA via App Store Connect
 
-Both workflows run tests before building and produce signed artifacts automatically.
+Both workflows generate `env.json` from Codemagic environment variables at build time.
+
+#### Required Environment Groups in Codemagic
+
+| Group | Variable | Description |
+|-------|----------|-------------|
+| `android_signing` | `CM_KEYSTORE`, `CM_KEYSTORE_PASSWORD`, `CM_KEY_PASSWORD`, `CM_KEY_ALIAS` | Android release signing |
+| `ios_signing` | `APP_STORE_CONNECT_KEY_IDENTIFIER`, `APP_STORE_CONNECT_ISSUER_ID`, `APP_STORE_CONNECT_PRIVATE_KEY` | iOS release signing |
+| `api_keys` | `LOGMEAL_API_TOKEN` | Food scanning API key (encrypted) |
 
 ### Publishing to App Stores
 Release artifacts are currently **downloaded manually** from the Codemagic build dashboard and uploaded to the Google Play Console and App Store Connect respectively. Automated publishing to the stores is not yet configured.

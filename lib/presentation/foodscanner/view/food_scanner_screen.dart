@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
@@ -95,7 +96,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
         camera,
         ResolutionPreset.medium,
         enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.nv21,
+        imageFormatGroup: ImageFormatGroup.yuv420,
       );
 
       await _cameraController!.initialize();
@@ -153,7 +154,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
     if (camera == null) return null;
 
     final sensorOrientation = camera.sensorOrientation;
-    InputImageRotation? rotation;
+    InputImageRotation rotation;
     switch (sensorOrientation) {
       case 0:
         rotation = InputImageRotation.rotation0deg;
@@ -171,14 +172,19 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
         rotation = InputImageRotation.rotation0deg;
     }
 
-    final plane = image.planes.first;
+    // Concatenate all YUV420 planes into a single byte array
+    final allBytes = WriteBuffer();
+    for (final plane in image.planes) {
+      allBytes.putUint8List(plane.bytes);
+    }
+
     return InputImage.fromBytes(
-      bytes: plane.bytes,
+      bytes: allBytes.done().buffer.asUint8List(),
       metadata: InputImageMetadata(
         size: Size(image.width.toDouble(), image.height.toDouble()),
         rotation: rotation,
-        format: InputImageFormat.nv21,
-        bytesPerRow: plane.bytesPerRow,
+        format: InputImageFormat.yuv420,
+        bytesPerRow: image.planes.first.bytesPerRow,
       ),
     );
   }

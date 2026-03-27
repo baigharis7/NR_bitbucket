@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/visual_food_provider.dart';
 
@@ -27,47 +28,84 @@ class LogMealProvider implements VisualFoodProvider {
   Future<List<VisualFoodResult>> identifyFoods(Uint8List imageBytes) async {
     try {
       // Step 1: Image segmentation — identify dishes
+      debugPrint('[LogMeal] Sending ${imageBytes.length} bytes for segmentation...');
       final segmentationResult = await _segmentImage(imageBytes);
-      if (segmentationResult == null) return [];
+      if (segmentationResult == null) {
+        debugPrint('[LogMeal] Segmentation returned null');
+        return [];
+      }
 
       final imageId = segmentationResult['imageId'] as int?;
       final segments = segmentationResult['segmentation_results'] as List<dynamic>?;
-      if (imageId == null || segments == null || segments.isEmpty) return [];
+
+      // Some responses use 'foodType' at the top level with recognition results
+      // nested differently — handle both structures
+      if (imageId == null) {
+        debugPrint('[LogMeal] No imageId in response: ${segmentationResult.keys}');
+        return [];
+      }
+
+      // If no segmentation_results, try recognition_results at top level
+      final recognitionResults = segments
+          ?? segmentationResult['recognition_results'] as List<dynamic>?;
+
+      if (recognitionResults == null || recognitionResults.isEmpty) {
+        debugPrint('[LogMeal] No recognition results found. Keys: ${segmentationResult.keys}');
+        return [];
+      }
+
+      debugPrint('[LogMeal] Found ${recognitionResults.length} segments, imageId=$imageId');
 
       // Step 2: Get nutritional info (free for same imageId)
       final nutritionMap = await _getNutritionalInfo(imageId);
 
-      // Build results from segmentation data + nutrition
+      // Build results from segmentation/recognition data + nutrition
       final results = <VisualFoodResult>[];
-      for (final segment in segments) {
-        final recognition = segment['recognition_results'] as List<dynamic>?;
-        if (recognition == null || recognition.isEmpty) continue;
 
-        // Take the top prediction
-        final top = recognition.first as Map<String, dynamic>;
-        final name = top['name'] as String? ?? '';
-        if (name.isEmpty) continue;
+      for (final item in recognitionResults) {
+        final itemMap = item as Map<String, dynamic>;
+
+        // Handle both structures:
+        // Structure A (segmentation): { recognition_results: [{name, id, prob}] }
+        // Structure B (flat): { name, id, prob }
+        String? name;
+        if (itemMap.containsKey('recognition_results')) {
+          final recognition = itemMap['recognition_results'] as List<dynamic>?;
+          if (recognition != null && recognition.isNotEmpty) {
+            final top = recognition.first as Map<String, dynamic>;
+            name = top['name'] as String?;
+          }
+        } else if (itemMap.containsKey('name')) {
+          name = itemMap['name'] as String?;
+        }
+
+        if (name == null || name.isEmpty) continue;
 
         // Serving size from segmentation (if available)
-        final servingSize = segment['serving_size'] as num?;
+        final servingSize = itemMap['serving_size'] as num?;
 
-        // Nutrition for this dish (keyed by segment index or aggregated)
+        // Nutrition for this dish
         double? kcal;
         if (nutritionMap != null) {
           kcal = _extractKcal(nutritionMap);
+          // Approximate per-dish split if multiple dishes detected
+          if (kcal != null && recognitionResults.length > 1) {
+            kcal = kcal / recognitionResults.length;
+          }
         }
 
+        debugPrint('[LogMeal] Detected: $name (${servingSize}g, ${kcal}kcal)');
         results.add(VisualFoodResult(
           name: name,
           estimatedGrams: servingSize?.toDouble(),
-          estimatedKcal: kcal != null && segments.length > 1
-              ? kcal / segments.length // approximate per-dish split
-              : kcal,
+          estimatedKcal: kcal,
         ));
       }
 
+      debugPrint('[LogMeal] Total results: ${results.length}');
       return results;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[LogMeal] Error: $e');
       return [];
     }
   }
@@ -88,8 +126,15 @@ class LogMealProvider implements VisualFoodProvider {
     final streamedResponse = await _client.send(request);
     final response = await http.Response.fromStream(streamedResponse);
 
-    if (response.statusCode != 200) return null;
-    return jsonDecode(response.body) as Map<String, dynamic>;
+    debugPrint('[LogMeal] Segmentation status: ${response.statusCode}');
+    if (response.statusCode != 200) {
+      debugPrint('[LogMeal] Segmentation error: ${response.body}');
+      return null;
+    }
+
+    final json = jsonDecode(response.body) as Map<String, dynamic>;
+    debugPrint('[LogMeal] Segmentation keys: ${json.keys.toList()}');
+    return json;
   }
 
   /// POST imageId to get nutritional information (no extra credit).
@@ -103,13 +148,17 @@ class LogMealProvider implements VisualFoodProvider {
       body: jsonEncode({'imageId': imageId}),
     );
 
-    if (response.statusCode != 200) return null;
+    debugPrint('[LogMeal] Nutrition status: ${response.statusCode}');
+    if (response.statusCode != 200) {
+      debugPrint('[LogMeal] Nutrition error: ${response.body}');
+      return null;
+    }
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
   /// Extract kcal from the nutrition response.
   double? _extractKcal(Map<String, dynamic> nutrition) {
-    // LogMeal returns nutrition under "nutritional_info" or "total_nutritional_info"
+    // LogMeal returns nutrition under various keys depending on the response
     final info = nutrition['nutritional_info'] as Map<String, dynamic>?
         ?? nutrition['total_nutritional_info'] as Map<String, dynamic>?;
     if (info == null) return null;
