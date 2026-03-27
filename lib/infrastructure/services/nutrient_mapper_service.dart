@@ -158,6 +158,78 @@ class NutrientMapperService {
     return result;
   }
 
+  // ---------------------------------------------------------------------------
+  // LogMeal → Params keys
+  // ---------------------------------------------------------------------------
+
+  /// Maps LogMeal nutritional_info field names to our Params field names.
+  /// LogMeal returns per-serving values; the caller should normalize to per-100g
+  /// if needed before calling this.
+  static Map<String, double> mapFromLogMeal(
+      Map<String, dynamic> nutritionalInfo) {
+    final result = <String, double>{};
+
+    const mapping = <String, String>{
+      'calories': 'energyKcal',
+      'totalKCal': 'energyKcal',
+      'totalKJ': 'energyKJ',
+      'protein': 'proteinLabel',
+      'total_carbs': 'carbsAvailable',
+      'carbs': 'carbsAvailable',
+      'total_fat': 'fatTotal',
+      'fat': 'fatTotal',
+      'fiber': 'fiber',
+      'sugar': 'sugarsTotal',
+      'saturated_fat': 'saturated',
+      'trans_fat': 'totalTrans',
+      'monounsaturated_fat': 'monounsaturated',
+      'polyunsaturated_fat': 'polyunsaturated',
+      'cholesterol': 'cholesterol',
+      'sodium': 'sodium',
+      'calcium': 'calcium',
+      'iron': 'iron',
+      'potassium': 'potassium',
+      'magnesium': 'magnesium',
+      'zinc': 'zinc',
+      'phosphorus': 'phosphorus',
+      'vitamin_a': 'vitA',
+      'vitamin_b1': 'vitB1',
+      'vitamin_b2': 'vitB2',
+      'vitamin_b3': 'vitB3',
+      'vitamin_b5': 'vitB5',
+      'vitamin_b6': 'vitB6',
+      'vitamin_b9': 'vitB9',
+      'vitamin_b12': 'vitB12',
+      'vitamin_c': 'vitC',
+      'vitamin_d': 'vitD',
+      'vitamin_e': 'vitE',
+      'water': 'water',
+    };
+
+    for (final entry in mapping.entries) {
+      final value = nutritionalInfo[entry.key];
+      if (value is num && value > 0) {
+        // Don't overwrite if already set (e.g. calories vs totalKCal)
+        result.putIfAbsent(entry.value, () => value.toDouble());
+      }
+    }
+
+    // Duplicate fat subtypes
+    if (result.containsKey('saturated') && !result.containsKey('sumSat')) {
+      result['sumSat'] = result['saturated']!;
+    }
+    if (result.containsKey('monounsaturated') &&
+        !result.containsKey('sumMonoUnsat')) {
+      result['sumMonoUnsat'] = result['monounsaturated']!;
+    }
+    if (result.containsKey('polyunsaturated') &&
+        !result.containsKey('sumPolyUnsat')) {
+      result['sumPolyUnsat'] = result['polyunsaturated']!;
+    }
+
+    return result;
+  }
+
   /// Parse OFF serving_size string (e.g. "52 g", "0.333 PACKAGE (52 g)")
   /// into grams. Returns null if unparseable.
   static double? parseServingGrams(String? servingSize) {

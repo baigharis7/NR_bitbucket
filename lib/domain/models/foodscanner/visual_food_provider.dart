@@ -18,9 +18,17 @@ class VisualFoodResult {
   final double? estimatedGrams;
   final double? estimatedKcal;
 
+  /// Detection confidence from the provider (0.0–1.0).
+  final double? confidence;
+
+  /// LogMeal dish ID — used to fetch ingredients for unmatched dishes.
+  final int? logmealDishId;
+
   VisualFoodResult({
     required this.name,
     this.estimatedGrams,
     this.estimatedKcal,
+    this.confidence,
+    this.logmealDishId,
   });
 }

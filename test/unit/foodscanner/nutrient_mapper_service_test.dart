@@ -180,6 +180,109 @@ void main() {
       });
     });
 
+    group('mapFromLogMeal', () {
+      test('maps basic macros', () {
+        final nutritionalInfo = {
+          'calories': 250.0,
+          'protein': 12.0,
+          'total_carbs': 30.0,
+          'total_fat': 10.0,
+          'fiber': 3.0,
+          'sugar': 5.0,
+        };
+
+        final result = NutrientMapperService.mapFromLogMeal(nutritionalInfo);
+
+        expect(result['energyKcal'], 250.0);
+        expect(result['proteinLabel'], 12.0);
+        expect(result['carbsAvailable'], 30.0);
+        expect(result['fatTotal'], 10.0);
+        expect(result['fiber'], 3.0);
+        expect(result['sugarsTotal'], 5.0);
+      });
+
+      test('maps vitamins and minerals', () {
+        final nutritionalInfo = {
+          'vitamin_a': 0.5,
+          'vitamin_c': 30.0,
+          'calcium': 120.0,
+          'iron': 2.5,
+          'sodium': 0.4,
+          'potassium': 300.0,
+        };
+
+        final result = NutrientMapperService.mapFromLogMeal(nutritionalInfo);
+
+        expect(result['vitA'], 0.5);
+        expect(result['vitC'], 30.0);
+        expect(result['calcium'], 120.0);
+        expect(result['iron'], 2.5);
+        expect(result['sodium'], 0.4);
+        expect(result['potassium'], 300.0);
+      });
+
+      test('prefers first key when multiple map to same field', () {
+        // 'calories' and 'totalKCal' both map to 'energyKcal'
+        final nutritionalInfo = {
+          'calories': 200.0,
+          'totalKCal': 250.0,
+        };
+
+        final result = NutrientMapperService.mapFromLogMeal(nutritionalInfo);
+
+        // putIfAbsent means first key wins
+        expect(result['energyKcal'], 200.0);
+      });
+
+      test('duplicates fat subtypes into sum fields', () {
+        final nutritionalInfo = {
+          'saturated_fat': 5.0,
+          'monounsaturated_fat': 3.0,
+          'polyunsaturated_fat': 2.0,
+        };
+
+        final result = NutrientMapperService.mapFromLogMeal(nutritionalInfo);
+
+        expect(result['saturated'], 5.0);
+        expect(result['sumSat'], 5.0);
+        expect(result['monounsaturated'], 3.0);
+        expect(result['sumMonoUnsat'], 3.0);
+        expect(result['polyunsaturated'], 2.0);
+        expect(result['sumPolyUnsat'], 2.0);
+      });
+
+      test('ignores zero and negative values', () {
+        final nutritionalInfo = {
+          'calories': 0,
+          'protein': -1.0,
+          'fat': 5.0,
+        };
+
+        final result = NutrientMapperService.mapFromLogMeal(nutritionalInfo);
+
+        expect(result.containsKey('energyKcal'), false);
+        expect(result.containsKey('proteinLabel'), false);
+        expect(result['fatTotal'], 5.0);
+      });
+
+      test('handles integer values', () {
+        final nutritionalInfo = {
+          'calories': 250,
+          'protein': 12,
+        };
+
+        final result = NutrientMapperService.mapFromLogMeal(nutritionalInfo);
+
+        expect(result['energyKcal'], 250.0);
+        expect(result['proteinLabel'], 12.0);
+      });
+
+      test('returns empty map for empty input', () {
+        final result = NutrientMapperService.mapFromLogMeal({});
+        expect(result, isEmpty);
+      });
+    });
+
     group('parseServingGrams', () {
       test('parses plain grams', () {
         expect(NutrientMapperService.parseServingGrams('52 g'), 52.0);

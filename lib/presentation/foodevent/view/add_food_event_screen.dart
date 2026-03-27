@@ -27,6 +27,8 @@ import '../../../domain/models/favorites/food/food_favorite.dart';
 import '../../../domain/models/favorites/food/meal_time.dart';
 import '../../../domain/models/foodevents/food_arguments_model.dart';
 import '../../../domain/models/foodroutine/food_routine_event.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodscanner/scanner_result.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/view/food_scanner_screen.dart';
 import '../../../infrastructure/errors/error_resolver.dart';
@@ -192,18 +194,53 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                         if (foodList != null) {
                                           scannerBloc.initializeMatcher(foodList);
                                         }
-                                        final result = await Navigator.push<List<FoodInFavorite>>(
+                                        final unitsFoodsMaster = state.unitsFoodsMaster;
+                                        if (unitsFoodsMaster != null) {
+                                          scannerBloc.initializeUnits(unitsFoodsMaster);
+                                        }
+                                        final result = await Navigator.push<ScannerResult>(
                                           context,
                                           MaterialPageRoute(
                                             builder: (_) => BlocProvider.value(
                                               value: scannerBloc,
-                                              child: FoodScannerScreen(mealType: state.foodEvent?.mealTime ?? 0),
+                                              child: FoodScannerScreen(
+                                                mealType: state.foodEvent?.mealTime ?? 0,
+                                              ),
                                             ),
                                           ),
                                         );
-                                        if (result != null && result.isNotEmpty) {
-                                          for (final food in result) {
-                                            bloc.add(AddFoodFromEventAction(foodInEvent: food));
+                                        if (result != null && result.foods.isNotEmpty) {
+                                          if (result.directLog) {
+                                            // Direct-log: save immediately and navigate to meal summary
+                                            final foodEventSimple = FoodEventSimple(
+                                              userId: '', // Overwritten by bloc handler
+                                              eventDate: state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch,
+                                              eventId: DateTime.now().millisecondsSinceEpoch,
+                                              mealType: state.foodEvent?.mealTime ?? 0,
+                                              foodName: null,
+                                              comment: null,
+                                              ingredients: result.foods.map((f) => FoodInEvent(
+                                                id: f.id,
+                                                qty: f.qty,
+                                                unit: f.unit,
+                                                cookingMethod: f.cookingMethod,
+                                                unitsEquivalences: f.unitsEquivalences,
+                                              )).toList(),
+                                              drinks: [],
+                                            );
+                                            bloc.add(FinishAddFoodEventAction(
+                                              foodEventSimple: foodEventSimple,
+                                              onFinish: () => _showConfirmationDialog(
+                                                message: AppLocalizations.of(context)!.food_event_successfully_saved,
+                                                context: context,
+                                                onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
+                                              ),
+                                            ));
+                                          } else {
+                                            // Edit flow: add foods to the event for editing
+                                            for (final food in result.foods) {
+                                              bloc.add(AddFoodFromEventAction(foodInEvent: food));
+                                            }
                                           }
                                         }
                                       },

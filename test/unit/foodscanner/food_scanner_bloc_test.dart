@@ -8,6 +8,7 @@ import 'package:nutrenaissance_flutter/domain/models/foodscanner/barcode_nutriti
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/scan_result.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/visual_food_provider.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/food_fuzzy_matcher.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_bloc.dart';
@@ -203,16 +204,22 @@ void main() {
               .having((s) => s.results.length, 'results.length', 2)
               .having((s) => s.results[0].scanResult.matchedFoodId, 'id0', 10)
               .having((s) => s.results[1].scanResult.matchedFoodId, 'id1', 20)
+              .having((s) => s.results[0].scanResult.source, 'source', 'logmeal')
+              .having((s) => s.results[0].scanResult.scannedNutrientsPer100g,
+                  'nutrients', isNull) // matched → use DB nutrients
               .having(
                   (s) => s.selectedIndices, 'selectedIndices', {0, 1}),
         ],
       );
 
       blocTest<FoodScannerBloc, FoodScannerState>(
-        'unmatched foods have null matchedFoodId',
+        'unmatched foods without dishId have null matchedFoodId',
         build: () => _buildBloc(masterFoods: []),
         act: (bloc) => bloc.add(OnVisualFoodDetectedAction(candidates: [
-          DetectedFoodCandidate(name: 'Unknown Dish'),
+          DetectedFoodCandidate(
+            name: 'Unknown Dish',
+            nutrientsPer100g: {'energyKcal': 200.0},
+          ),
         ])),
         expect: () => [
           isA<FoodScannerState>(),
@@ -220,7 +227,33 @@ void main() {
               .having((s) => s.results.first.scanResult.matchedFoodId,
                   'matchedFoodId', isNull)
               .having((s) => s.results.first.scanResult.scannedName,
-                  'scannedName', 'Unknown Dish'),
+                  'scannedName', 'Unknown Dish')
+              .having((s) => s.results.first.scanResult.scannedNutrientsPer100g,
+                  'nutrients', {'energyKcal': 200.0}),
+        ],
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'matched foods use DB nutrients (null scannedNutrientsPer100g)',
+        build: () => _buildBloc(
+          masterFoods: [_food(5, 'Apple')],
+        ),
+        act: (bloc) => bloc.add(OnVisualFoodDetectedAction(candidates: [
+          DetectedFoodCandidate(
+            name: 'Apple',
+            estimatedGrams: 150,
+            estimatedKcal: 78,
+          ),
+        ])),
+        expect: () => [
+          isA<FoodScannerState>(),
+          isA<FoodScannerState>()
+              .having((s) => s.results.first.scanResult.matchedFoodId,
+                  'matchedFoodId', 5)
+              .having((s) => s.results.first.scanResult.scannedNutrientsPer100g,
+                  'nutrients', isNull)
+              .having((s) => s.results.first.scanResult.estimatedGrams,
+                  'estimatedGrams', 150),
         ],
       );
     });
@@ -537,6 +570,21 @@ void main() {
         final result = bloc.fuzzyMatcher.findBestMatch('Orange juice');
         expect(result, isNotNull);
         expect(result!.food.id, 5);
+      });
+    });
+
+    // -----------------------------------------------------------------------
+    // initializeUnits
+    // -----------------------------------------------------------------------
+
+    group('initializeUnits', () {
+      test('stores unitsFoodsMaster for later use', () {
+        final bloc = _buildBloc();
+        final units = UnitsFoodsMaster(unitsFoodsMaster: [
+          UnitFoodMaster(id: 1, units: '5,75|6,150'),
+        ]);
+        // Should not throw
+        bloc.initializeUnits(units);
       });
     });
   });

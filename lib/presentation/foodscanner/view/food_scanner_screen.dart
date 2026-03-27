@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/scan_result.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodscanner/scanner_result.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_bloc.dart';
@@ -16,10 +18,11 @@ import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanne
 ///
 /// Uses the device camera for:
 /// - **Barcode scanning**: ML Kit detects barcodes in real-time from camera frames
-/// - **Visual food recognition**: User taps capture → photo sent to Claude Vision API
+/// - **Visual food recognition**: User taps capture → photo sent to LogMeal API
 ///
-/// Returns a [List<FoodInFavorite>] via Navigator.pop when the user
-/// confirms food selection (either via "Log selected" or after editing).
+/// Returns a [ScannerResult] via Navigator.pop when the user confirms food
+/// selection. [ScannerResult.directLog] distinguishes "Log selected" (save
+/// immediately) from "Edit" (open AddFoodEventScreen for editing).
 class FoodScannerScreen extends StatefulWidget {
   final int mealType;
 
@@ -35,6 +38,9 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   bool _isCameraInitialized = false;
   bool _isCapturing = false;
   bool _isOffline = false;
+
+  /// Frozen image bytes shown while scanning is in progress.
+  Uint8List? _capturedImageBytes;
 
   // ML Kit barcode scanner
   final BarcodeScanner _barcodeScanner = BarcodeScanner();
@@ -208,6 +214,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
       final bytes = await xFile.readAsBytes();
 
       if (mounted) {
+        setState(() => _capturedImageBytes = bytes);
         context
             .read<FoodScannerBloc>()
             .add(CapturePhotoAction(imageBytes: bytes));
@@ -225,6 +232,10 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
       listener: (context, state) {
         if (state.editingIndex != null) {
           _navigateToEditFood(context, state);
+        }
+        // Clear frozen image when results arrive or on error
+        if (!state.isProcessing && _capturedImageBytes != null) {
+          setState(() => _capturedImageBytes = null);
         }
         // Resume barcode scanning after reset or when results are cleared
         if (!state.hasResults &&
@@ -278,6 +289,16 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   }
 
   Widget _buildCameraPreview() {
+    // Show frozen captured image while scanning
+    if (_capturedImageBytes != null) {
+      return SizedBox.expand(
+        child: Image.memory(
+          _capturedImageBytes!,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
     if (!_isCameraInitialized || _cameraController == null) {
       return Container(
         color: Colors.black87,
@@ -287,13 +308,29 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
       );
     }
 
-    return SizedBox.expand(
-      child: FittedBox(
-        fit: BoxFit.cover,
-        child: SizedBox(
-          width: _cameraController!.value.previewSize!.height,
-          height: _cameraController!.value.previewSize!.width,
-          child: CameraPreview(_cameraController!),
+    return GestureDetector(
+      onTapUp: (details) {
+        final renderBox = context.findRenderObject() as RenderBox;
+        final localPoint = renderBox.globalToLocal(details.globalPosition);
+        final size = renderBox.size;
+        final x = localPoint.dx / size.width;
+        final y = localPoint.dy / size.height;
+        final point = Offset(x.clamp(0.0, 1.0), y.clamp(0.0, 1.0));
+        try {
+          _cameraController!.setFocusPoint(point);
+          _cameraController!.setExposurePoint(point);
+        } catch (_) {
+          // Some devices don't support focus/exposure point
+        }
+      },
+      child: SizedBox.expand(
+        child: FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: _cameraController!.value.previewSize!.height,
+            height: _cameraController!.value.previewSize!.width,
+            child: CameraPreview(_cameraController!),
+          ),
         ),
       ),
     );
@@ -315,13 +352,30 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   }
 
   Widget _buildViewfinder() {
-    return Center(
-      child: Container(
-        width: 260,
-        height: 260,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.white54, width: 2),
-          borderRadius: BorderRadius.circular(16),
+    final padding = MediaQuery.of(context).padding;
+    // Close button: top + 8 + 36px. Capture button: bottom + 40 + 72px.
+    final topEdge = padding.top + 8 + 36;
+    final bottomEdge = padding.bottom + 40 + 72;
+    // Equal gap from close button and capture button
+    const gap = 20.0;
+    final top = topEdge + gap;
+    final bottom = bottomEdge + gap;
+    const horizontalInset = 24.0;
+    const cornerLen = 32.0;
+    const strokeWidth = 3.0;
+    const color = Colors.white70;
+
+    return Positioned(
+      top: top,
+      bottom: bottom,
+      left: horizontalInset,
+      right: horizontalInset,
+      child: CustomPaint(
+        painter: _CornerBracketPainter(
+          color: color,
+          strokeWidth: strokeWidth,
+          cornerLength: cornerLen,
+          radius: 12,
         ),
       ),
     );
@@ -335,7 +389,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
           CircularProgressIndicator(color: AppColors.mountainMeadow),
           SizedBox(height: 16),
           Text(
-            'Scanning...',
+            'Scanning... please wait',
             style: TextStyle(color: Colors.white, fontSize: 16),
           ),
         ],
@@ -546,12 +600,17 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
     final displayName = result.isMatched
         ? result.matchedNameEn ?? result.scannedName
         : result.scannedName;
-    final kcalText = result.estimatedKcal != null
-        ? 'Energy: ${result.estimatedKcal!.round()} kcal.'
-        : '';
-    final amountText = result.estimatedGrams != null
-        ? ' - Amount: ${result.estimatedGrams!.round()} gr.'
-        : '';
+    final subtitleParts = <String>[];
+    if (result.estimatedGrams != null) {
+      subtitleParts.add('~${result.estimatedGrams!.round()} g');
+    }
+    if (result.estimatedKcal != null) {
+      subtitleParts.add('~${result.estimatedKcal!.round()} kcal');
+    }
+    if (result.isMatched) {
+      subtitleParts.add('Matched');
+    }
+    final subtitleText = subtitleParts.join(' · ');
 
     return GestureDetector(
       onTap: onToggle,
@@ -582,9 +641,9 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  if (kcalText.isNotEmpty || amountText.isNotEmpty)
+                  if (subtitleText.isNotEmpty)
                     Text(
-                      '$kcalText$amountText',
+                      subtitleText,
                       style: const TextStyle(
                         color: AppColors.white70Percent,
                         fontSize: 12,
@@ -677,7 +736,10 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
       final result = state.results[index].scanResult;
       selectedFoods.add(_scanResultToFoodInFavorite(result));
     }
-    Navigator.pop(context, selectedFoods);
+    Navigator.pop(
+      context,
+      ScannerResult(foods: selectedFoods, directLog: true),
+    );
   }
 
   void _navigateToEditFood(BuildContext context, FoodScannerState state) {
@@ -685,10 +747,10 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
     final result = state.results[editIndex].scanResult;
     final food = _scanResultToFoodInFavorite(result);
 
-    // Navigate to AddFoodEventScreen with this food pre-loaded.
-    // The route name and arguments depend on the existing navigation setup.
-    // For now, we pop with a single food marked for editing.
-    Navigator.pop(context, [food]);
+    Navigator.pop(
+      context,
+      ScannerResult(foods: [food], directLog: false),
+    );
   }
 
   FoodInFavorite _scanResultToFoodInFavorite(ScanResult result) {
@@ -701,20 +763,97 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
       nameEn = result.matchedNameEn;
       nameEs = result.matchedNameEs;
     } else {
-      // For unmatched foods, the negative ID was assigned when caching.
-      // Look it up from the barcode cache or assign a temporary one.
-      foodId = -1; // TODO: resolve from ScannedFoodRepository cache
+      foodId = -1;
       nameEn = result.scannedName;
       nameEs = result.scannedName;
     }
+
+    // LogMeal returns grams — use gram unit (-2) directly
+    final qty = (result.estimatedGrams ?? 100).round();
 
     return FoodInFavorite(
       id: foodId,
       name_en: nameEn,
       name_es: nameEs,
-      qty: (result.estimatedGrams ?? 100).round(),
-      unit: 0, // grams (unit ID 0 typically)
-      cookingMethod: 0, // no cooking method
+      qty: qty,
+      unit: -2, // grams
+      cookingMethod: 0,
     );
   }
+}
+
+/// Draws four corner brackets (L-shapes) around a rectangle.
+class _CornerBracketPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double cornerLength;
+  final double radius;
+
+  _CornerBracketPainter({
+    required this.color,
+    required this.strokeWidth,
+    required this.cornerLength,
+    required this.radius,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final w = size.width;
+    final h = size.height;
+    final c = cornerLength;
+    final r = radius;
+
+    // Top-left
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, c)
+        ..lineTo(0, r)
+        ..quadraticBezierTo(0, 0, r, 0)
+        ..lineTo(c, 0),
+      paint,
+    );
+
+    // Top-right
+    canvas.drawPath(
+      Path()
+        ..moveTo(w - c, 0)
+        ..lineTo(w - r, 0)
+        ..quadraticBezierTo(w, 0, w, r)
+        ..lineTo(w, c),
+      paint,
+    );
+
+    // Bottom-left
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, h - c)
+        ..lineTo(0, h - r)
+        ..quadraticBezierTo(0, h, r, h)
+        ..lineTo(c, h),
+      paint,
+    );
+
+    // Bottom-right
+    canvas.drawPath(
+      Path()
+        ..moveTo(w - c, h)
+        ..lineTo(w - r, h)
+        ..quadraticBezierTo(w, h, w, h - r)
+        ..lineTo(w, h - c),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _CornerBracketPainter old) =>
+      color != old.color ||
+      strokeWidth != old.strokeWidth ||
+      cornerLength != old.cornerLength ||
+      radius != old.radius;
 }

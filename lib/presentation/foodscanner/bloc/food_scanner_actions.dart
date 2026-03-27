@@ -54,7 +54,13 @@ class DetectedFoodCandidate {
   final double? estimatedGrams;
   final double? estimatedKcal;
 
-  /// Per-100g nutrient map from Passio (already mapped to our Params keys).
+  /// Detection confidence from the provider (0.0–1.0).
+  final double? confidence;
+
+  /// LogMeal dish ID — used to fetch ingredients for unmatched dishes.
+  final int? logmealDishId;
+
+  /// Per-100g nutrient map (already mapped to our Params keys).
   final Map<String, double>? nutrientsPer100g;
 
   DetectedFoodCandidate({
@@ -62,6 +68,8 @@ class DetectedFoodCandidate {
     this.passioFoodId,
     this.estimatedGrams,
     this.estimatedKcal,
+    this.confidence,
+    this.logmealDishId,
     this.nutrientsPer100g,
   });
 }

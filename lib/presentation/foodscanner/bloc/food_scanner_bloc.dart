@@ -7,11 +7,13 @@ import 'package:nutrenaissance_flutter/data/api/foodscanner/logmeal_provider.dar
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/visual_food_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_master.dart';
 import 'package:nutrenaissance_flutter/data/local/models/scannedfoods/scanned_food_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/scannedfoods/scanned_food_repository.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/barcode_nutrition_provider.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/scan_result.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/food_fuzzy_matcher.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/nutrient_mapper_service.dart';
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_state.dart';
@@ -22,12 +24,18 @@ class FoodScannerBloc
   final ScannedFoodRepository scannedFoodRepository;
   final VisualFoodProvider? visualFoodProvider;
   FoodFuzzyMatcher? _fuzzyMatcher;
+  UnitsFoodsMaster? _unitsFoodsMaster;
 
   /// Provide the master food list so the fuzzy matcher can be initialized.
   /// Call this when opening the scanner screen (master files should be loaded
   /// by then).
   void initializeMatcher(List<FoodItemMaster> masterFoods) {
     _fuzzyMatcher = FoodFuzzyMatcher(masterFoods);
+  }
+
+  /// Provide the units-foods master data for smart unit matching.
+  void initializeUnits(UnitsFoodsMaster unitsFoodsMaster) {
+    _unitsFoodsMaster = unitsFoodsMaster;
   }
 
   FoodFuzzyMatcher get fuzzyMatcher {
@@ -65,26 +73,82 @@ class FoodScannerBloc
 
     final results = <ScanResultEntry>[];
 
+    // Collect unmatched candidates that need ingredient breakdown
+    final unmatchedWithDishId = <int, DetectedFoodCandidate>{};
+
     for (final candidate in action.candidates) {
       final match = fuzzyMatcher.findBestMatch(candidate.name);
 
-      final scanResult = ScanResult(
-        scannedName: candidate.name,
-        source: 'passio',
-        detectionMethod: 'visual',
-        matchedFoodId: match?.food.id,
-        matchedNameEn: match?.food.en,
-        matchedNameEs: match?.food.es,
-        matchedGroup: match?.food.group,
-        matchScore: match?.score,
-        scannedNutrientsPer100g:
-            match == null ? candidate.nutrientsPer100g : null,
-        passioFoodId: candidate.passioFoodId,
-        estimatedGrams: candidate.estimatedGrams,
-        estimatedKcal: candidate.estimatedKcal,
-      );
+      if (match != null) {
+        // Matched in our DB — use our nutrients, LogMeal's gram estimate
+        debugPrint('[FoodScanner] Matched "${candidate.name}" → '
+            '${match.food.en} (id=${match.food.id}, score=${match.score})');
 
-      results.add(ScanResultEntry(scanResult: scanResult, isSelected: true));
+        results.add(ScanResultEntry(
+          scanResult: ScanResult(
+            scannedName: candidate.name,
+            source: 'logmeal',
+            detectionMethod: 'visual',
+            matchedFoodId: match.food.id,
+            matchedNameEn: match.food.en,
+            matchedNameEs: match.food.es,
+            matchedGroup: match.food.group,
+            matchScore: match.score,
+            scannedNutrientsPer100g: null, // Use our DB nutrients
+            estimatedGrams: candidate.estimatedGrams,
+            estimatedKcal: candidate.estimatedKcal,
+          ),
+          isSelected: true,
+        ));
+      } else if (candidate.logmealDishId != null) {
+        // Not matched — queue for ingredient breakdown
+        unmatchedWithDishId[candidate.logmealDishId!] = candidate;
+        debugPrint('[FoodScanner] Unmatched "${candidate.name}" — '
+            'will try ingredient breakdown (dishId=${candidate.logmealDishId})');
+      } else {
+        // Not matched, no dish ID — use provided nutrients directly
+        debugPrint('[FoodScanner] Unmatched "${candidate.name}" — '
+            'no dishId, using provided nutrients');
+        results.add(ScanResultEntry(
+          scanResult: ScanResult(
+            scannedName: candidate.name,
+            source: 'logmeal',
+            detectionMethod: 'visual',
+            scannedNutrientsPer100g: candidate.nutrientsPer100g,
+            estimatedGrams: candidate.estimatedGrams,
+            estimatedKcal: candidate.estimatedKcal,
+          ),
+          isSelected: true,
+        ));
+      }
+    }
+
+    // --- Cascading ingredient resolution for unmatched dishes ---
+    if (unmatchedWithDishId.isNotEmpty &&
+        visualFoodProvider is LogMealProvider) {
+      final logmeal = visualFoodProvider as LogMealProvider;
+      final imageId = logmeal.lastImageId;
+
+      if (imageId != null) {
+        await _resolveUnmatchedDishes(
+          logmeal, imageId, unmatchedWithDishId, results,
+        );
+      } else {
+        // No imageId — fall back to adding unmatched dishes with no nutrients
+        for (final candidate in unmatchedWithDishId.values) {
+          results.add(ScanResultEntry(
+            scanResult: ScanResult(
+              scannedName: candidate.name,
+              source: 'logmeal',
+              detectionMethod: 'visual',
+              scannedNutrientsPer100g: candidate.nutrientsPer100g,
+              estimatedGrams: candidate.estimatedGrams,
+              estimatedKcal: candidate.estimatedKcal,
+            ),
+            isSelected: true,
+          ));
+        }
+      }
     }
 
     emit(state.copyWith(
@@ -94,6 +158,145 @@ class FoodScannerBloc
         List.generate(results.length, (i) => i),
       ),
     ));
+  }
+
+  /// For unmatched dishes: fetch ingredients from LogMeal, fuzzy-match each
+  /// ingredient against our DB, and only fetch LogMeal nutrition for truly
+  /// unmatched ingredients.
+  Future<void> _resolveUnmatchedDishes(
+    LogMealProvider logmeal,
+    int imageId,
+    Map<int, DetectedFoodCandidate> unmatchedDishes,
+    List<ScanResultEntry> results,
+  ) async {
+    try {
+      final ingredients = await logmeal.getIngredients(imageId);
+
+      if (ingredients.isEmpty) {
+        debugPrint('[FoodScanner] No ingredients returned — '
+            'fetching LogMeal nutrition for unmatched dishes');
+        // Fall back to fetching nutrition for the whole image
+        await _addUnmatchedWithLogMealNutrition(
+          logmeal, imageId, unmatchedDishes.values.toList(), results,
+        );
+        return;
+      }
+
+      debugPrint('[FoodScanner] Got ${ingredients.length} ingredients');
+
+      // Try to match each ingredient against our DB
+      bool hasUnmatchedIngredients = false;
+
+      for (final ingredient in ingredients) {
+        final name = ingredient['name'] as String? ?? '';
+        if (name.isEmpty) continue;
+
+        final quantity = (ingredient['quantity'] as num?)?.toDouble();
+        final match = fuzzyMatcher.findBestMatch(name);
+
+        if (match != null) {
+          debugPrint('[FoodScanner] Ingredient "$name" matched → '
+              '${match.food.en} (id=${match.food.id})');
+          results.add(ScanResultEntry(
+            scanResult: ScanResult(
+              scannedName: name,
+              source: 'logmeal',
+              detectionMethod: 'visual',
+              matchedFoodId: match.food.id,
+              matchedNameEn: match.food.en,
+              matchedNameEs: match.food.es,
+              matchedGroup: match.food.group,
+              matchScore: match.score,
+              scannedNutrientsPer100g: null,
+              estimatedGrams: quantity,
+            ),
+            isSelected: true,
+          ));
+        } else {
+          hasUnmatchedIngredients = true;
+          debugPrint('[FoodScanner] Ingredient "$name" unmatched — '
+              'will use LogMeal nutrition');
+        }
+      }
+
+      // For unmatched ingredients, fetch LogMeal nutrition
+      if (hasUnmatchedIngredients) {
+        final nutritionResponse =
+            await logmeal.getNutritionForImage(imageId);
+        Map<String, double>? mappedNutrients;
+        if (nutritionResponse != null) {
+          mappedNutrients =
+              NutrientMapperService.mapFromLogMeal(nutritionResponse);
+        }
+
+        for (final ingredient in ingredients) {
+          final name = ingredient['name'] as String? ?? '';
+          if (name.isEmpty) continue;
+
+          final match = fuzzyMatcher.findBestMatch(name);
+          if (match != null) continue; // Already added above
+
+          final quantity = (ingredient['quantity'] as num?)?.toDouble();
+          results.add(ScanResultEntry(
+            scanResult: ScanResult(
+              scannedName: name,
+              source: 'logmeal',
+              detectionMethod: 'visual',
+              scannedNutrientsPer100g: mappedNutrients,
+              estimatedGrams: quantity,
+            ),
+            isSelected: true,
+          ));
+        }
+      }
+    } catch (e) {
+      debugPrint('[FoodScanner] Ingredient resolution error: $e');
+      // Fall back: add the original unmatched dishes with no nutrients
+      for (final candidate in unmatchedDishes.values) {
+        results.add(ScanResultEntry(
+          scanResult: ScanResult(
+            scannedName: candidate.name,
+            source: 'logmeal',
+            detectionMethod: 'visual',
+            scannedNutrientsPer100g: candidate.nutrientsPer100g,
+            estimatedGrams: candidate.estimatedGrams,
+            estimatedKcal: candidate.estimatedKcal,
+          ),
+          isSelected: true,
+        ));
+      }
+    }
+  }
+
+  /// Fetch LogMeal nutrition for the image and add unmatched dishes
+  /// with mapped nutrients.
+  Future<void> _addUnmatchedWithLogMealNutrition(
+    LogMealProvider logmeal,
+    int imageId,
+    List<DetectedFoodCandidate> candidates,
+    List<ScanResultEntry> results,
+  ) async {
+    final nutritionResponse = await logmeal.getNutritionForImage(imageId);
+    Map<String, double>? mappedNutrients;
+    if (nutritionResponse != null) {
+      mappedNutrients =
+          NutrientMapperService.mapFromLogMeal(nutritionResponse);
+    }
+
+    for (final candidate in candidates) {
+      results.add(ScanResultEntry(
+        scanResult: ScanResult(
+          scannedName: candidate.name,
+          source: 'logmeal',
+          detectionMethod: 'visual',
+          scannedNutrientsPer100g:
+              mappedNutrients ?? candidate.nutrientsPer100g,
+          estimatedGrams: candidate.estimatedGrams,
+          estimatedKcal: candidate.estimatedKcal,
+        ),
+        isSelected: true,
+      ));
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -300,6 +503,8 @@ class FoodScannerBloc
                 name: r.name,
                 estimatedGrams: r.estimatedGrams,
                 estimatedKcal: r.estimatedKcal,
+                confidence: r.confidence,
+                logmealDishId: r.logmealDishId,
               ))
           .toList();
 
