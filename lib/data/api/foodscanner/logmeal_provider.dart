@@ -139,6 +139,41 @@ class LogMealProvider implements VisualFoodProvider {
       await _confirmDishes(imageId, dishIds);
     }
 
+    // Step 5: Fetch ingredient quantities for gram estimates
+    // The basic segmentation endpoint doesn't return portion sizes, so we
+    // call the ingredients endpoint which returns standard portion weights.
+    final needsGrams = deduped.any((r) => r.estimatedGrams == null);
+    if (needsGrams) {
+      final ingredients = await getIngredients(imageId);
+      if (ingredients.isNotEmpty) {
+        // Sum total ingredient grams for the whole image
+        double totalGrams = 0;
+        for (final ing in ingredients) {
+          final qty = (ing['quantity'] as num?)?.toDouble()
+              ?? (ing['weight'] as num?)?.toDouble();
+          if (qty != null && qty > 0) totalGrams += qty;
+        }
+
+        debugPrint('[LogMeal] Ingredients total: ${totalGrams}g from ${ingredients.length} ingredients');
+        CrashlyticsService.instance.log(
+          'LogMeal ingredients: ${ingredients.length} items, total ${totalGrams}g',
+        );
+
+        if (totalGrams > 0) {
+          // Distribute proportionally across detected foods
+          final gramsPerFood = totalGrams / deduped.length;
+          final updated = deduped.map((r) => VisualFoodResult(
+            name: r.name,
+            estimatedGrams: r.estimatedGrams ?? gramsPerFood,
+            confidence: r.confidence,
+            logmealDishId: r.logmealDishId,
+            estimatedKcal: r.estimatedKcal,
+          )).toList();
+          return updated;
+        }
+      }
+    }
+
     return deduped;
   }
 
