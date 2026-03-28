@@ -61,6 +61,16 @@ class LogMealProvider implements VisualFoodProvider {
     }
 
     debugPrint('[LogMeal] Found ${segments.length} segments, imageId=$imageId');
+    debugPrint('[LogMeal] Response keys: ${segmentationResult.keys.toList()}');
+    CrashlyticsService.instance.log(
+      'LogMeal response keys: ${segmentationResult.keys.toList()}',
+    );
+    if (segments.isNotEmpty) {
+      debugPrint('[LogMeal] First segment: ${segments.first}');
+      CrashlyticsService.instance.log(
+        'LogMeal first segment keys: ${(segments.first as Map).keys.toList()}',
+      );
+    }
 
     // Step 2: Parse segments, extract confidence, filter, deduplicate
     final rawResults = <VisualFoodResult>[];
@@ -97,7 +107,15 @@ class LogMealProvider implements VisualFoodProvider {
         continue;
       }
 
-      final servingSize = itemMap['serving_size'] as num?;
+      // LogMeal may return portion info under different keys
+      debugPrint('[LogMeal] Segment keys for $name: ${itemMap.keys.toList()}');
+      CrashlyticsService.instance.log(
+        'LogMeal segment "$name" keys: ${itemMap.keys.toList()}',
+      );
+      final servingSize = (itemMap['serving_size'] as num?)
+          ?? (itemMap['quantity'] as num?)
+          ?? (itemMap['weight'] as num?)
+          ?? (itemMap['portion_size'] as num?);
 
       debugPrint('[LogMeal] Detected: $name (${servingSize}g, confidence=${prob?.toStringAsFixed(2)})');
       rawResults.add(VisualFoodResult(
@@ -178,7 +196,7 @@ class LogMealProvider implements VisualFoodProvider {
   Future<Map<String, dynamic>> _segmentImage(Uint8List imageBytes) async {
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse('$_baseUrl/v2/image/segmentation/complete'),
+      Uri.parse('$_baseUrl/v2/image/segmentation/complete/quantity'),
     );
     request.headers['Authorization'] = 'Bearer $_apiToken';
     request.files.add(http.MultipartFile.fromBytes(

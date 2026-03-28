@@ -29,6 +29,7 @@ import '../../../domain/models/foodevents/food_arguments_model.dart';
 import '../../../domain/models/foodroutine/food_routine_event.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/scanner_result.dart';
+import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/view/food_scanner_screen.dart';
 import '../../../infrastructure/errors/error_resolver.dart';
@@ -190,6 +191,8 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                       searchHintText: AppLocalizations.of(context)!.search_food_hint,
                                       onScanTap: () async {
                                         final scannerBloc = context.read<FoodScannerBloc>();
+                                        // Clear previous scan results before opening
+                                        scannerBloc.add(ResetScannerAction());
                                         final foodList = state.foodNames?.foodsAndDrinksNames?.foodNames;
                                         if (foodList != null) {
                                           scannerBloc.initializeMatcher(foodList);
