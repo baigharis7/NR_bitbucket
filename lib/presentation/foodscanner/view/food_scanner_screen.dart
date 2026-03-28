@@ -42,10 +42,8 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   /// Frozen image bytes shown while scanning is in progress.
   Uint8List? _capturedImageBytes;
 
-  // ML Kit barcode scanner
+  // ML Kit barcode scanner (used on captured photo, not live stream)
   final BarcodeScanner _barcodeScanner = BarcodeScanner();
-  bool _isProcessingFrame = false;
-  String? _lastScannedBarcode;
 
   @override
   void initState() {
@@ -102,97 +100,34 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
         camera,
         ResolutionPreset.medium,
         enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.yuv420,
       );
 
       await _cameraController!.initialize();
 
       if (!mounted) return;
       setState(() => _isCameraInitialized = true);
-
-      // Start barcode scanning from camera stream
-      _startBarcodeScanning();
     } catch (e) {
       debugPrint('Camera init error: $e');
     }
   }
 
-  void _startBarcodeScanning() {
-    _cameraController?.startImageStream((image) {
-      if (_isProcessingFrame) return;
-      _isProcessingFrame = true;
-      _processCameraFrame(image).whenComplete(() {
-        _isProcessingFrame = false;
-      });
-    });
-  }
-
-  Future<void> _processCameraFrame(CameraImage image) async {
+  /// Try barcode detection on the captured JPEG file.
+  /// Returns the barcode value if found, null otherwise.
+  Future<String?> _detectBarcodeInImage(String filePath) async {
     try {
-      final inputImage = _convertCameraImage(image);
-      if (inputImage == null) return;
-
+      final inputImage = InputImage.fromFilePath(filePath);
       final barcodes = await _barcodeScanner.processImage(inputImage);
-      if (barcodes.isEmpty || !mounted) return;
-
-      final barcode = barcodes.first;
-      final value = barcode.rawValue;
-      if (value == null || value == _lastScannedBarcode) return;
-
-      // Avoid re-scanning the same barcode
-      _lastScannedBarcode = value;
-
-      // Stop the image stream while processing
-      await _cameraController?.stopImageStream();
-
-      if (mounted) {
-        context
-            .read<FoodScannerBloc>()
-            .add(OnBarcodeDetectedAction(barcode: value));
+      if (barcodes.isNotEmpty) {
+        final value = barcodes.first.rawValue;
+        if (value != null && value.isNotEmpty) {
+          debugPrint('[Scanner] Barcode detected in photo: $value');
+          return value;
+        }
       }
-    } catch (_) {
-      // Silently handle ML Kit errors (e.g., bad frame)
+    } catch (e) {
+      debugPrint('[Scanner] Barcode detection error: $e');
     }
-  }
-
-  InputImage? _convertCameraImage(CameraImage image) {
-    final camera = _cameraController?.description;
-    if (camera == null) return null;
-
-    final sensorOrientation = camera.sensorOrientation;
-    InputImageRotation rotation;
-    switch (sensorOrientation) {
-      case 0:
-        rotation = InputImageRotation.rotation0deg;
-        break;
-      case 90:
-        rotation = InputImageRotation.rotation90deg;
-        break;
-      case 180:
-        rotation = InputImageRotation.rotation180deg;
-        break;
-      case 270:
-        rotation = InputImageRotation.rotation270deg;
-        break;
-      default:
-        rotation = InputImageRotation.rotation0deg;
-    }
-
-    // Concatenate all YUV420 planes into a single byte array
-    final allBytes = WriteBuffer();
-    for (final plane in image.planes) {
-      allBytes.putUint8List(plane.bytes);
-    }
-
-    return InputImage.fromBytes(
-      bytes: allBytes.done().buffer.asUint8List(),
-      metadata: InputImageMetadata(
-        size: Size(image.width.toDouble(), image.height.toDouble()),
-        rotation: rotation,
-        format: InputImageFormat.yuv420,
-        bytesPerRow: image.planes.first.bytesPerRow,
-      ),
-    );
+    return null;
   }
 
   Future<void> _capturePhoto() async {
@@ -205,19 +140,20 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
     setState(() => _isCapturing = true);
 
     try {
-      // Stop image stream before taking picture
-      if (_cameraController!.value.isStreamingImages) {
-        await _cameraController!.stopImageStream();
-      }
-
       final xFile = await _cameraController!.takePicture();
       final bytes = await xFile.readAsBytes();
 
-      if (mounted) {
-        setState(() => _capturedImageBytes = bytes);
-        context
-            .read<FoodScannerBloc>()
-            .add(CapturePhotoAction(imageBytes: bytes));
+      if (!mounted) return;
+      setState(() => _capturedImageBytes = bytes);
+
+      final bloc = context.read<FoodScannerBloc>();
+
+      // Try barcode detection first, then fall back to visual recognition
+      final barcode = await _detectBarcodeInImage(xFile.path);
+      if (barcode != null && mounted) {
+        bloc.add(OnBarcodeDetectedAction(barcode: barcode));
+      } else if (mounted) {
+        bloc.add(CapturePhotoAction(imageBytes: bytes));
       }
     } catch (e) {
       debugPrint('Capture error: $e');
@@ -236,15 +172,6 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
         // Clear frozen image when results arrive or on error
         if (!state.isProcessing && _capturedImageBytes != null) {
           setState(() => _capturedImageBytes = null);
-        }
-        // Resume barcode scanning after reset or when results are cleared
-        if (!state.hasResults &&
-            !state.isProcessing &&
-            _cameraController != null &&
-            _cameraController!.value.isInitialized &&
-            !_cameraController!.value.isStreamingImages) {
-          _lastScannedBarcode = null;
-          _startBarcodeScanning();
         }
       },
       builder: (context, state) {
