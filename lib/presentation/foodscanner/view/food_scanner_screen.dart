@@ -33,7 +33,7 @@ class FoodScannerScreen extends StatefulWidget {
 }
 
 class _FoodScannerScreenState extends State<FoodScannerScreen>
-    with WidgetsBindingObserver {
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   CameraController? _cameraController;
   bool _isCameraInitialized = false;
   bool _isCapturing = false;
@@ -45,10 +45,22 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   // ML Kit barcode scanner (used on captured photo, not live stream)
   final BarcodeScanner _barcodeScanner = BarcodeScanner();
 
+  // Focus ring
+  Offset? _focusPoint;
+  late AnimationController _focusAnimController;
+  late Animation<double> _focusAnimation;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _focusAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _focusAnimation = Tween<double>(begin: 1.4, end: 1.0).animate(
+      CurvedAnimation(parent: _focusAnimController, curve: Curves.easeOut),
+    );
     _checkConnectivity();
     _initializeCamera();
   }
@@ -56,6 +68,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _focusAnimController.dispose();
     _cameraController?.dispose();
     _barcodeScanner.close();
     super.dispose();
@@ -246,19 +259,50 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
         try {
           _cameraController!.setFocusPoint(point);
           _cameraController!.setExposurePoint(point);
+          _cameraController!.setFocusMode(FocusMode.auto);
         } catch (_) {
           // Some devices don't support focus/exposure point
         }
+        // Show focus ring at tap position
+        setState(() => _focusPoint = localPoint);
+        _focusAnimController.forward(from: 0);
+        Future.delayed(const Duration(milliseconds: 800), () {
+          if (mounted) setState(() => _focusPoint = null);
+        });
       },
-      child: SizedBox.expand(
-        child: FittedBox(
-          fit: BoxFit.cover,
-          child: SizedBox(
-            width: _cameraController!.value.previewSize!.height,
-            height: _cameraController!.value.previewSize!.width,
-            child: CameraPreview(_cameraController!),
+      child: Stack(
+        children: [
+          SizedBox.expand(
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: SizedBox(
+                width: _cameraController!.value.previewSize!.height,
+                height: _cameraController!.value.previewSize!.width,
+                child: CameraPreview(_cameraController!),
+              ),
+            ),
           ),
-        ),
+          if (_focusPoint != null)
+            Positioned(
+              left: _focusPoint!.dx - 30,
+              top: _focusPoint!.dy - 30,
+              child: AnimatedBuilder(
+                animation: _focusAnimation,
+                builder: (context, child) => Transform.scale(
+                  scale: _focusAnimation.value,
+                  child: child,
+                ),
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white, width: 1.5),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -201,12 +201,30 @@ class LogMealProvider implements VisualFoodProvider {
       }
 
       final json = jsonDecode(response.body) as Map<String, dynamic>;
-      debugPrint('[LogMeal] Ingredients keys: ${json.keys.toList()}');
+      debugPrint('[LogMeal] Ingredients response keys: ${json.keys.toList()}');
+      CrashlyticsService.instance.log(
+        'LogMeal ingredients response keys: ${json.keys.toList()}',
+      );
 
       // Response contains ingredient_list or similar
       final ingredients = json['ingredient_list'] as List<dynamic>?
           ?? json['ingredients'] as List<dynamic>?;
-      if (ingredients == null) return [];
+      if (ingredients == null) {
+        CrashlyticsService.instance.log(
+          'LogMeal ingredients: no ingredient_list or ingredients key. Full response: ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}',
+        );
+        return [];
+      }
+
+      // Log first ingredient's keys to understand the structure
+      if (ingredients.isNotEmpty) {
+        final first = ingredients.first as Map<String, dynamic>;
+        debugPrint('[LogMeal] First ingredient keys: ${first.keys.toList()}');
+        debugPrint('[LogMeal] First ingredient: $first');
+        CrashlyticsService.instance.log(
+          'LogMeal first ingredient: $first',
+        );
+      }
 
       return ingredients
           .map((e) => e as Map<String, dynamic>)
