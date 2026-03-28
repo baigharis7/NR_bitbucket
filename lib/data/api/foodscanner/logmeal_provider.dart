@@ -200,7 +200,7 @@ class LogMealProvider implements VisualFoodProvider {
     );
     request.headers['Authorization'] = 'Bearer $_apiToken';
     request.files.add(http.MultipartFile.fromBytes(
-      'image',
+      'sequence',
       imageBytes,
       filename: 'photo.jpg',
     ));
