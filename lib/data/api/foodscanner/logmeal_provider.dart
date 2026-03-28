@@ -196,11 +196,11 @@ class LogMealProvider implements VisualFoodProvider {
   Future<Map<String, dynamic>> _segmentImage(Uint8List imageBytes) async {
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse('$_baseUrl/v2/image/segmentation/complete/quantity'),
+      Uri.parse('$_baseUrl/v2/image/segmentation/complete'),
     );
     request.headers['Authorization'] = 'Bearer $_apiToken';
     request.files.add(http.MultipartFile.fromBytes(
-      'sequence',
+      'image',
       imageBytes,
       filename: 'photo.jpg',
     ));
