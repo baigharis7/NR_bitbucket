@@ -62,13 +62,13 @@ class LogMealProvider implements VisualFoodProvider {
 
     debugPrint('[LogMeal] Found ${segments.length} segments, imageId=$imageId');
     debugPrint('[LogMeal] Response keys: ${segmentationResult.keys.toList()}');
-    CrashlyticsService.instance.log(
-      'LogMeal response keys: ${segmentationResult.keys.toList()}',
-    );
     if (segments.isNotEmpty) {
       debugPrint('[LogMeal] First segment: ${segments.first}');
-      CrashlyticsService.instance.log(
-        'LogMeal first segment keys: ${(segments.first as Map).keys.toList()}',
+      // Non-fatal report so we can see the response structure in Crashlytics
+      CrashlyticsService.record(
+        Exception('LogMeal segment keys: ${(segments.first as Map).keys.toList()}'),
+        StackTrace.current,
+        context: {'logmeal_first_segment': segments.first.toString()},
       );
     }
 
@@ -109,9 +109,6 @@ class LogMealProvider implements VisualFoodProvider {
 
       // LogMeal may return portion info under different keys
       debugPrint('[LogMeal] Segment keys for $name: ${itemMap.keys.toList()}');
-      CrashlyticsService.instance.log(
-        'LogMeal segment "$name" keys: ${itemMap.keys.toList()}',
-      );
       final servingSize = (itemMap['serving_size'] as num?)
           ?? (itemMap['quantity'] as num?)
           ?? (itemMap['weight'] as num?)
@@ -155,9 +152,6 @@ class LogMealProvider implements VisualFoodProvider {
         }
 
         debugPrint('[LogMeal] Ingredients total: ${totalGrams}g from ${ingredients.length} ingredients');
-        CrashlyticsService.instance.log(
-          'LogMeal ingredients: ${ingredients.length} items, total ${totalGrams}g',
-        );
 
         if (totalGrams > 0) {
           // Distribute proportionally across detected foods
@@ -202,27 +196,32 @@ class LogMealProvider implements VisualFoodProvider {
 
       final json = jsonDecode(response.body) as Map<String, dynamic>;
       debugPrint('[LogMeal] Ingredients response keys: ${json.keys.toList()}');
-      CrashlyticsService.instance.log(
-        'LogMeal ingredients response keys: ${json.keys.toList()}',
-      );
 
       // Response contains ingredient_list or similar
       final ingredients = json['ingredient_list'] as List<dynamic>?
           ?? json['ingredients'] as List<dynamic>?;
       if (ingredients == null) {
-        CrashlyticsService.instance.log(
-          'LogMeal ingredients: no ingredient_list or ingredients key. Full response: ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}',
+        // Non-fatal so we can see the actual response structure
+        final body = response.body.length > 500
+            ? response.body.substring(0, 500)
+            : response.body;
+        CrashlyticsService.record(
+          Exception('LogMeal ingredients: no ingredient_list key'),
+          StackTrace.current,
+          context: {'logmeal_ingredients_response': body},
         );
         return [];
       }
 
-      // Log first ingredient's keys to understand the structure
+      // Log first ingredient to Crashlytics so we can see field names
       if (ingredients.isNotEmpty) {
         final first = ingredients.first as Map<String, dynamic>;
         debugPrint('[LogMeal] First ingredient keys: ${first.keys.toList()}');
         debugPrint('[LogMeal] First ingredient: $first');
-        CrashlyticsService.instance.log(
-          'LogMeal first ingredient: $first',
+        CrashlyticsService.record(
+          Exception('LogMeal ingredient structure: ${first.keys.toList()}'),
+          StackTrace.current,
+          context: {'logmeal_first_ingredient': first.toString()},
         );
       }
 
