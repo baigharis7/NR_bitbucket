@@ -34,17 +34,21 @@ class LogMealProvider implements VisualFoodProvider {
   })  : _apiToken = apiToken,
         _client = client ?? http.Client();
 
+  /// Log to both debugPrint and Crashlytics breadcrumbs.
+  void _log(String message) {
+    debugPrint('[LogMeal] $message');
+    CrashlyticsService.instance.log('LogMeal: $message');
+  }
+
   @override
   Future<List<VisualFoodResult>> identifyFoods(Uint8List imageBytes) async {
     // Step 1: Image segmentation
-    debugPrint('[LogMeal] Sending ${imageBytes.length} bytes for segmentation...');
+    _log('Segmenting image (${imageBytes.length} bytes)');
     final segmentationResult = await _segmentImage(imageBytes);
 
     final imageId = segmentationResult['imageId'] as int?;
     if (imageId == null) {
-      final msg = 'LogMeal: no imageId in response (keys: ${segmentationResult.keys.toList()})';
-      debugPrint('[LogMeal] $msg');
-      CrashlyticsService.instance.log(msg);
+      _log('No imageId in response (keys: ${segmentationResult.keys.toList()})');
       return [];
     }
     lastImageId = imageId;
@@ -54,26 +58,14 @@ class LogMealProvider implements VisualFoodProvider {
         ?? segmentationResult['recognition_results'] as List<dynamic>?;
 
     if (segments == null || segments.isEmpty) {
-      final msg = 'LogMeal: no food segments found (keys: ${segmentationResult.keys.toList()})';
-      debugPrint('[LogMeal] $msg');
-      CrashlyticsService.instance.log(msg);
+      _log('No food segments found (keys: ${segmentationResult.keys.toList()})');
       return [];
     }
 
-    debugPrint('[LogMeal] Found ${segments.length} segments, imageId=$imageId');
-    debugPrint('[LogMeal] Response keys: ${segmentationResult.keys.toList()}');
-    if (segments.isNotEmpty) {
-      debugPrint('[LogMeal] First segment: ${segments.first}');
-      // Non-fatal report so we can see the response structure in Crashlytics
-      CrashlyticsService.record(
-        Exception('LogMeal segment keys: ${(segments.first as Map).keys.toList()}'),
-        StackTrace.current,
-        context: {'logmeal_first_segment': segments.first.toString()},
-      );
-    }
+    _log('Found ${segments.length} segments, imageId=$imageId');
 
-    // Step 2: Parse segments, extract confidence, filter, deduplicate
-    final rawResults = <VisualFoodResult>[];
+    // Step 2: Parse segments, extract confidence, deduplicate
+    final allParsed = <VisualFoodResult>[];
 
     for (final item in segments) {
       final itemMap = item as Map<String, dynamic>;
@@ -101,21 +93,12 @@ class LogMealProvider implements VisualFoodProvider {
 
       if (name == null || name.isEmpty) continue;
 
-      // Filter by confidence
-      if (prob != null && prob < minConfidence) {
-        debugPrint('[LogMeal] Filtered: $name (confidence ${prob.toStringAsFixed(2)} < $minConfidence)');
-        continue;
-      }
-
-      // LogMeal may return portion info under different keys
-      debugPrint('[LogMeal] Segment keys for $name: ${itemMap.keys.toList()}');
       final servingSize = (itemMap['serving_size'] as num?)
           ?? (itemMap['quantity'] as num?)
           ?? (itemMap['weight'] as num?)
           ?? (itemMap['portion_size'] as num?);
 
-      debugPrint('[LogMeal] Detected: $name (${servingSize}g, confidence=${prob?.toStringAsFixed(2)})');
-      rawResults.add(VisualFoodResult(
+      allParsed.add(VisualFoodResult(
         name: name,
         estimatedGrams: servingSize?.toDouble(),
         confidence: prob,
@@ -123,9 +106,24 @@ class LogMealProvider implements VisualFoodProvider {
       ));
     }
 
+    if (allParsed.isEmpty) {
+      _log('WARNING: ${segments.length} segments but 0 parsed results');
+      return [];
+    }
+
+    // Soft confidence filter: prefer high-confidence results, but if ALL
+    // are below threshold, keep them anyway — never discard named foods.
+    final confident = allParsed.where((r) => (r.confidence ?? 1.0) >= minConfidence).toList();
+    final rawResults = confident.isNotEmpty ? confident : allParsed;
+    if (confident.isEmpty) {
+      _log('All ${allParsed.length} results below confidence $minConfidence — keeping best');
+    } else {
+      _log('${confident.length}/${allParsed.length} results above confidence $minConfidence');
+    }
+
     // Step 3: Deduplicate — keep highest-confidence entry per name
     final deduped = _deduplicateResults(rawResults);
-    debugPrint('[LogMeal] After filter+dedup: ${deduped.length} results (from ${segments.length} segments)');
+    _log('After dedup: ${deduped.length} results');
 
     // Step 4: Confirm dishes with LogMeal (improves accuracy over time)
     final dishIds = deduped
@@ -136,35 +134,65 @@ class LogMealProvider implements VisualFoodProvider {
       await _confirmDishes(imageId, dishIds);
     }
 
-    // Step 5: Fetch ingredient quantities for gram estimates
-    // The basic segmentation endpoint doesn't return portion sizes, so we
-    // call the ingredients endpoint which returns standard portion weights.
+    // Step 5: Estimate grams from ingredients endpoint
+    // The segmentation endpoint doesn't return portion sizes. The ingredients
+    // endpoint returns a "recipe" array with per-food weights.
     final needsGrams = deduped.any((r) => r.estimatedGrams == null);
+    _log('Needs grams: $needsGrams');
     if (needsGrams) {
       final ingredients = await getIngredients(imageId);
       if (ingredients.isNotEmpty) {
-        // Sum total ingredient grams for the whole image
-        double totalGrams = 0;
+        // Build name→weight map from recipe items
+        final weightByName = <String, double>{};
         for (final ing in ingredients) {
-          final qty = (ing['quantity'] as num?)?.toDouble()
-              ?? (ing['weight'] as num?)?.toDouble();
-          if (qty != null && qty > 0) totalGrams += qty;
+          final name = (ing['name'] as String?)?.toLowerCase().trim();
+          final weight = (ing['weight'] as num?)?.toDouble()
+              ?? (ing['quantity'] as num?)?.toDouble()
+              ?? (ing['measure'] is Map
+                  ? ((ing['measure'] as Map)['metric'] is Map
+                      ? ((ing['measure'] as Map)['metric']['quantity'] as num?)?.toDouble()
+                      : null)
+                  : null);
+          if (name != null && weight != null && weight > 0) {
+            weightByName[name] = weight;
+          }
         }
+        _log('Ingredient weights: $weightByName');
 
-        debugPrint('[LogMeal] Ingredients total: ${totalGrams}g from ${ingredients.length} ingredients');
+        if (weightByName.isNotEmpty) {
+          // Try to match each deduped food to its recipe weight by name
+          double totalWeight = weightByName.values.fold(0, (a, b) => a + b);
+          final fallbackGrams = totalWeight / deduped.length;
 
-        if (totalGrams > 0) {
-          // Distribute proportionally across detected foods
-          final gramsPerFood = totalGrams / deduped.length;
-          final updated = deduped.map((r) => VisualFoodResult(
-            name: r.name,
-            estimatedGrams: r.estimatedGrams ?? gramsPerFood,
-            confidence: r.confidence,
-            logmealDishId: r.logmealDishId,
-            estimatedKcal: r.estimatedKcal,
-          )).toList();
+          final updated = deduped.map((r) {
+            final key = r.name.toLowerCase().trim();
+            final matched = weightByName[key];
+            final grams = r.estimatedGrams ?? matched ?? fallbackGrams;
+            return VisualFoodResult(
+              name: r.name,
+              estimatedGrams: grams,
+              confidence: r.confidence,
+              logmealDishId: r.logmealDishId,
+              estimatedKcal: r.estimatedKcal,
+            );
+          }).toList();
           return updated;
         }
+      }
+
+      // Fallback: try nutrition endpoint for weight
+      final nutritionWeight = await _estimateGramsFromNutrition(imageId);
+      _log('Nutrition weight fallback: ${nutritionWeight}g');
+      if (nutritionWeight != null && nutritionWeight > 0) {
+        final gramsPerFood = nutritionWeight / deduped.length;
+        final updated = deduped.map((r) => VisualFoodResult(
+          name: r.name,
+          estimatedGrams: r.estimatedGrams ?? gramsPerFood,
+          confidence: r.confidence,
+          logmealDishId: r.logmealDishId,
+          estimatedKcal: r.estimatedKcal,
+        )).toList();
+        return updated;
       }
     }
 
@@ -188,48 +216,29 @@ class LogMealProvider implements VisualFoodProvider {
         body: jsonEncode({'imageId': imageId}),
       );
 
-      debugPrint('[LogMeal] Ingredients status: ${response.statusCode}');
+      _log('Ingredients status: ${response.statusCode}');
       if (response.statusCode != 200) {
-        debugPrint('[LogMeal] Ingredients error: ${response.body}');
+        _log('Ingredients error: ${response.body}');
         return [];
       }
 
       final json = jsonDecode(response.body) as Map<String, dynamic>;
-      debugPrint('[LogMeal] Ingredients response keys: ${json.keys.toList()}');
+      _log('Ingredients keys: ${json.keys.toList()}');
 
-      // Response contains ingredient_list or similar
-      final ingredients = json['ingredient_list'] as List<dynamic>?
+      // Response key varies: recipe, ingredient_list, or ingredients
+      final ingredients = json['recipe'] as List<dynamic>?
+          ?? json['ingredient_list'] as List<dynamic>?
           ?? json['ingredients'] as List<dynamic>?;
       if (ingredients == null) {
-        // Non-fatal so we can see the actual response structure
-        final body = response.body.length > 500
-            ? response.body.substring(0, 500)
-            : response.body;
-        CrashlyticsService.record(
-          Exception('LogMeal ingredients: no ingredient_list key'),
-          StackTrace.current,
-          context: {'logmeal_ingredients_response': body},
-        );
+        _log('No recipe/ingredient_list key (keys: ${json.keys.toList()})');
         return [];
-      }
-
-      // Log first ingredient to Crashlytics so we can see field names
-      if (ingredients.isNotEmpty) {
-        final first = ingredients.first as Map<String, dynamic>;
-        debugPrint('[LogMeal] First ingredient keys: ${first.keys.toList()}');
-        debugPrint('[LogMeal] First ingredient: $first');
-        CrashlyticsService.record(
-          Exception('LogMeal ingredient structure: ${first.keys.toList()}'),
-          StackTrace.current,
-          context: {'logmeal_first_ingredient': first.toString()},
-        );
       }
 
       return ingredients
           .map((e) => e as Map<String, dynamic>)
           .toList();
     } catch (e) {
-      debugPrint('[LogMeal] Ingredients fetch error: $e');
+      _log('Ingredients fetch error: $e');
       return [];
     }
   }
@@ -260,7 +269,7 @@ class LogMealProvider implements VisualFoodProvider {
     final streamedResponse = await _client.send(request);
     final response = await http.Response.fromStream(streamedResponse);
 
-    debugPrint('[LogMeal] Segmentation status: ${response.statusCode}');
+    _log('Segmentation status: ${response.statusCode}');
     if (response.statusCode != 200) {
       throw LogMealException(
         'Segmentation failed',
@@ -270,7 +279,7 @@ class LogMealProvider implements VisualFoodProvider {
     }
 
     final json = jsonDecode(response.body) as Map<String, dynamic>;
-    debugPrint('[LogMeal] Segmentation keys: ${json.keys.toList()}');
+    _log('Segmentation keys: ${json.keys.toList()}');
     return json;
   }
 
@@ -285,10 +294,57 @@ class LogMealProvider implements VisualFoodProvider {
         },
         body: jsonEncode({'imageId': imageId, 'dishes': dishIds}),
       );
-      debugPrint('[LogMeal] Dish confirmation status: ${response.statusCode}');
+      _log('Dish confirmation status: ${response.statusCode}');
     } catch (e) {
-      debugPrint('[LogMeal] Dish confirmation error: $e');
+      _log('Dish confirmation error: $e');
       // Non-critical — don't fail the scan if confirmation fails
+    }
+  }
+
+  /// Try to extract total weight from the nutrition endpoint response.
+  /// LogMeal nutrition responses may include serving_size, total_weight,
+  /// or per-dish weight fields.
+  Future<double?> _estimateGramsFromNutrition(int imageId) async {
+    try {
+      final nutrition = await _getNutritionalInfo(imageId);
+      if (nutrition == null) return null;
+
+      _log('Nutrition keys: ${nutrition.keys.toList()}');
+
+      // Try common weight fields
+      final weight = (nutrition['serving_size'] as num?)?.toDouble()
+          ?? (nutrition['total_weight'] as num?)?.toDouble()
+          ?? (nutrition['totalWeight'] as num?)?.toDouble()
+          ?? (nutrition['weight'] as num?)?.toDouble()
+          ?? (nutrition['serving_weight_grams'] as num?)?.toDouble()
+          ?? (nutrition['quantity'] as num?)?.toDouble();
+
+      if (weight != null && weight > 0) {
+        _log('Weight from nutrition: ${weight}g');
+        return weight;
+      }
+
+      // Check if there's a per-dish breakdown with weights
+      final dishes = nutrition['dishes'] as List<dynamic>?
+          ?? nutrition['foodItems'] as List<dynamic>?;
+      if (dishes != null && dishes.isNotEmpty) {
+        double total = 0;
+        for (final dish in dishes) {
+          if (dish is Map) {
+            final w = (dish['serving_size'] as num?)?.toDouble()
+                ?? (dish['weight'] as num?)?.toDouble()
+                ?? (dish['quantity'] as num?)?.toDouble();
+            if (w != null && w > 0) total += w;
+          }
+        }
+        if (total > 0) return total;
+      }
+
+      _log('No weight found in nutrition response');
+      return null;
+    } catch (e) {
+      _log('Gram estimation error: $e');
+      return null;
     }
   }
 
@@ -304,14 +360,14 @@ class LogMealProvider implements VisualFoodProvider {
         body: jsonEncode({'imageId': imageId}),
       );
 
-      debugPrint('[LogMeal] Nutrition status: ${response.statusCode}');
+      _log('Nutrition status: ${response.statusCode}');
       if (response.statusCode != 200) {
-        debugPrint('[LogMeal] Nutrition error: ${response.body}');
+        _log('Nutrition error: ${response.body}');
         return null;
       }
       return jsonDecode(response.body) as Map<String, dynamic>;
     } catch (e) {
-      debugPrint('[LogMeal] Nutrition fetch error: $e');
+      _log('Nutrition fetch error: $e');
       return null;
     }
   }

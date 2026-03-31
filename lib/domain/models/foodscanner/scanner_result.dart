@@ -10,5 +10,9 @@ class ScannerResult {
   /// edit flow (AddFoodEventScreen).
   final bool directLog;
 
-  ScannerResult({required this.foods, required this.directLog});
+  /// Auto-generated title for the food event.
+  /// Single food → food name; multiple foods → LogMeal dish name.
+  final String? title;
+
+  ScannerResult({required this.foods, required this.directLog, this.title});
 }

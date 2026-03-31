@@ -220,7 +220,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                               eventDate: state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch,
                                               eventId: DateTime.now().millisecondsSinceEpoch,
                                               mealType: state.foodEvent?.mealTime ?? 0,
-                                              foodName: null,
+                                              foodName: result.title,
                                               comment: null,
                                               ingredients: result.foods.map((f) => FoodInEvent(
                                                 id: f.id,
@@ -241,6 +241,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                             ));
                                           } else {
                                             // Edit flow: add foods to the event for editing
+                                            if (result.title != null && result.title!.isNotEmpty) {
+                                              bloc.add(AddFoodNameEventAction(foodName: result.title!));
+                                            }
                                             for (final food in result.foods) {
                                               bloc.add(AddFoodFromEventAction(foodInEvent: food));
                                             }

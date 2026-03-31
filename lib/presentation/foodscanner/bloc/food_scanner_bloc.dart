@@ -484,10 +484,13 @@ class FoodScannerBloc
     }
 
     emit(state.copyWith(isProcessing: true, errorMessage: () => null));
+    CrashlyticsService.instance.log('Scanner: capture photo (${action.imageBytes.length} bytes)');
 
     try {
       final results = await visualFoodProvider!
           .identifyFoods(Uint8List.fromList(action.imageBytes));
+
+      CrashlyticsService.instance.log('Scanner: identifyFoods returned ${results.length} results');
 
       if (results.isEmpty) {
         emit(state.copyWith(
@@ -508,9 +511,13 @@ class FoodScannerBloc
               ))
           .toList();
 
+      CrashlyticsService.instance.log(
+        'Scanner: ${candidates.map((c) => '${c.name}(${c.estimatedGrams}g)').join(', ')}',
+      );
+
       add(OnVisualFoodDetectedAction(candidates: candidates));
     } on LogMealException catch (e, stack) {
-      debugPrint('[FoodScanner] LogMeal error: $e');
+      CrashlyticsService.instance.log('Scanner: LogMeal error ${e.statusCode}');
       CrashlyticsService.record(e, stack, context: {
         'statusCode': e.statusCode.toString(),
         'responseBody': e.responseBody.length > 500
@@ -522,7 +529,7 @@ class FoodScannerBloc
         errorMessage: () => 'Scan failed (${e.statusCode}): ${e.responseBody}',
       ));
     } catch (e, stack) {
-      debugPrint('[FoodScanner] Unexpected error: $e');
+      CrashlyticsService.instance.log('Scanner: unexpected error: $e');
       CrashlyticsService.record(e, stack, context: {
         'source': 'food_scanner_capture',
       });

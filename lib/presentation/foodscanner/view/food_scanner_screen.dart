@@ -703,13 +703,19 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
 
   void _logSelectedFoods(BuildContext context, FoodScannerState state) {
     final selectedFoods = <FoodInFavorite>[];
+    final selectedResults = <ScanResult>[];
     for (final index in state.selectedIndices) {
       final result = state.results[index].scanResult;
       selectedFoods.add(_scanResultToFoodInFavorite(result));
+      selectedResults.add(result);
     }
     Navigator.pop(
       context,
-      ScannerResult(foods: selectedFoods, directLog: true),
+      ScannerResult(
+        foods: selectedFoods,
+        directLog: true,
+        title: _deriveTitle(selectedResults),
+      ),
     );
   }
 
@@ -720,8 +726,25 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
 
     Navigator.pop(
       context,
-      ScannerResult(foods: [food], directLog: false),
+      ScannerResult(
+        foods: [food],
+        directLog: false,
+        title: _deriveTitle([result]),
+      ),
     );
+  }
+
+  /// Derive a title for the food event from scan results.
+  /// Single food → matched DB name or scanned name.
+  /// Multiple foods → first scanned name (LogMeal dish name).
+  String _deriveTitle(List<ScanResult> results) {
+    if (results.isEmpty) return '';
+    if (results.length == 1) {
+      final r = results.first;
+      return r.matchedNameEn ?? r.scannedName;
+    }
+    // Multiple foods: use first result's scanned name as dish qualifier
+    return results.first.scannedName;
   }
 
   FoodInFavorite _scanResultToFoodInFavorite(ScanResult result) {

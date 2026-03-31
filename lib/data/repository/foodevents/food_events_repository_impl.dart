@@ -70,11 +70,12 @@ class FoodEventsRepositoryImpl extends FoodEventsRepository {
     return enrichedEvent;
   }
 
-  void _syncToBackend(UploadFoodEvent uploadFoodEvent) {
-    foodEventsApi.saveFoodEvent(uploadFoodEvent).catchError((error) {
+  Future<void> _syncToBackend(UploadFoodEvent uploadFoodEvent) async {
+    try {
+      await foodEventsApi.saveFoodEvent(uploadFoodEvent);
+    } catch (_) {
       syncQueue.enqueue('/food-event', uploadFoodEvent);
-      return <String, dynamic>{};
-    });
+    }
   }
 
   @override
@@ -116,9 +117,8 @@ class FoodEventsRepositoryImpl extends FoodEventsRepository {
 
   @override
   Future<bool> deleteFoodEvent(String userId, int eventDate) async {
-    foodEventsApi.deleteFoodEvent(userId, eventDate).catchError((error) {
+    foodEventsApi.deleteFoodEvent(userId, eventDate).then((_) {}).catchError((_) {
       syncQueue.enqueueDelete('/food-event', {'userId': userId, 'eventId': eventDate});
-      return <String, dynamic>{};
     });
     return true;
   }
