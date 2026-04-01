@@ -74,6 +74,27 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
     }
   }
 
+  /// Resolve detected cooking method names to IDs and apply them to foods.
+  void _applyCookingMethods(ScannerResult result, dynamic cookingMethodsInfoMaster) {
+    if (result.detectedCookingMethods.isEmpty) return;
+    final methods = cookingMethodsInfoMaster?.cookingMethodsInfo;
+    if (methods == null) return;
+
+    for (int i = 0; i < result.foods.length && i < result.detectedCookingMethods.length; i++) {
+      final detected = result.detectedCookingMethods[i];
+      if (detected == null) continue;
+
+      final detectedLower = detected.toLowerCase();
+      for (final method in methods) {
+        if (method.en?.toLowerCase() == detectedLower) {
+          result.foods[i].cookingMethod = method.id ?? 0;
+          result.foods[i].conversionFactor = Constants.CONVERSION_FACTOR_COOKED;
+          break;
+        }
+      }
+    }
+  }
+
   void _showConfirmationDialog({String? message, required BuildContext context, Function? onDismiss, bool showFavoriteTag = false, bool showRoutineTag = false, String? subtitle, String? hint}) {
     Future.delayed(const Duration(seconds: 2), () => Navigator.pop(context));
 
@@ -213,6 +234,9 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                           ),
                                         );
                                         if (result != null && result.foods.isNotEmpty) {
+                                          // Auto-apply detected cooking methods
+                                          _applyCookingMethods(result, state.cookingMethodsInfoMaster);
+
                                           if (result.directLog) {
                                             // Direct-log: save immediately and navigate to meal summary
                                             final foodEventSimple = FoodEventSimple(

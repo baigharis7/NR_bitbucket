@@ -14,5 +14,15 @@ class ScannerResult {
   /// Single food → food name; multiple foods → LogMeal dish name.
   final String? title;
 
-  ScannerResult({required this.foods, required this.directLog, this.title});
+  /// Detected cooking method names (e.g. "Grilled", "Fried") per food,
+  /// parallel to [foods]. Null entry means no cooking method detected.
+  /// The caller resolves these against CookingMethodsInfoMaster to get IDs.
+  final List<String?> detectedCookingMethods;
+
+  ScannerResult({
+    required this.foods,
+    required this.directLog,
+    this.title,
+    this.detectedCookingMethods = const [],
+  });
 }

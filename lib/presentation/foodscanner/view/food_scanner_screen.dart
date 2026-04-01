@@ -742,6 +742,9 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
         foods: selectedFoods,
         directLog: !needsEdit,
         title: _deriveTitle(selectedResults),
+        detectedCookingMethods: selectedResults
+            .map((r) => r.detectedCookingMethod)
+            .toList(),
       ),
     );
   }
@@ -757,6 +760,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
         foods: [food],
         directLog: false,
         title: _deriveTitle([result]),
+        detectedCookingMethods: [result.detectedCookingMethod],
       ),
     );
   }
