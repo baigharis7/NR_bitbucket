@@ -59,6 +59,9 @@ Thumbs.db
 .history
 .svn/
 
+# Claude Code
+.claude/
+
 # Visual Studio Code related
 .vscode/
 
