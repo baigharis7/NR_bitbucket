@@ -139,6 +139,74 @@ void main() {
       });
     });
 
+    // -----------------------------------------------------------------------
+    // extractCookingMethod
+    // -----------------------------------------------------------------------
+
+    group('extractCookingMethod', () {
+      test('extracts single-word cooking method', () {
+        final (cleaned, method) =
+            FoodFuzzyMatcher.extractCookingMethod('Grilled chicken breast');
+        expect(cleaned, 'chicken breast');
+        expect(method, 'Grilled');
+      });
+
+      test('extracts multi-word cooking method', () {
+        final (cleaned, method) =
+            FoodFuzzyMatcher.extractCookingMethod('Deep fried shrimp');
+        expect(cleaned, 'shrimp');
+        expect(method, 'Fried');
+      });
+
+      test('extracts cooking method at end of name', () {
+        final (cleaned, method) =
+            FoodFuzzyMatcher.extractCookingMethod('Salmon steamed');
+        expect(cleaned, 'salmon');
+        expect(method, 'Steamed');
+      });
+
+      test('extracts breaded/breadcrumbs', () {
+        final (cleaned, method) =
+            FoodFuzzyMatcher.extractCookingMethod('Breaded fish fillet');
+        expect(cleaned, 'fish fillet');
+        expect(method, 'Breaded');
+
+        final (cleaned2, method2) =
+            FoodFuzzyMatcher.extractCookingMethod('Fish with breadcrumbs');
+        expect(cleaned2, 'fish with');
+        expect(method2, 'Breaded');
+      });
+
+      test('returns null for no cooking method', () {
+        final (cleaned, method) =
+            FoodFuzzyMatcher.extractCookingMethod('Banana');
+        expect(cleaned, 'Banana');
+        expect(method, isNull);
+      });
+
+      test('maps fried variants to Fried', () {
+        for (final variant in ['fried', 'pan fried', 'stir fried', 'deep fried']) {
+          final (_, method) =
+              FoodFuzzyMatcher.extractCookingMethod('$variant rice');
+          expect(method, 'Fried', reason: '"$variant" should map to Fried');
+        }
+      });
+
+      test('maps roast to Roasted', () {
+        final (cleaned, method) =
+            FoodFuzzyMatcher.extractCookingMethod('Roast beef');
+        expect(cleaned, 'beef');
+        expect(method, 'Roasted');
+      });
+
+      test('is case insensitive', () {
+        final (cleaned, method) =
+            FoodFuzzyMatcher.extractCookingMethod('GRILLED CHICKEN');
+        expect(cleaned, 'chicken');
+        expect(method, 'Grilled');
+      });
+    });
+
     group('normalization', () {
       test('strips punctuation (but may join words)', () {
         // "scrambled-eggs!" → normalize removes - and ! → "scrambledeggs"

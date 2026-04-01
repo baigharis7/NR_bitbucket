@@ -698,5 +698,128 @@ void main() {
         ],
       );
     });
+
+    // -----------------------------------------------------------------------
+    // Cooking method extraction during matching
+    // -----------------------------------------------------------------------
+
+    group('Cooking method extraction', () {
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'strips cooking qualifier and matches base food',
+        build: () => _buildBloc(
+          masterFoods: [_food(4, 'Chicken breast')],
+        ),
+        act: (bloc) => bloc.add(OnVisualFoodDetectedAction(candidates: [
+          DetectedFoodCandidate(
+            name: 'Grilled chicken breast',
+            estimatedGrams: 200,
+          ),
+        ])),
+        verify: (bloc) {
+          expect(bloc.state.results.length, 1);
+          final result = bloc.state.results.first.scanResult;
+          expect(result.matchedFoodId, 4);
+          expect(result.detectedCookingMethod, 'Grilled');
+          expect(result.scannedName, 'Grilled chicken breast');
+        },
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'detects fried cooking method',
+        build: () => _buildBloc(
+          masterFoods: [_food(2, 'White rice')],
+        ),
+        act: (bloc) => bloc.add(OnVisualFoodDetectedAction(candidates: [
+          DetectedFoodCandidate(
+            name: 'Fried white rice',
+            estimatedGrams: 150,
+          ),
+        ])),
+        verify: (bloc) {
+          final result = bloc.state.results.first.scanResult;
+          expect(result.matchedFoodId, 2);
+          expect(result.detectedCookingMethod, 'Fried');
+        },
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'no cooking method when name has none',
+        build: () => _buildBloc(
+          masterFoods: [_food(8, 'Banana')],
+        ),
+        act: (bloc) => bloc.add(OnVisualFoodDetectedAction(candidates: [
+          DetectedFoodCandidate(
+            name: 'Banana',
+            estimatedGrams: 120,
+          ),
+        ])),
+        verify: (bloc) {
+          final result = bloc.state.results.first.scanResult;
+          expect(result.matchedFoodId, 8);
+          expect(result.detectedCookingMethod, isNull);
+        },
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'falls back to original name if cleaned name does not match',
+        build: () => _buildBloc(
+          masterFoods: [_food(10, 'Steamed broccoli')],
+        ),
+        act: (bloc) => bloc.add(OnVisualFoodDetectedAction(candidates: [
+          DetectedFoodCandidate(
+            name: 'Steamed broccoli',
+            estimatedGrams: 100,
+          ),
+        ])),
+        verify: (bloc) {
+          // "steamed broccoli" with cooking stripped → "broccoli"
+          // "broccoli" doesn't match "Steamed broccoli" via exact,
+          // but the fallback to the original name does match
+          final result = bloc.state.results.first.scanResult;
+          expect(result.matchedFoodId, 10);
+        },
+      );
+    });
+
+    // -----------------------------------------------------------------------
+    // Missing grams handling
+    // -----------------------------------------------------------------------
+
+    group('Missing grams', () {
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'preserves null estimatedGrams when LogMeal provides none',
+        build: () => _buildBloc(
+          masterFoods: [_food(8, 'Banana')],
+        ),
+        act: (bloc) => bloc.add(OnVisualFoodDetectedAction(candidates: [
+          DetectedFoodCandidate(
+            name: 'Banana',
+            estimatedGrams: null,
+          ),
+        ])),
+        verify: (bloc) {
+          final result = bloc.state.results.first.scanResult;
+          expect(result.matchedFoodId, 8);
+          expect(result.estimatedGrams, isNull);
+        },
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'passes through gram estimate when provided',
+        build: () => _buildBloc(
+          masterFoods: [_food(8, 'Banana')],
+        ),
+        act: (bloc) => bloc.add(OnVisualFoodDetectedAction(candidates: [
+          DetectedFoodCandidate(
+            name: 'Banana',
+            estimatedGrams: 120,
+          ),
+        ])),
+        verify: (bloc) {
+          final result = bloc.state.results.first.scanResult;
+          expect(result.estimatedGrams, 120);
+        },
+      );
+    });
   });
 }
