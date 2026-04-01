@@ -84,13 +84,28 @@ class FoodFuzzyMatcher {
         }
       }
 
-      // Score: shared tokens / max(scanned tokens, DB tokens)
-      final maxTokens = scannedTokens.length > indexed.tokens.length
-          ? scannedTokens.length
-          : indexed.tokens.length;
-      final score = shared / maxTokens;
+      if (shared == 0) continue;
 
-      if (score >= 0.85 && (bestToken == null || score > bestToken.score)) {
+      // If ALL DB tokens are found in the scanned name, it's a strong match
+      // e.g. DB "chicken breast" (2 tokens) all found in scanned
+      // "grilled chicken breast with herbs" (4 tokens) → containment match
+      final allDbTokensFound = shared == indexed.tokens.length;
+
+      double score;
+      if (allDbTokensFound && indexed.tokens.length >= 2) {
+        // Score based on how much of the scanned name the DB name covers
+        score = indexed.tokens.length / scannedTokens.length;
+        // Boost: all DB tokens present is a strong signal
+        score = (score + 1.0) / 2.0; // average toward 1.0
+      } else {
+        // Standard: shared tokens / max(scanned tokens, DB tokens)
+        final maxTokens = scannedTokens.length > indexed.tokens.length
+            ? scannedTokens.length
+            : indexed.tokens.length;
+        score = shared / maxTokens;
+      }
+
+      if (score >= 0.70 && (bestToken == null || score > bestToken.score)) {
         bestToken = FuzzyMatchResult(food: indexed.food, score: score);
       }
     }

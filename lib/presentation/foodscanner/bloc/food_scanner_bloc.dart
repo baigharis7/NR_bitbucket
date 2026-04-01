@@ -80,6 +80,10 @@ class FoodScannerBloc
     // Collect unmatched candidates that need ingredient breakdown
     final unmatchedWithDishId = <int, DetectedFoodCandidate>{};
 
+    // Default portion when LogMeal doesn't provide a gram estimate.
+    // 100g is the standard nutritional reference; user can adjust in edit.
+    const defaultGrams = 100.0;
+
     for (final candidate in action.candidates) {
       final match = fuzzyMatcher.findBestMatch(candidate.name);
 
@@ -99,7 +103,7 @@ class FoodScannerBloc
             matchedGroup: match.food.group,
             matchScore: match.score,
             scannedNutrientsPer100g: null, // Use our DB nutrients
-            estimatedGrams: candidate.estimatedGrams,
+            estimatedGrams: candidate.estimatedGrams ?? defaultGrams,
             estimatedKcal: candidate.estimatedKcal,
           ),
           isSelected: true,
@@ -119,7 +123,7 @@ class FoodScannerBloc
             source: 'logmeal',
             detectionMethod: 'visual',
             scannedNutrientsPer100g: candidate.nutrientsPer100g,
-            estimatedGrams: candidate.estimatedGrams,
+            estimatedGrams: candidate.estimatedGrams ?? defaultGrams,
             estimatedKcal: candidate.estimatedKcal,
           ),
           isSelected: true,

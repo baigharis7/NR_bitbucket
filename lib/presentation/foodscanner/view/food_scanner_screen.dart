@@ -442,119 +442,136 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
             color: AppColors.yellowishGreen,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          child: ListView(
-            controller: scrollController,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Column(
             children: [
-              // Handle bar
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.white50Percent,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+              // Fixed header section (not scrollable)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Handle bar
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppColors.white50Percent,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Results',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => bloc.add(ResetScannerAction()),
+                          child: const Text(
+                            'Clear',
+                            style: TextStyle(
+                                color: AppColors.white70Percent, fontSize: 14),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Select the food you would like to log.',
+                      style:
+                          TextStyle(color: AppColors.white70Percent, fontSize: 13),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
               ),
-              const SizedBox(height: 16),
 
-              // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Results',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+              // Scrollable food results list
+              Expanded(
+                child: ListView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  children: [
+                    ...state.results.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final item = entry.value;
+                      final isSelected = state.selectedIndices.contains(index);
+                      return _buildFoodResultTile(
+                        context,
+                        item.scanResult,
+                        isSelected,
+                        () =>
+                            bloc.add(ToggleFoodSelectionAction(index: index)),
+                      );
+                    }),
+
+                    const SizedBox(height: 12),
+
+                    // "Search Manually" link
+                    Center(
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: const Text(
+                          'Not what you are looking for? Search Manually',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () => bloc.add(ResetScannerAction()),
-                    child: const Text(
-                      'Clear',
-                      style: TextStyle(
-                          color: AppColors.white70Percent, fontSize: 14),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                'Select the food you would like to log.',
-                style:
-                    TextStyle(color: AppColors.white70Percent, fontSize: 13),
-              ),
-              const SizedBox(height: 16),
-
-              // Food results list
-              ...state.results.asMap().entries.map((entry) {
-                final index = entry.key;
-                final item = entry.value;
-                final isSelected = state.selectedIndices.contains(index);
-                return _buildFoodResultTile(
-                  context,
-                  item.scanResult,
-                  isSelected,
-                  () =>
-                      bloc.add(ToggleFoodSelectionAction(index: index)),
-                );
-              }),
-
-              const SizedBox(height: 12),
-
-              // "Search Manually" link
-              Center(
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Text(
-                    'Not what you are looking for? Search Manually',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
+                    const SizedBox(height: 12),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
 
-              // Action buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildActionButton(
-                      label: 'Search again',
-                      isPrimary: false,
-                      onTap: () => bloc.add(ResetScannerAction()),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  if (state.hasSelection) ...[
+              // Fixed action buttons (not scrollable)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                child: Row(
+                  children: [
                     Expanded(
                       child: _buildActionButton(
-                        label: hasEdited ? 'Continue' : 'Edit',
+                        label: 'Search again',
                         isPrimary: false,
-                        onTap: () =>
-                            bloc.add(EditNextSelectedFoodAction()),
+                        onTap: () => bloc.add(ResetScannerAction()),
                       ),
                     ),
                     const SizedBox(width: 12),
-                  ],
-                  Expanded(
-                    child: _buildActionButton(
-                      label: 'Log selected',
-                      isPrimary: true,
-                      onTap: state.hasSelection
-                          ? () => _logSelectedFoods(context, state)
-                          : null,
+                    if (state.hasSelection) ...[
+                      Expanded(
+                        child: _buildActionButton(
+                          label: hasEdited ? 'Continue' : 'Edit',
+                          isPrimary: false,
+                          onTap: () =>
+                              bloc.add(EditNextSelectedFoodAction()),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                    ],
+                    Expanded(
+                      child: _buildActionButton(
+                        label: 'Log selected',
+                        isPrimary: true,
+                        onTap: state.hasSelection
+                            ? () => _logSelectedFoods(context, state)
+                            : null,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
             ],
           ),
         );

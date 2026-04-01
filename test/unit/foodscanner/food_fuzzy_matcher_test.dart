@@ -48,12 +48,13 @@ void main() {
     });
 
     group('substring match', () {
-      test('DB name contained in scanned name scores based on length ratio',
+      test('DB name contained in scanned name matches via token containment',
           () {
-        // "french omelette with cheese" contains "french omelette" but
-        // score = (16/27 + 1.0) / 2 ≈ 0.80 which is below the 0.85 threshold
+        // "french omelette with cheese" — DB tokens {"french", "omelette"}
+        // are all found in scanned tokens, so token containment kicks in
         final result = matcher.findBestMatch('French omelette with cheese');
-        expect(result, isNull);
+        expect(result, isNotNull);
+        expect(result!.food.id, 7);
       });
 
       test('matches when substring ratio is high enough', () {
@@ -71,12 +72,13 @@ void main() {
     });
 
     group('token overlap', () {
-      test('requires 0.85 threshold — 2/3 shared tokens is not enough', () {
+      test('matches when all DB tokens found in scanned name', () {
         // "chicken breast grilled" tokens: {chicken, breast, grilled}
         // DB "Chicken breast" tokens: {chicken, breast}
-        // shared=2, max=3, score=0.667 — below 0.85 threshold
+        // All DB tokens found → containment match
         final result = matcher.findBestMatch('chicken breast grilled');
-        expect(result, isNull);
+        expect(result, isNotNull);
+        expect(result!.food.id, 4);
       });
 
       test('matches when token overlap meets threshold', () {
