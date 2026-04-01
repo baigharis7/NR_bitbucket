@@ -80,17 +80,20 @@ class FoodScannerBloc
     // Collect unmatched candidates that need ingredient breakdown
     final unmatchedWithDishId = <int, DetectedFoodCandidate>{};
 
-    // Default portion when LogMeal doesn't provide a gram estimate.
-    // 100g is the standard nutritional reference; user can adjust in edit.
-    const defaultGrams = 100.0;
-
     for (final candidate in action.candidates) {
-      final match = fuzzyMatcher.findBestMatch(candidate.name);
+      // Strip cooking method qualifiers before matching
+      final (cleanedName, cookingMethod) =
+          FoodFuzzyMatcher.extractCookingMethod(candidate.name);
+
+      // Try matching with cleaned name first, fall back to original
+      var match = fuzzyMatcher.findBestMatch(cleanedName);
+      match ??= fuzzyMatcher.findBestMatch(candidate.name);
 
       if (match != null) {
         // Matched in our DB — use our nutrients, LogMeal's gram estimate
         debugPrint('[FoodScanner] Matched "${candidate.name}" → '
-            '${match.food.en} (id=${match.food.id}, score=${match.score})');
+            '${match.food.en} (id=${match.food.id}, score=${match.score})'
+            '${cookingMethod != null ? ' [cooking: $cookingMethod]' : ''}');
 
         results.add(ScanResultEntry(
           scanResult: ScanResult(
@@ -103,8 +106,9 @@ class FoodScannerBloc
             matchedGroup: match.food.group,
             matchScore: match.score,
             scannedNutrientsPer100g: null, // Use our DB nutrients
-            estimatedGrams: candidate.estimatedGrams ?? defaultGrams,
+            estimatedGrams: candidate.estimatedGrams,
             estimatedKcal: candidate.estimatedKcal,
+            detectedCookingMethod: cookingMethod,
           ),
           isSelected: true,
         ));
@@ -123,7 +127,7 @@ class FoodScannerBloc
             source: 'logmeal',
             detectionMethod: 'visual',
             scannedNutrientsPer100g: candidate.nutrientsPer100g,
-            estimatedGrams: candidate.estimatedGrams ?? defaultGrams,
+            estimatedGrams: candidate.estimatedGrams,
             estimatedKcal: candidate.estimatedKcal,
           ),
           isSelected: true,

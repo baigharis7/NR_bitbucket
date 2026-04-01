@@ -164,6 +164,55 @@ class FoodFuzzyMatcher {
   // Helpers
   // ---------------------------------------------------------------------------
 
+  /// Common cooking method keywords that may appear in scanned food names.
+  /// These are stripped before matching to improve results.
+  /// The map keys are normalized keywords, values are display names that can
+  /// be matched against CookingMethodInfo.en at runtime.
+  static const cookingKeywords = <String, String>{
+    'grilled': 'Grilled',
+    'grilling': 'Grilled',
+    'fried': 'Fried',
+    'deep fried': 'Fried',
+    'pan fried': 'Fried',
+    'stir fried': 'Fried',
+    'baked': 'Baked',
+    'roasted': 'Roasted',
+    'roast': 'Roasted',
+    'steamed': 'Steamed',
+    'boiled': 'Boiled',
+    'poached': 'Boiled',
+    'sauteed': 'Sautéed',
+    'braised': 'Braised',
+    'smoked': 'Smoked',
+    'breaded': 'Breaded',
+    'breadcrumbs': 'Breaded',
+    'raw': 'Raw',
+  };
+
+  /// Strip cooking method keywords from a food name.
+  /// Returns (cleanedName, detectedCookingKeyword) where the keyword is the
+  /// display name (e.g. "Grilled") or null if none found.
+  static (String, String?) extractCookingMethod(String name) {
+    final lower = name.toLowerCase().trim();
+
+    // Check multi-word keywords first (e.g. "deep fried")
+    final sortedKeys = cookingKeywords.keys.toList()
+      ..sort((a, b) => b.length.compareTo(a.length));
+
+    for (final keyword in sortedKeys) {
+      if (lower.contains(keyword)) {
+        final cleaned = lower
+            .replaceAll(keyword, '')
+            .replaceAll(RegExp(r'\s+'), ' ')
+            .trim();
+        if (cleaned.isNotEmpty) {
+          return (cleaned, cookingKeywords[keyword]!);
+        }
+      }
+    }
+    return (name, null);
+  }
+
   /// Lowercase, remove diacritics/accents, strip punctuation and articles.
   static String _normalize(String input) {
     var s = input.toLowerCase().trim();

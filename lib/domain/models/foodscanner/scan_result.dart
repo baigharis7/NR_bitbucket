@@ -48,6 +48,10 @@ class ScanResult {
   /// Estimated kcal from the scan source.
   final double? estimatedKcal;
 
+  /// Cooking method detected from the scanned name (e.g. "Grilled", "Fried").
+  /// Matches CookingMethodInfo.en display names for auto-selection.
+  final String? detectedCookingMethod;
+
   ScanResult({
     required this.scannedName,
     this.brand,
@@ -63,6 +67,7 @@ class ScanResult {
     this.passioFoodId,
     this.estimatedGrams,
     this.estimatedKcal,
+    this.detectedCookingMethod,
   });
 
   bool get isMatched => matchedFoodId != null;

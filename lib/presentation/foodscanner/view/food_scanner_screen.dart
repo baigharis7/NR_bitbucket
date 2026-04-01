@@ -591,12 +591,17 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
     final subtitleParts = <String>[];
     if (result.estimatedGrams != null) {
       subtitleParts.add('~${result.estimatedGrams!.round()} g');
+    } else {
+      subtitleParts.add('Amount needed');
     }
     if (result.estimatedKcal != null) {
       subtitleParts.add('~${result.estimatedKcal!.round()} kcal');
     }
     if (result.isMatched) {
       subtitleParts.add('Matched');
+    }
+    if (result.detectedCookingMethod != null) {
+      subtitleParts.add(result.detectedCookingMethod!);
     }
     final subtitleText = subtitleParts.join(' · ');
 
@@ -726,11 +731,16 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
       selectedFoods.add(_scanResultToFoodInFavorite(result));
       selectedResults.add(result);
     }
+
+    // If any selected food has no gram estimate, force edit flow so the
+    // user can input the amount before logging.
+    final needsEdit = selectedResults.any((r) => r.estimatedGrams == null);
+
     Navigator.pop(
       context,
       ScannerResult(
         foods: selectedFoods,
-        directLog: true,
+        directLog: !needsEdit,
         title: _deriveTitle(selectedResults),
       ),
     );
@@ -780,7 +790,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
     }
 
     // LogMeal returns grams — use gram unit (-2) directly
-    final qty = (result.estimatedGrams ?? 100).round();
+    final qty = result.estimatedGrams?.round() ?? 0;
 
     return FoodInFavorite(
       id: foodId,
