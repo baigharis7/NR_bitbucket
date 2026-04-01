@@ -146,11 +146,9 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
     });
 
     on<UpdateFoodArgumentsModelEventState>((event, emit) {
-      emit(state.copyWith(isLoading: true));
       state.mealTime = event.foodArgumentsModel.mealTime;
       state.selectedDateTime = event.foodArgumentsModel.selectedDateTime;
       add(InitialMealTimeDetailsEventState(dateTime: state.selectedDateTime));
-      emit(state.copyWith(isLoading: false));
     });
 
     on<UpdateDateTimeMealTimeDetailsEvent>((event, emit) {
