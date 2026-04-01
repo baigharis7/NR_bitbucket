@@ -321,28 +321,16 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
         state.supplementObj?.eventDate = state.supplementObj?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
         state.supplementObj?.timeZone = await DateTimeHelper.getDeviceIANATimeZone();
         final uploadSupplementRoutine = mapToSupplementRoutineFromSupplement(state.supplementObj!);
-        await uploadSupplementRoutineInteractor.execute(uploadSupplementRoutine);
-        try {
-          await saveSupplementRoutineInteractor.execute(uploadSupplementRoutine, false);
-          DashboardEventBus.instance.notify(DataChangedCategory.supplement);
+        // Fire-and-forget: upload queues on failure via SyncQueueService
+        uploadSupplementRoutineInteractor.execute(uploadSupplementRoutine);
+        await saveSupplementRoutineInteractor.execute(uploadSupplementRoutine, false);
+        DashboardEventBus.instance.notify(DataChangedCategory.supplement);
 
-          _clearData();
-          emit(state.copyWith(isLoading: false));
-          event.onFinish.call();
-        } catch(error, st) {
-          emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveSupplementRoutineError));
-          CrashlyticsService.record(
-            error,
-            st,
-            context: {
-              'action': 'Supplement routine logging local',
-              'screen': 'Add Supplement',
-              'event data': state.supplementObj.toString(),
-            },
-          );
-        }
+        _clearData();
+        emit(state.copyWith(isLoading: false));
+        event.onFinish.call();
       } catch(error, st) {
-        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementRoutineError));
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveSupplementRoutineError));
         CrashlyticsService.record(
           error,
           st,
@@ -362,18 +350,23 @@ class SupplementsBloc extends Bloc<SupplementsEvent, SupplementsState> {
         event.supplement.eventId = DateTime.now().millisecondsSinceEpoch;
         event.supplement.eventDate = state.supplementObj?.eventDate ?? DateTime.now().millisecondsSinceEpoch;
         final uploadSupplements = mapToUploadSupplementsEv(event.supplement);
-        await uploadSupplementEventInteractor.execute(uploadSupplements);
-        try {
-          await saveSupplementEventInteractor.execute(event.supplement, false);
-          DashboardEventBus.instance.notify(DataChangedCategory.supplement);
-          _clearData();
-          emit(state.copyWith(isLoading: false));
-          event.onFinish.call();
-        } catch(_) {
-          emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementEventError));
-        }
-      } catch(_) {
-        emit(state.copyWith(isLoading: false, onError: ErrorTypes.uploadSupplementEventError));
+        // Fire-and-forget: upload queues on failure via SyncQueueService
+        uploadSupplementEventInteractor.execute(uploadSupplements);
+        await saveSupplementEventInteractor.execute(event.supplement, false);
+        DashboardEventBus.instance.notify(DataChangedCategory.supplement);
+        _clearData();
+        emit(state.copyWith(isLoading: false));
+        event.onFinish.call();
+      } catch(error, st) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.saveSupplementEventError));
+        CrashlyticsService.record(
+          error,
+          st,
+          context: {
+            'action': 'Supplement favorite logging',
+            'screen': 'Add Supplement',
+          },
+        );
       }
     });
   }

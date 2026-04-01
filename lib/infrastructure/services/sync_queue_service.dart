@@ -1,15 +1,23 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
 
 import 'package:chuck_interceptor/chuck_interceptor.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sync/sync_queue_entry.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/environment/environment.dart';
 import 'package:nutrenaissance_flutter/infrastructure/http/api_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 
 class SyncQueueService extends ApiHelper {
   final Box<SyncQueueEntry> _box;
+
+  /// Base delay doubles each retry: 2s → 4s → 8s → 16s → … capped at 5 min.
+  static const _baseDelaySeconds = 2;
+  static const _maxDelaySeconds = 300; // 5 minutes
   static const _maxRetries = 10;
 
   SyncQueueService(
@@ -33,8 +41,13 @@ class SyncQueueService extends ApiHelper {
   }
 
   Future<void> processQueue() async {
+    final now = DateTime.now().millisecondsSinceEpoch;
     final entries = _box.values.toList();
+
     for (final entry in entries) {
+      // Skip entries whose backoff hasn't elapsed yet
+      if (entry.nextRetryAt > now) continue;
+
       try {
         final uri = Uri.https(
           Environment().config!.baseUrl,
@@ -46,16 +59,67 @@ class SyncQueueService extends ApiHelper {
         } else {
           await post(uri, body);
         }
+        // Success — remove from queue
         await entry.delete();
-      } catch (_) {
-        entry.retryCount++;
-        if (entry.retryCount >= _maxRetries) {
+      } on HttpException catch (e) {
+        final statusCode = _extractStatusCode(e);
+        if (statusCode != null && statusCode >= 400 && statusCode < 500 && statusCode != 429) {
+          // 4xx (except 429) = permanent client error, don't retry
+          debugPrint('SyncQueue: dropping entry ${entry.path} — permanent error $statusCode');
+          _reportToCrashlytics(entry, e, permanent: true);
           await entry.delete();
         } else {
-          await entry.save();
+          // 429 (throttled), 5xx (server error), or unknown — schedule retry
+          _scheduleRetry(entry, e);
         }
+      } catch (e) {
+        // Network error, timeout, etc. — schedule retry
+        _scheduleRetry(entry, e);
       }
     }
+  }
+
+  void _scheduleRetry(SyncQueueEntry entry, dynamic error) {
+    entry.retryCount++;
+
+    if (entry.retryCount >= _maxRetries) {
+      _reportToCrashlytics(entry, error);
+      // Keep in queue — don't delete user data. Reset backoff so it
+      // gets another attempt next processQueue cycle.
+      entry.nextRetryAt = 0;
+      entry.save();
+      return;
+    }
+
+    final delaySeconds = min(
+      _baseDelaySeconds * pow(2, entry.retryCount - 1).toInt(),
+      _maxDelaySeconds,
+    );
+    entry.nextRetryAt = DateTime.now().millisecondsSinceEpoch + (delaySeconds * 1000);
+    entry.save();
+    debugPrint('SyncQueue: retry #${entry.retryCount} for ${entry.path} in ${delaySeconds}s');
+  }
+
+  void _reportToCrashlytics(SyncQueueEntry entry, dynamic error, {bool permanent = false}) {
+    CrashlyticsService.record(
+      error is Error ? error : Exception('SyncQueue failure: $error'),
+      error is Error ? error.stackTrace : StackTrace.current,
+      context: {
+        'action': 'SyncQueue ${permanent ? "permanent failure" : "max retries reached"}',
+        'path': entry.path,
+        'method': entry.method,
+        'retryCount': entry.retryCount.toString(),
+        'createdAt': DateTime.fromMillisecondsSinceEpoch(entry.createdAt).toIso8601String(),
+        'age': '${((DateTime.now().millisecondsSinceEpoch - entry.createdAt) / 1000 / 60).round()} min',
+      },
+    );
+  }
+
+  /// Extracts the HTTP status code from an HttpException message.
+  int? _extractStatusCode(HttpException e) {
+    final match = RegExp(r'status:\s*(\d+)').firstMatch(e.message);
+    if (match != null) return int.tryParse(match.group(1)!);
+    return null;
   }
 
   int get pendingCount => _box.length;

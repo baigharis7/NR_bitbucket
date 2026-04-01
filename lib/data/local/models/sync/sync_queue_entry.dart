@@ -20,11 +20,16 @@ class SyncQueueEntry extends HiveObject {
   @HiveField(4)
   String method;
 
+  /// Epoch millis — entry won't be retried before this time.
+  @HiveField(5)
+  int nextRetryAt;
+
   SyncQueueEntry({
     required this.path,
     required this.bodyJson,
     required this.createdAt,
     this.retryCount = 0,
     this.method = 'POST',
+    this.nextRetryAt = 0,
   });
 }
