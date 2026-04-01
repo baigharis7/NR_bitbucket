@@ -29,7 +29,8 @@ import 'package:nutrenaissance_flutter/data/api/steps/steps_api.dart';
 import 'package:nutrenaissance_flutter/data/api/supplements/supplemets_api.dart';
 import 'package:nutrenaissance_flutter/data/api/waterevents/water_events_api.dart';
 import 'package:nutrenaissance_flutter/data/api/foodscanner/claude_vision_provider.dart';
-import 'package:nutrenaissance_flutter/data/api/foodscanner/logmeal_provider.dart';
+import 'package:nutrenaissance_flutter/data/api/foodscanner/logmeal_token_api.dart';
+import 'package:nutrenaissance_flutter/data/api/foodscanner/logmeal_token_service.dart';
 import 'package:nutrenaissance_flutter/data/api/foodscanner/open_food_facts_barcode_provider.dart';
 import 'package:nutrenaissance_flutter/data/local/models/scannedfoods/scanned_food_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/scannedfoods/scanned_food_repository.dart';
@@ -711,6 +712,8 @@ void main() async {
   final GetAllEventsSortedByDateInteractor getAllEventsSortedByDateInteractor = GetAllEventsSortedByDateInteractorImpl(calendarRepository: calendarRepository);
   final EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor = EraseDBLocalEventsInteractorImpl(localStorageRepository: localStorageRepository);
   final eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService, chuck);
+  final logMealTokenApi = LogMealTokenApi(prefsRepository, authenticationService, chuck);
+  final logMealTokenService = LogMealTokenService(prefs: prefsRepository, api: logMealTokenApi);
   final eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
   final SynchronizeEventsInteractor synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
   final ModelsAppearanceRepository modelsAppearanceRepository = ModelsAppearanceRepositoryImpl(localStorageRepository: localStorageRepository);
@@ -1334,19 +1337,17 @@ void main() async {
           // FuzzyMatcher is initialized lazily when the scanner screen
           // is opened — call bloc.initializeMatcher(masterFoods) there.
           //
-          // Visual food recognition provider — pass API key via --dart-define.
-          // LogMeal (default): --dart-define=LOGMEAL_API_TOKEN=...
-          // Claude Vision (backup): --dart-define=CLAUDE_API_KEY=sk-...
-          const logmealToken = String.fromEnvironment('LOGMEAL_API_TOKEN');
+          // Visual food recognition: per-user LogMeal token fetched lazily
+          // from backend on first scan. Falls back to Claude Vision if
+          // CLAUDE_API_KEY is set (dev/testing only).
           const claudeApiKey = String.fromEnvironment('CLAUDE_API_KEY');
           return FoodScannerBloc(
             barcodeProvider: OpenFoodFactsBarcodeProvider(),
             scannedFoodRepository: scannedFoodRepository,
-            visualFoodProvider: logmealToken.isNotEmpty
-                ? LogMealProvider(apiToken: logmealToken)
-                : claudeApiKey.isNotEmpty
-                    ? ClaudeVisionProvider(apiKey: claudeApiKey)
-                    : null,
+            logMealTokenService: logMealTokenService,
+            visualFoodProvider: claudeApiKey.isNotEmpty
+                ? ClaudeVisionProvider(apiKey: claudeApiKey)
+                : null,
           );
         }),
         // ChangeNotifierProvider<SplashProvider>(create: (_) => splashProvider),

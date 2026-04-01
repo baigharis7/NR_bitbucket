@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/data/api/foodscanner/logmeal_provider.dart';
+import 'package:nutrenaissance_flutter/data/api/foodscanner/logmeal_token_service.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/visual_food_provider.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
@@ -22,7 +23,8 @@ class FoodScannerBloc
     extends BaseBloc<FoodScannerAction, FoodScannerState> {
   final BarcodeNutritionProvider barcodeProvider;
   final ScannedFoodRepository scannedFoodRepository;
-  final VisualFoodProvider? visualFoodProvider;
+  VisualFoodProvider? visualFoodProvider;
+  final LogMealTokenService? _logMealTokenService;
   FoodFuzzyMatcher? _fuzzyMatcher;
   UnitsFoodsMaster? _unitsFoodsMaster;
 
@@ -50,7 +52,9 @@ class FoodScannerBloc
     required this.barcodeProvider,
     required this.scannedFoodRepository,
     this.visualFoodProvider,
-  }) : super(const FoodScannerState()) {
+    LogMealTokenService? logMealTokenService,
+  })  : _logMealTokenService = logMealTokenService,
+        super(const FoodScannerState()) {
     on<OnVisualFoodDetectedAction>(_onVisualFoodDetected);
     on<OnBarcodeDetectedAction>(_onBarcodeDetected);
     on<ToggleFoodSelectionAction>(_onToggleSelection);
@@ -476,6 +480,15 @@ class FoodScannerBloc
     CapturePhotoAction action,
     Emitter<FoodScannerState> emit,
   ) async {
+    // Lazily create LogMealProvider with per-user token on first scan
+    if (visualFoodProvider == null && _logMealTokenService != null) {
+      emit(state.copyWith(isProcessing: true, errorMessage: () => null));
+      final token = await _logMealTokenService!.getOrCreateToken();
+      if (token != null) {
+        visualFoodProvider = LogMealProvider(apiToken: token);
+      }
+    }
+
     if (visualFoodProvider == null) {
       emit(state.copyWith(
         errorMessage: () => 'Visual recognition not configured',

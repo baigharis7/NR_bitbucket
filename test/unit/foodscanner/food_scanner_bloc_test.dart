@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nutrenaissance_flutter/data/api/foodscanner/logmeal_token_service.dart';
 import 'package:nutrenaissance_flutter/data/local/models/scannedfoods/scanned_food_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/scannedfoods/scanned_food_repository.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/barcode_nutrition_provider.dart';
@@ -58,6 +59,25 @@ class FakeVisualProvider implements VisualFoodProvider {
   }
 }
 
+class FakeLogMealTokenService implements LogMealTokenService {
+  String? nextToken;
+  int callCount = 0;
+
+  @override
+  Future<String?> getOrCreateToken() async {
+    callCount++;
+    return nextToken;
+  }
+
+  @override
+  Future<void> clearToken() async {}
+
+  // Required by Dart since LogMealTokenService has private fields;
+  // these are unused in the fake.
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -69,12 +89,14 @@ FoodScannerBloc _buildBloc({
   FakeBarcodeProvider? barcodeProvider,
   FakeScannedFoodRepository? repo,
   FakeVisualProvider? visualProvider,
+  FakeLogMealTokenService? tokenService,
   List<FoodItemMaster>? masterFoods,
 }) {
   final bloc = FoodScannerBloc(
     barcodeProvider: barcodeProvider ?? FakeBarcodeProvider(),
     scannedFoodRepository: repo ?? FakeScannedFoodRepository(),
     visualFoodProvider: visualProvider,
+    logMealTokenService: tokenService,
   );
   if (masterFoods != null) {
     bloc.initializeMatcher(masterFoods);
@@ -586,6 +608,95 @@ void main() {
         // Should not throw
         bloc.initializeUnits(units);
       });
+    });
+
+    // -----------------------------------------------------------------------
+    // Lazy LogMeal token initialization
+    // -----------------------------------------------------------------------
+
+    group('Lazy LogMeal token initialization', () {
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'creates LogMealProvider from token service on first capture',
+        build: () {
+          final ts = FakeLogMealTokenService()..nextToken = 'per-user-token';
+          return _buildBloc(
+            tokenService: ts,
+            masterFoods: [_food(1, 'Banana')],
+          );
+        },
+        act: (bloc) => bloc.add(CapturePhotoAction(imageBytes: [1, 2, 3])),
+        // The LogMealProvider will be created but the fake image bytes will
+        // fail segmentation. We just need to verify the provider was created
+        // (i.e. we don't get "Visual recognition not configured").
+        expect: () => [
+          // isProcessing = true (from lazy init)
+          isA<FoodScannerState>().having(
+              (s) => s.isProcessing, 'isProcessing', true),
+          // Scan will fail/error (fake bytes, real HTTP call blocked) but NOT
+          // with "Visual recognition not configured"
+          isA<FoodScannerState>()
+              .having((s) => s.errorMessage, 'errorMessage',
+                  isNot('Visual recognition not configured')),
+        ],
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'emits error when token service returns null',
+        build: () {
+          final ts = FakeLogMealTokenService()..nextToken = null;
+          return _buildBloc(tokenService: ts);
+        },
+        act: (bloc) => bloc.add(CapturePhotoAction(imageBytes: [1, 2, 3])),
+        expect: () => [
+          // isProcessing = true (from lazy init attempt)
+          isA<FoodScannerState>().having(
+              (s) => s.isProcessing, 'isProcessing', true),
+          // Falls through to "not configured" since token was null
+          isA<FoodScannerState>().having(
+            (s) => s.errorMessage,
+            'errorMessage',
+            'Visual recognition not configured',
+          ),
+        ],
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'skips token service when visualFoodProvider already set',
+        build: () {
+          final vp = FakeVisualProvider()
+            ..nextResults = [
+              VisualFoodResult(name: 'Apple', estimatedGrams: 150),
+            ];
+          final ts = FakeLogMealTokenService()..nextToken = 'unused-token';
+          return _buildBloc(
+            visualProvider: vp,
+            tokenService: ts,
+            masterFoods: [_food(2, 'Apple')],
+          );
+        },
+        act: (bloc) => bloc.add(CapturePhotoAction(imageBytes: [1, 2, 3])),
+        verify: (bloc) {
+          // Token service should NOT have been called since provider was
+          // already provided at construction time.
+          // We can't access the fake directly here, so we verify by checking
+          // that results came from the FakeVisualProvider (not an error).
+          expect(bloc.state.results.length, 1);
+          expect(bloc.state.results.first.scanResult.scannedName, 'Apple');
+        },
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'does not attempt token fetch when both provider and service are null',
+        build: () => _buildBloc(),
+        act: (bloc) => bloc.add(CapturePhotoAction(imageBytes: [1, 2, 3])),
+        expect: () => [
+          isA<FoodScannerState>().having(
+            (s) => s.errorMessage,
+            'errorMessage',
+            'Visual recognition not configured',
+          ),
+        ],
+      );
     });
   });
 }

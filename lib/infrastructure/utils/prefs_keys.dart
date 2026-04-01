@@ -12,4 +12,5 @@ enum PrefsKeys {
   supplementEvents,
   healthSyncEnabled,
   lastHealthSyncTime,
+  logMealToken,
 }

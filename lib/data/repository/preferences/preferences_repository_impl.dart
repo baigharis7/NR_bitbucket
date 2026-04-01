@@ -78,4 +78,10 @@ class PreferencesRepositoryImpl extends PreferencesRepository {
     return DateTime.fromMillisecondsSinceEpoch(millis);
   }
 
+  @override
+  String getLogMealToken() => prefs.getString(PrefsKeys.logMealToken);
+
+  @override
+  Future<void> setLogMealToken(String token) async => prefs.setString(PrefsKeys.logMealToken, token);
+
 }
