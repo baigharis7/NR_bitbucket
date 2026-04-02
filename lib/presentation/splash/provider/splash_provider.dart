@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:chuck_interceptor/chuck_interceptor.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
@@ -22,6 +23,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/domain/repository/masterfiles/master_files_repository.dart';
 import 'package:nutrenaissance_flutter/data/api/fcm/fcm_api.dart';
+import 'package:nutrenaissance_flutter/infrastructure/authentication/late_authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/profile_computation_service.dart';
@@ -47,7 +49,6 @@ import '../../../domain/repository/localstorage/local_storage.dart';
 import '../../../domain/repository/preferences/preferences.dart';
 import '../../../domain/repository/preferences/preferences_repository.dart';
 import '../../../domain/repository/profile/profile_repository.dart';
-import '../../../infrastructure/authentication/cognito_authentication_service.dart';
 import '../../../infrastructure/utils/prefs_keys.dart';
 
 class SplashProvider extends ChangeNotifier {
@@ -68,7 +69,7 @@ class SplashProvider extends ChangeNotifier {
 
   void init({required Function toLogin, required Function toDashboard}) async {
     try {
-      final authenticationService = await CognitoAuthenticationService.init();
+      FirebaseCrashlytics.instance.log('splash: starting init');
       final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
       final Preferences prefs = PreferencesImpl(sharedPreferences);
@@ -78,12 +79,23 @@ class SplashProvider extends ChangeNotifier {
       // Check auth first — no user means go straight to login
       final userId = getUserIdInteractor.execute();
       if (userId.isEmpty) {
+        FirebaseCrashlytics.instance.log('splash: no userId, going to login');
         Future.delayed(
           const Duration(seconds: NumConstants.splashDelay),
           () => toLogin.call(),
         );
         return;
       }
+
+      // Initialize Cognito/Amplify in the background — just SDK setup, not a login.
+      // Don't block navigation: API calls wait for it automatically via LateAuthenticationService.
+      FirebaseCrashlytics.instance.log('splash: starting Cognito init (background)');
+      LateAuthenticationService.instance.initialize(
+        timeout: const Duration(seconds: 10),
+      ).catchError((e) {
+        FirebaseCrashlytics.instance.log('splash: Cognito init failed (background): $e');
+      });
+      final authenticationService = LateAuthenticationService.instance;
 
       Chuck chuck = Chuck(
         showNotification: true,
@@ -107,26 +119,29 @@ class SplashProvider extends ChangeNotifier {
       synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
       fcmApi = FcmApi(prefsRepository, authenticationService, chuck);
 
-      // Sync, FCM registration, and master files update — non-critical, don't block navigation
-      try {
-        await synchronizeEventsInteractor.execute(userId, fullSync: false);
+      // Sync, FCM registration, and master files update — all fire-and-forget.
+      // Don't block navigation: dashboard loads from local cache,
+      // these run in the background and update when ready.
+      synchronizeEventsInteractor.execute(userId, fullSync: false).then((_) {
         final fcmToken = FcmService.instance.token;
         if (fcmToken != null) {
           fcmApi.registerToken(userId, fcmToken, Platform.isIOS ? 'ios' : 'android')
               .catchError((_) {});
         }
-      } catch (_) {}
-
-      // Check for master file updates in the background (non-blocking)
+      }).catchError((_) {});
       _refreshMasterFiles(prefsRepository, authenticationService, localStorageRepository, referenceDatabase);
 
+      FirebaseCrashlytics.instance.log('splash: checking local profile');
       final profile = await getProfileInteractor.execute();
       if (profile.isNull() || (profile!.objectives.orEmpty().isEmpty && profile.physicalCharacteristics.isNull())) {
+        FirebaseCrashlytics.instance.log('splash: no profile, going to login');
         toLogin.call();
       } else {
+        FirebaseCrashlytics.instance.log('splash: profile found, going to dashboard');
         toDashboard.call();
       }
     } catch (e) {
+      FirebaseCrashlytics.instance.log('splash: init failed: $e');
       debugPrint('SplashProvider.init() failed: $e');
       toLogin.call();
     }
@@ -136,7 +151,7 @@ class SplashProvider extends ChangeNotifier {
   /// Runs in the background — does not block navigation.
   void _refreshMasterFiles(
     PreferencesRepository prefsRepository,
-    CognitoAuthenticationService authenticationService,
+    LateAuthenticationService authenticationService,
     LocalStorageRepository localStorageRepository,
     ReferenceDatabase referenceDatabase,
   ) async {

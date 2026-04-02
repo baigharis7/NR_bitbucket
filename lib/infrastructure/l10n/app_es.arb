@@ -728,6 +728,8 @@
     "hydration_collagen_optimal_desc": "Piel radiante",
     "hydration_kidney_low_desc": "Riñones forzados",
     "hydration_kidney_mid_desc": "Protección moderada",
-    "hydration_kidney_optimal_desc": "Detox óptima"
+    "hydration_kidney_optimal_desc": "Detox óptima",
+
+    "connection_error_try_later": "No se pudo conectar. Por favor, inténtalo más tarde."
 
 }

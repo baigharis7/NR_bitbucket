@@ -2322,4 +2322,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hydration_kidney_optimal_desc => 'Optimal detox';
+
+  @override
+  String get connection_error_try_later =>
+      'Unable to connect. Please try again later.';
 }

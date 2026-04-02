@@ -727,6 +727,8 @@
     "hydration_collagen_optimal_desc": "Radiant skin",
     "hydration_kidney_low_desc": "Kidneys under strain",
     "hydration_kidney_mid_desc": "Moderate protection",
-    "hydration_kidney_optimal_desc": "Optimal detox"
+    "hydration_kidney_optimal_desc": "Optimal detox",
+
+    "connection_error_try_later": "Unable to connect. Please try again later."
 
 }

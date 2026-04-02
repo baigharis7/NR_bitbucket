@@ -4309,6 +4309,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Optimal detox'**
   String get hydration_kidney_optimal_desc;
+
+  /// No description provided for @connection_error_try_later.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to connect. Please try again later.'**
+  String get connection_error_try_later;
 }
 
 class _AppLocalizationsDelegate

@@ -47,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen>
   Animation<double>? _opacityAnimation;
   final _formKey = GlobalKey<FormState>();
   bool isChecked = false;
+  bool _initFailSnackBarShown = false;
 
   // FocusNodes for blur-based validation
   final _usernameFocusNode = FocusNode();
@@ -347,7 +348,29 @@ class _LoginScreenState extends State<LoginScreen>
     return ChangeNotifierProvider<LoginProviderNew>(
       create: (context) => provider,
       child: Consumer<LoginProviderNew>(
-        builder: (context, model, _) => Stack(
+        builder: (context, model, _) {
+          // Show a toast when Cognito init fails — once per failure
+          if (model.isInitFailed && !_initFailSnackBarShown) {
+            _initFailSnackBarShown = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(AppLocalizations.of(context)!.connection_error_try_later),
+                  duration: const Duration(seconds: 4),
+                  action: SnackBarAction(
+                    label: 'Retry',
+                    onPressed: () {
+                      _initFailSnackBarShown = false;
+                      model.initialize((Object object) => showErrorSnackBar(context, userError(context, object)));
+                    },
+                  ),
+                ),
+              );
+            });
+          } else if (!model.isInitFailed) {
+            _initFailSnackBarShown = false;
+          }
+          return Stack(
           children: [
             // Background image or gradient
             Container(
@@ -678,7 +701,8 @@ class _LoginScreenState extends State<LoginScreen>
               ),),
             ),
           ],
-        ),
+        );
+        },
       ),
     );
   }

@@ -68,7 +68,7 @@ import 'package:nutrenaissance_flutter/domain/repository/masterfiles/master_file
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/profile/profile_repository.dart';
-import 'package:nutrenaissance_flutter/infrastructure/authentication/cognito_authentication_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/authentication/late_authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/token_utils.dart';
@@ -96,13 +96,18 @@ class LoginProviderNew extends BaseProvider {
   SaveUserCredentialsInteractor? saveUserCredentialsInteractor;
   SaveUserInUsersRemoteDatabaseInteractor? saveUserInUsersRemoteDatabaseInteractor;
   SignOutInteractor? signOutInteractor;
-  CognitoAuthenticationService? authenticationService;
+  LateAuthenticationService? authenticationService;
   SynchronizeEventsInteractor? synchronizeEventsInteractor;
   GetUserIdInteractor? getUserIdInteractor;
   EraseDatabaseInteractor? eraseDatabaseInteractor;
   ReferenceDataApi? referenceDataApi;
   ReferenceDataService? referenceDataService;
   SyncQueueService? syncQueueService;
+
+  /// Whether Cognito/Amplify initialization failed and the provider
+  /// is not ready. The UI should show a retry option.
+  bool _initFailed = false;
+  bool get isInitFailed => _initFailed;
 
   get getNotConfirmedUserTryingToLogin => _notConfirmedUserTryingToLogin;
   get isLogin => _loginMode;
@@ -155,62 +160,69 @@ class LoginProviderNew extends BaseProvider {
   @override
   void initialize(Function onError) async {
     super.initialize(onError);
+    _initFailed = false;
 
-    // Fire all 4 async initializations in parallel
-    final authFuture = CognitoAuthenticationService.init();
-    final prefsFuture = SharedPreferences.getInstance();
-    final hiveFuture = Hive.openBox<SyncQueueEntry>('syncQueue');
-    final dbFuture = openReferenceDatabase();
+    try {
+      // Fire all 4 async initializations in parallel
+      final authFuture = LateAuthenticationService.instance.initialize();
+      final prefsFuture = SharedPreferences.getInstance();
+      final hiveFuture = Hive.openBox<SyncQueueEntry>('syncQueue');
+      final dbFuture = openReferenceDatabase();
 
-    authenticationService = await authFuture;
-    final sharedPreferences = await prefsFuture;
-    final syncQueueBox = await hiveFuture;
-    final referenceDatabase = await dbFuture;
+      await authFuture;
+      authenticationService = LateAuthenticationService.instance;
+      final sharedPreferences = await prefsFuture;
+      final syncQueueBox = await hiveFuture;
+      final referenceDatabase = await dbFuture;
 
-    Chuck chuck = Chuck(
-      showNotification: true,
-      showInspectorOnShake: true,
-      darkTheme: false,
-      maxCallsCount: 1000,
-    );
-    Preferences prefs = PreferencesImpl(sharedPreferences);
-    PreferencesRepository prefsRepository = PreferencesRepositoryImpl(prefs: prefs);
-    fetchUserAttributesInteractor = FetchUserAttributesInteractorImpl(authenticationService: authenticationService!);
-    getIdTokenInteractor = GetIdTokenInteractorImpl(preferencesRepository: prefsRepository);
-    ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService!, chuck);
-    syncQueueService = SyncQueueService(prefsRepository, authenticationService!, chuck, syncQueueBox);
-    LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService!, profileApi: profileApi, syncQueue: syncQueueService!);
-    saveUserCredentialsInteractor = SaveUserCredentialsInteractorImpl(preferencesRepository: prefsRepository);
-    signUpInteractor = SignUpInteractorImpl(loginRepository: loginRepository);
-    verificationCodeInteractor = SendVerificationCodeInteractorImpl(loginRepository: loginRepository);
-    signInInteractor = SignInInteractorImpl(loginRepository: loginRepository);
-    LocalStorageRepository localStorageRepository = LocalStorageImpl();
-    saveUsernameAndEmailInteractor = SaveUsernameAndEmailInteractorImpl(preferencesRepository: prefsRepository);
-    MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService!, chuck);
-    referenceDataApi = ReferenceDataApi(prefsRepository, authenticationService!, chuck);
-    referenceDataService = ReferenceDataService(referenceDatabase);
-    final profileComputationService = ProfileComputationService(referenceDatabase);
-    ProfileRepository profileRepository = ProfileRepositoryImpl(
-      profileApi: profileApi,
-      localStorageRepository: localStorageRepository,
-      profileComputationService: profileComputationService,
-      syncQueue: syncQueueService!,
-    );
-    saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
-    MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi, referenceDatabase: referenceDatabase);
-    getMasterFilesVersionInteractor = GetMasterFileVersionInteractorImpl(masterFilesRepository: masterFilesRepository);
-    manageMasterFilesInteractor = ManageMasterFilesInteractorImpl(masterFilesRepository: masterFilesRepository);
-    saveMasterFileInteractor = SaveMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
-    checkProfileExistenceInteractor = CheckProfileExistenceInteractorImpl(profileRepository: profileRepository);
-    downloadProfileInteractor = DownloadProfileInteractorImpl(profileRepository: profileRepository);
-    resendVerificationCodeInteractor = ResendVerificationCodeInteractorImpl(loginRepository: loginRepository);
-    saveUserInUsersRemoteDatabaseInteractor = SaveUserInUsersRemoteDatabaseInteractorImpl(loginRepository: loginRepository);
-    signOutInteractor = SignOutInteractorImpl(authenticationService: authenticationService!);
-    EventsSyncApi eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService!, chuck);
-    EventsSynchronizationRequestRepository eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
-    synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
-    getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
-    eraseDatabaseInteractor = EraseDatabaseInteractorImpl(localStorageRepository: localStorageRepository);
+      Chuck chuck = Chuck(
+        showNotification: true,
+        showInspectorOnShake: true,
+        darkTheme: false,
+        maxCallsCount: 1000,
+      );
+      Preferences prefs = PreferencesImpl(sharedPreferences);
+      PreferencesRepository prefsRepository = PreferencesRepositoryImpl(prefs: prefs);
+      fetchUserAttributesInteractor = FetchUserAttributesInteractorImpl(authenticationService: authenticationService!);
+      getIdTokenInteractor = GetIdTokenInteractorImpl(preferencesRepository: prefsRepository);
+      ProfileApi profileApi = ProfileApi(prefsRepository, authenticationService!, chuck);
+      syncQueueService = SyncQueueService(prefsRepository, authenticationService!, chuck, syncQueueBox);
+      LoginRepository loginRepository = LoginRepositoryImpl(authenticationService: authenticationService!, profileApi: profileApi, syncQueue: syncQueueService!);
+      saveUserCredentialsInteractor = SaveUserCredentialsInteractorImpl(preferencesRepository: prefsRepository);
+      signUpInteractor = SignUpInteractorImpl(loginRepository: loginRepository);
+      verificationCodeInteractor = SendVerificationCodeInteractorImpl(loginRepository: loginRepository);
+      signInInteractor = SignInInteractorImpl(loginRepository: loginRepository);
+      LocalStorageRepository localStorageRepository = LocalStorageImpl();
+      saveUsernameAndEmailInteractor = SaveUsernameAndEmailInteractorImpl(preferencesRepository: prefsRepository);
+      MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService!, chuck);
+      referenceDataApi = ReferenceDataApi(prefsRepository, authenticationService!, chuck);
+      referenceDataService = ReferenceDataService(referenceDatabase);
+      final profileComputationService = ProfileComputationService(referenceDatabase);
+      ProfileRepository profileRepository = ProfileRepositoryImpl(
+        profileApi: profileApi,
+        localStorageRepository: localStorageRepository,
+        profileComputationService: profileComputationService,
+        syncQueue: syncQueueService!,
+      );
+      saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
+      MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi, referenceDatabase: referenceDatabase);
+      getMasterFilesVersionInteractor = GetMasterFileVersionInteractorImpl(masterFilesRepository: masterFilesRepository);
+      manageMasterFilesInteractor = ManageMasterFilesInteractorImpl(masterFilesRepository: masterFilesRepository);
+      saveMasterFileInteractor = SaveMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
+      checkProfileExistenceInteractor = CheckProfileExistenceInteractorImpl(profileRepository: profileRepository);
+      downloadProfileInteractor = DownloadProfileInteractorImpl(profileRepository: profileRepository);
+      resendVerificationCodeInteractor = ResendVerificationCodeInteractorImpl(loginRepository: loginRepository);
+      saveUserInUsersRemoteDatabaseInteractor = SaveUserInUsersRemoteDatabaseInteractorImpl(loginRepository: loginRepository);
+      signOutInteractor = SignOutInteractorImpl(authenticationService: authenticationService!);
+      EventsSyncApi eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService!, chuck);
+      EventsSynchronizationRequestRepository eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
+      synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
+      getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
+      eraseDatabaseInteractor = EraseDatabaseInteractorImpl(localStorageRepository: localStorageRepository);
+    } catch (e) {
+      _initFailed = true;
+      notifyListeners();
+    }
   }
 
   void changeLoginMode(Function action) {
