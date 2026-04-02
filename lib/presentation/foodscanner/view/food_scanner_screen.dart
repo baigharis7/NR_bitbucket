@@ -538,7 +538,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
 
               // Fixed action buttons (not scrollable)
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                padding: EdgeInsets.fromLTRB(20, 8, 20, 16 + MediaQuery.of(context).padding.bottom),
                 child: Row(
                   children: [
                     Expanded(
