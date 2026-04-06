@@ -336,7 +336,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                               ),),
                                             );
                                           },
-                                      subtitle: recentFood.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${recentFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, recentFood.ingredients, context)}.',
+                                      subtitle: recentFood.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : recentFood.ingredients.orEmpty().isNotEmpty ? '${AppLocalizations.of(context)!.amount}: ${recentFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, recentFood.ingredients, context)}.' : '',
                                       beforeTrailingIcon: isPreselect ? null : Icons.tune,
                                       beforeTrailingTap: isPreselect ? null : () => bloc.add(PrefillFoodForCustomizeAction(foodFavorite: recentFood)),
                                     ),),
@@ -365,7 +365,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                               ),),
                                             );
                                           },
-                                      subtitle: favFood.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : '${AppLocalizations.of(context)!.amount}: ${favFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, favFood.ingredients, context)}.',
+                                      subtitle: favFood.ingredients.orEmpty().length > 1 ? AppLocalizations.of(context)!.combo.toUpperCase() : favFood.ingredients.orEmpty().isNotEmpty ? '${AppLocalizations.of(context)!.amount}: ${favFood.ingredients[0].qty} ${NutritionUtils.findUnitNameFavFood(state.unitsInfoMaster?.unitsInfoMaster, favFood.ingredients, context)}.' : '',
                                       beforeTrailingIcon: isPreselect ? null : Icons.tune,
                                       beforeTrailingTap: isPreselect ? null : () => bloc.add(PrefillFoodForCustomizeAction(foodFavorite: favFood)),
                                     ),),
