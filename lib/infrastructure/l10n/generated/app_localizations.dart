@@ -4124,119 +4124,245 @@ abstract class AppLocalizations {
   /// **'Reference'**
   String get metric_reference_title;
 
-  /// No description provided for @steps_low_range.
+  /// No description provided for @steps_range_1.
   ///
   /// In en, this message translates to:
-  /// **'< 5,000 steps'**
-  String get steps_low_range;
+  /// **'< 2,000 steps'**
+  String get steps_range_1;
 
-  /// No description provided for @steps_mid_range.
+  /// No description provided for @steps_range_2.
   ///
   /// In en, this message translates to:
-  /// **'5,000–10,000 steps'**
-  String get steps_mid_range;
+  /// **'2,000–4,000 steps'**
+  String get steps_range_2;
 
-  /// No description provided for @steps_optimal_range.
+  /// No description provided for @steps_range_3.
+  ///
+  /// In en, this message translates to:
+  /// **'4,000–6,000 steps'**
+  String get steps_range_3;
+
+  /// No description provided for @steps_range_4.
+  ///
+  /// In en, this message translates to:
+  /// **'6,000–8,000 steps'**
+  String get steps_range_4;
+
+  /// No description provided for @steps_range_5.
+  ///
+  /// In en, this message translates to:
+  /// **'8,000–10,000 steps'**
+  String get steps_range_5;
+
+  /// No description provided for @steps_range_6.
   ///
   /// In en, this message translates to:
   /// **'≥ 10,000 steps'**
-  String get steps_optimal_range;
+  String get steps_range_6;
 
-  /// No description provided for @steps_cardio_low_desc.
+  /// No description provided for @steps_cardio_desc_1.
   ///
   /// In en, this message translates to:
   /// **'Heart is overworked'**
-  String get steps_cardio_low_desc;
+  String get steps_cardio_desc_1;
 
-  /// No description provided for @steps_cardio_mid_desc.
+  /// No description provided for @steps_cardio_desc_2.
   ///
   /// In en, this message translates to:
-  /// **'Moderate improvement'**
-  String get steps_cardio_mid_desc;
+  /// **'Slight cardiovascular benefit'**
+  String get steps_cardio_desc_2;
 
-  /// No description provided for @steps_cardio_optimal_desc.
+  /// No description provided for @steps_cardio_desc_3.
+  ///
+  /// In en, this message translates to:
+  /// **'Noticeable improvement'**
+  String get steps_cardio_desc_3;
+
+  /// No description provided for @steps_cardio_desc_4.
+  ///
+  /// In en, this message translates to:
+  /// **'Good cardiovascular health'**
+  String get steps_cardio_desc_4;
+
+  /// No description provided for @steps_cardio_desc_5.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong heart efficiency'**
+  String get steps_cardio_desc_5;
+
+  /// No description provided for @steps_cardio_desc_6.
   ///
   /// In en, this message translates to:
   /// **'Athlete-level efficiency'**
-  String get steps_cardio_optimal_desc;
+  String get steps_cardio_desc_6;
 
-  /// No description provided for @steps_endurance_low_desc.
+  /// No description provided for @steps_endurance_desc_1.
   ///
   /// In en, this message translates to:
   /// **'I tire out fast'**
-  String get steps_endurance_low_desc;
+  String get steps_endurance_desc_1;
 
-  /// No description provided for @steps_endurance_mid_desc.
+  /// No description provided for @steps_endurance_desc_2.
   ///
   /// In en, this message translates to:
-  /// **'Moderate improvement'**
-  String get steps_endurance_mid_desc;
+  /// **'Slightly more stamina'**
+  String get steps_endurance_desc_2;
 
-  /// No description provided for @steps_endurance_optimal_desc.
+  /// No description provided for @steps_endurance_desc_3.
+  ///
+  /// In en, this message translates to:
+  /// **'Noticeable improvement'**
+  String get steps_endurance_desc_3;
+
+  /// No description provided for @steps_endurance_desc_4.
+  ///
+  /// In en, this message translates to:
+  /// **'Good endurance'**
+  String get steps_endurance_desc_4;
+
+  /// No description provided for @steps_endurance_desc_5.
+  ///
+  /// In en, this message translates to:
+  /// **'High aerobic capacity'**
+  String get steps_endurance_desc_5;
+
+  /// No description provided for @steps_endurance_desc_6.
   ///
   /// In en, this message translates to:
   /// **'Endurance all day long'**
-  String get steps_endurance_optimal_desc;
+  String get steps_endurance_desc_6;
 
-  /// No description provided for @sleep_low_range.
+  /// No description provided for @sleep_conc_range_1.
   ///
   /// In en, this message translates to:
-  /// **'< 6 hours'**
-  String get sleep_low_range;
+  /// **'< 5 hours'**
+  String get sleep_conc_range_1;
 
-  /// No description provided for @sleep_mid_range.
+  /// No description provided for @sleep_conc_range_2.
+  ///
+  /// In en, this message translates to:
+  /// **'5–6 hours'**
+  String get sleep_conc_range_2;
+
+  /// No description provided for @sleep_conc_range_3.
   ///
   /// In en, this message translates to:
   /// **'6–7 hours'**
-  String get sleep_mid_range;
+  String get sleep_conc_range_3;
 
-  /// No description provided for @sleep_optimal_range_male.
+  /// No description provided for @sleep_conc_range_4.
   ///
   /// In en, this message translates to:
-  /// **'≥ 7 hours'**
-  String get sleep_optimal_range_male;
+  /// **'7–7.5 hours'**
+  String get sleep_conc_range_4;
 
-  /// No description provided for @sleep_optimal_range_female.
+  /// No description provided for @sleep_conc_range_5.
   ///
   /// In en, this message translates to:
-  /// **'≥ 9 hours'**
-  String get sleep_optimal_range_female;
+  /// **'≥ 7.5 hours'**
+  String get sleep_conc_range_5;
 
-  /// No description provided for @sleep_concentration_low_desc.
+  /// No description provided for @sleep_conc_range_5_female.
+  ///
+  /// In en, this message translates to:
+  /// **'≥ 8.5 hours'**
+  String get sleep_conc_range_5_female;
+
+  /// No description provided for @sleep_conc_desc_1.
   ///
   /// In en, this message translates to:
   /// **'Brain fog, can\'t focus'**
-  String get sleep_concentration_low_desc;
+  String get sleep_conc_desc_1;
 
-  /// No description provided for @sleep_concentration_mid_desc.
+  /// No description provided for @sleep_conc_desc_2.
+  ///
+  /// In en, this message translates to:
+  /// **'Sluggish thinking'**
+  String get sleep_conc_desc_2;
+
+  /// No description provided for @sleep_conc_desc_3.
   ///
   /// In en, this message translates to:
   /// **'I function but not at 100%'**
-  String get sleep_concentration_mid_desc;
+  String get sleep_conc_desc_3;
 
-  /// No description provided for @sleep_concentration_optimal_desc.
+  /// No description provided for @sleep_conc_desc_4.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearly sharp'**
+  String get sleep_conc_desc_4;
+
+  /// No description provided for @sleep_conc_desc_5.
   ///
   /// In en, this message translates to:
   /// **'Clear mind, laser focus'**
-  String get sleep_concentration_optimal_desc;
+  String get sleep_conc_desc_5;
 
-  /// No description provided for @sleep_regeneration_low_desc.
+  /// No description provided for @sleep_regen_range_1.
+  ///
+  /// In en, this message translates to:
+  /// **'< 5 hours'**
+  String get sleep_regen_range_1;
+
+  /// No description provided for @sleep_regen_range_2.
+  ///
+  /// In en, this message translates to:
+  /// **'5–6 hours'**
+  String get sleep_regen_range_2;
+
+  /// No description provided for @sleep_regen_range_3.
+  ///
+  /// In en, this message translates to:
+  /// **'6–7 hours'**
+  String get sleep_regen_range_3;
+
+  /// No description provided for @sleep_regen_range_4.
+  ///
+  /// In en, this message translates to:
+  /// **'7–8 hours'**
+  String get sleep_regen_range_4;
+
+  /// No description provided for @sleep_regen_range_5.
+  ///
+  /// In en, this message translates to:
+  /// **'≥ 8 hours'**
+  String get sleep_regen_range_5;
+
+  /// No description provided for @sleep_regen_range_5_female.
+  ///
+  /// In en, this message translates to:
+  /// **'≥ 9 hours'**
+  String get sleep_regen_range_5_female;
+
+  /// No description provided for @sleep_regen_desc_1.
   ///
   /// In en, this message translates to:
   /// **'I never recover, always sore'**
-  String get sleep_regeneration_low_desc;
+  String get sleep_regen_desc_1;
 
-  /// No description provided for @sleep_regeneration_mid_desc.
+  /// No description provided for @sleep_regen_desc_2.
+  ///
+  /// In en, this message translates to:
+  /// **'Very slow recovery'**
+  String get sleep_regen_desc_2;
+
+  /// No description provided for @sleep_regen_desc_3.
   ///
   /// In en, this message translates to:
   /// **'I recover but slowly'**
-  String get sleep_regeneration_mid_desc;
+  String get sleep_regen_desc_3;
 
-  /// No description provided for @sleep_regeneration_optimal_desc.
+  /// No description provided for @sleep_regen_desc_4.
+  ///
+  /// In en, this message translates to:
+  /// **'Good recovery'**
+  String get sleep_regen_desc_4;
+
+  /// No description provided for @sleep_regen_desc_5.
   ///
   /// In en, this message translates to:
   /// **'I wake up fresh and new'**
-  String get sleep_regeneration_optimal_desc;
+  String get sleep_regen_desc_5;
 
   /// No description provided for @hydration_low_range.
   ///
@@ -4292,23 +4418,65 @@ abstract class AppLocalizations {
   /// **'Radiant skin'**
   String get hydration_collagen_optimal_desc;
 
-  /// No description provided for @hydration_kidney_low_desc.
+  /// No description provided for @kidney_range_1.
+  ///
+  /// In en, this message translates to:
+  /// **'< 4 glasses'**
+  String get kidney_range_1;
+
+  /// No description provided for @kidney_range_2.
+  ///
+  /// In en, this message translates to:
+  /// **'4–5 glasses'**
+  String get kidney_range_2;
+
+  /// No description provided for @kidney_range_3.
+  ///
+  /// In en, this message translates to:
+  /// **'6–7 glasses'**
+  String get kidney_range_3;
+
+  /// No description provided for @kidney_range_4.
+  ///
+  /// In en, this message translates to:
+  /// **'8–9 glasses'**
+  String get kidney_range_4;
+
+  /// No description provided for @kidney_range_5.
+  ///
+  /// In en, this message translates to:
+  /// **'≥ 10 glasses'**
+  String get kidney_range_5;
+
+  /// No description provided for @kidney_desc_1.
   ///
   /// In en, this message translates to:
   /// **'Kidneys under strain'**
-  String get hydration_kidney_low_desc;
+  String get kidney_desc_1;
 
-  /// No description provided for @hydration_kidney_mid_desc.
+  /// No description provided for @kidney_desc_2.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic hydration'**
+  String get kidney_desc_2;
+
+  /// No description provided for @kidney_desc_3.
   ///
   /// In en, this message translates to:
   /// **'Moderate protection'**
-  String get hydration_kidney_mid_desc;
+  String get kidney_desc_3;
 
-  /// No description provided for @hydration_kidney_optimal_desc.
+  /// No description provided for @kidney_desc_4.
+  ///
+  /// In en, this message translates to:
+  /// **'Good kidney function'**
+  String get kidney_desc_4;
+
+  /// No description provided for @kidney_desc_5.
   ///
   /// In en, this message translates to:
   /// **'Optimal detox'**
-  String get hydration_kidney_optimal_desc;
+  String get kidney_desc_5;
 
   /// No description provided for @connection_error_try_later.
   ///

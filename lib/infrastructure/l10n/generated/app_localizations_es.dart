@@ -2256,61 +2256,124 @@ class AppLocalizationsEs extends AppLocalizations {
   String get metric_reference_title => 'Referencia';
 
   @override
-  String get steps_low_range => '< 5k pasos';
+  String get steps_range_1 => '< 2k pasos';
 
   @override
-  String get steps_mid_range => '5–10k pasos';
+  String get steps_range_2 => '2–4k pasos';
 
   @override
-  String get steps_optimal_range => '≥ 10k pasos';
+  String get steps_range_3 => '4–6k pasos';
 
   @override
-  String get steps_cardio_low_desc => 'El corazón trabaja de más';
+  String get steps_range_4 => '6–8k pasos';
 
   @override
-  String get steps_cardio_mid_desc => 'Mejora moderada';
+  String get steps_range_5 => '8–10k pasos';
 
   @override
-  String get steps_cardio_optimal_desc => 'Eficiencia de atleta';
+  String get steps_range_6 => '≥ 10k pasos';
 
   @override
-  String get steps_endurance_low_desc => 'Me fatigo rápido';
+  String get steps_cardio_desc_1 => 'El corazón trabaja de más';
 
   @override
-  String get steps_endurance_mid_desc => 'Mejora moderada';
+  String get steps_cardio_desc_2 => 'Ligero beneficio cardiovascular';
 
   @override
-  String get steps_endurance_optimal_desc => 'Aguante todo el día';
+  String get steps_cardio_desc_3 => 'Mejora notable';
 
   @override
-  String get sleep_low_range => '< 6h';
+  String get steps_cardio_desc_4 => 'Buena salud cardiovascular';
 
   @override
-  String get sleep_mid_range => '6–7h';
+  String get steps_cardio_desc_5 => 'Alta eficiencia cardíaca';
 
   @override
-  String get sleep_optimal_range_male => '≥ 7h';
+  String get steps_cardio_desc_6 => 'Eficiencia de atleta';
 
   @override
-  String get sleep_optimal_range_female => '≥ 9h';
+  String get steps_endurance_desc_1 => 'Me fatigo rápido';
 
   @override
-  String get sleep_concentration_low_desc => 'Niebla mental, no me concentro';
+  String get steps_endurance_desc_2 => 'Algo más de aguante';
 
   @override
-  String get sleep_concentration_mid_desc => 'Funciono pero no al 100%';
+  String get steps_endurance_desc_3 => 'Mejora notable';
 
   @override
-  String get sleep_concentration_optimal_desc => 'Mente clara, enfoque láser';
+  String get steps_endurance_desc_4 => 'Buen aguante';
 
   @override
-  String get sleep_regeneration_low_desc => 'No me recupero, siempre roto';
+  String get steps_endurance_desc_5 => 'Alta capacidad aeróbica';
 
   @override
-  String get sleep_regeneration_mid_desc => 'Recupero pero lento';
+  String get steps_endurance_desc_6 => 'Aguante todo el día';
 
   @override
-  String get sleep_regeneration_optimal_desc => 'Me despierto nuevo';
+  String get sleep_conc_range_1 => '< 5h';
+
+  @override
+  String get sleep_conc_range_2 => '5–6h';
+
+  @override
+  String get sleep_conc_range_3 => '6–7h';
+
+  @override
+  String get sleep_conc_range_4 => '7–7.5h';
+
+  @override
+  String get sleep_conc_range_5 => '≥ 7.5h';
+
+  @override
+  String get sleep_conc_range_5_female => '≥ 8.5h';
+
+  @override
+  String get sleep_conc_desc_1 => 'Niebla mental, no me concentro';
+
+  @override
+  String get sleep_conc_desc_2 => 'Pensamiento lento';
+
+  @override
+  String get sleep_conc_desc_3 => 'Funciono pero no al 100%';
+
+  @override
+  String get sleep_conc_desc_4 => 'Casi al máximo';
+
+  @override
+  String get sleep_conc_desc_5 => 'Mente clara, enfoque láser';
+
+  @override
+  String get sleep_regen_range_1 => '< 5h';
+
+  @override
+  String get sleep_regen_range_2 => '5–6h';
+
+  @override
+  String get sleep_regen_range_3 => '6–7h';
+
+  @override
+  String get sleep_regen_range_4 => '7–8h';
+
+  @override
+  String get sleep_regen_range_5 => '≥ 8h';
+
+  @override
+  String get sleep_regen_range_5_female => '≥ 9h';
+
+  @override
+  String get sleep_regen_desc_1 => 'No me recupero, siempre roto';
+
+  @override
+  String get sleep_regen_desc_2 => 'Recuperación muy lenta';
+
+  @override
+  String get sleep_regen_desc_3 => 'Recupero pero lento';
+
+  @override
+  String get sleep_regen_desc_4 => 'Buena recuperación';
+
+  @override
+  String get sleep_regen_desc_5 => 'Me despierto nuevo';
 
   @override
   String get hydration_low_range => '< 6 vasos';
@@ -2340,13 +2403,34 @@ class AppLocalizationsEs extends AppLocalizations {
   String get hydration_collagen_optimal_desc => 'Piel radiante';
 
   @override
-  String get hydration_kidney_low_desc => 'Riñones forzados';
+  String get kidney_range_1 => '< 4 vasos';
 
   @override
-  String get hydration_kidney_mid_desc => 'Protección moderada';
+  String get kidney_range_2 => '4–5 vasos';
 
   @override
-  String get hydration_kidney_optimal_desc => 'Detox óptima';
+  String get kidney_range_3 => '6–7 vasos';
+
+  @override
+  String get kidney_range_4 => '8–9 vasos';
+
+  @override
+  String get kidney_range_5 => '≥ 10 vasos';
+
+  @override
+  String get kidney_desc_1 => 'Riñones forzados';
+
+  @override
+  String get kidney_desc_2 => 'Hidratación básica';
+
+  @override
+  String get kidney_desc_3 => 'Protección moderada';
+
+  @override
+  String get kidney_desc_4 => 'Buena función renal';
+
+  @override
+  String get kidney_desc_5 => 'Detox óptima';
 
   @override
   String get connection_error_try_later =>

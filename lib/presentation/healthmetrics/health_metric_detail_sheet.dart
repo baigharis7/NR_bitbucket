@@ -6,8 +6,6 @@ import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localiz
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
-enum _Tier { low, mid, optimal }
-
 class HealthMetricDetailSheet {
   static OverlayEntry? _scrimEntry;
   static OverlayEntry? _menuEntry;
@@ -22,27 +20,15 @@ class HealthMetricDetailSheet {
     final l10n = AppLocalizations.of(context)!;
     final info = _getMetricInfo(metric.type, l10n, sex);
 
-    final tier = _getCurrentTier(metric);
-    final tierColor = tier == _Tier.optimal
+    final tierIndex = _getCurrentTierIndex(metric);
+    final currentTier = info.tiers[tierIndex];
+    final isOptimal = tierIndex == info.tiers.length - 1;
+    final isLow = tierIndex == 0;
+    final tierColor = isOptimal
         ? AppColors.mountainMeadow
-        : tier == _Tier.mid
-            ? Colors.orange
-            : AppColors.errorRed;
-    final tierRange = tier == _Tier.optimal
-        ? info.optimalRange
-        : tier == _Tier.mid
-            ? info.midRange
-            : info.lowRange;
-    final tierDescription = tier == _Tier.optimal
-        ? info.optimalDescription
-        : tier == _Tier.mid
-            ? info.midDescription
-            : info.lowDescription;
-    final tierPercentage = tier == _Tier.optimal
-        ? info.optimalPercentage
-        : tier == _Tier.mid
-            ? info.midPercentage
-            : info.lowPercentage;
+        : isLow
+            ? AppColors.errorRed
+            : Colors.orange;
 
     final overlay = Overlay.of(context);
     _animController = AnimationController(
@@ -110,7 +96,7 @@ class HealthMetricDetailSheet {
                           color: tierColor.withValues(alpha: 0.15),
                         ),
                         child: Icon(
-                          _getArrowIcon(metric.type, tier),
+                          _getArrowIcon(metric.type, isOptimal, isLow),
                           color: tierColor,
                           size: 22,
                         ),
@@ -163,7 +149,7 @@ class HealthMetricDetailSheet {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                tierDescription,
+                                currentTier.description,
                                 style: AppTextStyles.radioCanadaBig.copyWith(
                                   fontSize: Dimens.fontSizeLarge,
                                   fontWeight: FontWeight.w600,
@@ -172,7 +158,7 @@ class HealthMetricDetailSheet {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                tierRange,
+                                currentTier.range,
                                 style: AppTextStyles.dmSans.copyWith(
                                   fontSize: Dimens.fontSizeNormal,
                                   color: Colors.black45,
@@ -182,7 +168,7 @@ class HealthMetricDetailSheet {
                           ),
                         ),
                         Text(
-                          tierPercentage,
+                          currentTier.percentage,
                           style: AppTextStyles.radioCanadaBig.copyWith(
                             fontSize: Dimens.fontSizeLarge,
                             fontWeight: FontWeight.w600,
@@ -337,60 +323,96 @@ class HealthMetricDetailSheet {
     });
   }
 
-  static IconData _getArrowIcon(HealthMetricType type, _Tier tier) {
+  static IconData _getArrowIcon(HealthMetricType type, bool isOptimal, bool isLow) {
     switch (type) {
-      // Steps, Collagen, Kidney: low = dash, mid/optimal = up
       case HealthMetricType.cardiovascularHealth:
       case HealthMetricType.physicalEndurance:
       case HealthMetricType.collagenElasticity:
       case HealthMetricType.kidneyHealth:
-        if (tier == _Tier.low) return Icons.remove_circle_outline;
+        if (isLow) return Icons.remove_circle_outline;
         return Icons.arrow_upward;
-
-      // Sleep: optimal = up, low/mid = down
       case HealthMetricType.concentrationFocus:
       case HealthMetricType.muscleRegeneration:
-        if (tier == _Tier.optimal) return Icons.arrow_upward;
+        if (isOptimal) return Icons.arrow_upward;
         return Icons.arrow_downward;
-
-      // Cramps: low = dash, mid/optimal = down (reduction)
       case HealthMetricType.goodbyeCramps:
-        if (tier == _Tier.low) return Icons.remove_circle_outline;
+        if (isLow) return Icons.remove_circle_outline;
         return Icons.arrow_downward;
     }
   }
 
-  static _Tier _getCurrentTier(HealthImpactMetric metric) {
+  /// Returns the index into the metric's tiers list for the current value.
+  static int _getCurrentTierIndex(HealthImpactMetric metric) {
+    final p = metric.percentage;
     switch (metric.type) {
+      // Steps cardio (6 tiers): formula thresholds at 2k/4k/6k/8k/10k boundaries
       case HealthMetricType.cardiovascularHealth:
-      case HealthMetricType.physicalEndurance:
-      case HealthMetricType.goodbyeCramps:
-      case HealthMetricType.collagenElasticity:
-      case HealthMetricType.kidneyHealth:
-        if (metric.isNeutral || metric.percentage == 0) return _Tier.low;
-        const optimalValues = {
-          HealthMetricType.cardiovascularHealth: 25.0,
-          HealthMetricType.physicalEndurance: 30.0,
-          HealthMetricType.goodbyeCramps: 65.0,
-          HealthMetricType.collagenElasticity: 32.0,
-          HealthMetricType.kidneyHealth: 65.0,
-        };
-        return metric.percentage >= optimalValues[metric.type]!
-            ? _Tier.optimal
-            : _Tier.mid;
+        if (p <= 0) return 0;
+        if (p < 7.5) return 0;   // <2k
+        if (p < 15.0) return 1;  // 2-4k
+        if (p < 19.5) return 2;  // 4-6k
+        if (p < 22.5) return 3;  // 6-8k
+        if (p < 25.0) return 4;  // 8-10k
+        return 5;                 // ≥10k
 
+      // Steps endurance (6 tiers)
+      case HealthMetricType.physicalEndurance:
+        if (p <= 0) return 0;
+        if (p < 9.0) return 0;   // <2k
+        if (p < 15.0) return 1;  // 2-4k
+        if (p < 20.5) return 2;  // 4-6k
+        if (p < 25.4) return 3;  // 6-8k
+        if (p < 30.0) return 4;  // 8-10k
+        return 5;                 // ≥10k
+
+      // Sleep concentration deficit (5 tiers, descending — higher deficit = worse)
       case HealthMetricType.concentrationFocus:
+        if (metric.isPositive) return 4;  // optimal
+        if (p <= 1.7) return 3;           // 7-7.5h
+        if (p <= 6.7) return 2;           // 6-7h
+        if (p <= 21.0) return 1;          // 5-6h
+        return 0;                          // <5h
+
+      // Sleep muscle deficit (5 tiers, descending)
       case HealthMetricType.muscleRegeneration:
-        if (metric.isPositive) return _Tier.optimal;
-        const midValues = {
-          HealthMetricType.concentrationFocus: 15.0,
-          HealthMetricType.muscleRegeneration: 15.0,
-        };
-        return metric.percentage <= midValues[metric.type]!
-            ? _Tier.mid
-            : _Tier.low;
+        if (metric.isPositive) return 4;  // optimal
+        if (p <= 2.2) return 3;           // 7-8h
+        if (p <= 6.7) return 2;           // 6-7h
+        if (p <= 20.2) return 1;          // 5-6h
+        return 0;                          // <5h
+
+      // Cramps & collagen: 3 tiers unchanged
+      case HealthMetricType.goodbyeCramps:
+        if (p == 0) return 0;
+        if (p < 65) return 1;
+        return 2;
+      case HealthMetricType.collagenElasticity:
+        if (p == 0) return 0;
+        if (p < 32) return 1;
+        return 2;
+
+      // Kidney (5 tiers): formula thresholds at 4/5/7/9/10 boundaries
+      case HealthMetricType.kidneyHealth:
+        if (p <= 0) return 0;
+        if (p < 27.0) return 0;  // <4
+        if (p < 42.8) return 1;  // 4-5
+        if (p < 58.4) return 2;  // 6-7
+        if (p < 61.7) return 3;  // 8-9
+        return 4;                 // ≥10
     }
   }
+}
+
+class _RangeTier {
+  final String range;
+  final String description;
+  final String percentage;
+
+  const _RangeTier({
+    required this.range,
+    required this.description,
+    required this.percentage,
+  });
 }
 
 class _MetricInfo {
@@ -398,38 +420,18 @@ class _MetricInfo {
   final String optimalValue;
   final String bibliography;
   final String description;
-  final String lowRange;
-  final String lowDescription;
-  final String lowPercentage;
-  final String midRange;
-  final String midDescription;
-  final String midPercentage;
-  final String optimalRange;
-  final String optimalDescription;
-  final String optimalPercentage;
+  final List<_RangeTier> tiers;
 
   const _MetricInfo({
     required this.indicator,
     required this.optimalValue,
     required this.bibliography,
     required this.description,
-    required this.lowRange,
-    required this.lowDescription,
-    required this.lowPercentage,
-    required this.midRange,
-    required this.midDescription,
-    required this.midPercentage,
-    required this.optimalRange,
-    required this.optimalDescription,
-    required this.optimalPercentage,
+    required this.tiers,
   });
 }
 
 _MetricInfo _getMetricInfo(HealthMetricType type, AppLocalizations l10n, [SexType? sex]) {
-  final sleepOptimalRange = sex == SexType.female
-      ? l10n.sleep_optimal_range_female
-      : l10n.sleep_optimal_range_male;
-
   switch (type) {
     case HealthMetricType.cardiovascularHealth:
       return _MetricInfo(
@@ -437,15 +439,14 @@ _MetricInfo _getMetricInfo(HealthMetricType type, AppLocalizations l10n, [SexTyp
         optimalValue: l10n.metric_optimal_cardiovascular,
         bibliography: l10n.metric_bib_cardiovascular,
         description: l10n.metric_desc_cardiovascular,
-        lowRange: l10n.steps_low_range,
-        lowDescription: l10n.steps_cardio_low_desc,
-        lowPercentage: '0%',
-        midRange: l10n.steps_mid_range,
-        midDescription: l10n.steps_cardio_mid_desc,
-        midPercentage: '↑ 13%',
-        optimalRange: l10n.steps_optimal_range,
-        optimalDescription: l10n.steps_cardio_optimal_desc,
-        optimalPercentage: '↑ 25%',
+        tiers: [
+          _RangeTier(range: l10n.steps_range_1, description: l10n.steps_cardio_desc_1, percentage: '0%'),
+          _RangeTier(range: l10n.steps_range_2, description: l10n.steps_cardio_desc_2, percentage: '↑ 8%'),
+          _RangeTier(range: l10n.steps_range_3, description: l10n.steps_cardio_desc_3, percentage: '↑ 15%'),
+          _RangeTier(range: l10n.steps_range_4, description: l10n.steps_cardio_desc_4, percentage: '↑ 19%'),
+          _RangeTier(range: l10n.steps_range_5, description: l10n.steps_cardio_desc_5, percentage: '↑ 23%'),
+          _RangeTier(range: l10n.steps_range_6, description: l10n.steps_cardio_desc_6, percentage: '↑ 25%'),
+        ],
       );
     case HealthMetricType.physicalEndurance:
       return _MetricInfo(
@@ -453,47 +454,48 @@ _MetricInfo _getMetricInfo(HealthMetricType type, AppLocalizations l10n, [SexTyp
         optimalValue: l10n.metric_optimal_endurance,
         bibliography: l10n.metric_bib_endurance,
         description: l10n.metric_desc_endurance,
-        lowRange: l10n.steps_low_range,
-        lowDescription: l10n.steps_endurance_low_desc,
-        lowPercentage: '0%',
-        midRange: l10n.steps_mid_range,
-        midDescription: l10n.steps_endurance_mid_desc,
-        midPercentage: '↑ 15%',
-        optimalRange: l10n.steps_optimal_range,
-        optimalDescription: l10n.steps_endurance_optimal_desc,
-        optimalPercentage: '↑ 30%',
+        tiers: [
+          _RangeTier(range: l10n.steps_range_1, description: l10n.steps_endurance_desc_1, percentage: '0%'),
+          _RangeTier(range: l10n.steps_range_2, description: l10n.steps_endurance_desc_2, percentage: '↑ 9%'),
+          _RangeTier(range: l10n.steps_range_3, description: l10n.steps_endurance_desc_3, percentage: '↑ 15%'),
+          _RangeTier(range: l10n.steps_range_4, description: l10n.steps_endurance_desc_4, percentage: '↑ 20%'),
+          _RangeTier(range: l10n.steps_range_5, description: l10n.steps_endurance_desc_5, percentage: '↑ 25%'),
+          _RangeTier(range: l10n.steps_range_6, description: l10n.steps_endurance_desc_6, percentage: '↑ 30%'),
+        ],
       );
     case HealthMetricType.concentrationFocus:
+      final optRange = sex == SexType.female
+          ? l10n.sleep_conc_range_5_female
+          : l10n.sleep_conc_range_5;
       return _MetricInfo(
         indicator: l10n.metric_indicator_concentration,
         optimalValue: l10n.metric_optimal_concentration,
         bibliography: l10n.metric_bib_concentration,
         description: l10n.metric_desc_concentration,
-        lowRange: l10n.sleep_low_range,
-        lowDescription: l10n.sleep_concentration_low_desc,
-        lowPercentage: '↓ 25%',
-        midRange: l10n.sleep_mid_range,
-        midDescription: l10n.sleep_concentration_mid_desc,
-        midPercentage: '↓ 15%',
-        optimalRange: sleepOptimalRange,
-        optimalDescription: l10n.sleep_concentration_optimal_desc,
-        optimalPercentage: '100%',
+        tiers: [
+          _RangeTier(range: l10n.sleep_conc_range_1, description: l10n.sleep_conc_desc_1, percentage: '↓ 59%'),
+          _RangeTier(range: l10n.sleep_conc_range_2, description: l10n.sleep_conc_desc_2, percentage: '↓ 21%'),
+          _RangeTier(range: l10n.sleep_conc_range_3, description: l10n.sleep_conc_desc_3, percentage: '↓ 7%'),
+          _RangeTier(range: l10n.sleep_conc_range_4, description: l10n.sleep_conc_desc_4, percentage: '↓ 2%'),
+          _RangeTier(range: optRange, description: l10n.sleep_conc_desc_5, percentage: '0%'),
+        ],
       );
     case HealthMetricType.muscleRegeneration:
+      final optRange = sex == SexType.female
+          ? l10n.sleep_regen_range_5_female
+          : l10n.sleep_regen_range_5;
       return _MetricInfo(
         indicator: l10n.metric_indicator_regeneration,
         optimalValue: l10n.metric_optimal_regeneration,
         bibliography: l10n.metric_bib_regeneration,
         description: l10n.metric_desc_regeneration,
-        lowRange: l10n.sleep_low_range,
-        lowDescription: l10n.sleep_regeneration_low_desc,
-        lowPercentage: '↓ 35%',
-        midRange: l10n.sleep_mid_range,
-        midDescription: l10n.sleep_regeneration_mid_desc,
-        midPercentage: '↓ 15%',
-        optimalRange: sleepOptimalRange,
-        optimalDescription: l10n.sleep_regeneration_optimal_desc,
-        optimalPercentage: '100%',
+        tiers: [
+          _RangeTier(range: l10n.sleep_regen_range_1, description: l10n.sleep_regen_desc_1, percentage: '↓ 20%'),
+          _RangeTier(range: l10n.sleep_regen_range_2, description: l10n.sleep_regen_desc_2, percentage: '↓ 7%'),
+          _RangeTier(range: l10n.sleep_regen_range_3, description: l10n.sleep_regen_desc_3, percentage: '↓ 3%'),
+          _RangeTier(range: l10n.sleep_regen_range_4, description: l10n.sleep_regen_desc_4, percentage: '↓ 1%'),
+          _RangeTier(range: optRange, description: l10n.sleep_regen_desc_5, percentage: '0%'),
+        ],
       );
     case HealthMetricType.goodbyeCramps:
       return _MetricInfo(
@@ -501,15 +503,11 @@ _MetricInfo _getMetricInfo(HealthMetricType type, AppLocalizations l10n, [SexTyp
         optimalValue: l10n.metric_optimal_cramps,
         bibliography: l10n.metric_bib_cramps,
         description: l10n.metric_desc_cramps,
-        lowRange: l10n.hydration_low_range,
-        lowDescription: l10n.hydration_cramps_low_desc,
-        lowPercentage: '0%',
-        midRange: l10n.hydration_mid_range,
-        midDescription: l10n.hydration_cramps_mid_desc,
-        midPercentage: '↓ 40%',
-        optimalRange: l10n.hydration_optimal_range,
-        optimalDescription: l10n.hydration_cramps_optimal_desc,
-        optimalPercentage: '↓ 65%',
+        tiers: [
+          _RangeTier(range: l10n.hydration_low_range, description: l10n.hydration_cramps_low_desc, percentage: '0%'),
+          _RangeTier(range: l10n.hydration_mid_range, description: l10n.hydration_cramps_mid_desc, percentage: '↓ 40%'),
+          _RangeTier(range: l10n.hydration_optimal_range, description: l10n.hydration_cramps_optimal_desc, percentage: '↓ 65%'),
+        ],
       );
     case HealthMetricType.collagenElasticity:
       return _MetricInfo(
@@ -517,15 +515,11 @@ _MetricInfo _getMetricInfo(HealthMetricType type, AppLocalizations l10n, [SexTyp
         optimalValue: l10n.metric_optimal_collagen,
         bibliography: l10n.metric_bib_collagen,
         description: l10n.metric_desc_collagen,
-        lowRange: l10n.hydration_low_range,
-        lowDescription: l10n.hydration_collagen_low_desc,
-        lowPercentage: '0%',
-        midRange: l10n.hydration_mid_range,
-        midDescription: l10n.hydration_collagen_mid_desc,
-        midPercentage: '↑ 17%',
-        optimalRange: l10n.hydration_optimal_range,
-        optimalDescription: l10n.hydration_collagen_optimal_desc,
-        optimalPercentage: '↑ 32%',
+        tiers: [
+          _RangeTier(range: l10n.hydration_low_range, description: l10n.hydration_collagen_low_desc, percentage: '0%'),
+          _RangeTier(range: l10n.hydration_mid_range, description: l10n.hydration_collagen_mid_desc, percentage: '↑ 17%'),
+          _RangeTier(range: l10n.hydration_optimal_range, description: l10n.hydration_collagen_optimal_desc, percentage: '↑ 32%'),
+        ],
       );
     case HealthMetricType.kidneyHealth:
       return _MetricInfo(
@@ -533,15 +527,13 @@ _MetricInfo _getMetricInfo(HealthMetricType type, AppLocalizations l10n, [SexTyp
         optimalValue: l10n.metric_optimal_kidney,
         bibliography: l10n.metric_bib_kidney,
         description: l10n.metric_desc_kidney,
-        lowRange: l10n.hydration_low_range,
-        lowDescription: l10n.hydration_kidney_low_desc,
-        lowPercentage: '0%',
-        midRange: l10n.hydration_mid_range,
-        midDescription: l10n.hydration_kidney_mid_desc,
-        midPercentage: '↑ 30%',
-        optimalRange: l10n.hydration_optimal_range,
-        optimalDescription: l10n.hydration_kidney_optimal_desc,
-        optimalPercentage: '↑ 65%',
+        tiers: [
+          _RangeTier(range: l10n.kidney_range_1, description: l10n.kidney_desc_1, percentage: '0%'),
+          _RangeTier(range: l10n.kidney_range_2, description: l10n.kidney_desc_2, percentage: '↑ 27%'),
+          _RangeTier(range: l10n.kidney_range_3, description: l10n.kidney_desc_3, percentage: '↑ 53%'),
+          _RangeTier(range: l10n.kidney_range_4, description: l10n.kidney_desc_4, percentage: '↑ 62%'),
+          _RangeTier(range: l10n.kidney_range_5, description: l10n.kidney_desc_5, percentage: '↑ 64%'),
+        ],
       );
   }
 }

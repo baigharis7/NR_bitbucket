@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:nutrenaissance_flutter/domain/models/dashboard/health_impact_metric.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
@@ -6,23 +8,20 @@ class HealthImpactCalculator {
   HealthImpactCalculator._();
 
   // ── Steps ──────────────────────────────────────────────────────────
-  // Ranges: Low <5000, Mid 5000-9999, Optimal ≥10000
-  // Cardiovascular Health: Low 0→13%, Mid 13→25%, Optimal 25%
-  // Physical Endurance:    Low 0→15%, Mid 15→30%, Optimal 30%
+  // Cardiovascular (resting HR): 25 × ln(x/1000) / ln(10), capped [0, 25]
+  // VO₂ max (endurance):         30 × (x/10000)^0.75,      capped [0, 30]
+  // Ranges: <2k, 2-4k, 4-6k, 6-8k, 8-10k, ≥10k
 
   static List<HealthImpactMetric> calculateStepsMetrics(int steps, AppLocalizations l10n) {
     final double cardio;
     final double endurance;
 
-    if (steps >= 10000) {
-      cardio = 25;
-      endurance = 30;
-    } else if (steps >= 5000) {
-      cardio = 13;
-      endurance = 15;
-    } else {
+    if (steps <= 0) {
       cardio = 0;
       endurance = 0;
+    } else {
+      cardio = (25 * log(steps / 1000) / ln10).clamp(0.0, 25.0);
+      endurance = (30 * pow(steps / 10000, 0.75)).toDouble().clamp(0.0, 30.0);
     }
 
     return [
@@ -46,73 +45,80 @@ class HealthImpactCalculator {
   }
 
   // ── Sleep ──────────────────────────────────────────────────────────
-  // Ranges: Low <6h, Mid 6-7h, Optimal ≥7h
-  // Concentration & Focus: Low ↓25%, Mid ↓15%, Optimal 100%
-  // Muscle Regeneration:   Low ↓35%, Mid ↓15%, Optimal 100%
+  // Concentration deficit: 100 × e^(-0.9 × (h-4.5)) - 5, clamped [0, 100]
+  // Muscle deficit:         35 × e^(-1.1 × (h-4.5)),      clamped [0, 35]
+  // Females apply +1h offset (need ~1h more for same benefit).
+  // Deficit < 0.5 treated as optimal (0%).
 
   static List<HealthImpactMetric> calculateSleepMetrics(
     double hours,
     AppLocalizations l10n, [
     SexType? sex,
   ]) {
-    final optimalThreshold = sex == SexType.female ? 9.0 : 7.0;
-    final double concentration;
-    final double muscle;
+    final offset = sex == SexType.female ? 1.0 : 0.0;
+    final h = hours - offset;
 
-    if (hours >= optimalThreshold) {
-      concentration = 100;
-      muscle = 100;
-    } else if (hours >= 6) {
-      concentration = 15;
-      muscle = 15;
+    // Hard cutoffs match spec boundaries: concentration 0% at ≥7.5h, muscle 0% at ≥8h
+    final double concDeficit;
+    final double muscDeficit;
+    if (h >= 7.5) {
+      concDeficit = 0;
     } else {
-      concentration = 25;
-      muscle = 35;
+      concDeficit = (100 * exp(-0.9 * (h - 4.5)) - 5).clamp(0.0, 100.0);
     }
+    if (h >= 8) {
+      muscDeficit = 0;
+    } else {
+      muscDeficit = (35 * exp(-1.1 * (h - 4.5))).clamp(0.0, 35.0);
+    }
+
+    final bool concOptimal = concDeficit == 0;
+    final bool muscOptimal = muscDeficit == 0;
 
     return [
       HealthImpactMetric(
         type: HealthMetricType.concentrationFocus,
         label: l10n.metric_concentration_focus,
         sublabel: l10n.metric_sublabel_working_memory,
-        percentage: concentration,
-        isPositive: hours >= optimalThreshold,
+        percentage: concOptimal ? 0 : concDeficit,
+        isPositive: concOptimal,
         isNeutral: false,
       ),
       HealthImpactMetric(
         type: HealthMetricType.muscleRegeneration,
         label: l10n.metric_muscle_regeneration,
         sublabel: l10n.metric_sublabel_tissue_repair,
-        percentage: muscle,
-        isPositive: hours >= optimalThreshold,
+        percentage: muscOptimal ? 0 : muscDeficit,
+        isPositive: muscOptimal,
         isNeutral: false,
       ),
     ];
   }
 
   // ── Hydration ──────────────────────────────────────────────────────
-  // Ranges: Low <6 glasses, Mid 6-9 glasses, Optimal ≥10 glasses
-  // Goodbye Cramps:       Low 0→40%, Mid 40→65%, Optimal 65%
-  // Collagen & Elasticity: Low 0→17%, Mid 17→32%, Optimal 32%
-  // Kidney Health:         Low 0→30%, Mid 30→65%, Optimal 65%
+  // Cramps & Collagen: unchanged 3-tier (no graduality per spec).
+  // Kidney: 65 × (1 - e^(-0.55 × (x-3))), clamped [0, 65]
+  // Ranges kidney: <4, 4-5, 6-7, 8-9, ≥10 glasses
 
   static List<HealthImpactMetric> calculateHydrationMetrics(int glasses, AppLocalizations l10n) {
     final double cramps;
     final double collagen;
-    final double kidney;
-
     if (glasses >= 10) {
       cramps = 65;
       collagen = 32;
-      kidney = 65;
     } else if (glasses >= 6) {
       cramps = 40;
       collagen = 17;
-      kidney = 30;
     } else {
       cramps = 0;
       collagen = 0;
+    }
+
+    final double kidney;
+    if (glasses <= 3) {
       kidney = 0;
+    } else {
+      kidney = (65 * (1 - exp(-0.55 * (glasses - 3)))).clamp(0.0, 65.0);
     }
 
     return [
@@ -141,47 +147,5 @@ class HealthImpactCalculator {
         isNeutral: kidney == 0,
       ),
     ];
-  }
-
-  // ── Helpers ────────────────────────────────────────────────────────
-
-  /// Linear interpolation for positive metrics (steps, hydration).
-  /// Low range [0, lowUpper): interpolate 0 → midValue
-  /// Mid range [lowUpper, midUpper): interpolate midValue → optimalValue
-  /// Optimal [midUpper, ∞): optimalValue
-  static double _interpolate({
-    required double value,
-    required double lowUpper,
-    required double midUpper,
-    required double midValue,
-    required double optimalValue,
-  }) {
-    if (value <= 0) return 0;
-    if (value >= midUpper) return optimalValue;
-    if (value < lowUpper) {
-      return (value / lowUpper) * midValue;
-    }
-    // Mid range
-    final progress = (value - lowUpper) / (midUpper - lowUpper);
-    return midValue + progress * (optimalValue - midValue);
-  }
-
-  /// Linear interpolation for sleep decline metrics.
-  /// Low [0, 6h): interpolate lowDecline → midDecline
-  /// Mid [6h, 7h): interpolate midDecline → 0
-  /// Optimal [7h, ∞): 0 (no decline)
-  static double _interpolateSleepDecline({
-    required double hours,
-    required double lowDecline,
-    required double midDecline,
-  }) {
-    if (hours >= 7) return 0;
-    if (hours <= 0) return lowDecline;
-    if (hours < 6) {
-      // Interpolate from lowDecline at 0h to midDecline at 6h
-      return lowDecline - (hours / 6) * (lowDecline - midDecline);
-    }
-    // Mid range: 6-7h, interpolate midDecline → 0
-    return midDecline * (7 - hours);
   }
 }

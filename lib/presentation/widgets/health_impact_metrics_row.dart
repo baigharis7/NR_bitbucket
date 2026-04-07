@@ -90,33 +90,37 @@ class HealthImpactMarkerWidget extends StatelessWidget {
   /// Returns the tier color: green for optimal, orange for mid, red for low.
   static Color _getTierColor(HealthImpactMetric m) {
     switch (m.type) {
+      // Continuous metrics: green at ≥80% of cap, orange otherwise, red at 0
       case HealthMetricType.cardiovascularHealth:
       case HealthMetricType.physicalEndurance:
-      case HealthMetricType.goodbyeCramps:
-      case HealthMetricType.collagenElasticity:
       case HealthMetricType.kidneyHealth:
         if (m.isNeutral || m.percentage == 0) return AppColors.errorRed;
+        const optimalThresholds = {
+          HealthMetricType.cardiovascularHealth: 20.0, // 80% of 25
+          HealthMetricType.physicalEndurance: 24.0, // 80% of 30
+          HealthMetricType.kidneyHealth: 52.0, // 80% of 65
+        };
+        return m.percentage >= optimalThresholds[m.type]!
+            ? AppColors.mountainMeadow
+            : Colors.orange;
+
+      // Tiered metrics: exact tier match
+      case HealthMetricType.goodbyeCramps:
+      case HealthMetricType.collagenElasticity:
+        if (m.isNeutral || m.percentage == 0) return AppColors.errorRed;
         const optimalValues = {
-          HealthMetricType.cardiovascularHealth: 25.0,
-          HealthMetricType.physicalEndurance: 30.0,
           HealthMetricType.goodbyeCramps: 65.0,
           HealthMetricType.collagenElasticity: 32.0,
-          HealthMetricType.kidneyHealth: 65.0,
         };
         return m.percentage >= optimalValues[m.type]!
             ? AppColors.mountainMeadow
             : Colors.orange;
 
+      // Sleep deficit: green when optimal, orange ≤15%, red >15%
       case HealthMetricType.concentrationFocus:
       case HealthMetricType.muscleRegeneration:
         if (m.isPositive) return AppColors.mountainMeadow;
-        const midValues = {
-          HealthMetricType.concentrationFocus: 15.0,
-          HealthMetricType.muscleRegeneration: 15.0,
-        };
-        return m.percentage <= midValues[m.type]!
-            ? Colors.orange
-            : AppColors.errorRed;
+        return m.percentage <= 15.0 ? Colors.orange : AppColors.errorRed;
     }
   }
 
