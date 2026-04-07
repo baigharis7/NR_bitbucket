@@ -543,7 +543,10 @@ class LoginProviderNew extends BaseProvider {
             final transformed = <String, dynamic>{};
             for (final obj in objectives) {
               if (obj is Map<String, dynamic>) {
-                transformed[obj['code'].toString()] = obj['nutrients'];
+                transformed[obj['code'].toString()] = {
+                  'nutrients': obj['nutrients'],
+                  if (obj['type'] != null) 'type': obj['type'],
+                };
               }
             }
             return ReferencePayload(

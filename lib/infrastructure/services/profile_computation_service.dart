@@ -205,12 +205,17 @@ class ProfileComputationService {
   // ---------------------------------------------------------------------------
 
   _MicronutrientResult _computeMicronutrients(List<int> objectives) {
-    // Separate normal (id < 100) from temporary (id >= 100) objectives
-    final normalObjectives = objectives.where((id) => id < 100).toList();
-    final temporaryObjectives = objectives.where((id) => id >= 100).toList();
+    // Classify using the `type` field from objective-nutrients reference data,
+    // matching the original Lambda logic (goal.type === "temporary").
+    final normalObjectives = objectives.where((id) => !_isTemporaryObjective(id)).toList();
+    final temporaryObjectives = objectives.where((id) => _isTemporaryObjective(id)).toList();
 
     final normalResult = _prioritize(normalObjectives);
-    final temporaryResult = _prioritize(temporaryObjectives);
+    // Exclude nutrients already in the normal pool (matches Lambda behavior)
+    final temporaryResult = _prioritize(
+      temporaryObjectives,
+      excludeNutrients: normalResult.all.toSet(),
+    );
 
     return _MicronutrientResult(
       micronutrients: normalResult.selected,
@@ -220,7 +225,10 @@ class ProfileComputationService {
     );
   }
 
-  _PrioritizationResult _prioritize(List<int> objectiveIds) {
+  _PrioritizationResult _prioritize(
+    List<int> objectiveIds, {
+    Set<String> excludeNutrients = const {},
+  }) {
     final Set<String> usedPool = {};
     final List<String> selected = [];
     final Set<String> allNutrients = {};
@@ -228,7 +236,9 @@ class ProfileComputationService {
     // Collect all nutrients across all objectives for the borrowing pool
     final Map<int, List<String>> objectiveNutrientLists = {};
     for (final id in objectiveIds) {
-      final nutrients = _getObjectiveNutrients(id);
+      final nutrients = _getObjectiveNutrients(id)
+          .where((n) => !excludeNutrients.contains(n))
+          .toList();
       objectiveNutrientLists[id] = nutrients;
       allNutrients.addAll(nutrients);
     }
@@ -270,9 +280,23 @@ class ProfileComputationService {
   List<String> _getObjectiveNutrients(int objectiveId) {
     final raw = _objectiveNutrientsCache![objectiveId.toString()];
     if (raw is List) {
-      return raw.cast<String>();
+      return raw.cast<String>(); // Old format: direct list
+    }
+    if (raw is Map) {
+      final nutrients = raw['nutrients'];
+      if (nutrients is List) return nutrients.cast<String>();
     }
     return [];
+  }
+
+  /// Returns true if the objective has `type: "temporary"` in the reference data.
+  /// Falls back to false for old-format data (plain lists) or unknown objectives.
+  bool _isTemporaryObjective(int objectiveId) {
+    final raw = _objectiveNutrientsCache![objectiveId.toString()];
+    if (raw is Map) {
+      return raw['type'] == 'temporary';
+    }
+    return false;
   }
 }
 

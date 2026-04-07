@@ -242,18 +242,26 @@ class RecommendationComputationService {
     for (final entry in (_objectiveNutrientsCache ?? {}).entries) {
       final objectiveCode = int.tryParse(entry.key);
       if (objectiveCode != null && objectives.contains(objectiveCode)) {
-        final nutrientList = entry.value;
-        if (nutrientList is List) {
-          for (final nutrient in nutrientList) {
-            final n = nutrient.toString();
-            if (!nutrients.contains(n)) {
-              nutrients.add(n);
-            }
+        final nutrientList = _extractNutrients(entry.value);
+        for (final nutrient in nutrientList) {
+          final n = nutrient.toString();
+          if (!nutrients.contains(n)) {
+            nutrients.add(n);
           }
         }
       }
     }
     return nutrients..sort();
+  }
+
+  /// Extracts nutrient list from either new format ({nutrients, type}) or old format (plain list).
+  List _extractNutrients(dynamic value) {
+    if (value is List) return value;
+    if (value is Map) {
+      final nutrients = value['nutrients'];
+      if (nutrients is List) return nutrients;
+    }
+    return [];
   }
 
   // ---------------------------------------------------------------------------
