@@ -17,6 +17,7 @@ void main() {
     '1': {'nutrients': ['calcium', 'vitD', 'magnesium', 'phosphorus']},
     '2': {'nutrients': ['iron', 'vitB12', 'vitB9', 'zinc']},
     '3': {'nutrients': ['vitC', 'vitE', 'selenium']},
+    '4': {'nutrients': ['choline', 'vitF', 'calcium', 'iron']},
     '56': {'nutrients': ['iron', 'vitB9', 'vitB6', 'magnesium'], 'type': 'temporary'},   // menstruation
     '57': {'nutrients': ['vitC', 'zinc', 'vitD', 'selenium'], 'type': 'temporary'},       // cold
   };
@@ -317,6 +318,20 @@ void main() {
         expect(calciumRda.ul, 2000);
       });
 
+      test('age 30 maps to 19-30 bracket (boundary)', () async {
+        await _insertReferenceData();
+        // age exactly 30 → bracket "19-30" (matching Lambda's <= 30 boundary)
+        final profile = _buildProfile(
+          sex: 0,
+          birthDate: DateTime(1996, 1, 1).millisecondsSinceEpoch,
+        );
+        final result = await service.computeProfile(profile);
+        expect(result, isNotNull);
+        // male 19-30 magnesium RDA = 400, vs male 30-50 = 420
+        final magRda = result!.userRdas.firstWhere((r) => r.n == 'magnesium');
+        expect(magRda.rda, 400);
+      });
+
       test('produces one RDA entry per nutrient in reference data', () async {
         await _insertReferenceData();
         final profile = _buildProfile();
@@ -326,23 +341,25 @@ void main() {
     });
 
     group('micronutrient prioritization', () {
-      test('single objective picks top 3', () async {
+      test('single objective picks top 3 sorted by RDA priority', () async {
         await _insertReferenceData();
         // Objective 1: ['calcium', 'vitD', 'magnesium', 'phosphorus']
+        // RDA: calcium=1000, magnesium=420, vitD=15, phosphorus=0
+        // Sorted by RDA → calcium, magnesium, vitD picked
         final profile = _buildProfile(objectives: [1]);
         final result = await service.computeProfile(profile);
-        expect(result!.micronutrients, ['calcium', 'vitD', 'magnesium']);
+        expect(result!.micronutrients, ['calcium', 'magnesium', 'vitD']);
         expect(result.userAll, containsAll(['calcium', 'vitD', 'magnesium', 'phosphorus']));
       });
 
       test('multiple objectives avoid duplicate selections', () async {
         await _insertReferenceData();
-        // Obj 1: ['calcium', 'vitD', 'magnesium', 'phosphorus'] → picks calcium, vitD, magnesium
-        // Obj 2: ['iron', 'vitB12', 'vitB9', 'zinc'] → picks iron, vitB12, vitB9
+        // Obj 1 sorted by RDA: calcium(1000), magnesium(420), vitD(15), phosphorus(0) → picks calcium, magnesium, vitD
+        // Obj 2 sorted by RDA: iron(8), vitB12(0), vitB9(0), zinc(0) → picks iron, vitB12, vitB9
         final profile = _buildProfile(objectives: [1, 2]);
         final result = await service.computeProfile(profile);
         expect(result!.micronutrients.length, 6);
-        expect(result.micronutrients.sublist(0, 3), ['calcium', 'vitD', 'magnesium']);
+        expect(result.micronutrients.sublist(0, 3), ['calcium', 'magnesium', 'vitD']);
         expect(result.micronutrients.sublist(3, 6), ['iron', 'vitB12', 'vitB9']);
       });
 
@@ -358,61 +375,80 @@ void main() {
 
       test('menstruation (id 56) classified as temporary', () async {
         await _insertReferenceData();
-        // Obj 56 (temporary): ['iron', 'vitB9', 'vitB6', 'magnesium'] → picks iron, vitB9, vitB6
+        // Obj 56 (temporary): ['iron', 'vitB9', 'vitB6', 'magnesium']
+        // RDA: magnesium=420, iron=8, vitB9=0, vitB6=0
+        // Sorted → magnesium, iron, vitB9 picked
         final profile = _buildProfile(objectives: [56]);
         final result = await service.computeProfile(profile);
         expect(result!.micronutrients, isEmpty);
         expect(result.userAll, isEmpty);
-        expect(result.temporaryMicronutrients, ['iron', 'vitB9', 'vitB6']);
+        expect(result.temporaryMicronutrients, ['magnesium', 'iron', 'vitB9']);
         expect(result.temporaryAll, containsAll(['iron', 'vitB9', 'vitB6', 'magnesium']));
       });
 
       test('cold (id 57) classified as temporary', () async {
         await _insertReferenceData();
-        // Obj 57 (temporary): ['vitC', 'zinc', 'vitD', 'selenium'] → picks vitC, zinc, vitD
+        // Obj 57 (temporary): ['vitC', 'zinc', 'vitD', 'selenium']
+        // RDA: vitC=90, vitD=15, zinc=0, selenium=0
+        // Sorted → vitC, vitD, zinc picked
         final profile = _buildProfile(objectives: [57]);
         final result = await service.computeProfile(profile);
         expect(result!.micronutrients, isEmpty);
         expect(result.userAll, isEmpty);
-        expect(result.temporaryMicronutrients, ['vitC', 'zinc', 'vitD']);
+        expect(result.temporaryMicronutrients, ['vitC', 'vitD', 'zinc']);
         expect(result.temporaryAll, containsAll(['vitC', 'zinc', 'vitD', 'selenium']));
       });
 
       test('both temporary objectives together', () async {
         await _insertReferenceData();
-        // Obj 56: ['iron', 'vitB9', 'vitB6', 'magnesium'] → picks iron, vitB9, vitB6
-        // Obj 57: ['vitC', 'zinc', 'vitD', 'selenium'] → picks vitC, zinc, vitD
+        // Obj 56 sorted by RDA: magnesium(420), iron(8), vitB9(0), vitB6(0) → picks magnesium, iron, vitB9
+        // Obj 57 sorted by RDA: vitC(90), vitD(15), zinc(0), selenium(0) → picks vitC, vitD, zinc
         final profile = _buildProfile(objectives: [56, 57]);
         final result = await service.computeProfile(profile);
         expect(result!.micronutrients, isEmpty);
         expect(result.temporaryMicronutrients.length, 6);
-        expect(result.temporaryMicronutrients.sublist(0, 3), ['iron', 'vitB9', 'vitB6']);
-        expect(result.temporaryMicronutrients.sublist(3, 6), ['vitC', 'zinc', 'vitD']);
+        expect(result.temporaryMicronutrients.sublist(0, 3), ['magnesium', 'iron', 'vitB9']);
+        expect(result.temporaryMicronutrients.sublist(3, 6), ['vitC', 'vitD', 'zinc']);
       });
 
       test('temporary nutrients overlapping with normal are excluded', () async {
         await _insertReferenceData();
         // Obj 2 (normal): ['iron', 'vitB12', 'vitB9', 'zinc'] → normal pool includes iron, vitB12, vitB9, zinc
         // Obj 56 (temp): ['iron', 'vitB9', 'vitB6', 'magnesium'] → iron and vitB9 overlap with normal
-        // After exclusion, temp only has: vitB6, magnesium → picks vitB6, magnesium
+        // After exclusion, temp only has: vitB6(0), magnesium(420) → sorted: magnesium, vitB6
         final profile = _buildProfile(objectives: [2, 56]);
         final result = await service.computeProfile(profile);
         expect(result!.micronutrients, ['iron', 'vitB12', 'vitB9']);
-        expect(result.temporaryMicronutrients, ['vitB6', 'magnesium']);
+        expect(result.temporaryMicronutrients, ['magnesium', 'vitB6']);
         expect(result.temporaryAll, isNot(contains('iron')));
         expect(result.temporaryAll, isNot(contains('vitB9')));
       });
 
       test('normal + temporary with overlap on magnesium', () async {
         await _insertReferenceData();
-        // Obj 1 (normal): ['calcium', 'vitD', 'magnesium', 'phosphorus'] → normal pool includes magnesium
-        // Obj 56 (temp): ['iron', 'vitB9', 'vitB6', 'magnesium'] → magnesium overlaps
-        // After exclusion, temp has: iron, vitB9, vitB6 → picks iron, vitB9, vitB6
+        // Obj 1 (normal) sorted: calcium(1000), magnesium(420), vitD(15), phosphorus(0)
+        // Normal pool includes magnesium
+        // Obj 56 (temp) after excluding normal pool: iron(8), vitB9(0), vitB6(0)
+        // Sorted → iron, vitB9, vitB6
         final profile = _buildProfile(objectives: [1, 56]);
         final result = await service.computeProfile(profile);
-        expect(result!.micronutrients, ['calcium', 'vitD', 'magnesium']);
+        expect(result!.micronutrients, ['calcium', 'magnesium', 'vitD']);
         expect(result.temporaryMicronutrients, ['iron', 'vitB9', 'vitB6']);
         expect(result.temporaryAll, isNot(contains('magnesium')));
+      });
+
+      test('choline and vitF are excluded from prioritization', () async {
+        await _insertReferenceData();
+        // Obj 4: ['choline', 'vitF', 'calcium', 'iron']
+        // After excluding choline/vitF: ['calcium', 'iron']
+        // Sorted by RDA: calcium(1000), iron(8) → picks both
+        final profile = _buildProfile(objectives: [4]);
+        final result = await service.computeProfile(profile);
+        expect(result!.micronutrients, ['calcium', 'iron']);
+        expect(result.micronutrients, isNot(contains('choline')));
+        expect(result.micronutrients, isNot(contains('vitF')));
+        expect(result.userAll, isNot(contains('choline')));
+        expect(result.userAll, isNot(contains('vitF')));
       });
 
       test('old format (plain lists) treated as normal objectives', () async {
@@ -428,9 +464,10 @@ void main() {
         // Recreate service to clear cache
         service = ProfileComputationService(db);
         // Obj 56 in old format has no type → treated as normal
+        // Sorted by RDA: magnesium(420), iron(8), vitB9(0), vitB6(0) → picks magnesium, iron, vitB9
         final profile = _buildProfile(objectives: [56]);
         final result = await service.computeProfile(profile);
-        expect(result!.micronutrients, ['iron', 'vitB9', 'vitB6']);
+        expect(result!.micronutrients, ['magnesium', 'iron', 'vitB9']);
         expect(result.temporaryMicronutrients, isEmpty);
       });
 

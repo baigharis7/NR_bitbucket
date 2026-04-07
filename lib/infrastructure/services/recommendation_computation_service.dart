@@ -237,6 +237,9 @@ class RecommendationComputationService {
   // Step 5: Get user target nutrients from objectives
   // ---------------------------------------------------------------------------
 
+  // Nutrients excluded from prioritization, matching the Lambda.
+  static const _excludedNutrients = {'choline', 'vitF'};
+
   List<String> _getUserNutrients(List<int> objectives) {
     final nutrients = <String>[];
     for (final entry in (_objectiveNutrientsCache ?? {}).entries) {
@@ -245,7 +248,7 @@ class RecommendationComputationService {
         final nutrientList = _extractNutrients(entry.value);
         for (final nutrient in nutrientList) {
           final n = nutrient.toString();
-          if (!nutrients.contains(n)) {
+          if (!_excludedNutrients.contains(n) && !nutrients.contains(n)) {
             nutrients.add(n);
           }
         }

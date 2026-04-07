@@ -126,15 +126,27 @@ class ProfileComputationService {
   }
 
   String _getAgeBracket(int age) {
-    if (age < 30) return '19-30';
-    if (age < 50) return '30-50';
-    if (age < 70) return '50-70';
+    if (age <= 30) return '19-30';
+    if (age <= 50) return '30-50';
+    if (age <= 70) return '50-70';
     return '70+';
   }
 
   // ---------------------------------------------------------------------------
   // BMR / kcal
   // ---------------------------------------------------------------------------
+
+  /// Age-dependent BMI thresholds for normal vs obese formula selection,
+  /// matching the original Lambda logic.
+  bool _isNormalBmi(double bmi, int age) {
+    if (age > 18 && age <= 24) return bmi < 24.9;
+    if (age > 24 && age <= 34) return bmi < 25;
+    if (age > 34 && age <= 44) return bmi < 26;
+    if (age > 44 && age <= 54) return bmi < 27;
+    if (age > 54 && age <= 64) return bmi < 28;
+    if (age > 65) return bmi < 29;
+    return bmi < 25; // fallback for age <= 18
+  }
 
   int _computeKcal({
     required double height,
@@ -147,8 +159,8 @@ class ProfileComputationService {
     final bmi = weight / (heightM * heightM);
 
     double bmr;
-    if (bmi < 30) {
-      // Harris-Benedict
+    if (_isNormalBmi(bmi, age)) {
+      // Harris-Benedict (revised 1984)
       if (sex == 0) {
         bmr = 66.5 + 13.75 * weight + 5.003 * height - 6.75 * age;
       } else {
@@ -204,16 +216,46 @@ class ProfileComputationService {
   // Micronutrient prioritization
   // ---------------------------------------------------------------------------
 
+  // Nutrients excluded from prioritization, matching the Lambda.
+  static const _excludedNutrients = {'choline', 'vitF'};
+
+  /// Builds a priority map from RDAs: nutrient → RDA value.
+  /// Higher RDA = higher priority (matching Lambda's buildPriorityMap).
+  Map<String, double> _buildPriorityMap() {
+    final map = <String, double>{};
+    for (final entry in _nutrientObjectiveCache!.entries) {
+      // Use the maximum RDA across all sex/age brackets as the priority weight
+      double maxRda = 0;
+      final sexData = entry.value as Map<String, dynamic>?;
+      if (sexData == null) continue;
+      for (final ageMap in sexData.values) {
+        if (ageMap is Map<String, dynamic>) {
+          for (final bracket in ageMap.values) {
+            if (bracket is Map<String, dynamic>) {
+              final rda = (bracket['rda'] as num?)?.toDouble() ?? 0;
+              if (rda > maxRda) maxRda = rda;
+            }
+          }
+        }
+      }
+      map[entry.key] = maxRda;
+    }
+    return map;
+  }
+
   _MicronutrientResult _computeMicronutrients(List<int> objectives) {
     // Classify using the `type` field from objective-nutrients reference data,
     // matching the original Lambda logic (goal.type === "temporary").
     final normalObjectives = objectives.where((id) => !_isTemporaryObjective(id)).toList();
     final temporaryObjectives = objectives.where((id) => _isTemporaryObjective(id)).toList();
 
-    final normalResult = _prioritize(normalObjectives);
+    final priorityMap = _buildPriorityMap();
+
+    final normalResult = _prioritize(normalObjectives, priorityMap: priorityMap);
     // Exclude nutrients already in the normal pool (matches Lambda behavior)
     final temporaryResult = _prioritize(
       temporaryObjectives,
+      priorityMap: priorityMap,
       excludeNutrients: normalResult.all.toSet(),
     );
 
@@ -227,23 +269,31 @@ class ProfileComputationService {
 
   _PrioritizationResult _prioritize(
     List<int> objectiveIds, {
+    required Map<String, double> priorityMap,
     Set<String> excludeNutrients = const {},
   }) {
     final Set<String> usedPool = {};
     final List<String> selected = [];
     final Set<String> allNutrients = {};
 
-    // Collect all nutrients across all objectives for the borrowing pool
+    // Collect all nutrients across all objectives for the borrowing pool,
+    // excluding choline/vitF (matching Lambda).
     final Map<int, List<String>> objectiveNutrientLists = {};
     for (final id in objectiveIds) {
       final nutrients = _getObjectiveNutrients(id)
+          .where((n) => !_excludedNutrients.contains(n))
           .where((n) => !excludeNutrients.contains(n))
-          .toList();
+          .toList()
+        ..sort((a, b) => (priorityMap[b] ?? 0).compareTo(priorityMap[a] ?? 0));
       objectiveNutrientLists[id] = nutrients;
       allNutrients.addAll(nutrients);
     }
 
-    // Pick top-3 unused per objective
+    // Sort global pool by RDA priority for consistent borrowing
+    final sortedAllNutrients = allNutrients.toList()
+      ..sort((a, b) => (priorityMap[b] ?? 0).compareTo(priorityMap[a] ?? 0));
+
+    // Pick top-3 unused per objective (sorted by RDA priority)
     for (final id in objectiveIds) {
       final nutrients = objectiveNutrientLists[id] ?? [];
       final List<String> picked = [];
@@ -257,9 +307,9 @@ class ProfileComputationService {
         }
       }
 
-      // Borrow from general pool if fewer than 3
+      // Borrow from global pool if fewer than 3
       if (picked.length < 3) {
-        for (final nutrient in allNutrients) {
+        for (final nutrient in sortedAllNutrients) {
           if (picked.length >= 3) break;
           if (!usedPool.contains(nutrient)) {
             picked.add(nutrient);
@@ -268,12 +318,14 @@ class ProfileComputationService {
         }
       }
 
+      // Sort each objective's picked nutrients by priority
+      picked.sort((a, b) => (priorityMap[b] ?? 0).compareTo(priorityMap[a] ?? 0));
       selected.addAll(picked);
     }
 
     return _PrioritizationResult(
       selected: selected,
-      all: allNutrients.toList(),
+      all: sortedAllNutrients,
     );
   }
 
