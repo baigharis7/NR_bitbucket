@@ -758,6 +758,8 @@
     "kidney_desc_4": "Buena función renal",
     "kidney_desc_5": "Detox óptima",
 
-    "connection_error_try_later": "No se pudo conectar. Por favor, inténtalo más tarde."
+    "connection_error_try_later": "No se pudo conectar. Por favor, inténtalo más tarde.",
+
+    "scan_food_barcode": "Escanear comida / código de barras"
 
 }

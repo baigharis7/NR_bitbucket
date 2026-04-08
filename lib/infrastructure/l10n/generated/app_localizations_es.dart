@@ -1408,7 +1408,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String remove_item(Object itemName) {
-    return '¿Estás seguro de que deseas eliminar\n\"$itemName\"??';
+    return '¿Estás seguro de que deseas eliminar\n\"$itemName\"?';
   }
 
   @override
@@ -2435,4 +2435,7 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get connection_error_try_later =>
       'No se pudo conectar. Por favor, inténtalo más tarde.';
+
+  @override
+  String get scan_food_barcode => 'Escanear comida / código de barras';
 }

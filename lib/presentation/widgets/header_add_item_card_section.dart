@@ -133,10 +133,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
             ],
           ),
           if (widget.onItemSelect != null) const SizedBox(height: 16),
-          if (widget.onItemSelect != null) Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(child: TypeAheadField<String>(
+          if (widget.onItemSelect != null) TypeAheadField<String>(
             key: _inputKey,
             controller: _foodInputController,
             focusNode: _focusInputController,
@@ -278,25 +275,40 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
             hideOnEmpty: true,
             hideOnLoading: true,
             debounceDuration: const Duration(milliseconds: 200),
-          )),
-              if (widget.onScanTap != null) Padding(
-                padding: const EdgeInsets.only(left: 10, bottom: 4),
-                child: GestureDetector(
-                  onTap: widget.onScanTap,
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      color: AppColors.yellowishGreen,
-                      shape: BoxShape.circle,
-                      boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 3))],
+          ),
+          if (widget.onScanTap != null) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Row(
+                children: [
+                  const Expanded(child: Divider(color: Colors.white54, thickness: 1)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      AppLocalizations.of(context)!.or,
+                      style: const TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500),
                     ),
-                    child: const Icon(Icons.center_focus_strong, color: Colors.white, size: 20),
                   ),
+                  const Expanded(child: Divider(color: Colors.white54, thickness: 1)),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: widget.onScanTap,
+                icon: const Icon(Icons.center_focus_strong, size: 20),
+                label: Text(AppLocalizations.of(context)!.scan_food_barcode),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.yellowishGreen,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  elevation: 3,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
           if (widget.child != null) widget.child!,
         ],
       ),

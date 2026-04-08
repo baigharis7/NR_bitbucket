@@ -757,6 +757,8 @@
     "kidney_desc_4": "Good kidney function",
     "kidney_desc_5": "Optimal detox",
 
-    "connection_error_try_later": "Unable to connect. Please try again later."
+    "connection_error_try_later": "Unable to connect. Please try again later.",
+
+    "scan_food_barcode": "Scan food / barcode"
 
 }

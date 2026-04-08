@@ -4483,6 +4483,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unable to connect. Please try again later.'**
   String get connection_error_try_later;
+
+  /// No description provided for @scan_food_barcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan food / barcode'**
+  String get scan_food_barcode;
 }
 
 class _AppLocalizationsDelegate

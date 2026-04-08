@@ -2410,4 +2410,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get connection_error_try_later =>
       'Unable to connect. Please try again later.';
+
+  @override
+  String get scan_food_barcode => 'Scan food / barcode';
 }
