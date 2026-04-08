@@ -4,8 +4,6 @@ import 'dart:ui';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:nutrenaissance_flutter/data/api/fcm/fcm_api.dart';
-import 'package:nutrenaissance_flutter/infrastructure/authentication/late_authentication_service.dart';
-import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -355,6 +353,7 @@ import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_event
 import 'package:nutrenaissance_flutter/domain/repository/steps/steps_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/supplements/supplements_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/waterevents/water_events_repository.dart';
+import 'package:nutrenaissance_flutter/infrastructure/authentication/cognito_authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/environment/environment.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/i10n_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
@@ -535,13 +534,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseCrashlytics.instance.log('main: Firebase initialized');
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  // FCM init is fire-and-forget — requestPermission() shows a native dialog
-  // and getToken() needs network. Neither should block app launch.
-  FcmService.instance.init().catchError((e) {
-    FirebaseCrashlytics.instance.log('main: FCM init failed: $e');
-  });
+  await FcmService.instance.init();
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
@@ -551,10 +545,7 @@ void main() async {
     return true;
   };
 
-  // Auth is initialized lazily on the splash screen — no network call here.
-  // API objects receive this wrapper and wait for auth only when making HTTP calls.
-  final AuthenticationService authenticationService = LateAuthenticationService.instance;
-  FirebaseCrashlytics.instance.log('main: LateAuthService created (no network)');
+  final authenticationService = await _initAmplifyWithRetry();
   final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
   Chuck chuck = Chuck(
@@ -569,7 +560,6 @@ void main() async {
   _fetchReferenceData(referenceDataApi, referenceDataService);
   final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
   await Hive.openBox<ScannedFoodEntity>(ScannedFoodEntity.boxName);
-  FirebaseCrashlytics.instance.log('main: local storage ready (SharedPrefs, Hive)');
   final SyncQueueService syncQueueService = SyncQueueService(prefsRepository, authenticationService, chuck, syncQueueBox);
   // Retry any pending API calls from previous sessions
   syncQueueService.processQueue();
@@ -1287,7 +1277,6 @@ void main() async {
 
   // await AndroidAlarmManager.periodic(const Duration(seconds: 5), 0, printHello);
 
-  FirebaseCrashlytics.instance.log('main: calling runApp');
   runApp(
     // MultiProvider(
     MultiBlocProvider(
@@ -1479,6 +1468,22 @@ void main() async {
   chuck.showInspector();
 }
 
+/// Initializes Amplify/Cognito with retry logic.
+/// AWSMobileClient can timeout on first launch (clean install) if network is slow.
+Future<CognitoAuthenticationService> _initAmplifyWithRetry() async {
+  const maxAttempts = 3;
+  for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await CognitoAuthenticationService.init();
+    } catch (e) {
+      if (attempt == maxAttempts) rethrow;
+      // Wait before retrying: 2s, 4s
+      await Future.delayed(Duration(seconds: attempt * 2));
+    }
+  }
+  // Unreachable, but satisfies the compiler
+  return await CognitoAuthenticationService.init();
+}
 
 /// Fetches reference data (nutrients, nutrient loss, sport METs) in the
 /// background at app startup. Populates Drift tables for client-side

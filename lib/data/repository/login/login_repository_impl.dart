@@ -2,12 +2,12 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/model/simple_user.dart';
 import 'package:nutrenaissance_flutter/data/api/profile/profile_api.dart';
 import 'package:nutrenaissance_flutter/domain/repository/login/login_repository.dart';
-import 'package:nutrenaissance_flutter/infrastructure/authentication/authentication_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/authentication/cognito_authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 
 class LoginRepositoryImpl extends LoginRepository {
 
-  final AuthenticationService authenticationService;
+  final CognitoAuthenticationService authenticationService;
   final ProfileApi profileApi;
   final SyncQueueService syncQueue;
 

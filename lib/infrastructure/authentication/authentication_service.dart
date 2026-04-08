@@ -9,5 +9,4 @@ abstract class AuthenticationService {
   Future<SignOutResult> signOut();
   Future<ResetPasswordResult> resetPassword(String username);
   Future<ResetPasswordResult> confirmResetPassword(String username, String newPassword, String confirmationCode);
-  Future<void> deleteUser();
 }
