@@ -48,6 +48,10 @@ class _LoginScreenState extends State<LoginScreen>
   final _formKey = GlobalKey<FormState>();
   bool isChecked = false;
 
+  // Provider — created once, survives widget rebuilds
+  late final LoginProviderNew _loginProvider;
+  bool _providerInitialized = false;
+
   // FocusNodes for blur-based validation
   final _usernameFocusNode = FocusNode();
   final _emailFocusNode = FocusNode();
@@ -272,6 +276,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void initState() {
     super.initState();
+    _loginProvider = LoginProviderNew();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(
@@ -299,6 +304,17 @@ class _LoginScreenState extends State<LoginScreen>
     _emailFocusNode.addListener(() => _onFieldBlur(_fieldEmail, _emailFocusNode, _emailController));
     _passwordFocusNode.addListener(() => _onFieldBlur(_fieldPassword, _passwordFocusNode, _passwordController));
     _repeatPasswordFocusNode.addListener(() => _onFieldBlur(_fieldRepeatPassword, _repeatPasswordFocusNode, _repeatPasswordController));
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_providerInitialized) {
+      _providerInitialized = true;
+      _loginProvider.initialize(
+        (Object object) => showErrorSnackBar(context, userError(context, object)),
+      );
+    }
   }
 
   void _onFieldBlur(String fieldName, FocusNode focusNode, TextEditingController controller) {
@@ -338,14 +354,8 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    final provider = LoginProviderNew();
-
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-      provider.initialize((Object object) => showErrorSnackBar(context, userError(context, object)));
-    // });
-
-    return ChangeNotifierProvider<LoginProviderNew>(
-      create: (context) => provider,
+    return ChangeNotifierProvider<LoginProviderNew>.value(
+      value: _loginProvider,
       child: Consumer<LoginProviderNew>(
         builder: (context, model, _) => Stack(
           children: [

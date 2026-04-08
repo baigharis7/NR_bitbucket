@@ -9,18 +9,32 @@ import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localiz
 
 import '../../../infrastructure/helpers/app_text_styles.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   static const routeName = '/splash_screen';
 
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    SplashProvider().init(
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  bool _initStarted = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initStarted) {
+      _initStarted = true;
+      SplashProvider().init(
         toLogin: () => Navigator.popAndPushNamed(context, LoginScreen.routeName),
         toDashboard: () => Navigator.popAndPushNamed(context, DashboardScreen.routeName),
-    );
+      );
+    }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: [
         // Background image or gradient
@@ -42,14 +56,6 @@ class SplashScreen extends StatelessWidget {
             ),
           ),
         ),
-
-        // Blur effect
-        // BackdropFilter(
-        //   filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-        //   child: Container(
-        //     color: Colors.black26.withOpacity(0.5), // Needed to activate the blur
-        //   ),
-        // ),
 
         Scaffold(
           backgroundColor: Colors.transparent,

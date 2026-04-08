@@ -6,23 +6,28 @@ import 'package:nutrenaissance_flutter/infrastructure/environment/environment.da
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 
 class CognitoAuthenticationService implements AuthenticationService {
-  final AmplifyService amplifyService;
+  CognitoAuthenticationService._();
+  static final CognitoAuthenticationService instance = CognitoAuthenticationService._();
 
-  static Future<CognitoAuthenticationService> init({AmplifyService? amplify}) async {
-    if (amplify == null) {
-      amplify = AmplifyService();
-      if (!Amplify.isConfigured) {
-        await amplify.addPlugin(AmplifyAuthCognito());
-        await amplify.configure(Environment().config!.cognitoConfig.orEmpty());
-      }
+  AmplifyService? _amplifyService;
+  bool _initialized = false;
+  bool get isInitialized => _initialized;
+
+  /// Initialize Amplify/Cognito. Safe to call multiple times — only the first
+  /// call does work. Returns this instance for convenience.
+  Future<CognitoAuthenticationService> initialize() async {
+    if (_initialized) return this;
+    _amplifyService = AmplifyService();
+    if (!Amplify.isConfigured) {
+      await _amplifyService!.addPlugin(AmplifyAuthCognito());
+      await _amplifyService!.configure(Environment().config!.cognitoConfig.orEmpty());
     }
-    return CognitoAuthenticationService._(amplify);
+    _initialized = true;
+    return this;
   }
 
-  CognitoAuthenticationService._(this.amplifyService);
-
   AuthCategory getAuthorization() {
-    return amplifyService.getAuth();
+    return _amplifyService!.getAuth();
   }
 
   @override

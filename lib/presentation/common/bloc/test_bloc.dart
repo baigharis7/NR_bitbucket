@@ -25,7 +25,7 @@ class TestBloc extends Bloc<TestActions, TestState> {
         darkTheme: false,
         maxCallsCount: 1000,
       );
-      final repository = SubjectiveAnalysisRepositoryImpl(localStorageRepository: LocalStorageImpl(), subjectiveAnalysisApi: SubjectiveAnalysisApi(PreferencesRepositoryImpl(prefs: PreferencesImpl(await SharedPreferences.getInstance())), await CognitoAuthenticationService.init(), chuck));
+      final repository = SubjectiveAnalysisRepositoryImpl(localStorageRepository: LocalStorageImpl(), subjectiveAnalysisApi: SubjectiveAnalysisApi(PreferencesRepositoryImpl(prefs: PreferencesImpl(await SharedPreferences.getInstance())), CognitoAuthenticationService.instance, chuck));
       final UploadSubjectiveAnalysisInteractor interactor = UploadSubjectiveAnalysisInteractorImpl(subjectiveAnalysisRepository: repository);
       final subjectiveData = SubjectiveAnalysisResult(
         eventDate: DateTimeHelper().provideCurrentDate().millisecondsSinceEpoch,

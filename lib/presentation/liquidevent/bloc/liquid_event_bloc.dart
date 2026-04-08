@@ -92,13 +92,18 @@ class LiquidEventBloc extends BaseBloc<LiquidEventActions, LiquidEventState> {
 
       try {
         final uploadLiquidEvent = await uploadLiquidEventInteractor.execute(liquidEvent);
-        await saveLiquidEventInteractor.execute(uploadLiquidEvent, state.isEdit!);
-        DashboardEventBus.instance.notify(DataChangedCategory.liquid);
-        _clearFields();
-        event.onFinish.call();
-        emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
+        if (uploadLiquidEvent.uploadSuccess) {
+          await saveLiquidEventInteractor.execute(uploadLiquidEvent, state.isEdit!);
+          DashboardEventBus.instance.notify(DataChangedCategory.liquid);
+          _clearFields();
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
+        } else {
+          state.onError = ErrorTypes.uploadLiquidEventError;
+          emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+        }
       } catch (error) {
-        state.onError = ErrorTypes.saveLiquidEventError;
+        state.onError = ErrorTypes.uploadLiquidEventError;
         emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
       }
     });
@@ -138,13 +143,18 @@ class LiquidEventBloc extends BaseBloc<LiquidEventActions, LiquidEventState> {
 
       try {
         final uploadLiquidEvent = await uploadLiquidEventInteractor.execute(liquidEvent);
-        await saveLiquidEventInteractor.execute(uploadLiquidEvent, state.isEdit!);
-        DashboardEventBus.instance.notify(DataChangedCategory.liquid);
-        _clearFields();
-        event.onFinish.call();
-        emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
+        if (uploadLiquidEvent.uploadSuccess) {
+          await saveLiquidEventInteractor.execute(uploadLiquidEvent, state.isEdit!);
+          DashboardEventBus.instance.notify(DataChangedCategory.liquid);
+          _clearFields();
+          event.onFinish.call();
+          emit(state.copyWith(isLoading: false, onError: null, eventDate: state.eventDate));
+        } else {
+          state.onError = ErrorTypes.uploadLiquidEventError;
+          emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
+        }
       } catch (error) {
-        state.onError = ErrorTypes.saveLiquidEventError;
+        state.onError = ErrorTypes.uploadLiquidEventError;
         emit(state.copyWith(isLoading: false, eventDate: state.eventDate));
       }
     },);

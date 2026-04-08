@@ -157,7 +157,8 @@ class LoginProviderNew extends BaseProvider {
     super.initialize(onError);
 
     // Fire all 4 async initializations in parallel
-    final authFuture = CognitoAuthenticationService.init();
+    // Singleton — already initialized by AppBootstrap
+    final authFuture = Future.value(CognitoAuthenticationService.instance);
     final prefsFuture = SharedPreferences.getInstance();
     final hiveFuture = Hive.openBox<SyncQueueEntry>('syncQueue');
     final dbFuture = openReferenceDatabase();

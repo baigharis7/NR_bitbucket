@@ -68,7 +68,8 @@ class SplashProvider extends ChangeNotifier {
 
   void init({required Function toLogin, required Function toDashboard}) async {
     try {
-      final authenticationService = await CognitoAuthenticationService.init();
+      // Singleton — already initialized by AppBootstrap before this screen mounts
+      final authenticationService = CognitoAuthenticationService.instance;
       final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
       final Preferences prefs = PreferencesImpl(sharedPreferences);
