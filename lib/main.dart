@@ -556,8 +556,7 @@ void main() async {
   final Preferences prefs = PreferencesImpl(sharedPreferences);
   final PreferencesRepository prefsRepository = PreferencesRepositoryImpl(prefs: prefs);
   final ReferenceDataApi referenceDataApi = ReferenceDataApi(prefsRepository, authenticationService, chuck);
-  // Fetch reference data in the background (nutrients, nutrient loss, sport METs)
-  _fetchReferenceData(referenceDataApi, referenceDataService);
+  // Reference data fetch moved below profileComputationService creation
   final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
   await Hive.openBox<ScannedFoodEntity>(ScannedFoodEntity.boxName);
   final SyncQueueService syncQueueService = SyncQueueService(prefsRepository, authenticationService, chuck, syncQueueBox);
@@ -575,6 +574,8 @@ void main() async {
     syncQueue: syncQueueService,
   );
   final ProfileComputationService profileComputationService = ProfileComputationService(referenceDatabase);
+  // Fetch reference data in the background (nutrients, nutrient loss, sport METs, objective-nutrients, nutrient-objective)
+  _fetchReferenceData(referenceDataApi, referenceDataService, profileComputationService);
   final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository, profileComputationService: profileComputationService, syncQueue: syncQueueService);
   final GetUserIdInteractor getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
   final UploadProfileInteractor uploadProfileInteractor = UploadProfileInteractorImpl(profileRepository: profileRepository);
@@ -1485,10 +1486,10 @@ Future<CognitoAuthenticationService> _initAmplifyWithRetry() async {
   return await CognitoAuthenticationService.init();
 }
 
-/// Fetches reference data (nutrients, nutrient loss, sport METs) in the
-/// background at app startup. Populates Drift tables for client-side
-/// calculations. Non-blocking — failures are silently ignored.
-void _fetchReferenceData(ReferenceDataApi api, ReferenceDataService service) {
+/// Fetches reference data (nutrients, nutrient loss, sport METs, objective-nutrients,
+/// nutrient-objective) in the background at app startup. Populates Drift tables
+/// for client-side calculations. Non-blocking — failures are silently ignored.
+void _fetchReferenceData(ReferenceDataApi api, ReferenceDataService service, ProfileComputationService profileComputationService) {
   service.refreshIfNeeded(
     fetchNutrients: () async {
       try {
@@ -1535,7 +1536,67 @@ void _fetchReferenceData(ReferenceDataApi api, ReferenceDataService service) {
         return null;
       }
     },
-  );
+    fetchObjectiveNutrients: () async {
+      try {
+        final raw = await api.fetchObjectiveNutrients();
+        final parsed = jsonDecode(raw);
+        final data = parsed['data'];
+        final objectives = data is Map ? data['objectives'] as List? ?? [] : data as List? ?? [];
+        final transformed = <String, dynamic>{};
+        for (final obj in objectives) {
+          if (obj is Map<String, dynamic>) {
+            transformed[obj['code'].toString()] = {
+              'nutrients': obj['nutrients'],
+              if (obj['type'] != null) 'type': obj['type'],
+            };
+          }
+        }
+        return ReferencePayload(
+          version: parsed['v'] as int? ?? 0,
+          json: jsonEncode(transformed),
+        );
+      } catch (_) {
+        return null;
+      }
+    },
+    fetchNutrientObjective: () async {
+      try {
+        final raw = await api.fetchNutrientObjective();
+        final parsed = jsonDecode(raw);
+        final data = parsed['data'];
+        final nutrients = data is Map ? data['nutrients'] as List? ?? [] : data as List? ?? [];
+        const ageBrackets = ['19-30', '30-50', '50-70', '70+'];
+        final transformed = <String, dynamic>{};
+        for (final n in nutrients) {
+          if (n is! Map<String, dynamic>) continue;
+          final name = n['name'] as String?;
+          if (name == null) continue;
+          final maleRda = <String, dynamic>{};
+          final femaleRda = <String, dynamic>{};
+          for (int i = 0; i < 4; i++) {
+            final bracket = ageBrackets[i];
+            final suffix = i + 1;
+            final rdaM = (n['male$suffix'] as num?)?.toDouble() ?? 0.0;
+            final rdaF = (n['female$suffix'] as num?)?.toDouble() ?? 0.0;
+            final ulSuffix = suffix <= 3 ? suffix : 3;
+            final ulM = (n['ulMale$ulSuffix'] as num?)?.toDouble() ?? 0.0;
+            final ulF = (n['ulFemale$ulSuffix'] as num?)?.toDouble() ?? 0.0;
+            maleRda[bracket] = {'rda': rdaM, 'ul': ulM};
+            femaleRda[bracket] = {'rda': rdaF, 'ul': ulF};
+          }
+          transformed[name] = {'male': maleRda, 'female': femaleRda};
+        }
+        return ReferencePayload(
+          version: parsed['v'] as int? ?? 0,
+          json: jsonEncode(transformed),
+        );
+      } catch (_) {
+        return null;
+      }
+    },
+  ).then((updated) {
+    if (updated) profileComputationService.invalidateCache();
+  });
 }
 
 void initLocalStorage() async {

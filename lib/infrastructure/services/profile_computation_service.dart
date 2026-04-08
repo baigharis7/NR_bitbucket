@@ -18,6 +18,13 @@ class ProfileComputationService {
 
   ProfileComputationService(this._db);
 
+  /// Clears in-memory caches so the next computation reloads from Drift.
+  /// Call after reference data has been updated (e.g. on app startup refresh).
+  void invalidateCache() {
+    _objectiveNutrientsCache = null;
+    _nutrientObjectiveCache = null;
+  }
+
   // ---------------------------------------------------------------------------
   // Public
   // ---------------------------------------------------------------------------
