@@ -473,6 +473,9 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         userProfileResponse = await uploadProfileInteractor.execute(profile);
         if (userProfileResponse.uploadSuccess) {
           profile.micronutrients = userProfileResponse.micronutrients;
+          profile.userAll = userProfileResponse.userAll;
+          profile.temporaryMicronutrients = userProfileResponse.temporaryMicronutrients;
+          profile.temporaryAll = userProfileResponse.temporaryAll;
           profile.userRdas = UserRdas(
             userRdas: userProfileResponse.userRdas.map((userRda) => UserRda(name: userRda.n, rda: userRda.rda, ul: userRda.ul, upperLimit: userRda.upperLimit)).toList(),
           );
