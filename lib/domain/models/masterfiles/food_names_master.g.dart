@@ -46,6 +46,7 @@ FoodItemMaster _$FoodItemMasterFromJson(Map<String, dynamic> json) =>
       es: json['es'] as String?,
       group: json['group'] as String?,
       units: json['units'] as String?,
+      included: (json['included'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$FoodItemMasterToJson(FoodItemMaster instance) =>
@@ -55,4 +56,5 @@ Map<String, dynamic> _$FoodItemMasterToJson(FoodItemMaster instance) =>
       'es': instance.es,
       'group': instance.group,
       'units': instance.units,
+      'included': instance.included,
     };

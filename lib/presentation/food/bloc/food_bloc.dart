@@ -24,6 +24,8 @@ class FoodBloc extends Bloc<FoodEventActions, FoodEventState> {
       if (state.foodNames!.foodsAndDrinksNames!.foodNames!.isEmpty) {
         state.foodNames = await getMasterFileInteractor
             .execute(MasterFilesType.foodsAndDrinksNames);
+        state.foodNames?.foodsAndDrinksNames?.foodNames?.removeWhere((f) => f.included == 1);
+        state.foodNames?.foodsAndDrinksNames?.drinkNames?.removeWhere((f) => f.included == 1);
       }
     });
 

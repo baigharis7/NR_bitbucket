@@ -40,15 +40,18 @@ class FoodItemMaster extends Translatable {
   String? group;
   @JsonKey(name: 'units')
   String? units;
+  @JsonKey(name: 'included')
+  int included;
 
 
-  FoodItemMaster({this.id, this.en, this.es, this.group, this.units});
+  FoodItemMaster({this.id, this.en, this.es, this.group, this.units, this.included = 0});
   FoodItemMaster.empty({
     this.id = 0,
     this.en = '',
     this.es = '',
     this.group = '',
     this.units = '',
+    this.included = 0,
   });
 
   factory FoodItemMaster.fromJson(Map<String, dynamic> json) => _$FoodItemMasterFromJson(json);

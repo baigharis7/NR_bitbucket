@@ -50,6 +50,8 @@ class RecipeTabBloc extends Bloc<RecipeTabEvent, RecipeTabState> {
       emit(state.copyWith(isLoading: true));
       state.profile = await getProfileInteractor.execute();
       final foodAndDrinksMasterFile = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames) as FoodsAndDrinksNamesMaster;
+      foodAndDrinksMasterFile.foodsAndDrinksNames?.foodNames?.removeWhere((f) => f.included == 1);
+      foodAndDrinksMasterFile.foodsAndDrinksNames?.drinkNames?.removeWhere((f) => f.included == 1);
       state.foodAndDrinksNames = foodAndDrinksMasterFile.foodsAndDrinksNames!.foodNames?..addAll(foodAndDrinksMasterFile.foodsAndDrinksNames!.drinkNames!.toList());
       state.recipesFavorites = await getRecipeFavoritesInteractor.execute();
       final foodIds = state.profile?.recommededIds.orEmpty() ?? [];

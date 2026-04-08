@@ -35,6 +35,8 @@ class CreateNewFoodFavoriteBloc extends BaseBloc<CreateNewFoodFavoriteActions, C
       _clearData();
       emit(state.copyWith(isLoading: true));
       state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
+      state.foodNames?.foodsAndDrinksNames?.foodNames?.removeWhere((f) => f.included == 1);
+      state.foodNames?.foodsAndDrinksNames?.drinkNames?.removeWhere((f) => f.included == 1);
       final conFactors  = await getMasterFileInteractor.execute(MasterFilesType.conversionFactors);
       state.conversionFactors = conFactors;
       state.oilTypes  = await getMasterFileInteractor.execute(MasterFilesType.oilTypes);

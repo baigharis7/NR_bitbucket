@@ -74,6 +74,8 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
       final foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
       state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
       state.foodNames = foodNames;
+      state.foodNames?.foodsAndDrinksNames?.foodNames?.removeWhere((f) => f.included == 1);
+      state.foodNames?.foodsAndDrinksNames?.drinkNames?.removeWhere((f) => f.included == 1);
       state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames.orEmpty().toList() ?? []);
       state.objectivesInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.objectivesInfo);
       state.objectiveNutrientsMap = await profileComputationService.getObjectiveNutrientsMap(state.profile?.objectives.orEmpty() ?? []);

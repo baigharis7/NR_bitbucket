@@ -61,6 +61,8 @@ class AddFavoriteFoodBloc extends BaseBloc<AddFavoriteFoodActions, AddFavoriteFo
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true,));
       state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
+      state.foodNames?.foodsAndDrinksNames?.foodNames?.removeWhere((f) => f.included == 1);
+      state.foodNames?.foodsAndDrinksNames?.drinkNames?.removeWhere((f) => f.included == 1);
       state.cookingMethodsMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethods);
       state.cookingMethodsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
       state.oilTypes = await getMasterFileInteractor.execute(MasterFilesType.oilTypes);

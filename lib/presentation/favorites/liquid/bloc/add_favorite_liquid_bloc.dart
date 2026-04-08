@@ -33,6 +33,8 @@ class AddFavoriteLiquidBloc extends BaseBloc<AddFavoriteLiquidActions, AddFavori
     on<InitializeStateAction>((event, emit) async {
       emit(state.copyWith(isLoading: true,));
       state.liquidNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
+      state.liquidNames?.foodsAndDrinksNames?.foodNames?.removeWhere((f) => f.included == 1);
+      state.liquidNames?.foodsAndDrinksNames?.drinkNames?.removeWhere((f) => f.included == 1);
       state.cookingMethodsMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethods);
       state.cookingMethodsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
       state.unitsFoodsMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsFoods);

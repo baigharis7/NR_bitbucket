@@ -41,6 +41,8 @@ class RecipesBloc extends BaseBloc<RecipesActions, RecipesState> {
       emit(state.copyWith(isLoading: true, onError: null,));
       state.exclusions = await getUserExclusionsInteractor.execute();
       state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
+      state.foodNames?.foodsAndDrinksNames?.foodNames?.removeWhere((f) => f.included == 1);
+      state.foodNames?.foodsAndDrinksNames?.drinkNames?.removeWhere((f) => f.included == 1);
       state.showCard = await isNecessaryToShowExplainingCardInteractor.execute(ExplainingCardRefs.recipes.index);
 
       emit(state.copyWith(isLoading: true, onError: null,));

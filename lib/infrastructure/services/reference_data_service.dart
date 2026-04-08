@@ -16,6 +16,10 @@ import 'package:nutrenaissance_flutter/data/local/drift/reference_database.dart'
 class ReferenceDataService {
   final ReferenceDatabase _db;
 
+  /// Called after nutrients.json is loaded/updated so food items in Hive
+  /// can be re-stamped with the latest `included` flags.
+  Future<void> Function()? onNutrientsUpdated;
+
   ReferenceDataService(this._db);
 
   // Version keys stored in the ReferenceDataVersions table
@@ -148,6 +152,7 @@ class ReferenceDataService {
     }).toList();
 
     await _db.replaceAllNutrientCompositions(entries);
+    await onNutrientsUpdated?.call();
   }
 
   /// Parses the S3 `nutrients_loss_table.json` file and populates the

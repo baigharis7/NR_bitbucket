@@ -24,5 +24,6 @@ abstract class MasterFilesRepository {
   );
   Future<void> saveMasterFile(dynamic masterFileResponse, MasterFilesType masterFilesType);
   Future<dynamic> getMasterFile(MasterFilesType masterFilesType);
+  Future<void> stampFoodIncludedFlags();
 
 }

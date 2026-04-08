@@ -95,6 +95,11 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
     if (masterFilesType == MasterFilesType.cookingMethodsOilsInfo) {
       await _syncCookingMethodOilsToDrift(masterFileResponse as CookingMethodsOilsInfoResponse);
     }
+
+    // Stamp included flags from NutrientCompositions onto food items in Hive
+    if (masterFilesType == MasterFilesType.foodsAndDrinksNames) {
+      await stampFoodIncludedFlags();
+    }
   }
 
   /// Extracts oil percentage data from the cookingMethodsOilsInfo master file
@@ -111,6 +116,30 @@ class MasterFilesRepositoryImpl extends MasterFilesRepository {
     if (entries.isNotEmpty) {
       await referenceDatabase.replaceAllCookingMethodOils(entries);
     }
+  }
+
+  @override
+  Future<void> stampFoodIncludedFlags() async {
+    final entity = await localStorageRepository.getMasterFile(MasterFilesType.foodsAndDrinksNames)
+        as FoodsAndDrinksNamesEntity?;
+    if (entity == null) return;
+
+    final allCompositions = await referenceDatabase.getAllNutrientCompositions();
+    if (allCompositions.isEmpty) return;
+
+    final includedMap = <int, int>{};
+    for (final comp in allCompositions) {
+      includedMap[comp.foodId] = comp.included;
+    }
+
+    for (final food in entity.data.foodNames) {
+      food.included = includedMap[food.id] ?? 0;
+    }
+    for (final drink in entity.data.drinkNames) {
+      drink.included = includedMap[drink.id] ?? 0;
+    }
+
+    await localStorageRepository.saveMasterFile(MasterFilesType.foodsAndDrinksNames, entity);
   }
 
   @override

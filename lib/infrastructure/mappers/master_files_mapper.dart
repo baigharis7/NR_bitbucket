@@ -144,15 +144,15 @@ ConversionFactorsInfoResponse mapToConversionFactorsInfoResponse(ConversionFacto
 }
 
 FoodsAndDrinksNamesEntity mapToFoodsAndDrinksNamesEntity(FoodsAndDrinksNamesResponse foodsAndDrinksNamesResponse) {
-  List<FoodItemEntity> foodsNames = foodsAndDrinksNamesResponse.data.foodNames.map((item) => FoodItemEntity(id: item.id, en: item.en, es: item.es, g: item.g, units: item.units)).toList();
-  List<FoodItemEntity> drinksNames = foodsAndDrinksNamesResponse.data.drinkNames.map((item) => FoodItemEntity(id: item.id, en: item.en, es: item.es, g: item.g, units: item.units)).toList();
+  List<FoodItemEntity> foodsNames = foodsAndDrinksNamesResponse.data.foodNames.map((item) => FoodItemEntity(id: item.id, en: item.en, es: item.es, g: item.g, units: item.units, included: 0)).toList();
+  List<FoodItemEntity> drinksNames = foodsAndDrinksNamesResponse.data.drinkNames.map((item) => FoodItemEntity(id: item.id, en: item.en, es: item.es, g: item.g, units: item.units, included: 0)).toList();
   FoodsAndDrinkListsEntity data = FoodsAndDrinkListsEntity(foodNames: foodsNames, drinkNames: drinksNames);
   return FoodsAndDrinksNamesEntity(id: MasterFilesType.foodsAndDrinksNames.index, v: foodsAndDrinksNamesResponse.v, data: data);
 }
 
 FoodsAndDrinksNamesMaster mapToFoodsAndDrinksNamesMaster(FoodsAndDrinksNamesEntity foodsAndDrinksNamesEntity) {
-  List<FoodItemMaster> foodsNames = foodsAndDrinksNamesEntity.data.foodNames.map((item) => FoodItemMaster(id: item.id, en: item.en, es: item.es, group: item.g, units: item.units)).toList();
-  List<FoodItemMaster> drinksNames = foodsAndDrinksNamesEntity.data.drinkNames.map((item) => FoodItemMaster(id: item.id, en: item.en, es: item.es, group: item.g, units: item.units)).toList();
+  List<FoodItemMaster> foodsNames = foodsAndDrinksNamesEntity.data.foodNames.map((item) => FoodItemMaster(id: item.id, en: item.en, es: item.es, group: item.g, units: item.units, included: item.included)).toList();
+  List<FoodItemMaster> drinksNames = foodsAndDrinksNamesEntity.data.drinkNames.map((item) => FoodItemMaster(id: item.id, en: item.en, es: item.es, group: item.g, units: item.units, included: item.included)).toList();
   FoodsAndDrinkListsMaster foodsAndDrinkListsMaster = FoodsAndDrinkListsMaster(foodNames: foodsNames, drinkNames: drinksNames);
   return FoodsAndDrinksNamesMaster(foodsAndDrinkListsMaster);
 }

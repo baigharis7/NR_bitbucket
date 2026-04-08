@@ -39,6 +39,8 @@ class ItemUpdateBloc extends Bloc<ItemUpdateEvent, ItemUpdateState> {
       emit(state.copyWith(isLoading: true,  onError: null));
         final foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
         state.foodNames = foodNames;
+        state.foodNames?.foodsAndDrinksNames?.foodNames?.removeWhere((f) => f.included == 1);
+        state.foodNames?.foodsAndDrinksNames?.drinkNames?.removeWhere((f) => f.included == 1);
         state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames.orEmpty().toList() ?? []);
       state.oilTypes = await getMasterFileInteractor.execute(MasterFilesType.oilTypes);
       state.conversionFactors = await getMasterFileInteractor.execute(MasterFilesType.conversionFactors);

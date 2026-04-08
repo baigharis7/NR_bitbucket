@@ -607,6 +607,7 @@ void main() async {
   final GetUserObjectivesInteractor getUserObjectivesInteractor = GetUserObjectivesInteractorImpl(profileRepository: profileRepository);
   final MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService, chuck);
   final MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi, referenceDatabase: referenceDatabase,);
+  referenceDataService.onNutrientsUpdated = () => masterFilesRepository.stampFoodIncludedFlags();
   final GetMasterFileInteractor getMasterFileInteractor = GetMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
   final GetUserRdasInteractor getUserRdasInteractor = GetUserRdasInteractorImpl(localStorageRepository: localStorageRepository);
   final SportEventsApi sportEventsApi = SportEventsApi(prefsRepository, authenticationService, chuck);

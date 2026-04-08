@@ -76,6 +76,8 @@ class FavoritesTabsBloc extends Bloc<FavoritesTabsEvent, FavoritesTabsState> {
     on<InitializeFavoritesTabsEvent>((event, emit) async {
       state.favFoods = await getFoodFavoritesInteractor.execute();
       state.foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
+      state.foodNames?.foodsAndDrinksNames?.foodNames?.removeWhere((f) => f.included == 1);
+      state.foodNames?.foodsAndDrinksNames?.drinkNames?.removeWhere((f) => f.included == 1);
       state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
       state.sportsInfo = await getMasterFileInteractor.execute(MasterFilesType.sportsInfo);
       state.supplementsInfo = await getMasterFileInteractor.execute(MasterFilesType.supplementsInfo);
