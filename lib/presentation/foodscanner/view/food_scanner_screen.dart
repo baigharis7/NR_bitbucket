@@ -341,12 +341,14 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
       bottom: bottom,
       left: horizontalInset,
       right: horizontalInset,
-      child: CustomPaint(
-        painter: _CornerBracketPainter(
-          color: color,
-          strokeWidth: strokeWidth,
-          cornerLength: cornerLen,
-          radius: 12,
+      child: IgnorePointer(
+        child: CustomPaint(
+          painter: _CornerBracketPainter(
+            color: color,
+            strokeWidth: strokeWidth,
+            cornerLength: cornerLen,
+            radius: 12,
+          ),
         ),
       ),
     );

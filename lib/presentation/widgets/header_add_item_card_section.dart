@@ -278,18 +278,18 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
           ),
           if (widget.onScanTap != null) ...[
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 20),
               child: Row(
                 children: [
-                  const Expanded(child: Divider(color: Colors.white54, thickness: 1)),
+                  Expanded(child: Divider(color: Colors.white.withOpacity(0.15), thickness: 1)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Text(
-                      AppLocalizations.of(context)!.or,
-                      style: const TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500),
+                      AppLocalizations.of(context)!.or.toUpperCase(),
+                      style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                   ),
-                  const Expanded(child: Divider(color: Colors.white54, thickness: 1)),
+                  Expanded(child: Divider(color: Colors.white.withOpacity(0.15), thickness: 1)),
                 ],
               ),
             ),
@@ -300,7 +300,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
                 icon: const Icon(Icons.center_focus_strong, size: 20),
                 label: Text(AppLocalizations.of(context)!.scan_food_barcode),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.yellowishGreen,
+                  backgroundColor: AppColors.greenCyan,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
