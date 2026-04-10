@@ -51,7 +51,7 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with TickerProv
 
   @override
   void didChangeDependencies() {
-    _tabs = [AppLocalizations.of(context)!.meal.toUpperCase(), AppLocalizations.of(context)!.physical_activity.toUpperCase(), AppLocalizations.of(context)!.supplements.toUpperCase()];
+    _tabs = [AppLocalizations.of(context)!.meal.toUpperCase(), AppLocalizations.of(context)!.workouts.toUpperCase(), AppLocalizations.of(context)!.supplements.toUpperCase()];
     super.didChangeDependencies();
   }
 
