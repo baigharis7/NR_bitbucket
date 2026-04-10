@@ -77,7 +77,7 @@ SportEventComplete mapHealthActivityToSportEventComplete({
         intensity: intensity,
         minutes: activity.durationMinutes,
         timeStart: activity.startTime.millisecondsSinceEpoch,
-        kcal: activity.caloriesBurned?.round(),
+        kcal: eventKcals,
         distance: activity.distance,
         avgHeartRate: activity.avgHeartRate,
       ),

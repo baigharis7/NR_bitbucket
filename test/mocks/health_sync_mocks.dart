@@ -11,6 +11,7 @@ import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences
 import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/upload_sport_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/save_sport_event_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sport_kcal_service.dart';
 
 // Repository Mocks
 class MockHealthSyncRepository extends Mock implements HealthSyncRepository {}
@@ -45,3 +46,7 @@ class MockGetTodaySportsInteractor extends Mock
 
 class MockGetMasterFileInteractor extends Mock
     implements GetMasterFileInteractor {}
+
+// Service Mocks
+class MockSportKcalCalculationService extends Mock
+    implements SportKcalCalculationService {}

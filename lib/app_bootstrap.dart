@@ -1270,6 +1270,7 @@ class _AppBootstrapState extends State<AppBootstrap> {
         preferencesRepository: prefsRepository,
         saveSportEventInteractor: saveSportEventInteractor,
         sportEventsRepository: sportEventsRepository,
+        sportKcalCalculationService: sportKcalCalculationService,
       );
 
       final healthSyncBloc = HealthSyncBloc(

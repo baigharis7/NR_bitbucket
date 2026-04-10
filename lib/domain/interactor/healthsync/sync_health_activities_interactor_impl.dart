@@ -12,6 +12,7 @@ import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_stor
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_events_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mappers/health_activity_mappers.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/sport_kcal_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/health_activity_type_mapping.dart';
 
 class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteractor {
@@ -20,6 +21,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
   final PreferencesRepository preferencesRepository;
   final SaveSportEventInteractor saveSportEventInteractor;
   final SportEventsRepository sportEventsRepository;
+  final SportKcalCalculationService sportKcalCalculationService;
 
   /// Minimum time between automatic syncs (5 minutes)
   static const Duration _minSyncInterval = Duration(minutes: 5);
@@ -38,6 +40,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     required this.preferencesRepository,
     required this.saveSportEventInteractor,
     required this.sportEventsRepository,
+    required this.sportKcalCalculationService,
   });
 
   @override
@@ -166,7 +169,8 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
   }
 
   /// Process a single health activity: build sport event with health platform
-  /// calories (no METs recalculation), save locally, sync to backend.
+  /// calories when available, otherwise compute via METs locally; save
+  /// locally, sync to backend.
   Future<SportEventComplete?> _processActivity(
     HealthActivity activity,
     String userId,
@@ -180,15 +184,42 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     sportId ??= HealthActivityTypeMapping.findFallbackSportId(sportsInfo);
     if (sportId == null) return null;
 
-    // Build SportEventComplete directly with health platform calories
-    // (skips SportKcalCalculationService — health platform data is more accurate)
+    // Resolve effective kcal: prefer health-platform value, otherwise compute
+    // locally via the same MET formula used by the manual entry path
+    // (sport-event-amplify Lambda port).
+    int effectiveKcal;
+    if (activity.caloriesBurned != null) {
+      effectiveKcal = activity.caloriesBurned!.round();
+      _log('kcal source: platform ($effectiveKcal kcal) for ${activity.activityType}');
+    } else if (activity.durationMinutes > 0) {
+      final simple = mapHealthActivityToSportEventSimple(
+        activity: activity,
+        userId: userId,
+        sportId: sportId,
+        sportsInfo: sportsInfo,
+      );
+      final profile = await localStorageRepository.getProfile();
+      final userWeight = profile?.physicalCharacteristics?.weight ?? 70.0;
+      final enriched = await sportKcalCalculationService.enrichSportEvent(
+        simple,
+        userWeight: userWeight,
+      );
+      effectiveKcal = enriched.eventKcals ?? 0;
+      _log('kcal source: METs-computed ($effectiveKcal kcal, weight=${userWeight}kg, '
+          'duration=${activity.durationMinutes}m) for ${activity.activityType}');
+    } else {
+      effectiveKcal = 0;
+      _log('kcal source: zero (no platform value, no duration) for ${activity.activityType}');
+    }
+
+    // Build SportEventComplete with the resolved kcal
     final sportEvent = mapHealthActivityToSportEventComplete(
       activity: activity,
       userId: userId,
       eventId: activity.startTime.millisecondsSinceEpoch,
       sportId: sportId,
       sportsInfo: sportsInfo,
-      eventKcals: activity.caloriesBurned?.round() ?? 0,
+      eventKcals: effectiveKcal,
     );
 
     // Save locally

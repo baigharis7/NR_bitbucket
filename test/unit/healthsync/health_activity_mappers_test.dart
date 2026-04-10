@@ -212,6 +212,51 @@ void main() {
       expect(info.distance, null);
       expect(info.avgHeartRate, null);
     });
+
+    test('info[0].kcal mirrors eventKcals param even when activity calories are null', () {
+      // Simulates a synced workout with no platform-supplied calories where the
+      // caller has computed a fallback eventKcals via SportKcalCalculationService.
+      final activityNoCalories = HealthActivity(
+        healthPlatformId: 'no_cal_id',
+        activityType: 'RUNNING',
+        startTime: DateTime(2024, 1, 15, 10, 0),
+        endTime: DateTime(2024, 1, 15, 10, 30),
+        durationMinutes: 30,
+        caloriesBurned: null,
+        distance: 5000,
+        avgHeartRate: null,
+        sourceName: 'Apple Health',
+        sourceType: 'apple_health',
+      );
+
+      final result = mapHealthActivityToSportEventComplete(
+        activity: activityNoCalories,
+        userId: 'user123',
+        eventId: 99,
+        sportId: 1,
+        sportsInfo: testSportsInfo,
+        eventKcals: 280, // computed fallback
+      );
+
+      expect(result.eventKcals, 280);
+      expect(result.info!.first.kcal, 280); // inner kcal stays in sync with outer
+    });
+
+    test('info[0].kcal differs from activity.caloriesBurned when caller overrides', () {
+      // Even when the activity has its own caloriesBurned, the mapper should
+      // honour the eventKcals parameter for both fields (single source of truth).
+      final result = mapHealthActivityToSportEventComplete(
+        activity: testActivity, // caloriesBurned: 500
+        userId: 'user123',
+        eventId: 42,
+        sportId: 1,
+        sportsInfo: testSportsInfo,
+        eventKcals: 555, // caller passes a different value
+      );
+
+      expect(result.eventKcals, 555);
+      expect(result.info!.first.kcal, 555);
+    });
   });
 
   group('HealthSyncMetadata mapping', () {
