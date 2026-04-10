@@ -231,11 +231,12 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
                 const SizedBox(height: 12),
                 // Meal time items in a row
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: mealItems.map((item) => _PlusGridItem(
-                    label: item['label'] as String,
-                    assetIcon: item['icon'] as String,
-                    onTap: item['onTap'] as VoidCallback,
+                  children: mealItems.map((item) => Expanded(
+                    child: _PlusGridItem(
+                      label: item['label'] as String,
+                      assetIcon: item['icon'] as String,
+                      onTap: item['onTap'] as VoidCallback,
+                    ),
                   )).toList(),
                 ),
                 const SizedBox(height: 16),
@@ -244,11 +245,12 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
                 const SizedBox(height: 16),
                 // Other items in a row
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: otherItems.map((item) => _PlusGridItem(
-                    label: item['label'] as String,
-                    assetIcon: item['icon'] as String,
-                    onTap: item['onTap'] as VoidCallback,
+                  children: otherItems.map((item) => Expanded(
+                    child: _PlusGridItem(
+                      label: item['label'] as String,
+                      assetIcon: item['icon'] as String,
+                      onTap: item['onTap'] as VoidCallback,
+                    ),
                   )).toList(),
                 ),
               ],
@@ -346,40 +348,50 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _MenuGridItem(
-                      icon: Icons.history,
-                      label: l10n.routines,
-                      onTap: () => _navigateFromMenu(RoutinesTabHolder.routeName),
-                    ),
-                    const SizedBox(width: 24),
-                    _MenuGridItem(
-                      icon: Icons.star_outline_rounded,
-                      label: l10n.favorites,
-                      onTap: () => _navigateFromMenu(FavoritesTabHolder.routeName),
-                    ),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _MenuGridItem(
+                          icon: Icons.history,
+                          label: l10n.routines,
+                          onTap: () => _navigateFromMenu(RoutinesTabHolder.routeName),
+                        ),
+                      ),
+                      Expanded(
+                        child: _MenuGridItem(
+                          icon: Icons.star_outline_rounded,
+                          label: l10n.favorites,
+                          onTap: () => _navigateFromMenu(FavoritesTabHolder.routeName),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _MenuSvgItem(
-                      svgAsset: 'assets/images/tips.svg',
-                      label: l10n.tips,
-                      onTap: () => _navigateFromMenu(RecommendationsTabHolder.routeName),
+                    Expanded(
+                      child: _MenuSvgItem(
+                        svgAsset: 'assets/images/tips.svg',
+                        label: l10n.tips,
+                        onTap: () => _navigateFromMenu(RecommendationsTabHolder.routeName),
+                      ),
                     ),
-                    _MenuSvgItem(
-                      svgAsset: 'assets/images/recipes.svg',
-                      label: l10n.recipes,
-                      onTap: () => _navigateFromMenu(RecipesTabsHolder.routeName),
+                    Expanded(
+                      child: _MenuSvgItem(
+                        svgAsset: 'assets/images/recipes.svg',
+                        label: l10n.recipes,
+                        onTap: () => _navigateFromMenu(RecipesTabsHolder.routeName),
+                      ),
                     ),
-                    _MenuSvgItem(
-                      svgAsset: 'assets/images/profile.svg',
-                      label: l10n.profile,
-                      onTap: () => _navigateFromMenu(ProfileScreen.routeName),
+                    Expanded(
+                      child: _MenuSvgItem(
+                        svgAsset: 'assets/images/profile.svg',
+                        label: l10n.profile,
+                        onTap: () => _navigateFromMenu(ProfileScreen.routeName),
+                      ),
                     ),
                   ],
                 ),
@@ -665,34 +677,34 @@ class _MenuGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: SizedBox(
-        width: 100,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-                border: Border.all(color: _kNavColor.withOpacity(0.3), width: 1.5),
-              ),
-              child: Icon(icon, color: _kNavColor.withOpacity(0.8), size: 36),
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+              border: Border.all(color: _kNavColor.withOpacity(0.3), width: 1.5),
             ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                fontFamily: 'Roboto',
-                color: _kNavColor,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
+            child: Icon(icon, color: _kNavColor.withOpacity(0.8), size: 36),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              fontFamily: 'Roboto',
+              color: _kNavColor,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
             ),
-          ],
-        ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
@@ -713,32 +725,32 @@ class _MenuSvgItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: SizedBox(
-        width: 100,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 40,
-              width: 40,
-              child: SvgPicture.asset(
-                svgAsset,
-                colorFilter: const ColorFilter.mode(_kNavColor, BlendMode.srcIn),
-              ),
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: 40,
+            width: 40,
+            child: SvgPicture.asset(
+              svgAsset,
+              colorFilter: const ColorFilter.mode(_kNavColor, BlendMode.srcIn),
             ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                fontFamily: 'Roboto',
-                color: _kNavColor,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              fontFamily: 'Roboto',
+              color: _kNavColor,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
             ),
-          ],
-        ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
@@ -759,38 +771,36 @@ class _PlusGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: SizedBox(
-        width: 80,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-                border: Border.all(color: _kNavColor.withOpacity(0.3), width: 1.5),
-              ),
-              child: Center(
-                child: Image.asset(assetIcon, width: 38, height: 38),
-              ),
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+              border: Border.all(color: _kNavColor.withOpacity(0.3), width: 1.5),
             ),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              style: const TextStyle(
-                fontFamily: 'Roboto',
-                color: _kNavColor,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            child: Center(
+              child: Image.asset(assetIcon, width: 38, height: 38),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: const TextStyle(
+              fontFamily: 'Roboto',
+              color: _kNavColor,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
