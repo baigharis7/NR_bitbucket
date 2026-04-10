@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
@@ -37,7 +36,6 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   CameraController? _cameraController;
   bool _isCameraInitialized = false;
   bool _isCapturing = false;
-  bool _isOffline = false;
 
   /// Frozen image bytes shown while scanning is in progress.
   Uint8List? _capturedImageBytes;
@@ -61,7 +59,6 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
     _focusAnimation = Tween<double>(begin: 1.4, end: 1.0).animate(
       CurvedAnimation(parent: _focusAnimController, curve: Curves.easeOut),
     );
-    _checkConnectivity();
     _initializeCamera();
   }
 
@@ -84,17 +81,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
       _cameraController = null;
       setState(() => _isCameraInitialized = false);
     } else if (state == AppLifecycleState.resumed) {
-      _checkConnectivity();
       _initializeCamera();
-    }
-  }
-
-  Future<void> _checkConnectivity() async {
-    try {
-      final result = await InternetAddress.lookup('example.com');
-      if (mounted) setState(() => _isOffline = result.isEmpty);
-    } on SocketException catch (_) {
-      if (mounted) setState(() => _isOffline = true);
     }
   }
 
@@ -207,9 +194,6 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
 
               // Processing indicator
               if (state.isProcessing) _buildProcessingIndicator(),
-
-              // Offline banner
-              if (_isOffline) _buildOfflineBanner(),
 
               // Capture button (bottom center) — only when no results
               if (!state.hasResults && !state.isProcessing)
@@ -370,58 +354,27 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
     );
   }
 
-  Widget _buildOfflineBanner() {
-    return Positioned(
-      top: MediaQuery.of(context).padding.top + 52,
-      left: 20,
-      right: 20,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.black87,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Row(
-          children: [
-            Icon(Icons.wifi_off, color: Colors.orangeAccent, size: 20),
-            SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                'No internet connection. Scanning requires an active connection.',
-                style: TextStyle(color: Colors.white70, fontSize: 13),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildCaptureButton() {
-    final disabled = _isOffline;
     return Positioned(
       bottom: MediaQuery.of(context).padding.bottom + 40,
       left: 0,
       right: 0,
       child: Center(
         child: GestureDetector(
-          onTap: disabled ? null : _capturePhoto,
-          child: Opacity(
-            opacity: disabled ? 0.35 : 1.0,
+          onTap: _capturePhoto,
+          child: Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 4),
+              color: Colors.white24,
+            ),
             child: Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
+              margin: const EdgeInsets.all(6),
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 4),
-                color: Colors.white24,
-              ),
-              child: Container(
-                margin: const EdgeInsets.all(6),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                ),
+                color: Colors.white,
               ),
             ),
           ),
