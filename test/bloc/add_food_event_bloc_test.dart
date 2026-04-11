@@ -239,7 +239,11 @@ void main() {
 
     blocTest<AddFoodEventBloc, AddFoodEventState>(
       'AddFoodArgumentModelEventAction with preSelectRoutine sets isRoutine true',
-      build: buildBloc,
+      build: () {
+        when(mockGetFoodFavorites.execute()).thenAnswer((_) async => []);
+        when(mockGetRecentFoodItems.execute()).thenAnswer((_) async => []);
+        return buildBloc();
+      },
       act: (bloc) => bloc.add(AddFoodArgumentModelEventAction(
         foodArgumentsModel: FoodArgumentsModel(
           mealTime: MealTime(id: 0, name: 'Breakfast', time: '08:00'),
@@ -256,7 +260,11 @@ void main() {
 
     blocTest<AddFoodEventBloc, AddFoodEventState>(
       'AddFoodArgumentModelEventAction with preSelectFavorite sets isFavorite true',
-      build: buildBloc,
+      build: () {
+        when(mockGetFoodFavorites.execute()).thenAnswer((_) async => []);
+        when(mockGetRecentFoodItems.execute()).thenAnswer((_) async => []);
+        return buildBloc();
+      },
       act: (bloc) => bloc.add(AddFoodArgumentModelEventAction(
         foodArgumentsModel: FoodArgumentsModel(
           mealTime: MealTime(id: 1, name: 'Lunch', time: '12:00'),
@@ -273,7 +281,11 @@ void main() {
 
     blocTest<AddFoodEventBloc, AddFoodEventState>(
       'AddFoodArgumentModelEventAction without preselect keeps both unset',
-      build: buildBloc,
+      build: () {
+        when(mockGetFoodFavorites.execute()).thenAnswer((_) async => []);
+        when(mockGetRecentFoodItems.execute()).thenAnswer((_) async => []);
+        return buildBloc();
+      },
       act: (bloc) => bloc.add(AddFoodArgumentModelEventAction(
         foodArgumentsModel: FoodArgumentsModel(
           mealTime: MealTime(id: 2, name: 'Dinner', time: '19:00'),
@@ -283,6 +295,78 @@ void main() {
       verify: (bloc) {
         expect(bloc.state.foodEvent!.isFavorite, isNot(true));
         expect(bloc.state.foodEvent!.isRoutine, isNot(true));
+      },
+    );
+
+    blocTest<AddFoodEventBloc, AddFoodEventState>(
+      'AddFoodArgumentModelEventAction filters favorites by mealTime',
+      build: () {
+        when(mockGetFoodFavorites.execute()).thenAnswer((_) async => [
+          FoodFavorite(ingredients: [], drinks: [], mealTime: 3, title: 'Snack fav'),
+          FoodFavorite(ingredients: [], drinks: [], mealTime: 0, title: 'Breakfast fav'),
+          FoodFavorite(ingredients: [], drinks: [], mealTime: 3, title: 'Snack fav 2'),
+        ]);
+        when(mockGetRecentFoodItems.execute()).thenAnswer((_) async => []);
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(AddFoodArgumentModelEventAction(
+        foodArgumentsModel: FoodArgumentsModel(
+          mealTime: MealTime(id: 3, name: 'Snack', time: '16:00'),
+          selectedDateTime: DateTime(2026, 4, 10),
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.foodEvent!.mealTime, 3);
+        expect(bloc.state.foodFavorites!.length, 2);
+        expect(bloc.state.foodFavorites!.every((f) => f.mealTime == 3), true);
+      },
+    );
+
+    blocTest<AddFoodEventBloc, AddFoodEventState>(
+      'AddFoodArgumentModelEventAction filters recents by mealTime',
+      build: () {
+        when(mockGetFoodFavorites.execute()).thenAnswer((_) async => []);
+        when(mockGetRecentFoodItems.execute()).thenAnswer((_) async => [
+          FoodFavorite(ingredients: [], drinks: [], mealTime: 1, title: 'Lunch recent'),
+          FoodFavorite(ingredients: [], drinks: [], mealTime: 0, title: 'Breakfast recent'),
+          FoodFavorite(ingredients: [], drinks: [], mealTime: 1, title: 'Lunch recent 2'),
+        ]);
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(AddFoodArgumentModelEventAction(
+        foodArgumentsModel: FoodArgumentsModel(
+          mealTime: MealTime(id: 1, name: 'Lunch', time: '12:00'),
+          selectedDateTime: DateTime(2026, 4, 10),
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.foodEvent!.mealTime, 1);
+        expect(bloc.state.recentFoodItems!.length, 2);
+        expect(bloc.state.recentFoodItems!.every((f) => f.mealTime == 1), true);
+      },
+    );
+
+    blocTest<AddFoodEventBloc, AddFoodEventState>(
+      'AddFoodArgumentModelEventAction returns empty lists when no items match mealTime',
+      build: () {
+        when(mockGetFoodFavorites.execute()).thenAnswer((_) async => [
+          FoodFavorite(ingredients: [], drinks: [], mealTime: 0, title: 'Breakfast fav'),
+        ]);
+        when(mockGetRecentFoodItems.execute()).thenAnswer((_) async => [
+          FoodFavorite(ingredients: [], drinks: [], mealTime: 1, title: 'Lunch recent'),
+        ]);
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(AddFoodArgumentModelEventAction(
+        foodArgumentsModel: FoodArgumentsModel(
+          mealTime: MealTime(id: 3, name: 'Snack', time: '16:00'),
+          selectedDateTime: DateTime(2026, 4, 10),
+        ),
+      )),
+      verify: (bloc) {
+        expect(bloc.state.foodEvent!.mealTime, 3);
+        expect(bloc.state.foodFavorites, isEmpty);
+        expect(bloc.state.recentFoodItems, isEmpty);
       },
     );
 

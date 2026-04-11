@@ -261,7 +261,7 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       emit(state.copyWith(isLoading: false, onError: null));
     },);
 
-    on<AddFoodArgumentModelEventAction>((event, emit) {
+    on<AddFoodArgumentModelEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null));
       state.foodEvent?.mealTime = event.foodArgumentsModel.mealTime.id;
       state.foodEvent?.eventDate = event.foodArgumentsModel.selectedDateTime.millisecondsSinceEpoch;
@@ -272,6 +272,11 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
       if (event.foodArgumentsModel.preSelectRoutine) {
         state.foodEvent?.isRoutine = true;
       }
+      // Re-filter favorites and recents for the correct mealTime
+      final allFavorites = await getFoodFavoritesInteractor.execute();
+      state.foodFavorites = allFavorites.orEmpty().where((foodFav) => foodFav.mealTime == state.foodEvent?.mealTime).toList();
+      final allRecent = await getRecentFoodItemsInteractor.execute();
+      state.recentFoodItems = allRecent.where((item) => item.mealTime == state.foodEvent?.mealTime).toList();
       emit(state.copyWith(isLoading: false,));
     },);
 
