@@ -159,8 +159,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
           }
         },
         builder: (context, state) {
-          final showFavRecent = state.foodEvent!.ingredients.orEmpty().isEmpty &&
-              (state.foodFavorites.orEmpty().isNotEmpty || state.recentFoodItems.orEmpty().isNotEmpty);
+          final showFavRecent = state.foodEvent!.ingredients.orEmpty().isEmpty;
 
           return Stack(
             children: [
