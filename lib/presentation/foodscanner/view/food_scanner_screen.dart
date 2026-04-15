@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +46,9 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   late AnimationController _focusAnimController;
   late Animation<double> _focusAnimation;
 
+  /// Tracks saveTick from the last frame so we can detect increments.
+  int _lastSeenSaveTick = 0;
+
   @override
   void initState() {
     super.initState();
@@ -60,6 +61,13 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
       CurvedAnimation(parent: _focusAnimController, curve: Curves.easeOut),
     );
     _initializeCamera();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context
+          .read<FoodScannerBloc>()
+          .add(InitializeMealTypeAction(mealType: widget.mealType));
+    });
   }
 
   @override
@@ -166,12 +174,39 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   Widget build(BuildContext context) {
     return BlocConsumer<FoodScannerBloc, FoodScannerState>(
       listener: (context, state) {
-        if (state.editingIndex != null) {
-          _navigateToEditFood(context, state);
-        }
         // Clear frozen image when results arrive or on error
         if (!state.isProcessing && _capturedImageBytes != null) {
           setState(() => _capturedImageBytes = null);
+        }
+
+        // A save finished — show splash
+        if (state.saveTick != _lastSeenSaveTick) {
+          _lastSeenSaveTick = state.saveTick;
+          _showSaveSplash(context);
+        }
+
+        // Error toast
+        final error = state.errorMessage;
+        if (error != null && error.isNotEmpty) {
+          ScaffoldMessenger.of(context)
+            ..clearSnackBars()
+            ..showSnackBar(SnackBar(content: Text(error)));
+        }
+
+        // Edit requested — pop with the selected row so the parent
+        // AddFoodEventScreen can prefill it in its own edit flow.
+        if (state.editingIndex != null) {
+          final index = state.editingIndex!;
+          context.read<FoodScannerBloc>().add(ClearEditingAction());
+          _popWithEditPayload(context, state, index);
+          return;
+        }
+
+        // List is empty after a save — navigate the parent back to the
+        // meal summary instead of the (now-empty) AddFoodEventScreen.
+        if (state.navigateToSummary) {
+          context.read<FoodScannerBloc>().add(ClearNavigateToSummaryAction());
+          Navigator.pop(context, true);
         }
       },
       builder: (context, state) {
@@ -291,9 +326,17 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
     );
   }
 
+  /// Pop with `true` if the user has logged anything this session so
+  /// the parent screen can navigate to the meal summary; otherwise pop
+  /// with `null` so the user lands back on the add-food screen.
+  void _closeScanner(BuildContext context) {
+    final didLog = _lastSeenSaveTick > 0;
+    Navigator.pop(context, didLog ? true : null);
+  }
+
   Widget _buildCloseButton(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pop(context),
+      onTap: () => _closeScanner(context),
       child: Container(
         width: 36,
         height: 36,
@@ -385,7 +428,6 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
 
   Widget _buildResultsSheet(BuildContext context, FoodScannerState state) {
     final bloc = context.read<FoodScannerBloc>();
-    final hasEdited = state.editedFoods.isNotEmpty;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.45,
@@ -475,7 +517,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                     // "Search Manually" link
                     Center(
                       child: GestureDetector(
-                        onTap: () => Navigator.pop(context),
+                        onTap: () => _closeScanner(context),
                         child: const Text(
                           'Not what you are looking for? Search Manually',
                           style: TextStyle(
@@ -494,36 +536,52 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
               // Fixed action buttons (not scrollable)
               Padding(
                 padding: EdgeInsets.fromLTRB(20, 8, 20, 16 + MediaQuery.of(context).padding.bottom),
-                child: Row(
+                child: Column(
                   children: [
-                    Expanded(
-                      child: _buildActionButton(
-                        label: 'Search again',
-                        isPrimary: false,
-                        onTap: () => bloc.add(ResetScannerAction()),
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildActionButton(
+                            label: 'Search again',
+                            isPrimary: false,
+                            onTap: () => bloc.add(ResetScannerAction()),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildActionButton(
+                            label: 'Edit',
+                            isPrimary: false,
+                            onTap: state.hasSelection && !state.isSaving
+                                ? () => bloc.add(EditTopmostAction())
+                                : null,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildActionButton(
+                            label: 'Log',
+                            isPrimary: true,
+                            onTap: state.hasSelection && !state.isSaving
+                                ? () => bloc.add(LogTopmostAction())
+                                : null,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    if (state.hasSelection) ...[
-                      Expanded(
+                    if (state.canLogAll) ...[
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
                         child: _buildActionButton(
-                          label: hasEdited ? 'Continue' : 'Edit',
-                          isPrimary: false,
-                          onTap: () =>
-                              bloc.add(EditNextSelectedFoodAction()),
+                          label: 'Log all',
+                          isPrimary: true,
+                          onTap: state.isSaving
+                              ? null
+                              : () => bloc.add(LogAllAction()),
                         ),
                       ),
-                      const SizedBox(width: 12),
                     ],
-                    Expanded(
-                      child: _buildActionButton(
-                        label: 'Log selected',
-                        isPrimary: true,
-                        onTap: state.hasSelection
-                            ? () => _logSelectedFoods(context, state)
-                            : null,
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -678,86 +736,45 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   // Navigation
   // ---------------------------------------------------------------------------
 
-  void _logSelectedFoods(BuildContext context, FoodScannerState state) {
-    final selectedFoods = <FoodInFavorite>[];
-    final selectedResults = <ScanResult>[];
-    for (final index in state.selectedIndices) {
-      final result = state.results[index].scanResult;
-      selectedFoods.add(_scanResultToFoodInFavorite(result));
-      selectedResults.add(result);
-    }
-
-    // If any selected food has no gram estimate, force edit flow so the
-    // user can input the amount before logging.
-    final needsEdit = selectedResults.any((r) => r.estimatedGrams == null);
-
-    Navigator.pop(
-      context,
-      ScannerResult(
-        foods: selectedFoods,
-        directLog: !needsEdit,
-        title: _deriveTitle(selectedResults),
-        detectedCookingMethods: selectedResults
-            .map((r) => r.detectedCookingMethod)
-            .toList(),
-      ),
-    );
+  void _showSaveSplash(BuildContext context) {
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(const SnackBar(
+        content: Text('Logged'),
+        duration: Duration(milliseconds: 900),
+      ));
   }
 
-  void _navigateToEditFood(BuildContext context, FoodScannerState state) {
-    final editIndex = state.editingIndex!;
-    final result = state.results[editIndex].scanResult;
-    final food = _scanResultToFoodInFavorite(result);
+  /// Pops the scanner with a single-food [ScannerResult] for the edit
+  /// flow so the parent AddFoodEventScreen can prefill and let the user
+  /// adjust quantity / cooking method before saving.
+  void _popWithEditPayload(
+      BuildContext context, FoodScannerState state, int index) {
+    final scan = state.results[index].scanResult;
+    final qty = scan.estimatedGrams?.round() ?? 0;
+    final foodId = scan.isMatched ? scan.matchedFoodId! : -1;
+    final nameEn =
+        scan.isMatched ? (scan.matchedNameEn ?? scan.scannedName) : scan.scannedName;
+    final nameEs =
+        scan.isMatched ? (scan.matchedNameEs ?? scan.scannedName) : scan.scannedName;
 
     Navigator.pop(
       context,
       ScannerResult(
-        foods: [food],
+        foods: [
+          FoodInFavorite(
+            id: foodId,
+            name_en: nameEn,
+            name_es: nameEs,
+            qty: qty,
+            unit: -2,
+            cookingMethod: 0,
+          ),
+        ],
         directLog: false,
-        title: _deriveTitle([result]),
-        detectedCookingMethods: [result.detectedCookingMethod],
+        title: nameEn,
+        detectedCookingMethods: [scan.detectedCookingMethod],
       ),
-    );
-  }
-
-  /// Derive a title for the food event from scan results.
-  /// Single food → matched DB name or scanned name.
-  /// Multiple foods → first scanned name (LogMeal dish name).
-  String _deriveTitle(List<ScanResult> results) {
-    if (results.isEmpty) return '';
-    if (results.length == 1) {
-      final r = results.first;
-      return r.matchedNameEn ?? r.scannedName;
-    }
-    // Multiple foods: use first result's scanned name as dish qualifier
-    return results.first.scannedName;
-  }
-
-  FoodInFavorite _scanResultToFoodInFavorite(ScanResult result) {
-    final int foodId;
-    final String? nameEn;
-    final String? nameEs;
-
-    if (result.isMatched) {
-      foodId = result.matchedFoodId!;
-      nameEn = result.matchedNameEn;
-      nameEs = result.matchedNameEs;
-    } else {
-      foodId = -1;
-      nameEn = result.scannedName;
-      nameEs = result.scannedName;
-    }
-
-    // LogMeal returns grams — use gram unit (-2) directly
-    final qty = result.estimatedGrams?.round() ?? 0;
-
-    return FoodInFavorite(
-      id: foodId,
-      name_en: nameEn,
-      name_es: nameEs,
-      qty: qty,
-      unit: -2, // grams
-      cookingMethod: 0,
     );
   }
 }

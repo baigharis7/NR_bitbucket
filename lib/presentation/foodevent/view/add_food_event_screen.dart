@@ -74,6 +74,44 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
     }
   }
 
+  /// Route the scanner's pop payload. `true` means the scanner already
+  /// saved at least one FoodEvent and we should navigate to the meal
+  /// summary; a [ScannerResult] means the user chose to edit one food
+  /// and we prefill the current draft; `null` means cancel.
+  void _handleScannerResult(
+    BuildContext context,
+    AddFoodEventBloc bloc,
+    AddFoodEventState state,
+    Object? result,
+  ) {
+    if (result == true) {
+      Navigator.popAndPushNamed(
+        context,
+        MealTimeDetailScreen.routeName,
+        arguments: FoodArgumentsModel(
+          mealTime: MealTime.getAllMealTimes().firstWhere(
+            (element) => element.id == state.foodEvent?.mealTime,
+            orElse: () => Breakfast(),
+          ),
+          selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(
+                  state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch) ??
+              DateTime.now(),
+        ),
+      );
+      return;
+    }
+
+    if (result is ScannerResult && result.foods.isNotEmpty) {
+      _applyCookingMethods(result, state.cookingMethodsInfoMaster);
+      if (result.title != null && result.title!.isNotEmpty) {
+        bloc.add(AddFoodNameEventAction(foodName: result.title!));
+      }
+      for (final food in result.foods) {
+        bloc.add(AddFoodFromEventAction(foodInEvent: food));
+      }
+    }
+  }
+
   /// Resolve detected cooking method names to IDs and apply them to foods.
   void _applyCookingMethods(ScannerResult result, dynamic cookingMethodsInfoMaster) {
     if (result.detectedCookingMethods.isEmpty) return;
@@ -221,7 +259,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                         if (unitsFoodsMaster != null) {
                                           scannerBloc.initializeUnits(unitsFoodsMaster);
                                         }
-                                        final result = await Navigator.push<ScannerResult>(
+                                        final result = await Navigator.push<Object?>(
                                           context,
                                           MaterialPageRoute(
                                             builder: (_) => BlocProvider.value(
@@ -232,46 +270,8 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                             ),
                                           ),
                                         );
-                                        if (result != null && result.foods.isNotEmpty) {
-                                          // Auto-apply detected cooking methods
-                                          _applyCookingMethods(result, state.cookingMethodsInfoMaster);
-
-                                          if (result.directLog) {
-                                            // Direct-log: save immediately and navigate to meal summary
-                                            final foodEventSimple = FoodEventSimple(
-                                              userId: '', // Overwritten by bloc handler
-                                              eventDate: state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch,
-                                              eventId: DateTime.now().millisecondsSinceEpoch,
-                                              mealType: state.foodEvent?.mealTime ?? 0,
-                                              foodName: result.title,
-                                              comment: null,
-                                              ingredients: result.foods.map((f) => FoodInEvent(
-                                                id: f.id,
-                                                qty: f.qty,
-                                                unit: f.unit,
-                                                cookingMethod: f.cookingMethod,
-                                                unitsEquivalences: f.unitsEquivalences,
-                                              )).toList(),
-                                              drinks: [],
-                                            );
-                                            bloc.add(FinishAddFoodEventAction(
-                                              foodEventSimple: foodEventSimple,
-                                              onFinish: () => _showConfirmationDialog(
-                                                message: AppLocalizations.of(context)!.food_event_successfully_saved,
-                                                context: context,
-                                                onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
-                                              ),
-                                            ));
-                                          } else {
-                                            // Edit flow: add foods to the event for editing
-                                            if (result.title != null && result.title!.isNotEmpty) {
-                                              bloc.add(AddFoodNameEventAction(foodName: result.title!));
-                                            }
-                                            for (final food in result.foods) {
-                                              bloc.add(AddFoodFromEventAction(foodInEvent: food));
-                                            }
-                                          }
-                                        }
+                                        if (!mounted) return;
+                                        _handleScannerResult(context, bloc, state, result);
                                       },
                                       items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),
                                       onItemSelect: (option, focus) {
@@ -405,7 +405,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                           if (unitsFoodsMaster != null) {
                                             scannerBloc.initializeUnits(unitsFoodsMaster);
                                           }
-                                          final result = await Navigator.push<ScannerResult>(
+                                          final result = await Navigator.push<Object?>(
                                             context,
                                             MaterialPageRoute(
                                               builder: (_) => BlocProvider.value(
@@ -416,43 +416,8 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                               ),
                                             ),
                                           );
-                                          if (result != null && result.foods.isNotEmpty) {
-                                            _applyCookingMethods(result, state.cookingMethodsInfoMaster);
-
-                                            if (result.directLog) {
-                                              final foodEventSimple = FoodEventSimple(
-                                                userId: '',
-                                                eventDate: state.foodEvent?.eventDate ?? DateTime.now().millisecondsSinceEpoch,
-                                                eventId: DateTime.now().millisecondsSinceEpoch,
-                                                mealType: state.foodEvent?.mealTime ?? 0,
-                                                foodName: result.title,
-                                                comment: null,
-                                                ingredients: result.foods.map((f) => FoodInEvent(
-                                                  id: f.id,
-                                                  qty: f.qty,
-                                                  unit: f.unit,
-                                                  cookingMethod: f.cookingMethod,
-                                                  unitsEquivalences: f.unitsEquivalences,
-                                                )).toList(),
-                                                drinks: [],
-                                              );
-                                              bloc.add(FinishAddFoodEventAction(
-                                                foodEventSimple: foodEventSimple,
-                                                onFinish: () => _showConfirmationDialog(
-                                                  message: AppLocalizations.of(context)!.food_event_successfully_saved,
-                                                  context: context,
-                                                  onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
-                                                ),
-                                              ));
-                                            } else {
-                                              if (result.title != null && result.title!.isNotEmpty) {
-                                                bloc.add(AddFoodNameEventAction(foodName: result.title!));
-                                              }
-                                              for (final food in result.foods) {
-                                                bloc.add(AddFoodFromEventAction(foodInEvent: food));
-                                              }
-                                            }
-                                          }
+                                          if (!mounted) return;
+                                          _handleScannerResult(context, bloc, state, result);
                                         },
                                         items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),
                                         onItemSelect: (option, focus) {

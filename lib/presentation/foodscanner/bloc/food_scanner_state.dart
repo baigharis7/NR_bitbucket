@@ -4,60 +4,79 @@ class FoodScannerState {
   /// Whether the scanner is processing a detection.
   final bool isProcessing;
 
+  /// Whether the scanner is currently saving a food event.
+  final bool isSaving;
+
   /// Results from the most recent scan.
-  /// Each entry is a detected food with match info.
   final List<ScanResultEntry> results;
 
-  /// Which results the user has selected (by index).
+  /// Which results the user has checked for action (by index).
   final Set<int> selectedIndices;
 
-  /// Index of the food currently being edited (sequential edit flow).
-  /// Null when not in edit mode.
+  /// Index of a row the UI should push into the edit screen, once.
+  /// Cleared after the listener consumes it.
   final int? editingIndex;
+
+  /// Monotonic counter bumped after every successful save; the screen
+  /// listens for changes to show a success splash.
+  final int saveTick;
+
+  /// Whether the scanner should pop and land on the meal summary.
+  /// Raised when the row list empties after a Log all / final Log.
+  final bool navigateToSummary;
 
   /// Error message to display, if any.
   final String? errorMessage;
 
-  /// Foods that have been fully edited/confirmed (removed from results).
-  final List<ScanResultEntry> editedFoods;
-
   const FoodScannerState({
     this.isProcessing = false,
+    this.isSaving = false,
     this.results = const [],
     this.selectedIndices = const {},
     this.editingIndex,
+    this.saveTick = 0,
+    this.navigateToSummary = false,
     this.errorMessage,
-    this.editedFoods = const [],
   });
 
   FoodScannerState copyWith({
     bool? isProcessing,
+    bool? isSaving,
     List<ScanResultEntry>? results,
     Set<int>? selectedIndices,
     int? Function()? editingIndex,
+    int? saveTick,
+    bool? navigateToSummary,
     String? Function()? errorMessage,
-    List<ScanResultEntry>? editedFoods,
   }) {
     return FoodScannerState(
       isProcessing: isProcessing ?? this.isProcessing,
+      isSaving: isSaving ?? this.isSaving,
       results: results ?? this.results,
       selectedIndices: selectedIndices ?? this.selectedIndices,
       editingIndex: editingIndex != null ? editingIndex() : this.editingIndex,
+      saveTick: saveTick ?? this.saveTick,
+      navigateToSummary: navigateToSummary ?? this.navigateToSummary,
       errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
-      editedFoods: editedFoods ?? this.editedFoods,
     );
   }
 
   bool get hasResults => results.isNotEmpty;
   bool get hasSelection => selectedIndices.isNotEmpty;
-  bool get isEditing => editingIndex != null;
 
-  /// Whether we're in mid-edit flow (some foods already edited, more remain).
-  bool get hasMoreToEdit {
-    final remaining = selectedIndices
-        .where((i) => !editedFoods.any((e) => e == results[i]))
-        .toList();
-    return remaining.length > 1;
+  /// Topmost (lowest-index) checked row, or null if nothing checked.
+  int? get topmostSelectedIndex {
+    if (selectedIndices.isEmpty) return null;
+    return selectedIndices.reduce((a, b) => a < b ? a : b);
+  }
+
+  /// Whether Log all can run: at least one checked row has an estimated
+  /// gram amount. Rows without grams are left behind for manual editing.
+  bool get canLogAll {
+    return selectedIndices.any((i) {
+      if (i >= results.length) return false;
+      return results[i].scanResult.estimatedGrams != null;
+    });
   }
 }
 

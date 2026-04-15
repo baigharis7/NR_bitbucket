@@ -6,7 +6,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/data/api/foodscanner/logmeal_provider.dart';
 import 'package:nutrenaissance_flutter/data/api/foodscanner/logmeal_token_service.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/visual_food_provider.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/scan_result_to_ingredient_mapper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_master.dart';
@@ -24,10 +30,15 @@ class FoodScannerBloc
     extends BaseBloc<FoodScannerAction, FoodScannerState> {
   final BarcodeNutritionProvider barcodeProvider;
   final ScannedFoodRepository scannedFoodRepository;
+  final ScanResultToIngredientMapper scanResultMapper;
+  final UploadFoodEventInteractor uploadFoodEventInteractor;
+  final SaveFoodEventInteractor saveFoodEventInteractor;
+  final GetUserIdInteractor getUserIdInteractor;
   VisualFoodProvider? visualFoodProvider;
   final LogMealTokenService? _logMealTokenService;
   FoodFuzzyMatcher? _fuzzyMatcher;
   UnitsFoodsMaster? _unitsFoodsMaster;
+  int _mealType = 0;
 
   /// Provide the master food list so the fuzzy matcher can be initialized.
   /// Call this when opening the scanner screen (master files should be loaded
@@ -52,18 +63,33 @@ class FoodScannerBloc
   FoodScannerBloc({
     required this.barcodeProvider,
     required this.scannedFoodRepository,
+    required this.scanResultMapper,
+    required this.uploadFoodEventInteractor,
+    required this.saveFoodEventInteractor,
+    required this.getUserIdInteractor,
     this.visualFoodProvider,
     LogMealTokenService? logMealTokenService,
   })  : _logMealTokenService = logMealTokenService,
         super(const FoodScannerState()) {
+    on<InitializeMealTypeAction>(_onInitializeMealType);
     on<OnVisualFoodDetectedAction>(_onVisualFoodDetected);
     on<OnBarcodeDetectedAction>(_onBarcodeDetected);
     on<ToggleFoodSelectionAction>(_onToggleSelection);
-    on<LogSelectedFoodsAction>(_onLogSelected);
-    on<EditNextSelectedFoodAction>(_onEditNext);
-    on<FoodEditedAction>(_onFoodEdited);
+    on<LogTopmostAction>(_onLogTopmost);
+    on<LogAllAction>(_onLogAll);
+    on<EditTopmostAction>(_onEditTopmost);
+    on<EditCompletedAction>(_onEditCompleted);
+    on<ClearEditingAction>(_onClearEditing);
+    on<ClearNavigateToSummaryAction>(_onClearNavigateToSummary);
     on<CapturePhotoAction>(_onCapturePhoto);
     on<ResetScannerAction>(_onReset);
+  }
+
+  void _onInitializeMealType(
+    InitializeMealTypeAction action,
+    Emitter<FoodScannerState> emit,
+  ) {
+    _mealType = action.mealType;
   }
 
   // ---------------------------------------------------------------------------
@@ -424,60 +450,166 @@ class FoodScannerBloc
   }
 
   // ---------------------------------------------------------------------------
-  // Log selected foods (no edit)
+  // Save flow (Log / Log all / Edit)
   // ---------------------------------------------------------------------------
 
-  void _onLogSelected(
-    LogSelectedFoodsAction action,
+  Future<void> _onLogTopmost(
+    LogTopmostAction action,
     Emitter<FoodScannerState> emit,
-  ) {
-    // The UI reads state.selectedIndices + state.results to build
-    // FoodInEvent/FoodInFavorite objects and dispatch to AddFoodEventBloc.
-    // This action just signals the UI to proceed.
+  ) async {
+    final index = state.topmostSelectedIndex;
+    if (index == null || index >= state.results.length) return;
+
+    final scan = state.results[index].scanResult;
+    if (scan.estimatedGrams == null) {
+      // Can't save without a gram amount — fall through to edit.
+      emit(state.copyWith(editingIndex: () => index));
+      return;
+    }
+
+    await _saveRow(index, emit);
   }
 
-  // ---------------------------------------------------------------------------
-  // Sequential edit flow
-  // ---------------------------------------------------------------------------
-
-  void _onEditNext(
-    EditNextSelectedFoodAction action,
+  Future<void> _onLogAll(
+    LogAllAction action,
     Emitter<FoodScannerState> emit,
-  ) {
-    // Find the first selected index that hasn't been edited yet
-    final unedited = state.selectedIndices
-        .where((i) => !state.editedFoods.contains(state.results[i]))
-        .toList()
-      ..sort();
+  ) async {
+    // Snapshot the scan results for every checked row that has a gram
+    // estimate. We resolve to scan objects now so later index shifts
+    // from row removals don't affect which foods we save.
+    final toSave = state.selectedIndices
+        .where((i) =>
+            i < state.results.length &&
+            state.results[i].scanResult.estimatedGrams != null)
+        .map((i) => state.results[i])
+        .toList();
 
-    if (unedited.isEmpty) return;
+    if (toSave.isEmpty) return;
 
-    emit(state.copyWith(editingIndex: () => unedited.first));
+    emit(state.copyWith(isSaving: true, errorMessage: () => null));
+
+    for (final entry in toSave) {
+      final currentIndex = state.results.indexOf(entry);
+      if (currentIndex < 0) continue;
+      await _saveRow(currentIndex, emit);
+    }
+
+    emit(state.copyWith(isSaving: false));
   }
 
-  void _onFoodEdited(
-    FoodEditedAction action,
+  void _onEditTopmost(
+    EditTopmostAction action,
     Emitter<FoodScannerState> emit,
   ) {
-    final edited = List<ScanResultEntry>.from(state.editedFoods)
-      ..add(state.results[action.index]);
+    final index = state.topmostSelectedIndex;
+    if (index == null || index >= state.results.length) return;
+    emit(state.copyWith(editingIndex: () => index));
+  }
 
-    // Remove from results list
+  void _onEditCompleted(
+    EditCompletedAction action,
+    Emitter<FoodScannerState> emit,
+  ) {
+    _removeRow(action.index, emit, bumpSaveTick: true);
+  }
+
+  void _onClearEditing(
+    ClearEditingAction action,
+    Emitter<FoodScannerState> emit,
+  ) {
+    emit(state.copyWith(editingIndex: () => null));
+  }
+
+  void _onClearNavigateToSummary(
+    ClearNavigateToSummaryAction action,
+    Emitter<FoodScannerState> emit,
+  ) {
+    emit(state.copyWith(navigateToSummary: false));
+  }
+
+  /// Map the row's scan result to an ingredient, upload and save a
+  /// FoodEvent, then drop the row from the list.
+  Future<void> _saveRow(int index, Emitter<FoodScannerState> emit) async {
+    final entry = state.results[index];
+    final scan = entry.scanResult;
+
+    emit(state.copyWith(isSaving: true, errorMessage: () => null));
+
+    try {
+      final ingredient = await scanResultMapper.toIngredient(scan);
+      final foodName = scan.isMatched
+          ? (scan.matchedNameEn ?? scan.scannedName)
+          : scan.scannedName;
+      final userId = getUserIdInteractor.execute();
+      final eventDateMs = DateTime.now().millisecondsSinceEpoch;
+      final foodEventSimple = FoodEventSimple(
+        userId: userId,
+        eventDate: eventDateMs,
+        eventId: eventDateMs,
+        mealType: _mealType,
+        foodName: foodName,
+        comment: null,
+        ingredients: [
+          FoodInEvent(
+            id: ingredient.id,
+            qty: ingredient.qty,
+            unit: ingredient.unit,
+            cookingMethod: ingredient.cookingMethod,
+            unitsEquivalences: ingredient.unitsEquivalences,
+          ),
+        ],
+        drinks: [],
+      );
+
+      final uploadResult = await uploadFoodEventInteractor.execute(foodEventSimple);
+      if (!uploadResult.uploadSuccess) {
+        emit(state.copyWith(
+          isSaving: false,
+          errorMessage: () => 'Failed to save "$foodName". Please try again.',
+        ));
+        return;
+      }
+
+      await saveFoodEventInteractor.execute(uploadResult, false);
+      DashboardEventBus.instance.notify(DataChangedCategory.food);
+
+      _removeRow(index, emit, bumpSaveTick: true);
+    } catch (e, stack) {
+      CrashlyticsService.record(e, stack, context: {
+        'source': 'food_scanner_save_row',
+        'scannedName': scan.scannedName,
+      });
+      emit(state.copyWith(
+        isSaving: false,
+        errorMessage: () => 'Could not save "${scan.scannedName}".',
+      ));
+    }
+  }
+
+  /// Drop a row from [FoodScannerState.results] and re-index
+  /// [FoodScannerState.selectedIndices]. Optionally bumps [saveTick] so
+  /// the screen can show a success splash.
+  void _removeRow(
+    int index,
+    Emitter<FoodScannerState> emit, {
+    bool bumpSaveTick = false,
+  }) {
     final newResults = List<ScanResultEntry>.from(state.results)
-      ..removeAt(action.index);
+      ..removeAt(index);
 
-    // Adjust selected indices
     final newSelection = <int>{};
     for (final i in state.selectedIndices) {
-      if (i == action.index) continue;
-      newSelection.add(i > action.index ? i - 1 : i);
+      if (i == index) continue;
+      newSelection.add(i > index ? i - 1 : i);
     }
 
     emit(state.copyWith(
       results: newResults,
       selectedIndices: newSelection,
+      isSaving: false,
+      saveTick: bumpSaveTick ? state.saveTick + 1 : state.saveTick,
       editingIndex: () => null,
-      editedFoods: edited,
+      navigateToSummary: newResults.isEmpty,
     ));
   }
 

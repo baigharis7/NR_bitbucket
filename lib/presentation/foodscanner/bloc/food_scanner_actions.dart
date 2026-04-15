@@ -1,5 +1,12 @@
 class FoodScannerAction {}
 
+/// Set the meal type every save from this scanner session should target.
+class InitializeMealTypeAction extends FoodScannerAction {
+  final int mealType;
+
+  InitializeMealTypeAction({required this.mealType});
+}
+
 /// Triggered when camera detects food candidates (visual recognition).
 class OnVisualFoodDetectedAction extends FoodScannerAction {
   /// List of detected food names with estimated grams and kcal.
@@ -15,28 +22,41 @@ class OnBarcodeDetectedAction extends FoodScannerAction {
   OnBarcodeDetectedAction({required this.barcode});
 }
 
-/// User selects/deselects a food from the results list.
+/// User toggles the checkbox on a result row.
 class ToggleFoodSelectionAction extends FoodScannerAction {
   final int index;
 
   ToggleFoodSelectionAction({required this.index});
 }
 
-/// User taps "Log selected" — log all selected foods with scan defaults.
-class LogSelectedFoodsAction extends FoodScannerAction {}
+/// Log the topmost checked row. If it has a gram estimate it saves a
+/// FoodEvent directly; otherwise it falls into the edit flow.
+class LogTopmostAction extends FoodScannerAction {}
 
-/// User taps "Edit" / "Continue" — start editing the next selected food.
-class EditNextSelectedFoodAction extends FoodScannerAction {}
+/// Log every checked row that has a gram estimate as its own FoodEvent.
+/// Rows without grams remain in the list.
+class LogAllAction extends FoodScannerAction {}
 
-/// A food has been edited and saved via AddFoodEventScreen.
-/// Removes it from the pending list.
-class FoodEditedAction extends FoodScannerAction {
+/// Start the edit flow for the topmost checked row.
+class EditTopmostAction extends FoodScannerAction {}
+
+/// Notify the bloc that the edit screen finished successfully and the
+/// given row is now logged. Removes it from the list.
+class EditCompletedAction extends FoodScannerAction {
   final int index;
 
-  FoodEditedAction({required this.index});
+  EditCompletedAction({required this.index});
 }
 
-/// User taps the capture button — triggers Claude Vision identification.
+/// Clears [FoodScannerState.editingIndex] — used by the screen listener
+/// once it has consumed the signal (either by pushing the edit screen
+/// or by reacting to a back-button return).
+class ClearEditingAction extends FoodScannerAction {}
+
+/// Clears [FoodScannerState.navigateToSummary] after the screen pops.
+class ClearNavigateToSummaryAction extends FoodScannerAction {}
+
+/// User taps the capture button — triggers visual identification.
 class CapturePhotoAction extends FoodScannerAction {
   /// JPEG image bytes from the camera.
   final List<int> imageBytes;

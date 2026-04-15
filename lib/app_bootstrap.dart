@@ -35,6 +35,7 @@ import 'package:nutrenaissance_flutter/data/api/foodscanner/open_food_facts_barc
 import 'package:nutrenaissance_flutter/data/local/models/scannedfoods/scanned_food_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/scannedfoods/scanned_food_repository.dart';
 import 'package:nutrenaissance_flutter/data/repository/scannedfoods/scanned_food_repository_impl.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/scan_result_to_ingredient_mapper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/food_fuzzy_matcher.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_bloc.dart';
 import 'package:nutrenaissance_flutter/data/local/models/analysis/subjective/subjective_analysis_result_entity.dart';
@@ -1348,6 +1349,11 @@ class _AppBootstrapState extends State<AppBootstrap> {
               return FoodScannerBloc(
                 barcodeProvider: OpenFoodFactsBarcodeProvider(),
                 scannedFoodRepository: scannedFoodRepository,
+                scanResultMapper:
+                    ScanResultToIngredientMapper(scannedFoodRepository),
+                uploadFoodEventInteractor: uploadFoodEventInteractor,
+                saveFoodEventInteractor: saveFoodEventInteractor,
+                getUserIdInteractor: getUserIdInteractor,
                 logMealTokenService: logMealTokenService,
                 visualFoodProvider: claudeApiKey.isNotEmpty
                     ? ClaudeVisionProvider(apiKey: claudeApiKey)

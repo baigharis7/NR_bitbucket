@@ -2,14 +2,20 @@ import 'dart:convert';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nutrenaissance_flutter/data/api/foodevents/model/upload_food_event.dart';
 import 'package:nutrenaissance_flutter/data/api/foodscanner/logmeal_token_service.dart';
 import 'package:nutrenaissance_flutter/data/local/models/scannedfoods/scanned_food_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/scannedfoods/scanned_food_repository.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/barcode_nutrition_provider.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/scan_result.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/visual_food_provider.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_master.dart';
+import 'package:nutrenaissance_flutter/infrastructure/mappers/scan_result_to_ingredient_mapper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/food_fuzzy_matcher.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_bloc.dart';
@@ -78,6 +84,46 @@ class FakeLogMealTokenService implements LogMealTokenService {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+class FakeUploadFoodEventInteractor implements UploadFoodEventInteractor {
+  bool success = true;
+  FoodEventSimple? lastInput;
+  int callCount = 0;
+
+  @override
+  Future<UploadFoodEvent> execute(FoodEventSimple foodEventSimple) async {
+    callCount++;
+    lastInput = foodEventSimple;
+    return UploadFoodEvent(
+      foodEventSimple.userId,
+      foodEventSimple.eventDate,
+      foodEventSimple.eventId,
+      foodEventSimple.mealType,
+      foodEventSimple.foodName,
+      foodEventSimple.comment,
+      null,
+      null,
+      null,
+      uploadSuccess: success,
+    );
+  }
+}
+
+class FakeSaveFoodEventInteractor implements SaveFoodEventInteractor {
+  int callCount = 0;
+
+  @override
+  Future<void> execute(UploadFoodEvent uploadFoodEvent, bool isEdit) async {
+    callCount++;
+  }
+}
+
+class FakeGetUserIdInteractor implements GetUserIdInteractor {
+  String userId = 'test-user';
+
+  @override
+  String execute() => userId;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -90,11 +136,19 @@ FoodScannerBloc _buildBloc({
   FakeScannedFoodRepository? repo,
   FakeVisualProvider? visualProvider,
   FakeLogMealTokenService? tokenService,
+  FakeUploadFoodEventInteractor? uploadInteractor,
+  FakeSaveFoodEventInteractor? saveInteractor,
   List<FoodItemMaster>? masterFoods,
 }) {
+  final actualRepo = repo ?? FakeScannedFoodRepository();
   final bloc = FoodScannerBloc(
     barcodeProvider: barcodeProvider ?? FakeBarcodeProvider(),
-    scannedFoodRepository: repo ?? FakeScannedFoodRepository(),
+    scannedFoodRepository: actualRepo,
+    scanResultMapper: ScanResultToIngredientMapper(actualRepo),
+    uploadFoodEventInteractor:
+        uploadInteractor ?? FakeUploadFoodEventInteractor(),
+    saveFoodEventInteractor: saveInteractor ?? FakeSaveFoodEventInteractor(),
+    getUserIdInteractor: FakeGetUserIdInteractor(),
     visualFoodProvider: visualProvider,
     logMealTokenService: tokenService,
   );
@@ -459,86 +513,207 @@ void main() {
     });
 
     // -----------------------------------------------------------------------
-    // EditNextSelectedFoodAction
+    // EditTopmostAction
     // -----------------------------------------------------------------------
 
-    group('EditNextSelectedFoodAction', () {
+    ScanResultEntry _matchedEntry(String name, int id, {double? grams}) =>
+        ScanResultEntry(
+          scanResult: ScanResult(
+            scannedName: name,
+            source: 'logmeal',
+            detectionMethod: 'visual',
+            matchedFoodId: id,
+            matchedNameEn: name,
+            matchedNameEs: name,
+            estimatedGrams: grams,
+          ),
+        );
+
+    group('EditTopmostAction', () {
       blocTest<FoodScannerBloc, FoodScannerState>(
-        'sets editingIndex to first unedited selected food',
+        'emits editingIndex = topmost selected row',
         build: () => _buildBloc(masterFoods: []),
-        seed: () {
-          final entries = [
-            ScanResultEntry(
-              scanResult: ScanResult(
-                  scannedName: 'A',
-                  source: 't',
-                  detectionMethod: 'visual'),
-            ),
-            ScanResultEntry(
-              scanResult: ScanResult(
-                  scannedName: 'B',
-                  source: 't',
-                  detectionMethod: 'visual'),
-            ),
-          ];
-          return FoodScannerState(
-            results: entries,
-            selectedIndices: {0, 1},
-          );
-        },
-        act: (bloc) => bloc.add(EditNextSelectedFoodAction()),
+        seed: () => FoodScannerState(
+          results: [
+            _matchedEntry('Apple', 1, grams: 100),
+            _matchedEntry('Pear', 2, grams: 120),
+            _matchedEntry('Plum', 3, grams: 80),
+          ],
+          selectedIndices: {1, 2},
+        ),
+        act: (bloc) => bloc.add(EditTopmostAction()),
         expect: () => [
           isA<FoodScannerState>()
-              .having((s) => s.editingIndex, 'editingIndex', 0),
+              .having((s) => s.editingIndex, 'editingIndex', 1),
+        ],
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'no-op when nothing is selected',
+        build: () => _buildBloc(masterFoods: []),
+        seed: () => FoodScannerState(
+          results: [_matchedEntry('Apple', 1, grams: 100)],
+          selectedIndices: const {},
+        ),
+        act: (bloc) => bloc.add(EditTopmostAction()),
+        expect: () => [],
+      );
+    });
+
+    // -----------------------------------------------------------------------
+    // LogTopmostAction
+    // -----------------------------------------------------------------------
+
+    group('LogTopmostAction', () {
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'saves the topmost row and removes it from the list',
+        build: () {
+          final upload = FakeUploadFoodEventInteractor();
+          final save = FakeSaveFoodEventInteractor();
+          return _buildBloc(
+            masterFoods: [],
+            uploadInteractor: upload,
+            saveInteractor: save,
+          );
+        },
+        seed: () => FoodScannerState(
+          results: [
+            _matchedEntry('Apple', 1, grams: 100),
+            _matchedEntry('Pear', 2, grams: 120),
+          ],
+          selectedIndices: {0, 1},
+        ),
+        act: (bloc) => bloc.add(LogTopmostAction()),
+        expect: () => [
+          isA<FoodScannerState>().having((s) => s.isSaving, 'isSaving', true),
+          isA<FoodScannerState>()
+              .having((s) => s.results.length, 'results.length', 1)
+              .having((s) => s.results[0].scanResult.matchedFoodId,
+                  'remaining id', 2)
+              .having((s) => s.selectedIndices, 'selected', {0})
+              .having((s) => s.saveTick, 'saveTick', 1)
+              .having((s) => s.navigateToSummary, 'navigateToSummary', false)
+              .having((s) => s.isSaving, 'isSaving', false),
+        ],
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'falls through to edit when topmost row has no grams',
+        build: () => _buildBloc(masterFoods: []),
+        seed: () => FoodScannerState(
+          results: [
+            _matchedEntry('Apple', 1, grams: null),
+            _matchedEntry('Pear', 2, grams: 120),
+          ],
+          selectedIndices: {0, 1},
+        ),
+        act: (bloc) => bloc.add(LogTopmostAction()),
+        expect: () => [
+          isA<FoodScannerState>()
+              .having((s) => s.editingIndex, 'editingIndex', 0)
+              .having((s) => s.results.length, 'results.length', 2),
+        ],
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'raises navigateToSummary when the last row is saved',
+        build: () => _buildBloc(masterFoods: []),
+        seed: () => FoodScannerState(
+          results: [_matchedEntry('Apple', 1, grams: 100)],
+          selectedIndices: {0},
+        ),
+        act: (bloc) => bloc.add(LogTopmostAction()),
+        expect: () => [
+          isA<FoodScannerState>().having((s) => s.isSaving, 'isSaving', true),
+          isA<FoodScannerState>()
+              .having((s) => s.results, 'results', isEmpty)
+              .having((s) => s.navigateToSummary, 'navigateToSummary', true)
+              .having((s) => s.saveTick, 'saveTick', 1),
+        ],
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'surfaces error when upload fails',
+        build: () {
+          final upload = FakeUploadFoodEventInteractor()..success = false;
+          return _buildBloc(
+            masterFoods: [],
+            uploadInteractor: upload,
+          );
+        },
+        seed: () => FoodScannerState(
+          results: [_matchedEntry('Apple', 1, grams: 100)],
+          selectedIndices: {0},
+        ),
+        act: (bloc) => bloc.add(LogTopmostAction()),
+        expect: () => [
+          isA<FoodScannerState>().having((s) => s.isSaving, 'isSaving', true),
+          isA<FoodScannerState>()
+              .having((s) => s.isSaving, 'isSaving', false)
+              .having((s) => s.results.length, 'results.length', 1)
+              .having((s) => s.errorMessage, 'errorMessage', contains('Apple')),
         ],
       );
     });
 
     // -----------------------------------------------------------------------
-    // FoodEditedAction
+    // LogAllAction
     // -----------------------------------------------------------------------
 
-    group('FoodEditedAction', () {
+    group('LogAllAction', () {
       blocTest<FoodScannerBloc, FoodScannerState>(
-        'removes edited food and adjusts indices',
-        build: () => _buildBloc(masterFoods: []),
-        seed: () {
-          final entries = [
-            ScanResultEntry(
-              scanResult: ScanResult(
-                  scannedName: 'A',
-                  source: 't',
-                  detectionMethod: 'visual'),
-            ),
-            ScanResultEntry(
-              scanResult: ScanResult(
-                  scannedName: 'B',
-                  source: 't',
-                  detectionMethod: 'visual'),
-            ),
-            ScanResultEntry(
-              scanResult: ScanResult(
-                  scannedName: 'C',
-                  source: 't',
-                  detectionMethod: 'visual'),
-            ),
-          ];
-          return FoodScannerState(
-            results: entries,
-            selectedIndices: {0, 1, 2},
-            editingIndex: 0,
+        'saves every checked row that has grams and leaves gramless rows',
+        build: () {
+          final upload = FakeUploadFoodEventInteractor();
+          final save = FakeSaveFoodEventInteractor();
+          return _buildBloc(
+            masterFoods: [],
+            uploadInteractor: upload,
+            saveInteractor: save,
           );
         },
-        act: (bloc) => bloc.add(FoodEditedAction(index: 0)),
+        seed: () => FoodScannerState(
+          results: [
+            _matchedEntry('Apple', 1, grams: 100),
+            _matchedEntry('Pear', 2, grams: null),
+            _matchedEntry('Plum', 3, grams: 80),
+          ],
+          selectedIndices: {0, 1, 2},
+        ),
+        act: (bloc) => bloc.add(LogAllAction()),
+        verify: (bloc) {
+          expect(bloc.state.results.length, 1);
+          expect(bloc.state.results[0].scanResult.matchedFoodId, 2);
+          expect(bloc.state.saveTick, 2);
+          expect(bloc.state.navigateToSummary, false);
+          expect(bloc.state.isSaving, false);
+        },
+      );
+    });
+
+    // -----------------------------------------------------------------------
+    // EditCompletedAction
+    // -----------------------------------------------------------------------
+
+    group('EditCompletedAction', () {
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'removes the edited row and bumps the save tick',
+        build: () => _buildBloc(masterFoods: []),
+        seed: () => FoodScannerState(
+          results: [
+            _matchedEntry('Apple', 1, grams: 100),
+            _matchedEntry('Pear', 2, grams: 120),
+          ],
+          selectedIndices: {0, 1},
+        ),
+        act: (bloc) => bloc.add(EditCompletedAction(index: 0)),
         expect: () => [
           isA<FoodScannerState>()
-              .having((s) => s.results.length, 'results.length', 2)
-              .having(
-                  (s) => s.results[0].scanResult.scannedName, 'first', 'B')
-              .having((s) => s.selectedIndices, 'selected', {0, 1})
-              .having((s) => s.editingIndex, 'editingIndex', isNull)
-              .having(
-                  (s) => s.editedFoods.length, 'editedFoods.length', 1),
+              .having((s) => s.results.length, 'results.length', 1)
+              .having((s) => s.results[0].scanResult.matchedFoodId, 'id', 2)
+              .having((s) => s.selectedIndices, 'selected', {0})
+              .having((s) => s.saveTick, 'saveTick', 1)
+              .having((s) => s.editingIndex, 'editingIndex', isNull),
         ],
       );
     });
