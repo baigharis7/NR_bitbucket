@@ -151,7 +151,7 @@ class _ItemUpdateScreenState extends State<ItemUpdateScreen> {
                     itemBuilder: (context, index) {
                       final foodInEvent = state.foodEvent!.ingredients.orEmpty()[index];
                       while (_itemKeys.length <= index) { _itemKeys.add(GlobalKey()); }
-                      final option = eventHelper.findFoodNameFromId(foodInEvent.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                      final option = eventHelper.resolveIngredientName(foodInEvent, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                       final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                       return FoodEventItem(
                         key: _itemKeys[index],

@@ -284,6 +284,20 @@ class EventsHelper {
     return item.translate(context);
   }
 
+  /// Resolves the display name for an ingredient. Prefers the inline
+  /// name on the ingredient (set for scanned foods that aren't in the
+  /// master list) and falls back to a master-list lookup by id.
+  String resolveIngredientName(
+    FoodInFavorite ingredient,
+    BuildContext context,
+    List<FoodItemMaster> foodNames,
+  ) {
+    final locale = Localizations.localeOf(context).languageCode;
+    final inline = locale == 'es' ? ingredient.name_es : ingredient.name_en;
+    if (inline != null && inline.isNotEmpty) return inline;
+    return findFoodNameFromId(ingredient.id, context, foodNames);
+  }
+
   String findFoodGroup(String foodName, String currentLanguage, List<FoodItemMaster> foodNames) {
     if (foodNames.isNotEmpty) {
       FoodItemMaster foodItem = foodNames.firstWhere(

@@ -522,7 +522,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                         ...state.foodEvent!.ingredients.orEmpty().asMap().entries.map((entry) {
                                           final index = entry.key;
                                           final foodInEvent = entry.value;
-                                          final option = eventHelper.findFoodNameFromId(foodInEvent.id, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
+                                          final option = eventHelper.resolveIngredientName(foodInEvent, context, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                                           final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
                                           return Column(
                                             children: [

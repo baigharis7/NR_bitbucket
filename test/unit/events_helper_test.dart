@@ -1,4 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_complete.dart';
@@ -395,6 +398,90 @@ void main() {
 
     test('returns empty string for empty food name (unmatched scanner food)', () {
       expect(eventsHelper.findFoodGroup('', 'en', foodNames), '');
+    });
+  });
+
+  // ── resolveIngredientName ───────────────────────────────────────────
+  //
+  // Scanned foods that aren't in the master list carry their display
+  // name inline on the FoodInFavorite. The resolver must prefer that
+  // inline name so edit screens can label them; otherwise it falls
+  // back to the master-list lookup by id.
+
+  group('resolveIngredientName', () {
+    final foodNames = [
+      FoodItemMaster(id: 1, en: 'Apple', es: 'Manzana', group: 'Fruits'),
+    ];
+
+    Future<String> resolveIn(
+      WidgetTester tester,
+      FoodInFavorite ingredient,
+      Locale locale,
+    ) async {
+      late String result;
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: locale,
+          supportedLocales: const [Locale('en'), Locale('es')],
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: Builder(
+            builder: (context) {
+              result = eventsHelper.resolveIngredientName(
+                ingredient,
+                context,
+                foodNames,
+              );
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
+      return result;
+    }
+
+    testWidgets('prefers inline English name when locale is en', (tester) async {
+      final ingredient = FoodInFavorite(
+        id: -7,
+        name_en: 'Scanned Mango',
+        name_es: 'Mango escaneado',
+        qty: 100,
+        unit: -2,
+        cookingMethod: 0,
+      );
+      expect(await resolveIn(tester, ingredient, const Locale('en')), 'Scanned Mango');
+    });
+
+    testWidgets('prefers inline Spanish name when locale is es', (tester) async {
+      final ingredient = FoodInFavorite(
+        id: -7,
+        name_en: 'Scanned Mango',
+        name_es: 'Mango escaneado',
+        qty: 100,
+        unit: -2,
+        cookingMethod: 0,
+      );
+      expect(await resolveIn(tester, ingredient, const Locale('es')), 'Mango escaneado');
+    });
+
+    testWidgets('falls back to master list when inline name is null', (tester) async {
+      final ingredient = FoodInFavorite(id: 1, qty: 100, unit: -2, cookingMethod: 0);
+      expect(await resolveIn(tester, ingredient, const Locale('en')), 'Apple');
+    });
+
+    testWidgets('falls back to master list when inline name is empty', (tester) async {
+      final ingredient = FoodInFavorite(
+        id: 1,
+        name_en: '',
+        name_es: '',
+        qty: 100,
+        unit: -2,
+        cookingMethod: 0,
+      );
+      expect(await resolveIn(tester, ingredient, const Locale('en')), 'Apple');
     });
   });
 }
