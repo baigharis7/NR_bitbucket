@@ -286,13 +286,16 @@ class EventsHelper {
 
   String findFoodGroup(String foodName, String currentLanguage, List<FoodItemMaster> foodNames) {
     if (foodNames.isNotEmpty) {
-      FoodItemMaster? foodItem = foodNames.firstWhere((food) {
-        if (currentLanguage == 'es') {
-          return food.es == foodName;
-        } else {
-          return food.en == foodName;
-        }
-      });
+      FoodItemMaster foodItem = foodNames.firstWhere(
+        (food) {
+          if (currentLanguage == 'es') {
+            return food.es == foodName;
+          } else {
+            return food.en == foodName;
+          }
+        },
+        orElse: () => FoodItemMaster.empty(),
+      );
 
       return foodItem.group.orEmpty();
     } else {

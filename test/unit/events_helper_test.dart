@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/food_names_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
@@ -359,6 +360,41 @@ void main() {
     test('returns the expected water quantity options', () {
       final quantities = eventsHelper.generateWaterQuantities();
       expect(quantities, [0.2, 0.5, 0.75, 1, 1.5, 2]);
+    });
+  });
+
+  // ── findFoodGroup ───────────────────────────────────────────────────
+  //
+  // Regression: findFoodGroup used a firstWhere without an orElse, so any
+  // call with a foodName not present in the master list (including the
+  // empty string produced by findFoodNameFromId when a scanned food is
+  // unmatched, id=-1) crashed with StateError("No element"), taking down
+  // the AddFoodEventScreen build and painting a gray screen.
+
+  group('findFoodGroup', () {
+    final foodNames = [
+      FoodItemMaster(id: 1, en: 'Apple', es: 'Manzana', group: 'Fruits'),
+      FoodItemMaster(id: 2, en: 'Chicken', es: 'Pollo', group: 'Proteins'),
+    ];
+
+    test('returns the group for a matched English food name', () {
+      expect(eventsHelper.findFoodGroup('Apple', 'en', foodNames), 'Fruits');
+    });
+
+    test('returns the group for a matched Spanish food name', () {
+      expect(eventsHelper.findFoodGroup('Pollo', 'es', foodNames), 'Proteins');
+    });
+
+    test('returns empty string when foodNames list is empty', () {
+      expect(eventsHelper.findFoodGroup('Apple', 'en', []), '');
+    });
+
+    test('returns empty string when food name is not in master list', () {
+      expect(eventsHelper.findFoodGroup('Mango', 'en', foodNames), '');
+    });
+
+    test('returns empty string for empty food name (unmatched scanner food)', () {
+      expect(eventsHelper.findFoodGroup('', 'en', foodNames), '');
     });
   });
 }
