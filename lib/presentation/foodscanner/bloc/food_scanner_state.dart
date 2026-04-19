@@ -17,9 +17,17 @@ class FoodScannerState {
   /// Cleared after the listener consumes it.
   final int? editingIndex;
 
-  /// Monotonic counter bumped after every successful save; the screen
-  /// listens for changes to show a success splash.
+  /// Monotonic counter bumped after every successful Log / Log all
+  /// save so the screen can show a success splash. Not bumped by the
+  /// edit flow, which shows its own confirmation dialog inside the
+  /// pushed AddFoodEventScreen.
   final int saveTick;
+
+  /// Whether at least one row was persisted (via direct log or edit
+  /// save) in this scanner session. Used by the close button to
+  /// decide whether to return `true` (navigate to summary) to the
+  /// caller.
+  final bool hasLoggedSomething;
 
   /// Whether the scanner should pop and land on the meal summary.
   /// Raised when the row list empties after a Log all / final Log.
@@ -35,6 +43,7 @@ class FoodScannerState {
     this.selectedIndices = const {},
     this.editingIndex,
     this.saveTick = 0,
+    this.hasLoggedSomething = false,
     this.navigateToSummary = false,
     this.errorMessage,
   });
@@ -46,6 +55,7 @@ class FoodScannerState {
     Set<int>? selectedIndices,
     int? Function()? editingIndex,
     int? saveTick,
+    bool? hasLoggedSomething,
     bool? navigateToSummary,
     String? Function()? errorMessage,
   }) {
@@ -56,6 +66,7 @@ class FoodScannerState {
       selectedIndices: selectedIndices ?? this.selectedIndices,
       editingIndex: editingIndex != null ? editingIndex() : this.editingIndex,
       saveTick: saveTick ?? this.saveTick,
+      hasLoggedSomething: hasLoggedSomething ?? this.hasLoggedSomething,
       navigateToSummary: navigateToSummary ?? this.navigateToSummary,
       errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
     );

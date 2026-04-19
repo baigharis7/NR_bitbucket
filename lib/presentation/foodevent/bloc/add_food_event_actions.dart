@@ -166,6 +166,15 @@ class UpdateFoodDataFromFavoritesAddFoodEventActions extends AddFoodEventActions
   UpdateFoodDataFromFavoritesAddFoodEventActions({required this.foodFavorite});
 }
 
+/// Prefill the add-food draft from a scan. Unlike the favorites path
+/// this leaves [FoodFavorite.isFavorite] / isRoutine / isEdit false so
+/// the Save button writes a fresh FoodEvent.
+class PrefillFoodFromScanAction extends AddFoodEventActions {
+  final FoodFavorite foodFavorite;
+
+  PrefillFoodFromScanAction({required this.foodFavorite});
+}
+
 class UpdateFoodRoutineFromRoutines extends AddFoodEventActions {
   final FoodRoutineEvent foodRoutineEvent;
 

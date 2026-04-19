@@ -5,8 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/food/food_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodscanner/scan_result.dart';
-import 'package:nutrenaissance_flutter/domain/models/foodscanner/scanner_result.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
+import 'package:nutrenaissance_flutter/presentation/foodevent/view/add_food_event_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/foodscanner/bloc/food_scanner_state.dart';
@@ -193,12 +195,13 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
             ..showSnackBar(SnackBar(content: Text(error)));
         }
 
-        // Edit requested — pop with the selected row so the parent
-        // AddFoodEventScreen can prefill it in its own edit flow.
+        // Edit requested — push a pre-filled AddFoodEventScreen on top
+        // of the scanner so the user returns here after save/back.
         if (state.editingIndex != null) {
           final index = state.editingIndex!;
+          final scan = state.results[index].scanResult;
           context.read<FoodScannerBloc>().add(ClearEditingAction());
-          _popWithEditPayload(context, state, index);
+          _pushEditScreen(context, scan, index);
           return;
         }
 
@@ -330,7 +333,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   /// the parent screen can navigate to the meal summary; otherwise pop
   /// with `null` so the user lands back on the add-food screen.
   void _closeScanner(BuildContext context) {
-    final didLog = _lastSeenSaveTick > 0;
+    final didLog = context.read<FoodScannerBloc>().state.hasLoggedSomething;
     Navigator.pop(context, didLog ? true : null);
   }
 
@@ -736,46 +739,72 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   // Navigation
   // ---------------------------------------------------------------------------
 
+  /// Show the same ConfirmationDialog the rest of the app uses after
+  /// a successful log, then auto-dismiss it.
   void _showSaveSplash(BuildContext context) {
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(const SnackBar(
-        content: Text('Logged'),
-        duration: Duration(milliseconds: 900),
-      ));
-  }
-
-  /// Pops the scanner with a single-food [ScannerResult] for the edit
-  /// flow so the parent AddFoodEventScreen can prefill and let the user
-  /// adjust quantity / cooking method before saving.
-  void _popWithEditPayload(
-      BuildContext context, FoodScannerState state, int index) {
-    final scan = state.results[index].scanResult;
-    final qty = scan.estimatedGrams?.round() ?? 0;
-    final foodId = scan.isMatched ? scan.matchedFoodId! : -1;
-    final nameEn =
-        scan.isMatched ? (scan.matchedNameEn ?? scan.scannedName) : scan.scannedName;
-    final nameEs =
-        scan.isMatched ? (scan.matchedNameEs ?? scan.scannedName) : scan.scannedName;
-
-    Navigator.pop(
-      context,
-      ScannerResult(
-        foods: [
-          FoodInFavorite(
-            id: foodId,
-            name_en: nameEn,
-            name_es: nameEs,
-            qty: qty,
-            unit: -2,
-            cookingMethod: 0,
-          ),
-        ],
-        directLog: false,
-        title: nameEn,
-        detectedCookingMethods: [scan.detectedCookingMethod],
+    final mealTimeIcon = 'assets/images/meal_time_${widget.mealType}.png';
+    Future.delayed(const Duration(seconds: 2), () {
+      if (Navigator.canPop(context)) Navigator.pop(context);
+    });
+    showDialog(
+      context: context,
+      builder: (ctx) => ConfirmationDialog(
+        message: AppLocalizations.of(ctx)!.food_event_successfully_saved,
+        iconAsset: mealTimeIcon,
       ),
     );
+  }
+
+  /// Push a pre-filled AddFoodEventScreen on top of the scanner so the
+  /// user edits one food and returns here. On save the screen pops
+  /// with `true`; on back it pops with `null`.
+  Future<void> _pushEditScreen(
+    BuildContext context,
+    ScanResult scan,
+    int index,
+  ) async {
+    final bloc = context.read<FoodScannerBloc>();
+
+    final qty = scan.estimatedGrams?.round() ?? 0;
+    final foodId = scan.isMatched ? scan.matchedFoodId! : -1;
+    final nameEn = scan.isMatched
+        ? (scan.matchedNameEn ?? scan.scannedName)
+        : scan.scannedName;
+    final nameEs = scan.isMatched
+        ? (scan.matchedNameEs ?? scan.scannedName)
+        : scan.scannedName;
+
+    final prefill = FoodFavorite(
+      ingredients: [
+        FoodInFavorite(
+          id: foodId,
+          name_en: nameEn,
+          name_es: nameEs,
+          qty: qty,
+          unit: -2,
+          cookingMethod: 0,
+        ),
+      ],
+      drinks: [],
+      mealTime: widget.mealType,
+      title: nameEn,
+    );
+
+    final saved = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        settings: RouteSettings(
+          name: AddFoodEventScreen.routeName,
+          arguments: prefill,
+        ),
+        builder: (_) => const AddFoodEventScreen(popOnSave: true),
+      ),
+    );
+
+    if (!context.mounted) return;
+    if (saved == true) {
+      bloc.add(EditCompletedAction(index: index));
+    }
   }
 }
 

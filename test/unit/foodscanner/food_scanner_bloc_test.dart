@@ -697,7 +697,7 @@ void main() {
 
     group('EditCompletedAction', () {
       blocTest<FoodScannerBloc, FoodScannerState>(
-        'removes the edited row and bumps the save tick',
+        'removes the edited row without bumping saveTick',
         build: () => _buildBloc(masterFoods: []),
         seed: () => FoodScannerState(
           results: [
@@ -712,7 +712,8 @@ void main() {
               .having((s) => s.results.length, 'results.length', 1)
               .having((s) => s.results[0].scanResult.matchedFoodId, 'id', 2)
               .having((s) => s.selectedIndices, 'selected', {0})
-              .having((s) => s.saveTick, 'saveTick', 1)
+              .having((s) => s.saveTick, 'saveTick', 0)
+              .having((s) => s.hasLoggedSomething, 'hasLoggedSomething', true)
               .having((s) => s.editingIndex, 'editingIndex', isNull),
         ],
       );

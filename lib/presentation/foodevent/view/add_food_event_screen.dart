@@ -44,7 +44,13 @@ import '../../widgets/item_info_card.dart';
 class AddFoodEventScreen extends StatefulWidget {
   static const routeName = '/add_food_event';
 
-  const AddFoodEventScreen({Key? key}) : super(key: key);
+  /// When true, a successful Save pops this screen with `true` instead
+  /// of navigating to the meal summary. Used by the scanner's edit
+  /// flow so the user returns to the scanner results to process any
+  /// remaining rows.
+  final bool popOnSave;
+
+  const AddFoodEventScreen({Key? key, this.popOnSave = false}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _AddFoodEventState();
@@ -158,7 +164,11 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
       if (infoReceived is FoodArgumentsModel) {
         bloc.add(AddFoodArgumentModelEventAction(foodArgumentsModel: infoReceived));
       } else if (infoReceived is FoodFavorite) {
-        bloc.add(UpdateFoodDataFromFavoritesAddFoodEventActions(foodFavorite: infoReceived));
+        if (widget.popOnSave) {
+          bloc.add(PrefillFoodFromScanAction(foodFavorite: infoReceived));
+        } else {
+          bloc.add(UpdateFoodDataFromFavoritesAddFoodEventActions(foodFavorite: infoReceived));
+        }
       } else if (infoReceived is FoodRoutineEvent) {
         bloc.add(UpdateFoodRoutineFromRoutines(foodRoutineEvent: infoReceived));
       }
@@ -614,7 +624,13 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                             bloc.add(FinishAddFoodEventAction(foodEventSimple: foodEventSimple, onFinish: () => _showConfirmationDialog(
                                               message: AppLocalizations.of(context)!.food_event_successfully_saved,
                                                 context: context,
-                                                onDismiss: () => Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!)),
+                                                onDismiss: () {
+                                                  if (widget.popOnSave) {
+                                                    Navigator.pop(context, true);
+                                                  } else {
+                                                    Navigator.popAndPushNamed(context, MealTimeDetailScreen.routeName, arguments: FoodArgumentsModel(mealTime: MealTime.getAllMealTimes().firstWhere((element) => element.id == state.foodEvent?.mealTime, orElse: () => Breakfast(),), selectedDateTime: DateTimeHelper.dateTimeFromMilliseconds(state.foodEvent!.eventDate)!));
+                                                  }
+                                                },
                                             ),),);
                                           }
                                         }

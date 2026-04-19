@@ -510,7 +510,9 @@ class FoodScannerBloc
     EditCompletedAction action,
     Emitter<FoodScannerState> emit,
   ) {
-    _removeRow(action.index, emit, bumpSaveTick: true);
+    // Don't bump saveTick — the pushed AddFoodEventScreen already
+    // showed its own confirmation dialog.
+    _removeRow(action.index, emit, bumpSaveTick: false);
   }
 
   void _onClearEditing(
@@ -608,6 +610,7 @@ class FoodScannerBloc
       selectedIndices: newSelection,
       isSaving: false,
       saveTick: bumpSaveTick ? state.saveTick + 1 : state.saveTick,
+      hasLoggedSomething: true,
       editingIndex: () => null,
       navigateToSummary: newResults.isEmpty,
     ));
