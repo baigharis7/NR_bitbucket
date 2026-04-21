@@ -825,29 +825,20 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   ) async {
     final bloc = context.read<FoodScannerBloc>();
 
-    final qty = scan.estimatedGrams?.round() ?? 0;
-    final foodId = scan.isMatched ? scan.matchedFoodId! : -1;
-    final nameEn = scan.isMatched
-        ? (scan.matchedNameEn ?? scan.scannedName)
-        : scan.scannedName;
-    final nameEs = scan.isMatched
-        ? (scan.matchedNameEs ?? scan.scannedName)
-        : scan.scannedName;
+    // Route through the same mapper used by the Log path so unmatched scans
+    // get their per-100g nutrients persisted to Drift and are assigned a
+    // stable negative food id. Otherwise the edited event saves with a
+    // bogus id, enrichment can't find the composition, and the saved row
+    // ends up with 0 kcal and no amount.
+    final ingredient = await bloc.scanResultMapper.toIngredient(scan);
+
+    if (!context.mounted) return;
 
     final prefill = FoodFavorite(
-      ingredients: [
-        FoodInFavorite(
-          id: foodId,
-          name_en: nameEn,
-          name_es: nameEs,
-          qty: qty,
-          unit: -2,
-          cookingMethod: 0,
-        ),
-      ],
+      ingredients: [ingredient],
       drinks: [],
       mealTime: widget.mealType,
-      title: nameEn,
+      title: ingredient.name_en ?? scan.scannedName,
     );
 
     final saved = await Navigator.push<bool>(
