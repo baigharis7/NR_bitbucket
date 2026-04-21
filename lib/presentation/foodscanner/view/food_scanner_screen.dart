@@ -463,7 +463,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                     ),
                     const SizedBox(height: 16),
 
-                    // Header
+                    // Header: "Results" on the left, "Scan again" on the right.
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -476,9 +476,11 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => bloc.add(ResetScannerAction()),
+                          onTap: state.isSaving
+                              ? null
+                              : () => bloc.add(ResetScannerAction()),
                           child: const Text(
-                            'Clear',
+                            'Scan again',
                             style: TextStyle(
                                 color: AppColors.white70Percent, fontSize: 14),
                           ),
@@ -491,7 +493,22 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                       style:
                           TextStyle(color: AppColors.white70Percent, fontSize: 13),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 10),
+
+                    // Manual search link, right under the subtitle.
+                    Center(
+                      child: GestureDetector(
+                        onTap: () => _closeScanner(context),
+                        child: const Text(
+                          'Not what you are looking for? Search Manually',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
                   ],
                 ),
               ),
@@ -514,23 +531,6 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                             bloc.add(ToggleFoodSelectionAction(index: index)),
                       );
                     }),
-
-                    const SizedBox(height: 12),
-
-                    // "Search Manually" link
-                    Center(
-                      child: GestureDetector(
-                        onTap: () => _closeScanner(context),
-                        child: const Text(
-                          'Not what you are looking for? Search Manually',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ),
                     const SizedBox(height: 12),
                   ],
                 ),
@@ -541,13 +541,16 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                 padding: EdgeInsets.fromLTRB(20, 8, 20, 16 + MediaQuery.of(context).padding.bottom),
                 child: Column(
                   children: [
+                    // Row 1: Clear | Edit | Log
                     Row(
                       children: [
                         Expanded(
                           child: _buildActionButton(
-                            label: 'Search again',
+                            label: 'Clear',
                             isPrimary: false,
-                            onTap: () => bloc.add(ResetScannerAction()),
+                            onTap: state.hasResults && !state.isSaving
+                                ? () => bloc.add(ResetScannerAction())
+                                : null,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -572,19 +575,31 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                         ),
                       ],
                     ),
-                    if (state.canLogAll) ...[
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        width: double.infinity,
-                        child: _buildActionButton(
-                          label: 'Log all',
-                          isPrimary: true,
-                          onTap: state.isSaving
-                              ? null
-                              : () => bloc.add(LogAllAction()),
+                    const SizedBox(height: 8),
+                    // Row 2: Done | Log all (equal size)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildActionButton(
+                            label: 'Done',
+                            isPrimary: false,
+                            onTap: state.isSaving
+                                ? null
+                                : () => _onDonePressed(context, state),
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildActionButton(
+                            label: 'Log all',
+                            isPrimary: true,
+                            onTap: state.hasSelection && !state.isSaving
+                                ? () => _onLogAllPressed(context, state)
+                                : null,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -738,6 +753,51 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   // ---------------------------------------------------------------------------
   // Navigation
   // ---------------------------------------------------------------------------
+
+  /// Log all when every checked row has a gram estimate; otherwise
+  /// fall through to the edit flow for the topmost gramless row.
+  void _onLogAllPressed(BuildContext context, FoodScannerState state) {
+    final bloc = context.read<FoodScannerBloc>();
+    final anyMissingGrams = state.selectedIndices.any((i) =>
+        i < state.results.length &&
+        state.results[i].scanResult.estimatedGrams == null);
+    if (anyMissingGrams) {
+      bloc.add(EditTopmostAction());
+    } else {
+      bloc.add(LogAllAction());
+    }
+  }
+
+  /// End the scan session. If the user still has rows checked, confirm
+  /// first since those rows would not be logged.
+  Future<void> _onDonePressed(
+      BuildContext context, FoodScannerState state) async {
+    if (state.hasSelection) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Finish logging?'),
+          content: const Text(
+              'You still have items selected. Finishing now will not log them.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Finish'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+    }
+    if (!context.mounted) return;
+    // Done always navigates the parent to the summary, regardless of
+    // whether anything was logged in this session.
+    Navigator.pop(context, true);
+  }
 
   /// Show the same ConfirmationDialog the rest of the app uses after
   /// a successful log, then auto-dismiss it.
