@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -20,6 +22,15 @@ import '../../infrastructure/utils/app_color.dart';
 import '../../infrastructure/utils/dimens.dart';
 
 const _kNavColor = Color(0xFF28421D);
+
+// iOS's home-indicator safe area is ~34pt, which makes the navbar look
+// disproportionately tall vs Android (where it's ~0–16pt). Cap the iOS
+// inset so the navbar stays compact but labels still clear the home
+// indicator / gesture zone.
+const double _kIOSNavBottomInset = 16.0;
+double _navBottomInset(BuildContext context) => Platform.isIOS
+    ? _kIOSNavBottomInset
+    : MediaQuery.of(context).padding.bottom;
 
 class CustomBottomNaviBarWidget extends StatefulWidget {
   final int activePosition;
@@ -138,7 +149,7 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
     HealthMetricDetailSheet.hide();
 
     final l10n = AppLocalizations.of(context)!;
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final bottomPadding = _navBottomInset(context);
     final selectedDateTime = widget.selectedDateTime ?? DateTime.now();
 
     final mealItems = MealTime.getAllMealTimes().map((e) => {
@@ -305,7 +316,7 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
     HealthMetricDetailSheet.hide();
 
     final l10n = AppLocalizations.of(context)!;
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final bottomPadding = _navBottomInset(context);
 
     setState(() {
       _menuOpen = true;
@@ -438,7 +449,7 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final bottomPadding = _navBottomInset(context);
 
     return SizedBox(
       height: 65 + bottomPadding,
@@ -456,86 +467,86 @@ class _CustomBottomNaviBarWidgetState extends State<CustomBottomNaviBarWidget>
               child: Padding(
                 padding: EdgeInsets.only(bottom: bottomPadding),
                 child: Row(
-                  children: [
-                    // Dashboard
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          _closeMenu();
-                          _closePlusMenu();
-                          HealthMetricDetailSheet.hide();
-                          if (ModalRoute.of(context)?.settings.name !=
-                              DashboardScreen.routeName) {
-                            Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              DashboardScreen.routeName,
-                              (route) => false,
-                            );
-                          }
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              height: 28,
-                              child: SvgPicture.asset(
-                                'assets/images/start.svg',
-                                colorFilter: ColorFilter.mode(
-                                  widget.activePosition == 0
-                                      ? _kNavColor
-                                      : AppColors.cloudyGrey,
-                                  BlendMode.srcIn,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              l10n.start,
-                              style: TextStyle(
-                                fontFamily: 'Roboto',
-                                color: widget.activePosition == 0
+                children: [
+                  // Dashboard
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        _closeMenu();
+                        _closePlusMenu();
+                        HealthMetricDetailSheet.hide();
+                        if (ModalRoute.of(context)?.settings.name !=
+                            DashboardScreen.routeName) {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            DashboardScreen.routeName,
+                            (route) => false,
+                          );
+                        }
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 28,
+                            child: SvgPicture.asset(
+                              'assets/images/start.svg',
+                              colorFilter: ColorFilter.mode(
+                                widget.activePosition == 0
                                     ? _kNavColor
                                     : AppColors.cloudyGrey,
-                                fontSize: 13,
+                                BlendMode.srcIn,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            l10n.start,
+                            style: TextStyle(
+                              fontFamily: 'Roboto',
+                              color: widget.activePosition == 0
+                                  ? _kNavColor
+                                  : AppColors.cloudyGrey,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                  ),
 
-                    // Space for center button
-                    const SizedBox(width: 80),
+                  // Space for center button
+                  const SizedBox(width: 80),
 
-                    // Menu
-                    Expanded(
-                      child: InkWell(
-                        onTap: _toggleMenu,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AnimatedIcon(
-                              icon: AnimatedIcons.menu_close,
-                              progress: _menuAnimController,
+                  // Menu
+                  Expanded(
+                    child: InkWell(
+                      onTap: _toggleMenu,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AnimatedIcon(
+                            icon: AnimatedIcons.menu_close,
+                            progress: _menuAnimController,
+                            color: _kNavColor,
+                            size: 26,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            l10n.menu,
+                            style: const TextStyle(
+                              fontFamily: 'Roboto',
                               color: _kNavColor,
-                              size: 26,
+                              fontSize: 13,
                             ),
-                            const SizedBox(height: 2),
-                            Text(
-                              l10n.menu,
-                              style: const TextStyle(
-                                fontFamily: 'Roboto',
-                                color: _kNavColor,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            ),
             ),
           ),
 

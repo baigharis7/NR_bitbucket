@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/domain/models/dashboard/health_impact_metric.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
@@ -5,6 +7,11 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.da
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
+
+// Must match the value used in [CustomBottomNaviBarWidget]. iOS's home-indicator
+// safe area (~34pt) is capped here so this popup sits flush with the navbar
+// on both platforms.
+const double _kIOSNavBottomInset = 16.0;
 
 class HealthMetricDetailSheet {
   static OverlayEntry? _scrimEntry;
@@ -15,8 +22,11 @@ class HealthMetricDetailSheet {
   static void show(BuildContext context, HealthImpactMetric metric, [SexType? sex]) {
     if (_menuEntry != null) return;
 
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final overlay = Overlay.of(context);
+    final rootMedia = MediaQuery.of(overlay.context);
+    final screenHeight = rootMedia.size.height;
+    final bottomPadding =
+        Platform.isIOS ? _kIOSNavBottomInset : rootMedia.padding.bottom;
     final l10n = AppLocalizations.of(context)!;
     final info = _getMetricInfo(metric.type, l10n, sex);
 
@@ -30,7 +40,6 @@ class HealthMetricDetailSheet {
             ? AppColors.errorRed
             : Colors.orange;
 
-    final overlay = Overlay.of(context);
     _animController = AnimationController(
       vsync: overlay,
       duration: const Duration(milliseconds: 300),
