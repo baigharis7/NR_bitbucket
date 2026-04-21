@@ -855,6 +855,10 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
     if (!context.mounted) return;
     if (saved == true) {
       bloc.add(EditCompletedAction(index: index));
+    } else {
+      // User backed out — let the bloc abort any in-flight Log all batch
+      // so it doesn't auto-resume on a later, unrelated edit.
+      bloc.add(EditCancelledAction());
     }
   }
 }

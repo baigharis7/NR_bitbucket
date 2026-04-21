@@ -33,6 +33,11 @@ class FoodScannerState {
   /// Raised when the row list empties after a Log all / final Log.
   final bool navigateToSummary;
 
+  /// True while a "Log all" batch is in flight. Items with a gram estimate
+  /// save directly; the loop pauses on the first item that needs an amount
+  /// and opens the edit screen for it, then resumes on edit completion.
+  final bool isLogAllInProgress;
+
   /// Error message to display, if any.
   final String? errorMessage;
 
@@ -45,6 +50,7 @@ class FoodScannerState {
     this.saveTick = 0,
     this.hasLoggedSomething = false,
     this.navigateToSummary = false,
+    this.isLogAllInProgress = false,
     this.errorMessage,
   });
 
@@ -57,6 +63,7 @@ class FoodScannerState {
     int? saveTick,
     bool? hasLoggedSomething,
     bool? navigateToSummary,
+    bool? isLogAllInProgress,
     String? Function()? errorMessage,
   }) {
     return FoodScannerState(
@@ -68,6 +75,7 @@ class FoodScannerState {
       saveTick: saveTick ?? this.saveTick,
       hasLoggedSomething: hasLoggedSomething ?? this.hasLoggedSomething,
       navigateToSummary: navigateToSummary ?? this.navigateToSummary,
+      isLogAllInProgress: isLogAllInProgress ?? this.isLogAllInProgress,
       errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
     );
   }
@@ -81,14 +89,10 @@ class FoodScannerState {
     return selectedIndices.reduce((a, b) => a < b ? a : b);
   }
 
-  /// Whether Log all can run: at least one checked row has an estimated
-  /// gram amount. Rows without grams are left behind for manual editing.
-  bool get canLogAll {
-    return selectedIndices.any((i) {
-      if (i >= results.length) return false;
-      return results[i].scanResult.estimatedGrams != null;
-    });
-  }
+  /// Whether Log all can run: at least one row is checked. Rows without a
+  /// gram estimate are routed through the edit screen mid-loop rather
+  /// than being skipped.
+  bool get canLogAll => hasSelection;
 }
 
 /// A single scan result entry with selection state.

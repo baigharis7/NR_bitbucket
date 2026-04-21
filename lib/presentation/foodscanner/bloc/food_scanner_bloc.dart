@@ -79,6 +79,7 @@ class FoodScannerBloc
     on<LogAllAction>(_onLogAll);
     on<EditTopmostAction>(_onEditTopmost);
     on<EditCompletedAction>(_onEditCompleted);
+    on<EditCancelledAction>(_onEditCancelled);
     on<ClearEditingAction>(_onClearEditing);
     on<ClearNavigateToSummaryAction>(_onClearNavigateToSummary);
     on<CapturePhotoAction>(_onCapturePhoto);
@@ -481,27 +482,57 @@ class FoodScannerBloc
     LogAllAction action,
     Emitter<FoodScannerState> emit,
   ) async {
-    // Snapshot the scan results for every checked row that has a gram
-    // estimate. We resolve to scan objects now so later index shifts
-    // from row removals don't affect which foods we save.
-    final toSave = state.selectedIndices
-        .where((i) =>
-            i < state.results.length &&
-            state.results[i].scanResult.estimatedGrams != null)
-        .map((i) => state.results[i])
-        .toList();
+    if (!state.hasSelection) return;
+    emit(state.copyWith(
+      isLogAllInProgress: true,
+      isSaving: true,
+      errorMessage: () => null,
+    ));
+    await _runLogAllLoop(emit);
+  }
 
-    if (toSave.isEmpty) return;
+  /// Walks the currently-selected rows top-down: rows with a gram estimate
+  /// save directly; on the first row without one we pause the loop and open
+  /// the edit screen. The loop resumes from [_onEditCompleted] so the user
+  /// never has to re-tap "Log all" between items.
+  Future<void> _runLogAllLoop(Emitter<FoodScannerState> emit) async {
+    while (state.selectedIndices.isNotEmpty) {
+      // Work through the list in display order so the visual topmost
+      // item is always the one being acted on.
+      final sorted = state.selectedIndices.toList()..sort();
+      final index = sorted.first;
 
-    emit(state.copyWith(isSaving: true, errorMessage: () => null));
+      if (index >= state.results.length) {
+        // Stale selection — drop it and keep going.
+        final cleaned = Set<int>.from(state.selectedIndices)..remove(index);
+        emit(state.copyWith(selectedIndices: cleaned));
+        continue;
+      }
 
-    for (final entry in toSave) {
-      final currentIndex = state.results.indexOf(entry);
-      if (currentIndex < 0) continue;
-      await _saveRow(currentIndex, emit);
+      final scan = state.results[index].scanResult;
+      if (scan.estimatedGrams == null) {
+        // Needs user input. Pause the batch and hand off to the edit
+        // screen; _onEditCompleted will resume us.
+        emit(state.copyWith(
+          isSaving: false,
+          editingIndex: () => index,
+        ));
+        return;
+      }
+
+      await _saveRow(index, emit);
+      // _saveRow emits isSaving: false via _removeRow after each save.
+      // Re-assert the spinner while the batch is still running.
+      if (state.selectedIndices.isNotEmpty) {
+        emit(state.copyWith(isSaving: true));
+      }
     }
 
-    emit(state.copyWith(isSaving: false));
+    // Batch finished.
+    emit(state.copyWith(
+      isSaving: false,
+      isLogAllInProgress: false,
+    ));
   }
 
   void _onEditTopmost(
@@ -513,13 +544,33 @@ class FoodScannerBloc
     emit(state.copyWith(editingIndex: () => index));
   }
 
-  void _onEditCompleted(
+  Future<void> _onEditCompleted(
     EditCompletedAction action,
     Emitter<FoodScannerState> emit,
-  ) {
+  ) async {
     // Don't bump saveTick — the pushed AddFoodEventScreen already
     // showed its own confirmation dialog.
     _removeRow(action.index, emit, bumpSaveTick: false);
+
+    if (state.isLogAllInProgress) {
+      // Resume the batch with the spinner re-armed.
+      emit(state.copyWith(isSaving: true));
+      await _runLogAllLoop(emit);
+    }
+  }
+
+  void _onEditCancelled(
+    EditCancelledAction action,
+    Emitter<FoodScannerState> emit,
+  ) {
+    // User backed out of the edit screen — abort any in-flight Log all
+    // batch so a later manual edit doesn't unexpectedly resume it.
+    if (state.isLogAllInProgress) {
+      emit(state.copyWith(
+        isLogAllInProgress: false,
+        isSaving: false,
+      ));
+    }
   }
 
   void _onClearEditing(

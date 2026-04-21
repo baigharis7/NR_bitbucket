@@ -662,7 +662,7 @@ void main() {
 
     group('LogAllAction', () {
       blocTest<FoodScannerBloc, FoodScannerState>(
-        'saves every checked row that has grams and leaves gramless rows',
+        'saves complete rows then pauses on the first gramless row for edit',
         build: () {
           final upload = FakeUploadFoodEventInteractor();
           final save = FakeSaveFoodEventInteractor();
@@ -682,11 +682,54 @@ void main() {
         ),
         act: (bloc) => bloc.add(LogAllAction()),
         verify: (bloc) {
-          expect(bloc.state.results.length, 1);
+          // Apple saved. Pear is still there at index 0 and selected for
+          // edit. Plum deferred until the edit completes.
+          expect(bloc.state.results.length, 2);
           expect(bloc.state.results[0].scanResult.matchedFoodId, 2);
-          expect(bloc.state.saveTick, 2);
-          expect(bloc.state.navigateToSummary, false);
+          expect(bloc.state.results[1].scanResult.matchedFoodId, 3);
+          expect(bloc.state.saveTick, 1);
           expect(bloc.state.isSaving, false);
+          expect(bloc.state.isLogAllInProgress, true);
+          expect(bloc.state.editingIndex, 0);
+        },
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'saves every row when all have gram estimates',
+        build: () => _buildBloc(masterFoods: []),
+        seed: () => FoodScannerState(
+          results: [
+            _matchedEntry('Apple', 1, grams: 100),
+            _matchedEntry('Plum', 3, grams: 80),
+          ],
+          selectedIndices: {0, 1},
+        ),
+        act: (bloc) => bloc.add(LogAllAction()),
+        verify: (bloc) {
+          expect(bloc.state.results, isEmpty);
+          expect(bloc.state.saveTick, 2);
+          expect(bloc.state.isSaving, false);
+          expect(bloc.state.isLogAllInProgress, false);
+          expect(bloc.state.navigateToSummary, true);
+        },
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'pauses immediately for edit when no row has a gram estimate',
+        build: () => _buildBloc(masterFoods: []),
+        seed: () => FoodScannerState(
+          results: [
+            _matchedEntry('Pear', 2, grams: null),
+            _matchedEntry('Quince', 4, grams: null),
+          ],
+          selectedIndices: {0, 1},
+        ),
+        act: (bloc) => bloc.add(LogAllAction()),
+        verify: (bloc) {
+          expect(bloc.state.results.length, 2);
+          expect(bloc.state.saveTick, 0);
+          expect(bloc.state.isLogAllInProgress, true);
+          expect(bloc.state.editingIndex, 0);
         },
       );
     });
@@ -707,15 +750,86 @@ void main() {
           selectedIndices: {0, 1},
         ),
         act: (bloc) => bloc.add(EditCompletedAction(index: 0)),
-        expect: () => [
-          isA<FoodScannerState>()
-              .having((s) => s.results.length, 'results.length', 1)
-              .having((s) => s.results[0].scanResult.matchedFoodId, 'id', 2)
-              .having((s) => s.selectedIndices, 'selected', {0})
-              .having((s) => s.saveTick, 'saveTick', 0)
-              .having((s) => s.hasLoggedSomething, 'hasLoggedSomething', true)
-              .having((s) => s.editingIndex, 'editingIndex', isNull),
-        ],
+        verify: (bloc) {
+          expect(bloc.state.results.length, 1);
+          expect(bloc.state.results[0].scanResult.matchedFoodId, 2);
+          expect(bloc.state.selectedIndices, {0});
+          expect(bloc.state.saveTick, 0);
+          expect(bloc.state.hasLoggedSomething, true);
+          expect(bloc.state.editingIndex, isNull);
+          expect(bloc.state.isLogAllInProgress, false);
+        },
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'resumes Log all: saves remaining complete rows after edit',
+        build: () => _buildBloc(masterFoods: []),
+        seed: () => FoodScannerState(
+          // Simulates paused Log all: Pear was being edited (index 0), Plum
+          // (index 1) still needs to be saved.
+          results: [
+            _matchedEntry('Pear', 2, grams: 120),
+            _matchedEntry('Plum', 3, grams: 80),
+          ],
+          selectedIndices: {0, 1},
+          isLogAllInProgress: true,
+        ),
+        act: (bloc) => bloc.add(EditCompletedAction(index: 0)),
+        verify: (bloc) {
+          // Both rows gone: Pear via edit remove, Plum via resumed save.
+          expect(bloc.state.results, isEmpty);
+          expect(bloc.state.saveTick, 1);
+          expect(bloc.state.isLogAllInProgress, false);
+          expect(bloc.state.isSaving, false);
+          expect(bloc.state.navigateToSummary, true);
+        },
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'resumes Log all: pauses on the next gramless row',
+        build: () => _buildBloc(masterFoods: []),
+        seed: () => FoodScannerState(
+          // Pear edited (index 0), Quince (index 1) also needs input.
+          results: [
+            _matchedEntry('Pear', 2, grams: 120),
+            _matchedEntry('Quince', 4, grams: null),
+          ],
+          selectedIndices: {0, 1},
+          isLogAllInProgress: true,
+        ),
+        act: (bloc) => bloc.add(EditCompletedAction(index: 0)),
+        verify: (bloc) {
+          // Quince remains, now at index 0, teed up for edit.
+          expect(bloc.state.results.length, 1);
+          expect(bloc.state.results[0].scanResult.matchedFoodId, 4);
+          expect(bloc.state.isLogAllInProgress, true);
+          expect(bloc.state.editingIndex, 0);
+        },
+      );
+    });
+
+    // -----------------------------------------------------------------------
+    // EditCancelledAction
+    // -----------------------------------------------------------------------
+
+    group('EditCancelledAction', () {
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'clears isLogAllInProgress so a later edit does not auto-resume',
+        build: () => _buildBloc(masterFoods: []),
+        seed: () => const FoodScannerState(isLogAllInProgress: true),
+        act: (bloc) => bloc.add(EditCancelledAction()),
+        verify: (bloc) {
+          expect(bloc.state.isLogAllInProgress, false);
+          expect(bloc.state.isSaving, false);
+        },
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'is a no-op when no Log all was in progress',
+        build: () => _buildBloc(masterFoods: []),
+        seed: () => const FoodScannerState(),
+        act: (bloc) => bloc.add(EditCancelledAction()),
+        expect: () => <FoodScannerState>[],
       );
     });
 

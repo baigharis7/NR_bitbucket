@@ -48,6 +48,11 @@ class EditCompletedAction extends FoodScannerAction {
   EditCompletedAction({required this.index});
 }
 
+/// Notify the bloc that the user exited the edit screen without saving.
+/// Stops an in-progress Log all batch so it doesn't auto-resume on a
+/// later, unrelated edit.
+class EditCancelledAction extends FoodScannerAction {}
+
 /// Clears [FoodScannerState.editingIndex] — used by the screen listener
 /// once it has consumed the signal (either by pushing the edit screen
 /// or by reacting to a back-button return).
