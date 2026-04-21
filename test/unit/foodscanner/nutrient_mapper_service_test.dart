@@ -283,6 +283,116 @@ void main() {
       });
     });
 
+    group('mapFromLogMealResponse', () {
+      test('unwraps nutritional_info and maps simple fields', () {
+        final response = {
+          'imageId': 1,
+          'nutritional_info': {
+            'calories': 250.0,
+            'protein': 12.0,
+            'fat': 10.0,
+          },
+        };
+        final result = NutrientMapperService.mapFromLogMealResponse(response);
+        expect(result['energyKcal'], 250.0);
+        expect(result['proteinLabel'], 12.0);
+        expect(result['fatTotal'], 10.0);
+      });
+
+      test('reads totalNutrients Edamam codes with quantity', () {
+        final response = {
+          'nutritional_info': {
+            'totalNutrients': {
+              'ENERC_KCAL': {'label': 'Energy', 'quantity': 200, 'unit': 'kcal'},
+              'PROCNT': {'label': 'Protein', 'quantity': 25, 'unit': 'g'},
+              'FAT': {'label': 'Fat', 'quantity': 16, 'unit': 'g'},
+              'CHOCDF': {'label': 'Carbs', 'quantity': 1.3, 'unit': 'g'},
+              'VITA_RAE': {'quantity': 300, 'unit': 'µg'},
+              'CA': {'quantity': 700, 'unit': 'mg'},
+            },
+          },
+        };
+        final result = NutrientMapperService.mapFromLogMealResponse(response);
+        expect(result['energyKcal'], 200.0);
+        expect(result['proteinLabel'], 25.0);
+        expect(result['fatTotal'], 16.0);
+        expect(result['carbsAvailable'], 1.3);
+        expect(result['vitA'], 300.0);
+        expect(result['calcium'], 700.0);
+      });
+
+      test('normalizes per-100g using serving_size', () {
+        // 50g serving of cheese with 200 kcal total → 400 kcal/100g.
+        final response = {
+          'serving_size': 50,
+          'nutritional_info': {
+            'calories': 200.0,
+            'protein': 12.5,
+          },
+        };
+        final result = NutrientMapperService.mapFromLogMealResponse(response);
+        expect(result['energyKcal'], 400.0);
+        expect(result['proteinLabel'], 25.0);
+      });
+
+      test('does not rescale when serving_size is 100 or missing', () {
+        final response100 = {
+          'serving_size': 100,
+          'nutritional_info': {'calories': 200.0},
+        };
+        expect(
+          NutrientMapperService.mapFromLogMealResponse(response100)['energyKcal'],
+          200.0,
+        );
+
+        final responseNoServing = {
+          'nutritional_info': {'calories': 200.0},
+        };
+        expect(
+          NutrientMapperService
+              .mapFromLogMealResponse(responseNoServing)['energyKcal'],
+          200.0,
+        );
+      });
+
+      test('handles flat response without nutritional_info wrapper', () {
+        final response = {
+          'calories': 150.0,
+          'protein': 7.0,
+        };
+        final result = NutrientMapperService.mapFromLogMealResponse(response);
+        expect(result['energyKcal'], 150.0);
+        expect(result['proteinLabel'], 7.0);
+      });
+
+      test('duplicates fat subtypes into sum fields', () {
+        final response = {
+          'nutritional_info': {
+            'totalNutrients': {
+              'FASAT': {'quantity': 5.0},
+              'FAMS': {'quantity': 3.0},
+              'FAPU': {'quantity': 2.0},
+            },
+          },
+        };
+        final result = NutrientMapperService.mapFromLogMealResponse(response);
+        expect(result['saturated'], 5.0);
+        expect(result['sumSat'], 5.0);
+        expect(result['monounsaturated'], 3.0);
+        expect(result['sumMonoUnsat'], 3.0);
+        expect(result['polyunsaturated'], 2.0);
+        expect(result['sumPolyUnsat'], 2.0);
+      });
+
+      test('returns empty map for empty/non-nutrition response', () {
+        expect(NutrientMapperService.mapFromLogMealResponse({}), isEmpty);
+        expect(
+          NutrientMapperService.mapFromLogMealResponse({'imageId': 42}),
+          isEmpty,
+        );
+      });
+    });
+
     group('parseServingGrams', () {
       test('parses plain grams', () {
         expect(NutrientMapperService.parseServingGrams('52 g'), 52.0);

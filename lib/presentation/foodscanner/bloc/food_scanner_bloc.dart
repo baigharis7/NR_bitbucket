@@ -265,7 +265,14 @@ class FoodScannerBloc
         Map<String, double>? mappedNutrients;
         if (nutritionResponse != null) {
           mappedNutrients =
-              NutrientMapperService.mapFromLogMeal(nutritionResponse);
+              NutrientMapperService.mapFromLogMealResponse(nutritionResponse);
+          if (mappedNutrients.isEmpty) {
+            debugPrint('[FoodScanner] LogMeal nutrition response had no '
+                'recognizable nutrients (keys: ${nutritionResponse.keys.toList()})');
+          } else {
+            debugPrint('[FoodScanner] Mapped ${mappedNutrients.length} '
+                'LogMeal nutrients: ${mappedNutrients.keys.toList()}');
+          }
         }
 
         for (final ingredient in ingredients) {

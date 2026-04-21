@@ -162,6 +162,121 @@ class NutrientMapperService {
   // LogMeal → Params keys
   // ---------------------------------------------------------------------------
 
+  // LogMeal's `totalNutrients` object uses Edamam-style nutrient codes. These
+  // carry the full micro breakdown (vitamins, minerals) that the simple
+  // top-level keys don't, so we read them when present.
+  static const _logMealTotalNutrientsMapping = <String, String>{
+    'ENERC_KCAL': 'energyKcal',
+    'ENERC_KJ': 'energyKJ',
+    'PROCNT': 'proteinLabel',
+    'CHOCDF': 'carbsAvailable',
+    'CHOCDF.net': 'carbsAvailable',
+    'CHOAVL': 'carbsAvailable',
+    'FAT': 'fatTotal',
+    'FIBTG': 'fiber',
+    'SUGAR': 'sugarsTotal',
+    'SUGAR.added': 'sugarsTotal',
+    'STARCH': 'starch',
+    'FRUS': 'fructose',
+    'GLUS': 'glucose',
+    'FASAT': 'saturated',
+    'FATRN': 'totalTrans',
+    'FAMS': 'monounsaturated',
+    'FAPU': 'polyunsaturated',
+    'CHOLE': 'cholesterol',
+    'NA': 'sodium',
+    'CA': 'calcium',
+    'FE': 'iron',
+    'K': 'potassium',
+    'MG': 'magnesium',
+    'ZN': 'zinc',
+    'CU': 'copper',
+    'MN': 'manganese',
+    'SE': 'selenium',
+    'P': 'phosphorus',
+    'VITA_RAE': 'vitA',
+    'THIA': 'vitB1',
+    'RIBF': 'vitB2',
+    'NIA': 'vitB3',
+    'PANTAC': 'vitB5',
+    'VITB6A': 'vitB6',
+    'FOLDFE': 'vitB9',
+    'FOLFD': 'vitB9',
+    'VITB12': 'vitB12',
+    'VITC': 'vitC',
+    'VITD': 'vitD',
+    'TOCPHA': 'vitE',
+    'WATER': 'water',
+  };
+
+  /// Extract a flat [Map<String, double>] of per-100g nutrients from a full
+  /// LogMeal `/v2/nutrition/recipe/nutritionalInfo` response.
+  ///
+  /// LogMeal's real API wraps nutrients under `nutritional_info` and reports
+  /// them for the *whole image* at a given `serving_size` (grams). This
+  /// method unwraps the response, merges both the simple top-level fields
+  /// (`calories`, `protein`, ...) and the richer `totalNutrients` codes
+  /// (`ENERC_KCAL`, `PROCNT`, ...), then normalizes to per-100g using
+  /// `serving_size` when available.
+  static Map<String, double> mapFromLogMealResponse(
+    Map<String, dynamic> response,
+  ) {
+    // Response may wrap the info under `nutritional_info` or be flat (older
+    // mocks / alternate formats). Dive into the wrapper when present.
+    final info = (response['nutritional_info'] is Map<String, dynamic>)
+        ? response['nutritional_info'] as Map<String, dynamic>
+        : response;
+
+    final result = <String, double>{};
+
+    // Simple top-level fields (calories, protein, fiber, etc).
+    result.addAll(mapFromLogMeal(info));
+
+    // `totalNutrients` is a richer breakdown keyed by Edamam codes.
+    // Each entry is typically `{ "label": ..., "quantity": <num>, "unit": ... }`.
+    final totalNutrients = info['totalNutrients'];
+    if (totalNutrients is Map) {
+      for (final entry in _logMealTotalNutrientsMapping.entries) {
+        final node = totalNutrients[entry.key];
+        double? quantity;
+        if (node is Map) {
+          final q = node['quantity'];
+          if (q is num) quantity = q.toDouble();
+        } else if (node is num) {
+          quantity = node.toDouble();
+        }
+        if (quantity != null && quantity > 0) {
+          result.putIfAbsent(entry.value, () => quantity!);
+        }
+      }
+    }
+
+    // Duplicate fat subtypes so both the label-style and sum-style fields
+    // are populated.
+    if (result.containsKey('saturated') && !result.containsKey('sumSat')) {
+      result['sumSat'] = result['saturated']!;
+    }
+    if (result.containsKey('monounsaturated') &&
+        !result.containsKey('sumMonoUnsat')) {
+      result['sumMonoUnsat'] = result['monounsaturated']!;
+    }
+    if (result.containsKey('polyunsaturated') &&
+        !result.containsKey('sumPolyUnsat')) {
+      result['sumPolyUnsat'] = result['polyunsaturated']!;
+    }
+
+    // Normalize to per-100g. LogMeal reports nutrients for the whole serving
+    // (e.g. 180g), but downstream storage assumes per-100g values.
+    final servingSize = (response['serving_size'] as num?)?.toDouble() ??
+        (info['serving_size'] as num?)?.toDouble();
+    if (servingSize != null && servingSize > 0 && servingSize != 100) {
+      final factor = 100.0 / servingSize;
+      return result.map((k, v) => MapEntry(k, v * factor));
+    }
+
+    return result;
+  }
+
   /// Maps LogMeal nutritional_info field names to our Params field names.
   /// LogMeal returns per-serving values; the caller should normalize to per-100g
   /// if needed before calling this.
