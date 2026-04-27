@@ -313,7 +313,7 @@ Each test case is tagged to indicate whether it has automated coverage and wheth
 |----|-----|-------|-----------------|--------|-------|
 | SPORT-09 | 👤 MANUAL | Tap Activity Log on Dashboard to open Sport Items screen | All sport events for the day shown | | |
 | SPORT-10 | 👤 MANUAL | Tap a sport item to open edit screen | Sport Update screen opens with current values | | |
-| SPORT-11 | ⚠️ PARTIAL | Edit duration, tap Save | Updated duration and recalculated kcal shown | | |
+| SPORT-11 | 🤖 AUTO | Edit duration, tap Save | Updated duration and recalculated kcal shown | | |
 | SPORT-12 | 🤖 AUTO | Delete a sport event, confirm deletion | Sport removed. Dashboard Activity Log updated | | |
 | SPORT-13 | 🤖 AUTO | Set duration to 0, tap Save | Validation error. Event not saved with 0 duration | | |
 
@@ -327,16 +327,16 @@ Each test case is tagged to indicate whether it has automated coverage and wheth
 |----|-----|-------|-----------------|--------|-------|
 | FU-01 | 👤 MANUAL | Navigate to Feces/Urine Tab Holder (from Dashboard or + menu) | Tab holder opens with Feces and Urine tabs | | |
 | FU-02 | 👤 MANUAL | On Feces tab, observe the form | Bristol scale or stool type selection visible | | |
-| FU-03 | ⚠️ PARTIAL | Select feces type/characteristics, tap Save | Feces event saved. Entry appears in history below | | |
-| FU-04 | 👤 MANUAL | Delete a feces event from the list | Event removed from history | | |
+| FU-03 | 🤖 AUTO | Select feces type/characteristics, tap Save | Feces event saved. Entry appears in history below | | |
+| FU-04 | 🤖 AUTO | Delete a feces event from the list | Event removed from history | | |
 
 ### 8.2 Urine Tracking
 
 | ID | Tag | Steps | Expected Result | Status | Notes |
 |----|-----|-------|-----------------|--------|-------|
 | FU-05 | 👤 MANUAL | Switch to Urine tab | Urine color/characteristic selection visible | | |
-| FU-06 | ⚠️ PARTIAL | Select urine color/characteristics, tap Save | Urine event saved. Entry appears in history below | | |
-| FU-07 | 👤 MANUAL | Delete a urine event from the list | Event removed from history | | |
+| FU-06 | 🤖 AUTO | Select urine color/characteristics, tap Save | Urine event saved. Entry appears in history below | | |
+| FU-07 | 🤖 AUTO | Delete a urine event from the list | Event removed from history | | |
 
 ### 8.3 Detail View
 
@@ -485,9 +485,9 @@ Each test case is tagged to indicate whether it has automated coverage and wheth
 | RCPE-02 | 👤 MANUAL | Observe available tabs | Discover and Favorites tabs | | |
 | RCPE-03 | 👤 MANUAL | Tap Discover tab | Recipe cards load | | |
 | RCPE-04 | 👤 MANUAL | Tap a recipe card | Recipe Detail screen opens | | |
-| RCPE-05 | 👤 MANUAL | On Recipe Detail, tap Ingredients tab | Ingredient list with quantities shown | | |
-| RCPE-06 | 👤 MANUAL | On Recipe Detail, tap Steps tab | Cooking steps shown in order | | |
-| RCPE-07 | 👤 MANUAL | Tap heart/favorite icon on a recipe | Recipe saved to favorites. Heart icon fills | | |
+| RCPE-05 | 🤖 AUTO | On Recipe Detail, tap Ingredients tab | Ingredient list with quantities shown | | |
+| RCPE-06 | 🤖 AUTO | On Recipe Detail, tap Steps tab | Cooking steps shown in order | | |
+| RCPE-07 | 🤖 AUTO | Tap heart/favorite icon on a recipe | Recipe saved to favorites. Heart icon fills | | |
 | RCPE-08 | 👤 MANUAL | Tap Favorites tab in Recipes | Saved recipe favorites listed | | |
 | RCPE-09 | 👤 MANUAL | Remove a recipe from favorites (tap heart again or delete) | Recipe removed from favorites list | | |
 | RCPE-10 | 👤 MANUAL | With no recipe favorites, observe Favorites tab | Empty state shown | | |
@@ -675,9 +675,9 @@ Total test cases: **284** across 18 sections + Dead Code verification.
 
 | Tag | Count | % | Meaning |
 |-----|-------|---|---------|
-| 🤖 AUTO | 111 | 39% | Backed by automated tests — regression-safe |
-| ⚠️ PARTIAL | 21 | 7% | Logic automated; visual/navigation needs manual eyes |
-| 👤 MANUAL | 152 | 53% | Real device, real backend, or human judgment required |
+| 🤖 AUTO | 119 | 41% | Backed by automated tests — regression-safe |
+| ⚠️ PARTIAL | 18 | 6% | Logic automated; visual/navigation needs manual eyes |
+| 👤 MANUAL | 147 | 53% | Real device, real backend, or human judgment required |
 
 **For QA testers:** All 284 cases must still be executed manually for release sign-off. The tags show which cases also have an automated regression net behind them.
 

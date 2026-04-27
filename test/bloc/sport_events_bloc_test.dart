@@ -1,12 +1,16 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/models/favorites/sport/add_sport_favorite.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
+import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_completed.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_arguments_model.dart';
+import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events_state.dart';
@@ -14,6 +18,16 @@ import 'package:nutrenaissance_flutter/presentation/sportevent/bloc/sport_events
 import 'bloc_test_mocks.mocks.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  // Stub flutter_timezone for DateTimeHelper.getDeviceIANATimeZone()
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(
+    const MethodChannel('flutter_timezone'),
+    (MethodCall methodCall) async =>
+        methodCall.method == 'getLocalTimezone' ? 'UTC' : null,
+  );
+
   late MockGetUserIdInteractor mockGetUserId;
   late MockSaveSportEventInteractor mockSaveSportEvent;
   late MockUploadSportEventsInteractor mockUploadSportEvent;
@@ -394,6 +408,224 @@ void main() {
         expect(bloc.state.sportSimpleEvent!.isCreateRoutine, false);
         expect(bloc.state.sportSimpleEvent!.title, 'Running');
         expect(bloc.state.sportSimpleEvent!.info!.length, 1);
+      },
+    );
+  });
+
+  group('SportEventsBloc - FinishSportEventAction (save flow)', () {
+    blocTest<SportEventsBloc, SportEventsState>(
+      'uploads, saves locally, and notifies event bus on success',
+      build: () {
+        when(mockGetUserId.execute()).thenReturn('user123');
+        when(mockUploadSportEvent.execute(any)).thenAnswer((_) async =>
+            SportEventComplete(
+              userId: 'user123',
+              eventId: 1,
+              eventDate: 1700000000000,
+              info: [],
+              eventKcals: 250,
+            ));
+        when(mockSaveSportEvent.execute(any, any)).thenAnswer((_) async {});
+        return buildBloc();
+      },
+      act: (bloc) {
+        final notifications = <DataChangedCategory>[];
+        DashboardEventBus.instance.stream.listen(notifications.add);
+        bloc.add(FinishSportEventAction(
+          sportEventSimple: SportEventSimple(
+            userId: 'user123',
+            eventDate: 1700000000000,
+            sportName: 'Running',
+            info: [],
+          ),
+          onFinish: () {},
+        ));
+      },
+      wait: const Duration(milliseconds: 100),
+      verify: (bloc) {
+        verify(mockUploadSportEvent.execute(any)).called(1);
+        verify(mockSaveSportEvent.execute(any, false)).called(1);
+        expect(bloc.state.onError, isNull);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'emits uploadingSportEventError when upload fails',
+      build: () {
+        when(mockGetUserId.execute()).thenReturn('user123');
+        when(mockUploadSportEvent.execute(any))
+            .thenThrow(Exception('network error'));
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(FinishSportEventAction(
+        sportEventSimple: SportEventSimple(
+          userId: 'user123',
+          eventDate: 1700000000000,
+          sportName: 'Running',
+          info: [],
+        ),
+        onFinish: () {},
+      )),
+      wait: const Duration(milliseconds: 50),
+      verify: (bloc) {
+        expect(bloc.state.onError, ErrorTypes.uploadingSportEventError);
+        verifyNever(mockSaveSportEvent.execute(any, any));
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'emits locallySavingSportEventError when local save fails after upload',
+      build: () {
+        when(mockGetUserId.execute()).thenReturn('user123');
+        when(mockUploadSportEvent.execute(any)).thenAnswer((_) async =>
+            SportEventComplete(
+              userId: 'user123',
+              eventId: 1,
+              eventDate: 1700000000000,
+              info: [],
+            ));
+        when(mockSaveSportEvent.execute(any, any))
+            .thenThrow(Exception('hive error'));
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(FinishSportEventAction(
+        sportEventSimple: SportEventSimple(
+          userId: 'user123',
+          eventDate: 1700000000000,
+          sportName: 'Running',
+          info: [],
+        ),
+        onFinish: () {},
+      )),
+      wait: const Duration(milliseconds: 50),
+      verify: (bloc) {
+        expect(bloc.state.onError, ErrorTypes.locallySavingSportEventError);
+      },
+    );
+  });
+
+  group('SportEventsBloc - FinishSportRoutineAddSportAction (routine save)', () {
+    blocTest<SportEventsBloc, SportEventsState>(
+      'uploads routine, saves locally, and notifies event bus on success',
+      build: () {
+        when(mockGetUserId.execute()).thenReturn('user123');
+        when(mockUploadRoutine.execute(any)).thenAnswer((_) async => true);
+        when(mockSaveRoutine.execute(any, any)).thenAnswer((_) async {});
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(FinishSportRoutineAddSportAction(
+        sportRoutineCompleted: SportRoutineCompleted(
+          userId: 'user123',
+          eventId: 1,
+          eventDate: 1700000000000,
+          info: [],
+          isRoutine: true,
+          daysOfWeek: [1, 3, 5],
+          scheduleTime: '07:00',
+        ),
+        onFinish: () {},
+      )),
+      wait: const Duration(milliseconds: 100),
+      verify: (bloc) {
+        verify(mockUploadRoutine.execute(any)).called(1);
+        verify(mockSaveRoutine.execute(any, false)).called(1);
+        expect(bloc.state.onError, isNull);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'emits uploadingSportRoutineError on upload failure',
+      build: () {
+        when(mockGetUserId.execute()).thenReturn('user123');
+        when(mockUploadRoutine.execute(any))
+            .thenThrow(Exception('network error'));
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(FinishSportRoutineAddSportAction(
+        sportRoutineCompleted: SportRoutineCompleted(
+          userId: 'user123',
+          eventId: 1,
+          eventDate: 1700000000000,
+          info: [],
+          isRoutine: true,
+          daysOfWeek: [1],
+          scheduleTime: '07:00',
+        ),
+        onFinish: () {},
+      )),
+      wait: const Duration(milliseconds: 50),
+      verify: (bloc) {
+        expect(bloc.state.onError, ErrorTypes.uploadingSportRoutineError);
+        verifyNever(mockSaveRoutine.execute(any, any));
+      },
+    );
+  });
+
+  group('SportEventsBloc - DeleteFavSportSportEventsAction', () {
+    blocTest<SportEventsBloc, SportEventsState>(
+      'deletes remotely, removes locally, refreshes favorites',
+      build: () {
+        when(mockGetUserId.execute()).thenReturn('user123');
+        when(mockDeleteSportFavorite.execute(any, any))
+            .thenAnswer((_) async => true);
+        when(mockRemoveSportFavorite.execute(any))
+            .thenAnswer((_) async => true);
+        when(mockGetSportFavorites.execute())
+            .thenAnswer((_) async => <AddSportFavorite>[]);
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(DeleteFavSportSportEventsAction(
+        sportFavorite: AddSportFavorite(
+          eventId: 42,
+          info: [],
+        ),
+        onFinish: () {},
+      )),
+      wait: const Duration(milliseconds: 50),
+      verify: (bloc) {
+        verify(mockDeleteSportFavorite.execute('user123', 42)).called(1);
+        verify(mockRemoveSportFavorite.execute(any)).called(1);
+        verify(mockGetSportFavorites.execute()).called(1);
+        expect(bloc.state.onError, isNull);
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'emits deleteSportFavoriteError when remote delete fails',
+      build: () {
+        when(mockGetUserId.execute()).thenReturn('user123');
+        when(mockDeleteSportFavorite.execute(any, any))
+            .thenThrow(Exception('network'));
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(DeleteFavSportSportEventsAction(
+        sportFavorite: AddSportFavorite(eventId: 42, info: []),
+        onFinish: () {},
+      )),
+      wait: const Duration(milliseconds: 50),
+      verify: (bloc) {
+        expect(bloc.state.onError, ErrorTypes.deleteSportFavoriteError);
+        verifyNever(mockRemoveSportFavorite.execute(any));
+      },
+    );
+
+    blocTest<SportEventsBloc, SportEventsState>(
+      'emits removeSportFavoriteError when local remove returns false',
+      build: () {
+        when(mockGetUserId.execute()).thenReturn('user123');
+        when(mockDeleteSportFavorite.execute(any, any))
+            .thenAnswer((_) async => true);
+        when(mockRemoveSportFavorite.execute(any))
+            .thenAnswer((_) async => false);
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(DeleteFavSportSportEventsAction(
+        sportFavorite: AddSportFavorite(eventId: 42, info: []),
+        onFinish: () {},
+      )),
+      wait: const Duration(milliseconds: 50),
+      verify: (bloc) {
+        expect(bloc.state.onError, ErrorTypes.removeSportFavoriteError);
       },
     );
   });
