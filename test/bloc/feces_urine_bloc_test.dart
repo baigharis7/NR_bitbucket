@@ -146,7 +146,7 @@ void main() {
       final bloc = buildBloc();
 
       bloc.add(UploadFecesEventAction(onFinish: () {}));
-      await Future.delayed(const Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       verifyNever(mockUploadFeces.execute(any));
       verifyNever(mockSaveFecesEvent.execute(any));
@@ -168,7 +168,7 @@ void main() {
 
       var finishCalled = false;
       bloc.add(UploadFecesEventAction(onFinish: () => finishCalled = true));
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockUploadFeces.execute(any)).called(1);
       verify(mockSaveFecesEvent.execute(any)).called(1);
@@ -221,7 +221,7 @@ void main() {
       final bloc = buildBloc();
 
       bloc.add(UploadUrineEventAction(onFinish: () {}));
-      await Future.delayed(const Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       verifyNever(mockUploadUrine.execute(any));
       verifyNever(mockSaveUrine.execute(any));
@@ -239,7 +239,7 @@ void main() {
       final sub = DashboardEventBus.instance.stream.listen(notifications.add);
 
       bloc.add(UploadUrineEventAction(onFinish: () {}));
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockUploadUrine.execute(any)).called(1);
       verify(mockSaveUrine.execute(any)).called(1);
@@ -287,7 +287,7 @@ void main() {
         uploadFeces: feces,
         onFinish: () {},
       ));
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockDeleteFeces.execute('user123', 1700000000000)).called(1);
       verify(mockRemoveFeces.execute(feces)).called(1);

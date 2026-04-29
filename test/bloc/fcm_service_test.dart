@@ -36,7 +36,7 @@ void main() {
       final sub = DashboardEventBus.instance.stream.listen(busEvents.add);
 
       FcmService.instance.simulateMessage(RemoteMessage(data: {'category': 'food'}));
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockUpdateEvents.execute(userId: 'user123', categoryType: PrefsKeys.foodEvents, fullSync: false)).called(1);
       verifyNever(mockSynchronizeEvents.execute(any, fullSync: anyNamed('fullSync')));
@@ -54,7 +54,7 @@ void main() {
       final sub = DashboardEventBus.instance.stream.listen(busEvents.add);
 
       FcmService.instance.simulateMessage(RemoteMessage(data: {'category': 'sport'}));
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockUpdateEvents.execute(userId: 'user123', categoryType: PrefsKeys.sportEvents, fullSync: false)).called(1);
       expect(busEvents, contains(DataChangedCategory.sport));
@@ -71,7 +71,7 @@ void main() {
       final sub = DashboardEventBus.instance.stream.listen(busEvents.add);
 
       FcmService.instance.simulateMessage(RemoteMessage(data: {'category': 'supplement'}));
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockUpdateEvents.execute(userId: 'user123', categoryType: PrefsKeys.supplementEvents, fullSync: false)).called(1);
       expect(busEvents, contains(DataChangedCategory.supplement));
@@ -85,7 +85,7 @@ void main() {
           .thenAnswer((_) async {});
 
       FcmService.instance.simulateMessage(RemoteMessage(data: {'category': 'unknown'}));
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockSynchronizeEvents.execute('user123', fullSync: false)).called(1);
       verifyNever(mockUpdateEvents.execute(userId: anyNamed('userId'), categoryType: anyNamed('categoryType'), fullSync: anyNamed('fullSync')));
@@ -97,7 +97,7 @@ void main() {
           .thenAnswer((_) async {});
 
       FcmService.instance.simulateMessage(RemoteMessage(data: {}));
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockSynchronizeEvents.execute('user123', fullSync: false)).called(1);
     });
@@ -109,7 +109,7 @@ void main() {
       final sub = DashboardEventBus.instance.stream.listen(busEvents.add);
 
       FcmService.instance.simulateMessage(RemoteMessage(data: {'category': 'food'}));
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockUpdateEvents.execute(userId: anyNamed('userId'), categoryType: anyNamed('categoryType'), fullSync: anyNamed('fullSync')));
       verifyNever(mockSynchronizeEvents.execute(any, fullSync: anyNamed('fullSync')));

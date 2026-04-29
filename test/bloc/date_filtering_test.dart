@@ -112,7 +112,7 @@ void main() {
       },
       act: (bloc) async {
         bloc.add(InitializeSupplementsDetailEvent(eventDate: pastDate));
-        await Future.delayed(const Duration(milliseconds: 200));
+        await pumpEventQueue();
         // Event bus or external trigger calls summary re-init — must use stored date
         bloc.add(SummaryInitializeSupplementsDetailEvent());
       },
@@ -209,7 +209,7 @@ void main() {
       act: (bloc) async {
         // First set the date
         bloc.add(UpdateDatetimeSportItemsEvents(dateTime: pastDate));
-        await Future.delayed(const Duration(milliseconds: 200));
+        await pumpEventQueue();
         // Then re-initialize (e.g. from event bus) — should use stored date
         bloc.add(SportItemsInitialization());
       },
@@ -658,7 +658,7 @@ void main() {
         act: (bloc) async {
           // Set _lastSelectedDate by initializing with pastDate
           bloc.add(InitializeState(dateTime: pastDate, onFinish: () {}));
-          await Future.delayed(const Duration(milliseconds: 500));
+          await pumpEventQueue();
           // Now trigger a food refresh — should use _lastSelectedDate (pastDate)
           bloc.add(RefreshCategoryAction(category: DataChangedCategory.food));
         },
@@ -678,7 +678,7 @@ void main() {
         },
         act: (bloc) async {
           bloc.add(InitializeState(dateTime: pastDate, onFinish: () {}));
-          await Future.delayed(const Duration(milliseconds: 500));
+          await pumpEventQueue();
           bloc.add(RefreshCategoryAction(category: DataChangedCategory.supplement));
         },
         wait: const Duration(milliseconds: 700),
@@ -695,7 +695,7 @@ void main() {
         },
         act: (bloc) async {
           bloc.add(InitializeState(dateTime: pastDate, onFinish: () {}));
-          await Future.delayed(const Duration(milliseconds: 500));
+          await pumpEventQueue();
           bloc.add(RefreshCategoryAction(category: DataChangedCategory.water));
         },
         wait: const Duration(milliseconds: 700),
@@ -712,7 +712,7 @@ void main() {
         },
         act: (bloc) async {
           bloc.add(InitializeState(dateTime: pastDate, onFinish: () {}));
-          await Future.delayed(const Duration(milliseconds: 500));
+          await pumpEventQueue();
           bloc.add(RefreshCategoryAction(category: DataChangedCategory.liquid));
         },
         wait: const Duration(milliseconds: 700),

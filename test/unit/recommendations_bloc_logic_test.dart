@@ -667,7 +667,7 @@ void main() {
       // Reset to null so the guard allows loading
       bloc.emit(RecommendationsGeneralState(isLoading: false, recentFoodEvents: null));
       bloc.add(LoadRecentFoodsAction());
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       expect(bloc.state.recentFoodEvents, isNotNull);
       expect(bloc.state.recentFoodEvents!.length, 2);
@@ -680,7 +680,7 @@ void main() {
       final bloc = _buildBloc(recentFoodEventsInteractor: mockRecentEvents);
       bloc.emit(RecommendationsGeneralState(isLoading: false, recentFoodEvents: null));
       bloc.add(LoadRecentFoodsAction());
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       expect(bloc.state.recentFoodEvents, isNotNull);
       expect(bloc.state.recentFoodEvents, isEmpty);
@@ -693,11 +693,11 @@ void main() {
       final bloc = _buildBloc(recentFoodEventsInteractor: mockRecentEvents);
       bloc.emit(RecommendationsGeneralState(isLoading: false, recentFoodEvents: null));
       bloc.add(LoadRecentFoodsAction());
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       // Second call should be a no-op (recentFoodEvents is now non-null)
       bloc.add(LoadRecentFoodsAction());
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(() => mockRecentEvents.execute()).called(1);
     });
@@ -724,7 +724,7 @@ void main() {
       final bloc = _buildBloc(foodFavoritesInteractor: mockFavorites);
       bloc.emit(RecommendationsGeneralState(isLoading: false, foodFavorites: null));
       bloc.add(LoadFavoritesAction());
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       expect(bloc.state.foodFavorites, isNotNull);
       expect(bloc.state.foodFavorites!.length, 1);
@@ -738,7 +738,7 @@ void main() {
       final bloc = _buildBloc(foodFavoritesInteractor: mockFavorites);
       bloc.emit(RecommendationsGeneralState(isLoading: false, foodFavorites: null));
       bloc.add(LoadFavoritesAction());
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       expect(bloc.state.foodFavorites, isNotNull);
       expect(bloc.state.foodFavorites, isEmpty);
@@ -751,11 +751,11 @@ void main() {
       final bloc = _buildBloc(foodFavoritesInteractor: mockFavorites);
       bloc.emit(RecommendationsGeneralState(isLoading: false, foodFavorites: null));
       bloc.add(LoadFavoritesAction());
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       // Second call should be a no-op (foodFavorites is now non-null)
       bloc.add(LoadFavoritesAction());
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(() => mockFavorites.execute()).called(1);
     });

@@ -132,7 +132,7 @@ void main() {
       act: (bloc) async {
         // First init to populate state (nutrientsInfoMaster, profile, etc.)
         bloc.add(InitialMealTimeDetailsEventState(dateTime: DateTime(2026, 3, 1)));
-        await Future.delayed(const Duration(milliseconds: 300));
+        await pumpEventQueue();
         // Reset mock call counts so we can verify delete doesn't trigger sync
         clearInteractions(mockUpdateEvents);
         // Now delete
@@ -239,7 +239,7 @@ void main() {
         bloc.add(UpdateFoodArgumentsModelEventState(
           foodArgumentsModel: FoodArgumentsModel(mealTime: MealTime(id: 0), selectedDateTime: DateTime(2026, 3, 1)),
         ));
-        await Future.delayed(const Duration(milliseconds: 300));
+        await pumpEventQueue();
       },
       verify: (bloc) {
         final state = bloc.state;
@@ -296,7 +296,7 @@ void main() {
         bloc.add(UpdateFoodArgumentsModelEventState(
           foodArgumentsModel: FoodArgumentsModel(mealTime: MealTime(id: 0), selectedDateTime: DateTime(2026, 3, 1)),
         ));
-        await Future.delayed(const Duration(milliseconds: 300));
+        await pumpEventQueue();
       },
       verify: (bloc) {
         final state = bloc.state;
@@ -320,7 +320,7 @@ void main() {
         bloc.add(UpdateFoodArgumentsModelEventState(
           foodArgumentsModel: FoodArgumentsModel(mealTime: MealTime(id: 0), selectedDateTime: DateTime(2026, 3, 1)),
         ));
-        await Future.delayed(const Duration(milliseconds: 300));
+        await pumpEventQueue();
       },
       verify: (bloc) {
         // Should not crash, groupedObjectiveNutrients stays null

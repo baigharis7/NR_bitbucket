@@ -535,7 +535,7 @@ void main() {
 
         final bloc = buildBloc();
         bloc.add(HealthSyncManualTrigger());
-        await Future.delayed(const Duration(milliseconds: 200));
+        await pumpEventQueue();
 
         expect(busEvents, contains(DataChangedCategory.sport));
 
@@ -556,7 +556,7 @@ void main() {
 
         final bloc = buildBloc();
         bloc.add(HealthSyncManualTrigger());
-        await Future.delayed(const Duration(milliseconds: 200));
+        await pumpEventQueue();
 
         expect(busEvents, isEmpty);
 
@@ -744,11 +744,11 @@ void main() {
 
         final bloc = buildBloc();
         // Wait for any initialization events to settle
-        await Future.delayed(const Duration(milliseconds: 100));
+        await pumpEventQueue();
 
         // Fire sport event on EventBus
         DashboardEventBus.instance.notify(DataChangedCategory.sport);
-        await Future.delayed(const Duration(milliseconds: 200));
+        await pumpEventQueue();
 
         expect(bloc.state.estimatedStepCount, 2880);
 

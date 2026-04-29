@@ -123,7 +123,7 @@ void main() {
               ));
       final bloc = buildBloc();
       bloc.add(InitializationRecipeDetailEventAction());
-      await Future.delayed(const Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       final result = bloc.getFoodNameByFoodId(5);
       expect(result.id, 5);
@@ -141,7 +141,7 @@ void main() {
               ));
       final bloc = buildBloc();
       bloc.add(InitializationRecipeDetailEventAction());
-      await Future.delayed(const Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       final result = bloc.getFoodNameByFoodId(9999);
       expect(result.id, 0);

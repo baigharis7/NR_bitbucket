@@ -105,7 +105,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.sport);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockGetTodaySports.execute(dateTime: anyNamed('dateTime'))).called(1);
 
@@ -116,7 +116,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetTodaySports.execute(dateTime: anyNamed('dateTime')));
 
@@ -141,7 +141,7 @@ void main() {
       bloc.add(DeleteSportItemSportItemsEvents(
         sportEventComplete: SportEventComplete(userId: 'user123', eventId: 1, eventDate: 1000, info: []),
       ));
-      await Future.delayed(const Duration(milliseconds: 200));
+      await pumpEventQueue();
 
       expect(notifications, contains(DataChangedCategory.sport));
 
@@ -155,7 +155,7 @@ void main() {
 
       // After close, notifications should not trigger events
       DashboardEventBus.instance.notify(DataChangedCategory.sport);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetTodaySports.execute(dateTime: anyNamed('dateTime')));
     });
@@ -204,7 +204,7 @@ void main() {
         final bloc = buildBloc();
 
         DashboardEventBus.instance.notify(category);
-        await Future.delayed(const Duration(milliseconds: 100));
+        await pumpEventQueue();
 
         verify(mockGetAllEvents.execute()).called(greaterThanOrEqualTo(1));
 
@@ -216,7 +216,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.profile);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetAllEvents.execute());
 
@@ -238,7 +238,7 @@ void main() {
         foodEventComplete: FoodEventComplete(userId: 'user123', eventDate: 1000, eventId: 1),
         onFinish: () {},
       ));
-      await Future.delayed(const Duration(milliseconds: 200));
+      await pumpEventQueue();
 
       expect(notifications, contains(DataChangedCategory.food));
 
@@ -261,7 +261,7 @@ void main() {
         sportEventComplete: SportEventComplete(userId: 'user123', eventId: 1, eventDate: 1000, info: []),
         onFinish: () {},
       ));
-      await Future.delayed(const Duration(milliseconds: 200));
+      await pumpEventQueue();
 
       expect(notifications, contains(DataChangedCategory.sport));
 
@@ -274,7 +274,7 @@ void main() {
       await bloc.close();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetAllEvents.execute());
     });
@@ -341,7 +341,7 @@ void main() {
         final bloc = buildBloc();
 
         DashboardEventBus.instance.notify(category);
-        await Future.delayed(const Duration(milliseconds: 100));
+        await pumpEventQueue();
 
         verify(mockGetUserKcal.execute()).called(greaterThanOrEqualTo(1));
 
@@ -353,7 +353,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.supplement);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetUserKcal.execute());
 
@@ -365,7 +365,7 @@ void main() {
       await bloc.close();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetUserKcal.execute());
     });
@@ -420,7 +420,7 @@ void main() {
         final bloc = buildBloc();
 
         DashboardEventBus.instance.notify(category);
-        await Future.delayed(const Duration(milliseconds: 100));
+        await pumpEventQueue();
 
         verify(mockGetWaterEvents.execute(dateTime: anyNamed('dateTime'))).called(greaterThanOrEqualTo(1));
 
@@ -432,7 +432,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetWaterEvents.execute(dateTime: anyNamed('dateTime')));
 
@@ -444,7 +444,7 @@ void main() {
       await bloc.close();
 
       DashboardEventBus.instance.notify(DataChangedCategory.liquid);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetWaterEvents.execute(dateTime: anyNamed('dateTime')));
     });
@@ -498,7 +498,7 @@ void main() {
 
       var finished = false;
       bloc.add(SavingUpdateSupplementFavorite(onFinish: () { finished = true; }));
-      await Future.delayed(const Duration(milliseconds: 200));
+      await pumpEventQueue();
 
       expect(notifications, contains(DataChangedCategory.supplement));
       expect(finished, true);
@@ -528,7 +528,7 @@ void main() {
 
       var finished = false;
       bloc.add(SavingUpdateSupplementRoutine(onFinish: () { finished = true; }));
-      await Future.delayed(const Duration(milliseconds: 200));
+      await pumpEventQueue();
 
       expect(notifications, contains(DataChangedCategory.supplement));
       expect(finished, true);
@@ -553,7 +553,7 @@ void main() {
       final sub = DashboardEventBus.instance.stream.listen(notifications.add);
 
       bloc.add(SavingUpdateSupplementFavorite(onFinish: () {}));
-      await Future.delayed(const Duration(milliseconds: 200));
+      await pumpEventQueue();
 
       expect(notifications, isNot(contains(DataChangedCategory.supplement)));
 
@@ -598,7 +598,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.supplement);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockGetDaySuppEvents.execute(dateTime: anyNamed('dateTime'))).called(greaterThanOrEqualTo(1));
 
@@ -609,7 +609,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetDaySuppEvents.execute(dateTime: anyNamed('dateTime')));
 
@@ -621,7 +621,7 @@ void main() {
       await bloc.close();
 
       DashboardEventBus.instance.notify(DataChangedCategory.supplement);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetDaySuppEvents.execute(dateTime: anyNamed('dateTime')));
     });
@@ -681,7 +681,7 @@ void main() {
       bloc.state.nutrientsInfoMaster = _stubNutrientsInfo;
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockGetFoodEvents.execute(dateTime: anyNamed('dateTime'))).called(greaterThanOrEqualTo(1));
 
@@ -692,7 +692,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.sport);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetFoodEvents.execute(dateTime: anyNamed('dateTime')));
 
@@ -704,7 +704,7 @@ void main() {
       await bloc.close();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetFoodEvents.execute(dateTime: anyNamed('dateTime')));
     });
@@ -763,7 +763,7 @@ void main() {
         final bloc = buildBloc();
 
         DashboardEventBus.instance.notify(category);
-        await Future.delayed(const Duration(milliseconds: 100));
+        await pumpEventQueue();
 
         verify(mockGetWeekFood.execute()).called(greaterThanOrEqualTo(1));
 
@@ -775,7 +775,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.supplement);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetWeekFood.execute());
 
@@ -788,7 +788,7 @@ void main() {
       await bloc.close();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetWeekFood.execute());
     });
@@ -830,7 +830,7 @@ void main() {
         final bloc = buildBloc();
 
         DashboardEventBus.instance.notify(category);
-        await Future.delayed(const Duration(milliseconds: 100));
+        await pumpEventQueue();
 
         verify(mockGetWeekFood.execute()).called(greaterThanOrEqualTo(1));
 
@@ -842,7 +842,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.sport);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetWeekFood.execute());
 
@@ -854,7 +854,7 @@ void main() {
       await bloc.close();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetWeekFood.execute());
     });
@@ -900,7 +900,7 @@ void main() {
         final bloc = buildBloc();
 
         DashboardEventBus.instance.notify(category);
-        await Future.delayed(const Duration(milliseconds: 100));
+        await pumpEventQueue();
 
         verify(mockGetWeekFood.execute()).called(greaterThanOrEqualTo(1));
 
@@ -912,7 +912,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.sport);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetWeekFood.execute());
 
@@ -924,7 +924,7 @@ void main() {
       await bloc.close();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetWeekFood.execute());
     });
@@ -971,7 +971,7 @@ void main() {
         final bloc = buildBloc();
 
         DashboardEventBus.instance.notify(category);
-        await Future.delayed(const Duration(milliseconds: 100));
+        await pumpEventQueue();
 
         verify(mockGetWeekFood.execute()).called(greaterThanOrEqualTo(1));
 
@@ -983,7 +983,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.supplement);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetWeekFood.execute());
 
@@ -995,7 +995,7 @@ void main() {
       await bloc.close();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetWeekFood.execute());
     });
@@ -1065,7 +1065,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockGetFoodEvents.execute()).called(greaterThanOrEqualTo(1));
 
@@ -1076,7 +1076,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.sport);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetFoodEvents.execute());
 
@@ -1088,7 +1088,7 @@ void main() {
       await bloc.close();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetFoodEvents.execute());
     });
@@ -1154,7 +1154,7 @@ void main() {
         final bloc = buildBloc();
 
         DashboardEventBus.instance.notify(category);
-        await Future.delayed(const Duration(milliseconds: 100));
+        await pumpEventQueue();
 
         verify(mockGetLiquidEvents.execute()).called(greaterThanOrEqualTo(1));
 
@@ -1166,7 +1166,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetLiquidEvents.execute());
 
@@ -1178,7 +1178,7 @@ void main() {
       await bloc.close();
 
       DashboardEventBus.instance.notify(DataChangedCategory.liquid);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetLiquidEvents.execute());
     });
@@ -1258,7 +1258,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.sport);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockGetTodaySports.execute()).called(greaterThanOrEqualTo(1));
 
@@ -1269,7 +1269,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetTodaySports.execute());
 
@@ -1281,7 +1281,7 @@ void main() {
       await bloc.close();
 
       DashboardEventBus.instance.notify(DataChangedCategory.sport);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetTodaySports.execute());
     });
@@ -1334,7 +1334,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockGetFoodRoutines.execute()).called(1);
       verifyNever(mockGetRoutines.execute());
@@ -1349,7 +1349,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.sport);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockGetRoutines.execute()).called(1);
       verifyNever(mockGetFoodRoutines.execute());
@@ -1364,7 +1364,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.supplement);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockGetSupplementRoutines.execute()).called(1);
       verifyNever(mockGetFoodRoutines.execute());
@@ -1377,7 +1377,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.water);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetFoodRoutines.execute());
       verifyNever(mockGetRoutines.execute());
@@ -1391,7 +1391,7 @@ void main() {
       await bloc.close();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetFoodRoutines.execute());
     });
@@ -1447,7 +1447,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockGetFoodFavorites.execute()).called(1);
       verifyNever(mockGetSportFavorites.execute());
@@ -1462,7 +1462,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.sport);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockGetSportFavorites.execute()).called(1);
       verifyNever(mockGetFoodFavorites.execute());
@@ -1477,7 +1477,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.supplement);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verify(mockGetSupplementFavorites.execute()).called(1);
       verifyNever(mockGetFoodFavorites.execute());
@@ -1490,7 +1490,7 @@ void main() {
       final bloc = buildBloc();
 
       DashboardEventBus.instance.notify(DataChangedCategory.water);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetFoodFavorites.execute());
       verifyNever(mockGetSportFavorites.execute());
@@ -1504,7 +1504,7 @@ void main() {
       await bloc.close();
 
       DashboardEventBus.instance.notify(DataChangedCategory.food);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await pumpEventQueue();
 
       verifyNever(mockGetFoodFavorites.execute());
     });

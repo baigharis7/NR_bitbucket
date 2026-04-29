@@ -463,7 +463,7 @@ void main() {
         DashboardEventBus.instance.notify(DataChangedCategory.water);
 
         // Give the event loop time to process the event
-        await Future.delayed(const Duration(milliseconds: 100));
+        await pumpEventQueue();
 
         verify(mockGetWaterEvents.execute(dateTime: anyNamed('dateTime'))).called(1);
 
@@ -685,7 +685,7 @@ void main() {
         },
         act: (bloc) async {
           bloc.add(FinishWaterEventAction(qty: 0.250, onFinish: () {}));
-          await Future.delayed(const Duration(milliseconds: 50));
+          await pumpEventQueue();
           bloc.add(FinishWaterEventAction(qty: 0.250, onFinish: () {}));
         },
         wait: const Duration(milliseconds: 500),
@@ -706,6 +706,10 @@ void main() {
         },
         act: (bloc) async {
           bloc.add(FinishWaterEventAction(qty: 0.250, onFinish: () {}));
+          // Real wall-clock wait required: the bloc's debounce uses Timer
+          // which respects real time. pumpEventQueue() would let the
+          // microtask flush but not advance the timer past the 200ms guard,
+          // and we want the second tap to be allowed (i.e. NOT debounced).
           await Future.delayed(const Duration(milliseconds: 250));
           bloc.add(FinishWaterEventAction(qty: 0.250, onFinish: () {}));
         },
