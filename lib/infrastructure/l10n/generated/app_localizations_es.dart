@@ -2325,6 +2325,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sleep_conc_range_5 => '≥ 7.5h';
 
   @override
+  String get sleep_conc_range_1_female => '< 6h';
+
+  @override
+  String get sleep_conc_range_2_female => '6–7h';
+
+  @override
+  String get sleep_conc_range_3_female => '7–8h';
+
+  @override
+  String get sleep_conc_range_4_female => '8–8.5h';
+
+  @override
   String get sleep_conc_range_5_female => '≥ 8.5h';
 
   @override
@@ -2356,6 +2368,18 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sleep_regen_range_5 => '≥ 8h';
+
+  @override
+  String get sleep_regen_range_1_female => '< 6h';
+
+  @override
+  String get sleep_regen_range_2_female => '6–7h';
+
+  @override
+  String get sleep_regen_range_3_female => '7–8h';
+
+  @override
+  String get sleep_regen_range_4_female => '8–9h';
 
   @override
   String get sleep_regen_range_5_female => '≥ 9h';

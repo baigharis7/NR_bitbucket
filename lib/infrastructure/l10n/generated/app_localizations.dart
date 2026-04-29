@@ -4262,6 +4262,30 @@ abstract class AppLocalizations {
   /// **'≥ 7.5 hours'**
   String get sleep_conc_range_5;
 
+  /// No description provided for @sleep_conc_range_1_female.
+  ///
+  /// In en, this message translates to:
+  /// **'< 6 hours'**
+  String get sleep_conc_range_1_female;
+
+  /// No description provided for @sleep_conc_range_2_female.
+  ///
+  /// In en, this message translates to:
+  /// **'6–7 hours'**
+  String get sleep_conc_range_2_female;
+
+  /// No description provided for @sleep_conc_range_3_female.
+  ///
+  /// In en, this message translates to:
+  /// **'7–8 hours'**
+  String get sleep_conc_range_3_female;
+
+  /// No description provided for @sleep_conc_range_4_female.
+  ///
+  /// In en, this message translates to:
+  /// **'8–8.5 hours'**
+  String get sleep_conc_range_4_female;
+
   /// No description provided for @sleep_conc_range_5_female.
   ///
   /// In en, this message translates to:
@@ -4327,6 +4351,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'≥ 8 hours'**
   String get sleep_regen_range_5;
+
+  /// No description provided for @sleep_regen_range_1_female.
+  ///
+  /// In en, this message translates to:
+  /// **'< 6 hours'**
+  String get sleep_regen_range_1_female;
+
+  /// No description provided for @sleep_regen_range_2_female.
+  ///
+  /// In en, this message translates to:
+  /// **'6–7 hours'**
+  String get sleep_regen_range_2_female;
+
+  /// No description provided for @sleep_regen_range_3_female.
+  ///
+  /// In en, this message translates to:
+  /// **'7–8 hours'**
+  String get sleep_regen_range_3_female;
+
+  /// No description provided for @sleep_regen_range_4_female.
+  ///
+  /// In en, this message translates to:
+  /// **'8–9 hours'**
+  String get sleep_regen_range_4_female;
 
   /// No description provided for @sleep_regen_range_5_female.
   ///

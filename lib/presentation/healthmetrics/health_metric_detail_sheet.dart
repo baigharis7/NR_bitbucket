@@ -473,37 +473,33 @@ _MetricInfo _getMetricInfo(HealthMetricType type, AppLocalizations l10n, [SexTyp
         ],
       );
     case HealthMetricType.concentrationFocus:
-      final optRange = sex == SexType.female
-          ? l10n.sleep_conc_range_5_female
-          : l10n.sleep_conc_range_5;
+      final isFemale = sex == SexType.female;
       return _MetricInfo(
         indicator: l10n.metric_indicator_concentration,
         optimalValue: l10n.metric_optimal_concentration,
         bibliography: l10n.metric_bib_concentration,
         description: l10n.metric_desc_concentration,
         tiers: [
-          _RangeTier(range: l10n.sleep_conc_range_1, description: l10n.sleep_conc_desc_1, percentage: '↓ 59%'),
-          _RangeTier(range: l10n.sleep_conc_range_2, description: l10n.sleep_conc_desc_2, percentage: '↓ 21%'),
-          _RangeTier(range: l10n.sleep_conc_range_3, description: l10n.sleep_conc_desc_3, percentage: '↓ 7%'),
-          _RangeTier(range: l10n.sleep_conc_range_4, description: l10n.sleep_conc_desc_4, percentage: '↓ 2%'),
-          _RangeTier(range: optRange, description: l10n.sleep_conc_desc_5, percentage: '0%'),
+          _RangeTier(range: isFemale ? l10n.sleep_conc_range_1_female : l10n.sleep_conc_range_1, description: l10n.sleep_conc_desc_1, percentage: '↓ 59%'),
+          _RangeTier(range: isFemale ? l10n.sleep_conc_range_2_female : l10n.sleep_conc_range_2, description: l10n.sleep_conc_desc_2, percentage: '↓ 21%'),
+          _RangeTier(range: isFemale ? l10n.sleep_conc_range_3_female : l10n.sleep_conc_range_3, description: l10n.sleep_conc_desc_3, percentage: '↓ 7%'),
+          _RangeTier(range: isFemale ? l10n.sleep_conc_range_4_female : l10n.sleep_conc_range_4, description: l10n.sleep_conc_desc_4, percentage: '↓ 2%'),
+          _RangeTier(range: isFemale ? l10n.sleep_conc_range_5_female : l10n.sleep_conc_range_5, description: l10n.sleep_conc_desc_5, percentage: '0%'),
         ],
       );
     case HealthMetricType.muscleRegeneration:
-      final optRange = sex == SexType.female
-          ? l10n.sleep_regen_range_5_female
-          : l10n.sleep_regen_range_5;
+      final isFemale = sex == SexType.female;
       return _MetricInfo(
         indicator: l10n.metric_indicator_regeneration,
         optimalValue: l10n.metric_optimal_regeneration,
         bibliography: l10n.metric_bib_regeneration,
         description: l10n.metric_desc_regeneration,
         tiers: [
-          _RangeTier(range: l10n.sleep_regen_range_1, description: l10n.sleep_regen_desc_1, percentage: '↓ 20%'),
-          _RangeTier(range: l10n.sleep_regen_range_2, description: l10n.sleep_regen_desc_2, percentage: '↓ 7%'),
-          _RangeTier(range: l10n.sleep_regen_range_3, description: l10n.sleep_regen_desc_3, percentage: '↓ 3%'),
-          _RangeTier(range: l10n.sleep_regen_range_4, description: l10n.sleep_regen_desc_4, percentage: '↓ 1%'),
-          _RangeTier(range: optRange, description: l10n.sleep_regen_desc_5, percentage: '0%'),
+          _RangeTier(range: isFemale ? l10n.sleep_regen_range_1_female : l10n.sleep_regen_range_1, description: l10n.sleep_regen_desc_1, percentage: '↓ 20%'),
+          _RangeTier(range: isFemale ? l10n.sleep_regen_range_2_female : l10n.sleep_regen_range_2, description: l10n.sleep_regen_desc_2, percentage: '↓ 7%'),
+          _RangeTier(range: isFemale ? l10n.sleep_regen_range_3_female : l10n.sleep_regen_range_3, description: l10n.sleep_regen_desc_3, percentage: '↓ 3%'),
+          _RangeTier(range: isFemale ? l10n.sleep_regen_range_4_female : l10n.sleep_regen_range_4, description: l10n.sleep_regen_desc_4, percentage: '↓ 1%'),
+          _RangeTier(range: isFemale ? l10n.sleep_regen_range_5_female : l10n.sleep_regen_range_5, description: l10n.sleep_regen_desc_5, percentage: '0%'),
         ],
       );
     case HealthMetricType.goodbyeCramps:
