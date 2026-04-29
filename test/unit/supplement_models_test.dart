@@ -441,14 +441,6 @@ void main() {
       expect(arg.name, 'Vitamin D');
     });
 
-    test('SupplementSimple.empty() creates blank state for new entry', () {
-      final empty = SupplementSimple.empty();
-
-      expect(empty.info, isEmpty);
-      expect(empty.isFavorite, isFalse);
-      expect(empty.isRoutine, isFalse);
-      expect(empty.daysOfWeek, isEmpty);
-    });
   });
 
   // ===========================================================

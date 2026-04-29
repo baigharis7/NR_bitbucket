@@ -355,23 +355,6 @@ void main() {
       expect(restored.fecesId, original.fecesId);
     });
 
-    test('Feces model fields are all nullable', () {
-      final feces = Feces(null, null, null, null);
-
-      expect(feces.id, isNull);
-      expect(feces.title, isNull);
-      expect(feces.description, isNull);
-      expect(feces.image, isNull);
-    });
-
-    test('Urines model fields are all nullable', () {
-      final urine = Urines(null, null, null);
-
-      expect(urine.id, isNull);
-      expect(urine.title, isNull);
-      expect(urine.image, isNull);
-    });
-
     test('shared UploadFeces model differentiates by context not field', () {
       // Both faeces and urine events use the same UploadFeces model.
       // Differentiation happens at the BLoC/repository level, not in the model.

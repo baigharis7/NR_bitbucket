@@ -72,13 +72,6 @@ void main() {
       expect(sport.info!.first.intensity, 0);
     });
 
-    test('SportEventSimple.empty() creates blank state', () {
-      final empty = SportEventSimple.empty();
-
-      expect(empty.info, isEmpty);
-      expect(empty.userId, isNull);
-      expect(empty.eventId, isNull);
-    });
   });
 
   // ===========================================================

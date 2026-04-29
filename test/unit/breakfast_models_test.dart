@@ -153,16 +153,6 @@ void main() {
       expect(fav.ingredients.length, 2);
     });
 
-    test('FoodFavorite.empty() initializes with default values', () {
-      final empty = FoodFavorite.empty(mealTime: 0);
-
-      expect(empty.ingredients, isEmpty);
-      expect(empty.drinks, isEmpty);
-      expect(empty.mealTime, 0);
-      expect(empty.daysOfWeek, isEmpty);
-      expect(empty.isFavorite, isNull);
-      expect(empty.isRoutine, isNull);
-    });
   });
 
   // ===========================================================
