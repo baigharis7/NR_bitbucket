@@ -422,7 +422,7 @@ Each test case is tagged to indicate whether it has automated coverage and wheth
 
 | ID | Tag | Steps | Expected Result | Status | Notes |
 |----|-----|-------|-----------------|--------|-------|
-| ROU-01 | 👤 MANUAL | Navigate to Routines Tab Holder (hamburger menu > Routines) | Tab holder opens | | |
+| ROU-01 | 🤖 AUTO | Navigate to Routines Tab Holder (hamburger menu > Routines) | Tab holder opens | | |
 | ROU-02 | 🤖 AUTO | Observe available tabs | Three tabs: Meal, Workouts, Supplements | | |
 
 ### 11.2 Meal Routines
@@ -430,7 +430,7 @@ Each test case is tagged to indicate whether it has automated coverage and wheth
 | ID | Tag | Steps | Expected Result | Status | Notes |
 |----|-----|-------|-----------------|--------|-------|
 | ROU-03 | 🤖 AUTO | Tap Meal routines tab | List of food routines shown with days of week, or empty state | | |
-| ROU-04 | 👤 MANUAL | Tap "+" to create a new food routine | Add Food Event screen opens with routine mode | | |
+| ROU-04 | 🤖 AUTO | Tap "+" to create a new food routine | Add Food Event screen opens with routine mode | | |
 | ROU-05 | 🤖 AUTO | Select food, set time, select days of week, save | Food routine created. Appears in Meal routines list | | |
 | ROU-06 | 🤖 AUTO | Delete a food routine, confirm deletion | Routine removed from list | | |
 
@@ -440,7 +440,7 @@ Each test case is tagged to indicate whether it has automated coverage and wheth
 |----|-----|-------|-----------------|--------|-------|
 | ROU-07 | 🤖 AUTO | Tap Workouts tab | List of sport routines, or empty state | | |
 | ROU-08 | 🤖 AUTO | Create a sport routine: select sport, set duration, set time, select days, save | Sport routine created. Appears in Workouts list | | |
-| ROU-09 | 👤 MANUAL | After saving sport routine, observe navigation | Note where the app navigates after save (back to routines list, or elsewhere) | | |
+| ROU-09 | 🤖 AUTO | After saving sport routine, observe navigation | Note where the app navigates after save (back to routines list, or elsewhere) | | |
 | ROU-10 | 👤 MANUAL | Verify routine data appears immediately after save (no need to navigate away) | Routine data visible immediately in the list | | |
 | ROU-11 | 🤖 AUTO | Delete a sport routine | Routine removed from list | | |
 
@@ -458,7 +458,7 @@ Each test case is tagged to indicate whether it has automated coverage and wheth
 |----|-----|-------|-----------------|--------|-------|
 | ROU-15 | 🤖 AUTO | Days-of-week selector: tap individual days on and off | Selected days highlight/unhighlight correctly | | |
 | ROU-16 | 🤖 AUTO | Create routine with no days selected, try to save | Validation error. Routine not saved without at least one day | | |
-| ROU-17 | 👤 MANUAL | With no routines saved, observe each routine tab | Empty state shown (no crash) | | |
+| ROU-17 | 🤖 AUTO | With no routines saved, observe each routine tab | Empty state shown (no crash) | | |
 
 ---
 
@@ -528,11 +528,11 @@ Each test case is tagged to indicate whether it has automated coverage and wheth
 |----|-----|-------|-----------------|--------|-------|
 | PROF-01 | 👤 MANUAL | Navigate to Profile (hamburger menu > Profile) | Profile screen shows user info cards | | |
 | PROF-02 | 🤖 AUTO | Observe profile data: name, age, sex, weight, height | All values match what was entered during registration | | |
-| PROF-03 | ⚠️ PARTIAL | Tap edit on General section | General Questions screen opens. Edit name, tap Save | | |
-| PROF-04 | 👤 MANUAL | Tap edit on Health section | Health Questions screen opens. Edit conditions, tap Save | | |
-| PROF-05 | 👤 MANUAL | Tap edit on Diet section | Diet Questions screen opens. Edit preferences, tap Save | | |
-| PROF-06 | 👤 MANUAL | Tap edit on Physical Activity section | Physical Activity screen opens. Change level, tap Save | | |
-| PROF-07 | 👤 MANUAL | Tap edit on Objectives section | Objectives dialog opens. Modify objectives, confirm | | |
+| PROF-03 | 🤖 AUTO | Tap edit on General section | General Questions screen opens. Edit name, tap Save | | |
+| PROF-04 | 🤖 AUTO | Tap edit on Health section | Health Questions screen opens. Edit conditions, tap Save | | |
+| PROF-05 | 🤖 AUTO | Tap edit on Diet section | Diet Questions screen opens. Edit preferences, tap Save | | |
+| PROF-06 | 🤖 AUTO | Tap edit on Physical Activity section | Physical Activity screen opens. Change level, tap Save | | |
+| PROF-07 | 🤖 AUTO | Tap edit on Objectives section | Objectives dialog opens. Modify objectives, confirm | | |
 | PROF-08 | 👤 MANUAL | Navigate to Aversions section | Aversions screen opens. Add/remove food aversions | | |
 | PROF-09 | 👤 MANUAL | Change weight in profile, return to Dashboard | Water goal on Dashboard updates (new weight * 0.035L) | | |
 | PROF-10 | ⚠️ PARTIAL | Verify profile changes persist after app restart | Kill app, relaunch, navigate to Profile. Changes still there | | |
@@ -541,13 +541,13 @@ Each test case is tagged to indicate whether it has automated coverage and wheth
 
 | ID | Tag | Steps | Expected Result | Status | Notes |
 |----|-----|-------|-----------------|--------|-------|
-| PROF-11 | 👤 MANUAL | Navigate to Settings (from Profile or settings icon) | Settings screen opens with all options | | |
-| PROF-12 | 👤 MANUAL | Observe available settings | Log Out, Health Sync, Support/Contact, Privacy Policy visible | | |
-| PROF-13 | 👤 MANUAL | Tap Health Sync | Health Sync Settings screen opens | | |
+| PROF-11 | 🤖 AUTO | Navigate to Settings (from Profile or settings icon) | Settings screen opens with all options | | |
+| PROF-12 | 🤖 AUTO | Observe available settings | Log Out, Health Sync, Support/Contact, Privacy Policy visible | | |
+| PROF-13 | 🤖 AUTO | Tap Health Sync | Health Sync Settings screen opens | | |
 | PROF-14 | 🤖 AUTO | Enable Health Sync toggle | Device health permissions requested | | |
-| PROF-15 | 👤 MANUAL | Disable Health Sync toggle | Sync disabled. Sleep/Steps widgets disappear from Dashboard | | |
+| PROF-15 | 🤖 AUTO | Disable Health Sync toggle | Sync disabled. Sleep/Steps widgets disappear from Dashboard | | |
 | PROF-16 | 👤 MANUAL | Tap Support/Contact (WhatsApp link) | WhatsApp opens (or appropriate link handling) | | |
-| PROF-17 | 👤 MANUAL | Tap Privacy Policy | Privacy Policy / Policy screen opens with content | | |
+| PROF-17 | 🤖 AUTO | Tap Privacy Policy | Privacy Policy / Policy screen opens with content | | |
 | PROF-18 | 👤 MANUAL | Tap Log Out | Confirmation dialog appears | | |
 | PROF-19 | 🤖 AUTO | Confirm Log Out | App navigates to Login screen. Session cleared | | |
 | PROF-20 | 👤 MANUAL | After logging out, relaunch app | Splash screen → Login screen (not Dashboard) | | |
@@ -675,9 +675,15 @@ Total test cases: **284** across 18 sections + Dead Code verification.
 
 | Tag | Count | % | Meaning |
 |-----|-------|---|---------|
-| 🤖 AUTO | 146 | 51% | Backed by automated tests — regression-safe |
-| ⚠️ PARTIAL | 17 | 6% | Logic automated; visual/navigation needs manual eyes |
-| 👤 MANUAL | 121 | 43% | Real device, real backend, or human judgment required |
+| 🤖 AUTO | 160 | 56% | Backed by automated tests — regression-safe |
+| ⚠️ PARTIAL | 16 | 6% | Logic automated; visual/navigation needs manual eyes |
+| 👤 MANUAL | 108 | 38% | Real device, real backend, or human judgment required |
+
+**Behind the AUTO tag** (1,484 automated tests across unit / widget / BLoC layers, all passing):
+- Phase 2: +35 BLoC tests for FecesUrine, Sport save flow, RecipeDetail
+- Phase 3: +29 navigation widget tests (bottom navbar, meal section, dashboard widgets)
+- Phase 3.5: +28 health-impact metric popup tests (Sleep, Steps, Hydration)
+- Phase 4: +14 full-screen navigation tests (Settings, Profile, Routines)
 
 **For QA testers:** All 284 cases must still be executed manually for release sign-off. The tags show which cases also have an automated regression net behind them.
 
