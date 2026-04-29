@@ -154,12 +154,26 @@ class PhysicalCharacteristicsAdapter
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
+    // Tolerant casts: older Hive payloads stored these as String; newer ones as
+    // num. Coerce defensively so a schema drift doesn't crash splash.
+    double toDouble(dynamic v) {
+      if (v is num) return v.toDouble();
+      if (v is String) return double.tryParse(v) ?? 0.0;
+      return 0.0;
+    }
+    int? toIntOrNull(dynamic v) {
+      if (v == null) return null;
+      if (v is int) return v;
+      if (v is num) return v.toInt();
+      if (v is String) return int.tryParse(v);
+      return null;
+    }
     return PhysicalCharacteristics(
-      height: fields[0] as double,
-      weight: fields[1] as double,
-      unit: fields[2] as int?,
-      bodyFat: fields[3] as int?,
-      waistMeasurement: fields[4] as int?,
+      height: toDouble(fields[0]),
+      weight: toDouble(fields[1]),
+      unit: toIntOrNull(fields[2]),
+      bodyFat: toIntOrNull(fields[3]),
+      waistMeasurement: toIntOrNull(fields[4]),
     );
   }
 

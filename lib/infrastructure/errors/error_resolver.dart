@@ -201,10 +201,16 @@ String? resolveFormError(BuildContext context, FormErrorTypes? formErrorTypes) {
 
 String userError(BuildContext context, Object error) {
   final stringResolver = AppLocalizations.of(context)!;
-  final catchError = error as dynamic;
-  // final catchErrorToString = catchError.underlyingException.toString();
-  // final result = catchErrorToString.subString(' ', ' (');
-  final result = catchError.message;
+  // Most thrown error objects (AuthException etc.) expose a `.message` getter,
+  // but TypeError / NoSuchMethodError / arbitrary Objects don't — accessing
+  // .message dynamically on those crashes with NoSuchMethodError. Fall back
+  // to toString() so the switch below at least gets *something* to match on.
+  String result;
+  try {
+    result = (error as dynamic).message?.toString() ?? error.toString();
+  } catch (_) {
+    result = error.toString();
+  }
 
   // return result;
   switch (result) {
