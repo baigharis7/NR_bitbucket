@@ -255,7 +255,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                     margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                                     child: HeaderAddItemCardSection(
                                       title: '${AppLocalizations.of(context)!.add} ${MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name}',
-                                      image: 'assets/images/meal_time_${state.foodEvent?.mealTime}.png',
+                                      image: 'assets/images/meal_time_${state.foodEvent?.mealTime ?? 0}.png',
                                       searchHintText: AppLocalizations.of(context)!.search_food_hint,
                                       onScanTap: () async {
                                         final scannerBloc = context.read<FoodScannerBloc>();
@@ -402,7 +402,7 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                       margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
                                       child: HeaderAddItemCardSection(
                                         title: '${AppLocalizations.of(context)!.add} ${MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name}',
-                                        image: 'assets/images/meal_time_${state.foodEvent?.mealTime}.png',
+                                        image: 'assets/images/meal_time_${state.foodEvent?.mealTime ?? 0}.png',
                                         searchHintText: AppLocalizations.of(context)!.search_food_hint,
                                         onScanTap: () async {
                                           final scannerBloc = context.read<FoodScannerBloc>();

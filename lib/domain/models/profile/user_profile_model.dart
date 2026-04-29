@@ -161,7 +161,9 @@ class UserRdas {
 @JsonSerializable(explicitToJson: true)
 class UserRda {
   String name;
+  @JsonKey(defaultValue: 0)
   num rda;
+  @JsonKey(defaultValue: 0)
   num ul;
   num? upperLimit;
 

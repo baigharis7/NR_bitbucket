@@ -22,6 +22,7 @@ class StepsRepositoryImpl extends StepsRepository {
     // Fire-and-forget: don't block UI on network call
     stepsApi.uploadSteps(uploadModel).catchError((error) {
       syncQueue.enqueue('/steps-count', uploadModel);
+      return <String, dynamic>{};
     });
     return true;
   }

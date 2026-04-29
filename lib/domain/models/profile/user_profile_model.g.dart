@@ -182,8 +182,8 @@ Map<String, dynamic> _$UserRdasToJson(UserRdas instance) => <String, dynamic>{
 
 UserRda _$UserRdaFromJson(Map<String, dynamic> json) => UserRda(
       name: json['name'] as String,
-      rda: json['rda'] as num,
-      ul: json['ul'] as num,
+      rda: json['rda'] as num? ?? 0,
+      ul: json['ul'] as num? ?? 0,
       upperLimit: json['upperLimit'] as num?,
     );
 

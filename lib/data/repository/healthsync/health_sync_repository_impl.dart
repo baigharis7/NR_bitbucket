@@ -471,6 +471,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     );
     sleepEventsApi.uploadSleepEvent(uploadModel).catchError((error) {
       syncQueue.enqueue('/sleep-event', uploadModel);
+      return <String, dynamic>{};
     });
   }
 
@@ -508,6 +509,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     );
     stepsApi.uploadSteps(uploadModel).catchError((error) {
       syncQueue.enqueue('/steps-count', uploadModel);
+      return <String, dynamic>{};
     });
   }
 

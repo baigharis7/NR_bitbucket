@@ -152,7 +152,7 @@ class _UpdateMealScreenState extends State<UpdateMealScreen> {
                           const SizedBox(height: Dimens.height12),
                           HeaderAddItemCardSection(
                             title: '${AppLocalizations.of(context)!.update} ${MealTime.getAllMealTimes().firstWhere((element) => element.id == (state.foodEvent?.mealTime ?? 0)).name}',
-                            image: 'assets/images/meal_time_${state.foodEvent?.mealTime}.png',
+                            image: 'assets/images/meal_time_${state.foodEvent?.mealTime ?? 0}.png',
                             searchHintText: AppLocalizations.of(context)!.search_food_hint,
                             onFocusNodeCreated: (node) => _focusInputController = node,
                             items: state.foodNames?.foodsAndDrinksNames?.foodNames.orEmpty().map((item) => item.translate(context)).toList(),

@@ -11,7 +11,7 @@ class StepsApi extends ApiHelper {
       AuthenticationService authenticationService, Chuck chuck)
       : super(preferencesRepository, authenticationService, chuck);
 
-  Future<void> uploadSteps(UploadStepEventResponse uploadStepEventResponse) => post(
+  Future<Map<String, dynamic>> uploadSteps(UploadStepEventResponse uploadStepEventResponse) => post(
         Uri.https(
           Environment().config!.baseUrl,
           '${Environment().config!.distributionPath}/steps-count',

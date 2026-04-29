@@ -11,7 +11,7 @@ class SleepEventsApi extends ApiHelper {
       AuthenticationService authenticationService, Chuck chuck)
       : super(preferencesRepository, authenticationService, chuck);
 
-  Future<void> uploadSleepEvent(UploadSleepEvent uploadSleepEvent) => post(
+  Future<Map<String, dynamic>> uploadSleepEvent(UploadSleepEvent uploadSleepEvent) => post(
         Uri.https(
           Environment().config!.baseUrl,
           '${Environment().config!.distributionPath}/sleep-event',
