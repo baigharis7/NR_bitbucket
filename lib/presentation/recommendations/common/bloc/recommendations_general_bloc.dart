@@ -87,8 +87,12 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
 
       emit(state.copyWith(isLoading: false, onError: null));
 
-      // Load recommendation groups first (fast, from Hive) to show skeleton
-      state.recommendationGroups = await getMasterFileInteractor.execute(MasterFilesType.recommendationGroups)! as RecommendationGroupsMaster;
+      // Load recommendation groups first (fast, from Hive) to show skeleton.
+      // Master file may be null if reference data isn't loaded yet (first launch,
+      // post cache-clear) — fall back to empty rather than crashing.
+      final groupsResult = await getMasterFileInteractor.execute(MasterFilesType.recommendationGroups);
+      state.recommendationGroups = (groupsResult as RecommendationGroupsMaster?)
+          ?? RecommendationGroupsMaster(recommendationGroups: []);
 
       // Emit placeholder group headers immediately (empty food lists)
       // so the UI shows collapsed groups while the rest loads

@@ -176,9 +176,16 @@ abstract class ApiHelper {
   Future<String> _getToken() async {
     final idToken = _preferencesRepository.getIdToken();
     if (isTokenExpired(idToken)) {
-      final attributes = await _authenticationService.fetchUserAttributes();
-      _preferencesRepository.setUserCredentials(attributes);
-      return attributes.userPoolTokensResult.value.idToken.toJson();
+      try {
+        final attributes = await _authenticationService.fetchUserAttributes();
+        await _preferencesRepository.setUserCredentials(attributes);
+        return attributes.userPoolTokensResult.value.idToken.toJson();
+      } catch (_) {
+        // Refresh failed (offline, session expired, etc.). Fall back to the
+        // cached (possibly expired) token so the API call surfaces a normal
+        // network/auth error to the caller instead of crashing here.
+        return idToken;
+      }
     } else {
       return idToken;
     }

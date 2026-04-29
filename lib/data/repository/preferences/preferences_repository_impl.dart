@@ -47,11 +47,16 @@ class PreferencesRepositoryImpl extends PreferencesRepository {
 
   @override
   Future<void> setUserCredentials(CognitoAuthSession session) async {
-    setSub(session.userSubResult.value.orEmpty());
-    setIdToken(session.userPoolTokensResult.value.idToken.toJson().orEmpty());
-    setAccessToken(session.userPoolTokensResult.value.accessToken.toJson().orEmpty());
-    setRefreshToken(session.userPoolTokensResult.value.refreshToken.orEmpty());
-    setUserSignedIn(session.isSignedIn);
+    // Reading `.value` throws when the result is an AWSErrorResult (e.g. the
+    // device is offline and Cognito couldn't be reached). In that case we
+    // simply skip persisting — the existing cached tokens stay in place.
+    try {
+      setSub(session.userSubResult.value.orEmpty());
+      setIdToken(session.userPoolTokensResult.value.idToken.toJson().orEmpty());
+      setAccessToken(session.userPoolTokensResult.value.accessToken.toJson().orEmpty());
+      setRefreshToken(session.userPoolTokensResult.value.refreshToken.orEmpty());
+      setUserSignedIn(session.isSignedIn);
+    } catch (_) {}
   }
 
   @override
