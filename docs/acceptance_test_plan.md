@@ -113,25 +113,25 @@ Each test case is tagged to indicate whether it has automated coverage and wheth
 | DASH-04 | ⚠️ PARTIAL | Observe Nutrition Progress widget | Shows kcal consumed out of daily goal. Circular or bar progress | | |
 | DASH-05 | ⚠️ PARTIAL | Observe macro nutrient bars below progress | Protein, Carbs, Fat bars shown with percentages/amounts | | |
 | DASH-06 | ⚠️ PARTIAL | Observe Micro Nutrients section | Nutrient bars shown with RDA percentages | | |
-| DASH-07 | 👤 MANUAL | Tap on the Micro Nutrients section | Navigates to Micro Nutrients Detail screen | | |
+| DASH-07 | 🤖 AUTO | Tap on the Micro Nutrients section | Navigates to Micro Nutrients Detail screen | | |
 
 ### 2.2 Meal Sections
 
 | ID | Tag | Steps | Expected Result | Status | Notes |
 |----|-----|-------|-----------------|--------|-------|
 | DASH-08 | ⚠️ PARTIAL | Observe Breakfast card on dashboard | Shows breakfast foods logged today (or empty state) with calorie total | | |
-| DASH-09 | 👤 MANUAL | Tap Breakfast card | Navigates to Meal Time Details screen for Breakfast | | |
-| DASH-10 | 👤 MANUAL | Tap Lunch card | Navigates to Meal Time Details screen for Lunch | | |
-| DASH-11 | 👤 MANUAL | Tap Dinner card | Navigates to Meal Time Details screen for Dinner | | |
-| DASH-12 | 👤 MANUAL | Tap Snack card | Navigates to Meal Time Details screen for Snack | | |
+| DASH-09 | 🤖 AUTO | Tap Breakfast card | Navigates to Meal Time Details screen for Breakfast | | |
+| DASH-10 | 🤖 AUTO | Tap Lunch card | Navigates to Meal Time Details screen for Lunch | | |
+| DASH-11 | 🤖 AUTO | Tap Dinner card | Navigates to Meal Time Details screen for Dinner | | |
+| DASH-12 | 🤖 AUTO | Tap Snack card | Navigates to Meal Time Details screen for Snack | | |
 
 ### 2.3 Supplements
 
 | ID | Tag | Steps | Expected Result | Status | Notes |
 |----|-----|-------|-----------------|--------|-------|
-| DASH-13 | ⚠️ PARTIAL | Observe Supplements card on dashboard | Shows supplements taken today (or empty state) | | |
-| DASH-14 | 👤 MANUAL | Tap Supplements card | Navigates to Supplements Detail screen | | |
-| DASH-15 | 👤 MANUAL | Tap "+" icon on Supplements card | Navigates to Supplements screen (add new) | | |
+| DASH-13 | 🤖 AUTO | Observe Supplements card on dashboard | Shows supplements taken today (or empty state) | | |
+| DASH-14 | 🤖 AUTO | Tap Supplements card | Navigates to Supplements Detail screen | | |
+| DASH-15 | 🤖 AUTO | Tap "+" icon on Supplements card | Navigates to Supplements screen (add new) | | |
 
 ### 2.4 Water & Hydration
 
@@ -148,8 +148,8 @@ Each test case is tagged to indicate whether it has automated coverage and wheth
 | ID | Tag | Steps | Expected Result | Status | Notes |
 |----|-----|-------|-----------------|--------|-------|
 | DASH-21 | 🤖 AUTO | Observe Activity Log section | Shows sport events logged today (or empty state) | | |
-| DASH-22 | 👤 MANUAL | Tap "+" on Activity Log section | Navigates to Add Sport Event screen | | |
-| DASH-23 | 👤 MANUAL | Tap Activity Log area (not the +) | Navigates to Sport Items screen | | |
+| DASH-22 | 🤖 AUTO | Tap "+" on Activity Log section | Navigates to Add Sport Event screen | | |
+| DASH-23 | 🤖 AUTO | Tap Activity Log area (not the +) | Navigates to Sport Items screen | | |
 | DASH-24 | 🤖 AUTO | If Health Sync enabled: observe Sleep widget | Sleep hours from device health data displayed | | |
 | DASH-25 | 🤖 AUTO | If Health Sync enabled: observe Steps widget | Step count from device health data displayed | | |
 
@@ -157,8 +157,8 @@ Each test case is tagged to indicate whether it has automated coverage and wheth
 
 | ID | Tag | Steps | Expected Result | Status | Notes |
 |----|-----|-------|-----------------|--------|-------|
-| DASH-26 | 👤 MANUAL | Observe Feces/Urine section on dashboard | Card visible with access to deposition tracking | | |
-| DASH-27 | 👤 MANUAL | Tap Feces/Urine card | Navigates to Feces/Urine Tab Holder | | |
+| DASH-26 | 🤖 AUTO | Observe Feces/Urine section on dashboard | Card visible with access to deposition tracking | | |
+| DASH-27 | 🤖 AUTO | Tap Feces/Urine card | Navigates to Feces/Urine Tab Holder | | |
 | DASH-28 | 👤 MANUAL | Tap Calendar icon in app bar | Navigates to Calendar Pane screen | | |
 
 ---
@@ -169,31 +169,31 @@ Each test case is tagged to indicate whether it has automated coverage and wheth
 
 | ID | Tag | Steps | Expected Result | Status | Notes |
 |----|-----|-------|-----------------|--------|-------|
-| NAV-01 | 👤 MANUAL | Tap the "+" button in bottom navigation bar | Overlay menu appears with food meal times and other options | | |
-| NAV-02 | 👤 MANUAL | In + menu, tap Breakfast | Navigates to Add Food Event screen with Breakfast pre-selected | | |
-| NAV-03 | 👤 MANUAL | In + menu, tap Lunch | Navigates to Add Food Event screen with Lunch pre-selected | | |
-| NAV-04 | 👤 MANUAL | In + menu, tap Dinner | Navigates to Add Food Event screen with Dinner pre-selected | | |
-| NAV-05 | 👤 MANUAL | In + menu, tap Snack | Navigates to Add Food Event screen with Snack pre-selected | | |
-| NAV-06 | 👤 MANUAL | In + menu, tap Supplements | Navigates to Supplements screen | | |
-| NAV-07 | 👤 MANUAL | In + menu, tap Physical Activity | Navigates to Add Sport Event screen | | |
-| NAV-08 | 👤 MANUAL | In + menu, tap Feces/Urine | Navigates to Feces/Urine Tabs screen | | |
+| NAV-01 | 🤖 AUTO | Tap the "+" button in bottom navigation bar | Overlay menu appears with food meal times and other options | | |
+| NAV-02 | 🤖 AUTO | In + menu, tap Breakfast | Navigates to Add Food Event screen with Breakfast pre-selected | | |
+| NAV-03 | 🤖 AUTO | In + menu, tap Lunch | Navigates to Add Food Event screen with Lunch pre-selected | | |
+| NAV-04 | 🤖 AUTO | In + menu, tap Dinner | Navigates to Add Food Event screen with Dinner pre-selected | | |
+| NAV-05 | 🤖 AUTO | In + menu, tap Snack | Navigates to Add Food Event screen with Snack pre-selected | | |
+| NAV-06 | 🤖 AUTO | In + menu, tap Supplements | Navigates to Supplements screen | | |
+| NAV-07 | 🤖 AUTO | In + menu, tap Physical Activity | Navigates to Add Sport Event screen | | |
+| NAV-08 | 🤖 AUTO | In + menu, tap Feces/Urine | Navigates to Feces/Urine Tabs screen | | |
 
 ### 3.2 Hamburger Menu
 
 | ID | Tag | Steps | Expected Result | Status | Notes |
 |----|-----|-------|-----------------|--------|-------|
-| NAV-09 | 👤 MANUAL | Tap hamburger menu icon in bottom navigation | Menu overlay opens with: Routines, Favorites, Tips, Recipes, Profile | | |
-| NAV-10 | 👤 MANUAL | Tap Routines | Navigates to Routines Tab Holder | | |
-| NAV-11 | 👤 MANUAL | Tap Favorites | Navigates to Favorites Tab Holder | | |
-| NAV-12 | 👤 MANUAL | Tap Tips | Navigates to Recommendations Tab Holder | | |
-| NAV-13 | 👤 MANUAL | Tap Recipes | Navigates to Recipes Tab Holder | | |
-| NAV-14 | 👤 MANUAL | Tap Profile | Navigates to Profile screen | | |
+| NAV-09 | 🤖 AUTO | Tap hamburger menu icon in bottom navigation | Menu overlay opens with: Routines, Favorites, Tips, Recipes, Profile | | |
+| NAV-10 | 🤖 AUTO | Tap Routines | Navigates to Routines Tab Holder | | |
+| NAV-11 | 🤖 AUTO | Tap Favorites | Navigates to Favorites Tab Holder | | |
+| NAV-12 | 🤖 AUTO | Tap Tips | Navigates to Recommendations Tab Holder | | |
+| NAV-13 | 🤖 AUTO | Tap Recipes | Navigates to Recipes Tab Holder | | |
+| NAV-14 | 🤖 AUTO | Tap Profile | Navigates to Profile screen | | |
 
 ### 3.3 General Navigation
 
 | ID | Tag | Steps | Expected Result | Status | Notes |
 |----|-----|-------|-----------------|--------|-------|
-| NAV-15 | 👤 MANUAL | Tap "Start" / Home button in bottom nav from any screen | Navigates back to Dashboard | | |
+| NAV-15 | 🤖 AUTO | Tap "Start" / Home button in bottom nav from any screen | Navigates back to Dashboard | | |
 | NAV-16 | 👤 MANUAL | Tap outside an open menu overlay (scrim area) | Menu dismisses | | |
 
 ---
@@ -675,9 +675,9 @@ Total test cases: **284** across 18 sections + Dead Code verification.
 
 | Tag | Count | % | Meaning |
 |-----|-------|---|---------|
-| 🤖 AUTO | 119 | 41% | Backed by automated tests — regression-safe |
-| ⚠️ PARTIAL | 18 | 6% | Logic automated; visual/navigation needs manual eyes |
-| 👤 MANUAL | 147 | 53% | Real device, real backend, or human judgment required |
+| 🤖 AUTO | 146 | 51% | Backed by automated tests — regression-safe |
+| ⚠️ PARTIAL | 17 | 6% | Logic automated; visual/navigation needs manual eyes |
+| 👤 MANUAL | 121 | 43% | Real device, real backend, or human judgment required |
 
 **For QA testers:** All 284 cases must still be executed manually for release sign-off. The tags show which cases also have an automated regression net behind them.
 
