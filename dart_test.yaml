@@ -1,0 +1,20 @@
+# Test runner defaults for both `flutter test` and `dart test`.
+# Override on the CLI when you need something different.
+
+# Compact reporter: one progress line that updates in place + a summary at
+# the end. Failures still print full stack traces.
+reporter: compact
+
+# Default per-test timeout. Most tests are unit/bloc and finish in
+# milliseconds; widget tests with pumpAndSettle() can take a couple of
+# seconds. 30s catches genuine hangs (unawaited futures, missing mock stubs)
+# without flaking on slow CI machines.
+timeout: 30s
+
+# Tag definitions — opt-in only. We are NOT applying tags to existing tests
+# in this change; this just declares the vocabulary so future tests can use
+# `@Tags(['slow'])` to be excluded from fast local runs via
+# `flutter test --exclude-tags=slow`.
+tags:
+  slow:
+    timeout: 2x

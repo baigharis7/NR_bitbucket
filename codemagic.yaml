@@ -33,7 +33,10 @@ workflows:
       - name: Static analysis
         script: flutter analyze --fatal-infos
       - name: Run tests
-        script: flutter test --coverage
+        # --reporter=github emits failure annotations as inline checks in
+        # the Codemagic log viewer, much easier to scan than the expanded
+        # output stream. dart_test.yaml sets the local default to compact.
+        script: flutter test --coverage --reporter=github
     artifacts:
       - coverage/**
 
