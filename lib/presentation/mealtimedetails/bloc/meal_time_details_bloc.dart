@@ -183,9 +183,9 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
   double getQuantityConsumedSoFar(String micronutrient) {
     double nutrientQuantitySoFar = 0.0;
     for (var foodEvent in state.foodEvents.orEmpty()) {
-      for (var food in foodEvent.foodInfo!) {
+      for (var food in foodEvent.foodInfo ?? []) {
         nutrientQuantitySoFar = nutrientQuantitySoFar +
-            (food.params!.toJson()[micronutrient] ?? 0.0);
+            (food.params?.toJson()[micronutrient] ?? 0.0);
       }
     }
 

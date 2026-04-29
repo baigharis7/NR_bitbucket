@@ -82,7 +82,10 @@ class _FoodEventItemState extends State<FoodEventItem> {
         units.split('|').map((unit) {
           final unitId = int.parse(unit.split(',')[0]);
           String name = widget.unitsInfoMaster.unitsInfoMaster
-              .firstWhere((unitInfo) => unitInfo.id == unitId)
+              .firstWhere(
+                (unitInfo) => unitInfo.id == unitId,
+                orElse: () => UnitInfoMaster.empty(),
+              )
               .translate(context);
           return SimpleItem(name: name, id: unitId);
         }),

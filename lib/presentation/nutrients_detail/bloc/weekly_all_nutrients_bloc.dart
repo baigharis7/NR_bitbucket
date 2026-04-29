@@ -63,9 +63,9 @@ class WeeklyAllNutrientsBloc extends Bloc<WeeklyAllNutrientsEventActions, Weekly
 
     double nutrientQuantitySoFar = 0.0;
     for (var foodEvent in state.weeklyFoodEvents ?? []) {
-      for (var food in foodEvent.foodInfo!) {
+      for (var food in foodEvent.foodInfo ?? []) {
         nutrientQuantitySoFar = nutrientQuantitySoFar +
-            (food.params!.toJson()[nutrient.name] ?? 0.0);
+            (food.params?.toJson()[nutrient.name] ?? 0.0);
       }
     }
     nutrientQuantitySoFar = double.parse((nutrientQuantitySoFar).toStringAsFixed(2));
