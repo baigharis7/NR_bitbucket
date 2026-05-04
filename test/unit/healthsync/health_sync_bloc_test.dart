@@ -21,9 +21,11 @@ void main() {
   late MockGetTodaySportsInteractor mockGetTodaySportsInteractor;
   late MockGetMasterFileInteractor mockGetMasterFileInteractor;
 
+  // Use real whitelisted production IDs (61 Running, 103 Walking) so
+  // step_estimation_utils' whitelist accepts these entries.
   final testSportsInfo = SportsInfoMaster(sportsInfoMaster: [
-    SportInfoMaster(id: 1, en: 'Running', es: 'Correr', mets: 10),
-    SportInfoMaster(id: 2, en: 'Walking', es: 'Caminar', mets: 3),
+    SportInfoMaster(id: 61, en: 'Running', es: 'Correr', mets: 10),
+    SportInfoMaster(id: 103, en: 'Walking', es: 'Caminar', mets: 3),
   ]);
 
   setUp(() {
@@ -636,7 +638,7 @@ void main() {
               eventId: 1,
               eventDate: DateTime.now().millisecondsSinceEpoch,
               source: 'manual',
-              info: [SportEventInfo(id: 1, minutes: 30)], // Running 10 METs: (10-1)*32*30 = 8640
+              info: [SportEventInfo(id: 61, minutes: 30)], // Running 10 METs: (10-1)*32*30 = 8640
             ),
           ]);
         },
@@ -672,7 +674,7 @@ void main() {
               eventId: 1,
               eventDate: DateTime.now().millisecondsSinceEpoch,
               source: 'health_connect',
-              info: [SportEventInfo(id: 1, minutes: 30)],
+              info: [SportEventInfo(id: 61, minutes: 30)],
             ),
           ]);
         },
@@ -719,7 +721,7 @@ void main() {
               userId: 'test',
               eventId: 1,
               eventDate: DateTime.now().millisecondsSinceEpoch,
-              info: [SportEventInfo(id: 2, minutes: 20)], // Walking 3 METs: (3-1)*32*20 = 1280
+              info: [SportEventInfo(id: 103, minutes: 20)], // Walking 3 METs: (3-1)*32*20 = 1280
             ),
           ]);
         },
@@ -738,7 +740,7 @@ void main() {
             userId: 'test',
             eventId: 1,
             eventDate: DateTime.now().millisecondsSinceEpoch,
-            info: [SportEventInfo(id: 1, minutes: 10)], // Running: (10-1)*32*10 = 2880
+            info: [SportEventInfo(id: 61, minutes: 10)], // Running: (10-1)*32*10 = 2880
           ),
         ]);
 
