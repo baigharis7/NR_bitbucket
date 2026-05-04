@@ -509,6 +509,7 @@ import 'package:chuck_interceptor/chuck_interceptor.dart';
 
 // Import main.dart for top-level helpers (navigatorKey, initLocalStorage, fetchReferenceData)
 import 'package:nutrenaissance_flutter/main.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/background_refresh_service.dart';
 
 class AppBootstrap extends StatefulWidget {
   const AppBootstrap({super.key});
@@ -517,14 +518,31 @@ class AppBootstrap extends StatefulWidget {
   State<AppBootstrap> createState() => _AppBootstrapState();
 }
 
-class _AppBootstrapState extends State<AppBootstrap> {
+class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver {
   Widget? _fullApp;
   Object? _error;
+  ReferenceDataApi? _referenceDataApi;
+  ReferenceDataService? _referenceDataService;
+  ProfileComputationService? _profileComputationService;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _initApp();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      BackgroundRefreshService.instance.refreshIfStale();
+    }
   }
 
   Future<void> _initApp() async {
@@ -588,6 +606,9 @@ class _AppBootstrapState extends State<AppBootstrap> {
       final ProfileComputationService profileComputationService = ProfileComputationService(referenceDatabase);
       // Fetch reference data in the background (nutrients, nutrient loss, sport METs, objective-nutrients, nutrient-objective)
       fetchReferenceData(referenceDataApi, referenceDataService, profileComputationService);
+      _profileComputationService = profileComputationService;
+      _referenceDataApi = referenceDataApi;
+      _referenceDataService = referenceDataService;
       final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository, profileComputationService: profileComputationService, syncQueue: syncQueueService);
       final GetUserIdInteractor getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
       final UploadProfileInteractor uploadProfileInteractor = UploadProfileInteractorImpl(profileRepository: profileRepository);
@@ -611,6 +632,13 @@ class _AppBootstrapState extends State<AppBootstrap> {
       final MasterFilesApi masterFilesApi = MasterFilesApi(prefsRepository, authenticationService, chuck);
       final MasterFilesRepository masterFilesRepository = MasterFilesRepositoryImpl(localStorageRepository: localStorageRepository, masterFilesApi: masterFilesApi, referenceDatabase: referenceDatabase,);
       referenceDataService.onNutrientsUpdated = () => masterFilesRepository.stampFoodIncludedFlags();
+      // Set up background-refresh on app foreground (rate-limited)
+      BackgroundRefreshService.instance.init(
+        masterFilesRepository: masterFilesRepository,
+        referenceDataApi: _referenceDataApi!,
+        referenceDataService: _referenceDataService!,
+        profileComputationService: _profileComputationService!,
+      );
       final GetMasterFileInteractor getMasterFileInteractor = GetMasterFileInteractorImpl(masterFilesRepository: masterFilesRepository);
       final GetUserRdasInteractor getUserRdasInteractor = GetUserRdasInteractorImpl(localStorageRepository: localStorageRepository);
       final SportEventsApi sportEventsApi = SportEventsApi(prefsRepository, authenticationService, chuck);

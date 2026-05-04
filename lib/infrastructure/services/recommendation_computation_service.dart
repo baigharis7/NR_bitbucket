@@ -267,6 +267,26 @@ class RecommendationComputationService {
     return [];
   }
 
+  /// Resolves a food's recommendation group by matching its food-code prefix
+  /// against the master file's `groups` lists. Falls back to the stored
+  /// `rec_group` integer if no match (handles foods loaded before the master
+  /// file is fetched, or codes the master file doesn't enumerate).
+  int _resolveRecGroup(NutrientComposition food, RecommendationGroupsMaster master) {
+    final code = food.group;
+    if (code.isNotEmpty) {
+      final normalized = code.endsWith('.') ? code.substring(0, code.length - 1) : code;
+      final withDot = code.endsWith('.') ? code : '$code.';
+      for (final group in master.recommendationGroups) {
+        if (group.groups.contains(code)
+            || group.groups.contains(normalized)
+            || group.groups.contains(withDot)) {
+          return group.id;
+        }
+      }
+    }
+    return food.recGroup;
+  }
+
   // ---------------------------------------------------------------------------
   // Step 8: Recommend food (filter + score)
   // ---------------------------------------------------------------------------
@@ -308,8 +328,9 @@ class RecommendationComputationService {
       final params = _parseParams(food.params);
       final exchangePortion = food.exchangePortion;
 
-      // Assign recommendation group
-      final recGroup = food.recGroup;
+      // Assign recommendation group — derive from food-code prefix so the
+      // grouping survives ID renumbering in the master file.
+      final recGroup = _resolveRecGroup(food, recommendationGroups);
 
       // Build scored food for objective nutrients
       if (userNutrients.isNotEmpty) {
@@ -395,6 +416,7 @@ class RecommendationComputationService {
       // Usual foods: repeated foods in this rec group
       final usualFoods = _buildUsualFoods(
         recGroupId: recGroup.id,
+        recommendationGroups: recommendationGroups,
         repeatedFoodIds: repeatedFoodIds,
         weekFoodEvents: weekFoodEvents,
         allIncludedFoods: allIncludedFoods,
@@ -450,6 +472,7 @@ class RecommendationComputationService {
 
   UsualFoods _buildUsualFoods({
     required int recGroupId,
+    required RecommendationGroupsMaster recommendationGroups,
     required Set<int> repeatedFoodIds,
     required List<FoodEventComplete> weekFoodEvents,
     required List<NutrientComposition> allIncludedFoods,
@@ -460,7 +483,7 @@ class RecommendationComputationService {
     final usualFoodCompositions = <NutrientComposition>[];
     for (final foodId in repeatedFoodIds) {
       final comp = foodById[foodId];
-      if (comp != null && comp.recGroup == recGroupId) {
+      if (comp != null && _resolveRecGroup(comp, recommendationGroups) == recGroupId) {
         usualFoodCompositions.add(comp);
       }
     }
