@@ -27,9 +27,14 @@ class ActivityLogWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final recentEvents = sportEvents.length > _maxItems
-        ? sportEvents.sublist(0, _maxItems)
-        : sportEvents;
+    final sortedEvents = [...sportEvents]..sort((a, b) {
+      final aTime = (a.info?.isNotEmpty ?? false) ? a.info!.first.timeStart : null;
+      final bTime = (b.info?.isNotEmpty ?? false) ? b.info!.first.timeStart : null;
+      return (bTime ?? b.eventDate).compareTo(aTime ?? a.eventDate);
+    });
+    final recentEvents = sortedEvents.length > _maxItems
+        ? sortedEvents.sublist(0, _maxItems)
+        : sortedEvents;
 
     return GestureDetector(
       onTap: onTap,
