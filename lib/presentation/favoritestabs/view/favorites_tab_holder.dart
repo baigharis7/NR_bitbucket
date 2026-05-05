@@ -283,30 +283,41 @@ class _FavoritesTabHolderState extends State<FavoritesTabHolder> with TickerProv
                   icon: Icons.star_rounded,
                 ),
                 const SizedBox(height: Dimens.height12),
-                TabBar(
-                  controller: _tabController,
-                  indicator: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(Dimens.border15),
-                  ),
-                  dividerColor: Colors.transparent,
-                  labelPadding: const EdgeInsets.symmetric(horizontal: Dimens.padding6),
-                  labelColor: Colors.white,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  unselectedLabelColor: AppColors.yellowishGreen,
-                  tabs: List.generate(_tabs.length, (index) {
-                    final isSelected = _tabController.index == index;
-                    return Container(
-                      height: 45,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(Dimens.border15),
-                        color: isSelected ? AppColors.yellowishGreen59 : AppColors.butter59,
-                      ),
-                      child: Container(margin: const EdgeInsets.symmetric(horizontal: Dimens.margin6), child: Text(_tabs[index], style: const TextStyle(fontWeight: FontWeight.w600, fontSize: Dimens.fontSize11), textAlign: TextAlign.center)),
-                    );
-                  }),
-                ),
+                Builder(builder: (context) {
+                  final tabFontSize = (MediaQuery.of(context).size.width * 0.028).clamp(9.0, 12.0);
+                  return TabBar(
+                    controller: _tabController,
+                    indicator: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(Dimens.border15),
+                    ),
+                    dividerColor: Colors.transparent,
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 2),
+                    labelColor: Colors.white,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    unselectedLabelColor: AppColors.yellowishGreen,
+                    tabs: List.generate(_tabs.length, (index) {
+                      final isSelected = _tabController.index == index;
+                      return Container(
+                        height: 45,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(horizontal: Dimens.padding4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(Dimens.border15),
+                          color: isSelected ? AppColors.yellowishGreen59 : AppColors.butter59,
+                        ),
+                        child: Text(
+                          _tabs[index],
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.visible,
+                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: tabFontSize),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    }),
+                  );
+                }),
                 Expanded(
                   child: TabBarView(
                     controller: _tabController,
