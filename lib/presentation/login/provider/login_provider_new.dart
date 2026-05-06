@@ -71,10 +71,30 @@ import 'package:nutrenaissance_flutter/domain/repository/profile/profile_reposit
 import 'package:nutrenaissance_flutter/infrastructure/authentication/cognito_authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/token_utils.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/validator_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+/// Outcome of one signIn → fetchAttributes attempt. `terminal` means the
+/// flow finished (successfully or with a user-facing error already shown);
+/// non-terminal means it failed in a way the caller may want to recover from
+/// and retry.
+class _SignInAttemptResult {
+  final bool terminal;
+  final Object? error;
+  final StackTrace? stack;
+  final String? nextStep;
+
+  _SignInAttemptResult._(this.terminal, {this.error, this.stack, this.nextStep});
+
+  factory _SignInAttemptResult.terminal() => _SignInAttemptResult._(true);
+  factory _SignInAttemptResult.notSignedIn(String nextStep) =>
+      _SignInAttemptResult._(false, nextStep: nextStep);
+  factory _SignInAttemptResult.threw(Object error, StackTrace stack) =>
+      _SignInAttemptResult._(false, error: error, stack: stack);
+}
 
 class LoginProviderNew extends BaseProvider {
 
@@ -309,36 +329,146 @@ class LoginProviderNew extends BaseProvider {
   }
 
   Future<void> _signInAndFetchUserAttributes(Function moveToNextScreen, {bool isFromVerificationCode = false}) async {
+    // First attempt — most users hit only this branch.
+    final firstResult = await _attemptSignInAndFetch(
+      moveToNextScreen,
+      isFromVerificationCode: isFromVerificationCode,
+      attempt: 1,
+    );
+    if (firstResult.terminal) return;
+
+    // First attempt failed in a way that suggests stale state. Self-heal:
+    // signOut + wipe Keychain/EncryptedPrefs, then retry once. Each attempt
+    // is logged to Crashlytics so we can see in dashboards how often the
+    // recovery path actually fires.
+    CrashlyticsService.record(
+      firstResult.error ?? StateError('signIn first attempt did not complete'),
+      firstResult.stack ?? StackTrace.current,
+      context: {
+        'phase': 'signIn',
+        'attempt': '1',
+        'next_step': firstResult.nextStep ?? 'n/a',
+        'error_type': firstResult.error?.runtimeType.toString() ?? 'none',
+      },
+    );
+
     try {
-      final signOut = await signOutInteractor!.execute();
-      try {
-        final signIn = await signInInteractor!.execute(getUsername.orEmpty(), getPassword.orEmpty());
-        if (signIn.isSignedIn) {
-          try {
-            final fetch = await fetchUserAttributesInteractor!.execute();
-            if (!isUserConfirmedFromToken(fetch.userPoolTokensResult.valueOrNull?.idToken.toJson())) {
-              _setNotConfirmedUserTryingToLogin(true);
-            } else if (isFromVerificationCode) {
-              _onFetchUserAttributesSuccess(fetch, moveToNextScreen, saveUserInRemote: () => _saveUserInRemoteUsersDatabase(fetch.userSubResult.value.orEmpty()));
-            } else {
-              _onFetchUserAttributesSuccess(fetch, moveToNextScreen);
-            }
-          } catch (fetchError) {
-            manageLoading(false);
-            _onFetchUserAttributesError(fetchError);
-          }
-        } else {
-          manageLoading(false);
-          // onError?.call(ErrorTypes.signInError);
-        }
-      } catch (signInError) {
-        manageLoading(false);
-        _onSignInError(signInError);
-      }
-    } catch (signOutError) {
-      manageLoading(false);
-      onError?.call(signOutError);
+      await CognitoAuthenticationService.instance.clearAuthState();
+    } catch (recoveryError, stack) {
+      CrashlyticsService.record(recoveryError, stack, context: {
+        'phase': 'clearAuthState',
+        'error_type': recoveryError.runtimeType.toString(),
+      });
     }
+
+    final secondResult = await _attemptSignInAndFetch(
+      moveToNextScreen,
+      isFromVerificationCode: isFromVerificationCode,
+      attempt: 2,
+    );
+    if (secondResult.terminal) return;
+
+    // Recovery + retry still failed. Surface a real error to the user.
+    manageLoading(false);
+    CrashlyticsService.record(
+      secondResult.error ?? StateError('signIn retry did not complete'),
+      secondResult.stack ?? StackTrace.current,
+      context: {
+        'phase': 'signIn',
+        'attempt': '2',
+        'next_step': secondResult.nextStep ?? 'n/a',
+        'error_type': secondResult.error?.runtimeType.toString() ?? 'none',
+      },
+    );
+    if (secondResult.error != null) {
+      _onSignInError(secondResult.error!);
+    } else {
+      onError?.call(
+        'Sign-in could not complete. Please check your credentials and try again.',
+      );
+    }
+  }
+
+  /// One full pass of signOut → signIn → fetch attributes.
+  /// Returns terminal=true when the call resolved (success, navigation kicked
+  /// off, or an unrecoverable user-side error like wrong password) and the
+  /// caller should NOT retry.
+  Future<_SignInAttemptResult> _attemptSignInAndFetch(
+    Function moveToNextScreen, {
+    required bool isFromVerificationCode,
+    required int attempt,
+  }) async {
+    try {
+      await signOutInteractor!.execute().timeout(const Duration(seconds: 2));
+    } catch (signOutError, stack) {
+      // signOut before signIn is best-effort — log but keep going.
+      CrashlyticsService.record(signOutError, stack, context: {
+        'phase': 'preSignOut',
+        'attempt': attempt.toString(),
+        'error_type': signOutError.runtimeType.toString(),
+      });
+    }
+
+    try {
+      // 8s per signIn attempt × 2 attempts + ~4s clearAuthState = 20s total
+      // worst-case for the whole login flow. Healthy signIn resolves in 1–3s.
+      final signIn = await signInInteractor!
+          .execute(getUsername.orEmpty(), getPassword.orEmpty())
+          .timeout(const Duration(seconds: 8));
+      if (!signIn.isSignedIn) {
+        return _SignInAttemptResult.notSignedIn(signIn.nextStep.signInStep.name);
+      }
+
+      try {
+        final fetch = await fetchUserAttributesInteractor!.execute();
+        if (!isUserConfirmedFromToken(fetch.userPoolTokensResult.valueOrNull?.idToken.toJson())) {
+          _setNotConfirmedUserTryingToLogin(true);
+        } else if (isFromVerificationCode) {
+          _onFetchUserAttributesSuccess(fetch, moveToNextScreen, saveUserInRemote: () => _saveUserInRemoteUsersDatabase(fetch.userSubResult.value.orEmpty()));
+        } else {
+          _onFetchUserAttributesSuccess(fetch, moveToNextScreen);
+        }
+        return _SignInAttemptResult.terminal();
+      } catch (fetchError, stack) {
+        // signIn worked but post-signin attribute fetch failed. This is a
+        // separate failure mode that wiping Keychain wouldn't fix, so treat
+        // it as terminal and surface the error.
+        manageLoading(false);
+        CrashlyticsService.record(fetchError, stack, context: {
+          'phase': 'fetchUserAttributes',
+          'attempt': attempt.toString(),
+          'error_type': fetchError.runtimeType.toString(),
+        });
+        _onFetchUserAttributesError(fetchError);
+        return _SignInAttemptResult.terminal();
+      }
+    } catch (signInError, stack) {
+      // NotAuthorizedException, UserNotFoundException etc. should not silently
+      // retry — they're user-input errors, not stale-state issues. Treat them
+      // as terminal so the user sees the error immediately. Other exceptions
+      // (network, internal) get retried by the caller.
+      if (_isUserSideAuthError(signInError)) {
+        manageLoading(false);
+        CrashlyticsService.record(signInError, stack, context: {
+          'phase': 'signIn',
+          'attempt': attempt.toString(),
+          'error_type': signInError.runtimeType.toString(),
+          'classified': 'userSide',
+        });
+        _onSignInError(signInError);
+        return _SignInAttemptResult.terminal();
+      }
+      return _SignInAttemptResult.threw(signInError, stack);
+    }
+  }
+
+  bool _isUserSideAuthError(Object error) {
+    return error is NotAuthorizedServiceException ||
+        error is UserNotFoundException ||
+        error is UserNotConfirmedException ||
+        error is PasswordResetRequiredException ||
+        error is CodeMismatchException ||
+        error is InvalidParameterException;
   }
 
   void _onSignInError(Object error) {

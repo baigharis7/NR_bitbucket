@@ -40,6 +40,24 @@ class MainActivity: FlutterFragmentActivity() {
                             result.success(false)
                         }
                     }
+                    "wipeAmplifyState" -> {
+                        try {
+                            val prefsDir = java.io.File(applicationInfo.dataDir, "shared_prefs")
+                            if (prefsDir.exists()) {
+                                prefsDir.listFiles()?.forEach { file ->
+                                    val name = file.name
+                                    if (name.contains("Amplify", ignoreCase = true) ||
+                                        name.contains("Cognito", ignoreCase = true) ||
+                                        name.contains("AWS", ignoreCase = true)) {
+                                        file.delete()
+                                    }
+                                }
+                            }
+                            result.success(null)
+                        } catch (e: Exception) {
+                            result.success(null)
+                        }
+                    }
                     else -> result.notImplemented()
                 }
             }

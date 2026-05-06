@@ -550,17 +550,11 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
       // Wait for the first frame to paint so the splash is visible immediately
       await WidgetsBinding.instance.endOfFrame;
 
-      // Initialize Cognito with retry
-      const maxAttempts = 3;
-      for (int attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-          await CognitoAuthenticationService.instance.initialize();
-          break;
-        } catch (e) {
-          if (attempt == maxAttempts) rethrow;
-          await Future.delayed(Duration(seconds: attempt * 2));
-        }
-      }
+      // Initialize Cognito. Internal logic handles its own watchdog +
+      // reset/wipe/retry within a 20s total budget; if it still fails the
+      // outer catch surfaces the "Unable to connect" splash with a Retry
+      // button. No outer retry loop needed.
+      await CognitoAuthenticationService.instance.initialize();
 
       // FCM init — fire-and-forget
       FcmService.instance.init().catchError((e) {
