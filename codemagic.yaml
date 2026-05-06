@@ -75,6 +75,12 @@ workflows:
     artifacts:
       - build/app/outputs/bundle/prodRelease/app-prod-release.aab
 
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: false
+
   # iOS Release - runs in parallel with android-release
   ios-release:
     name: iOS Release
