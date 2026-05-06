@@ -1418,6 +1418,18 @@ abstract class AppLocalizations {
   /// **'You must complete this field'**
   String get must_complete_field;
 
+  /// No description provided for @value_out_of_range.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a realistic value'**
+  String get value_out_of_range;
+
+  /// No description provided for @missing_weight_or_height.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your weight and height to continue'**
+  String get missing_weight_or_height;
+
   /// No description provided for @select_gender.
   ///
   /// In en, this message translates to:

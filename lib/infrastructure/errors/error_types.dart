@@ -81,6 +81,7 @@ enum ErrorTypes {
   saveSupplementRoutineError,
   deleteSupplementRoutineError,
   removeSupplementRoutineError,
+  missingWeightOrHeightError,
 }
 
 enum FormErrorTypes {

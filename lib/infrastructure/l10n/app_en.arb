@@ -219,6 +219,8 @@
     "email_format_error" : "The email doesn't have the right format",
     "empty_repeat_password" : "This field can't be empty",
     "must_complete_field" : "You must complete this field",
+    "value_out_of_range" : "Please enter a realistic value",
+    "missing_weight_or_height" : "Please enter your weight and height to continue",
     "select_gender" : "Select a gender option that helps us understand how your body behaves.",
     "repeat_password_error" : "Your password does not match!",
     "chosen_sport" : "Sport chosen",

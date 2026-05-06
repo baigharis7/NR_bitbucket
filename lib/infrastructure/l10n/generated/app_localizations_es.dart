@@ -753,6 +753,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get must_complete_field => 'Debes completar este campo';
 
   @override
+  String get value_out_of_range => 'Introduce un valor realista';
+
+  @override
+  String get missing_weight_or_height =>
+      'Introduce tu peso y tu altura para continuar';
+
+  @override
   String get select_gender =>
       'Selecciona una opción de género que nos ayude a entender cómo se comporta tu cuerpo.';
 

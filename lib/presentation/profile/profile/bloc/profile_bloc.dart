@@ -277,7 +277,10 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     });
 
     on<SaveChangesAction>((event, emit) async {
-      if ((state.profile?.physicalCharacteristics?.height ?? 0) <= 0 || (state.profile?.physicalCharacteristics?.weight ?? 0) <= 0) return;
+      if (!_hasValidWeightAndHeight()) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.missingWeightOrHeightError));
+        return;
+      }
       emit(state.copyWith(isLoading: true, onError: null));
       FemaleCharacteristics? femaleCharacteristics;
       if (state.profile!.sex == SexType.female && state.profile?.femaleCharacteristics?.menstruation?.regularity != null) {
@@ -351,6 +354,10 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     });
 
     on<FinishProfileAction>((event, emit) async {
+      if (!_hasValidWeightAndHeight()) {
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.missingWeightOrHeightError));
+        return;
+      }
       emit(state.copyWith(isLoading: true, onError: null));
       FemaleCharacteristics? femaleCharacteristics;
       if (state.profile!.sex == SexType.female && state.profile?.femaleCharacteristics?.menstruation?.regularity != null) {
@@ -607,11 +614,16 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
   bool _areAllergiesFilled() => state.profile!.exclusions != null && state.profile!.exclusions!.exclusions != null && _isAnyAllergySelected();
   bool _areIntolerancesFilled() => state.profile!.intolerances != null && state.profile!.intolerances!.isNotEmpty;
 
+  bool _hasValidWeightAndHeight() {
+    final h = state.profile?.physicalCharacteristics?.height;
+    final w = state.profile?.physicalCharacteristics?.weight;
+    return h != null && h > 0 && w != null && w > 0;
+  }
+
   bool areMandatoryFieldsComplete() {
     if (state.profile!.objectives!.isNotEmpty &&
         // !state.profile!.occupationActivityFactor.isNull() &&
-        !state.profile!.physicalCharacteristics!.height.isNull() &&
-        !state.profile!.physicalCharacteristics!.weight.isNull() &&
+        _hasValidWeightAndHeight() &&
         !state.profile!.commonName.isNull() &&
         !state.profile!.sex.isNull() &&
         !state.profile!.birthDate.isNull()
@@ -637,13 +649,15 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     //   ${AppLocalizations.of(context)!.physical_activity}
     //   ''';
     // }
-    if (state.profile!.physicalCharacteristics!.height.isNull()) {
-      error = '''$error 
+    final h = state.profile?.physicalCharacteristics?.height;
+    if (h == null || h <= 0) {
+      error = '''$error
       ${AppLocalizations.of(context)!.height}
       ''';
     }
-    if (state.profile!.physicalCharacteristics!.weight.isNull()) {
-      error = '''$error 
+    final w = state.profile?.physicalCharacteristics?.weight;
+    if (w == null || w <= 0) {
+      error = '''$error
       ${AppLocalizations.of(context)!.weight}
       ''';
     }

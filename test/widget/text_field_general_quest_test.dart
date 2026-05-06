@@ -86,7 +86,7 @@ void main() {
       expect(receivedValue, '180');
     });
 
-    testWidgets('clearing field sends -1 via callback', (tester) async {
+    testWidgets('clearing field sends empty string via callback', (tester) async {
       String? receivedValue;
 
       await tester.pumpWidget(buildTestWidget(
@@ -95,11 +95,36 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      // Clear the text field
       await tester.enterText(find.byType(TextField), '');
       await tester.pumpAndSettle();
 
-      expect(receivedValue, '-1');
+      expect(receivedValue, '');
+    });
+
+    testWidgets('validator surfaces error text on form validate', (tester) async {
+      final formKey = GlobalKey<FormState>();
+
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: Form(
+            key: formKey,
+            child: TextFieldGeneralQuest(
+              title: 'Weight',
+              onChanged: (_) {},
+              isNumeric: true,
+              errorBorderColor: Colors.red,
+              value: null,
+              validator: (v) =>
+                  (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      expect(formKey.currentState!.validate(), isFalse);
+      await tester.pumpAndSettle();
+      expect(find.text('Required'), findsOneWidget);
     });
   });
 }

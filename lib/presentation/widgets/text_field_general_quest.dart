@@ -11,6 +11,7 @@ class TextFieldGeneralQuest extends StatefulWidget {
   final bool isNumeric;
   final Color errorBorderColor;
   final double? value;
+  final String? Function(String?)? validator;
 
   const TextFieldGeneralQuest(
       {Key? key,
@@ -18,7 +19,8 @@ class TextFieldGeneralQuest extends StatefulWidget {
       required this.onChanged,
       this.isNumeric = false,
         required this.errorBorderColor,
-      required this.value})
+      required this.value,
+      this.validator})
       : super(key: key);
 
   @override
@@ -38,7 +40,7 @@ class _TextFieldGeneralQuestState extends State<TextFieldGeneralQuest> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(widget.title, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize17,)),
-        TextField(
+        TextFormField(
           keyboardType:
               widget.isNumeric ? TextInputType.number : TextInputType.text,
           controller: textController,
@@ -49,9 +51,11 @@ class _TextFieldGeneralQuestState extends State<TextFieldGeneralQuest> {
             contentPadding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
             enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
             focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+            errorMaxLines: 2,
           ),
+          validator: widget.validator,
           onChanged: (value) {
-            widget.onChanged.call(textController.text.toString().isEmpty ? '-1' : textController.text);
+            widget.onChanged.call(textController.text);
           },
         ),
       ],

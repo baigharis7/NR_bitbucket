@@ -8,7 +8,9 @@ import 'package:numberpicker/numberpicker.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/height_weight_units.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_picker_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
@@ -65,6 +67,30 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
     Navigator.pop(context, Constants.BACK);
   }
 
+  String? _validateBodyParameter({
+    required BuildContext context,
+    required String? value,
+    required bool isImperial,
+    required double metricMin,
+    required double metricMax,
+    required double imperialMin,
+    required double imperialMax,
+  }) {
+    if (value == null || value.trim().isEmpty) {
+      return AppLocalizations.of(context)!.must_complete_field;
+    }
+    final parsed = double.tryParse(value);
+    if (parsed == null) {
+      return AppLocalizations.of(context)!.must_complete_field;
+    }
+    final min = isImperial ? imperialMin : metricMin;
+    final max = isImperial ? imperialMax : metricMax;
+    if (parsed < min || parsed > max) {
+      return AppLocalizations.of(context)!.value_out_of_range;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -82,6 +108,9 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
             );
           } else {
             LoadingScreen.instance().hide();
+          }
+          if (state.onError != null) {
+            showErrorSnackBar(ctx, resolveError(ctx, state.onError!));
           }
         },
         builder: (BuildContext ctx, ProfileState state) {
@@ -349,11 +378,22 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                           isNumeric: true,
                                           value: state.profile!
                                               .physicalCharacteristics!.height,
-                                          title: state.unitWeightHeight?.height ?? AppLocalizations.of(ctx)!.height,
+                                          title: '${state.unitWeightHeight?.height ?? AppLocalizations.of(ctx)!.height} *',
+                                          validator: (value) => _validateBodyParameter(
+                                            context: context,
+                                            value: value,
+                                            isImperial: state.profile?.physicalCharacteristics?.unit == 2,
+                                            metricMin: 50,
+                                            metricMax: 250,
+                                            imperialMin: 1.5, // ft
+                                            imperialMax: 8.5, // ft
+                                          ),
                                           onChanged: (height) {
+                                            final parsed = double.tryParse(height);
+                                            if (parsed == null) return;
                                             bloc.add(
                                               SetBodyParameterAction(
-                                                parameter: double.parse(height),
+                                                parameter: parsed,
                                                 type: BodyParameters.height,
                                               ),
                                             );
@@ -367,11 +407,22 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                           isNumeric: true,
                                           value: state.profile!
                                               .physicalCharacteristics!.weight,
-                                          title: state.unitWeightHeight?.weight ?? AppLocalizations.of(ctx)!.weight,
+                                          title: '${state.unitWeightHeight?.weight ?? AppLocalizations.of(ctx)!.weight} *',
+                                          validator: (value) => _validateBodyParameter(
+                                            context: context,
+                                            value: value,
+                                            isImperial: state.profile?.physicalCharacteristics?.unit == 2,
+                                            metricMin: 20,
+                                            metricMax: 300,
+                                            imperialMin: 44, // lb
+                                            imperialMax: 660, // lb
+                                          ),
                                           onChanged: (weight) {
+                                            final parsed = double.tryParse(weight);
+                                            if (parsed == null) return;
                                             bloc.add(
                                               SetBodyParameterAction(
-                                                parameter: double.parse(weight),
+                                                parameter: parsed,
                                                 type: BodyParameters.weight,
                                               ),
                                             );
@@ -390,9 +441,11 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                           value: state.profile?.physicalCharacteristics?.bodyFat?.toDouble(),
                                           title: AppLocalizations.of(ctx)!.body_fat,
                                           onChanged: (bodyFat) {
+                                            final parsed = double.tryParse(bodyFat);
+                                            if (parsed == null) return;
                                             bloc.add(
                                               SetBodyParameterAction(
-                                                parameter: double.parse(bodyFat.toString()),
+                                                parameter: parsed,
                                                 type: BodyParameters.bodyFat,
                                               ),
                                             );
@@ -406,10 +459,12 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                           isNumeric: true,
                                           value: state.profile?.physicalCharacteristics?.waistMeasurement?.toDouble(),
                                           title: AppLocalizations.of(ctx)!.waist,
-                                          onChanged: (bodyFat) {
+                                          onChanged: (waist) {
+                                            final parsed = double.tryParse(waist);
+                                            if (parsed == null) return;
                                             bloc.add(
                                               SetBodyParameterAction(
-                                                parameter: double.parse(bodyFat),
+                                                parameter: parsed,
                                                 type: BodyParameters.waist,
                                               ),
                                             );

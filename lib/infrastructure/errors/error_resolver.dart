@@ -172,6 +172,8 @@ String resolveError(BuildContext context, ErrorTypes errorType) {
       return stringResolver.delete_supplement_routine_error;
     case ErrorTypes.removeSupplementRoutineError:
       return stringResolver.remove_supplement_routine_error;
+    case ErrorTypes.missingWeightOrHeightError:
+      return stringResolver.missing_weight_or_height;
   }
 }
 
