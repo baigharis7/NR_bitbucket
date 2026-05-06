@@ -46,6 +46,13 @@ class ScannedFoodEntity extends HiveObject {
   @HiveField(7)
   String detectionMethod;
 
+  /// Whether the source classifies this product as a beverage. Used to
+  /// route the food into the FoodEvent's drinks slot on save and on
+  /// re-scan from cache. Optional for backward compatibility with cache
+  /// entries written before this field existed.
+  @HiveField(8, defaultValue: false)
+  bool isBeverage;
+
   ScannedFoodEntity({
     required this.lookupKey,
     required this.localFoodId,
@@ -55,6 +62,7 @@ class ScannedFoodEntity extends HiveObject {
     required this.paramsJson,
     required this.scannedAt,
     required this.detectionMethod,
+    this.isBeverage = false,
   });
 
   factory ScannedFoodEntity.fromJson(Map<String, dynamic> json) =>

@@ -25,13 +25,14 @@ class ScannedFoodEntityAdapter extends TypeAdapter<ScannedFoodEntity> {
       paramsJson: fields[5] as String,
       scannedAt: fields[6] as int,
       detectionMethod: fields[7] as String,
+      isBeverage: fields[8] as bool? ?? false,
     );
   }
 
   @override
   void write(BinaryWriter writer, ScannedFoodEntity obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.lookupKey)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class ScannedFoodEntityAdapter extends TypeAdapter<ScannedFoodEntity> {
       ..writeByte(6)
       ..write(obj.scannedAt)
       ..writeByte(7)
-      ..write(obj.detectionMethod);
+      ..write(obj.detectionMethod)
+      ..writeByte(8)
+      ..write(obj.isBeverage);
   }
 
   @override
@@ -75,6 +78,7 @@ ScannedFoodEntity _$ScannedFoodEntityFromJson(Map<String, dynamic> json) =>
       paramsJson: json['paramsJson'] as String,
       scannedAt: (json['scannedAt'] as num).toInt(),
       detectionMethod: json['detectionMethod'] as String,
+      isBeverage: json['isBeverage'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$ScannedFoodEntityToJson(ScannedFoodEntity instance) =>
@@ -87,4 +91,5 @@ Map<String, dynamic> _$ScannedFoodEntityToJson(ScannedFoodEntity instance) =>
       'paramsJson': instance.paramsJson,
       'scannedAt': instance.scannedAt,
       'detectionMethod': instance.detectionMethod,
+      'isBeverage': instance.isBeverage,
     };

@@ -48,6 +48,7 @@ class ScanResultToIngredientMapper {
         paramsJson: jsonEncode(scan.scannedNutrientsPer100g ?? const {}),
         scannedAt: DateTime.now().millisecondsSinceEpoch,
         detectionMethod: scan.detectionMethod,
+        isBeverage: scan.isBeverage,
       );
       await _repository.saveScannedFood(entity);
     }

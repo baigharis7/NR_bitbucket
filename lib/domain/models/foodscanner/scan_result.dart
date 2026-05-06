@@ -52,6 +52,14 @@ class ScanResult {
   /// Matches CookingMethodInfo.en display names for auto-selection.
   final String? detectedCookingMethod;
 
+  /// True if the source classifies this product as a beverage. Drives
+  /// whether the scan is appended to the FoodEvent's `drinks` slot.
+  final bool isBeverage;
+
+  /// Human-readable serving-size hint ("30 g", "1 bottle (250 ml)") from
+  /// the source. Surfaced as a tap-to-fill suggestion; never auto-applied.
+  final String? servingSizeHint;
+
   ScanResult({
     required this.scannedName,
     this.brand,
@@ -68,6 +76,8 @@ class ScanResult {
     this.estimatedGrams,
     this.estimatedKcal,
     this.detectedCookingMethod,
+    this.isBeverage = false,
+    this.servingSizeHint,
   });
 
   bool get isMatched => matchedFoodId != null;

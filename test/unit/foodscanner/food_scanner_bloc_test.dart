@@ -396,8 +396,9 @@ void main() {
                   'name', 'Test Bar')
               .having((s) => s.results.first.scanResult.barcode,
                   'barcode', '999')
+              // Barcode scans never auto-fill grams — user always confirms.
               .having((s) => s.results.first.scanResult.estimatedGrams,
-                  'servingGrams', 50.0),
+                  'estimatedGrams', isNull),
         ],
       );
 
@@ -444,7 +445,7 @@ void main() {
       );
 
       blocTest<FoodScannerBloc, FoodScannerState>(
-        'does not cache matched barcode product',
+        'always caches barcode product regardless of master DB collision',
         build: () {
           final bp = FakeBarcodeProvider()
             ..nextResult = BarcodeProduct(
@@ -456,6 +457,9 @@ void main() {
           return _buildBloc(
             barcodeProvider: bp,
             repo: repo,
+            // Master DB happens to contain a "Banana" entry, but barcode
+            // scans are strictly OFF — they never fuzzy-match. The OFF
+            // product is always cached as a standalone scanned food.
             masterFoods: [_food(8, 'Banana')],
           );
         },
@@ -464,8 +468,74 @@ void main() {
         verify: (bloc) {
           final repo =
               bloc.scannedFoodRepository as FakeScannedFoodRepository;
-          // Should NOT cache because the food was matched
-          expect(repo.lastSaved, isNull);
+          expect(repo.lastSaved, isNotNull);
+          expect(repo.lastSaved!.lookupKey, '888');
+          expect(repo.lastSaved!.nameEn, 'Banana');
+        },
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'does not fuzzy-match barcode results against master DB',
+        build: () {
+          final bp = FakeBarcodeProvider()
+            ..nextResult = BarcodeProduct(
+              name: 'Banana',
+              nutrientsPer100g: {'energyKcal': 89.0},
+              barcode: '321',
+            );
+          return _buildBloc(
+            barcodeProvider: bp,
+            masterFoods: [_food(8, 'Banana')],
+          );
+        },
+        act: (bloc) =>
+            bloc.add(OnBarcodeDetectedAction(barcode: '321')),
+        expect: () => [
+          isA<FoodScannerState>().having(
+              (s) => s.isProcessing, 'isProcessing', true),
+          isA<FoodScannerState>()
+              .having((s) => s.results.first.scanResult.matchedFoodId,
+                  'matchedFoodId', isNull)
+              .having((s) => s.results.first.scanResult.isMatched,
+                  'isMatched', false)
+              .having(
+                  (s) =>
+                      s.results.first.scanResult.scannedNutrientsPer100g,
+                  'scannedNutrientsPer100g',
+                  isNotNull),
+        ],
+      );
+
+      blocTest<FoodScannerBloc, FoodScannerState>(
+        'flags beverage products for drinks-slot routing',
+        build: () {
+          final bp = FakeBarcodeProvider()
+            ..nextResult = BarcodeProduct(
+              name: 'Diet Coke',
+              nutrientsPer100g: {'energyKcal': 0.0},
+              barcode: '5449000000996',
+              isBeverage: true,
+              servingSizeHint: '330 ml',
+            );
+          return _buildBloc(barcodeProvider: bp, masterFoods: []);
+        },
+        act: (bloc) =>
+            bloc.add(OnBarcodeDetectedAction(barcode: '5449000000996')),
+        expect: () => [
+          isA<FoodScannerState>().having(
+              (s) => s.isProcessing, 'isProcessing', true),
+          isA<FoodScannerState>()
+              .having((s) => s.results.first.scanResult.isBeverage,
+                  'isBeverage', true)
+              .having((s) => s.results.first.scanResult.servingSizeHint,
+                  'servingSizeHint', '330 ml'),
+        ],
+        verify: (bloc) {
+          final repo =
+              bloc.scannedFoodRepository as FakeScannedFoodRepository;
+          // The beverage flag is persisted in the cache so re-scan and
+          // edit-later both keep correct routing.
+          expect(repo.lastSaved?.isBeverage, true);
         },
       );
     });

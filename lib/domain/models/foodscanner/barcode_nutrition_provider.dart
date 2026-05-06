@@ -29,6 +29,15 @@ class BarcodeProduct {
   /// Serving size in grams, if available.
   final double? servingGrams;
 
+  /// Human-readable serving-size hint from the source ("30 g",
+  /// "1 bottle (250 ml)"). Surfaced in the UI as a tap-to-fill suggestion;
+  /// we never use it to auto-fill the gram amount.
+  final String? servingSizeHint;
+
+  /// True if the source classifies this product as a beverage. Used to
+  /// route the scan into the FoodEvent's `drinks` slot vs `ingredients`.
+  final bool isBeverage;
+
   /// The raw barcode string.
   final String barcode;
 
@@ -37,6 +46,8 @@ class BarcodeProduct {
     this.brand,
     required this.nutrientsPer100g,
     this.servingGrams,
+    this.servingSizeHint,
+    this.isBeverage = false,
     required this.barcode,
   });
 }

@@ -356,7 +356,9 @@ class FoodScannerBloc
   ) async {
     emit(state.copyWith(isProcessing: true, errorMessage: () => null));
 
-    // Check local cache first
+    // Cache hit — render the cached OFF snapshot directly. Barcode scans
+    // are strictly OFF: never fuzzy-match against the master DB, never
+    // auto-estimate grams. The user always confirms the amount.
     final cached =
         await scannedFoodRepository.findByLookupKey(action.barcode);
     if (cached != null) {
@@ -364,21 +366,15 @@ class FoodScannerBloc
           (jsonDecode(cached.paramsJson) as Map<String, dynamic>)
               .map((k, v) => MapEntry(k, (v as num).toDouble()));
 
-      // Still try to fuzzy-match
-      final match = fuzzyMatcher.findBestMatch(cached.nameEn);
       final scanResult = ScanResult(
         scannedName: cached.nameEn,
         brand: cached.brand,
         source: cached.source,
         detectionMethod: 'barcode',
-        matchedFoodId: match?.food.id,
-        matchedNameEn: match?.food.en,
-        matchedNameEs: match?.food.es,
-        matchedGroup: match?.food.group,
-        matchScore: match?.score,
-        scannedNutrientsPer100g: match == null ? nutrientMap : null,
+        scannedNutrientsPer100g: nutrientMap,
         barcode: action.barcode,
         estimatedKcal: nutrientMap['energyKcal'],
+        isBeverage: cached.isBeverage,
       );
 
       emit(state.copyWith(
@@ -389,7 +385,7 @@ class FoodScannerBloc
       return;
     }
 
-    // Call barcode provider (Passio or OFF)
+    // Cache miss — hit the OFF provider.
     final product = await barcodeProvider.lookupBarcode(action.barcode);
     if (product == null) {
       emit(state.copyWith(
@@ -399,39 +395,34 @@ class FoodScannerBloc
       return;
     }
 
-    // Fuzzy match against our DB
-    final match = fuzzyMatcher.findBestMatch(product.name);
-
+    const source = 'openfoodfacts';
     final scanResult = ScanResult(
       scannedName: product.name,
       brand: product.brand,
-      source: 'passio', // or 'openfoodfacts' depending on provider
+      source: source,
       detectionMethod: 'barcode',
-      matchedFoodId: match?.food.id,
-      matchedNameEn: match?.food.en,
-      matchedNameEs: match?.food.es,
-      matchedGroup: match?.food.group,
-      matchScore: match?.score,
-      scannedNutrientsPer100g: match == null ? product.nutrientsPer100g : null,
+      scannedNutrientsPer100g: product.nutrientsPer100g,
       barcode: action.barcode,
-      estimatedGrams: product.servingGrams,
+      // No gram estimate for barcodes — user always enters the amount.
       estimatedKcal: product.nutrientsPer100g['energyKcal'],
+      isBeverage: product.isBeverage,
+      servingSizeHint: product.servingSizeHint,
     );
 
-    // Cache unmatched foods locally for next time
-    if (!scanResult.isMatched) {
-      final localId = await scannedFoodRepository.nextLocalFoodId();
-      await scannedFoodRepository.saveScannedFood(ScannedFoodEntity(
-        lookupKey: action.barcode,
-        localFoodId: localId,
-        nameEn: product.name,
-        brand: product.brand,
-        source: 'passio',
-        paramsJson: jsonEncode(product.nutrientsPer100g),
-        scannedAt: DateTime.now().millisecondsSinceEpoch,
-        detectionMethod: 'barcode',
-      ));
-    }
+    // Always cache barcode scans so re-scan and edit-later work without
+    // re-hitting OFF and so the negative food id is stable.
+    final localId = await scannedFoodRepository.nextLocalFoodId();
+    await scannedFoodRepository.saveScannedFood(ScannedFoodEntity(
+      lookupKey: action.barcode,
+      localFoodId: localId,
+      nameEn: product.name,
+      brand: product.brand,
+      source: source,
+      paramsJson: jsonEncode(product.nutrientsPer100g),
+      scannedAt: DateTime.now().millisecondsSinceEpoch,
+      detectionMethod: 'barcode',
+      isBeverage: product.isBeverage,
+    ));
 
     emit(state.copyWith(
       isProcessing: false,
@@ -602,6 +593,13 @@ class FoodScannerBloc
           : scan.scannedName;
       final userId = getUserIdInteractor.execute();
       final eventDateMs = DateTime.now().millisecondsSinceEpoch;
+      final foodInEvent = FoodInEvent(
+        id: ingredient.id,
+        qty: ingredient.qty,
+        unit: ingredient.unit,
+        cookingMethod: ingredient.cookingMethod,
+        unitsEquivalences: ingredient.unitsEquivalences,
+      );
       final foodEventSimple = FoodEventSimple(
         userId: userId,
         eventDate: eventDateMs,
@@ -609,16 +607,8 @@ class FoodScannerBloc
         mealType: _mealType,
         foodName: foodName,
         comment: null,
-        ingredients: [
-          FoodInEvent(
-            id: ingredient.id,
-            qty: ingredient.qty,
-            unit: ingredient.unit,
-            cookingMethod: ingredient.cookingMethod,
-            unitsEquivalences: ingredient.unitsEquivalences,
-          ),
-        ],
-        drinks: [],
+        ingredients: scan.isBeverage ? [] : [foodInEvent],
+        drinks: scan.isBeverage ? [foodInEvent] : [],
       );
 
       final uploadResult = await uploadFoodEventInteractor.execute(foodEventSimple);

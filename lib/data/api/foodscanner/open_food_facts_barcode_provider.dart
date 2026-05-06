@@ -24,6 +24,8 @@ class OpenFoodFactsBarcodeProvider implements BarcodeNutritionProvider {
       brand: product.brands,
       nutrientsPer100g: nutrients,
       servingGrams: servingGrams,
+      servingSizeHint: product.servingSize,
+      isBeverage: product.isBeverage,
       barcode: barcode,
     );
   }

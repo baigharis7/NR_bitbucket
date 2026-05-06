@@ -622,11 +622,17 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
     final subtitleParts = <String>[];
     if (result.estimatedGrams != null) {
       subtitleParts.add('~${result.estimatedGrams!.round()} g');
+    } else if (result.servingSizeHint != null &&
+        result.servingSizeHint!.isNotEmpty) {
+      subtitleParts.add('Amount needed (${result.servingSizeHint})');
     } else {
       subtitleParts.add('Amount needed');
     }
     if (result.estimatedKcal != null) {
-      subtitleParts.add('~${result.estimatedKcal!.round()} kcal');
+      // For barcode scans this is the per-100g kcal from the source; for
+      // visual scans it's the LogMeal portion estimate.
+      final suffix = result.detectionMethod == 'barcode' ? ' kcal/100g' : ' kcal';
+      subtitleParts.add('~${result.estimatedKcal!.round()}$suffix');
     }
     if (result.isMatched) {
       subtitleParts.add('Matched');
@@ -835,8 +841,8 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
     if (!context.mounted) return;
 
     final prefill = FoodFavorite(
-      ingredients: [ingredient],
-      drinks: [],
+      ingredients: scan.isBeverage ? [] : [ingredient],
+      drinks: scan.isBeverage ? [ingredient] : [],
       mealTime: widget.mealType,
       title: ingredient.name_en ?? scan.scannedName,
     );
