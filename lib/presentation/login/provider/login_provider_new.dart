@@ -398,8 +398,34 @@ class LoginProviderNew extends BaseProvider {
     required bool isFromVerificationCode,
     required int attempt,
   }) async {
+    final crashlytics = CrashlyticsService.instance;
+    await crashlytics.log('login attempt=$attempt: start');
+
+    // Defensive non-null checks so a missing interactor surfaces as a
+    // diagnostic instead of "Null check operator used on a null value".
+    if (signOutInteractor == null ||
+        signInInteractor == null ||
+        fetchUserAttributesInteractor == null) {
+      final missing = <String>[
+        if (signOutInteractor == null) 'signOutInteractor',
+        if (signInInteractor == null) 'signInInteractor',
+        if (fetchUserAttributesInteractor == null) 'fetchUserAttributesInteractor',
+      ].join(',');
+      final err = StateError('Login interactors not initialized: $missing');
+      CrashlyticsService.record(err, StackTrace.current, context: {
+        'phase': 'preInitCheck',
+        'attempt': attempt.toString(),
+        'missing': missing,
+      });
+      manageLoading(false);
+      onError?.call(err);
+      return _SignInAttemptResult.terminal();
+    }
+
     try {
+      await crashlytics.log('login attempt=$attempt: pre-signOut');
       await signOutInteractor!.execute().timeout(const Duration(seconds: 2));
+      await crashlytics.log('login attempt=$attempt: post-signOut');
     } catch (signOutError, stack) {
       // signOut before signIn is best-effort — log but keep going.
       CrashlyticsService.record(signOutError, stack, context: {
@@ -412,15 +438,21 @@ class LoginProviderNew extends BaseProvider {
     try {
       // 8s per signIn attempt × 2 attempts + ~4s clearAuthState = 20s total
       // worst-case for the whole login flow. Healthy signIn resolves in 1–3s.
+      await crashlytics.log('login attempt=$attempt: pre-signIn');
       final signIn = await signInInteractor!
           .execute(getUsername.orEmpty(), getPassword.orEmpty())
           .timeout(const Duration(seconds: 8));
+      await crashlytics.log(
+        'login attempt=$attempt: signIn returned isSignedIn=${signIn.isSignedIn}',
+      );
       if (!signIn.isSignedIn) {
         return _SignInAttemptResult.notSignedIn(signIn.nextStep.signInStep.name);
       }
 
       try {
+        await crashlytics.log('login attempt=$attempt: pre-fetchAttributes');
         final fetch = await fetchUserAttributesInteractor!.execute();
+        await crashlytics.log('login attempt=$attempt: post-fetchAttributes');
         if (!isUserConfirmedFromToken(fetch.userPoolTokensResult.valueOrNull?.idToken.toJson())) {
           _setNotConfirmedUserTryingToLogin(true);
         } else if (isFromVerificationCode) {

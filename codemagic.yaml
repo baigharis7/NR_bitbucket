@@ -120,8 +120,31 @@ workflows:
           flutter build ipa --release \
             --export-options-plist=/Users/builder/export_options.plist
 
+      - name: Upload dSYMs to Firebase Crashlytics
+        # Best-effort - don't fail the build if Crashlytics is having a bad
+        # day. Without dSYMs Crashlytics can't symbolicate iOS crashes, so
+        # this matters every time we ship a build.
+        script: |
+          set +e
+          UPLOAD_SYMBOLS="$CM_BUILD_DIR/ios/Pods/FirebaseCrashlytics/upload-symbols"
+          DSYM_DIR="$CM_BUILD_DIR/build/ios/archive/Runner.xcarchive/dSYMs"
+          FIREBASE_IOS_APP_ID="1:881238327460:ios:71eff9f522861dc7f9a631"
+
+          if [ ! -f "$UPLOAD_SYMBOLS" ]; then
+            echo "WARNING: upload-symbols not found at $UPLOAD_SYMBOLS - skipping"
+            exit 0
+          fi
+          if [ ! -d "$DSYM_DIR" ]; then
+            echo "WARNING: no dSYMs at $DSYM_DIR - skipping"
+            exit 0
+          fi
+
+          "$UPLOAD_SYMBOLS" -ai "$FIREBASE_IOS_APP_ID" -p ios "$DSYM_DIR" || \
+            echo "WARNING: upload-symbols failed but continuing"
+
     artifacts:
       - build/ios/ipa/*.ipa
+      - build/ios/archive/Runner.xcarchive/dSYMs
 
     publishing:
       app_store_connect:
