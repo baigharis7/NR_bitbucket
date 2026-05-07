@@ -1226,7 +1226,6 @@ class MockRemoveSportFavoriteInteractor extends _i1.Mock
 class MockSignUpInteractor extends _i1.Mock implements _i62.SignUpInteractor {
   @override
   _i14.Future<_i2.SignUpResult> execute(
-    String? username,
     String? email,
     String? password,
   ) =>
@@ -1234,7 +1233,6 @@ class MockSignUpInteractor extends _i1.Mock implements _i62.SignUpInteractor {
         Invocation.method(
           #execute,
           [
-            username,
             email,
             password,
           ],
@@ -1244,7 +1242,6 @@ class MockSignUpInteractor extends _i1.Mock implements _i62.SignUpInteractor {
           Invocation.method(
             #execute,
             [
-              username,
               email,
               password,
             ],
@@ -1256,7 +1253,6 @@ class MockSignUpInteractor extends _i1.Mock implements _i62.SignUpInteractor {
           Invocation.method(
             #execute,
             [
-              username,
               email,
               password,
             ],
@@ -2836,7 +2832,6 @@ class MockSaveLiquidEventInteractor extends _i1.Mock
 class MockLoginRepository extends _i1.Mock implements _i132.LoginRepository {
   @override
   _i14.Future<_i2.SignUpResult> signUp(
-    String? username,
     String? email,
     String? password,
   ) =>
@@ -2844,7 +2839,6 @@ class MockLoginRepository extends _i1.Mock implements _i132.LoginRepository {
         Invocation.method(
           #signUp,
           [
-            username,
             email,
             password,
           ],
@@ -2854,7 +2848,6 @@ class MockLoginRepository extends _i1.Mock implements _i132.LoginRepository {
           Invocation.method(
             #signUp,
             [
-              username,
               email,
               password,
             ],
@@ -2866,7 +2859,6 @@ class MockLoginRepository extends _i1.Mock implements _i132.LoginRepository {
           Invocation.method(
             #signUp,
             [
-              username,
               email,
               password,
             ],

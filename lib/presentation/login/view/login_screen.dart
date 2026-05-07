@@ -39,7 +39,6 @@ class _LoginScreenState extends State<LoginScreen>
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _repeatPasswordController = TextEditingController();
-  final _emailController = TextEditingController();
   final _mfaController = TextEditingController();
   final TapGestureRecognizer _tapRecognizer = TapGestureRecognizer();
   AnimationController? _controller;
@@ -54,12 +53,10 @@ class _LoginScreenState extends State<LoginScreen>
 
   // FocusNodes for blur-based validation
   final _usernameFocusNode = FocusNode();
-  final _emailFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
   final _repeatPasswordFocusNode = FocusNode();
 
   // Track which fields have been touched (interacted with and blurred with content)
-  static const String _fieldUsername = 'username';
   static const String _fieldEmail = 'email';
   static const String _fieldPassword = 'password';
   static const String _fieldRepeatPassword = 'repeatPassword';
@@ -300,8 +297,7 @@ class _LoginScreenState extends State<LoginScreen>
     );
 
     // Add focus listeners for blur-based validation
-    _usernameFocusNode.addListener(() => _onFieldBlur(_fieldUsername, _usernameFocusNode, _usernameController));
-    _emailFocusNode.addListener(() => _onFieldBlur(_fieldEmail, _emailFocusNode, _emailController));
+    _usernameFocusNode.addListener(() => _onFieldBlur(_fieldEmail, _usernameFocusNode, _usernameController));
     _passwordFocusNode.addListener(() => _onFieldBlur(_fieldPassword, _passwordFocusNode, _passwordController));
     _repeatPasswordFocusNode.addListener(() => _onFieldBlur(_fieldRepeatPassword, _repeatPasswordFocusNode, _repeatPasswordController));
   }
@@ -340,11 +336,9 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void dispose() {
     _usernameFocusNode.dispose();
-    _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     _repeatPasswordFocusNode.dispose();
     _controller!.dispose();
-    _emailController.dispose();
     _mfaController.dispose();
     _passwordController.dispose();
     _repeatPasswordController.dispose();
@@ -417,8 +411,8 @@ class _LoginScreenState extends State<LoginScreen>
                               padding: const EdgeInsets.only(bottom: 20,top: 50),
                               child: TextFormField(
                                 focusNode: _usernameFocusNode,
-                                autofillHints: model.isLogin ? const[AutofillHints.email] : null,
-                                onEditingComplete: model.isLogin ? () => TextInput.finishAutofillContext() : null,
+                                autofillHints: const[AutofillHints.email],
+                                onEditingComplete: () => TextInput.finishAutofillContext(),
                                 cursorColor: Colors.white,
                                 style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
                                 decoration: InputDecoration(
@@ -426,67 +420,23 @@ class _LoginScreenState extends State<LoginScreen>
                                   enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
                                   focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
                                   prefixIcon: Container(
-                                    padding: const EdgeInsets.only(bottom: Dimens.padding10),
-                                    height: Dimens.height32,
+                                    padding: const EdgeInsets.only(left: 12, bottom: 8, right: 12),
+                                    height: Dimens.heightXXSmall,
+                                    width: Dimens.widthXXXXSmall,
                                     child: Image.asset(
-                                      'assets/icon/icon_user.png',
+                                      'assets/icon/icon_email.png',
+                                      fit: BoxFit.contain,
                                     ),
                                   ),
                                   hintStyle: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
-                                  hintText: '${model.isLogin ? AppLocalizations.of(context)!.email : AppLocalizations.of(context)!.username} *',
+                                  hintText: '${AppLocalizations.of(context)!.email} *',
                                   errorMaxLines: 3,
                                 ),
                                 controller: _usernameController,
-                                validator: (value) => _shouldValidate(_fieldUsername)
-                                    ? resolveFormError(context, model.validateUsername(value))
+                                validator: (value) => _shouldValidate(_fieldEmail)
+                                    ? resolveFormError(context, model.validateEmail(value))
                                     : null,
                                 autovalidateMode: AutovalidateMode.disabled,
-                              ),
-                            ),
-                            if (!model.isLogin) AnimatedContainer(
-                              constraints: BoxConstraints(
-                                minHeight: !model.isLogin ? 60 : 0,
-                                maxHeight: !model.isLogin ? 120 : 0,
-                              ),
-                              duration:
-                              const Duration(milliseconds: NumConstants.animDelay),
-                              curve: Curves.easeInOut,
-                              child: FadeTransition(
-                                opacity: _opacityAnimation!,
-                                child: SlideTransition(
-                                  position: _slideAnimation!,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 20),
-                                    child: TextFormField(
-                                      focusNode: _emailFocusNode,
-                                      cursorColor: Colors.white,
-                                      style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
-                                      decoration: InputDecoration(
-                                        focusColor: Colors.white,
-                                        enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
-                                        focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
-                                        prefixIcon: Container(
-                                          padding: const EdgeInsets.only(left: 12, bottom: 8, right: 12),// to show container bounds
-                                          height: Dimens.heightXXSmall,
-                                          width: Dimens.widthXXXXSmall,
-                                          child: Image.asset(
-                                            'assets/icon/icon_email.png',
-                                            fit: BoxFit.contain,
-                                          ),
-                                        ),
-                                        hintStyle: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
-                                        hintText:
-                                        '${AppLocalizations.of(context)!.email} *',
-                                        errorMaxLines: 3,
-                                      ),
-                                      controller: _emailController,
-                                      validator: (value) => _shouldValidate(_fieldEmail)
-                                          ? resolveFormError(context, model.validateEmail(value))
-                                          : null,
-                                      autovalidateMode: AutovalidateMode.disabled,
-                                    ),
-                                  ),
-                                ),
                               ),
                             ),
                             TextFormField(
@@ -610,13 +560,12 @@ class _LoginScreenState extends State<LoginScreen>
                                   // Mark all fields as touched on submit so inline errors show
                                   if (!model.isLogin) {
                                     setState(() {
-                                      _touchedFields.addAll([_fieldUsername, _fieldEmail, _fieldPassword, _fieldRepeatPassword]);
+                                      _touchedFields.addAll([_fieldEmail, _fieldPassword, _fieldRepeatPassword]);
                                     });
                                   }
                                   if (_formKey.currentState!.validate()) {
                                     model.submitData(
-                                      username: _usernameController.text.trim().orEmpty(),
-                                      email: _emailController.text.orEmpty(),
+                                      email: _usernameController.text.trim().orEmpty(),
                                       password: _passwordController.text.orEmpty(),
                                       repeatPassword: _repeatPasswordController.text.orEmpty(),
                                       action: model.isLogin
@@ -650,7 +599,6 @@ class _LoginScreenState extends State<LoginScreen>
                               child: InkWell(
                                 onTap: () {
                                   _usernameController.clear();
-                                  _emailController.clear();
                                   _passwordController.clear();
                                   _repeatPasswordController.clear();
                                   _resetTouchedFields();

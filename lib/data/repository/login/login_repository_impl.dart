@@ -14,7 +14,7 @@ class LoginRepositoryImpl extends LoginRepository {
   LoginRepositoryImpl({required this.authenticationService, required this.profileApi, required this.syncQueue});
 
   @override
-  Future<SignUpResult> signUp(String username, String email, String password) => authenticationService.signUp(username, email, password);
+  Future<SignUpResult> signUp(String email, String password) => authenticationService.signUp(email, password);
 
   @override
   Future<SignUpResult> sendVerificationCode(String confirmationCode, String username) => authenticationService.sendVerificationCode(confirmationCode, username);

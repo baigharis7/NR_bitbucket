@@ -116,13 +116,11 @@ class CognitoAuthenticationService implements AuthenticationService {
   }
 
   @override
-  Future<SignUpResult> signUp(String username, String email, String password) {
-
+  Future<SignUpResult> signUp(String email, String password) {
     return getAuthorization().signUp(
-        username: username,
+        username: email,
         password: password,
         options: SignUpOptions(userAttributes: {
-          CognitoUserAttributeKey.givenName: username,
           CognitoUserAttributeKey.email: email,
         },),
     );

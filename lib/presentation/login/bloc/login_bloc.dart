@@ -271,7 +271,6 @@ class LoginBloc extends BaseBloc<LoginActions, LoginState> {
         } else {
           launchSync(
               block: () async => await signUpInteractor.execute(
-                state.username.orEmpty(),
                 state.email.orEmpty(),
                 state.password.orEmpty(),
               ),

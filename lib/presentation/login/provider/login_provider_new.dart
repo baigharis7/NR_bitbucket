@@ -129,7 +129,6 @@ class LoginProviderNew extends BaseProvider {
   get isLogin => _loginMode;
   bool get isPrivacyPolicyChecked => _isPrivacyPolicyChecked;
   String? get getEmail => _email.orEmpty();
-  String? get getUsername => _username.orEmpty();
   String? get getPassword => _password.orEmpty();
   get isLoginMode => _loginMode;
   get areMasterFilesChecked => _masterFilesChecked;
@@ -140,7 +139,6 @@ class LoginProviderNew extends BaseProvider {
   bool get isRepeatPasswordVisible => _repeatPasswordVisible;
 
   String? _email;
-  String? _username;
   String? _password;
   bool _loginMode = true;
   bool _isPrivacyPolicyChecked = false;
@@ -163,7 +161,6 @@ class LoginProviderNew extends BaseProvider {
   }
 
   void _setEmail(String email) => _email = email;
-  void _setUserName(String username) => _username = username;
   void _setPassword(String password) => _password = password;
   void _setGoToRegistry(Function goToRegistry) => _goToRegistry = goToRegistry;
   void _setMasterFilesChecked(bool masterFilesChecked) => _masterFilesChecked = masterFilesChecked;
@@ -256,7 +253,6 @@ class LoginProviderNew extends BaseProvider {
   }
 
   void submitData({
-    required String username,
     required String email,
     required String password,
     required String repeatPassword,
@@ -267,20 +263,19 @@ class LoginProviderNew extends BaseProvider {
     manageLoading(true);
 
     _setEmail(email.orEmpty());
-    _setUserName(username.orEmpty());
     _setPassword(password.orEmpty());
     _setGoToRegistry(goToRegistry);
 
     if (isLogin) {
-      _performLogin(username: username, password: password, moveToNextScreen: action);
+      _performLogin(email: email, password: password, moveToNextScreen: action);
     } else {
       goesToRegistry = true;
-      _performSignUp(username: username, email: email, password: password, action: action);
+      _performSignUp(email: email, password: password, action: action);
     }
   }
 
   void _onSignUpSuccess(SignUpResult result, Function action) {
-    _saveUsernameAndEmail(getUsername.orEmpty(), getEmail.orEmpty());
+    _saveUsernameAndEmail(getEmail.orEmpty(), getEmail.orEmpty());
     manageLoading(false);
     action.call();
   }
@@ -298,7 +293,7 @@ class LoginProviderNew extends BaseProvider {
   }
 
   Future<void> _performLogin({
-    required String username,
+    required String email,
     required password,
     bool isFromVerificationCode = false,
     required Function moveToNextScreen,
@@ -313,14 +308,12 @@ class LoginProviderNew extends BaseProvider {
   }
 
   Future<void> _performSignUp({
-    required String username,
     required String email,
     required String password,
     required Function action,
   }) async {
     try {
       final signUp = await signUpInteractor?.execute(
-        getUsername.orEmpty(),
         getEmail.orEmpty(),
         getPassword.orEmpty(),
       );
@@ -443,7 +436,7 @@ class LoginProviderNew extends BaseProvider {
       // worst-case for the whole login flow. Healthy signIn resolves in 1–3s.
       await crashlytics.log('login attempt=$attempt: pre-signIn');
       final signIn = await signInInteractor!
-          .execute(getUsername.orEmpty(), getPassword.orEmpty())
+          .execute(getEmail.orEmpty(), getPassword.orEmpty())
           .timeout(const Duration(seconds: 8));
       await crashlytics.log(
         'login attempt=$attempt: signIn returned isSignedIn=${signIn.isSignedIn}',
@@ -519,7 +512,7 @@ class LoginProviderNew extends BaseProvider {
   }
 
   void _saveUserInRemoteUsersDatabase(String userId) async {
-    final simpleUser = SimpleUser(email: getEmail.orEmpty(), userName: getUsername.orEmpty(), userId: userId);
+    final simpleUser = SimpleUser(email: getEmail.orEmpty(), userName: getEmail.orEmpty(), userId: userId);
     try {
       await saveUserInUsersRemoteDatabaseInteractor?.execute(simpleUser);
     } catch (saveUserInRemote) {
@@ -758,7 +751,7 @@ class LoginProviderNew extends BaseProvider {
   void notConfirmedUserAsksForNewVerificationCode(Function showMfaDialog) {
     _setNotConfirmedUserTryingToLogin(false);
     try {
-      resendVerificationCodeInteractor?.execute(getUsername.orEmpty());
+      resendVerificationCodeInteractor?.execute(getEmail.orEmpty());
       showMfaDialog.call();
     } catch (resendVerificationCodeError) {
       manageLoading(false);
@@ -770,7 +763,7 @@ class LoginProviderNew extends BaseProvider {
   void resendVerificationCode() async {
     manageLoading(true);
       try {
-        await resendVerificationCodeInteractor?.execute(_username.orEmpty());
+        await resendVerificationCodeInteractor?.execute(_email.orEmpty());
         manageLoading(false);
       } catch (error) {
         manageLoading(false);
@@ -937,7 +930,7 @@ class LoginProviderNew extends BaseProvider {
   }) async {
     manageLoading(true);
     try {
-      final signUpResult = await verificationCodeInteractor?.execute(confirmationCode, getUsername.orEmpty());
+      final signUpResult = await verificationCodeInteractor?.execute(confirmationCode, getEmail.orEmpty());
       _onSendVerificationCodeSuccess(signUpResult!, action);
     } catch (sendVerificationCodeError) {
       manageLoading(false);
@@ -959,19 +952,6 @@ class LoginProviderNew extends BaseProvider {
     //   onError?.call(ErrorTypes.confirmationCodeError);
     // }
     // _setLoginMode(true);
-  }
-
-  FormErrorTypes? validateUsername(String? username) {
-    if (isLogin) {
-      return null;
-    }
-    if (username == null || username.isEmpty) {
-      return FormErrorTypes.usernameEmptyOrNullError;
-    }
-    if (username.contains(' ')) {
-      return FormErrorTypes.usernameContainsSpacesError;
-    }
-    return null;
   }
 
   FormErrorTypes? validateEmail(String? value) {

@@ -9,6 +9,6 @@ class SignUpInteractorImpl extends SignUpInteractor {
   SignUpInteractorImpl({required this.loginRepository});
 
   @override
-  Future<SignUpResult> execute(String username, String email, String password) => loginRepository.signUp(username, email, password);
+  Future<SignUpResult> execute(String email, String password) => loginRepository.signUp(email, password);
 
 }
