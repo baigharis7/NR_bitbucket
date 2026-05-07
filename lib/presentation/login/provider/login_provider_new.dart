@@ -1,5 +1,6 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:chuck_interceptor/chuck_interceptor.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'dart:convert';
 
 import 'package:nutrenaissance_flutter/data/api/eventssync/events_sync_api.dart';
@@ -189,7 +190,9 @@ class LoginProviderNew extends BaseProvider {
     final referenceDatabase = await dbFuture;
 
     Chuck chuck = Chuck(
-      showNotification: true,
+      // See app_bootstrap.dart Chuck construction for context — debug-only
+      // to avoid the @mipmap/ic_launcher PlatformException on Android.
+      showNotification: kDebugMode,
       showInspectorOnShake: true,
       darkTheme: false,
       maxCallsCount: 1000,

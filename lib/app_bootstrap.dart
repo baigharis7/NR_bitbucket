@@ -574,7 +574,12 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
       final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
       Chuck chuck = Chuck(
-        showNotification: true,
+        // Chuck is a debug HTTP inspector. Its default notificationIcon is
+        // "@mipmap/ic_launcher" which the app's flutter_launcher_icons setup
+        // doesn't ship — posting any notification crashed Android with
+        // PlatformException(invalid_icon). Limit notifications to debug
+        // builds where Chuck is actually being used.
+        showNotification: kDebugMode,
         darkTheme: true,
         navigatorKey: navigatorKey,
       );
