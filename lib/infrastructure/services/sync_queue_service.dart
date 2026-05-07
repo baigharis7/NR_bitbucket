@@ -63,14 +63,21 @@ class SyncQueueService extends ApiHelper {
         await entry.delete();
       } on HttpException catch (e) {
         final statusCode = _extractStatusCode(e);
-        if (statusCode != null && statusCode >= 400 && statusCode < 500 && statusCode != 429) {
-          // 4xx (except 429) = permanent client error, don't retry
+        // Auth failures (401/403) are transient: the access token is expired
+        // and will be refreshed by ApiHelper on the next outgoing request.
+        // Throttling (429) is also transient. Everything else in the 4xx
+        // range is a permanent client error.
+        final isTransient = statusCode == null
+            || statusCode >= 500
+            || statusCode == 401
+            || statusCode == 403
+            || statusCode == 429;
+        if (isTransient) {
+          _scheduleRetry(entry, e);
+        } else {
           debugPrint('SyncQueue: dropping entry ${entry.path} — permanent error $statusCode');
           _reportToCrashlytics(entry, e, permanent: true);
           await entry.delete();
-        } else {
-          // 429 (throttled), 5xx (server error), or unknown — schedule retry
-          _scheduleRetry(entry, e);
         }
       } catch (e) {
         // Network error, timeout, etc. — schedule retry
