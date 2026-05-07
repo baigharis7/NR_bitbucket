@@ -114,11 +114,12 @@ class ProfileRepositoryImpl extends ProfileRepository {
   @override
   Future<int> getUserKcal() async {
     final profile = await localStorageRepository.getProfile();
-    try {
-      return profile!.kcal!;
-    } catch (error) {
-      rethrow;
-    }
+    // Profile may not be in local storage yet (pre-login, post cache-clear),
+    // and a freshly-created profile may not have kcal computed yet. Both are
+    // valid states — return 0 rather than throwing on the bang operator.
+    // JournalFoodBloc's default state already uses userKcal: 0, so this is
+    // consistent.
+    return profile?.kcal ?? 0;
   }
 
   @override

@@ -1201,7 +1201,12 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
         removeSupplementRoutineInteractor: removeSupplementRoutineInteractor,
       );
 
-      routinesTabBloc.add(InitializeRoutinesTabEvent());
+      // Same auth gate as the recommendations preload — Routines tab is
+      // unreachable from the login screen, and the bloc fetches data that
+      // requires a logged-in user.
+      if (getUserIdInteractor.execute().isNotEmpty) {
+        routinesTabBloc.add(InitializeRoutinesTabEvent());
+      }
 
       final sportItemsBloc = SportItemsBloc(
         getUserIdInteractor: getUserIdInteractor,
