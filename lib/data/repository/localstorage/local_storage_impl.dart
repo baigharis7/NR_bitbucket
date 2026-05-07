@@ -291,8 +291,8 @@ class LocalStorageImpl extends LocalStorageRepository {
   @override
   Future<List<UserRda>> getUserRdas() async {
     final profileEntity = await getProfile();
-    List<UserRda> userRdasEntities = mapToUserProfileModelFromProfileEntity(profileEntity!).userRdas?.userRdas ?? [];
-    return userRdasEntities;
+    if (profileEntity == null) return <UserRda>[];
+    return mapToUserProfileModelFromProfileEntity(profileEntity).userRdas?.userRdas ?? [];
   }
 
 
