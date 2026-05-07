@@ -343,11 +343,22 @@ class RecommendationsGeneralBloc extends Bloc<RecommendationsGeneralActions, Rec
   }
 
   /// Loads food & drink names master file if not already loaded.
+  /// Bails gracefully when the master file or its inner fields aren't
+  /// populated yet (e.g. fresh install, S3 download not complete).
   Future<void> _loadFoodAndDrinksNames() async {
-    if (state.foodAndDrinksNames.orEmpty().isEmpty) {
-      final foodAndDrinksMasterFile = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames) as FoodsAndDrinksNamesMaster;
-      state.foodAndDrinksNames = foodAndDrinksMasterFile.foodsAndDrinksNames!.foodNames?..addAll(foodAndDrinksMasterFile.foodsAndDrinksNames!.drinkNames!.toList());
-    }
+    if (state.foodAndDrinksNames.orEmpty().isNotEmpty) return;
+
+    final result = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
+    if (result is! FoodsAndDrinksNamesMaster) return;
+
+    final inner = result.foodsAndDrinksNames;
+    final foods = inner?.foodNames;
+    final drinks = inner?.drinkNames;
+    if (foods == null) return;
+
+    state.foodAndDrinksNames = drinks == null
+        ? List.of(foods)
+        : (List.of(foods)..addAll(drinks));
   }
 
   /// Saves recommended food IDs to local Hive profile (no API upload).

@@ -124,10 +124,9 @@ class ProfileRepositoryImpl extends ProfileRepository {
   @override
   Future<List<int>> getUserExclusions() async {
     final profile = await localStorageRepository.getProfile();
-    try {
-      return profile!.exclusions!.exclusions;
-    } catch (error) {
-      rethrow;
-    }
+    // Profile may not be in local storage yet, or the user may not have any
+    // exclusions configured. Both are valid states — return an empty list
+    // rather than throwing on the bang operator.
+    return profile?.exclusions?.exclusions ?? <int>[];
   }
 }

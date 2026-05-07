@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
-import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/error_type_strings.dart';
 
 String resolveError(BuildContext context, ErrorTypes errorType) {
@@ -214,7 +213,6 @@ String userError(BuildContext context, Object error) {
     result = error.toString();
   }
 
-  // return result;
   switch (result) {
     case ErrorTypStrings.NOT_AUTORIZED_USER:
       return stringResolver.not_authorized_error;
@@ -225,6 +223,9 @@ String userError(BuildContext context, Object error) {
     case ErrorTypStrings.OPERATION_NOT_COMPLETED_ES:
       return stringResolver.operation_not_completed;
     default:
-      return result;
+      // Anything we don't have a specific mapping for (TypeError,
+      // NullCheckError, raw Amplify exception text, etc.) gets the
+      // localized friendly fallback instead of leaking Dart-speak.
+      return stringResolver.sign_in_error;
   }
 }

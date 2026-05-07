@@ -1134,8 +1134,14 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
         getRecentFoodEventsInteractor: getRecentFoodEventsInteractor,
         getFoodFavoritesInteractor: getFoodFavoritesInteractor,
       );
-      // Pre-load recommendations data in background so Tips tab is instant
-      recommendationsGeneralBloc.add(InitialStateAction());
+      // Pre-load recommendations data in background so Tips tab is instant —
+      // but only when the user is authenticated. For pre-login launches the
+      // pre-load just hits a missing profile and crashes Future.wait, and the
+      // Tips tab isn't reachable from the login screen anyway. Stored sub is
+      // empty when the user has never completed signIn on this install.
+      if (getUserIdInteractor.execute().isNotEmpty) {
+        recommendationsGeneralBloc.add(InitialStateAction());
+      }
 
       final recipeTabBloc = RecipeTabBloc(
           getUserIdInteractor: getUserIdInteractor,
