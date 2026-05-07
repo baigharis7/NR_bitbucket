@@ -85,35 +85,49 @@ class AddFoodEventBloc extends BaseBloc<AddFoodEventActions, AddFoodEventState> 
     on<InitializeStateAction>((event, emit) async {
       _clearFields();
       emit(state.copyWith(isLoading: true,  onError: null));
-      if (state.foodNames!.foodsAndDrinksNames!.foodNames!.isEmpty) {
-        final foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
-        state.foodNames = foodNames;
-        state.foodNames?.foodsAndDrinksNames?.foodNames?.removeWhere((f) => f.included == 1);
-        state.foodNames?.foodsAndDrinksNames?.drinkNames?.removeWhere((f) => f.included == 1);
-        state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames.orEmpty().toList() ?? []);
-      }
-      final foodOils = await getMasterFileInteractor.execute(MasterFilesType.oilTypes);
-      state.oilTypes = foodOils;
-      state.conversionFactors = await getMasterFileInteractor.execute(MasterFilesType.conversionFactors);
-      if (state.cookingMethodsInfoMaster!.cookingMethodsInfo!.isEmpty) {
-        final a = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
-        state.cookingMethodsInfoMaster = a;
+      try {
+        if (state.foodNames?.foodsAndDrinksNames?.foodNames?.isEmpty ?? true) {
+          final foodNames = await getMasterFileInteractor.execute(MasterFilesType.foodsAndDrinksNames);
+          state.foodNames = foodNames;
+          state.foodNames?.foodsAndDrinksNames?.foodNames?.removeWhere((f) => f.included == 1);
+          state.foodNames?.foodsAndDrinksNames?.drinkNames?.removeWhere((f) => f.included == 1);
+          state.foodNames?.foodsAndDrinksNames?.foodNames?.addAll(state.foodNames?.foodsAndDrinksNames?.drinkNames.orEmpty().toList() ?? []);
         }
-      if (state.cookingMethodsMaster!.cookingMethods.isEmpty) {
-        state.cookingMethodsMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethods);
+        final foodOils = await getMasterFileInteractor.execute(MasterFilesType.oilTypes);
+        state.oilTypes = foodOils;
+        state.conversionFactors = await getMasterFileInteractor.execute(MasterFilesType.conversionFactors);
+        if (state.cookingMethodsInfoMaster!.cookingMethodsInfo!.isEmpty) {
+          final a = await getMasterFileInteractor.execute(MasterFilesType.cookingMethodsInfo);
+          state.cookingMethodsInfoMaster = a;
+        }
+        if (state.cookingMethodsMaster!.cookingMethods.isEmpty) {
+          state.cookingMethodsMaster = await getMasterFileInteractor.execute(MasterFilesType.cookingMethods);
+        }
+        if (state.unitsFoodsMaster!.unitsFoodsMaster.isEmpty) {
+          state.unitsFoodsMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsFoods);
+        }
+        if (state.unitsInfoMaster!.unitsInfoMaster.isEmpty) {
+          state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
+        }
+        try {
+          state.foodFavorites = await getFoodFavoritesInteractor.execute();
+          state.foodFavorites = state.foodFavorites.orEmpty().where((foodFav) => foodFav.mealTime == state.foodEvent?.mealTime).toList();
+        } catch (e, s) {
+          CrashlyticsService.record(e, s, context: {'where': 'AddFoodEventBloc.init.foodFavorites'});
+          state.foodFavorites = [];
+        }
+        try {
+          final allRecent = await getRecentFoodItemsInteractor.execute();
+          state.recentFoodItems = allRecent.where((item) => item.mealTime == state.foodEvent?.mealTime).toList();
+        } catch (e, s) {
+          CrashlyticsService.record(e, s, context: {'where': 'AddFoodEventBloc.init.recentFoodItems'});
+          state.recentFoodItems = [];
+        }
+        emit(state.copyWith(isLoading: false,));
+      } catch (e, s) {
+        CrashlyticsService.record(e, s, context: {'where': 'AddFoodEventBloc.init'});
+        emit(state.copyWith(isLoading: false, onError: ErrorTypes.retrieveFoodEventsError));
       }
-      if (state.unitsFoodsMaster!.unitsFoodsMaster.isEmpty) {
-        state.unitsFoodsMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsFoods);
-      }
-      if (state.unitsInfoMaster!.unitsInfoMaster.isEmpty) {
-        state.unitsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.unitsInfo);
-      }
-      state.foodFavorites = await getFoodFavoritesInteractor.execute();
-      state.foodFavorites = state.foodFavorites.orEmpty().where((foodFav) => foodFav.mealTime == state.foodEvent?.mealTime).toList();
-      final allRecent = await getRecentFoodItemsInteractor.execute();
-      state.recentFoodItems = allRecent.where((item) => item.mealTime == state.foodEvent?.mealTime).toList();
-
-      emit(state.copyWith(isLoading: false,));
     },);
 
     on<SwitchFavRecentTabAction>((event, emit) {

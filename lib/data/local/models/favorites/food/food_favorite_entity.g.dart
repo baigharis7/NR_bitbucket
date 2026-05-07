@@ -1,10 +1,10 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND
+// HAND-CURATED — DO NOT REGENERATE WITHOUT RESTORING.
+// Tolerant casts on read() handle Hive schema drift from older app versions
+// that wrote different types at the same HiveField indices. Bare `as` casts
+// crash on box open for those users and leave the food picker stuck on a
+// loading spinner. After running build_runner, restore with `git checkout --`.
 
 part of 'food_favorite_entity.dart';
-
-// **************************************************************************
-// TypeAdapterGenerator
-// **************************************************************************
 
 class FoodFavoriteEntityAdapter extends TypeAdapter<FoodFavoriteEntity> {
   @override
@@ -17,21 +17,47 @@ class FoodFavoriteEntityAdapter extends TypeAdapter<FoodFavoriteEntity> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return FoodFavoriteEntity(
-      ingredients: (fields[0] as List).cast<FoodInFavoriteEntity>(),
-      drinks: (fields[1] as List).cast<FoodInFavoriteEntity>(),
-      comment: fields[2] as String?,
-      mealTime: fields[3] as int,
-      title: fields[4] as String,
-      eventDate: fields[5] as int,
-      dish: fields[6] as bool?,
-      isRoutine: fields[7] as bool?,
-      daysOfWeek: (fields[8] as List?)?.cast<int>(),
-      eventId: fields[9] as int?,
-      userId: fields[10] as String?,
-      isFavorite: fields[11] as bool?,
-      time: fields[12] as String?,
-      timeZone: fields[13] as String?,
+      ingredients: _foodInList(fields[0]),
+      drinks: _foodInList(fields[1]),
+      comment: _strOrNull(fields[2]),
+      mealTime: _int(fields[3]),
+      title: _str(fields[4]),
+      eventDate: _int(fields[5]),
+      dish: _boolOrNull(fields[6]),
+      isRoutine: _boolOrNull(fields[7]),
+      daysOfWeek: _intListOrNull(fields[8]),
+      eventId: _intOrNull(fields[9]),
+      userId: _strOrNull(fields[10]),
+      isFavorite: _boolOrNull(fields[11]),
+      time: _strOrNull(fields[12]),
+      timeZone: _strOrNull(fields[13]),
     );
+  }
+
+  static String _str(dynamic v) => v is String ? v : '';
+  static String? _strOrNull(dynamic v) => v is String ? v : null;
+  static int _int(dynamic v) {
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    if (v is String) return int.tryParse(v) ?? 0;
+    return 0;
+  }
+  static int? _intOrNull(dynamic v) {
+    if (v == null) return null;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    if (v is String) return int.tryParse(v);
+    return null;
+  }
+  static bool? _boolOrNull(dynamic v) => v is bool ? v : null;
+  static List<FoodInFavoriteEntity> _foodInList(dynamic v) {
+    if (v is! List) return [];
+    return v.whereType<FoodInFavoriteEntity>().toList();
+  }
+  static List<int>? _intListOrNull(dynamic v) {
+    if (v == null) return null;
+    if (v is! List) return null;
+    return v.whereType<num>().map((n) => n.toInt()).toList();
   }
 
   @override
@@ -90,15 +116,15 @@ class FoodInFavoriteEntityAdapter extends TypeAdapter<FoodInFavoriteEntity> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return FoodInFavoriteEntity(
-      id: fields[0] as int,
-      qty: fields[1] as int,
-      unit: fields[2] as int,
-      cookingMethod: fields[3] as int,
-      unitsEquivalences: fields[4] as String?,
-      name_en: fields[5] as String?,
-      name_es: fields[6] as String?,
-      conversionFactor: fields[7] as int?,
-      usedOil: fields[8] as int?,
+      id: FoodFavoriteEntityAdapter._int(fields[0]),
+      qty: FoodFavoriteEntityAdapter._int(fields[1]),
+      unit: FoodFavoriteEntityAdapter._int(fields[2]),
+      cookingMethod: FoodFavoriteEntityAdapter._int(fields[3]),
+      unitsEquivalences: FoodFavoriteEntityAdapter._strOrNull(fields[4]),
+      name_en: FoodFavoriteEntityAdapter._strOrNull(fields[5]),
+      name_es: FoodFavoriteEntityAdapter._strOrNull(fields[6]),
+      conversionFactor: FoodFavoriteEntityAdapter._intOrNull(fields[7]),
+      usedOil: FoodFavoriteEntityAdapter._intOrNull(fields[8]),
     );
   }
 
