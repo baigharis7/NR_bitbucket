@@ -24,6 +24,12 @@ class SyncQueueEntry extends HiveObject {
   @HiveField(5)
   int nextRetryAt;
 
+  /// Epoch millis of the last Crashlytics report for this entry. Prevents
+  /// the same poison-pill entry from spamming Crashlytics on every cycle
+  /// after it has exhausted its retry budget.
+  @HiveField(6)
+  int lastReportedAt;
+
   SyncQueueEntry({
     required this.path,
     required this.bodyJson,
@@ -31,5 +37,6 @@ class SyncQueueEntry extends HiveObject {
     this.retryCount = 0,
     this.method = 'POST',
     this.nextRetryAt = 0,
+    this.lastReportedAt = 0,
   });
 }

@@ -23,13 +23,14 @@ class SyncQueueEntryAdapter extends TypeAdapter<SyncQueueEntry> {
       retryCount: fields[3] as int,
       method: fields[4] as String,
       nextRetryAt: fields[5] as int? ?? 0,
+      lastReportedAt: fields[6] as int? ?? 0,
     );
   }
 
   @override
   void write(BinaryWriter writer, SyncQueueEntry obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.path)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class SyncQueueEntryAdapter extends TypeAdapter<SyncQueueEntry> {
       ..writeByte(4)
       ..write(obj.method)
       ..writeByte(5)
-      ..write(obj.nextRetryAt);
+      ..write(obj.nextRetryAt)
+      ..writeByte(6)
+      ..write(obj.lastReportedAt);
   }
 
   @override

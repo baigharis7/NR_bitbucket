@@ -20,6 +20,20 @@ class SyncQueueService extends ApiHelper {
   static const _maxDelaySeconds = 300; // 5 minutes
   static const _maxRetries = 10;
 
+  /// Once the retry budget is spent, wait this long before trying again so a
+  /// permanently-broken server payload doesn't loop-spam the network and
+  /// Crashlytics on every processQueue cycle.
+  static const _exhaustedCooldownMs = 60 * 60 * 1000; // 1 hour
+
+  /// Only re-report an exhausted entry to Crashlytics this often, so one
+  /// stuck entry doesn't generate dozens of duplicate events per day.
+  static const _reportDedupeMs = 24 * 60 * 60 * 1000; // 24 hours
+
+  /// Drop an entry whose server upload has failed for this long. The local
+  /// copy of the user's data is unaffected — only the server-side mirror
+  /// is sacrificed.
+  static const _maxEntryAgeMs = 7 * 24 * 60 * 60 * 1000; // 7 days
+
   SyncQueueService(
     PreferencesRepository preferencesRepository,
     AuthenticationService authenticationService,
@@ -45,6 +59,14 @@ class SyncQueueService extends ApiHelper {
     final entries = _box.values.toList();
 
     for (final entry in entries) {
+      // Stop trying entries the server has rejected for a week — local data
+      // is already persisted in Hive; only the server mirror is sacrificed.
+      if (now - entry.createdAt > _maxEntryAgeMs) {
+        _reportToCrashlytics(entry, Exception('SyncQueue entry abandoned: age exceeded'), permanent: true);
+        await entry.delete();
+        continue;
+      }
+
       // Skip entries whose backoff hasn't elapsed yet
       if (entry.nextRetryAt > now) continue;
 
@@ -88,12 +110,20 @@ class SyncQueueService extends ApiHelper {
 
   void _scheduleRetry(SyncQueueEntry entry, dynamic error) {
     entry.retryCount++;
+    final now = DateTime.now().millisecondsSinceEpoch;
 
     if (entry.retryCount >= _maxRetries) {
-      _reportToCrashlytics(entry, error);
-      // Keep in queue — don't delete user data. Reset backoff so it
-      // gets another attempt next processQueue cycle.
-      entry.nextRetryAt = 0;
+      // Report to Crashlytics, but only if we haven't reported this same
+      // entry recently — prior implementation reset nextRetryAt to 0 and
+      // re-reported every processQueue cycle, generating dozens of duplicate
+      // events per stuck entry.
+      if (now - entry.lastReportedAt > _reportDedupeMs) {
+        _reportToCrashlytics(entry, error);
+        entry.lastReportedAt = now;
+      }
+      // Long cool-down rather than immediate re-attempt. Entry will be
+      // dropped entirely once its age exceeds _maxEntryAgeMs in processQueue.
+      entry.nextRetryAt = now + _exhaustedCooldownMs;
       entry.save();
       return;
     }
@@ -102,7 +132,7 @@ class SyncQueueService extends ApiHelper {
       _baseDelaySeconds * pow(2, entry.retryCount - 1).toInt(),
       _maxDelaySeconds,
     );
-    entry.nextRetryAt = DateTime.now().millisecondsSinceEpoch + (delaySeconds * 1000);
+    entry.nextRetryAt = now + (delaySeconds * 1000);
     entry.save();
     debugPrint('SyncQueue: retry #${entry.retryCount} for ${entry.path} in ${delaySeconds}s');
   }
