@@ -413,3 +413,20 @@ extension LanguageSelectorrr<T> on T {
 extension GetAllFoodNames on FoodsAndDrinkListsMaster {
   List<FoodItemMaster> getFoodsAndDrinkNamesOrEmpty() => [...drinkNames!.toList(), ...foodNames!.toList()];
 }
+
+extension SportEventCompleteDisplay on SportEventComplete {
+  /// Returns the localized display name for this event.
+  ///
+  /// Prefers the translated label from `info[0]` (which carries both name_en
+  /// and name_es) over the cached `sportName` field. Health-synced events
+  /// always store the English sport name in `sportName`, so reading it
+  /// directly leaks English into Spanish UI.
+  String displayName(BuildContext context) {
+    final list = info;
+    if (list != null && list.isNotEmpty) {
+      final translated = list[0].translate(context);
+      if (translated.isNotEmpty) return translated;
+    }
+    return sportName ?? '';
+  }
+}

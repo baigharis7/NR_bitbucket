@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:nutrenaissance_flutter/data/api/referencedata/reference_data_api.dart';
 import 'package:nutrenaissance_flutter/data/local/models/scannedfoods/scanned_food_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/analysis/subjective/subjective_analysis_result_entity.dart';
@@ -71,6 +72,12 @@ void main() async {
   Environment().initConfig(environmentName);
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  // Load intl locale data so DateFormat / TableCalendar render month & day
+  // names in Spanish when the device locale is es-*. Without this, DateFormat
+  // silently falls back to English even when a non-default locale is passed.
+  await initializeDateFormatting('es_ES', null);
+  await initializeDateFormatting('en_US', null);
 
   // Firebase init is local config (~50ms), safe to await before runApp
   await Firebase.initializeApp(

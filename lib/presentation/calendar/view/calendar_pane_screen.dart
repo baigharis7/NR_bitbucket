@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.da
 import 'package:nutrenaissance_flutter/domain/models/foodroutine/food_routine_event.dart';
 import 'package:nutrenaissance_flutter/domain/models/routines/sport_routine_completed.dart';
 import 'package:nutrenaissance_flutter/domain/models/supplements/supplement_simple.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
@@ -763,13 +764,7 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
       subtitle =
           '${l10n.routine_label} - ${_formatEventTime(event.eventDate)}';
     } else if (event is SportEventComplete) {
-      final lang = Localizations.localeOf(context).languageCode;
-      title = event.sportName ??
-          (event.info != null && event.info!.isNotEmpty
-              ? (lang == 'es'
-                  ? event.info![0].name_es ?? ''
-                  : event.info![0].name_en ?? '')
-              : '');
+      title = event.displayName(context);
       subtitle = 'WORKOUT - ${_formatEventTime(event.eventDate)}';
     } else if (event is SupplementSimple) {
       isSupplementEvent = true;

@@ -163,7 +163,7 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                                 ...state.todaySportEvents!.map((sportEvent) {
                                   final isSyncedActivity = sportEvent.source != null && sportEvent.source != 'manual';
                                   return EventItemWithEditAndLike(
-                                    name: sportEvent.sportName.toString(),
+                                    name: sportEvent.displayName(context),
                                     isFavorite: bloc.isSportFavorite(sportEvent),
                                     leadingIcon: isSyncedActivity ? Icons.monitor_heart : null,
                                     leadingIconColor: isSyncedActivity ? AppColors.yellowishGreen : null,
@@ -185,7 +185,7 @@ class _JournalSportScreenState extends State<JournalSportScreen> {
                                       } else {
                                         showUndoFavoriteDialog(
                                           context: ctx,
-                                          title: sportEvent.sportName.orEmpty(),
+                                          title: sportEvent.displayName(context),
                                           reloadScreen: () => bloc.add(InitializeStateAction()),
                                           onUndoFavorite: () {
                                             bloc.add(

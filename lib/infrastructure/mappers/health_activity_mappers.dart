@@ -31,8 +31,8 @@ SportEventSimple mapHealthActivityToSportEventSimple({
     info: [
       SportInfo(
         id: sportId,
-        name_en: sport?.en,
-        name_es: sport?.es,
+        name_en: sport?.en ?? activity.activityType,
+        name_es: sport?.es ?? activity.activityType,
         timeStart: activity.startTime.millisecondsSinceEpoch,
         intensity: intensity,
         minutes: activity.durationMinutes,
@@ -72,8 +72,8 @@ SportEventComplete mapHealthActivityToSportEventComplete({
     info: [
       SportEventInfo(
         id: sportId,
-        name_en: sport?.en,
-        name_es: sport?.es,
+        name_en: sport?.en ?? activity.activityType,
+        name_es: sport?.es ?? activity.activityType,
         intensity: intensity,
         minutes: activity.durationMinutes,
         timeStart: activity.startTime.millisecondsSinceEpoch,

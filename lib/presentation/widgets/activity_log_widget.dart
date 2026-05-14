@@ -164,11 +164,7 @@ class ActivityLogWidget extends StatelessWidget {
   }
 
   Widget _buildActivityItem(BuildContext context, SportEventComplete event, {required bool isLast}) {
-    // Get sport name from first info item
-    final sportName = event.sportName ??
-        (event.info != null && event.info!.isNotEmpty
-            ? event.info![0].translate(context)
-            : '');
+    final sportName = event.displayName(context);
 
     // Build duration from first info or sum all
     final totalMinutes = event.info?.fold<int>(0, (sum, info) => sum + info.minutes) ?? 0;

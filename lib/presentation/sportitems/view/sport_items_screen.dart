@@ -156,7 +156,10 @@ class _SportItemsScreenState extends State<SportItemsScreen> with MidnightToastM
                                       itemCount: state.sportEvents?.length ?? 0,
                                       itemBuilder: (context, index) {
                                         final activity = state.sportEvents![index];
-                                        final itemName = activity.sportName ?? NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: activity.info, context: context);
+                                        final translatedName = activity.displayName(context);
+                                        final itemName = translatedName.isNotEmpty
+                                            ? translatedName
+                                            : NutritionUtils.findSportName(names: state.sportsInfo?.sportsInfoMaster, ingredients: activity.info, context: context);
 
                                         // Check if this is a synced activity
                                         final isSyncedActivity = activity.source != null && activity.source != 'manual';
