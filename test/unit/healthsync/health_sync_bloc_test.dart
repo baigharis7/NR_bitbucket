@@ -346,6 +346,8 @@ void main() {
         setUp: () {
           when(() => mockToggleHealthSyncInteractor.execute(true))
               .thenAnswer((_) async => true);
+          when(() => mockHealthSyncRepository.setHealthSyncEnabled(any()))
+              .thenAnswer((_) async {});
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => DateTime(2024, 1, 15));
         },
@@ -365,6 +367,8 @@ void main() {
         setUp: () {
           when(() => mockToggleHealthSyncInteractor.execute(false))
               .thenAnswer((_) async => true);
+          when(() => mockHealthSyncRepository.setHealthSyncEnabled(any()))
+              .thenAnswer((_) async {});
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => null);
         },
@@ -384,6 +388,8 @@ void main() {
         setUp: () {
           when(() => mockToggleHealthSyncInteractor.execute(true))
               .thenAnswer((_) async => false);
+          when(() => mockHealthSyncRepository.setHealthSyncEnabled(any()))
+              .thenAnswer((_) async {});
           when(() => mockHealthSyncRepository.hasPermissions())
               .thenAnswer((_) async => false);
           when(() => mockHealthSyncRepository.isHealthSyncEnabled())

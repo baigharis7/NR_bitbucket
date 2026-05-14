@@ -231,8 +231,22 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
 
     try {
       _hsLog('HealthSync: toggle enable=${event.enable}');
+      // Persist the user's intent BEFORE invoking the permission dialog. On
+      // Android, the HC permission UI backgrounds our Activity and the OS may
+      // kill the Flutter engine while it is paused — if we wait until after
+      // the dialog to write the pref, that write never reaches disk and the
+      // toggle reverts on next launch. The interactor will write the same
+      // value again on its happy path, which is harmless.
+      await healthSyncRepository.setHealthSyncEnabled(event.enable);
+
       final success = await toggleHealthSyncInteractor.execute(event.enable);
       _hsLog('HealthSync: toggle success=$success');
+
+      if (!success && event.enable) {
+        // Permission was refused (or HC missing). Revert the optimistic write
+        // so the toggle does not appear stuck-on without backing permissions.
+        await healthSyncRepository.setHealthSyncEnabled(false);
+      }
 
       if (success) {
         final lastSyncTime = await healthSyncRepository.getLastSyncTime();

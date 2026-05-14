@@ -373,16 +373,33 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
 
   @override
   Future<void> setHealthSyncEnabled(bool enabled) async {
-    await preferencesRepository.saveLastFetchTime(
-      PrefsKeys.healthSyncEnabled,
-      enabled ? DateTime.fromMillisecondsSinceEpoch(1) : DateTime.fromMillisecondsSinceEpoch(0),
-    );
+    await preferencesRepository.setBoolPref(PrefsKeys.healthSyncEnabledV2, enabled);
+    CrashlyticsService.instance.log('HealthSync pref write: enabled=$enabled');
+    debugPrint('[HealthSync] pref write: enabled=$enabled');
   }
 
   @override
   Future<bool> isHealthSyncEnabled() async {
-    final time = await preferencesRepository.getLastFetchTime(PrefsKeys.healthSyncEnabled);
-    return time != null && time.millisecondsSinceEpoch > 0;
+    // V2 stores the toggle as a proper bool so we can distinguish "never set"
+    // from "explicitly false". Read this first.
+    final v2 = await preferencesRepository.getBoolPrefOrNull(PrefsKeys.healthSyncEnabledV2);
+    if (v2 != null) {
+      CrashlyticsService.instance.log('HealthSync pref read: v2=$v2');
+      return v2;
+    }
+
+    // Legacy migration: builds prior to V2 stored the toggle by abusing
+    // saveLastFetchTime — epoch=1 meant ON, epoch=0 meant OFF. Honor that
+    // value once, then migrate to V2 so subsequent reads take the fast path.
+    final legacy = await preferencesRepository.getLastFetchTime(PrefsKeys.healthSyncEnabled);
+    final legacyEnabled = legacy != null && legacy.millisecondsSinceEpoch > 0;
+    if (legacy != null) {
+      CrashlyticsService.instance.log('HealthSync pref read: legacy=$legacyEnabled, migrating to v2');
+      await preferencesRepository.setBoolPref(PrefsKeys.healthSyncEnabledV2, legacyEnabled);
+    } else {
+      CrashlyticsService.instance.log('HealthSync pref read: unset, defaulting false');
+    }
+    return legacyEnabled;
   }
 
   @override

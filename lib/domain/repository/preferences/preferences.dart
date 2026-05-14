@@ -7,4 +7,5 @@ abstract class Preferences {
   Future<void> setString(PrefsKeys key, String value);
   bool getBool(PrefsKeys key);
   Future<void> setBool(PrefsKeys key, bool value);
+  bool? getBoolOrNull(PrefsKeys key);
 }

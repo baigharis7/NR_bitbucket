@@ -20,6 +20,8 @@ abstract class PreferencesRepository {
   Future<bool> isUserSignedIn();
   Future<void> saveLastFetchTime(PrefsKeys categoryType, DateTime time);
   Future<DateTime?> getLastFetchTime(PrefsKeys categoryType);
+  Future<void> setBoolPref(PrefsKeys key, bool value);
+  Future<bool?> getBoolPrefOrNull(PrefsKeys key);
   Future<void> setLogMealToken(String token);
   String getLogMealToken();
 }

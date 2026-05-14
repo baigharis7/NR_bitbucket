@@ -84,6 +84,16 @@ class PreferencesRepositoryImpl extends PreferencesRepository {
   }
 
   @override
+  Future<void> setBoolPref(PrefsKeys key, bool value) async {
+    await prefs.setBool(key, value);
+  }
+
+  @override
+  Future<bool?> getBoolPrefOrNull(PrefsKeys key) async {
+    return prefs.getBoolOrNull(key);
+  }
+
+  @override
   String getLogMealToken() => prefs.getString(PrefsKeys.logMealToken);
 
   @override
