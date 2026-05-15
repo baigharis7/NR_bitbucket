@@ -11,10 +11,13 @@ import '../../../domain/interactor/foodevents/get_week_food_events_interactor.da
 import '../../../domain/interactor/masterfiles/get_master_file_interactor.dart';
 import '../../../domain/interactor/profile/get_profile_interactor.dart';
 import '../../../domain/interactor/profile/get_user_rdas_interactor.dart';
+import '../../../domain/interactor/supplements/get_day_supplement_events_interactor.dart';
 import '../../../domain/models/dashboard/nutrients_model.dart';
 import '../../../domain/models/dashboard/nutrients_weekly_model.dart';
 import '../../../domain/models/foodevents/food_event_complete.dart';
 import '../../../domain/models/masterfiles/nutrients_info_master.dart';
+import '../../../domain/models/masterfiles/supplements_info_master.dart';
+import '../../../domain/models/supplements/supplement_simple.dart';
 import '../../../infrastructure/helpers/date_time_helper.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 
@@ -28,6 +31,7 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
   final GetMasterFileInteractor getMasterFileInteractor;
   final GetProfileInteractor getProfileInteractor;
   final GetFoodEventsOfTodayInteractor getFoodEventsOfTodayInteractor;
+  final GetDaySupplementEventsInteractor getDaySupplementEventsInteractor;
   late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   MicroNutrientsDetailBloc({
@@ -35,6 +39,7 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
     required this.getMasterFileInteractor,
     required this.getProfileInteractor,
     required this.getFoodEventsOfTodayInteractor,
+    required this.getDaySupplementEventsInteractor,
   }) : super(MicroNutrientsDetailState(
     isLoading: false,
   ),
@@ -57,12 +62,14 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
       }
 
       state.foodEvents = await getFoodEventsOfTodayInteractor.execute();
+      state.supplementEvents = await getDaySupplementEventsInteractor.execute(dateTime: DateTime.now());
+      state.supplementsInfoMaster = await getMasterFileInteractor.execute(MasterFilesType.supplementsInfo);
 
       state.microNutrients = state.profile?.userAll.orEmpty()
           .map(
             (micronutrient) =>
             NutrientsModel(
-              quantityConsumed: getQuantityConsumedSoFar(micronutrient),
+              quantityConsumed: getQuantityConsumedSoFar(micronutrient) + getQuantitySupplementsSoFar(micronutrient),
               nutrientInfoMaster: getNutrientInfo(micronutrient),
               fractionToFill: 0.0,
               unit: getUnitForMicronutrient(micronutrient),
@@ -75,7 +82,7 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
           .map(
             (micronutrient) =>
             NutrientsModel(
-              quantityConsumed: getQuantityConsumedSoFar(micronutrient),
+              quantityConsumed: getQuantityConsumedSoFar(micronutrient) + getQuantitySupplementsSoFar(micronutrient),
               nutrientInfoMaster: getNutrientInfo(micronutrient),
               fractionToFill: 0.0,
               unit: getUnitForMicronutrient(micronutrient),
@@ -97,7 +104,7 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
       state.allMicronutrients = state.profile?.userRdas?.userRdas
           .orEmpty()
           .map((nutrient) => NutrientsModel(
-        quantityConsumed: getQuantityConsumedSoFar(nutrient.name),
+        quantityConsumed: getQuantityConsumedSoFar(nutrient.name) + getQuantitySupplementsSoFar(nutrient.name),
         nutrientInfoMaster: getNutrientInfo(nutrient.name),
         fractionToFill: 0.0,
         unit: getUnitForMicronutrient(nutrient.name),
@@ -147,6 +154,24 @@ class MicroNutrientsDetailBloc extends Bloc<MicroNutrientsDetailEvent, MicroNutr
     }
 
     return double.parse((nutrientQuantitySoFar).toStringAsFixed(2));
+  }
+
+  /// Sum supplement contribution toward a given micronutrient. Mirrors
+  /// DashboardBloc.getQuantitySupplementsSoFar so this detail screen agrees
+  /// with the dashboard after a supplement is added.
+  double getQuantitySupplementsSoFar(String micronutrient) {
+    double supplementQuantitySoFar = 0.0;
+    for (var supplement in state.supplementEvents.orEmpty()) {
+      for (var supplementItem in supplement.info.orEmpty()) {
+        final supplementInfo = state.supplementsInfoMaster?.data
+            .where((element) => supplementItem.id == element.id)
+            .firstOrNull;
+        if (supplementInfo?.computerName == micronutrient) {
+          supplementQuantitySoFar = supplementQuantitySoFar + supplementItem.amount;
+        }
+      }
+    }
+    return double.parse((supplementQuantitySoFar).toStringAsFixed(2));
   }
 
   String getUnitForMicronutrient(String micronutrient) {

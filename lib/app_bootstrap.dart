@@ -840,6 +840,7 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
         getWeekFoodEventsInteractor: getWeekFoodEventsInteractor,
         getProfileInteractor: getProfileInteractor,
         getFoodEventsOfTodayInteractor: getFoodEventsOfTodayInteractor,
+        getDaySupplementEventsInteractor: getDaySupplementEventsInteractor,
       );
 
       final macronutrientsDetailBloc = MacroNutrientsDetailBloc(

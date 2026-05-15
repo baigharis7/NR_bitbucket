@@ -10,6 +10,8 @@ class MicroNutrientsDetailState {
   NutrientsInfoMaster? nutrientsInfoMaster;
   UserProfileModel? profile;
   List<FoodEventComplete>? foodEvents;
+  List<SupplementSimple>? supplementEvents;
+  SupplementsInfoMaster? supplementsInfoMaster;
   List<NutrientsModel>? allMicronutrients;
   List<NutrientsModel>? filteredNutrientsLess15RDA;
   List<NutrientsWeeklyModel>? filteredNutrientsLess15RDAWeekly;
@@ -25,6 +27,8 @@ class MicroNutrientsDetailState {
     this.nutrientsInfoMaster,
     this.profile,
     this.foodEvents,
+    this.supplementEvents,
+    this.supplementsInfoMaster,
     this.allMicronutrients,
     this.filteredNutrientsLess15RDA,
     this.filteredNutrientsLess15RDAWeekly,
@@ -41,6 +45,8 @@ class MicroNutrientsDetailState {
     NutrientsInfoMaster? nutrientsInfoMaster,
     UserProfileModel? profile,
     List<FoodEventComplete>? foodEvents,
+    List<SupplementSimple>? supplementEvents,
+    SupplementsInfoMaster? supplementsInfoMaster,
     List<NutrientsModel>? allMicronutrients,
     List<NutrientsModel>? filteredNutrientsLess15RDA,
     List<NutrientsWeeklyModel>? filteredNutrientsLess15RDAWeekly,
@@ -56,6 +62,8 @@ class MicroNutrientsDetailState {
       nutrientsInfoMaster: nutrientsInfoMaster ?? this.nutrientsInfoMaster,
       profile: profile ?? this.profile,
       foodEvents: foodEvents ?? this.foodEvents,
+      supplementEvents: supplementEvents ?? this.supplementEvents,
+      supplementsInfoMaster: supplementsInfoMaster ?? this.supplementsInfoMaster,
       allMicronutrients:  allMicronutrients ?? this.allMicronutrients,
       filteredNutrientsLess15RDA: filteredNutrientsLess15RDA ?? this.filteredNutrientsLess15RDA,
       filteredNutrientsLess15RDAWeekly: filteredNutrientsLess15RDAWeekly ?? this.filteredNutrientsLess15RDAWeekly,

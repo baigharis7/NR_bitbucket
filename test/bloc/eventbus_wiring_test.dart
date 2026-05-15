@@ -1,8 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/models/calendar/calendar_events.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/masterfiles/supplements_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
@@ -868,12 +870,14 @@ void main() {
     late MockGetMasterFileInteractor mockGetMasterFile;
     late MockGetProfileInteractor mockGetProfile;
     late MockGetFoodEventsOfTodayInteractor mockGetFoodEvents;
+    late MockGetDaySupplementEventsInteractor mockGetDaySupplements;
 
     setUp(() {
       mockGetWeekFood = MockGetWeekFoodEventsInteractor();
       mockGetMasterFile = MockGetMasterFileInteractor();
       mockGetProfile = MockGetProfileInteractor();
       mockGetFoodEvents = MockGetFoodEventsOfTodayInteractor();
+      mockGetDaySupplements = MockGetDaySupplementEventsInteractor();
     });
 
     MicroNutrientsDetailBloc buildBloc() => MicroNutrientsDetailBloc(
@@ -881,13 +885,22 @@ void main() {
           getMasterFileInteractor: mockGetMasterFile,
           getProfileInteractor: mockGetProfile,
           getFoodEventsOfTodayInteractor: mockGetFoodEvents,
+          getDaySupplementEventsInteractor: mockGetDaySupplements,
         );
 
     void stubAllInteractors() {
       when(mockGetWeekFood.execute()).thenAnswer((_) async => <FoodEventComplete>[]);
-      when(mockGetMasterFile.execute(any)).thenAnswer((_) async => _stubNutrientsInfo);
+      // Return the master file matching the argument so callers can safely
+      // cast — the detail bloc now also fetches supplementsInfo.
+      when(mockGetMasterFile.execute(any)).thenAnswer((invocation) async {
+        final type = invocation.positionalArguments.first as MasterFilesType;
+        return type == MasterFilesType.supplementsInfo
+            ? SupplementsInfoMaster(v: 1, data: [])
+            : _stubNutrientsInfo;
+      });
       when(mockGetProfile.execute()).thenAnswer((_) async => UserProfileModel());
       when(mockGetFoodEvents.execute(dateTime: anyNamed('dateTime'))).thenAnswer((_) async => <FoodEventComplete>[]);
+      when(mockGetDaySupplements.execute(dateTime: anyNamed('dateTime'))).thenAnswer((_) async => <SupplementSimple>[]);
     }
 
     for (final category in [
