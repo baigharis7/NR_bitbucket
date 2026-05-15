@@ -51,12 +51,25 @@ class _MicroNutrientsSectionState extends State<MicroNutrientsSection> {
                   child: const Icon(Icons.keyboard_arrow_up, color: Colors.white, size: 22),
                 ),
                 const Spacer(),
-                InkWell(
+                // GestureDetector wraps the visible icon area with a wider
+                // hit target so taps adjacent to the 18×18 icon don't fall
+                // through to the parent expansion handler. behavior: opaque
+                // wins the gesture arena over the parent on its full bounds.
+                // The icon stays visually 18×18 pinned to the right.
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: () => Navigator.pushNamed(context, MicroNutrientsDetailScreen.routeName, arguments: {'micronutrients': widget.micronutrients, 'selectedDate': widget.selectedDate}),
                   child: SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: Image.asset('assets/images/info.png'),
+                    width: 44,
+                    height: 32,
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: Image.asset('assets/images/info.png'),
+                      ),
+                    ),
                   ),
                 ),
               ],
