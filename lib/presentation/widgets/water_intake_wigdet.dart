@@ -28,7 +28,6 @@ class WaterIntakeWidget extends StatefulWidget {
 }
 
 class _WaterIntakeWidgetState extends State<WaterIntakeWidget> {
-  bool _isExpanded = true;
   final double glassVolume = 0.25;
 
   @override
@@ -53,24 +52,17 @@ class _WaterIntakeWidgetState extends State<WaterIntakeWidget> {
       ),
       child: Column(
         children: [
-          // Title row inside the card
-          GestureDetector(
-            onTap: () => setState(() => _isExpanded = !_isExpanded),
-            child: Row(
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.hydration,
-                  style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20),
-                ),
-                const SizedBox(width: 4),
-                AnimatedRotation(
-                  turns: _isExpanded ? 0.0 : 0.5,
-                  duration: const Duration(milliseconds: 200),
-                  child: const Icon(Icons.keyboard_arrow_up, color: Colors.white, size: 22),
-                ),
-                const Spacer(),
-              ],
-            ),
+          // Title row. Previously had a chevron + tap-to-toggle, but the
+          // toggled flag was never read — every section below stayed visible
+          // either way — so the dropdown was decorative and confusing.
+          Row(
+            children: [
+              Text(
+                AppLocalizations.of(context)!.hydration,
+                style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSize20),
+              ),
+              const Spacer(),
+            ],
           ),
           const SizedBox(height: 10),
           // Glasses - always visible
