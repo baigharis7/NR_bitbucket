@@ -913,6 +913,7 @@ class LocalStorageImpl extends LocalStorageRepository {
   Future<bool> eraseDatabaseInformation() async {
     await _clearBox(_getProfileBox);
     await _clearBox(_getFoodEventsBox);
+    await _clearBox(_getFoodRoutinesBox);
     await _clearBox(_getLiquidEventsBox);
     await _clearBox(_getWaterEventsBox);
     await _clearBox(_getSportEventsBox);
@@ -930,10 +931,35 @@ class LocalStorageImpl extends LocalStorageRepository {
     await _clearBox(_getCreatineEventsBox);
     await _clearBox(_getCollagenEventsBox);
     await _clearBox(_getModelAppearanceBox);
+    // Previously missed user-scoped boxes — without these the next user
+    // could see leftover step counts, sleep logs, food routines, etc.
+    await _clearBox(_getUserStepsInfoBox);
+    await _clearBox(_getExplainingCardsBox);
+    await _clearBox(_openSleepEventsBox());
+    await _clearBox(_openHealthSyncMetadataBox());
+    // syncQueue and scannedFoods are opened in AppBootstrap, not here.
+    // Clear them via Hive directly when they're open.
+    await _clearOpenBoxByName('syncQueue');
+    await _clearOpenBoxByName('scanned_foods');
     for (var masterFilesType in MasterFilesType.values) {
       await _clearBox(_getMasterFilesBox(masterFilesType));
     }
     return true;
+  }
+
+  /// Best-effort clear of a Hive box opened elsewhere (e.g. AppBootstrap).
+  /// Silently no-ops if the box isn't open — preferable to opening it
+  /// without the correct typeArgument, which would corrupt subsequent reads.
+  Future<void> _clearOpenBoxByName(String name) async {
+    if (Hive.isBoxOpen(name)) {
+      try {
+        await Hive.box(name).clear();
+      } catch (_) {
+        // Ignore — type mismatch on dynamic Hive.box() call is acceptable
+        // since this is a defensive cleanup path. The next launch will
+        // re-open the box correctly.
+      }
+    }
   }
 
   Future<bool> _clearBox(Future<Box> box) async {

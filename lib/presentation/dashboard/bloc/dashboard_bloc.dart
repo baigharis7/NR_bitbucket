@@ -582,9 +582,14 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         if (token != null && fcmApi != null) {
           try { await fcmApi!.unregisterToken(token); } catch (_) {}
         }
+        // Fire-and-forget Amplify sign-out — it's a network round-trip
+        // (~500ms-2s) and the user's local data is what determines whether
+        // the next account's session is clean. Local Hive + prefs clear
+        // MUST complete before we navigate so the next account's first
+        // dashboard read can't pick up orphaned data.
         signOutInteractor.execute();
-        eraseDatabaseInteractor.execute();
-        sharedPreferences.clear();
+        await eraseDatabaseInteractor.execute();
+        await sharedPreferences.clear();
         state.isUpdatedDataNeeded = false;
         event.onFinish.call();
         emit(state.copyWith(isLoading: false, onError: null,));

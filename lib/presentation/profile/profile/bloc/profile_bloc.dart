@@ -432,10 +432,13 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     on<PerformLogOutAction>((event, emit) async {
       emit(state.copyWith(isLoading: true, onError: null, ));
       try {
+        // Fire-and-forget Amplify sign-out — see dashboard_bloc logout for
+        // rationale. Local clears MUST complete before we navigate so the
+        // next account can't read orphaned data.
         signOutInteractor.execute();
+        await eraseDatabaseInteractor.execute();
+        await sharedPreferences.clear();
         event.goToLogin.call();
-        eraseDatabaseInteractor.execute();
-        sharedPreferences.clear();
         emit(state.copyWith(isLoading: false, onError: null, ));
       } catch (errorSignOut) {
         state.onError = ErrorTypes.signOutError;

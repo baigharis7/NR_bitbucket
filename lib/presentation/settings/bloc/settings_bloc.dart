@@ -34,9 +34,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         if (token != null && fcmApi != null) {
           try { await fcmApi!.unregisterToken(token); } catch (_) {}
         }
-        final signOutResult = await signOutInteractor.execute();
-        final clearProfileResult = await eraseDatabaseInteractor.execute();
-        final clearShared = await sharedPreferences.clear();
+        // Fire-and-forget Amplify sign-out (slow network call) so the user
+        // doesn't stare at a spinner. Local clears MUST complete first so
+        // the next account starts clean.
+        signOutInteractor.execute();
+        await eraseDatabaseInteractor.execute();
+        await sharedPreferences.clear();
         emit(state.copyWith(isLoading: false, onError: null, ));
         event.goToLogin.call();
       } catch (errorSignOut) {

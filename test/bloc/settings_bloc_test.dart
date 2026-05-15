@@ -91,6 +91,41 @@ void main() {
       ],
     );
 
+    group('logout sequencing — local clears must complete before nav', () {
+      // Regression guard: previously dashboard_bloc and profile_bloc logout
+      // were fire-and-forget, so navigation happened while the Hive clear
+      // was still running. The next account opened to see User A's data.
+      // settings_bloc was the only correct path. Now all three await
+      // eraseDatabase + prefs.clear before calling goToLogin.
+
+      blocTest<SettingsBloc, SettingsState>(
+        'goToLogin is NOT called before eraseDatabase completes',
+        build: () {
+          // Make eraseDatabase take a measurable amount of time so the
+          // race window is observable.
+          when(mockEraseDb.execute()).thenAnswer((_) async {
+            await Future.delayed(const Duration(milliseconds: 80));
+            return true;
+          });
+          return _buildBloc();
+        },
+        act: (bloc) async {
+          var goToLoginCalledAt = -1;
+          final stopwatch = Stopwatch()..start();
+          bloc.add(SettingsLogOut(goToLogin: () {
+            goToLoginCalledAt = stopwatch.elapsedMilliseconds;
+          }));
+          // Wait for the bloc to finish processing.
+          await Future.delayed(const Duration(milliseconds: 200));
+          // Must be at least 80ms (the erase delay) before goToLogin fires.
+          // Use 70 as the threshold to allow a few ms of jitter.
+          expect(goToLoginCalledAt, greaterThanOrEqualTo(70),
+              reason: 'goToLogin fired before eraseDatabase finished — '
+                  'this is the fire-and-forget regression we are guarding against');
+        },
+      );
+    });
+
     group('FCM token unregister on logout', () {
       blocTest<SettingsBloc, SettingsState>(
         'unregisters FCM token before sign-out',

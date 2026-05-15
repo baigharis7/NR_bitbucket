@@ -122,6 +122,21 @@ class SplashProvider extends ChangeNotifier {
       _refreshMasterFiles(prefsRepository, authenticationService, localStorageRepository, referenceDatabase);
 
       final profile = await getProfileInteractor.execute();
+      // Defense-in-depth against incomplete logouts: if the Hive profile
+      // belongs to a different user than the current Cognito session, wipe
+      // local data and force re-onboarding. Should never fire in practice
+      // because logout awaits eraseDatabase, but this catches a kill mid-
+      // logout / OS-killed-during-clear / future regressions.
+      if (profile != null &&
+          profile.userId != null &&
+          profile.userId!.isNotEmpty &&
+          profile.userId != userId) {
+        debugPrint(
+            'SplashProvider: userId mismatch (hive=${profile.userId}, cognito=$userId), wiping local data');
+        await localStorageRepository.eraseDatabaseInformation();
+        toLogin.call();
+        return;
+      }
       if (profile.isNull() || (profile!.objectives.orEmpty().isEmpty && profile.physicalCharacteristics.isNull())) {
         toLogin.call();
       } else {
