@@ -15,7 +15,9 @@ class NutrientElementWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double progress = (current / goal).clamp(0.0, 1.0) * 100;
+    // Guard against goal == 0 (fresh account with no kcal target). NaN.clamp()
+    // returns NaN, which propagates into the progress bar and renders wrong.
+    final double progress = goal > 0 ? (current / goal).clamp(0.0, 1.0) * 100 : 0.0;
     return Column(
       children: [
         RichText(

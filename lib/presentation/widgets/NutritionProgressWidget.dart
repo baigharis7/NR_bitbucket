@@ -248,15 +248,24 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                     children: [
                       ...widget.nutrientsList.map(
                         (nutrient) {
-                          final double nPercent =
-                              (nutrient.quantityConsumed / nutrient.rda);
-                          final double nPercentage = nPercent * 100;
-                          final color = (nPercentage >= Constants.PERCENTAGE_110 &&
-                                  nPercentage <= Constants.PERCENTAGE_115)
-                              ? AppColors.mustardYellow
-                              : nPercentage > Constants.PERCENTAGE_115
-                                  ? AppColors.red
-                                  : AppColors.mountainMeadow;
+                          // For a brand-new account with no kcal target yet, rda
+                          // is 0. Without this guard, 0/0 produces NaN, every
+                          // comparison below evaluates to false, and the color
+                          // falls through to mountainMeadow (green) — making
+                          // every macro look "on target" before the user has
+                          // entered any data.
+                          final double rda = nutrient.rda.toDouble();
+                          final bool hasGoal = rda > 0;
+                          final double nPercentage =
+                              hasGoal ? (nutrient.quantityConsumed / rda) * 100 : 0.0;
+                          final color = !hasGoal
+                              ? AppColors.battleshipGrey
+                              : (nPercentage >= Constants.PERCENTAGE_110 &&
+                                      nPercentage <= Constants.PERCENTAGE_115)
+                                  ? AppColors.mustardYellow
+                                  : nPercentage > Constants.PERCENTAGE_115
+                                      ? AppColors.red
+                                      : AppColors.mountainMeadow;
                           return SizedBox(
                             width: MediaQuery.of(context).size.width / 3.5,
                             child: NutrientElementWidget(
