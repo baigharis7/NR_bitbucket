@@ -168,25 +168,6 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     }
   }
 
-  @override
-  Future<List<HealthActivity>> fetchSteps({
-    required DateTime startDate,
-    required DateTime endDate,
-  }) async {
-    try {
-      final healthData = await _health.getHealthDataFromTypes(
-        types: [HealthDataType.STEPS],
-        startTime: startDate,
-        endTime: endDate,
-      );
-
-      // Group steps by day and create activities
-      return _mapStepsToActivities(healthData);
-    } catch (e) {
-      return [];
-    }
-  }
-
   /// Maps workout HealthDataPoints to HealthActivity domain models
   List<HealthActivity> _mapWorkoutsToActivities(
     List<HealthDataPoint> workouts,
@@ -274,61 +255,6 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
         sourceName: workout.sourceName,
         sourceType: Platform.isIOS ? 'apple_health' : 'health_connect',
       ));
-    }
-
-    return activities;
-  }
-
-  /// Maps step HealthDataPoints to HealthActivity domain models
-  /// Groups steps by day
-  List<HealthActivity> _mapStepsToActivities(List<HealthDataPoint> stepsData) {
-    final activities = <HealthActivity>[];
-
-    // Group steps by day
-    final stepsByDay = <String, List<HealthDataPoint>>{};
-    for (final step in stepsData) {
-      final dayKey = '${step.dateFrom.year}-${step.dateFrom.month}-${step.dateFrom.day}';
-      stepsByDay.putIfAbsent(dayKey, () => []).add(step);
-    }
-
-    // Create one activity per day
-    for (final entry in stepsByDay.entries) {
-      final daySteps = entry.value;
-      if (daySteps.isEmpty) continue;
-
-      int totalSteps = 0;
-      DateTime? earliestStart;
-      DateTime? latestEnd;
-
-      for (final step in daySteps) {
-        final value = step.value;
-        if (value is NumericHealthValue) {
-          totalSteps += value.numericValue.round();
-        }
-        if (earliestStart == null || step.dateFrom.isBefore(earliestStart)) {
-          earliestStart = step.dateFrom;
-        }
-        if (latestEnd == null || step.dateTo.isAfter(latestEnd)) {
-          latestEnd = step.dateTo;
-        }
-      }
-
-      if (earliestStart != null && latestEnd != null && totalSteps > 0) {
-        // Generate a unique ID for daily steps
-        final stepId = '${daySteps.first.sourceName}_steps_${entry.key}';
-        activities.add(HealthActivity(
-          healthPlatformId: stepId,
-          activityType: 'WALKING',
-          startTime: earliestStart,
-          endTime: latestEnd,
-          durationMinutes: latestEnd.difference(earliestStart).inMinutes,
-          caloriesBurned: totalSteps * 0.04, // Rough estimate: 0.04 kcal per step
-          distance: totalSteps * 0.762, // Rough estimate: average step length ~0.762m
-          avgHeartRate: null,
-          sourceName: daySteps.first.sourceName,
-          sourceType: Platform.isIOS ? 'apple_health' : 'health_connect',
-        ));
-      }
     }
 
     return activities;

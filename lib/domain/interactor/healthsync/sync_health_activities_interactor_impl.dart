@@ -101,24 +101,20 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
         return syncedEvents;
       }
 
-      // Fetch activities from health platform
+      // Fetch activities from health platform. We deliberately do NOT
+      // synthesize an activity from passive STEPS data: that produced a
+      // bogus "Walking" entry per day with duration spanning the whole
+      // waking period (first step → last step). The step counter widget
+      // gets its data from fetchTodayStepCount, and real walking workouts
+      // come through HealthDataType.WORKOUT here.
       final activities = await healthSyncRepository.fetchActivities(
         startDate: startDate,
         endDate: endDate,
       );
       _log('Fetched ${activities.length} activities from health platform');
 
-      // Fetch steps as well
-      final steps = await healthSyncRepository.fetchSteps(
-        startDate: startDate,
-        endDate: endDate,
-      );
-      _log('Fetched ${steps.length} step entries from health platform');
-
-      // Combine and deduplicate
-      final allActivities = [...activities, ...steps];
-      final newActivities = await _deduplicateActivities(allActivities);
-      _log('After dedup: ${newActivities.length} new activities (${allActivities.length - newActivities.length} already synced)');
+      final newActivities = await _deduplicateActivities(activities);
+      _log('After dedup: ${newActivities.length} new activities (${activities.length - newActivities.length} already synced)');
 
       // Process each new activity
       for (final activity in newActivities) {

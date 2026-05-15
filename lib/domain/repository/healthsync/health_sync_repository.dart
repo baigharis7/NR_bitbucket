@@ -22,13 +22,6 @@ abstract class HealthSyncRepository {
     required DateTime endDate,
   });
 
-  /// Fetch step count data from the health platform.
-  /// Returns step data as HealthActivity entries.
-  Future<List<HealthActivity>> fetchSteps({
-    required DateTime startDate,
-    required DateTime endDate,
-  });
-
   /// Save sync metadata to track which activities have been imported.
   Future<void> saveHealthSyncMetadata(HealthSyncMetadata metadata);
 

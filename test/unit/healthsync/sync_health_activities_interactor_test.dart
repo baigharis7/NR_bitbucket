@@ -154,10 +154,6 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).thenAnswer((_) async => []);
-      when(() => mockHealthSyncRepository.fetchSteps(
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => []);
       when(() => mockHealthSyncRepository.setLastSyncTime(any()))
           .thenAnswer((_) async {});
 
@@ -196,10 +192,6 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).thenAnswer((_) async => [activity]);
-      when(() => mockHealthSyncRepository.fetchSteps(
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => []);
       // Activity is already synced
       when(() => mockHealthSyncRepository.isAlreadySynced('already_synced_id'))
           .thenAnswer((_) async => true);
@@ -249,10 +241,6 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).thenAnswer((_) async => [activity]);
-      when(() => mockHealthSyncRepository.fetchSteps(
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => []);
       when(() => mockHealthSyncRepository.isAlreadySynced('new_activity_id'))
           .thenAnswer((_) async => false);
 
@@ -305,10 +293,6 @@ void main() {
         fetchActivitiesCalled = true;
         return [];
       });
-      when(() => mockHealthSyncRepository.fetchSteps(
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => []);
       when(() => mockHealthSyncRepository.setLastSyncTime(any()))
           .thenAnswer((_) async {});
 
@@ -379,10 +363,6 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).thenAnswer((_) async => [activity]);
-      when(() => mockHealthSyncRepository.fetchSteps(
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => []);
       when(() => mockHealthSyncRepository.isAlreadySynced('no_calories_id'))
           .thenAnswer((_) async => false);
       when(() => mockSportKcalCalculationService.enrichSportEvent(
@@ -436,10 +416,6 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).thenAnswer((_) async => [activity]);
-      when(() => mockHealthSyncRepository.fetchSteps(
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => []);
       when(() => mockHealthSyncRepository.isAlreadySynced('has_calories_id'))
           .thenAnswer((_) async => false);
       when(() => mockSaveSportEventInteractor.execute(any(), any()))
@@ -489,10 +465,6 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).thenAnswer((_) async => [activity]);
-      when(() => mockHealthSyncRepository.fetchSteps(
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => []);
       when(() => mockHealthSyncRepository.isAlreadySynced('zero_duration_id'))
           .thenAnswer((_) async => false);
       when(() => mockSaveSportEventInteractor.execute(any(), any()))
@@ -563,10 +535,6 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).thenAnswer((_) async => [activity1, activity2]);
-      when(() => mockHealthSyncRepository.fetchSteps(
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => []);
       when(() => mockHealthSyncRepository.isAlreadySynced(any()))
           .thenAnswer((_) async => false);
 
