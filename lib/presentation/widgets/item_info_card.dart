@@ -42,7 +42,7 @@ class ItemInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final card = Container(
       margin: const EdgeInsets.only(top: Dimens.marginSmall, left: Dimens.marginLarge, right: Dimens.marginLarge),
       padding: const EdgeInsets.symmetric(vertical: Dimens.marginNormal, horizontal: Dimens.marginLarge),
       decoration: BoxDecoration(
@@ -105,24 +105,19 @@ class ItemInfoCard extends StatelessWidget {
               ],
             ],
           ),
-          // ListTile(
-          //   onTap: onItemTap,
-          //   // contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          //   titleAlignment: ListTileTitleAlignment.center,
-          //   horizontalTitleGap: 0,
-          //   leading: !leadingSrc.isNull() && !leadingTap.isNull() ? InkWell(onTap: () => leadingTap?.call(), child: Image.asset(leadingSrc!, width: leadingIconSize ?? 17, height: leadingIconSize ?? 17)) : const SizedBox(),
-          //   title: Text(
-          //     title,
-          //     style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w300, fontSize: Dimens.fontSizeLarge, color: Colors.black), maxLines: 1, overflow: TextOverflow.ellipsis,
-          //   ),
-          //   subtitle: !subtitle.isNull() ? Text(
-          //     subtitle!,
-          //     style: const TextStyle(color: AppColors.battleshipGrey, fontWeight: FontWeight.w500, fontSize: Dimens.fontSizeXSmall),
-          //   ) : const SizedBox(),
-          //   trailing: !trailingSrc.isNull() && !trailingTap.isNull() ? InkWell(onTap: () => trailingTap?.call(), child: Image.asset(trailingSrc!, height: 21, width: 21)) : const SizedBox(),
-          // ),
         ],
       ),
+    );
+
+    // Without a body tap handler, the card is presentational (or only the
+    // trailing icons are interactive). Otherwise wrap the whole card so
+    // testers can tap anywhere — previously only the small "+" icon worked,
+    // which made Recent/Favorites items feel non-functional.
+    if (onItemTap == null) return card;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onItemTap,
+      child: card,
     );
   }
 
