@@ -18,6 +18,7 @@ import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/interval_union.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
 /// Implementation of HealthSyncRepository using the health package.
@@ -489,14 +490,32 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
 
       if (sleepData.isEmpty) return 0.0;
 
-      // Sum total sleep duration from all sessions
-      double totalHours = 0.0;
+      // Log every session with source so we can diagnose bogus entries on
+      // testers' devices (e.g. Samsung Health "scheduled sleep" goal windows
+      // showing up as 8h SLEEP_SESSION records when actual sleep was 6h45m).
       for (final point in sleepData) {
-        final duration = point.dateTo.difference(point.dateFrom);
-        totalHours += duration.inMinutes / 60.0;
+        final mins = point.dateTo.difference(point.dateFrom).inMinutes;
+        CrashlyticsService.instance.log(
+          'HealthSync sleep session: source=${point.sourceName} '
+          'from=${point.dateFrom.toIso8601String()} '
+          'to=${point.dateTo.toIso8601String()} mins=$mins',
+        );
       }
 
-      debugPrint('[HealthSync] fetchTodaySleepHours: ${sleepData.length} sessions, total=$totalHours hours');
+      // Multiple connected apps (Samsung Health, Google Fit, smartwatch) can
+      // each log the same night, producing overlapping SLEEP_SESSION records.
+      // Naively summing them double-counts. Union the intervals first, then
+      // sum non-overlapping durations.
+      final totalMinutes = sumNonOverlappingMinutes(
+        sleepData.map((p) => TimeInterval(p.dateFrom, p.dateTo)),
+      );
+      final totalHours = totalMinutes / 60.0;
+
+      debugPrint('[HealthSync] fetchTodaySleepHours: ${sleepData.length} sessions, '
+          'merged total=$totalHours hours');
+      CrashlyticsService.instance.log(
+        'HealthSync sleep merged: ${sleepData.length} sessions → $totalHours hours',
+      );
       return totalHours;
     } catch (e) {
       // Return null on error so callers can distinguish a real fetch failure
@@ -506,6 +525,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       return null;
     }
   }
+
 
   @override
   Future<int?> fetchTodayStepCount(DateTime date) async {
