@@ -88,11 +88,17 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
   }
 
   /// Fetch sleep/step from Health Connect for a date and save to Hive + DynamoDB.
-  Future<({double sleepHours, int stepCount})> _fetchAndSave(DateTime date) async {
+  /// A null result from a fetch means the call errored — skip the save for
+  /// that field so we don't overwrite a previously good value with 0.
+  Future<({double? sleepHours, int? stepCount})> _fetchAndSave(DateTime date) async {
     final sleepHours = await healthSyncRepository.fetchTodaySleepHours(date);
     final stepCount = await healthSyncRepository.fetchTodayStepCount(date);
-    await healthSyncRepository.saveSleepEvent(date: date, sleepHours: sleepHours);
-    await healthSyncRepository.saveStepEvent(date: date, stepCount: stepCount);
+    if (sleepHours != null) {
+      await healthSyncRepository.saveSleepEvent(date: date, sleepHours: sleepHours);
+    }
+    if (stepCount != null) {
+      await healthSyncRepository.saveStepEvent(date: date, stepCount: stepCount);
+    }
     return (sleepHours: sleepHours, stepCount: stepCount);
   }
 
@@ -151,8 +157,10 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       if (isEnabled && isAvailable) {
         try {
           final fresh = await _fetchAndSave(today);
-          sleepHours = fresh.sleepHours;
-          stepCount = fresh.stepCount;
+          // Only override saved values when the fetch returned a real reading.
+          // A null means the fetch errored — keep the previously saved value.
+          if (fresh.sleepHours != null) sleepHours = fresh.sleepHours;
+          if (fresh.stepCount != null) stepCount = fresh.stepCount;
           _hsLog('HealthSync init: sleepHours=$sleepHours, stepCount=$stepCount');
         } catch (e) {
           _hsLog('HealthSync init: fetch failed (permissions likely revoked), using saved data');

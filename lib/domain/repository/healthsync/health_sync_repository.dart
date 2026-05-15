@@ -55,10 +55,14 @@ abstract class HealthSyncRepository {
   Future<void> openHealthConnect();
 
   /// Fetch today's total sleep hours from the health platform.
-  Future<double> fetchTodaySleepHours(DateTime date);
+  /// Returns null if the fetch failed (e.g. permissions revoked, HC error),
+  /// so callers can preserve any previously saved value rather than
+  /// clobbering it with 0. A real "no data" reading returns 0.0.
+  Future<double?> fetchTodaySleepHours(DateTime date);
 
   /// Fetch today's total step count from the health platform.
-  Future<int> fetchTodayStepCount(DateTime date);
+  /// Returns null on fetch failure — see fetchTodaySleepHours.
+  Future<int?> fetchTodayStepCount(DateTime date);
 
   /// Save sleep hours for a date to Hive + DynamoDB.
   Future<void> saveSleepEvent({

@@ -475,7 +475,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   }
 
   @override
-  Future<double> fetchTodaySleepHours(DateTime date) async {
+  Future<double?> fetchTodaySleepHours(DateTime date) async {
     try {
       // Look for sleep sessions from 6PM the previous day to noon the following day
       final startTime = DateTime(date.year, date.month, date.day).subtract(const Duration(hours: 6));
@@ -499,13 +499,16 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       debugPrint('[HealthSync] fetchTodaySleepHours: ${sleepData.length} sessions, total=$totalHours hours');
       return totalHours;
     } catch (e) {
+      // Return null on error so callers can distinguish a real fetch failure
+      // from "user has 0 sleep recorded so far today" and preserve any
+      // previously saved value instead of clobbering it with 0.
       debugPrint('[HealthSync] fetchTodaySleepHours ERROR: $e');
-      return 0.0;
+      return null;
     }
   }
 
   @override
-  Future<int> fetchTodayStepCount(DateTime date) async {
+  Future<int?> fetchTodayStepCount(DateTime date) async {
     try {
       final startTime = DateTime(date.year, date.month, date.day);
       final endTime = DateTime(date.year, date.month, date.day, 23, 59, 59);
@@ -527,8 +530,9 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       debugPrint('[HealthSync] fetchTodayStepCount: $totalSteps steps');
       return totalSteps;
     } catch (e) {
+      // Return null on error — same rationale as fetchTodaySleepHours.
       debugPrint('[HealthSync] fetchTodayStepCount ERROR: $e');
-      return 0;
+      return null;
     }
   }
 }
