@@ -144,58 +144,77 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
     return items;
   }
 
-  /// Returns programmed routines that don't have a matching logged event.
-  List<_ProgrammedRoutineItem> _getUnloggedProgrammedRoutines(
+  /// Pair each programmed routine for [date] with its matching logged event,
+  /// if any. The activity diary shows ONE row per programmed routine for the
+  /// day — rendered as "logged" if a matching event exists, or "upcoming"
+  /// (programmed) if no event matches yet. Events that don't correspond to
+  /// any programmed routine (manual one-off entries, device-synced sports,
+  /// etc.) are excluded from the diary entirely.
+  ///
+  /// Matching rules:
+  ///   - Food: by foodName + mealType
+  ///   - Sport: by sportName, restricted to events with source == null
+  ///     (cron-fired). Manual/Health-Connect sports never fulfil a routine.
+  ///   - Supplement: by name
+  ///
+  /// Food and supplement event models don't carry a `source` field, so the
+  /// best we can do for those is a name match — a same-named manual entry
+  /// will count as fulfilling the routine, which is what testers typically
+  /// expect.
+  List<_DiaryEntry> _buildDiaryEntries(
       DateTime date, List<dynamic> loggedEvents) {
-    final allProgrammed = _getProgrammedRoutinesForDay(date);
-    if (loggedEvents.isEmpty) return allProgrammed;
+    final programmed = _getProgrammedRoutinesForDay(date);
 
-    // Count logged food (by name+mealType), sport (by name), supplement (by name)
-    final loggedFoods = <String, int>{};
-    final loggedSports = <String, int>{};
-    final loggedSupplements = <String, int>{};
-    for (final e in loggedEvents) {
-      if (e is FoodEventComplete) {
-        final key =
-            '${(e.foodName ?? '').toLowerCase()}|${e.mealType ?? 0}';
-        loggedFoods[key] = (loggedFoods[key] ?? 0) + 1;
-      } else if (e is SportEventComplete) {
-        final key = (e.sportName ?? '').toLowerCase();
-        loggedSports[key] = (loggedSports[key] ?? 0) + 1;
-      } else if (e is SupplementSimple) {
-        final key = (e.name ?? '').toLowerCase();
-        loggedSupplements[key] = (loggedSupplements[key] ?? 0) + 1;
-      }
-    }
-
-    return allProgrammed.where((p) {
-      if (p.type == _RoutineType.food) {
-        final key = '${p.title.toLowerCase()}|${p.mealType}';
-        final count = loggedFoods[key] ?? 0;
-        if (count > 0) {
-          loggedFoods[key] = count - 1;
-          return false; // matched to a logged event
-        }
-        return true;
-      } else if (p.type == _RoutineType.sport) {
-        final key = p.title.toLowerCase();
-        final count = loggedSports[key] ?? 0;
-        if (count > 0) {
-          loggedSports[key] = count - 1;
-          return false;
-        }
-        return true;
-      } else if (p.type == _RoutineType.supplement) {
-        final key = p.title.toLowerCase();
-        final count = loggedSupplements[key] ?? 0;
-        if (count > 0) {
-          loggedSupplements[key] = count - 1;
-          return false;
-        }
-        return true;
-      }
+    // Pool of events still available to match — only sport events get the
+    // source-filter; food / supplement pass through because there's no
+    // source field on those models.
+    final pool = loggedEvents.where((e) {
+      if (e is SportEventComplete) return e.source == null;
       return true;
     }).toList();
+
+    final entries = <_DiaryEntry>[];
+    for (final p in programmed) {
+      dynamic match;
+      int? matchIndex;
+      for (int i = 0; i < pool.length; i++) {
+        if (_matchesProgrammedRoutine(p, pool[i])) {
+          match = pool[i];
+          matchIndex = i;
+          break;
+        }
+      }
+      if (matchIndex != null) pool.removeAt(matchIndex);
+      final sortMinutes = match != null
+          ? _millisToMinutes(_eventDateMillis(match))
+          : _timeStrToMinutes(p.time);
+      entries.add(_DiaryEntry(
+        programmed: p,
+        logged: match,
+        sortMinutes: sortMinutes,
+      ));
+    }
+    entries.sort((a, b) => a.sortMinutes.compareTo(b.sortMinutes));
+    return entries;
+  }
+
+  bool _matchesProgrammedRoutine(_ProgrammedRoutineItem p, dynamic event) {
+    if (p.type == _RoutineType.food && event is FoodEventComplete) {
+      return (event.foodName ?? '').toLowerCase() == p.title.toLowerCase() &&
+          (event.mealType ?? 0) == p.mealType;
+    } else if (p.type == _RoutineType.sport && event is SportEventComplete) {
+      return (event.sportName ?? '').toLowerCase() == p.title.toLowerCase();
+    } else if (p.type == _RoutineType.supplement && event is SupplementSimple) {
+      return (event.name ?? '').toLowerCase() == p.title.toLowerCase();
+    }
+    return false;
+  }
+
+  int _eventDateMillis(dynamic e) {
+    if (e is FoodEventComplete) return e.eventDate ?? 0;
+    if (e is SportEventComplete) return e.eventDate;
+    if (e is SupplementSimple) return e.eventDate ?? 0;
+    return 0;
   }
 
   @override
@@ -631,47 +650,13 @@ class _CalendarPaneScreenState extends State<CalendarPaneScreen> {
   // ──────────────────────────────────────────────────────────────────────────
 
   Widget _buildRoutineDiary(AppLocalizations l10n, String locale) {
-    final routineEvents = _getRoutineEventsForDay(_selectedDay);
-    // Sort ascending by event date (earliest first)
-    routineEvents.sort((a, b) {
-      final aDate = a is FoodEventComplete
-          ? (a.eventDate ?? 0)
-          : a is SportEventComplete
-              ? a.eventDate
-              : a is SupplementSimple
-                  ? (a.eventDate ?? 0)
-                  : 0;
-      final bDate = b is FoodEventComplete
-          ? (b.eventDate ?? 0)
-          : b is SportEventComplete
-              ? b.eventDate
-              : b is SupplementSimple
-                  ? (b.eventDate ?? 0)
-                  : 0;
-      return aDate.compareTo(bDate);
-    });
-
-    // Show programmed routines that don't yet have a matching logged event
-    final programmedRoutines =
-        _getUnloggedProgrammedRoutines(_selectedDay, routineEvents);
-
-    // Build a unified list of diary entries (logged + programmed), sorted by time
-    final diaryEntries = <_DiaryEntry>[];
-    for (final e in routineEvents) {
-      final millis = e is FoodEventComplete
-          ? (e.eventDate ?? 0)
-          : e is SportEventComplete
-              ? e.eventDate
-              : e is SupplementSimple
-                  ? (e.eventDate ?? 0)
-                  : 0;
-      diaryEntries.add(_DiaryEntry(logged: e, sortMinutes: _millisToMinutes(millis)));
-    }
-    for (final p in programmedRoutines) {
-      diaryEntries.add(_DiaryEntry(programmed: p, sortMinutes: _timeStrToMinutes(p.time)));
-    }
-    diaryEntries.sort((a, b) => a.sortMinutes.compareTo(b.sortMinutes));
-
+    // The diary is a 1:1 view of programmed routines for the day. Each entry
+    // is rendered as "logged" (matched to a cron-fired event) or "upcoming"
+    // (no matched event yet). Manual one-off entries that aren't tied to a
+    // routine are filtered out — they live in the per-category screens, not
+    // the routine diary.
+    final loggedEvents = _getRoutineEventsForDay(_selectedDay);
+    final diaryEntries = _buildDiaryEntries(_selectedDay, loggedEvents);
     final hasContent = diaryEntries.isNotEmpty;
 
     return Padding(

@@ -181,8 +181,14 @@ void main() {
       expect(find.text('No routines scheduled.'), findsOneWidget);
     });
 
+    // The routine diary is now anchored on programmed routines for the day —
+    // a one-off event without a matching routine does NOT appear (it belongs
+    // in the per-category screens). Every "logged" assertion here therefore
+    // pairs the event with a corresponding routine.
+
     testWidgets('shows food event in routine diary', (tester) async {
       setTestSurface(tester);
+      final todayWeekday = today.weekday;
       final events = DashboardAllCalendarEvents(
         foodEvents: [makeFoodEvent(foodName: 'Chicken Salad', mealType: 1)],
         sportEvents: [],
@@ -194,7 +200,21 @@ void main() {
         urineEvents: [],
       );
 
-      await tester.pumpWidget(buildTestWidget(allCalendarEvents: events));
+      await tester.pumpWidget(buildTestWidget(
+        allCalendarEvents: events,
+        programmedWeekdays: {todayWeekday},
+        mealRoutines: [
+          FoodRoutineEvent(
+            userId: 'test',
+            eventDate: todayMillis,
+            foodName: 'Chicken Salad',
+            comment: null,
+            mealType: 1,
+            daysOfWeek: [todayWeekday],
+            time: '12:00',
+          ),
+        ],
+      ));
       await tester.pumpAndSettle();
 
       expect(find.text('Chicken Salad'), findsOneWidget);
@@ -203,6 +223,7 @@ void main() {
 
     testWidgets('shows sport event in routine diary', (tester) async {
       setTestSurface(tester);
+      final todayWeekday = today.weekday;
       final events = DashboardAllCalendarEvents(
         foodEvents: [],
         sportEvents: [makeSportEvent(sportName: 'Swimming')],
@@ -214,7 +235,21 @@ void main() {
         urineEvents: [],
       );
 
-      await tester.pumpWidget(buildTestWidget(allCalendarEvents: events));
+      await tester.pumpWidget(buildTestWidget(
+        allCalendarEvents: events,
+        programmedWeekdays: {todayWeekday},
+        sportRoutines: [
+          SportRoutineCompleted(
+            userId: 'test',
+            eventId: 1,
+            eventDate: todayMillis,
+            sportName: 'Swimming',
+            info: [],
+            daysOfWeek: [todayWeekday],
+            scheduleTime: '10:00',
+          ),
+        ],
+      ));
       await tester.pumpAndSettle();
 
       expect(find.text('Swimming'), findsOneWidget);
@@ -223,6 +258,7 @@ void main() {
 
     testWidgets('shows multiple events sorted ascending', (tester) async {
       setTestSurface(tester);
+      final todayWeekday = today.weekday;
       final earlyMillis = DateTime(today.year, today.month, today.day, 8)
           .millisecondsSinceEpoch;
       final lateMillis = DateTime(today.year, today.month, today.day, 18)
@@ -244,7 +280,30 @@ void main() {
         urineEvents: [],
       );
 
-      await tester.pumpWidget(buildTestWidget(allCalendarEvents: events));
+      await tester.pumpWidget(buildTestWidget(
+        allCalendarEvents: events,
+        programmedWeekdays: {todayWeekday},
+        mealRoutines: [
+          FoodRoutineEvent(
+            userId: 'test',
+            eventDate: todayMillis,
+            foodName: 'Breakfast',
+            comment: null,
+            mealType: 0,
+            daysOfWeek: [todayWeekday],
+            time: '08:00',
+          ),
+          FoodRoutineEvent(
+            userId: 'test',
+            eventDate: todayMillis,
+            foodName: 'Dinner',
+            comment: null,
+            mealType: 2,
+            daysOfWeek: [todayWeekday],
+            time: '18:00',
+          ),
+        ],
+      ));
       await tester.pumpAndSettle();
 
       final breakfastPos = tester.getTopLeft(find.text('Breakfast'));
@@ -397,6 +456,7 @@ void main() {
 
     testWidgets('shows scrollbar when events exist', (tester) async {
       setTestSurface(tester);
+      final todayWeekday = today.weekday;
       final events = DashboardAllCalendarEvents(
         foodEvents: [
           makeFoodEvent(foodName: 'Item 1'),
@@ -411,7 +471,30 @@ void main() {
         urineEvents: [],
       );
 
-      await tester.pumpWidget(buildTestWidget(allCalendarEvents: events));
+      await tester.pumpWidget(buildTestWidget(
+        allCalendarEvents: events,
+        programmedWeekdays: {todayWeekday},
+        mealRoutines: [
+          FoodRoutineEvent(
+            userId: 'test',
+            eventDate: todayMillis,
+            foodName: 'Item 1',
+            comment: null,
+            mealType: 0,
+            daysOfWeek: [todayWeekday],
+            time: '08:00',
+          ),
+          FoodRoutineEvent(
+            userId: 'test',
+            eventDate: todayMillis,
+            foodName: 'Item 2',
+            comment: null,
+            mealType: 0,
+            daysOfWeek: [todayWeekday],
+            time: '09:00',
+          ),
+        ],
+      ));
       await tester.pumpAndSettle();
 
       expect(find.byType(Scrollbar), findsOneWidget);
@@ -427,6 +510,7 @@ void main() {
 
     testWidgets('renders check icon for logged events', (tester) async {
       setTestSurface(tester);
+      final todayWeekday = today.weekday;
       final events = DashboardAllCalendarEvents(
         foodEvents: [makeFoodEvent()],
         sportEvents: [],
@@ -438,7 +522,21 @@ void main() {
         urineEvents: [],
       );
 
-      await tester.pumpWidget(buildTestWidget(allCalendarEvents: events));
+      await tester.pumpWidget(buildTestWidget(
+        allCalendarEvents: events,
+        programmedWeekdays: {todayWeekday},
+        mealRoutines: [
+          FoodRoutineEvent(
+            userId: 'test',
+            eventDate: todayMillis,
+            foodName: 'Rice',
+            comment: null,
+            mealType: 0,
+            daysOfWeek: [todayWeekday],
+            time: '08:00',
+          ),
+        ],
+      ));
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.check), findsOneWidget);
@@ -447,6 +545,7 @@ void main() {
     testWidgets('renders subtitle with ROUTINE label for food events',
         (tester) async {
       setTestSurface(tester);
+      final todayWeekday = today.weekday;
       final events = DashboardAllCalendarEvents(
         foodEvents: [makeFoodEvent(foodName: 'Pasta')],
         sportEvents: [],
@@ -458,7 +557,21 @@ void main() {
         urineEvents: [],
       );
 
-      await tester.pumpWidget(buildTestWidget(allCalendarEvents: events));
+      await tester.pumpWidget(buildTestWidget(
+        allCalendarEvents: events,
+        programmedWeekdays: {todayWeekday},
+        mealRoutines: [
+          FoodRoutineEvent(
+            userId: 'test',
+            eventDate: todayMillis,
+            foodName: 'Pasta',
+            comment: null,
+            mealType: 0,
+            daysOfWeek: [todayWeekday],
+            time: '12:00',
+          ),
+        ],
+      ));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('ROUTINE'), findsOneWidget);
@@ -467,6 +580,7 @@ void main() {
     testWidgets('renders subtitle with WORKOUT label for sport events',
         (tester) async {
       setTestSurface(tester);
+      final todayWeekday = today.weekday;
       final events = DashboardAllCalendarEvents(
         foodEvents: [],
         sportEvents: [makeSportEvent(sportName: 'Yoga')],
@@ -478,7 +592,21 @@ void main() {
         urineEvents: [],
       );
 
-      await tester.pumpWidget(buildTestWidget(allCalendarEvents: events));
+      await tester.pumpWidget(buildTestWidget(
+        allCalendarEvents: events,
+        programmedWeekdays: {todayWeekday},
+        sportRoutines: [
+          SportRoutineCompleted(
+            userId: 'test',
+            eventId: 1,
+            eventDate: todayMillis,
+            sportName: 'Yoga',
+            info: [],
+            daysOfWeek: [todayWeekday],
+            scheduleTime: '07:00',
+          ),
+        ],
+      ));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('WORKOUT'), findsOneWidget);
@@ -558,7 +686,8 @@ void main() {
         (tester) async {
       setTestSurface(tester);
       final todayWeekday = today.weekday;
-      // One food event is logged, but a supplement routine is still programmed
+      // One food event is logged and corresponds to a programmed lunch
+      // routine; a supplement routine is still upcoming (no event yet).
       final events = DashboardAllCalendarEvents(
         foodEvents: [makeFoodEvent(foodName: 'Chicken Salad', mealType: 1)],
         sportEvents: [],
@@ -574,6 +703,17 @@ void main() {
       await tester.pumpWidget(buildTestWidget(
         allCalendarEvents: events,
         programmedWeekdays: {todayWeekday},
+        mealRoutines: [
+          FoodRoutineEvent(
+            userId: 'test',
+            eventDate: todayMillis,
+            foodName: 'Chicken Salad',
+            comment: null,
+            mealType: 1,
+            daysOfWeek: [todayWeekday],
+            time: '12:00',
+          ),
+        ],
         supplementRoutines: [
           SupplementSimple(
             name: 'Vitamin D',
@@ -700,6 +840,7 @@ void main() {
     testWidgets('logged supplement event shows as LOGGED with title',
         (tester) async {
       setTestSurface(tester);
+      final todayWeekday = today.weekday;
       final events = DashboardAllCalendarEvents(
         foodEvents: [],
         sportEvents: [],
@@ -720,7 +861,17 @@ void main() {
         ],
       );
 
-      await tester.pumpWidget(buildTestWidget(allCalendarEvents: events));
+      await tester.pumpWidget(buildTestWidget(
+        allCalendarEvents: events,
+        programmedWeekdays: {todayWeekday},
+        supplementRoutines: [
+          SupplementSimple(
+            name: 'Vitamin A',
+            daysOfWeek: [todayWeekday],
+            scheduleTime: '09:00',
+          ),
+        ],
+      ));
       await tester.pumpAndSettle();
 
       expect(find.text('Vitamin A'), findsOneWidget);
@@ -783,7 +934,8 @@ void main() {
         (tester) async {
       setTestSurface(tester);
       final todayWeekday = today.weekday;
-      // Logged food event at 14:00
+      // Logged food event at 14:00 with a matching lunch routine.
+      // Plus an upcoming supplement routine at 07:00 (no event yet).
       final lunchMillis = DateTime(today.year, today.month, today.day, 14)
           .millisecondsSinceEpoch;
       final events = DashboardAllCalendarEvents(
@@ -804,6 +956,17 @@ void main() {
       await tester.pumpWidget(buildTestWidget(
         allCalendarEvents: events,
         programmedWeekdays: {todayWeekday},
+        mealRoutines: [
+          FoodRoutineEvent(
+            userId: 'test',
+            eventDate: todayMillis,
+            foodName: 'Lunch',
+            comment: null,
+            mealType: 1,
+            daysOfWeek: [todayWeekday],
+            time: '14:00',
+          ),
+        ],
         supplementRoutines: [
           SupplementSimple(
             name: 'Morning Vitamin',
