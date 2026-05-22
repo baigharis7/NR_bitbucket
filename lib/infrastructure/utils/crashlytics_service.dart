@@ -69,17 +69,29 @@ class CrashlyticsService {
     _crashlytics.crash();
   }
 
-  static void record(dynamic error, StackTrace? stack, {Map<String, dynamic>? context}) {
+  /// Record a handled exception as a non-fatal Crashlytics event.
+  ///
+  /// Awaits both the custom-key writes and the recordError call so the event
+  /// is durably queued before this returns. Earlier fire-and-forget version
+  /// lost events when the caller's frame popped immediately after recording
+  /// (auth flow → snackbar → user retries → app backgrounds), which is why
+  /// the dashboard was empty despite instrumentation being in place.
+  static Future<void> record(dynamic error, StackTrace? stack,
+      {Map<String, dynamic>? context,}) async {
     try {
+      final crashlytics = FirebaseCrashlytics.instance;
       if (context != null) {
-        context.forEach((key, value) {
-          FirebaseCrashlytics.instance.setCustomKey(key, value.toString());
-        });
+        for (final entry in context.entries) {
+          await crashlytics.setCustomKey(entry.key, entry.value.toString());
+        }
       }
-
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: false);
+      await crashlytics.recordError(
+        error,
+        stack ?? StackTrace.current,
+        fatal: false,
+      );
     } catch (_) {
-      // Firebase not initialized (e.g. in tests)
+      // Firebase not initialized (e.g. in tests) — swallow.
     }
   }
 }

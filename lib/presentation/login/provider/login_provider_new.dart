@@ -325,6 +325,17 @@ class LoginProviderNew extends BaseProvider {
   }
 
   Future<void> _signInAndFetchUserAttributes(Function moveToNextScreen, {bool isFromVerificationCode = false}) async {
+    // Tag every Crashlytics event from this login session with the email being
+    // attempted. Users who haven't successfully signed in yet have no userId
+    // set, so without this we can't correlate a "user X can't log in" report
+    // with their non-fatal events in the dashboard.
+    try {
+      await CrashlyticsService.instance
+          .setCustomKey('attempted_username', getEmail.orEmpty());
+    } catch (_) {
+      // Crashlytics not initialized in tests — ignore.
+    }
+
     // First attempt — most users hit only this branch.
     final firstResult = await _attemptSignInAndFetch(
       moveToNextScreen,
@@ -337,7 +348,7 @@ class LoginProviderNew extends BaseProvider {
     // signOut + wipe Keychain/EncryptedPrefs, then retry once. Each attempt
     // is logged to Crashlytics so we can see in dashboards how often the
     // recovery path actually fires.
-    CrashlyticsService.record(
+    await CrashlyticsService.record(
       firstResult.error ?? StateError('signIn first attempt did not complete'),
       firstResult.stack ?? StackTrace.current,
       context: {
@@ -351,7 +362,7 @@ class LoginProviderNew extends BaseProvider {
     try {
       await CognitoAuthenticationService.instance.clearAuthState();
     } catch (recoveryError, stack) {
-      CrashlyticsService.record(recoveryError, stack, context: {
+      await CrashlyticsService.record(recoveryError, stack, context: {
         'phase': 'clearAuthState',
         'error_type': recoveryError.runtimeType.toString(),
       });
@@ -366,7 +377,7 @@ class LoginProviderNew extends BaseProvider {
 
     // Recovery + retry still failed. Surface a real error to the user.
     manageLoading(false);
-    CrashlyticsService.record(
+    await CrashlyticsService.record(
       secondResult.error ?? StateError('signIn retry did not complete'),
       secondResult.stack ?? StackTrace.current,
       context: {
@@ -408,7 +419,7 @@ class LoginProviderNew extends BaseProvider {
         if (fetchUserAttributesInteractor == null) 'fetchUserAttributesInteractor',
       ].join(',');
       final err = StateError('Login interactors not initialized: $missing');
-      CrashlyticsService.record(err, StackTrace.current, context: {
+      await CrashlyticsService.record(err, StackTrace.current, context: {
         'phase': 'preInitCheck',
         'attempt': attempt.toString(),
         'missing': missing,
@@ -424,7 +435,7 @@ class LoginProviderNew extends BaseProvider {
       await crashlytics.log('login attempt=$attempt: post-signOut');
     } catch (signOutError, stack) {
       // signOut before signIn is best-effort — log but keep going.
-      CrashlyticsService.record(signOutError, stack, context: {
+      await CrashlyticsService.record(signOutError, stack, context: {
         'phase': 'preSignOut',
         'attempt': attempt.toString(),
         'error_type': signOutError.runtimeType.toString(),
@@ -462,7 +473,7 @@ class LoginProviderNew extends BaseProvider {
         // separate failure mode that wiping Keychain wouldn't fix, so treat
         // it as terminal and surface the error.
         manageLoading(false);
-        CrashlyticsService.record(fetchError, stack, context: {
+        await CrashlyticsService.record(fetchError, stack, context: {
           'phase': 'fetchUserAttributes',
           'attempt': attempt.toString(),
           'error_type': fetchError.runtimeType.toString(),
@@ -477,7 +488,7 @@ class LoginProviderNew extends BaseProvider {
       // (network, internal) get retried by the caller.
       if (_isUserSideAuthError(signInError)) {
         manageLoading(false);
-        CrashlyticsService.record(signInError, stack, context: {
+        await CrashlyticsService.record(signInError, stack, context: {
           'phase': 'signIn',
           'attempt': attempt.toString(),
           'error_type': signInError.runtimeType.toString(),
@@ -490,8 +501,15 @@ class LoginProviderNew extends BaseProvider {
     }
   }
 
+  /// User-input errors that shouldn't trigger the Keychain-wipe retry path.
+  /// These are the **public API** exception types from `amplify_core`. The
+  /// previous version of this check used SDK-internal types like
+  /// `NotAuthorizedServiceException` which are never thrown to callers — so
+  /// every wrong-password attempt was wastefully wiping the Keychain and
+  /// retrying. Use the `AuthXxx`-prefixed classes that `Amplify.Auth.signIn`
+  /// actually throws.
   bool _isUserSideAuthError(Object error) {
-    return error is NotAuthorizedServiceException ||
+    return error is AuthNotAuthorizedException ||
         error is UserNotFoundException ||
         error is UserNotConfirmedException ||
         error is PasswordResetRequiredException ||
@@ -527,6 +545,19 @@ class LoginProviderNew extends BaseProvider {
       Function moveToNextScreen,
       {Function? saveUserInRemote,}
       ) async {
+      // Tag this Crashlytics installation with the Cognito userSub. Any
+      // subsequent non-fatal recorded for this user is then queryable by
+      // userId in the dashboard — closes the gap where post-login auth
+      // refresh failures had no user attribution.
+      final userSub = session.userSubResult.valueOrNull;
+      if (userSub != null && userSub.isNotEmpty) {
+        try {
+          await CrashlyticsService.instance.setUserId(userSub);
+        } catch (_) {
+          // Crashlytics not initialized — ignore.
+        }
+      }
+
       try {
         await saveUserCredentialsInteractor?.execute(session);
         await saveUserInRemote?.call();

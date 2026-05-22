@@ -115,65 +115,101 @@ class CognitoAuthenticationService implements AuthenticationService {
     return _amplifyService!.getAuth();
   }
 
+  /// Wraps an Amplify auth call so every failure is recorded to Crashlytics
+  /// as a non-fatal with `{phase, errorType, message, underlying}` context,
+  /// then rethrown so callers' existing error handling is unchanged.
+  Future<T> _trace<T>(String phase, Future<T> Function() block) async {
+    await CrashlyticsService.instance.log('auth.$phase attempt');
+    try {
+      return await block();
+    } catch (error, stack) {
+      final context = <String, dynamic>{
+        'phase': 'auth.$phase',
+        'errorType': error.runtimeType.toString(),
+      };
+      if (error is AmplifyException) {
+        context['message'] = error.message;
+        if (error.underlyingException != null) {
+          context['underlying'] = error.underlyingException.toString();
+        }
+      }
+      CrashlyticsService.record(error, stack, context: context);
+      rethrow;
+    }
+  }
+
   @override
   Future<SignUpResult> signUp(String email, String password) {
-    return getAuthorization().signUp(
-        username: email,
-        password: password,
-        options: SignUpOptions(userAttributes: {
-          CognitoUserAttributeKey.email: email,
-        },),
-    );
+    return _trace('signUp', () => getAuthorization().signUp(
+      username: email,
+      password: password,
+      options: SignUpOptions(userAttributes: {
+        CognitoUserAttributeKey.email: email,
+      }),
+    ),);
   }
 
   @override
   Future<SignUpResult> sendVerificationCode(
     String confirmationCode,
     String email,
-  ) async {
-    return getAuthorization().confirmSignUp(
-        username: email,
-        confirmationCode: confirmationCode,
+  ) {
+    return _trace('confirmSignUp', () => getAuthorization().confirmSignUp(
+      username: email,
+      confirmationCode: confirmationCode,
+    ),);
+  }
+
+  @override
+  Future<ResendSignUpCodeResult> resendVerificationCode(String username) {
+    return _trace('resendSignUpCode',
+        () => getAuthorization().resendSignUpCode(username: username),);
+  }
+
+  @override
+  Future<SignInResult> signIn(String username, String password) {
+    return _trace('signIn', () => getAuthorization().signIn(
+      username: username,
+      password: password,
+    ),);
+  }
+
+  @override
+  Future<CognitoAuthSession> fetchUserAttributes() {
+    return _trace('fetchAuthSession', () async {
+      final authSession = await getAuthorization().fetchAuthSession(
+        options: const FetchAuthSessionOptions(forceRefresh: true),
       );
+      return authSession as CognitoAuthSession;
+    });
   }
 
   @override
-  Future<ResendSignUpCodeResult> resendVerificationCode(String username) async {
-      return await getAuthorization().resendSignUpCode(username: username);
+  Future<SignOutResult> signOut() {
+    return _trace('signOut', () => getAuthorization().signOut());
+  }
+
+  Future<void> deleteUser() {
+    return _trace('deleteUser', () => getAuthorization().deleteUser());
   }
 
   @override
-  Future<SignInResult> signIn(String username, String password) async {
-    return getAuthorization().signIn(
+  Future<ResetPasswordResult> resetPassword(String username) {
+    return _trace('resetPassword',
+        () => getAuthorization().resetPassword(username: username),);
+  }
+
+  @override
+  Future<ResetPasswordResult> confirmResetPassword(
+      String username, String newPassword, String confirmationCode,) {
+    return _trace(
+      'confirmResetPassword',
+      () => getAuthorization().confirmResetPassword(
         username: username,
-        password: password,
+        newPassword: newPassword,
+        confirmationCode: confirmationCode,
+      ),
     );
-  }
-
-  @override
-  Future<CognitoAuthSession> fetchUserAttributes() async {
-
-    final authSession = await getAuthorization().fetchAuthSession(
-      options: const FetchAuthSessionOptions(forceRefresh: true),
-    );
-    return authSession as CognitoAuthSession;
-  }
-
-  @override
-  Future<SignOutResult> signOut() => getAuthorization().signOut();
-
-  Future<void> deleteUser() async {
-    await getAuthorization().deleteUser();
-  }
-
-  @override
-  Future<ResetPasswordResult> resetPassword(String username) async {
-    return await getAuthorization().resetPassword(username: username);
-  }
-
-  @override
-  Future<ResetPasswordResult> confirmResetPassword(String username, String newPassword, String confirmationCode) async {
-    return await getAuthorization().confirmResetPassword(username: username, newPassword: newPassword, confirmationCode: confirmationCode);
   }
 
 }
