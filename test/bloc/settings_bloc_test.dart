@@ -1,7 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
 import 'package:nutrenaissance_flutter/presentation/settings/bloc/settings_bloc.dart';
 
@@ -10,15 +9,14 @@ import 'bloc_test_mocks.mocks.dart';
 void main() {
   late MockSignOutInteractor mockSignOut;
   late MockEraseDatabaseInteractor mockEraseDb;
+  late MockClearAuthPreferencesInteractor mockClearAuth;
   late MockFcmApi mockFcmApi;
-  late SharedPreferences sharedPrefs;
 
   setUp(() async {
     mockSignOut = MockSignOutInteractor();
     mockEraseDb = MockEraseDatabaseInteractor();
+    mockClearAuth = MockClearAuthPreferencesInteractor();
     mockFcmApi = MockFcmApi();
-    SharedPreferences.setMockInitialValues({});
-    sharedPrefs = await SharedPreferences.getInstance();
   });
 
   tearDown(() {
@@ -28,7 +26,7 @@ void main() {
   SettingsBloc _buildBloc({bool withFcm = false}) => SettingsBloc(
         signOutInteractor: mockSignOut,
         eraseDatabaseInteractor: mockEraseDb,
-        sharedPreferences: sharedPrefs,
+        clearAuthPreferencesInteractor: mockClearAuth,
         fcmApi: withFcm ? mockFcmApi : null,
       );
 

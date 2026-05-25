@@ -941,9 +941,11 @@ class LocalStorageImpl extends LocalStorageRepository {
     // Clear them via Hive directly when they're open.
     await _clearOpenBoxByName('syncQueue');
     await _clearOpenBoxByName('scanned_foods');
-    for (var masterFilesType in MasterFilesType.values) {
-      await _clearBox(_getMasterFilesBox(masterFilesType));
-    }
+    // Master files are intentionally preserved across sign-out. They're
+    // global app reference data (food list, sport list, nutrients info, etc.),
+    // not user-specific, and clearing them forces a multi-MB redownload of
+    // all 15 files on the next login. Keeping them lets the server-side
+    // version diff return null when nothing changed.
     return true;
   }
 

@@ -22,6 +22,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/is_nece
 import 'package:nutrenaissance_flutter/domain/interactor/explainingcards/save_explaining_card_interaction_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_food_events_of_today_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/clear_auth_preferences_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_user_micronutrients_interactor.dart';
@@ -57,7 +58,6 @@ import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_b
 import 'package:nutrenaissance_flutter/presentation/common/bloc/base_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/bloc/dashboard_state.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/api/profile/model/user_profile_response.dart';
 import '../../../data/local/models/modelsappearence/models_appearance_entity.dart';
@@ -118,7 +118,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   final ManageMasterFilesInteractor manageMasterFilesInteractor;
   final SignOutInteractor signOutInteractor;
   final EraseDatabaseInteractor eraseDatabaseInteractor;
-  final SharedPreferences sharedPreferences;
+  final ClearAuthPreferencesInteractor clearAuthPreferencesInteractor;
   final GetRoutinesInteractor getRoutinesInteractor;
   final EraseDBLocalEventsInteractor eraseDBLocalEventsInteractor;
   final SynchronizeEventsInteractor synchronizeEventsInteractor;
@@ -162,7 +162,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
     required this.getAllDashboardEventsSortedByDateInteractor,
     required this.getMasterFilesVersionInteractor,
     required this.manageMasterFilesInteractor,
-    required this.sharedPreferences,
+    required this.clearAuthPreferencesInteractor,
     required this.eraseDatabaseInteractor,
     required this.signOutInteractor,
     required this.getRoutinesInteractor,
@@ -584,12 +584,15 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
         }
         // Fire-and-forget Amplify sign-out — it's a network round-trip
         // (~500ms-2s) and the user's local data is what determines whether
-        // the next account's session is clean. Local Hive + prefs clear
-        // MUST complete before we navigate so the next account's first
-        // dashboard read can't pick up orphaned data.
+        // the next account's session is clean. Local Hive + auth-prefs
+        // clear MUST complete before we navigate so the next account's
+        // first dashboard read can't pick up orphaned data. Master files
+        // and their version prefs are intentionally preserved — they're
+        // global app data and re-downloading them is the main cost of a
+        // fresh login.
         signOutInteractor.execute();
         await eraseDatabaseInteractor.execute();
-        await sharedPreferences.clear();
+        await clearAuthPreferencesInteractor.execute();
         state.isUpdatedDataNeeded = false;
         event.onFinish.call();
         emit(state.copyWith(isLoading: false, onError: null,));

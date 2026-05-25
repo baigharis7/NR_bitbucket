@@ -24,4 +24,5 @@ abstract class PreferencesRepository {
   Future<bool?> getBoolPrefOrNull(PrefsKeys key);
   Future<void> setLogMealToken(String token);
   String getLogMealToken();
+  Future<void> clearAuthPreferences();
 }

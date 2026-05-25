@@ -19,12 +19,12 @@ import 'test_navigation_helpers.dart';
 void main() {
   late MockSignOutInteractor mockSignOut;
   late MockEraseDatabaseInteractor mockEraseDb;
-  late MockSharedPreferences mockPrefs;
+  late MockClearAuthPreferencesInteractor mockClearAuth;
 
   setUp(() {
     mockSignOut = MockSignOutInteractor();
     mockEraseDb = MockEraseDatabaseInteractor();
-    mockPrefs = MockSharedPreferences();
+    mockClearAuth = MockClearAuthPreferencesInteractor();
   });
 
   setUp(() {
@@ -41,7 +41,7 @@ void main() {
     final bloc = SettingsBloc(
       signOutInteractor: mockSignOut,
       eraseDatabaseInteractor: mockEraseDb,
-      sharedPreferences: mockPrefs,
+      clearAuthPreferencesInteractor: mockClearAuth,
     );
     return BlocProvider<SettingsBloc>.value(
       value: bloc,
@@ -136,7 +136,7 @@ void main() {
       final bloc = SettingsBloc(
         signOutInteractor: mockSignOut,
         eraseDatabaseInteractor: mockEraseDb,
-        sharedPreferences: mockPrefs,
+        clearAuthPreferencesInteractor: mockClearAuth,
       );
       await tester.pumpWidget(BlocProvider<SettingsBloc>.value(
         value: bloc,

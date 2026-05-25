@@ -211,6 +211,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_m
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_model_appearance_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_model_appearance_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_model_appearance_interactor_impl.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/clear_auth_preferences_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/clear_auth_preferences_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor_impl.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
@@ -610,6 +612,7 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
       _referenceDataService = referenceDataService;
       final ProfileRepository profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository, profileComputationService: profileComputationService, syncQueue: syncQueueService);
       final GetUserIdInteractor getUserIdInteractor = GetUserIdInteractorImpl(preferencesRepository: prefsRepository);
+      final ClearAuthPreferencesInteractor clearAuthPreferencesInteractor = ClearAuthPreferencesInteractorImpl(preferencesRepository: prefsRepository);
       final UploadProfileInteractor uploadProfileInteractor = UploadProfileInteractorImpl(profileRepository: profileRepository);
       final SaveProfileInteractor saveProfileInteractor = SaveProfileInteractorImpl(profileRepository: profileRepository);
       final FoodEventsApi foodEventsApi = FoodEventsApi(prefsRepository, authenticationService, chuck);
@@ -822,7 +825,7 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
         getMasterFilesVersionInteractor: getMasterFilesVersionInteractor,
         signOutInteractor: signOutInteractor,
         eraseDatabaseInteractor: eraseDatabaseInteractor,
-        sharedPreferences: sharedPreferences,
+        clearAuthPreferencesInteractor: clearAuthPreferencesInteractor,
         getRoutinesInteractor: getRoutinesInteractor,
         eraseDBLocalEventsInteractor: eraseDBLocalEventsInteractor,
         synchronizeEventsInteractor: synchronizeEventsInteractor,
@@ -1108,7 +1111,7 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
         getMasterFileInteractor: getMasterFileInteractor,
         signOutInteractor: signOutInteractor,
         eraseDatabaseInteractor: eraseDatabaseInteractor,
-        sharedPreferences: sharedPreferences,
+        clearAuthPreferencesInteractor: clearAuthPreferencesInteractor,
       );
 
       final addFavoriteLiquidBloc = AddFavoriteLiquidBloc(
@@ -1287,7 +1290,7 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
       final settingsBloc = SettingsBloc(
           signOutInteractor: signOutInteractor,
           eraseDatabaseInteractor: eraseDatabaseInteractor,
-          sharedPreferences: sharedPreferences,
+          clearAuthPreferencesInteractor: clearAuthPreferencesInteractor,
           fcmApi: fcmApi,
       );
 

@@ -157,6 +157,8 @@ import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/save_m
     as _i106;
 import 'package:nutrenaissance_flutter/domain/interactor/modelsappearance/show_model_appearance_interactor.dart'
     as _i104;
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/clear_auth_preferences_interactor.dart'
+    as _i200;
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_id_token_interactor.dart'
     as _i72;
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart'
@@ -557,6 +559,22 @@ class MockEraseDatabaseInteractor extends _i1.Mock
         returnValue: _i14.Future<bool>.value(false),
         returnValueForMissingStub: _i14.Future<bool>.value(false),
       ) as _i14.Future<bool>);
+}
+
+/// A class which mocks [ClearAuthPreferencesInteractor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockClearAuthPreferencesInteractor extends _i1.Mock
+    implements _i200.ClearAuthPreferencesInteractor {
+  @override
+  _i14.Future<void> execute() => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+        ),
+        returnValue: _i14.Future<void>.value(),
+        returnValueForMissingStub: _i14.Future<void>.value(),
+      ) as _i14.Future<void>);
 }
 
 /// A class which mocks [GetWeekFoodEventsInteractor].

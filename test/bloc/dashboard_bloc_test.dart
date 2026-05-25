@@ -52,7 +52,7 @@ void main() {
   late MockGetAllDashboardEventsSortedByDateInteractor mockGetAllDashboardEvents;
   late MockGetMasterFileVersionInteractor mockGetMasterFileVersion;
   late MockManageMasterFilesInteractor mockManageMasterFiles;
-  late MockSharedPreferences mockSharedPreferences;
+  late MockClearAuthPreferencesInteractor mockClearAuth;
   late MockEraseDatabaseInteractor mockEraseDatabase;
   late MockSignOutInteractor mockSignOut;
   late MockGetRoutinesInteractor mockGetRoutines;
@@ -97,7 +97,7 @@ void main() {
     mockGetAllDashboardEvents = MockGetAllDashboardEventsSortedByDateInteractor();
     mockGetMasterFileVersion = MockGetMasterFileVersionInteractor();
     mockManageMasterFiles = MockManageMasterFilesInteractor();
-    mockSharedPreferences = MockSharedPreferences();
+    mockClearAuth = MockClearAuthPreferencesInteractor();
     mockEraseDatabase = MockEraseDatabaseInteractor();
     mockSignOut = MockSignOutInteractor();
     mockGetRoutines = MockGetRoutinesInteractor();
@@ -143,7 +143,7 @@ void main() {
     getAllDashboardEventsSortedByDateInteractor: mockGetAllDashboardEvents,
     getMasterFilesVersionInteractor: mockGetMasterFileVersion,
     manageMasterFilesInteractor: mockManageMasterFiles,
-    sharedPreferences: mockSharedPreferences,
+    clearAuthPreferencesInteractor: mockClearAuth,
     eraseDatabaseInteractor: mockEraseDatabase,
     signOutInteractor: mockSignOut,
     getRoutinesInteractor: mockGetRoutines,
@@ -487,7 +487,7 @@ void main() {
         build: () {
           FcmService.instance.tokenForTesting = 'test-token-123';
           when(mockFcmApi.unregisterToken(any)).thenAnswer((_) async {});
-          when(mockSharedPreferences.clear()).thenAnswer((_) async => true);
+          when(mockClearAuth.execute()).thenAnswer((_) async {});
           return DashboardBloc(
             getFoodEventsOfTodayInteractor: mockGetFoodEvents,
             getMasterFileInteractor: mockGetMasterFile,
@@ -520,7 +520,7 @@ void main() {
             getAllDashboardEventsSortedByDateInteractor: mockGetAllDashboardEvents,
             getMasterFilesVersionInteractor: mockGetMasterFileVersion,
             manageMasterFilesInteractor: mockManageMasterFiles,
-            sharedPreferences: mockSharedPreferences,
+            clearAuthPreferencesInteractor: mockClearAuth,
             eraseDatabaseInteractor: mockEraseDatabase,
             signOutInteractor: mockSignOut,
             getRoutinesInteractor: mockGetRoutines,
@@ -550,7 +550,7 @@ void main() {
         build: () {
           FcmService.instance.tokenForTesting = 'test-token-123';
           when(mockFcmApi.unregisterToken(any)).thenThrow(Exception('network error'));
-          when(mockSharedPreferences.clear()).thenAnswer((_) async => true);
+          when(mockClearAuth.execute()).thenAnswer((_) async {});
           return DashboardBloc(
             getFoodEventsOfTodayInteractor: mockGetFoodEvents,
             getMasterFileInteractor: mockGetMasterFile,
@@ -583,7 +583,7 @@ void main() {
             getAllDashboardEventsSortedByDateInteractor: mockGetAllDashboardEvents,
             getMasterFilesVersionInteractor: mockGetMasterFileVersion,
             manageMasterFilesInteractor: mockManageMasterFiles,
-            sharedPreferences: mockSharedPreferences,
+            clearAuthPreferencesInteractor: mockClearAuth,
             eraseDatabaseInteractor: mockEraseDatabase,
             signOutInteractor: mockSignOut,
             getRoutinesInteractor: mockGetRoutines,
@@ -612,7 +612,7 @@ void main() {
         'skips unregister when token is null',
         build: () {
           FcmService.instance.tokenForTesting = null;
-          when(mockSharedPreferences.clear()).thenAnswer((_) async => true);
+          when(mockClearAuth.execute()).thenAnswer((_) async {});
           return DashboardBloc(
             getFoodEventsOfTodayInteractor: mockGetFoodEvents,
             getMasterFileInteractor: mockGetMasterFile,
@@ -645,7 +645,7 @@ void main() {
             getAllDashboardEventsSortedByDateInteractor: mockGetAllDashboardEvents,
             getMasterFilesVersionInteractor: mockGetMasterFileVersion,
             manageMasterFilesInteractor: mockManageMasterFiles,
-            sharedPreferences: mockSharedPreferences,
+            clearAuthPreferencesInteractor: mockClearAuth,
             eraseDatabaseInteractor: mockEraseDatabase,
             signOutInteractor: mockSignOut,
             getRoutinesInteractor: mockGetRoutines,

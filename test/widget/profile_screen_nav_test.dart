@@ -34,7 +34,7 @@ void main() {
   late MockSaveProfileInteractor mockSaveProfile;
   late MockSignOutInteractor mockSignOut;
   late MockEraseDatabaseInteractor mockEraseDb;
-  late MockSharedPreferences mockPrefs;
+  late MockClearAuthPreferencesInteractor mockClearAuth;
 
   setUpAll(() {
     // Profile bloc init calls helpers like Allergens.listAllAllergens which
@@ -51,7 +51,7 @@ void main() {
     mockSaveProfile = MockSaveProfileInteractor();
     mockSignOut = MockSignOutInteractor();
     mockEraseDb = MockEraseDatabaseInteractor();
-    mockPrefs = MockSharedPreferences();
+    mockClearAuth = MockClearAuthPreferencesInteractor();
 
     when(mockGetProfile.execute()).thenAnswer((_) async => UserProfileModel.empty());
     when(mockGetUserId.execute()).thenReturn('user123');
@@ -88,7 +88,7 @@ void main() {
       saveProfileInteractor: mockSaveProfile,
       signOutInteractor: mockSignOut,
       eraseDatabaseInteractor: mockEraseDb,
-      sharedPreferences: mockPrefs,
+      clearAuthPreferencesInteractor: mockClearAuth,
     );
     return BlocProvider<ProfileBloc>.value(
       value: bloc,

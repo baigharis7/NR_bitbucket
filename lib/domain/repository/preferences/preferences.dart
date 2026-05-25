@@ -8,4 +8,5 @@ abstract class Preferences {
   bool getBool(PrefsKeys key);
   Future<void> setBool(PrefsKeys key, bool value);
   bool? getBoolOrNull(PrefsKeys key);
+  Future<void> remove(PrefsKeys key);
 }

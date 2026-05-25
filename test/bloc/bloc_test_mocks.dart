@@ -3,6 +3,7 @@ import 'package:nutrenaissance_flutter/data/api/fcm/fcm_api.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/sign_out_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/erase_database_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/clear_auth_preferences_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/get_week_food_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/liquidevents/get_week_liquid_events_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_week_sports_interactor.dart';
@@ -147,6 +148,7 @@ import 'package:shared_preferences/shared_preferences.dart';
   // SettingsBloc
   MockSpec<SignOutInteractor>(),
   MockSpec<EraseDatabaseInteractor>(),
+  MockSpec<ClearAuthPreferencesInteractor>(),
   // EnergyBalanceDetailBloc
   MockSpec<GetWeekFoodEventsInteractor>(),
   MockSpec<GetWeekLiquidEventsInteractor>(),

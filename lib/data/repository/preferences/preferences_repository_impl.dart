@@ -99,4 +99,18 @@ class PreferencesRepositoryImpl extends PreferencesRepository {
   @override
   Future<void> setLogMealToken(String token) async => prefs.setString(PrefsKeys.logMealToken, token);
 
+  @override
+  Future<void> clearAuthPreferences() async {
+    // Auth identity only — sync flags, health-sync settings, master-file
+    // version prefs, and logMealToken must survive sign-out so the next
+    // login can use server-side diffing instead of re-downloading everything.
+    await prefs.remove(PrefsKeys.sub);
+    await prefs.remove(PrefsKeys.username);
+    await prefs.remove(PrefsKeys.email);
+    await prefs.remove(PrefsKeys.accessToken);
+    await prefs.remove(PrefsKeys.idToken);
+    await prefs.remove(PrefsKeys.refreshToken);
+    await prefs.remove(PrefsKeys.isUserSignedIn);
+  }
+
 }

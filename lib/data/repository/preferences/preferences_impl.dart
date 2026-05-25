@@ -28,4 +28,7 @@ class PreferencesImpl extends Preferences {
   @override
   bool? getBoolOrNull(PrefsKeys key) => prefs.getBool(key.name);
 
+  @override
+  Future<void> remove(PrefsKeys key) => prefs.remove(key.name);
+
 }

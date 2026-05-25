@@ -3,6 +3,7 @@ import 'package:nutrenaissance_flutter/data/api/profile/model/user_profile_respo
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/erase_database_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/interactor/preferences/clear_auth_preferences_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/get_profile_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/profile/save_profile_entity_interactor.dart';
@@ -27,8 +28,6 @@ import 'package:nutrenaissance_flutter/presentation/profile/model/aversions_ui_m
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_state.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../../infrastructure/utils/constants.dart';
 
 
@@ -40,7 +39,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
   final SaveProfileInteractor saveProfileInteractor;
   final SignOutInteractor signOutInteractor;
   final EraseDatabaseInteractor eraseDatabaseInteractor;
-  final SharedPreferences sharedPreferences;
+  final ClearAuthPreferencesInteractor clearAuthPreferencesInteractor;
 
   ProfileBloc({
     required this.getProfileInteractor,
@@ -50,7 +49,7 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
     required this.saveProfileInteractor,
     required this.signOutInteractor,
     required this.eraseDatabaseInteractor,
-    required this.sharedPreferences,
+    required this.clearAuthPreferencesInteractor,
   }) : super(ProfileState(
     isLoading: false,
     profile: UserProfileModel.empty(),
@@ -434,10 +433,11 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
       try {
         // Fire-and-forget Amplify sign-out — see dashboard_bloc logout for
         // rationale. Local clears MUST complete before we navigate so the
-        // next account can't read orphaned data.
+        // next account can't read orphaned data. Master files + their
+        // version prefs are intentionally preserved.
         signOutInteractor.execute();
         await eraseDatabaseInteractor.execute();
-        await sharedPreferences.clear();
+        await clearAuthPreferencesInteractor.execute();
         event.goToLogin.call();
         emit(state.copyWith(isLoading: false, onError: null, ));
       } catch (errorSignOut) {

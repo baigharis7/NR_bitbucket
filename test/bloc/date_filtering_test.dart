@@ -468,7 +468,7 @@ void main() {
     late MockGetAllDashboardEventsSortedByDateInteractor mockGetAllDashboardEvents;
     late MockGetMasterFileVersionInteractor mockGetMasterFileVersion;
     late MockManageMasterFilesInteractor mockManageMasterFiles;
-    late MockSharedPreferences mockSharedPreferences;
+    late MockClearAuthPreferencesInteractor mockClearAuth;
     late MockEraseDatabaseInteractor mockEraseDatabase;
     late MockSignOutInteractor mockSignOut;
     late MockGetRoutinesInteractor mockGetRoutines;
@@ -513,7 +513,7 @@ void main() {
       mockGetAllDashboardEvents = MockGetAllDashboardEventsSortedByDateInteractor();
       mockGetMasterFileVersion = MockGetMasterFileVersionInteractor();
       mockManageMasterFiles = MockManageMasterFilesInteractor();
-      mockSharedPreferences = MockSharedPreferences();
+      mockClearAuth = MockClearAuthPreferencesInteractor();
       mockEraseDatabase = MockEraseDatabaseInteractor();
       mockSignOut = MockSignOutInteractor();
       mockGetRoutines = MockGetRoutinesInteractor();
@@ -559,7 +559,7 @@ void main() {
           getAllDashboardEventsSortedByDateInteractor: mockGetAllDashboardEvents,
           getMasterFilesVersionInteractor: mockGetMasterFileVersion,
           manageMasterFilesInteractor: mockManageMasterFiles,
-          sharedPreferences: mockSharedPreferences,
+          clearAuthPreferencesInteractor: mockClearAuth,
           eraseDatabaseInteractor: mockEraseDatabase,
           signOutInteractor: mockSignOut,
           getRoutinesInteractor: mockGetRoutines,
