@@ -103,23 +103,6 @@ class ProfileRepositoryImpl extends ProfileRepository {
     if (profile.isEmpty) {
       return null;
     }
-    // `GET /users?email=...` resolves to the `get-user-from-email` Lambda,
-    // which returns just `{userName, email, userId}` for users who registered
-    // but never completed the profile setup screen. Treating that as
-    // "no profile" lets the caller route the user to the Registry flow
-    // instead of crashing the late-non-null parse of UploadUserProfile.
-    if (profile['commonName'] == null) {
-      await CrashlyticsService.record(
-        StateError('downloadProfile got user-identity response (no commonName) — routing to Registry'),
-        StackTrace.current,
-        context: {
-          'phase': 'downloadProfile',
-          'has_userId': (profile['userId'] != null).toString(),
-          'keys': profile.keys.toList().join(','),
-        },
-      );
-      return null;
-    }
     try {
       final uploadProfile = upload.UploadUserProfile.fromJson(profile);
       return mapToUserProfileModelFromUploadUser(uploadProfile);
