@@ -138,10 +138,21 @@ class CognitoAuthenticationService implements AuthenticationService {
     }
   }
 
+  /// Build the Cognito `username` field from an email. The prod pool has
+  /// `AliasAttributes: ['email']`, which means Cognito explicitly rejects a
+  /// signup whose `username` is in email format (it would collide with the
+  /// alias index). Replacing `@` with `~` produces a deterministic, unique,
+  /// non-email-format string we can re-derive in confirmSignUp /
+  /// resendSignUpCode without needing to persist it across the verification
+  /// flow. Sign-in keeps using the raw email — Cognito resolves it via the
+  /// alias once `email_verified=true`.
+  String _usernameForEmail(String email) =>
+      email.trim().toLowerCase().replaceAll('@', '~');
+
   @override
   Future<SignUpResult> signUp(String email, String password) {
     return _trace('signUp', () => getAuthorization().signUp(
-      username: email,
+      username: _usernameForEmail(email),
       password: password,
       options: SignUpOptions(userAttributes: {
         CognitoUserAttributeKey.email: email,
@@ -155,15 +166,18 @@ class CognitoAuthenticationService implements AuthenticationService {
     String email,
   ) {
     return _trace('confirmSignUp', () => getAuthorization().confirmSignUp(
-      username: email,
+      username: _usernameForEmail(email),
       confirmationCode: confirmationCode,
     ),);
   }
 
   @override
-  Future<ResendSignUpCodeResult> resendVerificationCode(String username) {
+  Future<ResendSignUpCodeResult> resendVerificationCode(String email) {
+    // Parameter is the email (caller passes `getEmail`). We translate to the
+    // pool-stored username here; resendSignUpCode requires the actual
+    // username, not the alias, when the user is still UNCONFIRMED.
     return _trace('resendSignUpCode',
-        () => getAuthorization().resendSignUpCode(username: username),);
+        () => getAuthorization().resendSignUpCode(username: _usernameForEmail(email)),);
   }
 
   @override
