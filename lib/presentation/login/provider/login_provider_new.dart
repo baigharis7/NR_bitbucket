@@ -280,16 +280,12 @@ class LoginProviderNew extends BaseProvider {
     action.call();
   }
 
-  void _onSignUpError(Object error) {
+  void _onSignUpError(Object error, [StackTrace? stack]) {
+    CrashlyticsService.record(error, stack ?? StackTrace.current, context: {
+      'phase': 'signUp',
+      'error_type': error.runtimeType.toString(),
+    });
     onError?.call(error);
-
-    // if (error is UsernameExistsException) {
-    //   onError?.call(ErrorTypes.usernameExistsError);
-    // } else if (error is LimitExceededException) {
-    //   onError?.call(ErrorTypes.limitError);
-    // } else {
-    //   onError?.call(ErrorTypes.unknownError);
-    // }
   }
 
   Future<void> _performLogin({
@@ -300,10 +296,13 @@ class LoginProviderNew extends BaseProvider {
   }) async {
     try {
       _signInAndFetchUserAttributes(moveToNextScreen, isFromVerificationCode: isFromVerificationCode);
-    } catch (errorSignOut) {
+    } catch (errorSignOut, stack) {
       manageLoading(false);
+      await CrashlyticsService.record(errorSignOut, stack, context: {
+        'phase': 'performLogin',
+        'error_type': errorSignOut.runtimeType.toString(),
+      });
       onError?.call(errorSignOut);
-      // onError?.call(ErrorTypes.unknownError);
     }
   }
 
@@ -318,9 +317,9 @@ class LoginProviderNew extends BaseProvider {
         getPassword.orEmpty(),
       );
       _onSignUpSuccess(signUp!, action);
-    } catch (signUpError) {
+    } catch (signUpError, stack) {
       manageLoading(false);
-      _onSignUpError(signUpError);
+      _onSignUpError(signUpError, stack);
     }
   }
 
@@ -519,24 +518,21 @@ class LoginProviderNew extends BaseProvider {
 
   void _onSignInError(Object error) {
     onError?.call(error);
-
-    // if (error is UserNotConfirmedException) {
-    //   _setNotConfirmedUserTryingToLogin(true);
-    // } else if (error is NotAuthorizedException) {
-    //   onError?.call(ErrorTypes.notAuthorizedError);
-    // } else {
-    //   onError?.call(ErrorTypes.signInError);
-    // }
   }
 
   void _saveUserInRemoteUsersDatabase(String userId) async {
+    await CrashlyticsService.instance.log('post-signin: saveUserInRemote start userId=$userId');
     final simpleUser = SimpleUser(email: getEmail.orEmpty(), userName: getEmail.orEmpty(), userId: userId);
     try {
       await saveUserInUsersRemoteDatabaseInteractor?.execute(simpleUser);
-    } catch (saveUserInRemote) {
+    } catch (saveUserInRemote, stack) {
       manageLoading(false);
+      await CrashlyticsService.record(saveUserInRemote, stack, context: {
+        'phase': 'saveUserInRemoteUsersDatabase',
+        'userId': userId,
+        'error_type': saveUserInRemote.runtimeType.toString(),
+      });
       onError?.call(saveUserInRemote);
-      // onError?.call(ErrorTypes.saveUserInRemoteDatabaseError);
     }
   }
 
@@ -559,13 +555,18 @@ class LoginProviderNew extends BaseProvider {
       }
 
       try {
+        await CrashlyticsService.instance.log('post-signin: saveUserCredentials');
         await saveUserCredentialsInteractor?.execute(session);
+        await CrashlyticsService.instance.log('post-signin: saveUserInRemote? = ${saveUserInRemote != null}');
         await saveUserInRemote?.call();
         final userId = getUserIdInteractor!.execute();
+        await CrashlyticsService.instance.log('post-signin: localUserId=$userId sessionSub=${session.userSubResult.valueOrNull}');
         if (session.isSignedIn) {
           if (!isProfileChecked) {
             try {
+              await CrashlyticsService.instance.log('post-signin: checkProfileExistence start');
               final profileExists = await checkProfileExistenceInteractor?.execute(session.userSubResult.value.orEmpty());
+              await CrashlyticsService.instance.log('post-signin: checkProfileExistence=$profileExists');
               _setProfileChecked(true);
               if (!profileExists!) {
                 String? email = getEmailFromToken(getIdTokenInteractor?.execute());
@@ -573,28 +574,49 @@ class LoginProviderNew extends BaseProvider {
                   _downloadProfile(email.orEmpty(), moveToNextScreen);
                 } else {
                   manageLoading(false);
-                  // onError?.call(ErrorTypes.getEmailFromTokenError);
+                  await CrashlyticsService.record(
+                    StateError('post-signin: email from id-token was null, cannot downloadProfile'),
+                    StackTrace.current,
+                    context: {'phase': 'getEmailFromToken', 'branch': 'noLocalProfile'},
+                  );
+                  onError?.call(StateError('Could not read email from token'));
                 }
               } else {
-                // Aquí lo de borrar los datos.
                 if (session.userSubResult.value != userId) {
-                  await eraseDatabaseInteractor!.execute();
+                  await CrashlyticsService.instance.log('post-signin: userSub mismatch, eraseDatabase');
+                  try {
+                    await eraseDatabaseInteractor!.execute();
+                  } catch (eraseError, eraseStack) {
+                    await CrashlyticsService.record(eraseError, eraseStack, context: {
+                      'phase': 'eraseDatabase',
+                      'error_type': eraseError.runtimeType.toString(),
+                    });
+                    rethrow;
+                  }
                   String? email = getEmailFromToken(getIdTokenInteractor?.execute());
                   if (email.isNotNull()) {
                     _downloadProfile(email.orEmpty(), moveToNextScreen);
                   } else {
                     manageLoading(false);
-                    // onError?.call(ErrorTypes.getEmailFromTokenError);
+                    await CrashlyticsService.record(
+                      StateError('post-signin: email from id-token was null after erase'),
+                      StackTrace.current,
+                      context: {'phase': 'getEmailFromToken', 'branch': 'subMismatch'},
+                    );
+                    onError?.call(StateError('Could not read email from token'));
                   }
                 } else {
                   _manageMasterFiles(userId, moveToNextScreen);
                 }
               }
-            } catch (profileExistenceError) {
+            } catch (profileExistenceError, stack) {
               manageLoading(false);
               _setProfileChecked(false);
+              await CrashlyticsService.record(profileExistenceError, stack, context: {
+                'phase': 'checkProfileExistence',
+                'error_type': profileExistenceError.runtimeType.toString(),
+              });
               onError?.call(profileExistenceError);
-              // onError?.call(ErrorTypes.profileExistenceError);
             }
           } else {
             if (!areMasterFilesChecked) {
@@ -604,8 +626,12 @@ class LoginProviderNew extends BaseProvider {
             }
           }
         }
-      } catch (userCredentialsError) {
+      } catch (userCredentialsError, stack) {
         manageLoading(false);
+        await CrashlyticsService.record(userCredentialsError, stack, context: {
+          'phase': 'onFetchUserAttributesSuccess',
+          'error_type': userCredentialsError.runtimeType.toString(),
+        });
         _onFetchUserAttributesError(userCredentialsError);
       }
   }
@@ -613,41 +639,47 @@ class LoginProviderNew extends BaseProvider {
   void _onFetchUserAttributesError(Object error) {
     if (error is UserNotConfirmedException) {
       _setNotConfirmedUserTryingToLogin(true);
-    } else if (error is NoSuchMethodError) {
-      onError?.call();
     } else {
       onError?.call(error);
-      // onError?.call(ErrorTypes.fetchUserCredentialsError);
     }
   }
 
   void _downloadProfile(String email, Function? moveToNextScreen) async {
-      try {
-        final userProfileModel = await downloadProfileInteractor?.execute(email.orEmpty());
-        if (userProfileModel.isNull()) {
-          final userId = getUserIdInteractor!.execute();
-          _manageMasterFiles(userId, () => goToRegistry());
-        } else {
-          _saveProfileInLocal(userProfileModel!, moveToNextScreen!);
-        }
-      } catch (downloadProfileError) {
-        manageLoading(false);
-        _setProfileChecked(false);
-        onError?.call(downloadProfileError);
-        // onError?.call(ErrorTypes.downloadProfileError);
+    await CrashlyticsService.instance.log('post-signin: downloadProfile start');
+    try {
+      final userProfileModel = await downloadProfileInteractor?.execute(email.orEmpty());
+      await CrashlyticsService.instance.log('post-signin: downloadProfile returned isNull=${userProfileModel.isNull()}');
+      if (userProfileModel.isNull()) {
+        final userId = getUserIdInteractor!.execute();
+        _manageMasterFiles(userId, () => goToRegistry());
+      } else {
+        _saveProfileInLocal(userProfileModel!, moveToNextScreen!);
       }
+    } catch (downloadProfileError, stack) {
+      manageLoading(false);
+      _setProfileChecked(false);
+      await CrashlyticsService.record(downloadProfileError, stack, context: {
+        'phase': 'downloadProfile',
+        'error_type': downloadProfileError.runtimeType.toString(),
+      });
+      onError?.call(downloadProfileError);
+    }
   }
 
   void _saveProfileInLocal(UserProfileModel userProfileModel, Function? moveToNextScreen) async {
+    await CrashlyticsService.instance.log('post-signin: saveProfileInLocal start');
     try {
       await saveProfileInteractor?.execute(userProfileModel);
       final userId = getUserIdInteractor!.execute();
       _manageMasterFiles(userId, moveToNextScreen);
-    } catch (saveProfileError) {
+    } catch (saveProfileError, stack) {
       manageLoading(false);
       _setProfileChecked(false);
+      await CrashlyticsService.record(saveProfileError, stack, context: {
+        'phase': 'saveProfileInLocal',
+        'error_type': saveProfileError.runtimeType.toString(),
+      });
       onError?.call(saveProfileError);
-      // onError?.call(ErrorTypes.saveProfileInLocalError);
     }
   }
 
@@ -656,7 +688,16 @@ class LoginProviderNew extends BaseProvider {
   }
 
   Future<void> _synchronizeEvents(String userId) async {
-    await synchronizeEventsInteractor!.execute(userId, fullSync: true);
+    try {
+      await synchronizeEventsInteractor!.execute(userId, fullSync: true);
+    } catch (error, stack) {
+      await CrashlyticsService.record(error, stack, context: {
+        'phase': 'synchronizeEvents',
+        'userId': userId,
+        'error_type': error.runtimeType.toString(),
+      });
+      rethrow;
+    }
   }
 
   /// Fetches reference data (nutrients, nutrient loss, sport METs) and stores
@@ -774,8 +815,14 @@ class LoginProviderNew extends BaseProvider {
           }
         },
       );
-    } catch (_) {
-      // Reference data fetch is best-effort — don't block login
+    } catch (error, stack) {
+      // Reference data fetch is best-effort — don't block login, but log so we
+      // know when S3 fetches are silently failing (would degrade computed RDAs
+      // to Lambda fallback).
+      await CrashlyticsService.record(error, stack, context: {
+        'phase': 'fetchReferenceData',
+        'error_type': error.runtimeType.toString(),
+      });
     }
   }
 
@@ -784,30 +831,33 @@ class LoginProviderNew extends BaseProvider {
     try {
       resendVerificationCodeInteractor?.execute(getEmail.orEmpty());
       showMfaDialog.call();
-    } catch (resendVerificationCodeError) {
+    } catch (resendVerificationCodeError, stack) {
       manageLoading(false);
+      CrashlyticsService.record(resendVerificationCodeError, stack, context: {
+        'phase': 'resendVerificationCode.notConfirmedUser',
+        'error_type': resendVerificationCodeError.runtimeType.toString(),
+      });
       onError?.call(resendVerificationCodeError);
-      // onError?.call(ErrorTypes.resendVerificationCodeError);
     }
   }
 
   void resendVerificationCode() async {
     manageLoading(true);
-      try {
-        await resendVerificationCodeInteractor?.execute(_email.orEmpty());
-        manageLoading(false);
-      } catch (error) {
-        manageLoading(false);
-        onError?.call(error);
-        // if (error is LimitExceededException) {
-        //   onError?.call(ErrorTypes.limitError);
-        // } else {
-        //   onError?.call(ErrorTypes.resendVerificationCodeError);
-        // }
-      }
+    try {
+      await resendVerificationCodeInteractor?.execute(_email.orEmpty());
+      manageLoading(false);
+    } catch (error, stack) {
+      manageLoading(false);
+      await CrashlyticsService.record(error, stack, context: {
+        'phase': 'resendVerificationCode',
+        'error_type': error.runtimeType.toString(),
+      });
+      onError?.call(error);
+    }
   }
 
   void _manageMasterFiles(String userId, Function? onFinish) async {
+    await CrashlyticsService.instance.log('post-signin: manageMasterFiles start userId=$userId');
     try {
       // Fire all 15 Hive version reads in parallel
       final versions = await Future.wait([
@@ -832,9 +882,22 @@ class LoginProviderNew extends BaseProvider {
         versions[0], versions[1], versions[2], versions[3], versions[4],
         versions[5], versions[6], versions[7], versions[8], versions[9],
         versions[10], versions[11], versions[12], versions[13], versions[14],
-      ).then((masterFilesResponse) => _onSuccessManageMasterFiles(masterFilesResponse, userId, onFinish));
-    } catch (errorManageMasterFiles) {
+      ).then(
+        (masterFilesResponse) => _onSuccessManageMasterFiles(masterFilesResponse, userId, onFinish),
+      ).catchError((error, stack) async {
+        await CrashlyticsService.record(error, stack, context: {
+          'phase': 'manageMasterFiles.execute',
+          'error_type': error.runtimeType.toString(),
+        });
+        manageLoading(false);
+        _onErrorManageMasterFiles(error);
+      });
+    } catch (errorManageMasterFiles, stack) {
       manageLoading(false);
+      await CrashlyticsService.record(errorManageMasterFiles, stack, context: {
+        'phase': 'manageMasterFiles.versionReads',
+        'error_type': errorManageMasterFiles.runtimeType.toString(),
+      });
       _onErrorManageMasterFiles(errorManageMasterFiles);
     }
   }
@@ -924,6 +987,7 @@ class LoginProviderNew extends BaseProvider {
     });
 
     _setMasterFilesChecked(true);
+    await CrashlyticsService.instance.log('post-signin: masterFiles saved, starting events sync + reference data');
     try {
       // Run events sync, reference data fetch, and pending sync queue in parallel
       syncQueueService?.processQueue();
@@ -936,17 +1000,19 @@ class LoginProviderNew extends BaseProvider {
             ? goToRegistry.call()
             : onFinish?.call();
       });
-    } catch (synchronizeEventError) {
+    } catch (synchronizeEventError, stack) {
       manageLoading(false);
+      await CrashlyticsService.record(synchronizeEventError, stack, context: {
+        'phase': 'synchronizeEvents+fetchReferenceData',
+        'error_type': synchronizeEventError.runtimeType.toString(),
+      });
       onError?.call(synchronizeEventError);
-      // onError?.call(ErrorTypes.synchronizeEventsError);
     }
   }
 
   void _onErrorManageMasterFiles(Object error) {
     _setMasterFilesChecked(false);
     onError?.call(error);
-    // onError?.call(ErrorTypes.manageMasterFilesError);
   }
 
   void notConfirmedUserCancelsReceiveConfirmationCode() {
@@ -963,9 +1029,9 @@ class LoginProviderNew extends BaseProvider {
     try {
       final signUpResult = await verificationCodeInteractor?.execute(confirmationCode, getEmail.orEmpty());
       _onSendVerificationCodeSuccess(signUpResult!, action);
-    } catch (sendVerificationCodeError) {
+    } catch (sendVerificationCodeError, stack) {
       manageLoading(false);
-      _onSendVerificationCodeError(sendVerificationCodeError,);
+      _onSendVerificationCodeError(sendVerificationCodeError, stack);
     }
   }
 
@@ -973,16 +1039,12 @@ class LoginProviderNew extends BaseProvider {
     _signInAndFetchUserAttributes(action, isFromVerificationCode: true);
   }
 
-  void _onSendVerificationCodeError(Object error) {
+  void _onSendVerificationCodeError(Object error, [StackTrace? stack]) {
+    CrashlyticsService.record(error, stack ?? StackTrace.current, context: {
+      'phase': 'sendVerificationCode',
+      'error_type': error.runtimeType.toString(),
+    });
     onError?.call(error);
-    // if (error is AliasExistsException) {
-    //   onError?.call(ErrorTypes.emailAlreadyExistsError);
-    // } else if (error is CodeExpiredException) {
-    //   onError?.call(ErrorTypes.codeExpiredError);
-    // } else {
-    //   onError?.call(ErrorTypes.confirmationCodeError);
-    // }
-    // _setLoginMode(true);
   }
 
   FormErrorTypes? validateEmail(String? value) {
