@@ -193,19 +193,21 @@ domain.UserProfileModel mapToUserProfileModelFromUploadUser(upload.UploadUserPro
       waistMeasurement: uploadUserProfile.physicalCharacteristics!.waistMeasurement,
   );
 
+  // Female users registered via older versions of the signup flow could land
+  // here with femaleCharacteristics absent (the menstruation question was
+  // skippable). Force-unwrapping the chain threw on every login for those
+  // accounts. Defaulting the inner fields to null keeps the rest of the
+  // profile loadable; femaleCharacteristics isn't read by any calc path.
+  final menstruation = uploadUserProfile.femaleCharacteristics?.menstruation;
   final domain.FemaleCharacteristics? femaleCharacteristics = uploadUserProfile.sex == 0
       ? null
       : domain.FemaleCharacteristics(
-      menstruation: domain.Menstruation(
-        regularity: uploadUserProfile.femaleCharacteristics!.menstruation!.regularity,
-        daysOfCycle: uploadUserProfile.femaleCharacteristics!.menstruation!.regularity == 0
-          ? uploadUserProfile.femaleCharacteristics!.menstruation!.daysOfCycle
-          : null,
-        lastStartDate: uploadUserProfile.femaleCharacteristics!.menstruation!.regularity == 0
-            ? uploadUserProfile.femaleCharacteristics!.menstruation!.lastStartDate
-            : null,
-      ),
-  );
+          menstruation: domain.Menstruation(
+            regularity: menstruation?.regularity,
+            daysOfCycle: menstruation?.regularity == 0 ? menstruation?.daysOfCycle : null,
+            lastStartDate: menstruation?.regularity == 0 ? menstruation?.lastStartDate : null,
+          ),
+        );
 
   final domain.MedicalSituation medicalSituation = domain.MedicalSituation(
     commonDiseases: convertToList(uploadUserProfile.medicalSituation!.commonDiseases),
