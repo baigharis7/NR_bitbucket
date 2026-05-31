@@ -58,7 +58,7 @@ class ScreenTopBar extends StatelessWidget {
             )
           else if (selectedDate != null)
             Text(
-              DateFormat('EEE, MMM d yyyy').format(selectedDate!),
+              DateFormat('EEE, MMM d yyyy', Localizations.localeOf(context).languageCode).format(selectedDate!),
               style: AppTextStyles.merriWeather.copyWith(
                 fontSize: 16,
                 color: Colors.white,

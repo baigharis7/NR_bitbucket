@@ -496,7 +496,7 @@ class _AddSportEventScreenState extends State<AddSportEventScreen> {
           title = AppLocalizations.of(context)!.health_sync_card_enabled;
           subtitle = healthState.lastSyncTime != null
               ? AppLocalizations.of(context)!.health_sync_last_sync(
-                  DateFormat('MMM d, yyyy HH:mm').format(healthState.lastSyncTime!),
+                  DateFormat('MMM d, yyyy HH:mm', Localizations.localeOf(context).languageCode).format(healthState.lastSyncTime!),
                 )
               : AppLocalizations.of(context)!.health_sync_card_never_synced;
         } else {

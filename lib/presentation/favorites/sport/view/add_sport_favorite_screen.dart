@@ -314,7 +314,7 @@ class _AddSportFavoriteScreenState extends State<AddSportFavoriteScreen> {
                                                   ),
                                                   Container(
                                                     margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginNormal),
-                                                    child: Text(DateFormat('hh:mm a, MM/dd/yy').format(DateTime.fromMillisecondsSinceEpoch(int.parse(sport.timeStart.toString())))),
+                                                    child: Text(DateFormat('hh:mm a, MM/dd/yy', Localizations.localeOf(context).languageCode).format(DateTime.fromMillisecondsSinceEpoch(int.parse(sport.timeStart.toString())))),
                                                   ),
                                                 ],
                                               ),

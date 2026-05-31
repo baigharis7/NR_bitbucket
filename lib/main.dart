@@ -78,6 +78,8 @@ void main() async {
   // silently falls back to English even when a non-default locale is passed.
   await initializeDateFormatting('es_ES', null);
   await initializeDateFormatting('en_US', null);
+  await initializeDateFormatting('es', null);
+  await initializeDateFormatting('en', null);
 
   // Firebase init is local config (~50ms), safe to await before runApp
   await Firebase.initializeApp(

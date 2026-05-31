@@ -242,7 +242,7 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
                                   context,
                                   icon: Icons.access_time,
                                   label: AppLocalizations.of(context)!.health_sync_last_sync(
-                                    DateFormat('MMM d, yyyy HH:mm').format(state.lastSyncTime!),
+                                    DateFormat('MMM d, yyyy HH:mm', Localizations.localeOf(context).languageCode).format(state.lastSyncTime!),
                                   ),
                                 ),
                                 const SizedBox(height: Dimens.height12),
