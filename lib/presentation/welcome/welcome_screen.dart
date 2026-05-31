@@ -1,12 +1,11 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/healthsync/view/health_sync_onboarding_screen.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
-
-import '../profile/common/objectives_screen.dart';
-import '../profile/registry/view/registry_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 
 class WelcomeScreen extends StatelessWidget {
   static const routeName = '/welcome_screen';
@@ -15,42 +14,60 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-      body: Center(
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXXXLarge),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Image.asset(
-              'assets/icon/app_icon.png',
-              width: 90,
-              height: 90,
+    return Stack(
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/background.png'),
+              fit: BoxFit.cover,
             ),
-            Container(
-              margin:
-                  const EdgeInsets.symmetric(vertical: Dimens.marginXXLarge),
-              child: Text(
-                AppLocalizations.of(context)!.welcome + '!',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: Dimens.fontSizeXLarge,
-                ),
-              ),
-            ),
-            Container(
-              margin:
-                  const EdgeInsets.symmetric(vertical: Dimens.marginXXXLarge),
-              child: RoundedCustomButton(
-                onPressed: () {
-                  Navigator.of(context)
-                      .popAndPushNamed(HealthSyncOnboardingScreen.routeName);
-                },
-                buttonText: AppLocalizations.of(context)!.begin,
-              ),
-            )
-          ]),
+          ),
         ),
-      ),
-    ));
+        BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(color: Colors.black.withOpacity(0)),
+        ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Dimens.marginXXXLarge,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/logo_name_white.png',
+                    width: 220,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(height: Dimens.height37),
+                  Text(
+                    '${AppLocalizations.of(context)!.welcome}!',
+                    style: AppTextStyles.merriWeather.copyWith(
+                      fontWeight: FontWeight.w700,
+                      fontSize: Dimens.fontSize21,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: Dimens.height37),
+                  GeneralButton(
+                    title: AppLocalizations.of(context)!.begin,
+                    onTap: () {
+                      Navigator.of(context).popAndPushNamed(
+                        HealthSyncOnboardingScreen.routeName,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

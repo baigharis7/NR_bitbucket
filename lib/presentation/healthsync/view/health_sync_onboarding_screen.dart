@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
@@ -7,7 +10,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/healthsync/bloc/health_sync_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/common/objectives_screen.dart';
-import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
 
 /// Onboarding screen for health app sync, shown during registration flow.
 /// Promotes syncing with HealthKit/Health Connect and allows users to
@@ -18,7 +21,8 @@ class HealthSyncOnboardingScreen extends StatefulWidget {
   const HealthSyncOnboardingScreen({super.key});
 
   @override
-  State<HealthSyncOnboardingScreen> createState() => _HealthSyncOnboardingScreenState();
+  State<HealthSyncOnboardingScreen> createState() =>
+      _HealthSyncOnboardingScreenState();
 }
 
 class _HealthSyncOnboardingScreenState extends State<HealthSyncOnboardingScreen>
@@ -70,177 +74,226 @@ class _HealthSyncOnboardingScreenState extends State<HealthSyncOnboardingScreen>
         }
       },
       builder: (context, state) {
-        return SafeArea(
-          child: Scaffold(
-            backgroundColor: AppColors.floralWhite,
-            body: Center(
-              child: SingleChildScrollView(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: Dimens.marginXXXLarge,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Health sync icon
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: AppColors.yellowishGreen.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.watch,
-                          size: 50,
-                          color: AppColors.yellowishGreen,
-                        ),
-                      ),
-                      const SizedBox(height: Dimens.height25),
-
-                      // Title
-                      Text(
-                        AppLocalizations.of(context)!.health_sync_title,
-                        style: AppTextStyles.merriWeather.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontSize: Dimens.fontSizeXLarge,
-                          color: Colors.black,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: Dimens.height12),
-
-                      // Description
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: Dimens.padding10,
-                        ),
-                        child: Text(
-                          AppLocalizations.of(context)!.health_sync_description,
-                          style: AppTextStyles.radioCanadaBig.copyWith(
-                            fontWeight: FontWeight.w400,
-                            fontSize: Dimens.fontSizeNormal,
-                            color: AppColors.battleshipGrey,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      const SizedBox(height: Dimens.height37),
-
-                      // Data types we'll sync
-                      _buildDataTypesList(context),
-                      const SizedBox(height: Dimens.height37),
-
-                      // Not available message with Install button
-                      if (!state.isAvailable && !state.isLoading)
-                        Column(
-                          children: [
-                            Text(
-                              AppLocalizations.of(context)!.health_sync_not_available,
-                              style: AppTextStyles.radioCanadaBig.copyWith(
-                                fontSize: Dimens.fontSizeSmall,
-                                color: Colors.orange,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: Dimens.height12),
-                            OutlinedButton.icon(
-                              onPressed: () {
-                                _bloc.add(HealthSyncInstallHealthConnect());
-                              },
-                              icon: const Icon(Icons.download, size: 18),
-                              label: Text(AppLocalizations.of(context)!.health_sync_hc_install_button),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: Colors.orange,
-                                side: const BorderSide(color: Colors.orange),
-                              ),
-                            ),
-                            const SizedBox(height: Dimens.height12),
-                          ],
-                        ),
-
-                      // Connect Now button
-                      RoundedCustomButton(
-                        onPressed: () {
-                          _bloc.add(HealthSyncRequestPermissions());
-                        },
-                        enableButton: state.isAvailable,
-                        buttonText: AppLocalizations.of(context)!.health_sync_connect,
-                      ),
-                      const SizedBox(height: Dimens.height12),
-
-                      // Skip for now link
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).popAndPushNamed(
-                            ObjectivesScreen.routeName,
-                          );
-                        },
-                        child: Text(
-                          AppLocalizations.of(context)!.health_sync_skip,
-                          style: AppTextStyles.radioCanadaBig.copyWith(
-                            fontWeight: FontWeight.w400,
-                            fontSize: Dimens.fontSizeNormal,
-                            color: AppColors.yellowishGreen,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+        return Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/background.png'),
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-          ),
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(color: Colors.black.withOpacity(0)),
+            ),
+            Scaffold(
+              backgroundColor: Colors.transparent,
+              body: SafeArea(
+                child: Column(
+                  children: [
+                    const SizedBox(height: Dimens.height32),
+                    Image.asset(
+                      'assets/images/logo_name_white.png',
+                      width: 200,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: Dimens.paddingLarge),
+
+                    // Intro / promo card (mirrors settings toggle card)
+                    _buildIntroCard(context),
+
+                    // HC install button (Android only, when HC not available)
+                    if (Platform.isAndroid && !state.isAvailable && !state.isLoading)
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(
+                          left: Dimens.paddingLarge,
+                          right: Dimens.paddingLarge,
+                          top: Dimens.paddingLarge,
+                        ),
+                        child: GeneralButton(
+                          title: AppLocalizations.of(context)!
+                              .health_sync_hc_install_button,
+                          onTap: () =>
+                              _bloc.add(HealthSyncInstallHealthConnect()),
+                        ),
+                      ),
+
+                    const SizedBox(height: Dimens.paddingLarge),
+
+                    // Data types card (mirrors settings data-types card)
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: Dimens.paddingLarge),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: Dimens.padding20,
+                            vertical: Dimens.paddingLarge,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.floralWhite,
+                            borderRadius:
+                                BorderRadius.circular(Dimens.border15),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _buildDataTypeItem(context,
+                                  Icons.fitness_center, 'Workouts'),
+                              _buildDataTypeItem(context,
+                                  Icons.local_fire_department, 'Active Calories'),
+                              _buildDataTypeItem(
+                                  context, Icons.favorite, 'Heart Rate'),
+                              _buildDataTypeItem(
+                                  context, Icons.directions_walk, 'Steps'),
+                              _buildDataTypeItem(
+                                  context, Icons.straighten, 'Distance'),
+                              _buildDataTypeItem(
+                                  context, Icons.bedtime, 'Sleep',
+                                  showDivider: false),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Connect Now button (mirrors Sync Now button)
+                    Container(
+                      margin: const EdgeInsets.only(
+                        left: Dimens.paddingLarge,
+                        right: Dimens.paddingLarge,
+                        top: Dimens.paddingLarge,
+                      ),
+                      child: GeneralButton(
+                        title:
+                            AppLocalizations.of(context)!.health_sync_connect,
+                        selectedColor: state.isAvailable
+                            ? AppColors.yellowishGreen
+                            : AppColors.yellowishGreen.withOpacity(0.4),
+                        onTap: state.isAvailable
+                            ? () => _bloc.add(HealthSyncRequestPermissions())
+                            : null,
+                      ),
+                    ),
+
+                    // Skip for now
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).popAndPushNamed(
+                          ObjectivesScreen.routeName,
+                        );
+                      },
+                      child: Text(
+                        AppLocalizations.of(context)!.health_sync_skip,
+                        style: AppTextStyles.radioCanadaBig.copyWith(
+                          fontWeight: FontWeight.w400,
+                          fontSize: Dimens.fontSizeNormal,
+                          color: Colors.white,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: Dimens.paddingLarge),
+                  ],
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
   }
 
-  Widget _buildDataTypesList(BuildContext context) {
-    final dataTypes = [
-      {'icon': Icons.fitness_center, 'label': 'Workouts'},
-      {'icon': Icons.directions_walk, 'label': 'Steps'},
-      {'icon': Icons.local_fire_department, 'label': 'Calories'},
-      {'icon': Icons.favorite, 'label': 'Heart Rate'},
-      {'icon': Icons.straighten, 'label': 'Distance'},
-      {'icon': Icons.bedtime, 'label': 'Sleep'},
-    ];
+  Widget _buildIntroCard(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+      padding: const EdgeInsets.symmetric(
+        horizontal: Dimens.paddingNormal,
+        vertical: Dimens.paddingNormal,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.yellowishGreen59,
+        borderRadius: BorderRadius.circular(Dimens.border15),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.monitor_heart,
+            size: 36,
+            color: Colors.white,
+          ),
+          const SizedBox(width: Dimens.width12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.health_sync_title,
+                  style: AppTextStyles.merriWeather.copyWith(
+                    fontWeight: FontWeight.w600,
+                    fontSize: Dimens.fontSize15,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  AppLocalizations.of(context)!.health_sync_description,
+                  style: AppTextStyles.radioCanadaBig.copyWith(
+                    fontSize: Dimens.fontSizeSmall,
+                    color: Colors.white70,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-    return Wrap(
-      spacing: 12,
-      runSpacing: 8,
-      alignment: WrapAlignment.center,
-      children: dataTypes.map((type) {
-        return Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 6,
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.yellowishGreen.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(16),
-          ),
+  Widget _buildDataTypeItem(BuildContext context, IconData icon, String label,
+      {bool showDivider = true}) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: Dimens.paddingNormal),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                type['icon'] as IconData,
-                size: 16,
+                icon,
+                size: 24,
                 color: AppColors.yellowishGreen,
               ),
-              const SizedBox(width: 4),
-              Text(
-                type['label'] as String,
-                style: AppTextStyles.radioCanadaBig.copyWith(
-                  fontSize: Dimens.fontSizeSmall,
-                  color: AppColors.yellowishGreen,
+              const SizedBox(width: Dimens.width12),
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppTextStyles.merriWeather.copyWith(
+                    fontSize: Dimens.fontSizeMedium,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.yellowishGreen,
+                  ),
                 ),
+              ),
+              const Icon(
+                Icons.check,
+                size: 22,
+                color: AppColors.yellowishGreen,
               ),
             ],
           ),
-        );
-      }).toList(),
+        ),
+        if (showDivider)
+          Divider(
+            color: AppColors.yellowishGreen.withOpacity(0.3),
+            height: 1,
+          ),
+      ],
     );
   }
 }
