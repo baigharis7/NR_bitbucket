@@ -278,7 +278,7 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
                       margin: const EdgeInsets.only(
                         left: Dimens.paddingLarge,
                         right: Dimens.paddingLarge,
-                        bottom: Dimens.paddingLarge,
+                        bottom: 30,
                       ),
                       child: GeneralButton(
                         title: state.isSyncing
