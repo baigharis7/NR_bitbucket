@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/vertical_nutrient_widget.dart';
@@ -18,7 +19,7 @@ class NutrientsSection extends StatelessWidget {
       Row(children: [
         Image.asset(image ?? 'assets/images/goal_objectives.png', height: 18, width: 18,),
         const SizedBox(width: Dimens.widthXXXXSmall),
-        Text(title ?? 'Objectives', style: TextStyle(fontWeight: FontWeight.w900, color: titleColor ?? AppColors.peacockBlue, fontSize: Dimens.fontSize13)),
+        Text(title ?? AppLocalizations.of(context)!.objectives, style: TextStyle(fontWeight: FontWeight.w900, color: titleColor ?? AppColors.peacockBlue, fontSize: Dimens.fontSize13)),
       ],
       ),
       const SizedBox(height: Dimens.height30),

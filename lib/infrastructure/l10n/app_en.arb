@@ -769,6 +769,25 @@
 
     "connection_error_try_later": "Unable to connect. Please try again later.",
 
-    "scan_food_barcode": "Scan food / barcode"
+    "scan_food_barcode": "Scan food / barcode",
+
+    "retry": "Retry",
+    "kcal_of": "KCAL OF",
+    "servings_label": "Servings",
+    "finish_logging_title": "Finish logging?",
+    "finish_logging_body": "You still have items selected. Finishing now will not log them.",
+    "barcode_scanner_title": "Barcode Scanner",
+    "barcode_scanner_unavailable": "Barcode scanning is currently unavailable.",
+
+    "scanner_scanning": "Scanning... please wait",
+    "scanner_results": "Results",
+    "scanner_scan_again": "Scan again",
+    "scanner_select_food": "Select the food you would like to log.",
+    "scanner_clear": "Clear",
+    "scanner_log": "Log",
+    "scanner_done": "Done",
+    "scanner_log_all": "Log all",
+    "scanner_amount_needed": "Amount needed",
+    "scanner_matched": "Matched"
 
 }

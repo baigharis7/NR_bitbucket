@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/domain/models/recipes/recipes_master.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/recipes/recipe_detail/bloc/recipe_detail_bloc.dart';
 
 import '../../../infrastructure/utils/dimens.dart';
@@ -36,7 +37,7 @@ class _RecipeIngredientsState extends State<RecipeIngredients> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: SizedBox(width: double.infinity,child: RecipeIngredientItem(name: 'Servings', imageSource: 'assets/images/persons.png', qty: state.uploadRecipeFavorite?.itemRecipe.servings.toString() ?? '', styleText: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),)),
+                child: SizedBox(width: double.infinity,child: RecipeIngredientItem(name: AppLocalizations.of(context)!.servings_label, imageSource: 'assets/images/persons.png', qty: state.uploadRecipeFavorite?.itemRecipe.servings.toString() ?? '', styleText: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),)),
               ),
               // Card(
               //   shape: RoundedRectangleBorder(

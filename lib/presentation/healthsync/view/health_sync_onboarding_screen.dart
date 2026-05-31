@@ -149,7 +149,7 @@ class _HealthSyncOnboardingScreenState extends State<HealthSyncOnboardingScreen>
                                 _bloc.add(HealthSyncInstallHealthConnect());
                               },
                               icon: const Icon(Icons.download, size: 18),
-                              label: const Text('Install Health Connect'),
+                              label: Text(AppLocalizations.of(context)!.health_sync_hc_install_button),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.orange,
                                 side: const BorderSide(color: Colors.orange),

@@ -385,15 +385,15 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   }
 
   Widget _buildProcessingIndicator() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(color: AppColors.mountainMeadow),
-          SizedBox(height: 16),
+          const CircularProgressIndicator(color: AppColors.mountainMeadow),
+          const SizedBox(height: 16),
           Text(
-            'Scanning... please wait',
-            style: TextStyle(color: Colors.white, fontSize: 16),
+            AppLocalizations.of(context)!.scanner_scanning,
+            style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
         ],
       ),
@@ -467,9 +467,9 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Results',
-                          style: TextStyle(
+                        Text(
+                          AppLocalizations.of(context)!.scanner_results,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -479,19 +479,19 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                           onTap: state.isSaving
                               ? null
                               : () => bloc.add(ResetScannerAction()),
-                          child: const Text(
-                            'Scan again',
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.of(context)!.scanner_scan_again,
+                            style: const TextStyle(
                                 color: AppColors.white70Percent, fontSize: 14),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'Select the food you would like to log.',
+                    Text(
+                      AppLocalizations.of(context)!.scanner_select_food,
                       style:
-                          TextStyle(color: AppColors.white70Percent, fontSize: 13),
+                          const TextStyle(color: AppColors.white70Percent, fontSize: 13),
                     ),
                     const SizedBox(height: 10),
 
@@ -546,7 +546,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                       children: [
                         Expanded(
                           child: _buildActionButton(
-                            label: 'Clear',
+                            label: AppLocalizations.of(context)!.scanner_clear,
                             isPrimary: false,
                             onTap: state.hasResults && !state.isSaving
                                 ? () => bloc.add(ResetScannerAction())
@@ -556,7 +556,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                         const SizedBox(width: 12),
                         Expanded(
                           child: _buildActionButton(
-                            label: 'Edit',
+                            label: AppLocalizations.of(context)!.edit,
                             isPrimary: false,
                             onTap: state.hasSelection && !state.isSaving
                                 ? () => bloc.add(EditTopmostAction())
@@ -566,7 +566,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                         const SizedBox(width: 12),
                         Expanded(
                           child: _buildActionButton(
-                            label: 'Log',
+                            label: AppLocalizations.of(context)!.scanner_log,
                             isPrimary: true,
                             onTap: state.hasSelection && !state.isSaving
                                 ? () => bloc.add(LogTopmostAction())
@@ -581,7 +581,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                       children: [
                         Expanded(
                           child: _buildActionButton(
-                            label: 'Done',
+                            label: AppLocalizations.of(context)!.scanner_done,
                             isPrimary: false,
                             onTap: state.isSaving
                                 ? null
@@ -591,7 +591,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
                         const SizedBox(width: 12),
                         Expanded(
                           child: _buildActionButton(
-                            label: 'Log all',
+                            label: AppLocalizations.of(context)!.scanner_log_all,
                             isPrimary: true,
                             onTap: state.hasSelection && !state.isSaving
                                 ? () => _onLogAllPressed(context, state)
@@ -619,14 +619,15 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
     final displayName = result.isMatched
         ? result.matchedNameEn ?? result.scannedName
         : result.scannedName;
+    final l10n = AppLocalizations.of(context)!;
     final subtitleParts = <String>[];
     if (result.estimatedGrams != null) {
       subtitleParts.add('~${result.estimatedGrams!.round()} g');
     } else if (result.servingSizeHint != null &&
         result.servingSizeHint!.isNotEmpty) {
-      subtitleParts.add('Amount needed (${result.servingSizeHint})');
+      subtitleParts.add('${l10n.scanner_amount_needed} (${result.servingSizeHint})');
     } else {
-      subtitleParts.add('Amount needed');
+      subtitleParts.add(l10n.scanner_amount_needed);
     }
     if (result.estimatedKcal != null) {
       // For barcode scans this is the per-100g kcal from the source; for
@@ -635,7 +636,7 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
       subtitleParts.add('~${result.estimatedKcal!.round()}$suffix');
     }
     if (result.isMatched) {
-      subtitleParts.add('Matched');
+      subtitleParts.add(l10n.scanner_matched);
     }
     if (result.detectedCookingMethod != null) {
       subtitleParts.add(result.detectedCookingMethod!);
@@ -779,20 +780,20 @@ class _FoodScannerScreenState extends State<FoodScannerScreen>
   Future<void> _onDonePressed(
       BuildContext context, FoodScannerState state) async {
     if (state.hasSelection) {
+      final l10n = AppLocalizations.of(context)!;
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Finish logging?'),
-          content: const Text(
-              'You still have items selected. Finishing now will not log them.'),
+          title: Text(l10n.finish_logging_title),
+          content: Text(l10n.finish_logging_body),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Finish'),
+              child: Text(l10n.finish),
             ),
           ],
         ),

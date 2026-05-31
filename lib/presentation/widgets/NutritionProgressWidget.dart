@@ -213,7 +213,7 @@ class _NutritionProgressWidgetState extends State<NutritionProgressWidget> {
                                   style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSize35, color: Colors.white),
                                 ),
                                 Text(
-                                  'KCAL OF',
+                                  AppLocalizations.of(context)!.kcal_of,
                                   style: AppTextStyles.radioCanadaBig.copyWith(fontSize: Dimens.fontSize11, color: Colors.white),
                                 ),
                                 Text(

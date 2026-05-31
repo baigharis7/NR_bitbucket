@@ -1582,9 +1582,10 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
                       ),
                     if (_error != null) ...[
                       const SizedBox(height: 32),
-                      const Text(
-                        'Unable to connect',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      Text(
+                        localizations?.connection_error_try_later ??
+                            'Unable to connect. Please try again later.',
+                        style: const TextStyle(color: Colors.white, fontSize: 16),
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
@@ -1594,7 +1595,7 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
                           });
                           _initApp();
                         },
-                        child: const Text('Retry'),
+                        child: Text(localizations?.retry ?? 'Retry'),
                       ),
                     ],
                   ],

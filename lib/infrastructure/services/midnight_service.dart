@@ -93,12 +93,11 @@ mixin MidnightToastMixin<T extends StatefulWidget> on State<T> {
   void subscribeMidnight() {
     _midnightSub = MidnightService.instance.stream.listen((_) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        if (l10n == null) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              AppLocalizations.of(context)?.new_day_message ??
-                  "It's a new day! Go back to see today's data.",
-            ),
+            content: Text(l10n.new_day_message),
             duration: const Duration(seconds: 4),
             behavior: SnackBarBehavior.floating,
           ),

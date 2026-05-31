@@ -313,7 +313,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get occupation_mandatory =>
-      'You have to select an activity according to your occupation';
+      'Tienes que seleccionar una actividad acorde a tu ocupación';
 
   @override
   String get high_blood_pressure => 'Hipertensión arterial';
@@ -559,7 +559,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get username_exists_error =>
-      'Este nombre de usuario ya está en uso. Por favor escribe uno nuevo.';
+      'Ya existe una cuenta con este correo. Inicia sesión en su lugar.';
 
   @override
   String get get_email_from_token_error =>
@@ -718,7 +718,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get save_liquid_event_error =>
-      'There was an error in saving liquid event. Try again later.';
+      'Hubo un error al guardar el evento líquido. Inténtalo de nuevo más tarde.';
 
   @override
   String get invalid_password_error =>
@@ -734,7 +734,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get retry_sign_up =>
-      'Vuelva a intentar la operación e ingrese otro nombre de usuario o correo electrónico.';
+      'Ya existe una cuenta con este correo. Inicia sesión en su lugar.';
 
   @override
   String get invalid_code =>
@@ -1773,7 +1773,7 @@ class AppLocalizationsEs extends AppLocalizations {
       '<h2>Política de Privacidad</h2><p>El Titular le informa sobre su <b>Política de Privacidad</b> respecto al tratamiento y protección de los datos personales de los usuarios que se recaban durante el uso de la aplicación móvil (en adelante, “la App”).</p><p>En este sentido, el Titular garantiza el cumplimiento de la normativa vigente en materia de protección de datos personales, reflejada en la <b>Ley Orgánica 3/2018</b>, de 5 de diciembre, de Protección de Datos Personales y de Garantía de los Derechos Digitales (LOPD GDD). Cumple también con el <b>Reglamento (UE) 2016/679</b> del Parlamento Europeo y del Consejo de 27 de abril de 2016 relativo a la protección de las personas físicas (RGPD).</p><p>El uso de la App implica la aceptación de esta Política de Privacidad así como de las condiciones incluidas en el Aviso Legal.</p><h3>Identidad del Responsable</h3><ul><li><b>Responsable:</b> NUTRENAISSANCE S.L.U.</li><li><b>NIF:</b> B42981100</li><li><b>Domicilio:</b> Calle de Peña Goñi, 2. 02 IZ., Gipuzkoa - España</li><li><b>Correo electrónico:</b> info@nutrenaissance.com</li><li><b>Sitio Web:</b>https://nutrenaissance.com</li></ul><h3>Principios aplicados en el tratamiento de datos</h3><p>En el tratamiento de sus datos personales, el Titular aplicará los siguientes principios conforme al RGPD:</p><ul><li><b>Licitud, lealtad y transparencia:</b> siempre se requerirá el consentimiento para el tratamiento de los datos personales, previamente informado de manera transparente.</li><li><b>Minimización de datos:</b> se solicitarán únicamente los datos estrictamente necesarios.</li><li><b>Limitación del plazo de conservación:</b> los datos se conservarán solo durante el tiempo necesario para los fines del tratamiento.</li><li><b>Integridad y confidencialidad:</b> se aplican medidas técnicas y organizativas para garantizar la seguridad y confidencialidad de los datos.</li></ul><h3>Obtención de datos personales</h3><p>Para utilizar la App es necesario crear una cuenta y proporcionar ciertos datos personales. Los datos que se recaban incluyen:</p><ul><li><b>Datos identificativos:</b> nombre, apellidos, correo electrónico y credenciales de acceso.</li><li><b>Datos básicos de salud y nutrición:</b> peso, altura, índice de masa corporal (IMC), masa muscular y otras mediciones que el usuario introduzca para utilizar las funcionalidades de la App.</li><li><b>Datos de uso:</b> interacciones dentro de la App, preferencias y registros de actividad necesarios para mejorar el servicio.</li></ul><p>Esta información es imprescindible para que la App pueda ofrecer un servicio de nutrición personalizado. Al introducir estos datos, el usuario consiente su recogida, uso y tratamiento conforme a lo descrito en la presente Política de Privacidad.</p><h3>Derechos</h3><p>El Titular le informa que sobre sus datos personales tiene derecho a:</p><ul><li>Solicitar el acceso a los datos almacenados.</li><li>Solicitar su rectificación o supresión.</li><li>Solicitar la limitación de su tratamiento.</li><li>Oponerse al tratamiento.</li></ul><p>El ejercicio de estos derechos es personal y debe realizarse directamente por el interesado, enviando su solicitud junto con una copia de un documento de identidad válido al correo electrónico: <b>info@nutrenaissance.com</b>. El ejercicio de estos derechos no incluye datos que el Titular esté obligado a conservar por motivos administrativos, legales o de seguridad. Asimismo, el usuario tiene derecho a presentar una reclamación ante la <b>Agencia Española de Protección de Datos</b> si considera que el tratamiento de sus datos infringe la normativa.</p><h3>Finalidad del tratamiento de datos personales</h3><p>Los datos se recaban con las siguientes finalidades:</p><ul><li>Ofrecer y personalizar los servicios de nutrición de la App.</li><li>Garantizar el cumplimiento del Aviso Legal y de la normativa aplicable.</li><li>Mejorar los servicios y funcionalidades de la App.</li><li>Gestionar la presencia del Titular en redes sociales.</li></ul><p>El Titular no utilizará los perfiles en redes sociales para enviar publicidad de forma individualizada.</p><h3>Seguridad de los datos personales</h3><p>El Titular aplica medidas técnicas y organizativas adecuadas para proteger los datos frente a pérdida, uso indebido, acceso no autorizado, divulgación o destrucción. Los datos personales no serán cedidos a terceros, salvo obligación legal o en caso de que sea necesario para la prestación de un servicio, siempre con el consentimiento del usuario y bajo estrictas garantías de seguridad.</p><h3>Contenido de terceros</h3><p>La App puede contener enlaces o contenidos integrados (por ejemplo, vídeos, artículos) de terceros. Estos sitios pueden recopilar datos y aplicar sus propias políticas de privacidad, ajenas al Titular.</p><h3>Cookies y tecnologías de seguimiento</h3><p>La App puede utilizar cookies u otras tecnologías similares necesarias para su correcto funcionamiento.</p><h3>Legitimación para el tratamiento</h3><p>La base legal para el tratamiento de sus datos es el consentimiento del interesado.</p><h3>Categorías de datos personales</h3><ul><li>Datos identificativos.</li><li>Datos básicos de salud y nutrición (no considerados categorías especiales en el sentido estricto del RGPD).</li><li>Datos de uso.</li></ul><h3>Conservación de los datos</h3><p>Los datos personales proporcionados se conservarán mientras el usuario mantenga su cuenta activa o hasta que solicite su supresión.</p><h3>Destinatarios de datos personales</h3><p><b>Google Analytics:</b> servicio de análisis prestado por Google Inc., que puede recopilar datos de uso de la App a través de cookies u otras tecnologías. Parte de los datos pueden almacenarse en servidores de Estados Unidos. Más información en la Política de privacidad de Google.</p><h3>Datos no identificativos</h3><p>Durante el uso de la App también se pueden recopilar datos no identificativos, como dirección IP, geolocalización aproximada, hábitos de uso y métricas técnicas.</p><h3>Exactitud y veracidad de los datos</h3><p>El usuario garantiza que los datos facilitados son correctos, completos, exactos y actualizados, siendo responsable de cualquier inexactitud.</p><h3>Aceptación y consentimiento</h3><p>Al registrarse y usar la App, el usuario declara haber sido informado de las condiciones sobre protección de datos de carácter personal, aceptando y consintiendo su tratamiento en los términos establecidos en la presente Política de Privacidad.</p><h3>Cambios en la Política de Privacidad</h3><p>El Titular se reserva el derecho a modificar esta Política de Privacidad para adaptarla a novedades legislativas o prácticas de la industria. La versión vigente será siempre la publicada en la App.</p>';
 
   @override
-  String get privacy_title => 'Privacy Policy';
+  String get privacy_title => 'Política de Privacidad';
 
   @override
   String get tip_text =>
@@ -1928,7 +1928,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get new_day_message =>
-      'It\'s a new day! Go back to see today\'s data.';
+      '¡Es un nuevo día! Vuelve atrás para ver los datos de hoy.';
 
   @override
   String get health_sync_settings => 'Sincronización de salud';
@@ -2469,4 +2469,58 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get scan_food_barcode => 'Escanear comida / código de barras';
+
+  @override
+  String get retry => 'Reintentar';
+
+  @override
+  String get kcal_of => 'KCAL DE';
+
+  @override
+  String get servings_label => 'Raciones';
+
+  @override
+  String get finish_logging_title => '¿Finalizar registro?';
+
+  @override
+  String get finish_logging_body =>
+      'Aún tienes elementos seleccionados. Si finalizas ahora no se registrarán.';
+
+  @override
+  String get barcode_scanner_title => 'Escáner de código de barras';
+
+  @override
+  String get barcode_scanner_unavailable =>
+      'El escáner de código de barras no está disponible actualmente.';
+
+  @override
+  String get scanner_scanning => 'Escaneando... por favor espera';
+
+  @override
+  String get scanner_results => 'Resultados';
+
+  @override
+  String get scanner_scan_again => 'Escanear de nuevo';
+
+  @override
+  String get scanner_select_food =>
+      'Selecciona el alimento que quieres registrar.';
+
+  @override
+  String get scanner_clear => 'Borrar';
+
+  @override
+  String get scanner_log => 'Registrar';
+
+  @override
+  String get scanner_done => 'Listo';
+
+  @override
+  String get scanner_log_all => 'Registrar todo';
+
+  @override
+  String get scanner_amount_needed => 'Cantidad necesaria';
+
+  @override
+  String get scanner_matched => 'Coincide';
 }

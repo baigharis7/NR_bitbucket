@@ -1121,7 +1121,7 @@ abstract class AppLocalizations {
   /// No description provided for @username_exists_error.
   ///
   /// In en, this message translates to:
-  /// **'This username is already taken. Please enter a new one.'**
+  /// **'An account with this email already exists. Please log in instead.'**
   String get username_exists_error;
 
   /// No description provided for @get_email_from_token_error.
@@ -1385,7 +1385,7 @@ abstract class AppLocalizations {
   /// No description provided for @retry_sign_up.
   ///
   /// In en, this message translates to:
-  /// **'Retry operation and enter another username or email.'**
+  /// **'An account with this email already exists. Please log in instead.'**
   String get retry_sign_up;
 
   /// No description provided for @invalid_code.
@@ -4549,6 +4549,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scan food / barcode'**
   String get scan_food_barcode;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @kcal_of.
+  ///
+  /// In en, this message translates to:
+  /// **'KCAL OF'**
+  String get kcal_of;
+
+  /// No description provided for @servings_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Servings'**
+  String get servings_label;
+
+  /// No description provided for @finish_logging_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish logging?'**
+  String get finish_logging_title;
+
+  /// No description provided for @finish_logging_body.
+  ///
+  /// In en, this message translates to:
+  /// **'You still have items selected. Finishing now will not log them.'**
+  String get finish_logging_body;
+
+  /// No description provided for @barcode_scanner_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode Scanner'**
+  String get barcode_scanner_title;
+
+  /// No description provided for @barcode_scanner_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode scanning is currently unavailable.'**
+  String get barcode_scanner_unavailable;
+
+  /// No description provided for @scanner_scanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning... please wait'**
+  String get scanner_scanning;
+
+  /// No description provided for @scanner_results.
+  ///
+  /// In en, this message translates to:
+  /// **'Results'**
+  String get scanner_results;
+
+  /// No description provided for @scanner_scan_again.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan again'**
+  String get scanner_scan_again;
+
+  /// No description provided for @scanner_select_food.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the food you would like to log.'**
+  String get scanner_select_food;
+
+  /// No description provided for @scanner_clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get scanner_clear;
+
+  /// No description provided for @scanner_log.
+  ///
+  /// In en, this message translates to:
+  /// **'Log'**
+  String get scanner_log;
+
+  /// No description provided for @scanner_done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get scanner_done;
+
+  /// No description provided for @scanner_log_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Log all'**
+  String get scanner_log_all;
+
+  /// No description provided for @scanner_amount_needed.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount needed'**
+  String get scanner_amount_needed;
+
+  /// No description provided for @scanner_matched.
+  ///
+  /// In en, this message translates to:
+  /// **'Matched'**
+  String get scanner_matched;
 }
 
 class _AppLocalizationsDelegate

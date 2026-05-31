@@ -18,7 +18,10 @@ class IngestedSpentWidget extends StatelessWidget {
       const SizedBox(height: 4),
       Text(value.toString(), style: AppTextStyles.radioCanadaBig.copyWith(fontSize: 28, fontWeight: FontWeight.w400)),
       const SizedBox(height: 2),
-      Text(title.toUpperCase(), textAlign: TextAlign.center, style: AppTextStyles.radioCanadaBig.copyWith(fontSize: 12, fontWeight: FontWeight.w400)),
+      FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(title.toUpperCase(), textAlign: TextAlign.center, style: AppTextStyles.radioCanadaBig.copyWith(fontSize: 12, fontWeight: FontWeight.w400)),
+      ),
     ],);
   }
 

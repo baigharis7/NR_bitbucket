@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 
 class BarCodeScanningScreen extends StatelessWidget {
@@ -7,13 +8,14 @@ class BarCodeScanningScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.darkJungleGreen,
-        title: const Text('Barcode Scanner'),
+        title: Text(l10n.barcode_scanner_title),
       ),
-      body: const Center(
-        child: Text('Barcode scanning is currently unavailable.'),
+      body: Center(
+        child: Text(l10n.barcode_scanner_unavailable),
       ),
     );
   }

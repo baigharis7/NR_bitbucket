@@ -553,7 +553,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get username_exists_error =>
-      'This username is already taken. Please enter a new one.';
+      'An account with this email already exists. Please log in instead.';
 
   @override
   String get get_email_from_token_error =>
@@ -727,7 +727,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retry_sign_up =>
-      'Retry operation and enter another username or email.';
+      'An account with this email already exists. Please log in instead.';
 
   @override
   String get invalid_code =>
@@ -2444,4 +2444,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scan_food_barcode => 'Scan food / barcode';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get kcal_of => 'KCAL OF';
+
+  @override
+  String get servings_label => 'Servings';
+
+  @override
+  String get finish_logging_title => 'Finish logging?';
+
+  @override
+  String get finish_logging_body =>
+      'You still have items selected. Finishing now will not log them.';
+
+  @override
+  String get barcode_scanner_title => 'Barcode Scanner';
+
+  @override
+  String get barcode_scanner_unavailable =>
+      'Barcode scanning is currently unavailable.';
+
+  @override
+  String get scanner_scanning => 'Scanning... please wait';
+
+  @override
+  String get scanner_results => 'Results';
+
+  @override
+  String get scanner_scan_again => 'Scan again';
+
+  @override
+  String get scanner_select_food => 'Select the food you would like to log.';
+
+  @override
+  String get scanner_clear => 'Clear';
+
+  @override
+  String get scanner_log => 'Log';
+
+  @override
+  String get scanner_done => 'Done';
+
+  @override
+  String get scanner_log_all => 'Log all';
+
+  @override
+  String get scanner_amount_needed => 'Amount needed';
+
+  @override
+  String get scanner_matched => 'Matched';
 }
