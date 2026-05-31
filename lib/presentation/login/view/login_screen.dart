@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/gestures.dart';
@@ -10,8 +9,6 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/mixins/show_loading_mixin.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/app_info.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/num_constants.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
@@ -311,41 +308,9 @@ class _LoginScreenState extends State<LoginScreen>
     if (!_providerInitialized) {
       _providerInitialized = true;
       _loginProvider.initialize(
-        (Object object) => showErrorSnackBar(
-          context,
-          _composeLoginErrorMessage(context, object),
-        ),
+        (Object object) => showErrorSnackBar(context, userError(context, object)),
       );
     }
-  }
-
-  /// Builds the snackbar text for a login failure. The first line is the
-  /// localized friendly message; the second is `[Type: raw message]`; the
-  /// third is a diagnostic block with the last breadcrumb phase, app
-  /// build, platform/OS and UTC time. A screenshot of this snackbar gives
-  /// us enough context to triage without depending on Crashlytics
-  /// (non-fatals only upload on next launch — which may never happen if
-  /// the user force-quits after the error).
-  String _composeLoginErrorMessage(BuildContext context, Object error) {
-    final base = userError(context, error);
-    String detail;
-    try {
-      final raw = (error as dynamic).message?.toString();
-      detail = (raw != null && raw.isNotEmpty)
-          ? '${error.runtimeType}: $raw'
-          : error.toString();
-    } catch (_) {
-      detail = error.toString();
-    }
-    detail = detail.replaceAll('\n', ' ').trim();
-    if (detail.length > 140) detail = '${detail.substring(0, 140)}…';
-
-    final phase = CrashlyticsService.lastBreadcrumb ?? 'unknown';
-    final platform = '${Platform.operatingSystem} ${Platform.operatingSystemVersion.split(' ').first}';
-    final time = DateTime.now().toUtc().toIso8601String().substring(11, 19);
-    final diagnostic = 'phase=$phase · ${AppInfo.versionLabel} · $platform · ${time}Z';
-
-    return '$base\n[$detail]\n$diagnostic';
   }
 
   void _onFieldBlur(String fieldName, FocusNode focusNode, TextEditingController controller) {

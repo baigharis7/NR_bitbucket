@@ -9,12 +9,6 @@ class CrashlyticsService {
   CrashlyticsService._privateConstructor();
   static final CrashlyticsService instance = CrashlyticsService._privateConstructor();
 
-  /// Last message passed to [log]. Mirrored in-memory so the login error
-  /// snackbar can surface the most recent breadcrumb in its diagnostic block —
-  /// Crashlytics non-fatals only upload on the next app session, but the
-  /// snackbar can read this value right now.
-  static String? lastBreadcrumb;
-
   FirebaseCrashlytics? _crashlyticsInstance;
   FirebaseCrashlytics get _crashlytics {
     try {
@@ -57,7 +51,6 @@ class CrashlyticsService {
 
   /// Log informational messages to be visible in Crashlytics
   Future<void> log(String message) async {
-    lastBreadcrumb = message;
     try {
       await _crashlytics.log(message);
     } catch (_) {
