@@ -107,7 +107,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
       final uploadProfile = upload.UploadUserProfile.fromJson(profile);
       return mapToUserProfileModelFromUploadUser(uploadProfile);
     } catch (error, stack) {
-      await CrashlyticsService.record(error, stack, context: {
+      await CrashlyticsService.record(error, stack, fatal: true, context: {
         'phase': 'downloadProfile.parse',
         'error_type': error.runtimeType.toString(),
         'keys': profile.keys.toList().join(','),

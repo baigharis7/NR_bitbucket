@@ -116,8 +116,14 @@ class CognitoAuthenticationService implements AuthenticationService {
   }
 
   /// Wraps an Amplify auth call so every failure is recorded to Crashlytics
-  /// as a non-fatal with `{phase, errorType, message, underlying}` context,
-  /// then rethrown so callers' existing error handling is unchanged.
+  /// with `{phase, errorType, message, underlying}` context, then rethrown so
+  /// callers' existing error handling is unchanged.
+  ///
+  /// `signUp` failures are recorded as fatal because they indicate a config
+  /// or validation bug (e.g. the InvalidParameterException blocking Romina-
+  /// class signups) — we want them visible same-session rather than waiting
+  /// for the next app launch. signIn failures stay non-fatal: most are
+  /// user-side (wrong password) and would pollute the crash-free metric.
   Future<T> _trace<T>(String phase, Future<T> Function() block) async {
     await CrashlyticsService.instance.log('auth.$phase attempt');
     try {
@@ -133,7 +139,8 @@ class CognitoAuthenticationService implements AuthenticationService {
           context['underlying'] = error.underlyingException.toString();
         }
       }
-      CrashlyticsService.record(error, stack, context: context);
+      final fatal = phase == 'signUp';
+      CrashlyticsService.record(error, stack, context: context, fatal: fatal);
       rethrow;
     }
   }

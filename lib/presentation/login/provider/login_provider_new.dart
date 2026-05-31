@@ -281,7 +281,7 @@ class LoginProviderNew extends BaseProvider {
   }
 
   void _onSignUpError(Object error, [StackTrace? stack]) {
-    CrashlyticsService.record(error, stack ?? StackTrace.current, context: {
+    CrashlyticsService.record(error, stack ?? StackTrace.current, fatal: true, context: {
       'phase': 'signUp',
       'error_type': error.runtimeType.toString(),
     });
@@ -527,7 +527,7 @@ class LoginProviderNew extends BaseProvider {
       await saveUserInUsersRemoteDatabaseInteractor?.execute(simpleUser);
     } catch (saveUserInRemote, stack) {
       manageLoading(false);
-      await CrashlyticsService.record(saveUserInRemote, stack, context: {
+      await CrashlyticsService.record(saveUserInRemote, stack, fatal: true, context: {
         'phase': 'saveUserInRemoteUsersDatabase',
         'userId': userId,
         'error_type': saveUserInRemote.runtimeType.toString(),
@@ -577,6 +577,7 @@ class LoginProviderNew extends BaseProvider {
                   await CrashlyticsService.record(
                     StateError('post-signin: email from id-token was null, cannot downloadProfile'),
                     StackTrace.current,
+                    fatal: true,
                     context: {'phase': 'getEmailFromToken', 'branch': 'noLocalProfile'},
                   );
                   onError?.call(StateError('Could not read email from token'));
@@ -587,7 +588,7 @@ class LoginProviderNew extends BaseProvider {
                   try {
                     await eraseDatabaseInteractor!.execute();
                   } catch (eraseError, eraseStack) {
-                    await CrashlyticsService.record(eraseError, eraseStack, context: {
+                    await CrashlyticsService.record(eraseError, eraseStack, fatal: true, context: {
                       'phase': 'eraseDatabase',
                       'error_type': eraseError.runtimeType.toString(),
                     });
@@ -601,6 +602,7 @@ class LoginProviderNew extends BaseProvider {
                     await CrashlyticsService.record(
                       StateError('post-signin: email from id-token was null after erase'),
                       StackTrace.current,
+                      fatal: true,
                       context: {'phase': 'getEmailFromToken', 'branch': 'subMismatch'},
                     );
                     onError?.call(StateError('Could not read email from token'));
@@ -612,7 +614,7 @@ class LoginProviderNew extends BaseProvider {
             } catch (profileExistenceError, stack) {
               manageLoading(false);
               _setProfileChecked(false);
-              await CrashlyticsService.record(profileExistenceError, stack, context: {
+              await CrashlyticsService.record(profileExistenceError, stack, fatal: true, context: {
                 'phase': 'checkProfileExistence',
                 'error_type': profileExistenceError.runtimeType.toString(),
               });
@@ -628,7 +630,7 @@ class LoginProviderNew extends BaseProvider {
         }
       } catch (userCredentialsError, stack) {
         manageLoading(false);
-        await CrashlyticsService.record(userCredentialsError, stack, context: {
+        await CrashlyticsService.record(userCredentialsError, stack, fatal: true, context: {
           'phase': 'onFetchUserAttributesSuccess',
           'error_type': userCredentialsError.runtimeType.toString(),
         });
@@ -658,7 +660,7 @@ class LoginProviderNew extends BaseProvider {
     } catch (downloadProfileError, stack) {
       manageLoading(false);
       _setProfileChecked(false);
-      await CrashlyticsService.record(downloadProfileError, stack, context: {
+      await CrashlyticsService.record(downloadProfileError, stack, fatal: true, context: {
         'phase': 'downloadProfile',
         'error_type': downloadProfileError.runtimeType.toString(),
       });
@@ -675,7 +677,7 @@ class LoginProviderNew extends BaseProvider {
     } catch (saveProfileError, stack) {
       manageLoading(false);
       _setProfileChecked(false);
-      await CrashlyticsService.record(saveProfileError, stack, context: {
+      await CrashlyticsService.record(saveProfileError, stack, fatal: true, context: {
         'phase': 'saveProfileInLocal',
         'error_type': saveProfileError.runtimeType.toString(),
       });
@@ -691,7 +693,7 @@ class LoginProviderNew extends BaseProvider {
     try {
       await synchronizeEventsInteractor!.execute(userId, fullSync: true);
     } catch (error, stack) {
-      await CrashlyticsService.record(error, stack, context: {
+      await CrashlyticsService.record(error, stack, fatal: true, context: {
         'phase': 'synchronizeEvents',
         'userId': userId,
         'error_type': error.runtimeType.toString(),
@@ -885,7 +887,7 @@ class LoginProviderNew extends BaseProvider {
       ).then(
         (masterFilesResponse) => _onSuccessManageMasterFiles(masterFilesResponse, userId, onFinish),
       ).catchError((error, stack) async {
-        await CrashlyticsService.record(error, stack, context: {
+        await CrashlyticsService.record(error, stack, fatal: true, context: {
           'phase': 'manageMasterFiles.execute',
           'error_type': error.runtimeType.toString(),
         });
@@ -894,7 +896,7 @@ class LoginProviderNew extends BaseProvider {
       });
     } catch (errorManageMasterFiles, stack) {
       manageLoading(false);
-      await CrashlyticsService.record(errorManageMasterFiles, stack, context: {
+      await CrashlyticsService.record(errorManageMasterFiles, stack, fatal: true, context: {
         'phase': 'manageMasterFiles.versionReads',
         'error_type': errorManageMasterFiles.runtimeType.toString(),
       });
@@ -1002,7 +1004,7 @@ class LoginProviderNew extends BaseProvider {
       });
     } catch (synchronizeEventError, stack) {
       manageLoading(false);
-      await CrashlyticsService.record(synchronizeEventError, stack, context: {
+      await CrashlyticsService.record(synchronizeEventError, stack, fatal: true, context: {
         'phase': 'synchronizeEvents+fetchReferenceData',
         'error_type': synchronizeEventError.runtimeType.toString(),
       });
