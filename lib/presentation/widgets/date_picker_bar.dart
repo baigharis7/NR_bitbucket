@@ -77,7 +77,7 @@ class _DatePickerBarState extends State<DatePickerBar> {
 
   @override
   Widget build(BuildContext context) {
-    final displayDate = isToday ? AppLocalizations.of(context)!.today : DateFormat('dd MMM yyyy').format(widget.selectedDateTime ?? todayDate);
+    final displayDate = isToday ? AppLocalizations.of(context)!.today : DateFormat('dd MMM yyyy', Localizations.localeOf(context).languageCode).format(widget.selectedDateTime ?? todayDate);
 
     return Container(
       height: Dimens.height34,

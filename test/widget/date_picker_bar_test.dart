@@ -3,14 +3,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/date_picker_bar.dart';
 
 void main() {
+  setUpAll(() async {
+    await initializeDateFormatting('es', null);
+    await initializeDateFormatting('en', null);
+  });
+
   Widget buildTestWidget({
     required DateTime selectedDateTime,
     required Function(DateTime) onChangeDate,
+    Locale locale = const Locale('en'),
   }) {
     return MaterialApp(
+      locale: locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -122,6 +130,38 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(callbackCalled, false);
+    });
+
+    testWidgets('renders month abbreviation in Spanish when locale is es',
+        (tester) async {
+      // January = "Jan" in EN, "ene" in ES. Picking January catches the
+      // month-name regression even though e.g. May happens to look the
+      // same in both languages.
+      final januaryDate = DateTime(2026, 1, 15);
+
+      await tester.pumpWidget(buildTestWidget(
+        selectedDateTime: januaryDate,
+        onChangeDate: (_) {},
+        locale: const Locale('es'),
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.text('15 ene 2026'), findsOneWidget);
+      expect(find.text('15 Jan 2026'), findsNothing);
+    });
+
+    testWidgets('renders month abbreviation in English when locale is en',
+        (tester) async {
+      final januaryDate = DateTime(2026, 1, 15);
+
+      await tester.pumpWidget(buildTestWidget(
+        selectedDateTime: januaryDate,
+        onChangeDate: (_) {},
+        locale: const Locale('en'),
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.text('15 Jan 2026'), findsOneWidget);
     });
   });
 }
