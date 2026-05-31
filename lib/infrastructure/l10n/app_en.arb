@@ -578,6 +578,7 @@
     "new_day_message": "It's a new day! Go back to see today's data.",
     "health_sync_settings": "Health App Sync",
     "health_sync_title": "Sync with your health apps",
+    "health_sync_onboarding_title": "Connect with Health Sync",
     "health_sync_description": "Connect to automatically import your workouts, steps, and active calories",
     "health_sync_connect": "Connect Now",
     "health_sync_skip": "Skip for now",

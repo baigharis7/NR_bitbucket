@@ -13,6 +13,10 @@ class TextFieldGeneralQuest extends StatefulWidget {
   final double? value;
   final String? Function(String?)? validator;
 
+  /// When true, uses darker colors so it reads correctly against a light
+  /// (floralWhite) card background — used by the onboarding flow.
+  final bool dark;
+
   const TextFieldGeneralQuest(
       {Key? key,
       required this.title,
@@ -20,7 +24,8 @@ class TextFieldGeneralQuest extends StatefulWidget {
       this.isNumeric = false,
         required this.errorBorderColor,
       required this.value,
-      this.validator})
+      this.validator,
+      this.dark = false})
       : super(key: key);
 
   @override
@@ -36,21 +41,26 @@ class _TextFieldGeneralQuestState extends State<TextFieldGeneralQuest> {
       textController.text = widget.value.orZero() <= 0 ? '' : widget.value.toString();
     }
 
+    final fg =
+        widget.dark ? AppColors.yellowishGreen : Colors.white;
+    final borderColor =
+        widget.dark ? AppColors.yellowishGreen : AppColors.whit;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.title, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize17,)),
+        Text(widget.title, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize17, color: fg)),
         TextFormField(
           keyboardType:
               widget.isNumeric ? TextInputType.number : TextInputType.text,
           controller: textController,
-          cursorColor: Colors.white,
-          style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal,),
-          decoration: const InputDecoration(
-            focusColor: Colors.white,
-            contentPadding: EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
-            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+          cursorColor: fg,
+          style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal, color: fg),
+          decoration: InputDecoration(
+            focusColor: fg,
+            contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: borderColor, width: 1)),
+            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: fg, width: 2)),
             errorMaxLines: 2,
           ),
           validator: widget.validator,

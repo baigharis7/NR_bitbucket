@@ -3554,6 +3554,12 @@ abstract class AppLocalizations {
   /// **'Sync with your health apps'**
   String get health_sync_title;
 
+  /// No description provided for @health_sync_onboarding_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect with Health Sync'**
+  String get health_sync_onboarding_title;
+
   /// No description provided for @health_sync_description.
   ///
   /// In en, this message translates to:

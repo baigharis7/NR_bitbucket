@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/app_text_styles.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
-import 'package:nutrenaissance_flutter/presentation/healthsync/view/health_sync_onboarding_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/profile/common/general_questions_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/onboarding_progress_dots.dart';
 
 class WelcomeScreen extends StatelessWidget {
   static const routeName = '/welcome_screen';
@@ -31,39 +32,47 @@ class WelcomeScreen extends StatelessWidget {
         Scaffold(
           backgroundColor: Colors.transparent,
           body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Dimens.marginXXXLarge,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/images/logo_name_white.png',
-                    width: 220,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(height: Dimens.height37),
-                  Text(
-                    '${AppLocalizations.of(context)!.welcome}!',
-                    style: AppTextStyles.merriWeather.copyWith(
-                      fontWeight: FontWeight.w700,
-                      fontSize: Dimens.fontSize21,
-                      color: Colors.white,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Dimens.marginXXXLarge,
                     ),
-                    textAlign: TextAlign.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/images/logo_name_white.png',
+                          width: 220,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(height: Dimens.height37),
+                        Text(
+                          '${AppLocalizations.of(context)!.welcome}!',
+                          style: AppTextStyles.merriWeather.copyWith(
+                            fontWeight: FontWeight.w700,
+                            fontSize: Dimens.fontSize21,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: Dimens.height37),
+                        GeneralButton(
+                          title: AppLocalizations.of(context)!.begin,
+                          onTap: () {
+                            Navigator.of(context).popAndPushNamed(
+                              GeneralQuestionsScreen.routeName,
+                              arguments: {'isOnboarding': true},
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: Dimens.height37),
-                  GeneralButton(
-                    title: AppLocalizations.of(context)!.begin,
-                    onTap: () {
-                      Navigator.of(context).popAndPushNamed(
-                        HealthSyncOnboardingScreen.routeName,
-                      );
-                    },
-                  ),
-                ],
-              ),
+                ),
+                const OnboardingProgressDots(currentStep: 0),
+              ],
             ),
           ),
         ),

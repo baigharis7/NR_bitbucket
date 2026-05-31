@@ -1937,6 +1937,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get health_sync_title => 'Sincroniza con tus apps de salud';
 
   @override
+  String get health_sync_onboarding_title => 'Conecta con Health Sync';
+
+  @override
   String get health_sync_description =>
       'Conéctate para importar automáticamente tus entrenamientos, pasos y calorías activas';
 

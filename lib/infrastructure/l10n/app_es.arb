@@ -577,6 +577,7 @@
     "search_drink_hint": "Escribe para buscar una bebida",
     "health_sync_settings": "Sincronización de salud",
     "health_sync_title": "Sincroniza con tus apps de salud",
+    "health_sync_onboarding_title": "Conecta con Health Sync",
     "health_sync_description": "Conéctate para importar automáticamente tus entrenamientos, pasos y calorías activas",
     "health_sync_connect": "Conectar ahora",
     "health_sync_skip": "Omitir por ahora",

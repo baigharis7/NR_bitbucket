@@ -10,8 +10,9 @@ class GeneralButton extends StatelessWidget {
   final Color? selectedColor;
   final Color? textColor;
   final Function? onTap;
+  final double? fontSize;
 
-  const GeneralButton({super.key, this.title, this.selectedColor, this.textColor, this.onTap});
+  const GeneralButton({super.key, this.title, this.selectedColor, this.textColor, this.onTap, this.fontSize});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class GeneralButton extends StatelessWidget {
           border: Border.all(color: AppColors.whit),
           borderRadius: BorderRadius.circular(Dimens.border18),
         ),
-        child: Text(title ?? AppLocalizations.of(context)!.save, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize19, color: textColor)),
+        child: Text(title ?? AppLocalizations.of(context)!.save, style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: fontSize ?? Dimens.fontSize19, color: textColor)),
       ),
     );
   }

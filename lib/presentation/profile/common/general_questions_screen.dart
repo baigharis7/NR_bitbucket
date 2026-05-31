@@ -23,6 +23,7 @@ import 'package:nutrenaissance_flutter/presentation/profile/profile/view/profile
 import 'package:nutrenaissance_flutter/presentation/widgets/centered_icon_box.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/custom_button_1.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/onboarding_progress_dots.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/rounded_custom_button.dart';
 
 import '../../../infrastructure/helpers/app_text_styles.dart';
@@ -30,6 +31,7 @@ import '../../widgets/custom_bottom_navi_bar_widget.dart';
 import '../../widgets/header_add_item_card_section.dart';
 import '../../widgets/screen_top_bar.dart';
 import '../../widgets/text_field_general_quest.dart';
+import 'objectives_screen.dart';
 
 class GeneralQuestionsScreen extends StatefulWidget {
   static const routeName = '/general_questions';
@@ -96,6 +98,9 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
 
     if (_commonNameController.text == '') _commonNameController.text = bloc.state.profile!.commonName ?? '';
     String language = Localizations.localeOf(context).languageCode;
+    final args = ModalRoute.of(context)?.settings.arguments as Map?;
+    final isOnboarding = args?['isOnboarding'] == true;
+    const inputFg = AppColors.yellowishGreen;
 
     return BlocProvider.value(
       value: bloc,
@@ -142,37 +147,72 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                 backgroundColor: Colors.transparent,
                 body: SafeArea(child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 0),
-                      child: Column(children: [
-                        ScreenTopBar(onBack: () => onBack()),
-                        const SizedBox(height: Dimens.height12),
-                        HeaderAddItemCardSection(title: AppLocalizations.of(context)!.edit_profile, icon: Icons.person, iconColor: Colors.white),
-                        const SizedBox(height: Dimens.height12),
-                      ]),
-                    ),
-                    Expanded(child: Scrollbar(
-                      thumbVisibility: true,
-                      child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: Dimens.padding20),
-                      child: Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
+                    if (isOnboarding) ...[
+                      const SizedBox(height: Dimens.height12),
+                      // Invisible spacer matches ScreenTopBar height on
+                      // subsequent screens so the logo Y position stays put.
+                      const SizedBox(height: 28),
+                      const SizedBox(height: Dimens.height12),
+                      Image.asset(
+                        'assets/images/logo_name_white.png',
+                        width: 200,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(height: Dimens.paddingLarge),
+                    ] else
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(Dimens.padding20, Dimens.padding20, Dimens.padding20, 0),
+                        child: Column(children: [
+                          ScreenTopBar(onBack: () => onBack()),
+                          const SizedBox(height: Dimens.height12),
+                          HeaderAddItemCardSection(title: AppLocalizations.of(context)!.edit_profile, icon: Icons.person, iconColor: Colors.white),
+                          const SizedBox(height: Dimens.height12),
+                        ]),
+                      ),
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+                        padding: const EdgeInsets.symmetric(horizontal: Dimens.padding20, vertical: Dimens.paddingLarge),
+                        decoration: BoxDecoration(
+                          color: AppColors.floralWhite,
+                          borderRadius: BorderRadius.circular(Dimens.border15),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (isOnboarding) ...[
+                              ListTile(
+                                titleAlignment: ListTileTitleAlignment.top,
+                                leading: const Icon(Icons.person, size: 35, color: AppColors.yellowishGreen),
+                                horizontalTitleGap: 6,
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(
+                                  AppLocalizations.of(context)!.profile,
+                                  style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeXXLarge, color: AppColors.yellowishGreen),
+                                ),
+                              ),
+                              const SizedBox(height: Dimens.height12),
+                            ],
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Form(
+                                  key: _formKey,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
                               const SizedBox(width: double.infinity),
                               TextFormField(
                                 controller: _commonNameController,
-                                cursorColor: Colors.white,
-                                style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
+                                cursorColor: inputFg,
+                                style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal, color: inputFg),
                                 decoration: InputDecoration(
                                   contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
                                   hintText:
                                   '${AppLocalizations.of(ctx)!.write_your_name_here} *',
-                                  hintStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
-                                  focusColor: Colors.white,
-                                  enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
-                                  focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
+                                  hintStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal, color: inputFg),
+                                  focusColor: inputFg,
+                                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: inputFg, width: 1)),
+                                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: inputFg, width: 2)),
                                   errorMaxLines: 2,
                                 ),
                                 validator: (value) {
@@ -195,20 +235,20 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                     if (pickedDate != null) bloc.add(RefreshBirthdateAction(birthdate: pickedDate.millisecondsSinceEpoch));
                                   });
                                 },
-                                style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
+                                style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal, color: inputFg),
                                 decoration: InputDecoration(
                                   errorMaxLines: 2,
                                 // contentPadding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
-                                  hintStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
-                                enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
+                                  hintStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal, color: inputFg),
+                                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: inputFg, width: 1)),
                                   hintText: state.profile!.birthDate == null ? '${AppLocalizations.of(ctx)!.birthday_question} *' : DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.birthDate!)),
-                                  prefixIcon: const Icon(Icons.calendar_month, color: Colors.white),
+                                  prefixIcon: Icon(Icons.calendar_month, color: inputFg),
                                 ),
                                 validator: (value) => state.profile?.birthDate?.isNull() ?? true ? AppLocalizations.of(context)!.must_complete_field : null,),
                               const SizedBox(height: Dimens.height32),
                               Column(crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  if (state.profile?.sex?.isNull() ?? true) Text('${AppLocalizations.of(context)!.select_gender} *', style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17,),),
+                                  if (state.profile?.sex?.isNull() ?? true) Text('${AppLocalizations.of(context)!.select_gender} *', style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17, color: inputFg),),
                                   if (state.profile?.sex?.isNull() ?? true) const SizedBox(height: Dimens.height32),
                                   Row(
                                     children: [
@@ -242,10 +282,8 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const SizedBox(height: Dimens.height32),
-                                    Text('${AppLocalizations.of(context)!.regularity_period_question} *', style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17,)),
+                                    Text('${AppLocalizations.of(context)!.regularity_period_question} *', style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17, color: inputFg)),
                                     const SizedBox(height: Dimens.height12),
-                                    if (state.profile?.femaleCharacteristics?.menstruation?.regularity.isNull() ?? true) Text(AppLocalizations.of(context)!.must_complete_field+':', style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17,), textAlign: TextAlign.start),
-                                    const SizedBox(height: Dimens.heightXXSmall),
                                     Row(
                                       children: [
                                         Expanded(flex: 1,
@@ -254,6 +292,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                               selectedColor: state.profile!.femaleCharacteristics?.menstruation?.regularity == MenstruationRegularity.regular.index ? AppColors.yellowishGreen : AppColors.floralWhite,
                                               textColor: state.profile?.femaleCharacteristics?.menstruation?.regularity == MenstruationRegularity.regular.index ? AppColors.floralWhite : AppColors.yellowishGreen,
                                               onTap: () => bloc.add(SetPeriodRegularityAction(periodRegularity: MenstruationRegularity.regular.index)),
+                                              fontSize: Dimens.fontSize17,
                                         ),),
                                         const SizedBox(width: Dimens.width25,),
                                         Expanded(flex: 1,
@@ -262,6 +301,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                               selectedColor: state.profile?.femaleCharacteristics?.menstruation?.regularity == MenstruationRegularity.irregular.index ? AppColors.yellowishGreen : AppColors.floralWhite,
                                               textColor: state.profile?.femaleCharacteristics?.menstruation?.regularity == MenstruationRegularity.irregular.index ? AppColors.floralWhite : AppColors.yellowishGreen,
                                               onTap: () => bloc.add(SetPeriodRegularityAction(periodRegularity: MenstruationRegularity.irregular.index)),
+                                              fontSize: Dimens.fontSize17,
                                             ),),
                                       ],
                                     ),
@@ -274,6 +314,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                             selectedColor: state.profile?.femaleCharacteristics?.menstruation?.regularity == MenstruationRegularity.menopause.index ? AppColors.yellowishGreen : AppColors.floralWhite,
                                             textColor: state.profile?.femaleCharacteristics?.menstruation?.regularity == MenstruationRegularity.menopause.index ? AppColors.floralWhite : AppColors.yellowishGreen,
                                             onTap: () => bloc.add(SetPeriodRegularityAction(periodRegularity: MenstruationRegularity.menopause.index)),
+                                            fontSize: Dimens.fontSize17,
                                           ),),
                                         const SizedBox(width: Dimens.width25,),
                                         Expanded(flex: 1,
@@ -282,6 +323,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                             selectedColor: state.profile?.femaleCharacteristics?.menstruation?.regularity == MenstruationRegularity.withoutPeriod.index ? AppColors.yellowishGreen : AppColors.floralWhite,
                                             textColor: state.profile?.femaleCharacteristics?.menstruation?.regularity == MenstruationRegularity.withoutPeriod.index ? AppColors.floralWhite : AppColors.yellowishGreen,
                                             onTap: () => bloc.add(SetPeriodRegularityAction(periodRegularity: MenstruationRegularity.withoutPeriod.index)),
+                                            fontSize: Dimens.fontSize17,
                                           ),),
                                       ],
                                     ),
@@ -290,7 +332,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         const SizedBox(height: Dimens.height32,),
-                                        Text(AppLocalizations.of(context)!.period_duration_question, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17,),),
+                                        Text(AppLocalizations.of(context)!.period_duration_question, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17, color: inputFg),),
                                         const SizedBox(height: Dimens.height12),
                                         Container(
                                           alignment: Alignment.center,
@@ -301,18 +343,18 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                             value: state.profile!.femaleCharacteristics!.menstruation!.daysOfCycle ?? Constants.PERIOD_DURATION_INITIAL_VALUE,
                                             axis: Axis.horizontal,
                                             step: 1,
-                                            textStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
-                                            selectedTextStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
+                                            textStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal, color: inputFg),
+                                            selectedTextStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal, color: inputFg),
                                             decoration: BoxDecoration(
                                               borderRadius:
                                               BorderRadius.circular(30),
-                                              border: Border.all(color: Colors.white),
+                                              border: Border.all(color: inputFg),
                                             ),
                                             onChanged: (duration) => context.read<ProfileBloc>().add(SetPeriodDurationAction(days: duration),),
                                           ),
                                         ),
                                         const SizedBox(height: Dimens.height12),
-                                        Text('${AppLocalizations.of(context)!.last_period_question} *', style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),),
+                                        Text('${AppLocalizations.of(context)!.last_period_question} *', style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal, color: inputFg),),
                                         TextFormField(
                                           onTap: () {
                                             DatePickerHelper
@@ -328,8 +370,8 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                             hintText: state.profile!.femaleCharacteristics!.menstruation!.lastStartDate != null ? DateFormat('yyyy/MM/dd').format(DateTime.fromMillisecondsSinceEpoch(state.profile!.femaleCharacteristics!.menstruation!.lastStartDate!,),) : '',
                                             // border: InputBorder.none,
                                             enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                                            hintStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal,),
-                                            prefixIcon: const Icon(Icons.calendar_month, color: Colors.white),
+                                            hintStyle: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeNormal, color: inputFg),
+                                            prefixIcon: Icon(Icons.calendar_month, color: inputFg),
                                             errorMaxLines: 2,
                                           ),
                                           validator: (value) => state.profile!.femaleCharacteristics?.menstruation?.lastStartDate.isNull() ?? true ? AppLocalizations.of(context)!.must_complete_field : null,
@@ -339,7 +381,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                         : Container(),
                                   ],
                                 ),
-                              const SizedBox(height: Dimens.height32),
+                              const SizedBox(height: Dimens.height12),
                               Column(
                                 children: [
                                   Card(
@@ -374,6 +416,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                     children: [
                                       Expanded(
                                         child: TextFieldGeneralQuest(
+                                          dark: true,
                                           errorBorderColor: Colors.grey.shade100,
                                           isNumeric: true,
                                           value: state.profile!
@@ -403,6 +446,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       const SizedBox(width: Dimens.width32),
                                       Expanded(
                                         child: TextFieldGeneralQuest(
+                                          dark: true,
                                           errorBorderColor: Colors.grey.shade100,
                                           isNumeric: true,
                                           value: state.profile!
@@ -436,6 +480,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                     children: [
                                       Expanded(
                                         child: TextFieldGeneralQuest(
+                                          dark: true,
                                           errorBorderColor: Colors.grey.shade100,
                                           isNumeric: true,
                                           value: state.profile?.physicalCharacteristics?.bodyFat?.toDouble(),
@@ -455,6 +500,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                       const SizedBox(width: Dimens.width32),
                                       Expanded(
                                         child: TextFieldGeneralQuest(
+                                          dark: true,
                                           errorBorderColor: Colors.grey.shade100,
                                           isNumeric: true,
                                           value: state.profile?.physicalCharacteristics?.waistMeasurement?.toDouble(),
@@ -479,22 +525,37 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                           ),
                       ),
                     ),
-                    )),
+                    ),
+                    ]))),
+                    const SizedBox(height: Dimens.height25),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: Dimens.padding20),
+                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
                       child: GeneralButton(
-                        title: AppLocalizations.of(context)!.save,
+                        title: isOnboarding
+                            ? AppLocalizations.of(context)!.next
+                            : AppLocalizations.of(context)!.save,
                         onTap: () {
                           if (_formKey.currentState!.validate()) {
-                            bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName)));
+                            if (isOnboarding) {
+                              Navigator.popAndPushNamed(
+                                context,
+                                ObjectivesScreen.routeName,
+                                arguments: const {'isOnboarding': true},
+                              );
+                            } else {
+                              bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, ProfileScreen.routeName)));
+                            }
                           }
                         },
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    if (isOnboarding)
+                      const OnboardingProgressDots(currentStep: 1)
+                    else
+                      const SizedBox(height: 30),
                   ],
                 ),),
-                bottomNavigationBar: const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
+                bottomNavigationBar: isOnboarding ? null : const CustomBottomNaviBarWidget(activePosition: Constants.PROFILE),
               )
             ],),
           );

@@ -9,7 +9,12 @@ import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.d
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_actions.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/profile/bloc/profile_state.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/error_resolver.dart';
+import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+import 'package:nutrenaissance_flutter/presentation/healthsync/view/health_sync_onboarding_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/general_button.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/onboarding_progress_dots.dart';
+import 'package:nutrenaissance_flutter/presentation/widgets/screen_top_bar.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/text_checkbox_box.dart';
 import '../../../infrastructure/utils/app_color.dart';
 import '../../widgets/text_radio_button_expansible.dart';
@@ -77,6 +82,8 @@ class _ObjectivesScreenState extends State<ObjectivesScreen> {
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<ProfileBloc>(context);
+    final args = ModalRoute.of(context)?.settings.arguments as Map?;
+    final isOnboarding = args?['isOnboarding'] == true;
 
     return BlocProvider.value(
       value: bloc,
@@ -90,6 +97,7 @@ class _ObjectivesScreenState extends State<ObjectivesScreen> {
         } else {
           LoadingScreen.instance().hide();
         }
+        if (state.onError != null) showErrorSnackBar(ctx, resolveError(ctx, state.onError!));
       },
       builder: (ctx, state) {
         return Stack(
@@ -117,39 +125,51 @@ class _ObjectivesScreenState extends State<ObjectivesScreen> {
             Scaffold(
               backgroundColor: Colors.transparent,
               body: SafeArea(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: Dimens.height32),
-                      Image.asset(
-                        'assets/images/logo_name_white.png',
-                        width: 200,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(height: Dimens.height32),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(Dimens.padding4),
-                          decoration: BoxDecoration(
-                            color: AppColors.floralWhite,
-                              borderRadius: BorderRadius.circular(Dimens.border11),
-                          ),
-                          child: SingleChildScrollView(
-                            padding: const EdgeInsets.symmetric(horizontal: Dimens.padding20, vertical: Dimens.padding4),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ListTile(
-                                  titleAlignment: ListTileTitleAlignment.top,
-                                  leading: Image.asset('assets/images/goal_objectives.png', height: 35, width: 35),
-                                    horizontalTitleGap: Dimens.zero,
-                                    contentPadding: EdgeInsets.zero,
-                                    title: Text(AppLocalizations.of(context)!.goals,
-                                      style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeXXLarge, color: AppColors.peacockBlue),
-                                    ),
-                                ),
-                                const SizedBox(height: Dimens.height12),
+                child: Column(
+                  children: [
+                    const SizedBox(height: Dimens.height12),
+                    if (isOnboarding)
+                      ScreenTopBar(
+                        onBack: () => Navigator.of(context).popAndPushNamed(
+                          GeneralQuestionsScreen.routeName,
+                          arguments: const {'isOnboarding': true},
+                        ),
+                      )
+                    else
+                      const SizedBox(height: 28),
+                    const SizedBox(height: Dimens.height12),
+                    Image.asset(
+                      'assets/images/logo_name_white.png',
+                      width: 200,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: Dimens.paddingLarge),
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+                        padding: const EdgeInsets.symmetric(horizontal: Dimens.padding20, vertical: Dimens.paddingLarge),
+                        decoration: BoxDecoration(
+                          color: AppColors.floralWhite,
+                          borderRadius: BorderRadius.circular(Dimens.border15),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ListTile(
+                              titleAlignment: ListTileTitleAlignment.top,
+                              leading: Image.asset('assets/images/goal_objectives.png', height: 35, width: 35),
+                              horizontalTitleGap: 6,
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(AppLocalizations.of(context)!.goals,
+                                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeXXLarge, color: AppColors.peacockBlue),
+                              ),
+                            ),
+                            const SizedBox(height: Dimens.height12),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
                                 Text(AppLocalizations.of(context)!.metabolic_objectives,
                                   style: const TextStyle(fontWeight: FontWeight.w900, fontSize: Dimens.fontSizeLarge, color: AppColors.peacockBlue),
                                 ),
@@ -189,22 +209,46 @@ class _ObjectivesScreenState extends State<ObjectivesScreen> {
                             ),
                           ),
                         ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: Dimens.height32),
-                      GeneralButton(
+                    ),
+                    const SizedBox(height: Dimens.height25),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: Dimens.paddingLarge),
+                      child: GeneralButton(
+                        title: isOnboarding
+                            ? AppLocalizations.of(context)!.next
+                            : AppLocalizations.of(context)!.save,
                         onTap: () {
                           if (state.profile!.objectives!.isNotEmpty) {
-                            // bloc.add(FinishProfileAction(nextScreen: () => Navigator.popAndPushNamed(context, GeneralQuestionsScreen.routeName)));
-                            Navigator.popAndPushNamed(
-                                context, GeneralQuestionsScreen.routeName,);
+                            if (isOnboarding) {
+                              // Fire-and-forget: dispatch the save and proceed
+                              // immediately. The upload + DynamoDB sync runs in
+                              // the background — matches the pattern used by
+                              // other save flows in the app. The user is not
+                              // blocked behind the network round-trip.
+                              bloc.add(FinishProfileAction(nextScreen: () {}));
+                              Navigator.popAndPushNamed(
+                                context,
+                                HealthSyncOnboardingScreen.routeName,
+                                arguments: const {'isOnboarding': true},
+                              );
+                            } else {
+                              Navigator.popAndPushNamed(
+                                  context, GeneralQuestionsScreen.routeName,);
+                            }
                           } else {
                             showObjectivesErrorDialog(context);
                           }
                         },
                       ),
+                    ),
+                    if (isOnboarding)
+                      const OnboardingProgressDots(currentStep: 2)
+                    else
                       const SizedBox(height: Dimens.height32),
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ),
