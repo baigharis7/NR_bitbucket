@@ -68,6 +68,7 @@
     "body_fat_mandatory": "El porcentaje de grasa corporal es un parámetro obligatorio",
     "waist_measurement_mandatory": "La medición de la cintura es un parámetro obligatorio",
     "regularity_period_question": "¿Cómo es tu período?",
+    "skip_for_now": "Omitir por ahora",
     "regular": "Regular",
     "irregular": "Irregular",
     "menopause": "Menopausia",

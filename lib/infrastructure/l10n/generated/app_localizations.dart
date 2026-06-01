@@ -512,6 +512,12 @@ abstract class AppLocalizations {
   /// **'How is your period?'**
   String get regularity_period_question;
 
+  /// No description provided for @skip_for_now.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get skip_for_now;
+
   /// No description provided for @regular.
   ///
   /// In en, this message translates to:

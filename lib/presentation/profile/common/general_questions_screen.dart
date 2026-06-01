@@ -282,7 +282,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const SizedBox(height: Dimens.height32),
-                                    Text('${AppLocalizations.of(context)!.regularity_period_question} *', style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17, color: inputFg)),
+                                    Text(AppLocalizations.of(context)!.regularity_period_question, style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSize17, color: inputFg)),
                                     const SizedBox(height: Dimens.height12),
                                     Row(
                                       children: [
@@ -326,6 +326,21 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                             fontSize: Dimens.fontSize17,
                                           ),),
                                       ],
+                                    ),
+                                    const SizedBox(height: Dimens.height12),
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: TextButton(
+                                        onPressed: () => bloc.add(ClearMenstruationAction()),
+                                        child: Text(
+                                          AppLocalizations.of(context)!.skip_for_now,
+                                          style: AppTextStyles.merriWeather.copyWith(
+                                            fontSize: Dimens.fontSize17,
+                                            color: inputFg,
+                                            decoration: TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                     state.profile?.femaleCharacteristics?.menstruation?.regularity == MenstruationRegularity.regular.index
                                         ? Column(

@@ -236,6 +236,14 @@ class ProfileBloc extends BaseBloc<ProfileActions, ProfileState> {
       ),);
     });
 
+    on<ClearMenstruationAction>((event, emit) {
+      // Same end-state as never picking a regularity option — FinishProfileAction
+      // already saves the profile with femaleCharacteristics omitted when this
+      // is null, and the download mapper now tolerates the missing field.
+      state.profile!.femaleCharacteristics = null;
+      emit(state.copyWith(isLoading: false, onError: null));
+    });
+
     on<SetPeriodDurationAction>((event, emit) {
       emit(state.copyWith(isLoading: false, onError: null),);
       state.profile!.femaleCharacteristics!.menstruation!.daysOfCycle = event.days;

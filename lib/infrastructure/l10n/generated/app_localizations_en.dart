@@ -224,6 +224,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get regularity_period_question => 'How is your period?';
 
   @override
+  String get skip_for_now => 'Skip for now';
+
+  @override
   String get regular => 'Regular';
 
   @override

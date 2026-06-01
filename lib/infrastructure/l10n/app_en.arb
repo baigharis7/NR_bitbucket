@@ -68,6 +68,7 @@
     "body_fat_mandatory": "The body fat is a mandatory parameter",
     "waist_measurement_mandatory": "The waist measurement fat is a mandatory parameter",
     "regularity_period_question": "How is your period?",
+    "skip_for_now": "Skip for now",
     "regular": "Regular",
     "irregular": "Irregular",
     "menopause": "Menopause",

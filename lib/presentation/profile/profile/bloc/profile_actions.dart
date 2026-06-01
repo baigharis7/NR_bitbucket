@@ -106,6 +106,14 @@ class SetPeriodRegularityAction extends ProfileActions {
   SetPeriodRegularityAction({required this.periodRegularity});
 }
 
+/// Wipes femaleCharacteristics back to null so the user can skip the period
+/// question entirely. Save logic in FinishProfileAction already permits a null
+/// femaleCharacteristics, so this is the same end-state as never tapping a
+/// regularity button — but reachable explicitly via a Skip button.
+class ClearMenstruationAction extends ProfileActions {
+  ClearMenstruationAction();
+}
+
 class SetPeriodDurationAction extends ProfileActions {
   int days;
 
