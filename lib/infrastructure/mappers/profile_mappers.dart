@@ -96,10 +96,16 @@ entity.UserProfileEntity mapToProfileEntity(domain.UserProfileModel profileModel
     ),
     femaleCharacteristics: profileModel.femaleCharacteristics != null
         ? entity.FemaleCharacteristics(
+            // The 265 mapper fix produces a non-null FemaleCharacteristics with
+            // an all-null Menstruation for legacy female accounts whose source
+            // record never had the data (Olatz, Luisa Desch, maddi). Hive's
+            // Menstruation field types are already nullable — the `!`s here
+            // were purely cosmetic and crashed in saveProfileInLocal on every
+            // login after 265 unblocked the download. `?.` lets nulls flow.
             menstruation: entity.Menstruation(
-                regularity: profileModel.femaleCharacteristics!.menstruation!.regularity!,
-                lastStartDate: profileModel.femaleCharacteristics!.menstruation!.lastStartDate,
-                daysOfCycle: profileModel.femaleCharacteristics!.menstruation!.daysOfCycle,
+                regularity: profileModel.femaleCharacteristics!.menstruation?.regularity,
+                lastStartDate: profileModel.femaleCharacteristics!.menstruation?.lastStartDate,
+                daysOfCycle: profileModel.femaleCharacteristics!.menstruation?.daysOfCycle,
             ),
           )
         : null,
