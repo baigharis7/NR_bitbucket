@@ -5,49 +5,70 @@ import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 
+// Every `!` in this file used to crash a real user. Audit history:
+//   - 265 (downloadProfile mapper): female accounts missing femaleCharacteristics
+//   - 268 (saveProfileInLocal mapper): orphan-content menstruation (regularity null)
+//   - 269 (this sweep): all remaining `!` chains converted to `?.` + safe defaults
+// Pattern: trust nothing at read time. Boundary validation (signup form, Lambda
+// schema check) is the *only* guarantee these fields exist; reads must tolerate
+// drift from migrations, partial server responses, legacy schemas, etc.
 upload.UploadUserProfile mapToUploadUserProfileModel(domain.UserProfileModel userProfileModel) {
+  final pc = userProfileModel.physicalCharacteristics;
   final upload.PhysicalCharacteristics physicalCharacteristics = upload.PhysicalCharacteristics(
-    height: userProfileModel.physicalCharacteristics!.height!,
-    weight: userProfileModel.physicalCharacteristics!.weight!,
-    unit: userProfileModel.physicalCharacteristics?.unit,
-    bodyFat: userProfileModel.physicalCharacteristics!.bodyFat,
-    waistMeasurement: userProfileModel.physicalCharacteristics!.waistMeasurement,
+    height: pc?.height ?? 0.0,
+    weight: pc?.weight ?? 0.0,
+    unit: pc?.unit,
+    bodyFat: pc?.bodyFat,
+    waistMeasurement: pc?.waistMeasurement,
   );
 
-  final upload.FemaleCharacteristics? femaleCharacteristics = userProfileModel.sex!.index == upload.SexType.male.index
+  // Default to female index (1) when sex is missing — matches the same default
+  // mapper #4 already applies on the download side. Calc-relevant; should not
+  // be null in practice (signup enforces it), but if drift happens we surface
+  // the issue at boundary validation rather than crashing this mapper.
+  final int sexIndex = userProfileModel.sex?.index ?? upload.SexType.female.index;
+  final upload.FemaleCharacteristics? femaleCharacteristics = sexIndex == upload.SexType.male.index
       ? null
       : userProfileModel.femaleCharacteristics == null ? null : upload.FemaleCharacteristics(
-      menstruation: upload.Menstruation(
-      regularity: userProfileModel.femaleCharacteristics?.menstruation?.regularity,
-      daysOfCycle: userProfileModel.femaleCharacteristics?.menstruation?.regularity == 0
-          ? userProfileModel.femaleCharacteristics?.menstruation?.daysOfCycle
-          : null,
-      lastStartDate: userProfileModel.femaleCharacteristics?.menstruation?.regularity == 0
-          ? userProfileModel.femaleCharacteristics?.menstruation?.lastStartDate
-          : null,
-    ),
-  );
+          menstruation: upload.Menstruation(
+            regularity: userProfileModel.femaleCharacteristics?.menstruation?.regularity,
+            daysOfCycle: userProfileModel.femaleCharacteristics?.menstruation?.regularity == 0
+                ? userProfileModel.femaleCharacteristics?.menstruation?.daysOfCycle
+                : null,
+            lastStartDate: userProfileModel.femaleCharacteristics?.menstruation?.regularity == 0
+                ? userProfileModel.femaleCharacteristics?.menstruation?.lastStartDate
+                : null,
+          ),
+        );
 
-  final upload.MedicalSituation? medicalSituation = upload.MedicalSituation(
-    commonDiseases: userProfileModel.medicalSituation!.commonDiseases!.convertToBinary(Constants.DISEASES_SIZE),
-    otherDiseases: userProfileModel.medicalSituation!.otherDiseases,
-    underPharmaceuticalTreatment: userProfileModel.medicalSituation!.underPharmaceuticalTreatment,
+  final ms = userProfileModel.medicalSituation;
+  final upload.MedicalSituation medicalSituation = upload.MedicalSituation(
+    commonDiseases: (ms?.commonDiseases ?? const <int>[]).convertToBinary(Constants.DISEASES_SIZE),
+    otherDiseases: ms?.otherDiseases ?? const <String>[],
+    underPharmaceuticalTreatment: ms?.underPharmaceuticalTreatment ?? false,
   );
 
   final String exclusions = _setExclusions(
-      allergens: userProfileModel.exclusions!.exclusions.orEmpty(),
+      allergens: userProfileModel.exclusions?.exclusions ?? const <int>[],
       dietType: userProfileModel.dietType,
   );
 
   final upload.UserRdas uploadUserRdas = upload.UserRdas(
-    userRdas: userProfileModel.userRdas.isNull() ? [] : userProfileModel.userRdas!.userRdas.map((userRdas) => upload.UserRda(n: userRdas.name, rda: userRdas.rda, ul: userRdas.ul, upperLimit: userRdas.upperLimit ?? 0.0)).toList(),
+    userRdas: (userProfileModel.userRdas?.userRdas ?? const <domain.UserRda>[])
+        .map((rda) => upload.UserRda(
+              n: rda.name,
+              rda: rda.rda,
+              ul: rda.ul,
+              upperLimit: rda.upperLimit ?? 0.0,
+            ))
+        .toList(),
   );
 
   final profile = upload.UploadUserProfile(
     userId: userProfileModel.userId,
     commonName: userProfileModel.commonName.orEmpty(),
     birthDate: userProfileModel.birthDate.orZero(),
-    sex: userProfileModel.sex!.index.orZero(),
+    sex: sexIndex,
     occupationActivityFactor: userProfileModel.occupationActivityFactor.orZero(),
     objectives: userProfileModel.objectives.orEmpty(),
     physicalCharacteristics: physicalCharacteristics,
@@ -75,41 +96,41 @@ String _setExclusions({List<int> allergens = const [], int? dietType}) {
 }
 
 entity.UserProfileEntity mapToProfileEntity(domain.UserProfileModel profileModel) {
+  final pc = profileModel.physicalCharacteristics;
+  final ms = profileModel.medicalSituation;
+  final fc = profileModel.femaleCharacteristics;
   return entity.UserProfileEntity(
     userId: profileModel.userId,
     commonName: profileModel.commonName.orEmpty(),
     birthDate: profileModel.birthDate.orZero(),
-    sex: profileModel.sex!.index,
+    sex: profileModel.sex?.index ?? domain.SexType.female.index,
     occupationActivityFactor: profileModel.occupationActivityFactor.orZero(),
     physicalCharacteristics: entity.PhysicalCharacteristics(
-        weight: profileModel.physicalCharacteristics!.weight!,
-        height: profileModel.physicalCharacteristics!.height!,
-        // TODO: estos dos no son necesarios. No hay por qué poner valor.
-      unit: profileModel.physicalCharacteristics?.unit,
-        bodyFat: profileModel.physicalCharacteristics!.bodyFat,
-        waistMeasurement: profileModel.physicalCharacteristics!.waistMeasurement,
+        weight: pc?.weight ?? 0.0,
+        height: pc?.height ?? 0.0,
+        unit: pc?.unit,
+        bodyFat: pc?.bodyFat,
+        waistMeasurement: pc?.waistMeasurement,
     ),
     medicalSituation: entity.MedicalSituation(
-        commonDiseases: profileModel.medicalSituation!.commonDiseases.orEmpty(),
-        otherDiseases: profileModel.medicalSituation!.otherDiseases.orEmpty(),
-        underPharmaceuticalTreatment: profileModel.medicalSituation!.underPharmaceuticalTreatment,
+        commonDiseases: ms?.commonDiseases ?? const <int>[],
+        otherDiseases: ms?.otherDiseases ?? const <String>[],
+        underPharmaceuticalTreatment: ms?.underPharmaceuticalTreatment ?? false,
     ),
-    femaleCharacteristics: profileModel.femaleCharacteristics != null
+    femaleCharacteristics: fc != null
         ? entity.FemaleCharacteristics(
-            // The 265 mapper fix produces a non-null FemaleCharacteristics with
-            // an all-null Menstruation for legacy female accounts whose source
-            // record never had the data (Olatz, Luisa Desch, maddi). Hive's
-            // Menstruation field types are already nullable — the `!`s here
-            // were purely cosmetic and crashed in saveProfileInLocal on every
-            // login after 265 unblocked the download. `?.` lets nulls flow.
+            // Legacy female accounts (Olatz, Luisa Desch ×2, maddi) and any
+            // user who taps "Skip for now" on signup produce a non-null FC
+            // with an all-null Menstruation. Entity field types are already
+            // nullable; `?.` lets the orphan-content shape flow through.
             menstruation: entity.Menstruation(
-                regularity: profileModel.femaleCharacteristics!.menstruation?.regularity,
-                lastStartDate: profileModel.femaleCharacteristics!.menstruation?.lastStartDate,
-                daysOfCycle: profileModel.femaleCharacteristics!.menstruation?.daysOfCycle,
+                regularity: fc.menstruation?.regularity,
+                lastStartDate: fc.menstruation?.lastStartDate,
+                daysOfCycle: fc.menstruation?.daysOfCycle,
             ),
           )
         : null,
-    exclusions: entity.Exclusions(exclusions: profileModel.exclusions!.exclusions.orEmpty()),
+    exclusions: entity.Exclusions(exclusions: profileModel.exclusions?.exclusions ?? const <int>[]),
     intolerances: profileModel.intolerances,
     dietType: profileModel.dietType,
     foodAversions: profileModel.foodAversions,
@@ -119,50 +140,66 @@ entity.UserProfileEntity mapToProfileEntity(domain.UserProfileModel profileModel
     userAll: profileModel.userAll,
     temporaryMicronutrients: profileModel.temporaryMicronutrients,
     temporaryAll: profileModel.temporaryAll,
-    userRdas: entity.UserRdasEntity(userRdasEntity: profileModel.userRdas!.userRdas.map((userRdas) => entity.UserRdaEntity(n: userRdas.name, rda: userRdas.rda.toDouble(), ul: userRdas.ul.toDouble(), upperLimit: userRdas.upperLimit?.toDouble() ?? 0.0)).toList()),
+    userRdas: entity.UserRdasEntity(
+      userRdasEntity: (profileModel.userRdas?.userRdas ?? const <domain.UserRda>[])
+          .map((rda) => entity.UserRdaEntity(
+                n: rda.name,
+                rda: rda.rda.toDouble(),
+                ul: rda.ul.toDouble(),
+                upperLimit: rda.upperLimit?.toDouble() ?? 0.0,
+              ))
+          .toList(),
+    ),
     recommededIds: profileModel.recommededIds,
     kcal: profileModel.kcal,
   );
 }
 
 domain.UserProfileModel mapToUserProfileModelFromProfileEntity(entity.UserProfileEntity profileEntity) {
+  final pc = profileEntity.physicalCharacteristics;
   final domain.PhysicalCharacteristics physicalCharacteristics = domain.PhysicalCharacteristics(
-    height: profileEntity.physicalCharacteristics!.height,
-    weight: profileEntity.physicalCharacteristics!.weight,
-    unit: profileEntity.physicalCharacteristics?.unit,
-    bodyFat: profileEntity.physicalCharacteristics!.bodyFat,
-    waistMeasurement: profileEntity.physicalCharacteristics!.waistMeasurement,
+    height: pc?.height ?? 0.0,
+    weight: pc?.weight ?? 0.0,
+    unit: pc?.unit,
+    bodyFat: pc?.bodyFat,
+    waistMeasurement: pc?.waistMeasurement,
   );
 
+  final fcEntity = profileEntity.femaleCharacteristics;
   final domain.FemaleCharacteristics? femaleCharacteristics = profileEntity.sex == 0
       ? null
-      : profileEntity.femaleCharacteristics == null ? null : domain.FemaleCharacteristics(
-      menstruation: domain.Menstruation(
-        regularity: profileEntity.femaleCharacteristics!.menstruation!.regularity,
-        daysOfCycle: profileEntity.femaleCharacteristics!.menstruation!.regularity == 0
-            ? profileEntity.femaleCharacteristics!.menstruation!.daysOfCycle
-            : null,
-        lastStartDate: profileEntity.femaleCharacteristics!.menstruation!.regularity == 0
-            ? profileEntity.femaleCharacteristics!.menstruation!.lastStartDate
-            : null,
-      ),
-  );
+      : fcEntity == null ? null : domain.FemaleCharacteristics(
+          menstruation: domain.Menstruation(
+            regularity: fcEntity.menstruation?.regularity,
+            daysOfCycle: fcEntity.menstruation?.regularity == 0
+                ? fcEntity.menstruation?.daysOfCycle
+                : null,
+            lastStartDate: fcEntity.menstruation?.regularity == 0
+                ? fcEntity.menstruation?.lastStartDate
+                : null,
+          ),
+        );
 
+  final msEntity = profileEntity.medicalSituation;
   final domain.MedicalSituation medicalSituation = domain.MedicalSituation(
-      commonDiseases: profileEntity.medicalSituation!.commonDiseases,
-      otherDiseases: profileEntity.medicalSituation!.otherDiseases,
-      underPharmaceuticalTreatment: profileEntity.medicalSituation!.underPharmaceuticalTreatment,
+      commonDiseases: msEntity?.commonDiseases ?? const <int>[],
+      otherDiseases: msEntity?.otherDiseases ?? const <String>[],
+      underPharmaceuticalTreatment: msEntity?.underPharmaceuticalTreatment ?? false,
   );
 
   final domain.Exclusions exclusions = domain.Exclusions(
-      exclusions: profileEntity.exclusions!.exclusions,
+      exclusions: profileEntity.exclusions?.exclusions ?? const <int>[],
   );
 
   final DietType dietType = findDietType(profileEntity.dietType ?? 0);
 
   final intolerances = profileEntity.intolerances;
 
-  final userRdas = domain.UserRdas(userRdas: profileEntity.userRdas!.userRdasEntity.map((userRdas) => domain.UserRda(name: userRdas.n, rda: userRdas.rda, ul: userRdas.ul, upperLimit: userRdas.upperLimit)).toList());
+  final userRdas = domain.UserRdas(
+    userRdas: (profileEntity.userRdas?.userRdasEntity ?? const <entity.UserRdaEntity>[])
+        .map((rda) => domain.UserRda(name: rda.n, rda: rda.rda, ul: rda.ul, upperLimit: rda.upperLimit))
+        .toList(),
+  );
 
   return domain.UserProfileModel(
     userId: profileEntity.userId,
@@ -191,18 +228,18 @@ domain.UserProfileModel mapToUserProfileModelFromProfileEntity(entity.UserProfil
 }
 
 domain.UserProfileModel mapToUserProfileModelFromUploadUser(upload.UploadUserProfile uploadUserProfile) {
+  final pc = uploadUserProfile.physicalCharacteristics;
   final domain.PhysicalCharacteristics physicalCharacteristics = domain.PhysicalCharacteristics(
-      height: uploadUserProfile.physicalCharacteristics!.height,
-      weight: uploadUserProfile.physicalCharacteristics!.weight,
-      unit: uploadUserProfile.physicalCharacteristics?.unit,
-      bodyFat: uploadUserProfile.physicalCharacteristics!.bodyFat,
-      waistMeasurement: uploadUserProfile.physicalCharacteristics!.waistMeasurement,
+      height: pc?.height ?? 0.0,
+      weight: pc?.weight ?? 0.0,
+      unit: pc?.unit,
+      bodyFat: pc?.bodyFat,
+      waistMeasurement: pc?.waistMeasurement,
   );
 
   // Female users registered via older versions of the signup flow could land
   // here with femaleCharacteristics absent (the menstruation question was
-  // skippable). Force-unwrapping the chain threw on every login for those
-  // accounts. Defaulting the inner fields to null keeps the rest of the
+  // skippable). Defaulting the inner fields to null keeps the rest of the
   // profile loadable; femaleCharacteristics isn't read by any calc path.
   final menstruation = uploadUserProfile.femaleCharacteristics?.menstruation;
   final domain.FemaleCharacteristics? femaleCharacteristics = uploadUserProfile.sex == 0
@@ -215,21 +252,32 @@ domain.UserProfileModel mapToUserProfileModelFromUploadUser(upload.UploadUserPro
           ),
         );
 
+  final ms = uploadUserProfile.medicalSituation;
   final domain.MedicalSituation medicalSituation = domain.MedicalSituation(
-    commonDiseases: convertToList(uploadUserProfile.medicalSituation!.commonDiseases),
-    otherDiseases: uploadUserProfile.medicalSituation!.otherDiseases ?? [],
-    underPharmaceuticalTreatment: uploadUserProfile.medicalSituation!.underPharmaceuticalTreatment,
+    commonDiseases: convertToList(ms?.commonDiseases),
+    otherDiseases: ms?.otherDiseases ?? const <String>[],
+    underPharmaceuticalTreatment: ms?.underPharmaceuticalTreatment ?? false,
   );
 
+  // RangeError-safe substring: a backend record shorter than the schema's
+  // ALLERGENS_SIZE shouldn't crash login. Truncate only when long enough.
+  final exclusionsRaw = uploadUserProfile.exclusions ?? '';
+  final exclusionsTrimmed = exclusionsRaw.length >= Constants.ALLERGENS_SIZE - 1
+      ? exclusionsRaw.substring(0, Constants.ALLERGENS_SIZE - 1)
+      : exclusionsRaw;
   final domain.Exclusions exclusions = domain.Exclusions(
-    exclusions: convertToList(uploadUserProfile.exclusions!.substring(0, Constants.ALLERGENS_SIZE-1)),
+    exclusions: convertToList(exclusionsTrimmed),
   );
 
-  final DietType dietType = getDietType(uploadUserProfile.exclusions.orEmpty());
+  final DietType dietType = getDietType(exclusionsRaw);
 
   final intolerances = convertToList(uploadUserProfile.intolerances);
 
-  final userRdas = domain.UserRdas(userRdas: uploadUserProfile.userRdas!.map((userRdas) => domain.UserRda(name: userRdas.n, rda: userRdas.rda, ul: userRdas.ul, upperLimit: userRdas.upperLimit)).toList());
+  final userRdas = domain.UserRdas(
+    userRdas: (uploadUserProfile.userRdas ?? const <upload.UserRda>[])
+        .map((rda) => domain.UserRda(name: rda.n, rda: rda.rda, ul: rda.ul, upperLimit: rda.upperLimit))
+        .toList(),
+  );
 
   return domain.UserProfileModel(
     userId: uploadUserProfile.userId,
