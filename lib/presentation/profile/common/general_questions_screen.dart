@@ -434,6 +434,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                           dark: true,
                                           errorBorderColor: Colors.grey.shade100,
                                           isNumeric: true,
+                                          integerOnly: true,
                                           value: state.profile!
                                               .physicalCharacteristics!.height,
                                           title: '${state.unitWeightHeight?.height ?? AppLocalizations.of(ctx)!.height} *',
@@ -464,6 +465,7 @@ class _GeneralQuestionsScreenState extends State<GeneralQuestionsScreen> {
                                           dark: true,
                                           errorBorderColor: Colors.grey.shade100,
                                           isNumeric: true,
+                                          integerOnly: true,
                                           value: state.profile!
                                               .physicalCharacteristics!.weight,
                                           title: '${state.unitWeightHeight?.weight ?? AppLocalizations.of(ctx)!.weight} *',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
@@ -9,6 +10,7 @@ class TextFieldGeneralQuest extends StatefulWidget {
   final String title;
   final Function onChanged;
   final bool isNumeric;
+  final bool integerOnly;
   final Color errorBorderColor;
   final double? value;
   final String? Function(String?)? validator;
@@ -22,6 +24,7 @@ class TextFieldGeneralQuest extends StatefulWidget {
       required this.title,
       required this.onChanged,
       this.isNumeric = false,
+      this.integerOnly = false,
         required this.errorBorderColor,
       required this.value,
       this.validator,
@@ -38,7 +41,13 @@ class _TextFieldGeneralQuestState extends State<TextFieldGeneralQuest> {
   @override
   Widget build(BuildContext context) {
     if (textController.text == '') {
-      textController.text = widget.value.orZero() <= 0 ? '' : widget.value.toString();
+      if (widget.value.orZero() <= 0) {
+        textController.text = '';
+      } else if (widget.integerOnly) {
+        textController.text = widget.value!.round().toString();
+      } else {
+        textController.text = widget.value.toString();
+      }
     }
 
     final fg =
@@ -53,6 +62,9 @@ class _TextFieldGeneralQuestState extends State<TextFieldGeneralQuest> {
         TextFormField(
           keyboardType:
               widget.isNumeric ? TextInputType.number : TextInputType.text,
+          inputFormatters: widget.integerOnly
+              ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]
+              : null,
           controller: textController,
           cursorColor: fg,
           style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal, color: fg),
