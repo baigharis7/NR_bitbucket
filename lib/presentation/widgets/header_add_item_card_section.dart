@@ -90,7 +90,7 @@ class _HeaderAddItemCardSectionState extends State<HeaderAddItemCardSection> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(left: Dimens.paddingLarge, right: Dimens.paddingLarge, bottom: Dimens.paddingLarge, top: Dimens.paddingNormal),
+      padding: const EdgeInsets.all(Dimens.paddingLarge),
       decoration: BoxDecoration(
         color: const Color(0xFF28421D).withOpacity(0.59),
         borderRadius: BorderRadius.circular(16),
