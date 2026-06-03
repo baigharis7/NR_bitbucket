@@ -140,12 +140,14 @@ class HealthImpactMarkerWidget extends StatelessWidget {
             Text(
               metric.label,
               style: AppTextStyles.merriWeather.copyWith(
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
+                height: 1.15,
               ),
               textAlign: TextAlign.center,
-              maxLines: 1,
+              maxLines: 2,
+              softWrap: true,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
