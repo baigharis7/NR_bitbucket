@@ -32,7 +32,12 @@ class _WaterIntakeWidgetState extends State<WaterIntakeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    int totalGlasses = (widget.totalLitersGoal / glassVolume).ceil();
+    final int recommendedGlasses = (widget.totalLitersGoal / glassVolume).ceil();
+    // Always show one extra empty glass once the user reaches/exceeds the
+    // personalised recommendation, so they can keep logging consumption past it.
+    final int totalGlasses = widget.consumedGlasses >= recommendedGlasses
+        ? widget.consumedGlasses + 1
+        : recommendedGlasses;
     double totalConsumedLiters = widget.consumedGlasses * glassVolume;
     double progress = (totalConsumedLiters / widget.totalLitersGoal).clamp(0.0, 1.0);
 

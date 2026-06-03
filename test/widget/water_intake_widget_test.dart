@@ -237,17 +237,32 @@ void main() {
       expect(find.text('0.00 L.'), findsOneWidget);
     });
 
-    // Edge case: all glasses consumed
-    testWidgets('fully consumed shows all filled glasses', (tester) async {
+    // Edge case: all recommended glasses consumed — one extra empty glass is
+    // shown so the user can keep logging consumption beyond the recommendation.
+    testWidgets('fully consumed shows extra empty glass past recommendation', (tester) async {
       await tester.pumpWidget(buildTestWidget(
         totalLitersGoal: 2.0,
-        consumedGlasses: 8, // 8 glasses = 2.0L
+        consumedGlasses: 8, // 8 glasses = 2.0L (matches recommendation)
       ));
       await tester.pumpAndSettle();
 
-      // No add icons should be shown (all glasses filled)
-      expect(find.byIcon(Icons.add), findsNothing);
+      // 8 filled + 1 empty (over-consumption affordance)
+      expect(find.byIcon(Icons.add), findsOneWidget);
       expect(find.text('2.00 L.'), findsOneWidget);
+    });
+
+    // New behaviour: user can consume past the personalised recommendation.
+    testWidgets('exceeding recommendation keeps showing one extra empty glass',
+        (tester) async {
+      await tester.pumpWidget(buildTestWidget(
+        totalLitersGoal: 2.0,
+        consumedGlasses: 10, // 2 past the 8-glass recommendation
+      ));
+      await tester.pumpAndSettle();
+
+      // 10 filled glasses + 1 empty trailing affordance
+      expect(find.byIcon(Icons.add), findsOneWidget);
+      expect(find.text('2.50 L.'), findsOneWidget);
     });
   });
 }
