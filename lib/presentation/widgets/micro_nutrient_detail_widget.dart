@@ -27,7 +27,7 @@ class _MicroNutrientDetailWidgetState extends State<MicroNutrientDetailWidget> {
     final double percentage = percent * 100;
     final color = widget.nutrientsModel.quantityConsumed > widget.nutrientsModel.upperLimit && widget.nutrientsModel.upperLimit > 0 ? AppColors.red : AppColors.green;
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
+      margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

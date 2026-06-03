@@ -27,7 +27,7 @@ class _VerticalNutrientWidgetState extends State<VerticalNutrientWidget> {
     final colors = widget.nutrient.quantityConsumed > widget.nutrient.upperLimit && widget.nutrient.upperLimit > 0 ? [AppColors.rose, AppColors.persianRed] : [AppColors.lightGreen, AppColors.green];
     final fillRatio = widget.nutrient.rda > 0 ? (widget.nutrient.quantityConsumed / widget.nutrient.rda).clamp(0.0, 1.0) : 0.0;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginXSmall),
+      margin: const EdgeInsets.symmetric(horizontal: Dimens.marginSmall),
       height: Dimens.heightMedium,
       width: Dimens.width60,
       child: Column(
@@ -114,7 +114,7 @@ class _VerticalNutrientWidgetState extends State<VerticalNutrientWidget> {
               ),
             ),
           ),
-          Text(widget.nutrient.nutrientInfoMaster.abbr.toString(), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: widget.titleColor ?? AppColors.peacockBlue,)),
+          Text(widget.nutrient.nutrientInfoMaster.abbr.toString(), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: Dimens.fontSizeSmall, color: widget.titleColor ?? AppColors.peacockBlue,)),
         ],
       ),
     );
