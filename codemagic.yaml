@@ -89,7 +89,7 @@ workflows:
     environment:
       flutter: 3.32.8
       groups:
-        - ios_signing
+        - ios_group
     triggering:
       events:
         - push
