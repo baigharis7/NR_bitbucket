@@ -129,3 +129,10 @@ build/
 
 # FVM Version Cache
 .fvm/
+
+# Unused platform targets — this is an Android + iOS only app.
+# Flutter regenerates these on demand; they are not built or shipped.
+/linux/
+/web/
+/macos/
+/windows/
