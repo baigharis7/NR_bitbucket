@@ -354,7 +354,7 @@ class EventsHelper {
       } else {
         return sport.en == sportName;
       }
-    });
+    }, orElse: () => SportInfoMaster.empty());
     return sportChosen.mets;
   }
 
@@ -365,12 +365,12 @@ class EventsHelper {
       } else {
         return sport.en == sportName;
       }
-    });
+    }, orElse: () => SportInfoMaster.empty());
     return sportChosen.id;
   }
 
   SportInfoMaster getSportNameById(int? sportId, List<SportInfoMaster> sportsInfoMasterList) {
-    return sportsInfoMasterList.firstWhere((sportInfoMaster) => sportInfoMaster.id == sportId);
+    return sportsInfoMasterList.firstWhere((sportInfoMaster) => sportInfoMaster.id == sportId, orElse: () => SportInfoMaster.empty());
   }
 
   UnitInfoMaster findUnitName(int unitId, List<UnitInfoMaster> unitsInfoMaster) {

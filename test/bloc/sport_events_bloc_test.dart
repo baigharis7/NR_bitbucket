@@ -629,4 +629,58 @@ void main() {
       },
     );
   });
+
+  group('SportEventsBloc - sport lookups (firstWhere crash regression)', () {
+    // Regression for crash_analysis.md group 2 (sports): findSportByName /
+    // findSportIdByName / findSportById used to throw StateError when a sport
+    // name/id from the server catalog had no local match, crashing the screen.
+    final running =
+        SportInfoMaster(id: 7, en: 'Running', es: 'Correr', mets: 8);
+
+    SportEventsBloc buildWithSports() {
+      final bloc = buildBloc();
+      bloc.state.sportsInfo = SportsInfoMaster(sportsInfoMaster: [running]);
+      return bloc;
+    }
+
+    test('findSportByName returns matching sport when it exists', () {
+      final bloc = buildWithSports();
+      expect(bloc.findSportByName('Running', 'en').id, 7);
+      bloc.close();
+    });
+
+    test('findSportByName returns empty without throwing on no match', () {
+      final bloc = buildWithSports();
+      final result = bloc.findSportByName('Swimming', 'en');
+      expect(result.id, 0);
+      expect(result.en, '');
+      bloc.close();
+    });
+
+    test('findSportIdByName returns matching id (spanish) when it exists', () {
+      final bloc = buildWithSports();
+      expect(bloc.findSportIdByName('Correr', 'es'), 7);
+      bloc.close();
+    });
+
+    test('findSportIdByName returns 0 without throwing on no match', () {
+      final bloc = buildWithSports();
+      expect(bloc.findSportIdByName('Swimming', 'en'), 0);
+      bloc.close();
+    });
+
+    test('findSportById returns matching sport when the id exists', () {
+      final bloc = buildWithSports();
+      expect(bloc.findSportById(7).id, 7);
+      bloc.close();
+    });
+
+    test('findSportById returns empty without throwing on no match', () {
+      final bloc = buildWithSports();
+      final result = bloc.findSportById(99);
+      expect(result.id, 0);
+      expect(result.en, '');
+      bloc.close();
+    });
+  });
 }
