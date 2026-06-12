@@ -71,8 +71,13 @@ class MacroNutrientsDetailBloc extends Bloc<MacroNutrientsDetailEvent, MacroNutr
   String getTodayMessage(String todayString, String locale) => DateTimeHelper().formatDashboardTodayMessage(todayString, locale);
 
   NutrientInfoMaster getNutrientInfo(String nutrientName) {
-    final nutrientInfo = state.nutrientsInfoMaster!.nutrientsInfo
-        .firstWhere((info) => info.officialName == nutrientName);
+    NutrientInfoMaster nutrientInfo =
+        NutrientInfoMaster(officialName: nutrientName, unit: '', en: '', es: '');
+    for (var info in state.nutrientsInfoMaster!.nutrientsInfo) {
+      if (info.officialName == nutrientName) {
+        nutrientInfo = info;
+      }
+    }
     return nutrientInfo;
   }
 

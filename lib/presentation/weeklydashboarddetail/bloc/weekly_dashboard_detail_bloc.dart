@@ -101,14 +101,25 @@ class WeeklyDashboardDetailBloc
   }
 
   NutrientInfoMaster getNutrientInfo(String nutrientName) {
-    final nutrientInfo = state.nutrientsInfoMaster!.nutrientsInfo
-        .firstWhere((info) => info.officialName == nutrientName);
+    NutrientInfoMaster nutrientInfo =
+        NutrientInfoMaster(officialName: nutrientName, unit: '', en: '', es: '');
+    for (var info in state.nutrientsInfoMaster!.nutrientsInfo) {
+      if (info.officialName == nutrientName) {
+        nutrientInfo = info;
+      }
+    }
     return nutrientInfo;
   }
 
+  num _rdaForMicronutrient(String micronutrient) {
+    for (var rda in state.userRdas ?? []) {
+      if (rda.name == micronutrient) return rda.rda;
+    }
+    return 0;
+  }
+
   double getFractionToFillMicros(String micronutrient) {
-    final rdaForUser =
-        state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
+    final rdaForUser = _rdaForMicronutrient(micronutrient);
     double nutrientQuantitySoFar = 0.0;
     for (var foodEvent in state.weeklyFoodEvents!) {
       for (var food in foodEvent.foodInfo!) {
@@ -117,23 +128,25 @@ class WeeklyDashboardDetailBloc
       }
     }
 
+    if (rdaForUser <= 0) return 0;
     double returnQuantity = nutrientQuantitySoFar / rdaForUser;
     if (returnQuantity > 1) returnQuantity = 1;
     return returnQuantity;
   }
 
   String getUnitForMicronutrient(String micronutrient) {
-    final nutrientInfo = state.nutrientsInfoMaster!.nutrientsInfo.firstWhere((
-      info,
-    ) =>
-        info.officialName == micronutrient);
-    return nutrientInfo.unit;
+    var unit = '';
+    for (var info in state.nutrientsInfoMaster!.nutrientsInfo) {
+      if (info.officialName == micronutrient) {
+        unit = info.unit;
+      }
+    }
+    return unit;
   }
 
   List<Map<String, dynamic>> getWeeklyMicroNutrientsDataFormatted(
       List<FoodEventComplete> completeWeekData, String micronutrient) {
-    final rdaForUser =
-        state.userRdas!.firstWhere((rda) => rda.name == micronutrient).rda;
+    final rdaForUser = _rdaForMicronutrient(micronutrient);
     List<Map<String, dynamic>> weeklyData = [];
     int latestDate = 1;
     for (var event in completeWeekData) {
@@ -159,7 +172,7 @@ class WeeklyDashboardDetailBloc
         }
       }
       // weeklyData.add({'day': eventWeekDay, 'kcal': EventsHelper().getFractionToFillKcal(nutrientConsumed, state.userProfile?.kcal ?? 0)});
-      nutrientConsumed = nutrientConsumed / rdaForUser;
+      nutrientConsumed = rdaForUser > 0 ? nutrientConsumed / rdaForUser : 0;
       if (nutrientConsumed > 1) nutrientConsumed = 1;
       if (nutrientConsumed < 0) nutrientConsumed = 0.0;
       weeklyData
