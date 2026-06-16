@@ -2529,4 +2529,8 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get scanner_matched => 'Coincide';
+
+  @override
+  String get food_not_found_in_catalog =>
+      'No encontramos ese alimento en el catálogo. Elige otro, por favor.';
 }

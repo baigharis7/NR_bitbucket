@@ -318,23 +318,24 @@ class EventsHelper {
   }
 
   FoodInFavorite? findFoodByFoodName(String foodName, String currentLanguage, List<FoodItemMaster> foodNames) {
-    FoodItemMaster? foodItem;
-    if (currentLanguage == 'es') {
-      foodItem = foodNames.firstWhere((food) => food.es == foodName);
-    } else {
-      foodItem = foodNames.firstWhere((food) => food.en == foodName);
-    }
-      return FoodInFavorite(id: foodItem.id!, qty: 0, unit: -1, conversionFactor: -1, cookingMethod: -1, usedOil: 0);
+    final FoodItemMaster foodItem = foodNames.firstWhere(
+      (food) => currentLanguage == 'es' ? food.es == foodName : food.en == foodName,
+      orElse: () => FoodItemMaster.empty(),
+    );
+    // No exact match in the master list (e.g. catalog renamed or device
+    // locale differs from es/en). Return null so the UI can warn instead
+    // of crashing on a null id assertion.
+    if (foodItem.id == null || foodItem.id == 0) return null;
+    return FoodInFavorite(id: foodItem.id!, qty: 0, unit: -1, conversionFactor: -1, cookingMethod: -1, usedOil: 0);
   }
 
   FoodInFavorite? findFoodIdToFavorite(String foodName, String currentLanguage, List<FoodItemMaster> foodNames) {
-    FoodItemMaster? foodItem;
-    if (currentLanguage == 'es') {
-      foodItem = foodNames.firstWhere((food) => food.es == foodName);
-    } else {
-      foodItem = foodNames.firstWhere((food) => food.en == foodName);
-    }
-      return FoodInFavorite(id: foodItem.id!, name_en: foodItem.en.orEmpty(), name_es: foodItem.es.orEmpty(), qty: 0, unit: -1, conversionFactor: 0, cookingMethod: -1, usedOil: 0);
+    final FoodItemMaster foodItem = foodNames.firstWhere(
+      (food) => currentLanguage == 'es' ? food.es == foodName : food.en == foodName,
+      orElse: () => FoodItemMaster.empty(),
+    );
+    if (foodItem.id == null || foodItem.id == 0) return null;
+    return FoodInFavorite(id: foodItem.id!, name_en: foodItem.en.orEmpty(), name_es: foodItem.es.orEmpty(), qty: 0, unit: -1, conversionFactor: 0, cookingMethod: -1, usedOil: 0);
   }
 
   String findCookingMethodName(BuildContext context, int cookingMethod, List<CookingMethodInfo> cookingMethodsInfo) {

@@ -273,11 +273,15 @@ class _CreateNewFoodFavoriteScreenState extends State<CreateNewFoodFavoriteScree
                         );
                       },
                       onSelected: (option) {
-                        // TODO: manage possible errors
                         final currentLanguage = Localizations.localeOf(context).languageCode;
                         final food = eventHelper.findFoodIdToFavorite(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                        final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                        bloc.add(AddFoodFromFavoriteAction(foodInFavorite: food!));
+                        if (food == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(AppLocalizations.of(context)!.food_not_found_in_catalog)),
+                          );
+                          return;
+                        }
+                        bloc.add(AddFoodFromFavoriteAction(foodInFavorite: food));
                         _foodInputController.text = '';
                         // showAddFoodFavoriteDialog(
                         //   AddFoodFavoriteDialog(

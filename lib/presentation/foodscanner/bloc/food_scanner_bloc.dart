@@ -361,11 +361,20 @@ class FoodScannerBloc
     // auto-estimate grams. The user always confirms the amount.
     final cached =
         await scannedFoodRepository.findByLookupKey(action.barcode);
+    Map<String, double>? nutrientMap;
     if (cached != null) {
-      final nutrientMap =
-          (jsonDecode(cached.paramsJson) as Map<String, dynamic>)
-              .map((k, v) => MapEntry(k, (v as num).toDouble()));
-
+      try {
+        nutrientMap =
+            (jsonDecode(cached.paramsJson) as Map<String, dynamic>)
+                .map((k, v) => MapEntry(k, (v as num).toDouble()));
+      } catch (e) {
+        // Corrupt or legacy cache row — discard and fall through to a
+        // fresh OFF lookup instead of crashing.
+        debugPrint('[FoodScanner] Corrupt barcode cache for ${action.barcode}: $e');
+        nutrientMap = null;
+      }
+    }
+    if (cached != null && nutrientMap != null) {
       final scanResult = ScanResult(
         scannedName: cached.nameEn,
         brand: cached.brand,
@@ -644,6 +653,7 @@ class FoodScannerBloc
     Emitter<FoodScannerState> emit, {
     bool bumpSaveTick = false,
   }) {
+    if (index < 0 || index >= state.results.length) return;
     final newResults = List<ScanResultEntry>.from(state.results)
       ..removeAt(index);
 

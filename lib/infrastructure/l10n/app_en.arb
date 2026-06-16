@@ -790,6 +790,7 @@
     "scanner_done": "Done",
     "scanner_log_all": "Log all",
     "scanner_amount_needed": "Amount needed",
-    "scanner_matched": "Matched"
+    "scanner_matched": "Matched",
+    "food_not_found_in_catalog": "We couldn't find that food in the catalog. Please pick another."
 
 }
