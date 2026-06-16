@@ -16,17 +16,15 @@
 # 3. Connect your Bitbucket repository in Codemagic UI
 
 workflows:
-  # PR Checks - runs on every pull request
+  # PR Checks - manual only. Start from the Codemagic UI when you want a
+  # remote analyze + test run. No automatic trigger: the flow is to run
+  # tests locally (fvm flutter test) and trigger any build by hand.
   pr-checks:
     name: PR Checks
     max_build_duration: 30
     instance_type: mac_mini_m2
     environment:
       flutter: 3.32.8
-    triggering:
-      events:
-        - pull_request
-      cancel_previous_builds: true
     scripts:
       - name: Get dependencies
         script: flutter pub get
