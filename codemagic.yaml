@@ -40,7 +40,9 @@ workflows:
     artifacts:
       - coverage/**
 
-  # Android Release - runs in parallel with ios-release
+  # Android Release - manual only. Start from the Codemagic UI
+  # ("Start new build" -> select this workflow). No automatic trigger on
+  # push to keep full control over when a release is built & published.
   android-release:
     name: Android Release
     max_build_duration: 45
@@ -49,13 +51,6 @@ workflows:
       flutter: 3.32.8
       groups:
         - android_signing
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: master
-          include: true
-          source: true
     scripts:
       - name: Get dependencies
         script: flutter pub get
@@ -81,7 +76,9 @@ workflows:
         track: internal
         submit_as_draft: false
 
-  # iOS Release - runs in parallel with android-release
+  # iOS Release - manual only. Start from the Codemagic UI
+  # ("Start new build" -> select this workflow). No automatic trigger on
+  # push to keep full control over when a release is built & published.
   ios-release:
     name: iOS Release
     max_build_duration: 60
@@ -90,13 +87,6 @@ workflows:
       flutter: 3.32.8
       groups:
         - ios_group
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: master
-          include: true
-          source: true
     scripts:
       - name: Get dependencies
         script: flutter pub get
