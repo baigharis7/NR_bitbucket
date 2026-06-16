@@ -191,13 +191,18 @@ class _CreateNewLiquidFavoriteScreenState extends State<CreateNewLiquidFavoriteS
                                 .where((String option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
                           },
                           onSelected: (option) {
-                            // TODO: manage possible errors
                             final currentLanguage = Localizations.localeOf(context).languageCode;
                             final food = eventHelper.findFoodIdToFavorite(option, currentLanguage, state.liquidNames!.foodsAndDrinksNames!.drinkNames!);
+                            if (food == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(AppLocalizations.of(context)!.food_not_found_in_catalog)),
+                              );
+                              return;
+                            }
                             final foodGroup = eventHelper.findFoodGroup(option, currentLanguage, state.liquidNames!.foodsAndDrinksNames!.drinkNames!);
                             showAddLiquidFavoriteDialog(
                               AddFoodFavoriteDialog(
-                                  foodInFavorite: food!,
+                                  foodInFavorite: food,
                                   foodGroup: foodGroup.orEmpty(),
                                   cookingMethodsMaster: state.cookingMethodsMaster!,
                                   cookingMethodsInfoMaster: state.cookingMethodsInfoMaster!,

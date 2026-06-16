@@ -287,7 +287,13 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                       onItemSelect: (option, focus) {
                                         _focusInputController = focus;
                                         final food = eventHelper.findFoodByFoodName(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                                        bloc.add(AddFoodFromEventAction(foodInEvent: food!));
+                                        if (food == null) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text(AppLocalizations.of(context)!.food_not_found_in_catalog)),
+                                          );
+                                          return;
+                                        }
+                                        bloc.add(AddFoodFromEventAction(foodInEvent: food));
                                         // Auto-scroll to newly added item
                                         WidgetsBinding.instance.addPostFrameCallback((_) {
                                           _scrollController.animateTo(
@@ -448,7 +454,13 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
                                         onItemSelect: (option, focus) {
                                           _focusInputController = focus;
                                           final food = eventHelper.findFoodByFoodName(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                                          bloc.add(AddFoodFromEventAction(foodInEvent: food!));
+                                          if (food == null) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text(AppLocalizations.of(context)!.food_not_found_in_catalog)),
+                                            );
+                                            return;
+                                          }
+                                          bloc.add(AddFoodFromEventAction(foodInEvent: food));
                                           // Auto-scroll to newly added item
                                           WidgetsBinding.instance.addPostFrameCallback((_) {
                                             _scrollController.animateTo(

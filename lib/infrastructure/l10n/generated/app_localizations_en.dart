@@ -2503,4 +2503,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scanner_matched => 'Matched';
+
+  @override
+  String get food_not_found_in_catalog =>
+      'We couldn\'t find that food in the catalog. Please pick another.';
 }

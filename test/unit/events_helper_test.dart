@@ -484,4 +484,67 @@ void main() {
       expect(await resolveIn(tester, ingredient, const Locale('en')), 'Apple');
     });
   });
+
+  // ── findFoodByFoodName / findFoodIdToFavorite ───────────────────────
+  //
+  // Regression: both used a firstWhere without an orElse and then a
+  // `.id!` null assertion. A food name not present in the master list
+  // (catalog renamed, or device locale other than es/en where the
+  // autocomplete label and the lookup language diverge) crashed with
+  // StateError, taking down the add-food / favorites screens. They must
+  // now return null on no match so the UI can warn instead of crashing.
+
+  group('findFoodByFoodName', () {
+    final foodNames = [
+      FoodItemMaster(id: 1, en: 'Apple', es: 'Manzana', group: 'Fruits'),
+      FoodItemMaster(id: 2, en: 'Chicken', es: 'Pollo', group: 'Proteins'),
+    ];
+
+    test('returns a FoodInFavorite with the matched id (English)', () {
+      final result = eventsHelper.findFoodByFoodName('Apple', 'en', foodNames);
+      expect(result, isNotNull);
+      expect(result!.id, 1);
+    });
+
+    test('returns a FoodInFavorite with the matched id (Spanish)', () {
+      final result = eventsHelper.findFoodByFoodName('Pollo', 'es', foodNames);
+      expect(result, isNotNull);
+      expect(result!.id, 2);
+    });
+
+    test('returns null when the food name is not in the master list', () {
+      expect(eventsHelper.findFoodByFoodName('Mango', 'en', foodNames), isNull);
+    });
+
+    test('returns null for an empty food name', () {
+      expect(eventsHelper.findFoodByFoodName('', 'en', foodNames), isNull);
+    });
+
+    test('returns null when the master list is empty', () {
+      expect(eventsHelper.findFoodByFoodName('Apple', 'en', []), isNull);
+    });
+  });
+
+  group('findFoodIdToFavorite', () {
+    final foodNames = [
+      FoodItemMaster(id: 1, en: 'Apple', es: 'Manzana', group: 'Fruits'),
+      FoodItemMaster(id: 2, en: 'Chicken', es: 'Pollo', group: 'Proteins'),
+    ];
+
+    test('returns a FoodInFavorite carrying id and inline names', () {
+      final result = eventsHelper.findFoodIdToFavorite('Manzana', 'es', foodNames);
+      expect(result, isNotNull);
+      expect(result!.id, 1);
+      expect(result.name_en, 'Apple');
+      expect(result.name_es, 'Manzana');
+    });
+
+    test('returns null when the food name is not in the master list', () {
+      expect(eventsHelper.findFoodIdToFavorite('Mango', 'en', foodNames), isNull);
+    });
+
+    test('returns null for an empty food name', () {
+      expect(eventsHelper.findFoodIdToFavorite('', 'es', foodNames), isNull);
+    });
+  });
 }

@@ -442,7 +442,7 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       } else {
         return sport.en == name;
       }
-    });
+    }, orElse: () => SportInfoMaster.empty());
     return sport;
   }
 
@@ -453,12 +453,12 @@ class SportEventsBloc extends BaseBloc<SportEventsActions, SportEventsState> {
       } else {
         return sport.en == name;
       }
-    });
+    }, orElse: () => SportInfoMaster.empty());
     return sport.id;
   }
 
   SportInfoMaster findSportById(int sportId) {
-    return state.sportsInfo!.sportsInfoMaster.firstWhere((sport) => sport.id == sportId);
+    return state.sportsInfo!.sportsInfoMaster.firstWhere((sport) => sport.id == sportId, orElse: () => SportInfoMaster.empty());
     }
 
   int calculateMillisecondsStart(TimeOfDay timeStart, DateTime dateStart) {

@@ -159,7 +159,13 @@ class _UpdateMealScreenState extends State<UpdateMealScreen> {
                             onItemSelect: (option, focus) {
                               _focusInputController = focus;
                               final food = eventHelper.findFoodByFoodName(option, currentLanguage, state.foodNames!.foodsAndDrinksNames!.foodNames!);
-                              updateMealBloc.add(UpdateIngredientsUpdateMealEvent(ingredient: food!));
+                              if (food == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(AppLocalizations.of(context)!.food_not_found_in_catalog)),
+                                );
+                                return;
+                              }
+                              updateMealBloc.add(UpdateIngredientsUpdateMealEvent(ingredient: food));
                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                 _scrollController.animateTo(
                                   _scrollController.position.maxScrollExtent,

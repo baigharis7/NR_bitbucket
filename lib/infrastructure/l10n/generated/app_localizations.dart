@@ -4663,6 +4663,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Matched'**
   String get scanner_matched;
+
+  /// No description provided for @food_not_found_in_catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find that food in the catalog. Please pick another.'**
+  String get food_not_found_in_catalog;
 }
 
 class _AppLocalizationsDelegate

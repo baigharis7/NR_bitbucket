@@ -790,6 +790,7 @@
     "scanner_done": "Listo",
     "scanner_log_all": "Registrar todo",
     "scanner_amount_needed": "Cantidad necesaria",
-    "scanner_matched": "Coincide"
+    "scanner_matched": "Coincide",
+    "food_not_found_in_catalog": "No encontramos ese alimento en el catálogo. Elige otro, por favor."
 
 }
