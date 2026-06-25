@@ -673,19 +673,11 @@ These features exist in the codebase but should NOT be reachable by the user. Ve
 
 Total test cases: **284** across 18 sections + Dead Code verification.
 
-| Tag | Count | % | Meaning |
-|-----|-------|---|---------|
-| 🤖 AUTO | 160 | 56% | Backed by automated tests — regression-safe |
-| ⚠️ PARTIAL | 16 | 6% | Logic automated; visual/navigation needs manual eyes |
-| 👤 MANUAL | 108 | 38% | Real device, real backend, or human judgment required |
+Each case carries a coverage tag (🤖 AUTO / ⚠️ PARTIAL / 👤 MANUAL) indicating whether it
+also has an automated regression net behind it. Tags are maintained per case in the tables
+above; run `flutter test` for current automated-suite status rather than a snapshot count.
 
-**Behind the AUTO tag** (1,484 automated tests across unit / widget / BLoC layers, all passing):
-- Phase 2: +35 BLoC tests for FecesUrine, Sport save flow, RecipeDetail
-- Phase 3: +29 navigation widget tests (bottom navbar, meal section, dashboard widgets)
-- Phase 3.5: +28 health-impact metric popup tests (Sleep, Steps, Hydration)
-- Phase 4: +14 full-screen navigation tests (Settings, Profile, Routines)
-
-**For QA testers:** All 284 cases must still be executed manually for release sign-off. The tags show which cases also have an automated regression net behind them.
+**For QA testers:** All 284 cases must still be executed manually for release sign-off. The tags show which cases also have automated coverage.
 
 **For developers:** When a 🤖 AUTO case fails manually, check the corresponding test file first — it may indicate the test mock has drifted from real behavior. When a 👤 MANUAL case repeatedly fails, consider promoting it to a programmatic test.
 
