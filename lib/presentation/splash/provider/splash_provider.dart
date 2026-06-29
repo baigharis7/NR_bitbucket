@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:chuck_interceptor/chuck_interceptor.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
@@ -87,8 +88,11 @@ class SplashProvider extends ChangeNotifier {
       }
 
       Chuck chuck = Chuck(
-        showNotification: true,
-        showInspectorOnShake: true,
+        // Debug-only: showNotification's default @mipmap/ic_launcher icon
+        // crashes Android (PlatformException invalid_icon), and the
+        // shake-to-open inspector must not be reachable in release builds.
+        showNotification: kDebugMode,
+        showInspectorOnShake: kDebugMode,
         darkTheme: false,
         maxCallsCount: 1000,
       );

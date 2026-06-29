@@ -190,7 +190,7 @@ class LoginProviderNew extends BaseProvider {
       // See app_bootstrap.dart Chuck construction for context — debug-only
       // to avoid the @mipmap/ic_launcher PlatformException on Android.
       showNotification: kDebugMode,
-      showInspectorOnShake: true,
+      showInspectorOnShake: kDebugMode,
       darkTheme: false,
       maxCallsCount: 1000,
     );
