@@ -13,6 +13,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/num_constants.dart';
 import 'package:nutrenaissance_flutter/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/forgottenpassword/view/fogotten_password_screen.dart';
+import 'package:nutrenaissance_flutter/presentation/login/view/mfa_verification_dialog.dart';
 import 'package:nutrenaissance_flutter/presentation/login/provider/login_provider_new.dart';
 import 'package:nutrenaissance_flutter/presentation/privacypolicy/privacy_policy.dart';
 import 'package:nutrenaissance_flutter/presentation/profile/registry/view/registry_screen.dart';
@@ -129,68 +130,15 @@ class _LoginScreenState extends State<LoginScreen>
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => SimpleDialog(
-          title: Center(
-            child: Text(
-              AppLocalizations.of(context)!.verify_your_account,
-            ),
-          ),
-          children: [
-            Stack(
-              children: [
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: Dimens.paddingSmall,
-                        horizontal: Dimens.paddingLarge,
-                      ),
-                      child: Text(
-                        AppLocalizations.of(context)!.verification_code_explanation,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: Dimens.paddingSmall,
-                        horizontal: Dimens.paddingNormal,
-                      ),
-                      child: TextField(
-                        decoration: InputDecoration(
-                          labelText:
-                          AppLocalizations.of(context)!.enter_otp,
-                        ),
-                        controller: _mfaController,
-                        keyboardType: TextInputType.number,
-                        maxLength: 6,
-                      ),
-                    ),
-                    RoundedCustomButton(
-                      verticalMargin: Dimens.marginSmall,
-                      horizontalMargin: Dimens.marginLarge,
-                      buttonText: AppLocalizations.of(context)!.accept,
-                      onPressed: () {
-                        if (_mfaController.text.isNotEmpty) sendVerificationCode.call(_mfaController.text);
-                        _mfaController.text = '';
-                        Navigator.pop(context);
-                      },
-                    ),
-                    RoundedCustomButton(
-                      verticalMargin: Dimens.marginSmall,
-                      horizontalMargin: Dimens.marginLarge,
-                      buttonText: AppLocalizations.of(context)!.resend_verification_code,
-                      onPressed: () => resendVerificationCode.call(),
-                    ),
-                    RoundedCustomButton(
-                      verticalMargin: Dimens.marginSmall,
-                      horizontalMargin: Dimens.marginLarge,
-                      buttonText: AppLocalizations.of(context)!.cancel,
-                      onPressed: () => _showExitConfirmationDialog(context),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+      builder: (ctx) => MfaVerificationDialog(
+        controller: _mfaController,
+        onSubmit: (code) {
+          sendVerificationCode.call(code);
+          _mfaController.text = '';
+          Navigator.pop(context);
+        },
+        onResend: () => resendVerificationCode.call(),
+        onCancel: () => _showExitConfirmationDialog(context),
       ),
     );
   }
