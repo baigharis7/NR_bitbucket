@@ -795,6 +795,11 @@
     "too_many_attempts": "Too many attempts. Please wait a few minutes and try again.",
     "reset_code_sent_hint": "If an account exists for this email, we've sent you a code.",
     "resend_code": "Resend code",
-    "reset_code_resent": "Code resent."
+    "reset_code_resent": "Code resent.",
+    "signup_resumed_code_resent": "You had already started signing up. We've resent your verification code.",
+    "account_already_active": "An active account already exists for this email.",
+    "login_verification_recovery_action": "Didn't get to verify your account? Resend code",
+    "recovery_code_conditional_hint": "If your sign-up was pending verification, we've resent your code.",
+    "account_already_verified": "Your account is already verified. Check your password or reset it."
 
 }

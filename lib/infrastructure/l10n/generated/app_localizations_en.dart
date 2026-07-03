@@ -2518,4 +2518,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reset_code_resent => 'Code resent.';
+
+  @override
+  String get signup_resumed_code_resent =>
+      'You had already started signing up. We\'ve resent your verification code.';
+
+  @override
+  String get account_already_active =>
+      'An active account already exists for this email.';
+
+  @override
+  String get login_verification_recovery_action =>
+      'Didn\'t get to verify your account? Resend code';
+
+  @override
+  String get recovery_code_conditional_hint =>
+      'If your sign-up was pending verification, we\'ve resent your code.';
+
+  @override
+  String get account_already_verified =>
+      'Your account is already verified. Check your password or reset it.';
 }
