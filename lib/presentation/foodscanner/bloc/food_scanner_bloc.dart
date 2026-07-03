@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/data/api/foodscanner/logmeal_provider.dart';
 import 'package:nutrenaissance_flutter/data/api/foodscanner/logmeal_token_service.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/save_food_event_interactor.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/network_error_utils.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/foodevents/upload_food_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/preferences/get_user_id_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_simple.dart';
@@ -750,25 +750,11 @@ class FoodScannerBloc
       });
       emit(state.copyWith(
         isProcessing: false,
-        errorMessage: () => _isNetworkError(e)
+        errorMessage: () => isNetworkError(e)
             ? 'No internet connection. Please check your network and try again.'
             : 'Scan error: $e',
       ));
     }
-  }
-
-  /// Detects whether an error originates from a missing/broken network
-  /// connection so we can surface a friendly message instead of a raw stack.
-  bool _isNetworkError(Object e) {
-    if (e is SocketException) return true;
-    final s = e.toString();
-    return s.contains('SocketException') ||
-        s.contains('Failed host lookup') ||
-        s.contains('Network is unreachable') ||
-        s.contains('Connection refused') ||
-        s.contains('Connection closed') ||
-        s.contains('Connection timed out') ||
-        s.contains('No address associated with hostname');
   }
 
   // ---------------------------------------------------------------------------
