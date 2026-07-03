@@ -29,7 +29,6 @@ class ResetPasswordScreen extends StatefulWidget {
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   late ResetPasswordBloc bloc;
 
-  final _emailController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _repeatPasswordController = TextEditingController();
   final _confirmationCodeController = TextEditingController();
@@ -43,9 +42,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
     _newPasswordController.dispose();
     _repeatPasswordController.dispose();
+    _confirmationCodeController.dispose();
     super.dispose();
   }
 
@@ -65,6 +64,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Email the reset code was requested for, carried over from
+    // ForgottenPasswordScreen so the user never re-types it (AC-6.1).
+    final email = ModalRoute.of(context)?.settings.arguments as String? ?? '';
     return BlocProvider.value(
       value: bloc,
       child: BlocConsumer<ResetPasswordBloc, ResetPasswordState>(
@@ -117,30 +119,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             Text(
                               AppLocalizations.of(context)!.reset_your_password,
                               style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeXXLarge, fontWeight: FontWeight.w700,),
-                            ),
-                            const SizedBox(
-                              height: Dimens.heightXSmall,
-                            ),
-                            TextFormField(
-                              cursorColor: Colors.white,
-                              style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
-                              decoration: InputDecoration(
-                                focusColor: Colors.white,
-                                enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
-                                focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white, width: 2)),
-                                hintText: AppLocalizations.of(context)!
-                                    .email,
-                                hintStyle: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
-                                errorMaxLines: 3,
-                              ),
-                              controller: _emailController,
-                              validator: (value) => resolveFormError(
-                                context,
-                                isEmail(value)
-                                    ? null
-                                    : FormErrorTypes.emailFormatError,
-                              ),
-                              onChanged: (value) => _formKey.currentState!.validate(),
                             ),
                             const SizedBox(
                               height: Dimens.heightXSmall,
@@ -247,7 +225,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 if (_formKey.currentState!.validate()) {
                                   bloc.add(
                                     ConfirmResetPasswordEventAction(
-                                      username: _emailController.text,
+                                      username: email,
                                       password: _repeatPasswordController.text,
                                       confirmationCode:
                                           _confirmationCodeController.text,
