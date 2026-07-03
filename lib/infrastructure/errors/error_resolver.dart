@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/network_error_utils.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/error_type_strings.dart';
 
 String resolveError(BuildContext context, ErrorTypes errorType) {
@@ -202,6 +203,14 @@ String? resolveFormError(BuildContext context, FormErrorTypes? formErrorTypes) {
 
 String userError(BuildContext context, Object error) {
   final stringResolver = AppLocalizations.of(context)!;
+
+  // Connectivity failures are detected by type/text before any string
+  // matching: they can wrap any operation and must never surface as an
+  // auth-specific message.
+  if (isNetworkError(error)) {
+    return stringResolver.connection_error_try_later;
+  }
+
   // Most thrown error objects (AuthException etc.) expose a `.message` getter,
   // but TypeError / NoSuchMethodError / arbitrary Objects don't — accessing
   // .message dynamically on those crashes with NoSuchMethodError. Fall back
@@ -222,10 +231,14 @@ String userError(BuildContext context, Object error) {
       return stringResolver.invalid_code;
     case ErrorTypStrings.OPERATION_NOT_COMPLETED_ES:
       return stringResolver.operation_not_completed;
+    case ErrorTypStrings.DAILY_LIMIT_EXCEEDED:
+      return stringResolver.too_many_attempts;
     default:
       // Anything we don't have a specific mapping for (TypeError,
       // NullCheckError, raw Amplify exception text, etc.) gets the
       // localized friendly fallback instead of leaking Dart-speak.
-      return stringResolver.sign_in_error;
+      // This is shared by login and password-reset screens, so it must
+      // stay operation-neutral (never "sign in failed").
+      return stringResolver.generic_error;
   }
 }

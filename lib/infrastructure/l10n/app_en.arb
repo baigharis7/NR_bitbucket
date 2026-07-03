@@ -791,6 +791,8 @@
     "scanner_log_all": "Log all",
     "scanner_amount_needed": "Amount needed",
     "scanner_matched": "Matched",
-    "food_not_found_in_catalog": "We couldn't find that food in the catalog. Please pick another."
+    "food_not_found_in_catalog": "We couldn't find that food in the catalog. Please pick another.",
+    "too_many_attempts": "Too many attempts. Please wait a few minutes and try again.",
+    "reset_code_sent_hint": "If an account exists for this email, we've sent you a code. Check your inbox and your spam folder."
 
 }

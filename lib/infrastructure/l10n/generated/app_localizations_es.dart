@@ -157,7 +157,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get too_many_attempts =>
-      'Demasiados intentos, prueba de nuevo mañana.';
+      'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.';
 
   @override
   String get name_you_want_to_be_called_by =>
@@ -2533,4 +2533,8 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get food_not_found_in_catalog =>
       'No encontramos ese alimento en el catálogo. Elige otro, por favor.';
+
+  @override
+  String get reset_code_sent_hint =>
+      'Si existe una cuenta para este email, te hemos enviado un código. Revisa tu bandeja de entrada y la carpeta de spam.';
 }

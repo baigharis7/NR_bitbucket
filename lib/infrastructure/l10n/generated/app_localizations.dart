@@ -377,7 +377,7 @@ abstract class AppLocalizations {
   /// No description provided for @too_many_attempts.
   ///
   /// In en, this message translates to:
-  /// **'Too many attempts. Try it again tomorrow.'**
+  /// **'Too many attempts. Please wait a few minutes and try again.'**
   String get too_many_attempts;
 
   /// No description provided for @name_you_want_to_be_called_by.
@@ -4669,6 +4669,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We couldn\'t find that food in the catalog. Please pick another.'**
   String get food_not_found_in_catalog;
+
+  /// No description provided for @reset_code_sent_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'If an account exists for this email, we\'ve sent you a code. Check your inbox and your spam folder.'**
+  String get reset_code_sent_hint;
 }
 
 class _AppLocalizationsDelegate
