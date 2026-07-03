@@ -795,6 +795,11 @@
     "too_many_attempts": "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.",
     "reset_code_sent_hint": "Si existe una cuenta para este email, te hemos enviado un código.",
     "resend_code": "Reenviar código",
-    "reset_code_resent": "Código reenviado."
+    "reset_code_resent": "Código reenviado.",
+    "signup_resumed_code_resent": "Ya habías empezado el registro. Te hemos reenviado el código de verificación.",
+    "account_already_active": "Ya existe una cuenta activa con este email.",
+    "login_verification_recovery_action": "¿No llegaste a verificar tu cuenta? Reenviar código",
+    "recovery_code_conditional_hint": "Si tu registro estaba pendiente de verificar, te hemos reenviado el código.",
+    "account_already_verified": "Tu cuenta ya está verificada. Revisa la contraseña o restablécela."
 
 }

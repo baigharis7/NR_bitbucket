@@ -4687,6 +4687,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Code resent.'**
   String get reset_code_resent;
+
+  /// No description provided for @signup_resumed_code_resent.
+  ///
+  /// In en, this message translates to:
+  /// **'You had already started signing up. We\'ve resent your verification code.'**
+  String get signup_resumed_code_resent;
+
+  /// No description provided for @account_already_active.
+  ///
+  /// In en, this message translates to:
+  /// **'An active account already exists for this email.'**
+  String get account_already_active;
+
+  /// No description provided for @login_verification_recovery_action.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t get to verify your account? Resend code'**
+  String get login_verification_recovery_action;
+
+  /// No description provided for @recovery_code_conditional_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'If your sign-up was pending verification, we\'ve resent your code.'**
+  String get recovery_code_conditional_hint;
+
+  /// No description provided for @account_already_verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is already verified. Check your password or reset it.'**
+  String get account_already_verified;
 }
 
 class _AppLocalizationsDelegate

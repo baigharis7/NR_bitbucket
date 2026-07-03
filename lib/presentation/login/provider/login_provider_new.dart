@@ -71,8 +71,10 @@ import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences
 import 'package:nutrenaissance_flutter/domain/repository/profile/profile_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/authentication/cognito_authentication_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
+import 'package:nutrenaissance_flutter/infrastructure/errors/network_error_utils.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/error_type_strings.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/token_utils.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/validator_utils.dart';
 import 'package:nutrenaissance_flutter/presentation/common/provider/base_provider.dart';
@@ -96,6 +98,14 @@ class _SignInAttemptResult {
   factory _SignInAttemptResult.threw(Object error, StackTrace stack) =>
       _SignInAttemptResult._(false, error: error, stack: stack);
 }
+
+/// Outcome of probing an existing account's state via resendSignUpCode (B3).
+///
+/// The probe doubles as the useful action: when the account is UNCONFIRMED
+/// the verification code is actually resent. `codeResent` also covers the
+/// simulated success Cognito returns for usernames it doesn't know
+/// (anti-enumeration) — callers must keep user-facing copy conditional.
+enum ProbeResult { codeResent, alreadyConfirmed, network, tooManyAttempts, unknown }
 
 class LoginProviderNew extends BaseProvider {
 
@@ -825,6 +835,39 @@ class LoginProviderNew extends BaseProvider {
         'phase': 'fetchReferenceData',
         'error_type': error.runtimeType.toString(),
       });
+    }
+  }
+
+  /// Probes the state of the account for [getEmail] by attempting to resend
+  /// its sign-up verification code. Used by both B3 doors (signup collision,
+  /// login recovery action) — never called automatically on login failures.
+  Future<ProbeResult> probeAccountState() async {
+    try {
+      await resendVerificationCodeInteractor!.execute(getEmail.orEmpty());
+      return ProbeResult.codeResent;
+    } on InvalidParameterException catch (e) {
+      return e.message
+              .toLowerCase()
+              .contains(ErrorTypStrings.USER_ALREADY_CONFIRMED_FRAGMENT)
+          ? ProbeResult.alreadyConfirmed
+          : ProbeResult.unknown;
+    } on LimitExceededException {
+      return ProbeResult.tooManyAttempts;
+    } on TooManyRequestsException {
+      return ProbeResult.tooManyAttempts;
+    } catch (error) {
+      if (isNetworkError(error)) return ProbeResult.network;
+      // Wrapped/legacy paths where only the message survives.
+      String message;
+      try {
+        message = (error as dynamic).message?.toString() ?? '';
+      } catch (_) {
+        message = '';
+      }
+      if (message == ErrorTypStrings.DAILY_LIMIT_EXCEEDED) {
+        return ProbeResult.tooManyAttempts;
+      }
+      return ProbeResult.unknown;
     }
   }
 

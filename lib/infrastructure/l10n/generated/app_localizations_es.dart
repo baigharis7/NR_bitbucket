@@ -2543,4 +2543,24 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get reset_code_resent => 'Código reenviado.';
+
+  @override
+  String get signup_resumed_code_resent =>
+      'Ya habías empezado el registro. Te hemos reenviado el código de verificación.';
+
+  @override
+  String get account_already_active =>
+      'Ya existe una cuenta activa con este email.';
+
+  @override
+  String get login_verification_recovery_action =>
+      '¿No llegaste a verificar tu cuenta? Reenviar código';
+
+  @override
+  String get recovery_code_conditional_hint =>
+      'Si tu registro estaba pendiente de verificar, te hemos reenviado el código.';
+
+  @override
+  String get account_already_verified =>
+      'Tu cuenta ya está verificada. Revisa la contraseña o restablécela.';
 }
