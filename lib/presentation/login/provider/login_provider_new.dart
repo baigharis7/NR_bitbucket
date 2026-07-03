@@ -107,6 +107,14 @@ class _SignInAttemptResult {
 /// (anti-enumeration) — callers must keep user-facing copy conditional.
 enum ProbeResult { codeResent, alreadyConfirmed, network, tooManyAttempts, unknown }
 
+/// Probe result plus the original error (when any), so degraded branches can
+/// surface the real cause through the shared `userError` mapping.
+class ProbeOutcome {
+  final ProbeResult result;
+  final Object? error;
+  const ProbeOutcome(this.result, [this.error]);
+}
+
 class LoginProviderNew extends BaseProvider {
 
   LoginProviderNew();
@@ -135,6 +143,14 @@ class LoginProviderNew extends BaseProvider {
   ReferenceDataService? referenceDataService;
   SyncQueueService? syncQueueService;
 
+  /// B3 signup door — set by the screen: opens the verification dialog when a
+  /// signup collision turns out to be an UNCONFIRMED account (code resent).
+  Function? onResumedVerification;
+
+  /// B3 signup door — set by the screen: the colliding account is CONFIRMED;
+  /// offer sign-in / password-reset instead.
+  Function? onAccountAlreadyActive;
+
   get getNotConfirmedUserTryingToLogin => _notConfirmedUserTryingToLogin;
   get isLogin => _loginMode;
   bool get isPrivacyPolicyChecked => _isPrivacyPolicyChecked;
@@ -148,6 +164,11 @@ class LoginProviderNew extends BaseProvider {
   bool get isPasswordVisible => _passwordVisible;
   bool get isRepeatPasswordVisible => _repeatPasswordVisible;
 
+  /// B3 login door: whether to offer the "didn't get to verify your account?"
+  /// recovery action. Only true after a credentials failure — never on the
+  /// happy path — and the probe behind it only runs on explicit user tap.
+  bool get showVerificationRecovery => _showVerificationRecovery;
+
   String? _email;
   String? _password;
   bool _loginMode = true;
@@ -159,6 +180,7 @@ class LoginProviderNew extends BaseProvider {
   bool _passwordVisible = false;
   bool _repeatPasswordVisible = false;
   bool goesToRegistry = false;
+  bool _showVerificationRecovery = false;
 
   void _setLoginMode(bool isLoginOn) {
     _loginMode = isLoginOn;
@@ -178,6 +200,36 @@ class LoginProviderNew extends BaseProvider {
   void _setNotConfirmedUserTryingToLogin(bool notConfirmedUserTryingToLogin) {
     _notConfirmedUserTryingToLogin = notConfirmedUserTryingToLogin;
     notifyListeners();
+  }
+
+  void _setShowVerificationRecovery(bool show) {
+    if (_showVerificationRecovery == show) return;
+    _showVerificationRecovery = show;
+    notifyListeners();
+  }
+
+  /// B3 login door: explicit, user-invoked recovery ("didn't get to verify
+  /// your account?"). Probes the account state; the resend is real for
+  /// UNCONFIRMED accounts and simulated for unknown/legacy usernames
+  /// (anti-enumeration), so [onCodeResent] copy must stay conditional.
+  Future<void> requestVerificationRecovery({
+    required Function onCodeResent,
+    required Function onAlreadyConfirmed,
+  }) async {
+    manageLoading(true);
+    final outcome = await probeAccountState();
+    manageLoading(false);
+    switch (outcome.result) {
+      case ProbeResult.codeResent:
+        _setShowVerificationRecovery(false);
+        onCodeResent.call();
+      case ProbeResult.alreadyConfirmed:
+        _setShowVerificationRecovery(false);
+        onAlreadyConfirmed.call();
+      default:
+        onError?.call(
+            outcome.error ?? StateError('verification recovery failed'));
+    }
   }
 
   @override
@@ -246,6 +298,7 @@ class LoginProviderNew extends BaseProvider {
 
   void changeLoginMode(Function action) {
     _setLoginMode(!isLogin);
+    _setShowVerificationRecovery(false);
     notifyListeners();
     if (!isLogin) {
       action.call();
@@ -271,6 +324,7 @@ class LoginProviderNew extends BaseProvider {
   }) async {
 
     manageLoading(true);
+    _setShowVerificationRecovery(false);
 
     _setEmail(email.orEmpty());
     _setPassword(password.orEmpty());
@@ -290,12 +344,43 @@ class LoginProviderNew extends BaseProvider {
     action.call();
   }
 
-  void _onSignUpError(Object error, [StackTrace? stack]) {
+  void _onSignUpError(Object error, [StackTrace? stack]) async {
     CrashlyticsService.record(error, stack ?? StackTrace.current, fatal: true, context: {
       'phase': 'signUp',
       'error_type': error.runtimeType.toString(),
     });
+    // B3 signup door: the email already has an account. UsernameExists proved
+    // it exists, so the probe outcome is deterministic here — branch to the
+    // right exit instead of the old misleading "sign in instead" message.
+    if (_isUsernameExists(error)) {
+      final outcome = await probeAccountState();
+      switch (outcome.result) {
+        case ProbeResult.codeResent:
+          // UNCONFIRMED — code genuinely resent; resume verification.
+          onResumedVerification?.call();
+          return;
+        case ProbeResult.alreadyConfirmed:
+          onAccountAlreadyActive?.call();
+          return;
+        default:
+          // Probe couldn't run (network/limits/unknown): surface its real
+          // cause; fall back to the original signup error if none captured.
+          onError?.call(outcome.error ?? error);
+          return;
+      }
+    }
     onError?.call(error);
+  }
+
+  bool _isUsernameExists(Object error) {
+    if (error is UsernameExistsException) return true;
+    String message;
+    try {
+      message = (error as dynamic).message?.toString() ?? '';
+    } catch (_) {
+      message = '';
+    }
+    return message == ErrorTypStrings.USER_ALREADY_EXISTS;
   }
 
   Future<void> _performLogin({
@@ -527,6 +612,12 @@ class LoginProviderNew extends BaseProvider {
   }
 
   void _onSignInError(Object error) {
+    // B3: a credentials failure may actually be an UNCONFIRMED account whose
+    // email alias doesn't resolve (masked by anti-enumeration). Offer — never
+    // auto-run — the verification recovery action (AC-2.1/AC-2.6).
+    if (error is AuthNotAuthorizedException || error is UserNotFoundException) {
+      _setShowVerificationRecovery(true);
+    }
     onError?.call(error);
   }
 
@@ -841,22 +932,22 @@ class LoginProviderNew extends BaseProvider {
   /// Probes the state of the account for [getEmail] by attempting to resend
   /// its sign-up verification code. Used by both B3 doors (signup collision,
   /// login recovery action) — never called automatically on login failures.
-  Future<ProbeResult> probeAccountState() async {
+  Future<ProbeOutcome> probeAccountState() async {
     try {
       await resendVerificationCodeInteractor!.execute(getEmail.orEmpty());
-      return ProbeResult.codeResent;
+      return const ProbeOutcome(ProbeResult.codeResent);
     } on InvalidParameterException catch (e) {
       return e.message
               .toLowerCase()
               .contains(ErrorTypStrings.USER_ALREADY_CONFIRMED_FRAGMENT)
-          ? ProbeResult.alreadyConfirmed
-          : ProbeResult.unknown;
-    } on LimitExceededException {
-      return ProbeResult.tooManyAttempts;
-    } on TooManyRequestsException {
-      return ProbeResult.tooManyAttempts;
+          ? ProbeOutcome(ProbeResult.alreadyConfirmed, e)
+          : ProbeOutcome(ProbeResult.unknown, e);
+    } on LimitExceededException catch (e) {
+      return ProbeOutcome(ProbeResult.tooManyAttempts, e);
+    } on TooManyRequestsException catch (e) {
+      return ProbeOutcome(ProbeResult.tooManyAttempts, e);
     } catch (error) {
-      if (isNetworkError(error)) return ProbeResult.network;
+      if (isNetworkError(error)) return ProbeOutcome(ProbeResult.network, error);
       // Wrapped/legacy paths where only the message survives.
       String message;
       try {
@@ -865,9 +956,9 @@ class LoginProviderNew extends BaseProvider {
         message = '';
       }
       if (message == ErrorTypStrings.DAILY_LIMIT_EXCEEDED) {
-        return ProbeResult.tooManyAttempts;
+        return ProbeOutcome(ProbeResult.tooManyAttempts, error);
       }
-      return ProbeResult.unknown;
+      return ProbeOutcome(ProbeResult.unknown, error);
     }
   }
 

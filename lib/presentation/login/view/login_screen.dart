@@ -258,7 +258,69 @@ class _LoginScreenState extends State<LoginScreen>
       _loginProvider.initialize(
         (Object object) => showErrorSnackBar(context, userError(context, object)),
       );
+      // B3 signup door: a collision with an UNCONFIRMED account resumes the
+      // verification (code already resent by the probe); a collision with a
+      // CONFIRMED one offers sign-in / reset instead.
+      _loginProvider.onResumedVerification = () {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content:
+              Text(AppLocalizations.of(context)!.signup_resumed_code_resent),
+        ));
+        _showVerificationDialogAndContinue(context);
+      };
+      _loginProvider.onAccountAlreadyActive =
+          () => _showAccountAlreadyActiveDialog(context);
     }
+  }
+
+  /// Opens the same verification dialog the normal signup uses; on success
+  /// the flow continues through confirmSignUp → auto-login → onboarding.
+  void _showVerificationDialogAndContinue(BuildContext context) {
+    _showMFADialog(
+      context: context,
+      sendVerificationCode: (confirmationCode) =>
+          _loginProvider.sendVerificationCode(
+        confirmationCode: confirmationCode,
+        action: () => Navigator.of(context)
+            .popAndPushNamed(WelcomeScreen.routeName, result: true),
+        alreadyExistsAlias: () => Navigator.pop(context),
+      ),
+      resendVerificationCode: () => _loginProvider.resendVerificationCode(),
+    );
+  }
+
+  void _showAccountAlreadyActiveDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: Text(AppLocalizations.of(ctx)!.account_already_active),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              Navigator.pushNamed(context, ForgottenPasswordScreen.routeName);
+            },
+            child: Text(AppLocalizations.of(ctx)!.reset_password),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              if (!_loginProvider.isLogin) {
+                // Keep the typed email; clear only the passwords and switch
+                // the screen to login mode.
+                _passwordController.clear();
+                _repeatPasswordController.clear();
+                _resetTouchedFields();
+                _loginProvider.changeLoginMode(() {
+                  _controller!.forward();
+                });
+              }
+            },
+            child: Text(AppLocalizations.of(ctx)!.login),
+          ),
+        ],
+      ),
+    );
   }
 
   void _onFieldBlur(String fieldName, FocusNode focusNode, TextEditingController controller) {
@@ -542,6 +604,38 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                               onTap: () => Navigator.pushNamed(context, ForgottenPasswordScreen.routeName),
                             ),
+                            // B3 login door: explicit recovery for accounts
+                            // that never completed verification. Only shown
+                            // after a credentials failure; the probe behind it
+                            // runs only when the user taps.
+                            if (model.isLogin && model.showVerificationRecovery)
+                              Container(
+                                margin: const EdgeInsets.only(top: Dimens.marginNormal),
+                                child: InkWell(
+                                  onTap: () => model.requestVerificationRecovery(
+                                    onCodeResent: () {
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                        content: Text(AppLocalizations.of(context)!.recovery_code_conditional_hint),
+                                      ));
+                                      _showVerificationDialogAndContinue(context);
+                                    },
+                                    onAlreadyConfirmed: () {
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                        content: Text(AppLocalizations.of(context)!.account_already_verified),
+                                        action: SnackBarAction(
+                                          label: AppLocalizations.of(context)!.reset_password,
+                                          onPressed: () => Navigator.pushNamed(context, ForgottenPasswordScreen.routeName),
+                                        ),
+                                      ));
+                                    },
+                                  ),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.login_verification_recovery_action,
+                                    textAlign: TextAlign.start,
+                                    style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeMedium, decoration: TextDecoration.underline,),
+                                  ),
+                                ),
+                              ),
                             Container(
                               margin: const EdgeInsets.symmetric(vertical: Dimens.marginXLarge),
                               child: InkWell(
