@@ -2536,5 +2536,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get reset_code_sent_hint =>
-      'Si existe una cuenta para este email, te hemos enviado un código. Revisa tu bandeja de entrada y la carpeta de spam.';
+      'Si existe una cuenta para este email, te hemos enviado un código.';
+
+  @override
+  String get resend_code => 'Reenviar código';
+
+  @override
+  String get reset_code_resent => 'Código reenviado.';
 }

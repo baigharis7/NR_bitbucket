@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/confirmation_dialog.dart';
+import 'package:nutrenaissance_flutter/presentation/forgottenpassword/bloc/forgotten_password_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/resetpassword/bloc/reset_password_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/resetpassword/view/reset_password_screen.dart';
@@ -15,6 +16,7 @@ import '../bloc/bloc_test_mocks.mocks.dart';
 void main() {
   late MockLoginRepository mockLoginRepository;
   late ResetPasswordBloc bloc;
+  late ForgottenPasswordBloc forgottenBloc;
 
   const carriedEmail = 'user@example.com';
 
@@ -28,7 +30,10 @@ void main() {
   Future<void> pumpAndOpenScreen(WidgetTester tester) async {
     mockLoginRepository = MockLoginRepository();
     bloc = ResetPasswordBloc(loginRepository: mockLoginRepository);
+    forgottenBloc =
+        ForgottenPasswordBloc(loginRepository: mockLoginRepository);
     addTearDown(bloc.close);
+    addTearDown(forgottenBloc.close);
 
     await tester.pumpWidget(
       MaterialApp(
@@ -40,8 +45,11 @@ void main() {
         ],
         supportedLocales: const [Locale('en'), Locale('es')],
         routes: {
-          ResetPasswordScreen.routeName: (_) => BlocProvider.value(
-                value: bloc,
+          ResetPasswordScreen.routeName: (_) => MultiBlocProvider(
+                providers: [
+                  BlocProvider.value(value: bloc),
+                  BlocProvider.value(value: forgottenBloc),
+                ],
                 child: const ResetPasswordScreen(),
               ),
           // Stub target for the post-success navigation; the real
@@ -70,6 +78,7 @@ void main() {
     await tester.enterText(fields.at(0), 'Passw0rd!');
     await tester.enterText(fields.at(1), 'Passw0rd!');
     await tester.enterText(fields.at(2), '123456');
+    await tester.ensureVisible(find.byType(ElevatedButton).last);
     await tester.tap(find.byType(ElevatedButton).last);
     await tester.pumpAndSettle();
   }
@@ -89,6 +98,36 @@ void main() {
 
       final codeField = tester.widget<TextField>(find.byType(TextField).at(2));
       expect(codeField.obscureText, isFalse);
+    });
+
+    testWidgets('shows the honest check-your-inbox hint (AC-2.1)',
+        (tester) async {
+      await pumpAndOpenScreen(tester);
+
+      final l10n = AppLocalizations.of(
+          tester.element(find.byType(ResetPasswordScreen)))!;
+      expect(find.text(l10n.reset_code_sent_hint), findsOneWidget);
+    });
+
+    testWidgets('resend button requests a new code for the carried email '
+        '(AC-2.2/2.3)', (tester) async {
+      await pumpAndOpenScreen(tester);
+      when(mockLoginRepository.resetPassword(any))
+          .thenAnswer((_) async => const CognitoResetPasswordResult(
+                isPasswordReset: false,
+                nextStep: ResetPasswordStep(
+                    updateStep:
+                        AuthResetPasswordStep.confirmResetPasswordWithCode),
+              ));
+
+      final l10n = AppLocalizations.of(
+          tester.element(find.byType(ResetPasswordScreen)))!;
+      await tester.ensureVisible(find.text(l10n.resend_code));
+      await tester.tap(find.text(l10n.resend_code));
+      await tester.pumpAndSettle();
+
+      verify(mockLoginRepository.resetPassword(carriedEmail)).called(1);
+      expect(find.text(l10n.reset_code_resent), findsOneWidget);
     });
 
     testWidgets('confirms the reset against the carried email (AC-3.2)',

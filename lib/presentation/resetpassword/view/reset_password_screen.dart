@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/infrastructure/l10n/generated/app_localizations.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/snack_bar_helper.dart';
+import 'package:nutrenaissance_flutter/presentation/forgottenpassword/bloc/forgotten_password_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/login/view/login_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/resetpassword/bloc/reset_password_bloc.dart';
 
@@ -133,6 +134,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             const SizedBox(
                               height: Dimens.heightXSmall,
                             ),
+                            // Honest feedback: Cognito's anti-enumeration means
+                            // we can't tell whether the email had an account,
+                            // so the copy is conditional on purpose (AC-2.1).
+                            Text(
+                              AppLocalizations.of(context)!.reset_code_sent_hint,
+                              style: AppTextStyles.merriWeather.copyWith(fontSize: Dimens.fontSizeMedium),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(
+                              height: Dimens.heightXSmall,
+                            ),
                             TextFormField(
                               cursorColor: Colors.white,
                               style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
@@ -223,6 +235,36 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               onChanged: (value) => _formKey.currentState!.validate(),
                               keyboardType: TextInputType.number,
                               maxLength: 6,
+                            ),
+                            const SizedBox(
+                              height: Dimens.heightXSmall,
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () {
+                                  // Reuses the request flow (and its global
+                                  // loading/error listeners) with the carried
+                                  // email; success feedback stays honest.
+                                  BlocProvider.of<ForgottenPasswordBloc>(context)
+                                      .add(ResetPasswordRequestEventAction(
+                                    userName: email,
+                                    next: () => ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                      content: Text(AppLocalizations.of(context)!
+                                          .reset_code_resent),
+                                    )),
+                                  ));
+                                },
+                                child: Text(
+                                  AppLocalizations.of(context)!.resend_code,
+                                  style: AppTextStyles.merriWeather.copyWith(
+                                    fontSize: Dimens.fontSizeMedium,
+                                    fontWeight: FontWeight.w700,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ),
                             ),
                             const SizedBox(
                               height: Dimens.heightXSmall,

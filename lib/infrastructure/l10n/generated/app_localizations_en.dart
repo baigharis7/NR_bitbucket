@@ -2511,5 +2511,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reset_code_sent_hint =>
-      'If an account exists for this email, we\'ve sent you a code. Check your inbox and your spam folder.';
+      'If an account exists for this email, we\'ve sent you a code.';
+
+  @override
+  String get resend_code => 'Resend code';
+
+  @override
+  String get reset_code_resent => 'Code resent.';
 }

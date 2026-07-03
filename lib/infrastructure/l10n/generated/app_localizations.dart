@@ -4673,8 +4673,20 @@ abstract class AppLocalizations {
   /// No description provided for @reset_code_sent_hint.
   ///
   /// In en, this message translates to:
-  /// **'If an account exists for this email, we\'ve sent you a code. Check your inbox and your spam folder.'**
+  /// **'If an account exists for this email, we\'ve sent you a code.'**
   String get reset_code_sent_hint;
+
+  /// No description provided for @resend_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code'**
+  String get resend_code;
+
+  /// No description provided for @reset_code_resent.
+  ///
+  /// In en, this message translates to:
+  /// **'Code resent.'**
+  String get reset_code_resent;
 }
 
 class _AppLocalizationsDelegate
