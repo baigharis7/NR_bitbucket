@@ -49,17 +49,27 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   void _showConfirmationDialog(BuildContext context) {
-    Future.delayed(const Duration(seconds: 2), () => Navigator.pop(context));
-
-    showDialog(context: context, builder: (ctx) => ConfirmationDialog(
-      message: AppLocalizations.of(context)!.password_save_successfully,
-    ),).then(
-      (value) => Navigator.pushNamedAndRemoveUntil(
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        // Auto-dismiss after 2s. Pop through the dialog's own context so
+        // that, if the user already dismissed it by tapping the barrier,
+        // this timer can't pop whatever route is on top by then.
+        Future.delayed(const Duration(seconds: 2), () {
+          if (dialogContext.mounted) Navigator.of(dialogContext).pop();
+        });
+        return ConfirmationDialog(
+          message: AppLocalizations.of(context)!.password_save_successfully,
+        );
+      },
+    ).then((_) {
+      if (!context.mounted) return;
+      Navigator.pushNamedAndRemoveUntil(
         context,
         LoginScreen.routeName,
         (route) => false,
-      ),
-    );
+      );
+    });
   }
 
   @override
@@ -193,7 +203,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             TextFormField(
                               cursorColor: Colors.white,
                               style: AppTextStyles.merriWeather.copyWith(fontWeight: FontWeight.w700,),
-                              obscureText: !(state.isRepeatPasswordVisible ?? false),
                               decoration: InputDecoration(
                                 focusColor: Colors.white,
                                 enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.whit, width: 1)),
@@ -226,7 +235,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   bloc.add(
                                     ConfirmResetPasswordEventAction(
                                       username: email,
-                                      password: _repeatPasswordController.text,
+                                      password: _newPasswordController.text,
                                       confirmationCode:
                                           _confirmationCodeController.text,
                                       onFinish: () =>
