@@ -47,7 +47,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/upload_
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/save_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/delete_sport_favorite_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/favorites/sport/remove_sport_favorite_from_local_interactor.dart';
-// LoginBloc
+// Login (auth flows: LoginProviderNew, forgotten/reset password blocs)
 import 'package:nutrenaissance_flutter/domain/interactor/login/signup_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/send_perrification_code_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/login/fetch_user_attributes_interactor.dart';
@@ -186,7 +186,7 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<SaveSportFavoriteInteractor>(),
   MockSpec<DeleteSportFavoriteInteractor>(),
   MockSpec<RemoveSportFavoriteInteractor>(),
-  // LoginBloc
+  // Login (auth flows: LoginProviderNew, forgotten/reset password blocs)
   MockSpec<SignUpInteractor>(),
   MockSpec<SendVerificationCodeInteractor>(),
   MockSpec<FetchUserAttributesInteractor>(),
