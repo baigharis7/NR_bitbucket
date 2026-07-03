@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,6 +10,7 @@ import 'bloc_test_mocks.mocks.dart';
 
 void main() {
   late MockLoginRepository mockLoginRepository;
+  var navigated = false;
 
   setUp(() {
     mockLoginRepository = MockLoginRepository();
@@ -69,6 +72,45 @@ void main() {
             .having((s) => s.isLoading, 'isLoading', false)
             .having((s) => s.onError, 'onError', isNotNull),
       ],
+    );
+
+    blocTest<ForgottenPasswordBloc, ForgottenPasswordState>(
+      'network failure emits error and does NOT navigate forward (AC-5.2)',
+      build: () {
+        when(mockLoginRepository.resetPassword(any))
+            .thenThrow(const SocketException('no internet'));
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(ResetPasswordRequestEventAction(
+        userName: 'testuser',
+        next: () => fail('must not navigate to the code screen on failure'),
+      )),
+      expect: () => [
+        isA<ForgottenPasswordState>().having((s) => s.isLoading, 'isLoading', true),
+        isA<ForgottenPasswordState>()
+            .having((s) => s.isLoading, 'isLoading', false)
+            .having((s) => s.onError, 'onError', isA<SocketException>()),
+      ],
+    );
+
+    blocTest<ForgottenPasswordBloc, ForgottenPasswordState>(
+      'success invokes next so the user reaches the code screen (AC-2.1)',
+      build: () {
+        navigated = false;
+        when(mockLoginRepository.resetPassword(any))
+            .thenAnswer((_) async => CognitoResetPasswordResult(
+                  isPasswordReset: false,
+                  nextStep: ResetPasswordStep(
+                      updateStep:
+                          AuthResetPasswordStep.confirmResetPasswordWithCode),
+                ));
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(ResetPasswordRequestEventAction(
+        userName: 'testuser',
+        next: () => navigated = true,
+      )),
+      verify: (_) => expect(navigated, isTrue),
     );
   });
 }

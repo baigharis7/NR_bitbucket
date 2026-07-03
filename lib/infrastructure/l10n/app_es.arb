@@ -791,6 +791,10 @@
     "scanner_log_all": "Registrar todo",
     "scanner_amount_needed": "Cantidad necesaria",
     "scanner_matched": "Coincide",
-    "food_not_found_in_catalog": "No encontramos ese alimento en el catálogo. Elige otro, por favor."
+    "food_not_found_in_catalog": "No encontramos ese alimento en el catálogo. Elige otro, por favor.",
+    "too_many_attempts": "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.",
+    "reset_code_sent_hint": "Si existe una cuenta para este email, te hemos enviado un código.",
+    "resend_code": "Reenviar código",
+    "reset_code_resent": "Código reenviado."
 
 }

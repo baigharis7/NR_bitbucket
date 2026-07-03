@@ -175,10 +175,12 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
                                 title: AppLocalizations.of(context)!.reset_password,
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
+                                    final email = _emailController.text.trim();
                                     bloc.add(ResetPasswordRequestEventAction(
-                                        userName: _emailController.text.toString(),
+                                        userName: email,
                                         next: () => Navigator.pushNamed(
-                                            context, ResetPasswordScreen.routeName)));
+                                            context, ResetPasswordScreen.routeName,
+                                            arguments: email)));
                                   }
                                 },
                               ),

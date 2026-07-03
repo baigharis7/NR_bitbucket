@@ -153,7 +153,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'User already exists. Choose another name and try again please.';
 
   @override
-  String get too_many_attempts => 'Too many attempts. Try it again tomorrow.';
+  String get too_many_attempts =>
+      'Too many attempts. Please wait a few minutes and try again.';
 
   @override
   String get name_you_want_to_be_called_by =>
@@ -2507,4 +2508,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get food_not_found_in_catalog =>
       'We couldn\'t find that food in the catalog. Please pick another.';
+
+  @override
+  String get reset_code_sent_hint =>
+      'If an account exists for this email, we\'ve sent you a code.';
+
+  @override
+  String get resend_code => 'Resend code';
+
+  @override
+  String get reset_code_resent => 'Code resent.';
 }
