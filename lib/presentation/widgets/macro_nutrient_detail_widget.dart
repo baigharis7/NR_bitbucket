@@ -66,7 +66,7 @@ class _MacroNutrientDetailWidgetState extends State<MacroNutrientDetailWidget> {
                           alignment: Alignment.center,
                           margin: const EdgeInsets.only(top: Dimens.marginXSmall),
                           child: Text(
-                            '${(widget.nutrientsModel.quantityConsumed)} ${widget.nutrientsModel.unit}',
+                            '${widget.nutrientsModel.quantityConsumed.toNutrientDisplay()} ${widget.nutrientsModel.unit}',
                             style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall),
                           ),
                         ),

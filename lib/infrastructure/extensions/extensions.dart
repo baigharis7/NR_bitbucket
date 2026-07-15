@@ -223,6 +223,14 @@ extension DoubleExtensions on double? {
       return value;
     }
   }
+
+  /// Display policy for macronutrient quantities: 1 decimal, half-up
+  /// (8.76 -> "8.8", 76.25 -> "76.3"). Single source of truth for the
+  /// rounding convention agreed with the domain expert — see
+  /// proteinas/specs/decision-redondeo-display.md. Energy (kcal) stays
+  /// integer and micros are pending the expert's confirmation, so neither
+  /// uses this yet.
+  String toNutrientDisplay() => orZero().toStringAsFixed(1);
 }
 
 extension LanguageSelector<T> on T {

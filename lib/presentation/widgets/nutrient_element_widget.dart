@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/presentation/widgets/ani_nutri_progress_bar_widget.dart';
 import '../../infrastructure/helpers/app_text_styles.dart';
 import '../../infrastructure/utils/dimens.dart';
@@ -24,7 +25,7 @@ class NutrientElementWidget extends StatelessWidget {
           text: TextSpan(
             children: [
               TextSpan(
-                text: '${current.ceil()}',
+                text: current.toNutrientDisplay(),
                 style: AppTextStyles.radioCanadaBig.copyWith(fontWeight: FontWeight.w700, fontSize: Dimens.fontSize15),
               ),
               TextSpan(

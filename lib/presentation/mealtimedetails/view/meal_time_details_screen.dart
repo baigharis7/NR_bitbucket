@@ -293,7 +293,7 @@ class _MealTimeDetailScreenState extends State<MealTimeDetailScreen> with Midnig
                                       return Expanded(
                                         child: Column(children: [
                                           Text(macroNutrient.nutrientInfoMaster.translate(context), style: const TextStyle(color: Colors.white, fontSize: Dimens.fontSizeSmall, fontWeight: FontWeight.w700)),
-                                          Text('${macroNutrient.quantityConsumed.toInt()}${macroNutrient.unit}', style: const TextStyle(color: Colors.white,fontWeight: FontWeight.w600, fontSize: Dimens.fontSize21)),
+                                          Text('${macroNutrient.quantityConsumed.toNutrientDisplay()}${macroNutrient.unit}', style: const TextStyle(color: Colors.white,fontWeight: FontWeight.w600, fontSize: Dimens.fontSize21)),
                                         ],),
                                       );
                                     }),
