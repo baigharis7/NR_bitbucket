@@ -13,6 +13,10 @@ enum HealthSyncErrorCategory {
   unknown,
 }
 
+/// Coarse source category retained in `sourceSelected` metadata — never a raw
+/// source display name.
+enum HealthSyncSourceCategory { wearable, phone, thirdPartyApp, unknown }
+
 /// Pure builders that assemble [HealthSyncDiagnosticEvent]s carrying only
 /// privacy-safe fields: counts, coarse categories, coarse platform, and
 /// day-bucketed dates. No Firebase, no raw health payloads.
@@ -24,7 +28,7 @@ class HealthSyncDiagnostics {
   static HealthSyncDiagnosticEvent fetchFailed({
     required HealthSyncDomain domain,
     required Object error,
-    String? platform,
+    HealthSyncPlatform? platform,
   }) {
     return HealthSyncDiagnosticEvent(
       type: HealthSyncDiagnosticType.fetchFailed,
@@ -39,7 +43,7 @@ class HealthSyncDiagnostics {
   /// a read succeeded but returned zero records.
   static HealthSyncDiagnosticEvent fetchNoData({
     required HealthSyncDomain domain,
-    String? platform,
+    HealthSyncPlatform? platform,
   }) {
     return HealthSyncDiagnosticEvent(
       type: HealthSyncDiagnosticType.fetchNoData,
@@ -55,8 +59,8 @@ class HealthSyncDiagnostics {
     required HealthSyncDomain domain,
     required int sourceCount,
     required int discardedCount,
-    required String selectedCategory,
-    String? platform,
+    required HealthSyncSourceCategory selectedCategory,
+    HealthSyncPlatform? platform,
   }) {
     return HealthSyncDiagnosticEvent(
       type: HealthSyncDiagnosticType.sourceSelected,
@@ -66,7 +70,7 @@ class HealthSyncDiagnostics {
       metadata: {
         'sourceCount': sourceCount,
         'discardedCount': discardedCount,
-        'selectedCategory': selectedCategory,
+        'selectedCategory': selectedCategory.name,
       },
     );
   }

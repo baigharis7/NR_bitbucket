@@ -56,14 +56,14 @@ void main() {
 
       final event = HealthSyncDiagnostics.fetchFailed(
         domain: HealthSyncDomain.workout,
-        platform: 'ios',
+        platform: HealthSyncPlatform.ios,
         error: error,
       );
 
       expect(event.type, HealthSyncDiagnosticType.fetchFailed);
       expect(event.severity, HealthSyncDiagnosticSeverity.error);
       expect(event.domain, HealthSyncDomain.workout);
-      expect(event.platform, 'ios');
+      expect(event.platform, HealthSyncPlatform.ios);
       expect(
         event.metadata['errorCategory'],
         HealthSyncErrorCategory.permission.name,
@@ -83,7 +83,7 @@ void main() {
     test('is an info-severity event with empty metadata', () {
       final event = HealthSyncDiagnostics.fetchNoData(
         domain: HealthSyncDomain.steps,
-        platform: 'android',
+        platform: HealthSyncPlatform.android,
       );
       expect(event.type, HealthSyncDiagnosticType.fetchNoData);
       expect(event.severity, HealthSyncDiagnosticSeverity.info);
@@ -96,10 +96,10 @@ void main() {
     test('carries only counts and the selected category', () {
       final event = HealthSyncDiagnostics.sourceSelected(
         domain: HealthSyncDomain.sleep,
-        platform: 'android',
+        platform: HealthSyncPlatform.android,
         sourceCount: 3,
         discardedCount: 2,
-        selectedCategory: 'wearable',
+        selectedCategory: HealthSyncSourceCategory.wearable,
       );
 
       expect(event.type, HealthSyncDiagnosticType.sourceSelected);

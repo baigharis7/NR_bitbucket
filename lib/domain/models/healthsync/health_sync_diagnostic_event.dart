@@ -29,19 +29,25 @@ enum HealthSyncDomain {
   background,
 }
 
+enum HealthSyncPlatform { android, ios }
+
 /// A single privacy-safe diagnostic observation.
 ///
 /// [metadata] must only ever contain sanitized values — counts, coarse
 /// categories, coarse platform, and day-bucketed (`yyyy-MM-dd`) dates. It must
 /// never carry raw source display names, exact timestamps, raw platform/workout
 /// IDs, user identifiers, or full error messages/stacktraces.
+///
+/// The sanctioned privacy-safe way to build events is via [HealthSyncDiagnostics]
+/// (the sanitizer); direct construction is a low-level primitive and does not
+/// sanitize [metadata].
 class HealthSyncDiagnosticEvent {
   final HealthSyncDiagnosticType type;
   final HealthSyncDiagnosticSeverity severity;
   final HealthSyncDomain domain;
 
-  /// Coarse platform only: 'android', 'ios', or null.
-  final String? platform;
+  /// Coarse platform only: android, ios, or null.
+  final HealthSyncPlatform? platform;
 
   /// Sanitized fields only. Defaults to a const empty map.
   final Map<String, Object> metadata;

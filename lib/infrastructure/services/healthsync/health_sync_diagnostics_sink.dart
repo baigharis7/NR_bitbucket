@@ -46,7 +46,7 @@ class CrashlyticsHealthSyncDiagnosticsSink
       ..write(' type=${event.type.name}')
       ..write(' severity=${event.severity.name}')
       ..write(' domain=${event.domain.name}')
-      ..write(' platform=${event.platform ?? 'unknown'}');
+      ..write(' platform=${event.platform?.name ?? 'unknown'}');
     final keys = event.metadata.keys.toList()..sort();
     for (final key in keys) {
       buffer.write(' $key=${event.metadata[key]}');

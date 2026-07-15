@@ -6,7 +6,7 @@ HealthSyncDiagnosticEvent _event() => const HealthSyncDiagnosticEvent(
   type: HealthSyncDiagnosticType.fetchFailed,
   severity: HealthSyncDiagnosticSeverity.error,
   domain: HealthSyncDomain.workout,
-  platform: 'ios',
+  platform: HealthSyncPlatform.ios,
   metadata: {'errorCategory': 'permission'},
 );
 
@@ -38,7 +38,7 @@ void main() {
           type: HealthSyncDiagnosticType.sourceSelected,
           severity: HealthSyncDiagnosticSeverity.info,
           domain: HealthSyncDomain.sleep,
-          platform: 'android',
+          platform: HealthSyncPlatform.android,
           metadata: {'sourceCount': 3, 'discardedCount': 2},
         ),
       );

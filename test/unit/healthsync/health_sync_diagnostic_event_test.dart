@@ -7,14 +7,14 @@ void main() {
       type: HealthSyncDiagnosticType.fetchSucceeded,
       severity: HealthSyncDiagnosticSeverity.info,
       domain: HealthSyncDomain.workout,
-      platform: 'android',
+      platform: HealthSyncPlatform.android,
       metadata: {'count': 3},
     );
 
     expect(event.type, HealthSyncDiagnosticType.fetchSucceeded);
     expect(event.severity, HealthSyncDiagnosticSeverity.info);
     expect(event.domain, HealthSyncDomain.workout);
-    expect(event.platform, 'android');
+    expect(event.platform, HealthSyncPlatform.android);
     expect(event.metadata['count'], 3);
   });
 
