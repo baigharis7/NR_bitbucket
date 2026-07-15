@@ -10,6 +10,7 @@ import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_com
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
 
 import '../../mocks/health_sync_mocks.dart';
+import '../../support/healthsync/health_activity_builder.dart';
 
 class FakeHealthActivity extends Fake implements HealthActivity {}
 class FakeSportEventComplete extends Fake implements SportEventComplete {}
@@ -205,17 +206,10 @@ void main() {
     });
 
     test('processes new activities successfully', () async {
-      final activity = HealthActivity(
+      final activity = aHealthActivity(
         healthPlatformId: 'new_activity_id',
-        activityType: 'RUNNING',
         startTime: DateTime.now().subtract(const Duration(hours: 1)),
         endTime: DateTime.now(),
-        durationMinutes: 60,
-        caloriesBurned: 500,
-        distance: 10000,
-        avgHeartRate: 150,
-        sourceName: 'Apple Health',
-        sourceType: 'apple_health',
       );
 
       final uploadedEvent = SportEventComplete(
