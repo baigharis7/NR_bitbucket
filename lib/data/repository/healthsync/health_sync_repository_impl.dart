@@ -108,7 +108,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       startDate: startDate,
       endDate: endDate,
     );
-    return result.data ?? const [];
+    return result.data ?? <HealthActivity>[];
   }
 
   @override
@@ -153,7 +153,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       );
 
       if (activities.isEmpty) {
-        return HealthFetchResult.successNoData(const []);
+        return HealthFetchResult.successNoData(activities);
       }
       return HealthFetchResult.success(activities);
     } catch (e) {
