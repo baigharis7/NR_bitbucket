@@ -35,7 +35,7 @@ abstract class HealthPlatformClient {
 /// injectable so delegation can be verified against a mocked [Health].
 class HealthPlatformClientImpl implements HealthPlatformClient {
   HealthPlatformClientImpl({Health Function()? healthFactory})
-      : _healthFactory = healthFactory ?? Health.new;
+    : _healthFactory = healthFactory ?? Health.new;
 
   final Health Function() _healthFactory;
   Health? _health;
@@ -46,7 +46,10 @@ class HealthPlatformClientImpl implements HealthPlatformClient {
     List<HealthDataType> types, {
     required List<HealthDataAccess> permissions,
   }) {
-    return _healthInstance.requestAuthorization(types, permissions: permissions);
+    return _healthInstance.requestAuthorization(
+      types,
+      permissions: permissions,
+    );
   }
 
   @override

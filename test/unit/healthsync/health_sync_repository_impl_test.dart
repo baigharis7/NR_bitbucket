@@ -34,12 +34,14 @@ class _FakeClient implements HealthPlatformClient {
   List<HealthDataAccess>? lastAuthPermissions;
   List<HealthDataType>? lastCheckTypes;
   List<HealthDataAccess>? lastCheckPermissions;
-  final List<({List<HealthDataType> types, DateTime start, DateTime end})> reads =
-      [];
+  final List<({List<HealthDataType> types, DateTime start, DateTime end})>
+  reads = [];
 
   @override
-  Future<bool> requestAuthorization(List<HealthDataType> types,
-      {required List<HealthDataAccess> permissions}) async {
+  Future<bool> requestAuthorization(
+    List<HealthDataType> types, {
+    required List<HealthDataAccess> permissions,
+  }) async {
     lastAuthTypes = types;
     lastAuthPermissions = permissions;
     if (throwOnAuthorize != null) throw throwOnAuthorize!;
@@ -47,8 +49,10 @@ class _FakeClient implements HealthPlatformClient {
   }
 
   @override
-  Future<bool?> hasPermissions(List<HealthDataType> types,
-      {required List<HealthDataAccess> permissions}) async {
+  Future<bool?> hasPermissions(
+    List<HealthDataType> types, {
+    required List<HealthDataAccess> permissions,
+  }) async {
     lastCheckTypes = types;
     lastCheckPermissions = permissions;
     if (throwOnHasPermissions != null) throw throwOnHasPermissions!;
@@ -68,25 +72,19 @@ class _FakeClient implements HealthPlatformClient {
 }
 
 class _FakeService implements HealthPlatformService {
-  _FakeService({
-    this.hostPlatform = HealthHostPlatform.android,
-    List<HealthDataType>? readTypes,
-    this.distanceType = HealthDataType.DISTANCE_DELTA,
-    this.importedSourceType = 'health_connect',
-    this.availableResult = true,
-    this.throwOnAvailable,
-  }) : readTypes = readTypes ??
-            const [HealthDataType.WORKOUT, HealthDataType.STEPS];
-
+  // Fields carry defaults; tests mutate them directly after construction.
   @override
-  HealthHostPlatform hostPlatform;
+  HealthHostPlatform hostPlatform = HealthHostPlatform.android;
   @override
-  List<HealthDataType> readTypes;
+  List<HealthDataType> readTypes = const [
+    HealthDataType.WORKOUT,
+    HealthDataType.STEPS,
+  ];
   @override
-  HealthDataType distanceType;
+  HealthDataType distanceType = HealthDataType.DISTANCE_DELTA;
   @override
-  String importedSourceType;
-  bool availableResult;
+  String importedSourceType = 'health_connect';
+  bool availableResult = true;
   Object? throwOnAvailable;
   int installCount = 0;
   int openCount = 0;
@@ -137,14 +135,14 @@ void main() {
   late _FakeService service;
 
   HealthSyncRepositoryImpl build() => HealthSyncRepositoryImpl(
-        localStorageRepository: localStorage,
-        preferencesRepository: prefs,
-        sleepEventsApi: sleepApi,
-        stepsApi: stepsApi,
-        syncQueue: syncQueue,
-        healthPlatformClient: client,
-        healthPlatformService: service,
-      );
+    localStorageRepository: localStorage,
+    preferencesRepository: prefs,
+    sleepEventsApi: sleepApi,
+    stepsApi: stepsApi,
+    syncQueue: syncQueue,
+    healthPlatformClient: client,
+    healthPlatformService: service,
+  );
 
   setUp(() {
     localStorage = _MockLocalStorage();
@@ -171,25 +169,47 @@ void main() {
   });
 
   group('permissions', () {
-    test('requestPermissions delegates service types + READ-per-type', () async {
-      service.readTypes = [HealthDataType.WORKOUT, HealthDataType.STEPS];
-      client.authorizeResult = true;
-      final result = await build().requestPermissions();
-      expect(result, isTrue);
-      expect(client.lastAuthTypes, [HealthDataType.WORKOUT, HealthDataType.STEPS]);
-      expect(client.lastAuthPermissions,
-          [HealthDataAccess.READ, HealthDataAccess.READ]);
-    });
+    test(
+      'requestPermissions delegates service types + READ-per-type',
+      () async {
+        service.readTypes = [HealthDataType.WORKOUT, HealthDataType.STEPS];
+        client.authorizeResult = true;
+        final result = await build().requestPermissions();
+        expect(result, isTrue);
+        expect(client.lastAuthTypes, [
+          HealthDataType.WORKOUT,
+          HealthDataType.STEPS,
+        ]);
+        expect(client.lastAuthPermissions, [
+          HealthDataAccess.READ,
+          HealthDataAccess.READ,
+        ]);
+      },
+    );
 
     test('requestPermissions returns false on client exception', () async {
       client.throwOnAuthorize = Exception('boom');
       expect(await build().requestPermissions(), isFalse);
     });
 
-    test('hasPermissions returns delegated true', () async {
-      client.hasPermissionsResult = true;
-      expect(await build().hasPermissions(), isTrue);
-    });
+    test(
+      'hasPermissions delegates full readTypes + READ-per-type and returns the result',
+      () async {
+        service.readTypes = [
+          HealthDataType.WORKOUT,
+          HealthDataType.STEPS,
+          HealthDataType.SLEEP_SESSION,
+        ];
+        client.hasPermissionsResult = true;
+        expect(await build().hasPermissions(), isTrue);
+        expect(client.lastCheckTypes, service.readTypes);
+        expect(client.lastCheckPermissions, [
+          HealthDataAccess.READ,
+          HealthDataAccess.READ,
+          HealthDataAccess.READ,
+        ]);
+      },
+    );
 
     test('hasPermissions maps a null result to false', () async {
       client.hasPermissionsResult = null;
@@ -213,7 +233,8 @@ void main() {
         _point(
           type: HealthDataType.WORKOUT,
           value: WorkoutHealthValue(
-              workoutActivityType: HealthWorkoutActivityType.RUNNING),
+            workoutActivityType: HealthWorkoutActivityType.RUNNING,
+          ),
           from: start,
           to: end,
           sourceName: 'Apple Watch',
@@ -244,8 +265,10 @@ void main() {
         ),
       ];
 
-      final activities =
-          await build().fetchActivities(startDate: start, endDate: end);
+      final activities = await build().fetchActivities(
+        startDate: start,
+        endDate: end,
+      );
 
       expect(activities, hasLength(1));
       final a = activities.single;
@@ -258,43 +281,59 @@ void main() {
       expect(a.avgHeartRate, 150);
       expect(a.sourceName, 'Apple Watch');
       expect(a.sourceType, 'apple_health');
-      expect(a.healthPlatformId,
-          'Apple Watch_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}');
-      // Distance read used the service-provided distance type.
       expect(
-        client.reads.any((r) => r.types.first == HealthDataType.DISTANCE_WALKING_RUNNING),
+        a.healthPlatformId,
+        'Apple Watch_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}',
+      );
+      // The four reads happen in the expected order, each single-typed (with
+      // the service-provided distance type), over the exact requested window.
+      expect(client.reads.map((r) => r.types).toList(), [
+        [HealthDataType.WORKOUT],
+        [HealthDataType.ACTIVE_ENERGY_BURNED],
+        [HealthDataType.DISTANCE_WALKING_RUNNING],
+        [HealthDataType.HEART_RATE],
+      ]);
+      expect(
+        client.reads.every((r) => r.start == start && r.end == end),
         isTrue,
       );
     });
 
-    test('uses workout built-in energy/distance when enrichment absent', () async {
-      final start = DateTime(2026, 7, 1, 8, 0);
-      final end = DateTime(2026, 7, 1, 8, 30);
-      client.dataByType[HealthDataType.WORKOUT] = [
-        _point(
-          type: HealthDataType.WORKOUT,
-          value: WorkoutHealthValue(
-            workoutActivityType: HealthWorkoutActivityType.RUNNING,
-            totalEnergyBurned: 120,
-            totalDistance: 2000,
+    test(
+      'uses workout built-in energy/distance when enrichment absent',
+      () async {
+        final start = DateTime(2026, 7, 1, 8, 0);
+        final end = DateTime(2026, 7, 1, 8, 30);
+        client.dataByType[HealthDataType.WORKOUT] = [
+          _point(
+            type: HealthDataType.WORKOUT,
+            value: WorkoutHealthValue(
+              workoutActivityType: HealthWorkoutActivityType.RUNNING,
+              totalEnergyBurned: 120,
+              totalDistance: 2000,
+            ),
+            from: start,
+            to: end,
           ),
-          from: start,
-          to: end,
-        ),
-      ];
+        ];
 
-      final a =
-          (await build().fetchActivities(startDate: start, endDate: end)).single;
-      expect(a.caloriesBurned, 120);
-      expect(a.distance, 2000);
-      expect(a.avgHeartRate, isNull);
-    });
+        final a = (await build().fetchActivities(
+          startDate: start,
+          endDate: end,
+        )).single;
+        expect(a.caloriesBurned, 120);
+        expect(a.distance, 2000);
+        expect(a.avgHeartRate, isNull);
+      },
+    );
 
     test('returns [] when the client throws', () async {
       client.throwOnRead = Exception('boom');
       expect(
         await build().fetchActivities(
-            startDate: DateTime(2026), endDate: DateTime(2026)),
+          startDate: DateTime(2026),
+          endDate: DateTime(2026),
+        ),
         isEmpty,
       );
     });

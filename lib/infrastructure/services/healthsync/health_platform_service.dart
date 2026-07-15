@@ -52,10 +52,10 @@ class HealthPlatformServiceImpl implements HealthPlatformService {
     Future<bool?> Function(String method)? invokeBool,
     Future<bool> Function(Uri uri)? canLaunch,
     LaunchUrlCallback? launch,
-  })  : _hostPlatform = hostPlatform ?? _detectHostPlatform(),
-        _invokeBool = invokeBool ?? _defaultInvokeBool,
-        _canLaunch = canLaunch ?? canLaunchUrl,
-        _launch = launch ?? _defaultLaunch;
+  }) : _hostPlatform = hostPlatform ?? _detectHostPlatform(),
+       _invokeBool = invokeBool ?? _defaultInvokeBool,
+       _canLaunch = canLaunch ?? canLaunchUrl,
+       _launch = launch ?? _defaultLaunch;
 
   final HealthHostPlatform _hostPlatform;
   final Future<bool?> Function(String method) _invokeBool;
@@ -74,25 +74,26 @@ class HealthPlatformServiceImpl implements HealthPlatformService {
   static Future<bool?> _defaultInvokeBool(String method) =>
       _channel.invokeMethod<bool>(method);
 
-  static Future<bool> _defaultLaunch(Uri uri,
-          {LaunchMode mode = LaunchMode.platformDefault}) =>
-      launchUrl(uri, mode: mode);
+  static Future<bool> _defaultLaunch(
+    Uri uri, {
+    LaunchMode mode = LaunchMode.platformDefault,
+  }) => launchUrl(uri, mode: mode);
 
   @override
   HealthHostPlatform get hostPlatform => _hostPlatform;
 
   @override
   List<HealthDataType> get readTypes => [
-        HealthDataType.WORKOUT,
-        HealthDataType.STEPS,
-        HealthDataType.ACTIVE_ENERGY_BURNED,
-        HealthDataType.HEART_RATE,
-        HealthDataType.SLEEP_SESSION,
-        if (_hostPlatform == HealthHostPlatform.ios)
-          HealthDataType.DISTANCE_WALKING_RUNNING,
-        if (_hostPlatform == HealthHostPlatform.android)
-          HealthDataType.DISTANCE_DELTA,
-      ];
+    HealthDataType.WORKOUT,
+    HealthDataType.STEPS,
+    HealthDataType.ACTIVE_ENERGY_BURNED,
+    HealthDataType.HEART_RATE,
+    HealthDataType.SLEEP_SESSION,
+    if (_hostPlatform == HealthHostPlatform.ios)
+      HealthDataType.DISTANCE_WALKING_RUNNING,
+    if (_hostPlatform == HealthHostPlatform.android)
+      HealthDataType.DISTANCE_DELTA,
+  ];
 
   @override
   HealthDataType get distanceType => _hostPlatform == HealthHostPlatform.ios
@@ -115,8 +116,9 @@ class HealthPlatformServiceImpl implements HealthPlatformService {
         // silently when HC is not installed.
         final result = await _invokeBool('isHealthConnectAvailable');
         debugPrint('[HealthSync] isHealthConnectAvailable=$result');
-        CrashlyticsService.instance
-            .log('HealthSync: isHealthConnectAvailable=$result');
+        CrashlyticsService.instance.log(
+          'HealthSync: isHealthConnectAvailable=$result',
+        );
         return result ?? false;
       case HealthHostPlatform.ios:
         // HealthKit is always available on supported iOS devices.
@@ -127,6 +129,21 @@ class HealthPlatformServiceImpl implements HealthPlatformService {
   @override
   Future<void> installHealthConnect() async {
     if (_hostPlatform != HealthHostPlatform.android) return;
+    await _launchStoreListing();
+  }
+
+  @override
+  Future<void> openHealthConnect() async {
+    if (_hostPlatform != HealthHostPlatform.android) return;
+    final opened = await _invokeBool('openHealthConnect');
+    if (opened != true) {
+      await _launchStoreListing();
+    }
+  }
+
+  /// Open the Health Connect Play Store listing, preferring the `market://`
+  /// deep link and falling back to the web URL (external) when it can't launch.
+  Future<void> _launchStoreListing() async {
     final marketUri = Uri.parse('market://details?id=$_hcPackage');
     if (await _canLaunch(marketUri)) {
       await _launch(marketUri);
@@ -135,24 +152,6 @@ class HealthPlatformServiceImpl implements HealthPlatformService {
         Uri.parse('https://play.google.com/store/apps/details?id=$_hcPackage'),
         mode: LaunchMode.externalApplication,
       );
-    }
-  }
-
-  @override
-  Future<void> openHealthConnect() async {
-    if (_hostPlatform != HealthHostPlatform.android) return;
-    final opened = await _invokeBool('openHealthConnect');
-    if (opened != true) {
-      final marketUri = Uri.parse('market://details?id=$_hcPackage');
-      if (await _canLaunch(marketUri)) {
-        await _launch(marketUri);
-      } else {
-        await _launch(
-          Uri.parse(
-              'https://play.google.com/store/apps/details?id=$_hcPackage'),
-          mode: LaunchMode.externalApplication,
-        );
-      }
     }
   }
 }

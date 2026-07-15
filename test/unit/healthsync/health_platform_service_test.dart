@@ -4,6 +4,10 @@ import 'package:health/health.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_service.dart';
 
+const marketUrl = 'market://details?id=com.google.android.apps.healthdata';
+const webUrl =
+    'https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata';
+
 void main() {
   HealthPlatformServiceImpl build({
     required HealthHostPlatform host,
@@ -34,18 +38,27 @@ void main() {
     test('Android read types include DISTANCE_DELTA, not WALKING_RUNNING', () {
       final s = build(host: HealthHostPlatform.android);
       expect(s.readTypes, contains(HealthDataType.DISTANCE_DELTA));
-      expect(s.readTypes, isNot(contains(HealthDataType.DISTANCE_WALKING_RUNNING)));
+      expect(
+        s.readTypes,
+        isNot(contains(HealthDataType.DISTANCE_WALKING_RUNNING)),
+      );
       expect(s.distanceType, HealthDataType.DISTANCE_DELTA);
       expect(s.importedSourceType, 'health_connect');
     });
 
-    test('unsupported host has no distance type in read list, defaults to DELTA', () {
-      final s = build(host: HealthHostPlatform.unsupported);
-      expect(s.readTypes, isNot(contains(HealthDataType.DISTANCE_WALKING_RUNNING)));
-      expect(s.readTypes, isNot(contains(HealthDataType.DISTANCE_DELTA)));
-      expect(s.distanceType, HealthDataType.DISTANCE_DELTA);
-      expect(s.importedSourceType, 'health_connect');
-    });
+    test(
+      'unsupported host has no distance type in read list, defaults to DELTA',
+      () {
+        final s = build(host: HealthHostPlatform.unsupported);
+        expect(
+          s.readTypes,
+          isNot(contains(HealthDataType.DISTANCE_WALKING_RUNNING)),
+        );
+        expect(s.readTypes, isNot(contains(HealthDataType.DISTANCE_DELTA)));
+        expect(s.distanceType, HealthDataType.DISTANCE_DELTA);
+        expect(s.importedSourceType, 'health_connect');
+      },
+    );
 
     test('base read types are present on every platform', () {
       final s = build(host: HealthHostPlatform.android);
@@ -89,13 +102,17 @@ void main() {
       expect(called, isFalse);
     });
 
-    test('Android delegates to native isHealthConnectAvailable = true', () async {
-      final s = build(
-        host: HealthHostPlatform.android,
-        invokeBool: (m) async => m == 'isHealthConnectAvailable' ? true : null,
-      );
-      expect(await s.isHealthSyncAvailable(), isTrue);
-    });
+    test(
+      'Android delegates to native isHealthConnectAvailable = true',
+      () async {
+        final s = build(
+          host: HealthHostPlatform.android,
+          invokeBool: (m) async =>
+              m == 'isHealthConnectAvailable' ? true : null,
+        );
+        expect(await s.isHealthSyncAvailable(), isTrue);
+      },
+    );
 
     test('Android returns false when native result is false', () async {
       final s = build(
@@ -130,41 +147,55 @@ void main() {
       expect(log, isEmpty);
     });
 
-    test('opens via native channel and does not launch a URL on success', () async {
-      final log = <({Uri uri, LaunchMode mode})>[];
-      final s = build(
-        host: HealthHostPlatform.android,
-        invokeBool: (_) async => true,
-        launchLog: log,
-      );
-      await s.openHealthConnect();
-      expect(log, isEmpty);
-    });
+    test(
+      'invokes exactly the openHealthConnect native method and launches no URL on success',
+      () async {
+        final log = <({Uri uri, LaunchMode mode})>[];
+        final methods = <String>[];
+        final s = build(
+          host: HealthHostPlatform.android,
+          invokeBool: (m) async {
+            methods.add(m);
+            return true;
+          },
+          launchLog: log,
+        );
+        await s.openHealthConnect();
+        expect(methods, ['openHealthConnect']);
+        expect(log, isEmpty);
+      },
+    );
 
-    test('falls back to market URL when native open returns false', () async {
-      final log = <({Uri uri, LaunchMode mode})>[];
-      final s = build(
-        host: HealthHostPlatform.android,
-        invokeBool: (_) async => false,
-        canLaunch: (_) async => true,
-        launchLog: log,
-      );
-      await s.openHealthConnect();
-      expect(log.single.uri.scheme, 'market');
-    });
+    test(
+      'falls back to the exact market URL when native open returns false',
+      () async {
+        final log = <({Uri uri, LaunchMode mode})>[];
+        final s = build(
+          host: HealthHostPlatform.android,
+          invokeBool: (_) async => false,
+          canLaunch: (_) async => true,
+          launchLog: log,
+        );
+        await s.openHealthConnect();
+        expect(log.single.uri.toString(), marketUrl);
+      },
+    );
 
-    test('falls back to web URL when market cannot launch', () async {
-      final log = <({Uri uri, LaunchMode mode})>[];
-      final s = build(
-        host: HealthHostPlatform.android,
-        invokeBool: (_) async => false,
-        canLaunch: (_) async => false,
-        launchLog: log,
-      );
-      await s.openHealthConnect();
-      expect(log.single.uri.scheme, 'https');
-      expect(log.single.mode, LaunchMode.externalApplication);
-    });
+    test(
+      'falls back to the exact web URL (external) when market cannot launch',
+      () async {
+        final log = <({Uri uri, LaunchMode mode})>[];
+        final s = build(
+          host: HealthHostPlatform.android,
+          invokeBool: (_) async => false,
+          canLaunch: (_) async => false,
+          launchLog: log,
+        );
+        await s.openHealthConnect();
+        expect(log.single.uri.toString(), webUrl);
+        expect(log.single.mode, LaunchMode.externalApplication);
+      },
+    );
   });
 
   group('installHealthConnect', () {
@@ -183,19 +214,22 @@ void main() {
         launchLog: log,
       );
       await s.installHealthConnect();
-      expect(log.single.uri.scheme, 'market');
+      expect(log.single.uri.toString(), marketUrl);
     });
 
-    test('falls back to web URL (external) when market cannot launch', () async {
-      final log = <({Uri uri, LaunchMode mode})>[];
-      final s = build(
-        host: HealthHostPlatform.android,
-        canLaunch: (_) async => false,
-        launchLog: log,
-      );
-      await s.installHealthConnect();
-      expect(log.single.uri.scheme, 'https');
-      expect(log.single.mode, LaunchMode.externalApplication);
-    });
+    test(
+      'falls back to the exact web URL (external) when market cannot launch',
+      () async {
+        final log = <({Uri uri, LaunchMode mode})>[];
+        final s = build(
+          host: HealthHostPlatform.android,
+          canLaunch: (_) async => false,
+          launchLog: log,
+        );
+        await s.installHealthConnect();
+        expect(log.single.uri.toString(), webUrl);
+        expect(log.single.mode, LaunchMode.externalApplication);
+      },
+    );
   });
 }
