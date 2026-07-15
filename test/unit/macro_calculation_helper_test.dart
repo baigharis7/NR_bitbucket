@@ -6,7 +6,7 @@ import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 /// Helper to create a Params object with only the fields needed for testing.
 /// All 100+ positional params are null except the ones we set.
 Params _makeParams({
-  double? proteinSci,
+  double? proteinLabel,
   double? carbsAvailable,
   double? fatTotal,
   double? fiber,
@@ -70,8 +70,8 @@ Params _makeParams({
     null, // phosphorus
     null, // potassium
     null, // proline
-    null, // proteinLabel
-    proteinSci, // proteinSci
+    proteinLabel, // proteinLabel
+    null, // proteinSci
     null, // selenium
     null, // serin
     null, // sodium
@@ -155,35 +155,35 @@ void main() {
     // TS-PROF003a
     test('muscle gain (obj 50): carbs 40%, protein 30%, fat 30%', () {
       expect(helper.getPercentageByMacro('carbsAvailable', [50]), 40);
-      expect(helper.getPercentageByMacro('proteinSci', [50]), 30);
+      expect(helper.getPercentageByMacro('proteinLabel', [50]), 30);
       expect(helper.getPercentageByMacro('fatTotal', [50]), 30);
     });
 
     // TS-PROF003b
     test('weight loss (obj 51): carbs 40%, protein 30%, fat 30%', () {
       expect(helper.getPercentageByMacro('carbsAvailable', [51]), 40);
-      expect(helper.getPercentageByMacro('proteinSci', [51]), 30);
+      expect(helper.getPercentageByMacro('proteinLabel', [51]), 30);
       expect(helper.getPercentageByMacro('fatTotal', [51]), 30);
     });
 
     // TS-PROF003c
     test('balanced (obj 52): carbs 50%, protein 20%, fat 30%', () {
       expect(helper.getPercentageByMacro('carbsAvailable', [52]), 50);
-      expect(helper.getPercentageByMacro('proteinSci', [52]), 20);
+      expect(helper.getPercentageByMacro('proteinLabel', [52]), 20);
       expect(helper.getPercentageByMacro('fatTotal', [52]), 30);
     });
 
     // TS-PROF003d
     test('default (no matching obj): carbs 30%, protein 35%, fat 35%', () {
       expect(helper.getPercentageByMacro('carbsAvailable', []), 30);
-      expect(helper.getPercentageByMacro('proteinSci', []), 35);
+      expect(helper.getPercentageByMacro('proteinLabel', []), 35);
       expect(helper.getPercentageByMacro('fatTotal', []), 35);
     });
 
     test('muscle gain + weight loss (obj 50+51) treated same as either', () {
       // Both 50 and 51 use the same distribution
       expect(helper.getPercentageByMacro('carbsAvailable', [50, 51]), 40);
-      expect(helper.getPercentageByMacro('proteinSci', [50, 51]), 30);
+      expect(helper.getPercentageByMacro('proteinLabel', [50, 51]), 30);
       expect(helper.getPercentageByMacro('fatTotal', [50, 51]), 30);
     });
   });
@@ -201,7 +201,7 @@ void main() {
     });
 
     test('protein uses 4 kcal/gram', () {
-      expect(helper.getKcalPerGram('proteinSci'), 4);
+      expect(helper.getKcalPerGram('proteinLabel'), 4);
     });
   });
 
@@ -211,7 +211,7 @@ void main() {
     // TS-PROF003e: 2000 kcal with muscle gain (obj 50)
     test('calculates protein RDA for 2000 kcal with muscle gain', () {
       // protein: 2000/100 * 30 = 600 kcal → 600/4 = 150g
-      final result = helper.getMacroNutrientRda(2000, 'proteinSci', [50]);
+      final result = helper.getMacroNutrientRda(2000, 'proteinLabel', [50]);
       expect(result, 150);
     });
 
@@ -234,7 +234,7 @@ void main() {
     });
 
     test('returns 0 when kcal is 0', () {
-      final result = helper.getMacroNutrientRda(0, 'proteinSci', [50]);
+      final result = helper.getMacroNutrientRda(0, 'proteinLabel', [50]);
       expect(result, 0);
     });
   });
@@ -284,22 +284,22 @@ void main() {
         _makeFoodEvent(foodInfo: [
           FoodInfo('group', 1, 'Apple', 'Manzana', 1,
             EventInfo(null, 100.0, 1, null, null, null),
-            _makeParams(proteinSci: 0.5), null),
+            _makeParams(proteinLabel: 0.5), null),
         ]),
         _makeFoodEvent(foodInfo: [
           FoodInfo('group', 2, 'Chicken', 'Pollo', 1,
             EventInfo(null, 150.0, 1, null, null, null),
-            _makeParams(proteinSci: 31.0), null),
+            _makeParams(proteinLabel: 31.0), null),
         ]),
       ];
 
-      final result = helper.calculateConsumedNutrient(events, 'proteinSci');
+      final result = helper.calculateConsumedNutrient(events, 'proteinLabel');
       expect(result, 31.5);
     });
 
     // TS-NUTR001b
     test('returns 0 for empty events', () {
-      final result = helper.calculateConsumedNutrient([], 'proteinSci');
+      final result = helper.calculateConsumedNutrient([], 'proteinLabel');
       expect(result, 0.0);
     });
 
@@ -324,7 +324,7 @@ void main() {
         _makeFoodEvent(foodInfo: null),
       ];
 
-      final result = helper.calculateConsumedNutrient(events, 'proteinSci');
+      final result = helper.calculateConsumedNutrient(events, 'proteinLabel');
       expect(result, 0.0);
     });
 
@@ -332,11 +332,11 @@ void main() {
       final events = [
         _makeFoodEvent(foodInfo: [
           FoodInfo('group', 1, 'A', 'A', 1, null,
-            _makeParams(proteinSci: null), null),
+            _makeParams(proteinLabel: null), null),
         ]),
       ];
 
-      final result = helper.calculateConsumedNutrient(events, 'proteinSci');
+      final result = helper.calculateConsumedNutrient(events, 'proteinLabel');
       expect(result, 0.0);
     });
   });

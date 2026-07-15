@@ -46,7 +46,7 @@ class _MockProfileComputationService extends Mock
 }
 
 final _stubNutrientsInfo = NutrientsInfoMaster(nutrientsInfo: [
-  NutrientInfoMaster(officialName: 'proteinSci', unit: 'g', en: 'Protein', es: 'Proteína'),
+  NutrientInfoMaster(officialName: 'proteinLabel', unit: 'g', en: 'Protein', es: 'Proteína'),
   NutrientInfoMaster(officialName: 'carbsAvailable', unit: 'g', en: 'Carbs', es: 'Carbohidratos'),
   NutrientInfoMaster(officialName: 'fatTotal', unit: 'g', en: 'Fat', es: 'Grasa'),
   NutrientInfoMaster(officialName: 'addedSugar', unit: 'g', en: 'Added Sugar', es: 'Azúcar'),

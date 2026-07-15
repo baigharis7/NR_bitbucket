@@ -115,7 +115,7 @@ class MealTimeDetailsBloc extends Bloc<MealTimeDetailsEvent, MealTimeDetailsStat
       // Build "other" micronutrients (non-objective, non-zero)
       _buildOtherMicronutrients();
 
-      state.macronutrients = ['proteinSci', 'carbsAvailable', 'fatTotal']
+      state.macronutrients = ['proteinLabel', 'carbsAvailable', 'fatTotal']
           .map(
             (macronutrient) =>
             NutrientsModel(

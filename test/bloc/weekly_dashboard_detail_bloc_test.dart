@@ -1,4 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/nutrients_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/profile/user_profile_model.dart';
 import 'package:nutrenaissance_flutter/presentation/weeklydashboarddetail/bloc/weekly_dashboard_detail_bloc.dart';
@@ -85,6 +87,45 @@ void main() {
         expect(value.isNaN, isFalse);
         expect(value.isInfinite, isFalse);
       }
+    });
+  });
+
+  group('InitialStateEventAction', () {
+    test('builds the weekly macros list from the label-protein column', () async {
+      // Macro list pinned to the label-protein column (workstream B).
+      final masterInteractor = MockGetMasterFileInteractor();
+      when(masterInteractor.execute(MasterFilesType.nutrientsInfo))
+          .thenAnswer((_) async => NutrientsInfoMaster(nutrientsInfo: [
+                NutrientInfoMaster(
+                    officialName: 'proteinLabel',
+                    unit: 'g',
+                    en: 'Protein',
+                    es: 'Proteínas'),
+              ]));
+
+      final microsInteractor = MockGetUserMicronutrientsInteractor();
+      when(microsInteractor.execute()).thenAnswer((_) async => <String>[]);
+
+      final initBloc = WeeklyDashboardDetailBloc(
+        getWeekFoodEventsInteractor: MockGetWeekFoodEventsInteractor(),
+        getUserMicronutrientsInteractor: microsInteractor,
+        getUserRdasInteractor: MockGetUserRdasInteractor(),
+        getProfileInteractor: MockGetProfileInteractor(),
+        getMasterFileInteractor: masterInteractor,
+        getWeekLiquidEventsInteractor: MockGetWeekLiquidEventsInteractor(),
+        getWeekSportsInteractor: MockGetWeekSportsInteractor(),
+      );
+      addTearDown(initBloc.close);
+
+      initBloc.add(InitialStateEventAction());
+      await initBloc.stream.first;
+
+      expect(
+        initBloc.state.macronutrientsWeekly!
+            .map((m) => m.nutrientInfoMaster.officialName)
+            .toList(),
+        ['proteinLabel', 'carbsAvailable', 'fatTotal'],
+      );
     });
   });
 }

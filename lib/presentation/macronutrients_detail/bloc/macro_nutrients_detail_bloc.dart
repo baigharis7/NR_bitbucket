@@ -47,7 +47,7 @@ class MacroNutrientsDetailBloc extends Bloc<MacroNutrientsDetailEvent, MacroNutr
       state.userProfile?.kcal = getUserKcalSelectiveObjectives(state.userProfile?.kcal ?? 0);
       state.weeklyFoodEvents = await getWeekFoodEventsInteractor.execute();
 
-      state.macronutrientsWeekly = ['proteinSci', 'carbsAvailable', 'fatTotal']
+      state.macronutrientsWeekly = ['proteinLabel', 'carbsAvailable', 'fatTotal']
           .map(
             (macronutrient) => NutrientsWeeklyModel(
             nutrientInfoMaster: getNutrientInfo(macronutrient),
@@ -130,7 +130,7 @@ class MacroNutrientsDetailBloc extends Bloc<MacroNutrientsDetailEvent, MacroNutr
       macroo = macro == 'carbsAvailable' ? 40 : 30;
     }
     else if (state.userProfile?.objectives?.contains(52) ?? false) {
-      macroo = macro == 'carbsAvailable' ? 50 : macro == 'proteinSci' ? 20 : 30;
+      macroo = macro == 'carbsAvailable' ? 50 : macro == 'proteinLabel' ? 20 : 30;
     }
     else {
       macroo = macro == 'carbsAvailable' ? 30 : 35;

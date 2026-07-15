@@ -107,7 +107,7 @@ class _MacroNutrientsDetailScreenState extends State<MacroNutrientsDetailScreen>
                           ),
                           ...state.macronutrients.orEmpty().map((item) {
                             var description = '';
-                            if (item.nutrientInfoMaster.officialName == 'proteinSci') {
+                            if (item.nutrientInfoMaster.officialName == 'proteinLabel') {
                               description = AppLocalizations.of(context)!.protein;
                             }
                             if (item.nutrientInfoMaster.officialName == 'carbsAvailable') {

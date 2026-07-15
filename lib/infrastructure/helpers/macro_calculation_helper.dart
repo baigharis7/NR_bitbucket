@@ -9,7 +9,7 @@ class MacroCalculationHelper {
     if (objectives.contains(50) || objectives.contains(51)) {
       return macro == 'carbsAvailable' ? 40 : 30;
     } else if (objectives.contains(52)) {
-      return macro == 'carbsAvailable' ? 50 : macro == 'proteinSci' ? 20 : 30;
+      return macro == 'carbsAvailable' ? 50 : macro == 'proteinLabel' ? 20 : 30;
     } else {
       return macro == 'carbsAvailable' ? 30 : 35;
     }

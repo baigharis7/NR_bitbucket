@@ -329,4 +329,34 @@ void main() {
       },
     );
   });
+
+  group('MealTimeDetailsBloc - Macros list', () {
+    blocTest<MealTimeDetailsBloc, MealTimeDetailsState>(
+      'builds the macros list from the label-protein column',
+      build: () {
+        stubInitMocks(
+          profile: UserProfileModel(userId: 'user123', userAll: [], userRdas: UserRdas(userRdas: [])),
+          nutrientsInfo: [
+            NutrientInfoMaster(officialName: 'proteinLabel', unit: 'g', en: 'Protein', es: 'Proteínas'),
+          ],
+        );
+        return buildBloc();
+      },
+      act: (bloc) async {
+        bloc.add(UpdateFoodArgumentsModelEventState(
+          foodArgumentsModel: FoodArgumentsModel(mealTime: MealTime(id: 0), selectedDateTime: DateTime(2026, 3, 1)),
+        ));
+        await pumpEventQueue();
+      },
+      verify: (bloc) {
+        // Macro list pinned to the label-protein column (workstream B).
+        expect(
+          bloc.state.macronutrients!
+              .map((m) => m.nutrientInfoMaster.officialName)
+              .toList(),
+          ['proteinLabel', 'carbsAvailable', 'fatTotal'],
+        );
+      },
+    );
+  });
 }
