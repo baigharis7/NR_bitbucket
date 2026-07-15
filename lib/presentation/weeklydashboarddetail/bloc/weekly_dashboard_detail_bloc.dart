@@ -72,7 +72,7 @@ class WeeklyDashboardDetailBloc
                     state.weeklyFoodEvents ?? [], micronutrient)),
           )
           .toList();
-      state.macronutrientsWeekly = ['proteinSci', 'carbsAvailable', 'fatTotal']
+      state.macronutrientsWeekly = ['proteinLabel', 'carbsAvailable', 'fatTotal']
           .map(
             (macronutrient) => NutrientsWeeklyModel(
                 nutrientInfoMaster: getNutrientInfo(macronutrient),

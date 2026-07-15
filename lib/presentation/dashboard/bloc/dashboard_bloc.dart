@@ -311,7 +311,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
             ),
       ).toList();
 
-      state.macronutrients = ['proteinSci', 'carbsAvailable', 'fatTotal']
+      state.macronutrients = ['proteinLabel', 'carbsAvailable', 'fatTotal']
           .map(
             (macronutrient) =>
             NutrientsModel(
@@ -866,7 +866,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
       macroo = macro == 'carbsAvailable' ? 40 : 30;
     }
     else if (state.profile?.objectives?.contains(52) ?? false) {
-      macroo = macro == 'carbsAvailable' ? 50 : macro == 'proteinSci' ? 20 : 30;
+      macroo = macro == 'carbsAvailable' ? 50 : macro == 'proteinLabel' ? 20 : 30;
     }
     else {
       macroo = macro == 'carbsAvailable' ? 30 : 35;
@@ -877,7 +877,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
   // int getPercentageByMacro(String macro) => macro == 'carbsAvailable' ? 30 : 35;
   // int getPercentageByMacro(String macro) => macro == 'carbsAvailable' ? 40 : 30; (For gain Muscle's) - Objectives-50
   // int getPercentageByMacro(String macro) => macro == 'carbsAvailable' ? 40 : 30; (Lose fat) - Objectives-51
-  // int getPercentageByMacro(String macro) => macro == 'carbsAvailable' ? 50 : macro == 'proteinSci' ? 20 : 30; (Maintain Weight) - Objectives-52
+  // int getPercentageByMacro(String macro) => macro == 'carbsAvailable' ? 50 : macro == 'proteinLabel' ? 20 : 30; (Maintain Weight) - Objectives-52
   int getKcalPerGram(String macro) => macro == 'fatTotal' ? 9 : 4;
 
   String getTodayMessage(String todayString, String locale) => DateTimeHelper().formatDashboardTodayMessage(todayString, locale);
@@ -971,7 +971,7 @@ class DashboardBloc extends BaseBloc<DashboardActions, DashboardState> {
             ))
         .toList();
 
-    state.macronutrients = ['proteinSci', 'carbsAvailable', 'fatTotal']
+    state.macronutrients = ['proteinLabel', 'carbsAvailable', 'fatTotal']
         .map((macronutrient) => NutrientsModel(
               quantityConsumed: getQuantityConsumedSoFar(macronutrient),
               nutrientInfoMaster: getNutrientInfo(macronutrient),

@@ -222,6 +222,13 @@ void main() {
             expect(bloc.state.energyModel, isNotNull);
             expect(bloc.state.micronutrients, isNotNull);
             expect(bloc.state.sugarAndFiberModel, isNotNull);
+            // Macro list pinned to the label-protein column (workstream B).
+            expect(
+              bloc.state.macronutrients!
+                  .map((m) => m.nutrientInfoMaster.officialName)
+                  .toList(),
+              ['proteinLabel', 'carbsAvailable', 'fatTotal'],
+            );
           },
         );
       });
