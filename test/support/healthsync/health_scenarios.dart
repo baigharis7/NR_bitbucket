@@ -87,13 +87,11 @@ List<HealthDataPoint> overlappingSleepSessions({
   HealthSource sourceA = appleWatch,
   HealthSource sourceB = iphone,
 }) {
+  final span = to.difference(from);
+  final shift = overlapShift < span ~/ 2 ? overlapShift : span ~/ 2;
   return [
     sleepPoint(from: from, to: to, source: sourceA),
-    sleepPoint(
-      from: from.add(overlapShift),
-      to: to.add(overlapShift),
-      source: sourceB,
-    ),
+    sleepPoint(from: from.add(shift), to: to.add(shift), source: sourceB),
   ];
 }
 

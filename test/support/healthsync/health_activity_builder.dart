@@ -81,31 +81,27 @@ class HealthActivityBuilder {
 /// Top-level convenience wrapper over [HealthActivityBuilder]. Nullable fields
 /// accept an explicit `null`; omitting them keeps the canonical default.
 HealthActivity aHealthActivity({
-  String healthPlatformId = 'test-activity-id',
-  String activityType = 'RUNNING',
+  String? healthPlatformId,
+  String? activityType,
   DateTime? startTime,
   DateTime? endTime,
-  int durationMinutes = 60,
+  int? durationMinutes,
   Object? caloriesBurned = _unset,
   Object? distance = _unset,
   Object? avgHeartRate = _unset,
-  String sourceName = 'Apple Health',
-  String sourceType = 'apple_health',
-}) {
-  return HealthActivityBuilder(
-    healthPlatformId: healthPlatformId,
-    activityType: activityType,
-    startTime: startTime,
-    endTime: endTime,
-    durationMinutes: durationMinutes,
-    caloriesBurned: caloriesBurned == _unset
-        ? 500.0
-        : (caloriesBurned as num?)?.toDouble(),
-    distance: distance == _unset ? 10000.0 : (distance as num?)?.toDouble(),
-    avgHeartRate: avgHeartRate == _unset
-        ? 150
-        : (avgHeartRate as num?)?.toInt(),
-    sourceName: sourceName,
-    sourceType: sourceType,
-  ).build();
-}
+  String? sourceName,
+  String? sourceType,
+}) => HealthActivityBuilder()
+    .copyWith(
+      healthPlatformId: healthPlatformId,
+      activityType: activityType,
+      startTime: startTime,
+      endTime: endTime,
+      durationMinutes: durationMinutes,
+      caloriesBurned: caloriesBurned,
+      distance: distance,
+      avgHeartRate: avgHeartRate,
+      sourceName: sourceName,
+      sourceType: sourceType,
+    )
+    .build();

@@ -21,7 +21,8 @@ HealthDataPoint healthDataPoint({
   HealthSource source = _defaultSource,
 }) {
   return HealthDataPoint(
-    uuid: '$type-${from.millisecondsSinceEpoch}',
+    uuid:
+        '$type-${from.millisecondsSinceEpoch}-${to.millisecondsSinceEpoch}-${source.id}',
     value: value,
     type: type,
     unit: HealthDataUnit.NO_UNIT,
