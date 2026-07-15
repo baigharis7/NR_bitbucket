@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/data/local/models/sleepevents/sleep_event
 import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_activity.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/health_fetch_result.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_metadata.dart';
 import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
@@ -103,6 +104,18 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     required DateTime startDate,
     required DateTime endDate,
   }) async {
+    final result = await fetchActivitiesResult(
+      startDate: startDate,
+      endDate: endDate,
+    );
+    return result.data ?? const [];
+  }
+
+  @override
+  Future<HealthFetchResult<List<HealthActivity>>> fetchActivitiesResult({
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
     try {
       // Fetch workout data from health platform
       final healthData = await healthPlatformClient.getHealthDataFromTypes(
@@ -132,14 +145,22 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       );
 
       // Convert to HealthActivity list
-      return _mapWorkoutsToActivities(
+      final activities = _mapWorkoutsToActivities(
         healthData,
         energyData,
         distanceData,
         heartRateData,
       );
+
+      if (activities.isEmpty) {
+        return HealthFetchResult.successNoData(const []);
+      }
+      return HealthFetchResult.success(activities);
     } catch (e) {
-      return [];
+      return HealthFetchResult.failed(
+        reason: HealthFetchFailureReason.pluginError,
+        message: e.runtimeType.toString(),
+      );
     }
   }
 

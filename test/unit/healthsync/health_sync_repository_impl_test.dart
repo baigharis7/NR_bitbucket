@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:health/health.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nutrenaissance_flutter/data/repository/healthsync/health_sync_repository_impl.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/health_fetch_result.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/data/api/sleepevents/sleep_events_api.dart';
@@ -337,6 +338,139 @@ void main() {
         isEmpty,
       );
     });
+  });
+
+  group('fetchActivitiesResult', () {
+    test('maps a workout to a success result with the activity', () async {
+      final start = DateTime(2026, 7, 1, 8, 0);
+      final end = DateTime(2026, 7, 1, 9, 0);
+      service.importedSourceType = 'apple_health';
+      service.distanceType = HealthDataType.DISTANCE_WALKING_RUNNING;
+
+      client.dataByType[HealthDataType.WORKOUT] = [
+        _point(
+          type: HealthDataType.WORKOUT,
+          value: WorkoutHealthValue(
+            workoutActivityType: HealthWorkoutActivityType.RUNNING,
+          ),
+          from: start,
+          to: end,
+          sourceName: 'Apple Watch',
+        ),
+      ];
+      client.dataByType[HealthDataType.ACTIVE_ENERGY_BURNED] = [
+        _point(
+          type: HealthDataType.ACTIVE_ENERGY_BURNED,
+          value: NumericHealthValue(numericValue: 300),
+          from: start,
+          to: end,
+        ),
+      ];
+      client.dataByType[HealthDataType.DISTANCE_WALKING_RUNNING] = [
+        _point(
+          type: HealthDataType.DISTANCE_WALKING_RUNNING,
+          value: NumericHealthValue(numericValue: 5000),
+          from: start,
+          to: end,
+        ),
+      ];
+      client.dataByType[HealthDataType.HEART_RATE] = [
+        _point(
+          type: HealthDataType.HEART_RATE,
+          value: NumericHealthValue(numericValue: 150),
+          from: start,
+          to: end,
+        ),
+      ];
+
+      final result = await build().fetchActivitiesResult(
+        startDate: start,
+        endDate: end,
+      );
+
+      expect(result.status, HealthFetchStatus.success);
+      expect(result.isSuccess, isTrue);
+      expect(result.hasData, isTrue);
+      expect(result.failureReason, isNull);
+      expect(result.data, hasLength(1));
+      final a = result.data!.single;
+      expect(a.activityType, 'RUNNING');
+      expect(a.startTime, start);
+      expect(a.endTime, end);
+      expect(a.durationMinutes, 60);
+      expect(a.caloriesBurned, 300);
+      expect(a.distance, 5000);
+      expect(a.avgHeartRate, 150);
+      expect(a.sourceName, 'Apple Watch');
+      expect(a.sourceType, 'apple_health');
+      expect(
+        a.healthPlatformId,
+        'Apple Watch_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}',
+      );
+    });
+
+    test('empty read yields successNoData with empty data', () async {
+      final result = await build().fetchActivitiesResult(
+        startDate: DateTime(2026, 7, 1),
+        endDate: DateTime(2026, 7, 2),
+      );
+      expect(result.status, HealthFetchStatus.successNoData);
+      expect(result.isSuccess, isTrue);
+      expect(result.hasData, isFalse);
+      expect(result.data, isEmpty);
+      expect(result.failureReason, isNull);
+    });
+
+    test('client exception yields failed with pluginError reason', () async {
+      client.throwOnRead = Exception('boom');
+      final result = await build().fetchActivitiesResult(
+        startDate: DateTime(2026),
+        endDate: DateTime(2026),
+      );
+      expect(result.status, HealthFetchStatus.failed);
+      expect(result.isSuccess, isFalse);
+      expect(result.data, isNull);
+      expect(result.failureReason, HealthFetchFailureReason.pluginError);
+    });
+
+    test(
+      'fetchActivities delegates: same activity on data, [] on throw',
+      () async {
+        final start = DateTime(2026, 7, 1, 8, 0);
+        final end = DateTime(2026, 7, 1, 9, 0);
+        client.dataByType[HealthDataType.WORKOUT] = [
+          _point(
+            type: HealthDataType.WORKOUT,
+            value: WorkoutHealthValue(
+              workoutActivityType: HealthWorkoutActivityType.RUNNING,
+            ),
+            from: start,
+            to: end,
+            sourceName: 'Apple Watch',
+          ),
+        ];
+
+        final activities = await build().fetchActivities(
+          startDate: start,
+          endDate: end,
+        );
+        expect(activities, hasLength(1));
+        expect(activities.single.activityType, 'RUNNING');
+        expect(
+          activities.single.healthPlatformId,
+          'Apple Watch_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}',
+        );
+
+        client.throwOnRead = Exception('boom');
+        expect(
+          await build().fetchActivities(
+            startDate: DateTime(2026),
+            endDate: DateTime(2026),
+          ),
+          isEmpty,
+        );
+      },
+    );
   });
 
   group('fetchTodaySleepHours', () {

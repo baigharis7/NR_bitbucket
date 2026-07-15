@@ -1,4 +1,5 @@
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_activity.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/health_fetch_result.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_metadata.dart';
 
 /// Repository interface for health platform integration.
@@ -18,6 +19,18 @@ abstract class HealthSyncRepository {
   /// Fetch workout activities from the health platform.
   /// Returns activities between [startDate] and [endDate].
   Future<List<HealthActivity>> fetchActivities({
+    required DateTime startDate,
+    required DateTime endDate,
+  });
+
+  /// Typed workout fetch. Runs the same reads and mapping as [fetchActivities]
+  /// but reports the outcome explicitly: a non-empty mapped list →
+  /// [HealthFetchStatus.success]; an empty read → [HealthFetchStatus.successNoData];
+  /// a thrown client/plugin error → [HealthFetchStatus.failed] with
+  /// [HealthFetchFailureReason.pluginError]. Permission / platform-unavailable
+  /// detection is deferred to later tickets; this path never emits them, nor
+  /// [HealthFetchStatus.partialSuccess].
+  Future<HealthFetchResult<List<HealthActivity>>> fetchActivitiesResult({
     required DateTime startDate,
     required DateTime endDate,
   });
