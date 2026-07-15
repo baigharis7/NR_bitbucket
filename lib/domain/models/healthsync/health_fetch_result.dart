@@ -104,6 +104,6 @@ class HealthFetchResult<T> {
 
   bool get hasData {
     final d = data;
-    return d != null && !(d is Iterable && (d as Iterable).isEmpty);
+    return d != null && !(d is Iterable && d.isEmpty);
   }
 }
