@@ -1,9 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:health/health.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:nutrenaissance_flutter/data/api/sleepevents/models/upload_sleep_event.dart';
 import 'package:nutrenaissance_flutter/data/api/sleepevents/sleep_events_api.dart';
 import 'package:nutrenaissance_flutter/data/api/steps/models/upload_step_event_response.dart';
@@ -17,6 +13,8 @@ import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_meta
 import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_client.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/interval_union.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
@@ -29,28 +27,8 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   final SleepEventsApi sleepEventsApi;
   final StepsApi stepsApi;
   final SyncQueueService syncQueue;
-
-  // Lazy initialization to avoid blocking during app startup
-  Health? _healthInstance;
-  Health get _health => _healthInstance ??= Health();
-
-  /// Health data types we want to read from the platform.
-  /// Uses DISTANCE_DELTA on Android (DISTANCE_WALKING_RUNNING is iOS-only).
-  static final List<HealthDataType> _readTypes = [
-    HealthDataType.WORKOUT,
-    HealthDataType.STEPS,
-    HealthDataType.ACTIVE_ENERGY_BURNED,
-    HealthDataType.HEART_RATE,
-    HealthDataType.SLEEP_SESSION,
-    if (Platform.isIOS) HealthDataType.DISTANCE_WALKING_RUNNING,
-    if (Platform.isAndroid) HealthDataType.DISTANCE_DELTA,
-  ];
-
-  /// Permissions for the health data types (all read)
-  static final List<HealthDataAccess> _permissions =
-      _readTypes.map((_) => HealthDataAccess.READ).toList();
-
-  static const _platformChannel = MethodChannel('nutrenaissance/platform');
+  final HealthPlatformClient healthPlatformClient;
+  final HealthPlatformService healthPlatformService;
 
   HealthSyncRepositoryImpl({
     required this.localStorageRepository,
@@ -58,30 +36,24 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     required this.sleepEventsApi,
     required this.stepsApi,
     required this.syncQueue,
+    required this.healthPlatformClient,
+    required this.healthPlatformService,
   });
+
+  /// Permissions list derived from the service's read types (one READ each).
+  List<HealthDataAccess> get _permissions =>
+      healthPlatformService.readTypes
+          .map((_) => HealthDataAccess.READ)
+          .toList();
 
   @override
   Future<bool> isHealthSyncAvailable() async {
     try {
-      if (!Platform.isIOS && !Platform.isAndroid) {
-        return false;
-      }
-
-      if (Platform.isAndroid) {
-        // Use native HealthConnectClient.getSdkStatus() to check if HC is installed.
-        // The health plugin's hasPermissions probe is unreliable — it falls through
-        // to Google Fit silently when HC is not installed.
-        final result = await _platformChannel.invokeMethod<bool>('isHealthConnectAvailable');
-        debugPrint('[HealthSync] isHealthConnectAvailable=$result');
-        CrashlyticsService.instance.log('HealthSync: isHealthConnectAvailable=$result');
-        return result ?? false;
-      }
-
-      // iOS: HealthKit is always available on supported devices
-      return true;
+      return await healthPlatformService.isHealthSyncAvailable();
     } catch (e, stack) {
       debugPrint('[HealthSync] isHealthSyncAvailable ERROR: $e');
-      CrashlyticsService.record(e, stack, context: {'method': 'isHealthSyncAvailable'});
+      CrashlyticsService.record(e, stack,
+          context: {'method': 'isHealthSyncAvailable'});
       return false;
     }
   }
@@ -89,14 +61,18 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   @override
   Future<bool> requestPermissions() async {
     try {
-      debugPrint('[HealthSync] requestAuthorization types=${_readTypes.map((t) => t.name).join(",")}');
-      CrashlyticsService.instance.log('HealthSync: requestAuthorization types=${_readTypes.map((t) => t.name).join(",")}');
-      final authorized = await _health.requestAuthorization(
-        _readTypes,
+      final types = healthPlatformService.readTypes;
+      debugPrint(
+          '[HealthSync] requestAuthorization types=${types.map((t) => t.name).join(",")}');
+      CrashlyticsService.instance.log(
+          'HealthSync: requestAuthorization types=${types.map((t) => t.name).join(",")}');
+      final authorized = await healthPlatformClient.requestAuthorization(
+        types,
         permissions: _permissions,
       );
       debugPrint('[HealthSync] requestAuthorization result=$authorized');
-      CrashlyticsService.instance.log('HealthSync: requestAuthorization result=$authorized');
+      CrashlyticsService.instance
+          .log('HealthSync: requestAuthorization result=$authorized');
       return authorized;
     } catch (e, stack) {
       debugPrint('[HealthSync] requestPermissions ERROR: $e');
@@ -108,8 +84,8 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   @override
   Future<bool> hasPermissions() async {
     try {
-      final authorized = await _health.hasPermissions(
-        _readTypes,
+      final authorized = await healthPlatformClient.hasPermissions(
+        healthPlatformService.readTypes,
         permissions: _permissions,
       );
       debugPrint('[HealthSync] hasPermissions=$authorized');
@@ -129,29 +105,27 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   }) async {
     try {
       // Fetch workout data from health platform
-      final healthData = await _health.getHealthDataFromTypes(
+      final healthData = await healthPlatformClient.getHealthDataFromTypes(
         types: [HealthDataType.WORKOUT],
         startTime: startDate,
         endTime: endDate,
       );
 
       // Also fetch associated data for enrichment
-      final energyData = await _health.getHealthDataFromTypes(
+      final energyData = await healthPlatformClient.getHealthDataFromTypes(
         types: [HealthDataType.ACTIVE_ENERGY_BURNED],
         startTime: startDate,
         endTime: endDate,
       );
 
-      final distanceType = Platform.isIOS
-          ? HealthDataType.DISTANCE_WALKING_RUNNING
-          : HealthDataType.DISTANCE_DELTA;
-      final distanceData = await _health.getHealthDataFromTypes(
+      final distanceType = healthPlatformService.distanceType;
+      final distanceData = await healthPlatformClient.getHealthDataFromTypes(
         types: [distanceType],
         startTime: startDate,
         endTime: endDate,
       );
 
-      final heartRateData = await _health.getHealthDataFromTypes(
+      final heartRateData = await healthPlatformClient.getHealthDataFromTypes(
         types: [HealthDataType.HEART_RATE],
         startTime: startDate,
         endTime: endDate,
@@ -254,7 +228,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
         distance: distance,
         avgHeartRate: avgHeartRate,
         sourceName: workout.sourceName,
-        sourceType: Platform.isIOS ? 'apple_health' : 'health_connect',
+        sourceType: healthPlatformService.importedSourceType,
       ));
     }
 
@@ -341,40 +315,12 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
 
   @override
   Future<void> installHealthConnect() async {
-    if (Platform.isAndroid) {
-      // Health Connect Play Store URL
-      const playStoreUrl = 'market://details?id=com.google.android.apps.healthdata';
-      const webUrl = 'https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata';
-
-      final uri = Uri.parse(playStoreUrl);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri);
-      } else {
-        // Fallback to web URL if Play Store app not available
-        await launchUrl(Uri.parse(webUrl), mode: LaunchMode.externalApplication);
-      }
-    }
+    await healthPlatformService.installHealthConnect();
   }
 
   @override
   Future<void> openHealthConnect() async {
-    if (Platform.isAndroid) {
-      // Use native intent to open the Health Connect app directly
-      final opened = await _platformChannel.invokeMethod<bool>('openHealthConnect');
-      if (opened != true) {
-        // Fallback: open Play Store listing
-        const hcPackage = 'com.google.android.apps.healthdata';
-        final marketUri = Uri.parse('market://details?id=$hcPackage');
-        if (await canLaunchUrl(marketUri)) {
-          await launchUrl(marketUri);
-        } else {
-          await launchUrl(
-            Uri.parse('https://play.google.com/store/apps/details?id=$hcPackage'),
-            mode: LaunchMode.externalApplication,
-          );
-        }
-      }
-    }
+    await healthPlatformService.openHealthConnect();
   }
 
   /// Midnight millis for a date — used as eventDate and eventId (one record per day).
@@ -482,7 +428,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       final startTime = DateTime(date.year, date.month, date.day).subtract(const Duration(hours: 6));
       final endTime = DateTime(date.year, date.month, date.day, 12);
 
-      final sleepData = await _health.getHealthDataFromTypes(
+      final sleepData = await healthPlatformClient.getHealthDataFromTypes(
         types: [HealthDataType.SLEEP_SESSION],
         startTime: startTime,
         endTime: endTime,
@@ -533,7 +479,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       final startTime = DateTime(date.year, date.month, date.day);
       final endTime = DateTime(date.year, date.month, date.day, 23, 59, 59);
 
-      final stepsData = await _health.getHealthDataFromTypes(
+      final stepsData = await healthPlatformClient.getHealthDataFromTypes(
         types: [HealthDataType.STEPS],
         startTime: startTime,
         endTime: endTime,
