@@ -70,6 +70,24 @@ void main() {
     });
   });
 
+  group('NutrientElementWidget — display rounding policy (1 decimal)', () {
+    testWidgets('shows consumed value with 1 decimal, not ceil/truncate',
+        (tester) async {
+      await tester.pumpWidget(buildTestWidget(current: 8.76, goal: 150));
+      await tester.pumpAndSettle();
+      // Pre-policy this widget rendered ceil() ("9") while the meal time
+      // summary truncated ("8") — the same 8.76 g shown two different ways.
+      expect(find.textContaining('8.8', findRichText: true), findsOneWidget);
+    });
+
+    testWidgets('goal stays integer ("/ 150"), only consumed gets decimals',
+        (tester) async {
+      await tester.pumpWidget(buildTestWidget(current: 8.76, goal: 150));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('150', findRichText: true), findsOneWidget);
+    });
+  });
+
   group('NutrientElementWidget — normal path', () {
     testWidgets('progress bar matches current/goal ratio', (tester) async {
       await tester.pumpWidget(buildTestWidget(current: 25, goal: 100));
