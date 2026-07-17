@@ -51,6 +51,10 @@ class Constants {
   static const COOKING_METHOD_BREADED = -4;
   static const COOKING_METHOD_FRIED = 5;
   static const CONVERSION_FACTOR_COOKED = 1;
+
+  /// Cooking options are hidden while the cooking computation layer is broken.
+  /// See fase-2 workstream C docs. Flip to true to restore the UI.
+  static const bool cookingOptionsEnabled = false;
   static const EXTRA_VERGIN_COOKING_OIL = 0;
   static const LOCALE_ES = 'es_ES';
   static const LANGUAGE_ES = 'es';

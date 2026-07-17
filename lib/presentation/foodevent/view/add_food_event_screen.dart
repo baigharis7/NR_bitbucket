@@ -56,6 +56,32 @@ class AddFoodEventScreen extends StatefulWidget {
   State<StatefulWidget> createState() => _AddFoodEventState();
 }
 
+/// Resolve detected cooking method names to IDs and apply them to foods.
+/// Top-level so the scanner entry path can be covered by tests.
+@visibleForTesting
+void applyDetectedCookingMethods(ScannerResult result, dynamic cookingMethodsInfoMaster) {
+  // While cooking options are hidden, scanned foods must enter as raw so they
+  // take the same computation path as manually added ones.
+  if (!Constants.cookingOptionsEnabled) return;
+  if (result.detectedCookingMethods.isEmpty) return;
+  final methods = cookingMethodsInfoMaster?.cookingMethodsInfo;
+  if (methods == null) return;
+
+  for (int i = 0; i < result.foods.length && i < result.detectedCookingMethods.length; i++) {
+    final detected = result.detectedCookingMethods[i];
+    if (detected == null) continue;
+
+    final detectedLower = detected.toLowerCase();
+    for (final method in methods) {
+      if (method.en?.toLowerCase() == detectedLower) {
+        result.foods[i].cookingMethod = method.id ?? 0;
+        result.foods[i].conversionFactor = Constants.CONVERSION_FACTOR_COOKED;
+        break;
+      }
+    }
+  }
+}
+
 class _AddFoodEventState extends State<AddFoodEventScreen> {
   late AddFoodEventBloc bloc;
   TextEditingController _foodInputController = TextEditingController();
@@ -108,33 +134,12 @@ class _AddFoodEventState extends State<AddFoodEventScreen> {
     }
 
     if (result is ScannerResult && result.foods.isNotEmpty) {
-      _applyCookingMethods(result, state.cookingMethodsInfoMaster);
+      applyDetectedCookingMethods(result, state.cookingMethodsInfoMaster);
       if (result.title != null && result.title!.isNotEmpty) {
         bloc.add(AddFoodNameEventAction(foodName: result.title!));
       }
       for (final food in result.foods) {
         bloc.add(AddFoodFromEventAction(foodInEvent: food));
-      }
-    }
-  }
-
-  /// Resolve detected cooking method names to IDs and apply them to foods.
-  void _applyCookingMethods(ScannerResult result, dynamic cookingMethodsInfoMaster) {
-    if (result.detectedCookingMethods.isEmpty) return;
-    final methods = cookingMethodsInfoMaster?.cookingMethodsInfo;
-    if (methods == null) return;
-
-    for (int i = 0; i < result.foods.length && i < result.detectedCookingMethods.length; i++) {
-      final detected = result.detectedCookingMethods[i];
-      if (detected == null) continue;
-
-      final detectedLower = detected.toLowerCase();
-      for (final method in methods) {
-        if (method.en?.toLowerCase() == detectedLower) {
-          result.foods[i].cookingMethod = method.id ?? 0;
-          result.foods[i].conversionFactor = Constants.CONVERSION_FACTOR_COOKED;
-          break;
-        }
       }
     }
   }

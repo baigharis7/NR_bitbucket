@@ -10,6 +10,7 @@ import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart
 import 'package:nutrenaissance_flutter/infrastructure/helpers/events_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/simple_item_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 class AddFoodFavoriteDialog extends StatefulWidget {
@@ -161,7 +162,7 @@ class _AddFoodFavoriteItem extends State<AddFoodFavoriteDialog> {
               ),
             ],
           ),
-          Container(
+          if (Constants.cookingOptionsEnabled) Container(
             margin: const EdgeInsets.only(
               left: Dimens.marginNormal,
               top: Dimens.marginLarge,
@@ -169,7 +170,7 @@ class _AddFoodFavoriteItem extends State<AddFoodFavoriteDialog> {
             alignment: Alignment.centerLeft,
             child: Text(AppLocalizations.of(context)!.cooking_method),
           ),
-          Container(
+          if (Constants.cookingOptionsEnabled) Container(
             alignment: Alignment.centerLeft,
             margin: const EdgeInsets.symmetric(
               horizontal: Dimens.marginNormal,

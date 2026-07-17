@@ -7,7 +7,8 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/cooking_methods_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_foods_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_master.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/app_color.dart';
+import 'package:nutrenaissance_flutter/data/api/masterfiles/model/oil_types_response.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/presentation/foodevent/view/food_event_item.dart';
 
 void main() {
@@ -44,6 +45,7 @@ void main() {
     Function(FoodInFavorite)? onConversionFactorChange,
     Function(FoodInFavorite)? onOilUsedChange,
     CookingMethodsInfoMaster? cookingMethodsInfoOverride,
+    OilTypesResponse? oilTypes,
     bool showValidation = false,
   }) {
     return MaterialApp(
@@ -63,7 +65,7 @@ void main() {
             foodInEvent: foodInEvent,
             foodGroup: foodGroup,
             cookingMethodsMaster: testCookingMethods,
-            oilTypes: null,
+            oilTypes: oilTypes,
             conversionFactors: null,
             cookingMethodsInfoMaster:
                 cookingMethodsInfoOverride ?? testCookingMethodsInfo,
@@ -113,48 +115,6 @@ void main() {
       expect(find.text('grams'), findsOneWidget);
     });
 
-    testWidgets('cooked toggle is OFF by default (conversionFactor: 0)',
-        (tester) async {
-      final food = FoodInFavorite(
-        id: 100,
-        qty: 50,
-        unit: -1,
-        cookingMethod: -1,
-        conversionFactor: 0,
-      );
-
-      await tester.pumpWidget(buildTestWidget(foodInEvent: food));
-      await tester.pumpAndSettle();
-
-      // "Preparation Method" label is shown
-      expect(find.text('Preparation Method'), findsOneWidget);
-
-      // Switch exists and is OFF
-      final switchWidget = tester.widget<Switch>(find.byType(Switch));
-      expect(switchWidget.value, isFalse);
-
-      // "Cooked" label next to switch
-      expect(find.text('Cooked'), findsOneWidget);
-    });
-
-    testWidgets('no cooking method dropdown when cooked toggle is OFF',
-        (tester) async {
-      final food = FoodInFavorite(
-        id: 100,
-        qty: 50,
-        unit: -1,
-        cookingMethod: -1,
-        conversionFactor: 0,
-      );
-
-      await tester.pumpWidget(buildTestWidget(foodInEvent: food));
-      await tester.pumpAndSettle();
-
-      // Should NOT show cooking method dropdown items
-      expect(find.text('Boiled'), findsNothing);
-      expect(find.text('Grilled'), findsNothing);
-    });
-
     testWidgets('entering quantity calls onQtyChange callback',
         (tester) async {
       FoodInFavorite? changedFood;
@@ -181,32 +141,41 @@ void main() {
     });
   });
 
-  group('TS-BF0002: Add single cooked item', () {
-    testWidgets(
-        'enabling cooked toggle shows cooking method dropdown',
+  group('Cooking options hidden (Constants.cookingOptionsEnabled = false)', () {
+    // These tests describe the hidden state introduced by workstream C.
+    // When cooking options are re-enabled (flag flipped to true), rewrite
+    // them against the fixed cooking model together with the flag change.
+    testWidgets('does not render cooked switch, cooking method dropdown or oil selector',
         (tester) async {
-      // Start with cooked already ON (conversionFactor: 1)
+      // A cooked+fried legacy ingredient with oil types available would
+      // render all three controls if the flag were on.
       final food = FoodInFavorite(
         id: 100,
         qty: 100,
         unit: -1,
-        cookingMethod: -1,
-        conversionFactor: 1,
+        cookingMethod: Constants.COOKING_METHOD_FRIED,
+        conversionFactor: Constants.CONVERSION_FACTOR_COOKED,
+        usedOil: 0,
       );
 
-      await tester.pumpWidget(buildTestWidget(foodInEvent: food));
+      await tester.pumpWidget(buildTestWidget(
+        foodInEvent: food,
+        oilTypes: OilTypesResponse(v: 1, data: [
+          OilTypeResponse(id: 0, en: 'Extra virgin olive oil', es: 'Aceite de oliva virgen extra'),
+        ]),
+      ));
       await tester.pumpAndSettle();
 
-      // Switch should be ON
-      final switchWidget = tester.widget<Switch>(find.byType(Switch));
-      expect(switchWidget.value, isTrue);
-
-      // Cooking method dropdown should be visible
-      // The dropdown shows "None" as the default label for value -1
-      expect(find.byType(DropdownButton<int>), findsOneWidget);
+      expect(find.byType(Switch), findsNothing);
+      expect(find.text('Preparation Method'), findsNothing);
+      expect(find.text('Cooked'), findsNothing);
+      // Cooking method and oil selectors are DropdownButton<int>;
+      // the unit selector is DropdownButton<String> and must remain.
+      expect(find.byType(DropdownButton<int>), findsNothing);
+      expect(find.byType(DropdownButton<String>), findsOneWidget);
     });
 
-    testWidgets('toggling cooked switch calls onConversionFactorChange',
+    testWidgets('editing quantity preserves cooking fields of a legacy cooked ingredient',
         (tester) async {
       FoodInFavorite? changedFood;
 
@@ -214,27 +183,32 @@ void main() {
         id: 100,
         qty: 100,
         unit: -1,
-        cookingMethod: -1,
-        conversionFactor: 0,
+        cookingMethod: Constants.COOKING_METHOD_FRIED,
+        conversionFactor: Constants.CONVERSION_FACTOR_COOKED,
+        usedOil: 0,
       );
 
       await tester.pumpWidget(buildTestWidget(
         foodInEvent: food,
-        onConversionFactorChange: (f) => changedFood = f,
+        onQtyChange: (f) => changedFood = f,
       ));
       await tester.pumpAndSettle();
 
-      // Tap the cooked switch to enable it
-      await tester.tap(find.byType(Switch));
+      await tester.enterText(find.byType(TextField), '150');
       await tester.pumpAndSettle();
 
       expect(changedFood, isNotNull);
-      expect(changedFood!.conversionFactor, 1);
+      expect(changedFood!.qty, 150);
+      expect(changedFood!.cookingMethod, Constants.COOKING_METHOD_FRIED);
+      expect(changedFood!.conversionFactor, Constants.CONVERSION_FACTOR_COOKED);
+      expect(changedFood!.usedOil, 0);
     });
 
-    testWidgets('shows error border when cooked but no cooking method selected',
+    testWidgets('legacy cooked item without cooking method shows no validation error',
         (tester) async {
-      // Cooked (1) but cookingMethod still -1 → error
+      // Cooked (1) with cookingMethod -1 used to trigger the missing-method
+      // error; with the selector hidden the user could never fix it, so the
+      // check is skipped.
       final food = FoodInFavorite(
         id: 100,
         qty: 100,
@@ -246,23 +220,7 @@ void main() {
       await tester.pumpWidget(buildTestWidget(foodInEvent: food, showValidation: true));
       await tester.pumpAndSettle();
 
-      // The cooking method dropdown container should have a red error border
-      final containers = find.byType(Container);
-      bool hasErrorBorder = false;
-      for (final element in containers.evaluate()) {
-        final widget = element.widget as Container;
-        final decoration = widget.decoration;
-        if (decoration is BoxDecoration && decoration.border != null) {
-          final border = decoration.border;
-          if (border is Border && border.top.color == AppColors.errorRed) {
-            hasErrorBorder = true;
-            break;
-          }
-        }
-      }
-
-      // Error state should exist (cooked with cookingMethod -1 triggers error)
-      expect(hasErrorBorder, isTrue);
+      expect(find.text('Please select a cooking method'), findsNothing);
     });
   });
 

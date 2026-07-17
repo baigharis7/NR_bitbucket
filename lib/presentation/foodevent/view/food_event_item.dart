@@ -146,7 +146,8 @@ class _FoodEventItemState extends State<FoodEventItem> {
 
     final missingQty = widget.foodInEvent.qty <= 0;
     final missingUnit = widget.foodInEvent.unit == -1;
-    final missingCookingMethod = ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && ingredient.cookingMethod == -1;
+    // Skipped when cooking options are hidden so legacy cooked items don't show an error the user can't fix.
+    final missingCookingMethod = Constants.cookingOptionsEnabled && ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && ingredient.cookingMethod == -1;
 
     return Column(
       children: [
@@ -281,8 +282,8 @@ class _FoodEventItemState extends State<FoodEventItem> {
               //   ),
               // ),
               const SizedBox(width: Dimens.widthXXXXSmall),
-              Text(AppLocalizations.of(context)!.conversion_factor, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal)),
-              Row(
+              if (Constants.cookingOptionsEnabled) Text(AppLocalizations.of(context)!.conversion_factor, style: const TextStyle(color: AppColors.yellowishGreen, fontWeight: FontWeight.w700, fontSize: Dimens.fontSizeNormal)),
+              if (Constants.cookingOptionsEnabled) Row(
                 children: [
                   Switch.adaptive(
                     value: ingredient.conversionFactor == 1,
@@ -347,7 +348,7 @@ class _FoodEventItemState extends State<FoodEventItem> {
                   ],
                 ],
               ),
-              if ((ingredient.cookingMethod == Constants.COOKING_METHOD_BREADED || ingredient.cookingMethod == Constants.COOKING_METHOD_FRIED) && widget.oilTypes?.data != null) Container(
+              if (Constants.cookingOptionsEnabled && (ingredient.cookingMethod == Constants.COOKING_METHOD_BREADED || ingredient.cookingMethod == Constants.COOKING_METHOD_FRIED) && widget.oilTypes?.data != null) Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                 height: Dimens.heightSmall - 15,
                 child: Container(
