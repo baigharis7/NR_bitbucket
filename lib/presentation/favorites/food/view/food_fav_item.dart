@@ -180,7 +180,8 @@ class _FoodFavItemState extends State<FoodFavItem> {
       ingredient.unit = widget.foodInFavorite.unit;
     // }
 
-    _error = ingredient.qty <= 0 || ingredient.unit == -1 || ingredient.conversionFactor.orZero() < 0  || (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && ingredient.cookingMethod == -1);
+    // Cooking terms are skipped when cooking options are hidden so legacy cooked favorites don't show an error the user can't fix.
+    _error = ingredient.qty <= 0 || ingredient.unit == -1 || (Constants.cookingOptionsEnabled && (ingredient.conversionFactor.orZero() < 0 || (ingredient.conversionFactor == Constants.CONVERSION_FACTOR_COOKED && ingredient.cookingMethod == -1)));
 
     return Column(
       children: [
@@ -286,7 +287,7 @@ class _FoodFavItemState extends State<FoodFavItem> {
                   ],
                 ),
               ),
-              Container(
+              if (Constants.cookingOptionsEnabled) Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                 height: Dimens.heightSmall - 15,
                 child: Row(
@@ -311,7 +312,7 @@ class _FoodFavItemState extends State<FoodFavItem> {
                   ],
                 ),
               ),
-              Container(
+              if (Constants.cookingOptionsEnabled) Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                 height: Dimens.heightSmall - 15,
                 child: Row(
@@ -367,7 +368,7 @@ class _FoodFavItemState extends State<FoodFavItem> {
                   ],
                 ),
               ),
-              if (ingredient.cookingMethod == Constants.COOKING_METHOD_BREADED || ingredient.cookingMethod == Constants.COOKING_METHOD_FRIED) Container(
+              if (Constants.cookingOptionsEnabled && (ingredient.cookingMethod == Constants.COOKING_METHOD_BREADED || ingredient.cookingMethod == Constants.COOKING_METHOD_FRIED)) Container(
                 margin: const EdgeInsets.symmetric(vertical: Dimens.marginNormal),
                 height: Dimens.heightSmall - 15,
                 child: Row(

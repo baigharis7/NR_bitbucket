@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/domain/models/masterfiles/units_info_mast
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/simple_item_helper.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/toast_helper.dart';
+import 'package:nutrenaissance_flutter/infrastructure/utils/constants.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/dimens.dart';
 
 class AddFoodEventDialog extends StatefulWidget {
@@ -196,12 +197,12 @@ class _AddFoodEventItem extends State<AddFoodEventDialog> {
                 ),
               ],
             ),
-            Container(
+            if (Constants.cookingOptionsEnabled) Container(
               margin: const EdgeInsets.only(left: Dimens.marginNormal, top: Dimens.marginLarge),
               alignment: Alignment.centerLeft,
               child: Text(AppLocalizations.of(context)!.cooking_method),
             ),
-            Container(
+            if (Constants.cookingOptionsEnabled) Container(
               alignment: Alignment.centerLeft,
               margin: const EdgeInsets.symmetric(horizontal: Dimens.marginNormal, vertical: Dimens.marginNormal),
               child: Row(
