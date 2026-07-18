@@ -77,6 +77,39 @@ void main() {
       expect(serialized, isNot(contains('2026-07-15T08:30')));
       expect(serialized, isNot(contains('user-42')));
     });
+
+    test('accepts a pre-classified category without an error object', () {
+      final event = HealthSyncDiagnostics.fetchFailed(
+        domain: HealthSyncDomain.workout,
+        category: HealthSyncErrorCategory.timeout,
+      );
+
+      expect(event.type, HealthSyncDiagnosticType.fetchFailed);
+      expect(event.severity, HealthSyncDiagnosticSeverity.error);
+      expect(event.metadata['errorCategory'], 'timeout');
+      expect(event.metadata.containsKey('phase'), isFalse);
+    });
+
+    test('an explicit category wins over classification of the error', () {
+      final event = HealthSyncDiagnostics.fetchFailed(
+        domain: HealthSyncDomain.workout,
+        error: Exception('Permission denied'),
+        category: HealthSyncErrorCategory.plugin,
+      );
+
+      expect(event.metadata['errorCategory'], 'plugin');
+    });
+
+    test('adds a phase metadata entry when phase is non-null', () {
+      final event = HealthSyncDiagnostics.fetchFailed(
+        domain: HealthSyncDomain.workout,
+        category: HealthSyncErrorCategory.plugin,
+        phase: 'enrichment',
+      );
+
+      expect(event.metadata['errorCategory'], 'plugin');
+      expect(event.metadata['phase'], 'enrichment');
+    });
   });
 
   group('HealthSyncDiagnostics.fetchNoData', () {
@@ -108,6 +141,47 @@ void main() {
       expect(event.metadata['selectedCategory'], 'wearable');
       // The builder exposes no parameter for a raw source name.
       expect(event.metadata.containsKey('sourceName'), isFalse);
+    });
+  });
+
+  group('HealthSyncDiagnostics.fetchSucceeded', () {
+    test('is an info-severity event carrying only the count', () {
+      final event = HealthSyncDiagnostics.fetchSucceeded(
+        domain: HealthSyncDomain.workout,
+        count: 3,
+      );
+
+      expect(event.type, HealthSyncDiagnosticType.fetchSucceeded);
+      expect(event.severity, HealthSyncDiagnosticSeverity.info);
+      expect(event.domain, HealthSyncDomain.workout);
+      expect(event.platform, isNull);
+      expect(event.metadata, {'count': 3});
+    });
+  });
+
+  group('HealthSyncDiagnostics.permissionDenied', () {
+    test('is a warning-severity event with empty metadata', () {
+      final event = HealthSyncDiagnostics.permissionDenied(
+        domain: HealthSyncDomain.workout,
+      );
+
+      expect(event.type, HealthSyncDiagnosticType.permissionDenied);
+      expect(event.severity, HealthSyncDiagnosticSeverity.warning);
+      expect(event.domain, HealthSyncDomain.workout);
+      expect(event.metadata, isEmpty);
+    });
+  });
+
+  group('HealthSyncDiagnostics.platformUnavailable', () {
+    test('is a warning-severity event with empty metadata', () {
+      final event = HealthSyncDiagnostics.platformUnavailable(
+        domain: HealthSyncDomain.workout,
+      );
+
+      expect(event.type, HealthSyncDiagnosticType.platformUnavailable);
+      expect(event.severity, HealthSyncDiagnosticSeverity.warning);
+      expect(event.domain, HealthSyncDomain.workout);
+      expect(event.metadata, isEmpty);
     });
   });
 }
