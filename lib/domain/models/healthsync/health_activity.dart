@@ -1,8 +1,15 @@
 /// Represents an activity synced from a health platform (HealthKit or Health Connect).
 /// This is a domain model used before converting to SportEventComplete.
 class HealthActivity {
-  /// Unique identifier from the health platform (uuid)
+  /// Canonical platform identity: the platform record UUID (Health Connect
+  /// `metadata.id` / HealthKit `HKObject.uuid`) when the platform provided
+  /// one, else [legacyPlatformId]. New sync metadata is keyed by this.
   final String healthPlatformId;
+
+  /// Legacy synthesized identity `'<sourceName>_<startMs>_<endMs>'` — always
+  /// computed. Bridges metadata written before the uuid upgrade so existing
+  /// users don't re-import (exact-tier dedupe checks BOTH ids).
+  final String legacyPlatformId;
 
   /// Type of activity (e.g., 'WORKOUT', 'RUNNING', 'CYCLING', 'WALKING')
   final String activityType;
@@ -33,6 +40,7 @@ class HealthActivity {
 
   HealthActivity({
     required this.healthPlatformId,
+    required this.legacyPlatformId,
     required this.activityType,
     required this.startTime,
     required this.endTime,

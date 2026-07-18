@@ -170,6 +170,7 @@ void main() {
     test('deduplicates already synced activities', () async {
       final activity = HealthActivity(
         healthPlatformId: 'already_synced_id',
+        legacyPlatformId: 'legacy_already_synced_id',
         activityType: 'RUNNING',
         startTime: DateTime.now().subtract(const Duration(hours: 1)),
         endTime: DateTime.now(),
@@ -313,6 +314,7 @@ void main() {
       // Synced workout with duration but no platform-supplied calories
       final activity = HealthActivity(
         healthPlatformId: 'no_calories_id',
+        legacyPlatformId: 'legacy_no_calories_id',
         activityType: 'RUNNING',
         startTime: DateTime(2024, 5, 1, 10, 0),
         endTime: DateTime(2024, 5, 1, 10, 30),
@@ -391,6 +393,7 @@ void main() {
     test('does not call kcal service when platform calories are present', () async {
       final activity = HealthActivity(
         healthPlatformId: 'has_calories_id',
+        legacyPlatformId: 'legacy_has_calories_id',
         activityType: 'RUNNING',
         startTime: DateTime(2024, 5, 2, 10, 0),
         endTime: DateTime(2024, 5, 2, 11, 0),
@@ -441,6 +444,7 @@ void main() {
     test('falls back to 0 kcal when both calories and duration are missing', () async {
       final activity = HealthActivity(
         healthPlatformId: 'zero_duration_id',
+        legacyPlatformId: 'legacy_zero_duration_id',
         activityType: 'RUNNING',
         startTime: DateTime(2024, 5, 3, 10, 0),
         endTime: DateTime(2024, 5, 3, 10, 0),
@@ -489,6 +493,7 @@ void main() {
     test('continues processing when individual activity fails', () async {
       final activity1 = HealthActivity(
         healthPlatformId: 'activity_1',
+        legacyPlatformId: 'legacy_activity_1',
         activityType: 'RUNNING',
         startTime: DateTime.now().subtract(const Duration(hours: 2)),
         endTime: DateTime.now().subtract(const Duration(hours: 1)),
@@ -502,6 +507,7 @@ void main() {
 
       final activity2 = HealthActivity(
         healthPlatformId: 'activity_2',
+        legacyPlatformId: 'legacy_activity_2',
         activityType: 'WALKING',
         startTime: DateTime.now().subtract(const Duration(hours: 1)),
         endTime: DateTime.now(),

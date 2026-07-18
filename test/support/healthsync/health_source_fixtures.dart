@@ -62,3 +62,24 @@ const HealthSource unknownSource = HealthSource(
   deviceId: 'unknown-device',
   platform: HealthPlatformType.googleHealthConnect,
 );
+
+// Android writer-package sources (Health Connect reality: sourceName is the
+// WRITER'S package name and sourceId is always '').
+const HealthSource samsungHealthPackage = HealthSource(
+  name: 'com.sec.android.app.shealth',
+  id: '',
+  deviceId: 'samsung-device',
+  platform: HealthPlatformType.googleHealthConnect,
+);
+const HealthSource googleFitPackage = HealthSource(
+  name: 'com.google.android.apps.fitness',
+  id: '',
+  deviceId: 'pixel-device',
+  platform: HealthPlatformType.googleHealthConnect,
+);
+const HealthSource garminPackage = HealthSource(
+  name: 'com.garmin.android.apps.connectmobile',
+  id: '',
+  deviceId: 'garmin-device',
+  platform: HealthPlatformType.googleHealthConnect,
+);

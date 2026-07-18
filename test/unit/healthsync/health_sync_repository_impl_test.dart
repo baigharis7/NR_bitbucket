@@ -256,7 +256,12 @@ void main() {
       service.distanceType = HealthDataType.DISTANCE_WALKING_RUNNING;
 
       client.dataByType[HealthDataType.WORKOUT] = [
-        workoutPoint(from: start, to: end, source: appleWatch),
+        workoutPoint(
+          from: start,
+          to: end,
+          source: appleWatch,
+          uuid: 'wk-uuid-e2e',
+        ),
       ];
       client.dataByType[HealthDataType.ACTIVE_ENERGY_BURNED] = [
         numericPoint(
@@ -299,8 +304,9 @@ void main() {
       expect(a.avgHeartRate, 150);
       expect(a.sourceName, 'Apple Watch');
       expect(a.sourceType, 'apple_health');
+      expect(a.healthPlatformId, 'wk-uuid-e2e');
       expect(
-        a.healthPlatformId,
+        a.legacyPlatformId,
         'Apple Watch_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}',
       );
       // The four reads happen in the expected order, each single-typed (with
@@ -361,7 +367,12 @@ void main() {
       service.distanceType = HealthDataType.DISTANCE_WALKING_RUNNING;
 
       client.dataByType[HealthDataType.WORKOUT] = [
-        workoutPoint(from: start, to: end, source: appleWatch),
+        workoutPoint(
+          from: start,
+          to: end,
+          source: appleWatch,
+          uuid: 'wk-uuid-typed',
+        ),
       ];
       client.dataByType[HealthDataType.ACTIVE_ENERGY_BURNED] = [
         numericPoint(
@@ -408,8 +419,9 @@ void main() {
       expect(a.avgHeartRate, 150);
       expect(a.sourceName, 'Apple Watch');
       expect(a.sourceType, 'apple_health');
+      expect(a.healthPlatformId, 'wk-uuid-typed');
       expect(
-        a.healthPlatformId,
+        a.legacyPlatformId,
         'Apple Watch_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}',
       );
     });
@@ -448,7 +460,12 @@ void main() {
         final start = DateTime(2026, 7, 1, 8, 0);
         final end = DateTime(2026, 7, 1, 9, 0);
         client.dataByType[HealthDataType.WORKOUT] = [
-          workoutPoint(from: start, to: end, source: appleWatch),
+          workoutPoint(
+            from: start,
+            to: end,
+            source: appleWatch,
+            uuid: 'wk-uuid-delegate',
+          ),
         ];
 
         final activities = await build().fetchActivities(
@@ -457,10 +474,7 @@ void main() {
         );
         expect(activities, hasLength(1));
         expect(activities.single.activityType, 'RUNNING');
-        expect(
-          activities.single.healthPlatformId,
-          'Apple Watch_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}',
-        );
+        expect(activities.single.healthPlatformId, 'wk-uuid-delegate');
 
         client.throwOnRead = Exception('boom');
         expect(
@@ -469,6 +483,79 @@ void main() {
             endDate: DateTime(2026),
           ),
           isEmpty,
+        );
+      },
+    );
+
+    test('platform uuid becomes healthPlatformId; legacy id preserved', () async {
+      final start = DateTime(2026, 7, 1, 8, 0);
+      final end = DateTime(2026, 7, 1, 9, 0);
+      client.dataByType[HealthDataType.WORKOUT] = [
+        workoutPoint(
+          from: start,
+          to: end,
+          source: appleWatch,
+          uuid: 'platform-uuid-1',
+        ),
+      ];
+
+      final result = await build().fetchActivitiesResult(
+        startDate: start,
+        endDate: end,
+      );
+
+      final a = result.data!.single;
+      expect(a.healthPlatformId, 'platform-uuid-1');
+      expect(
+        a.legacyPlatformId,
+        'Apple Watch_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}',
+      );
+    });
+
+    test('empty uuid falls back to the synthesized legacy id', () async {
+      final start = DateTime(2026, 7, 1, 8, 0);
+      final end = DateTime(2026, 7, 1, 9, 0);
+      client.dataByType[HealthDataType.WORKOUT] = [
+        workoutPoint(from: start, to: end, source: appleWatch, uuid: ''),
+      ];
+
+      final result = await build().fetchActivitiesResult(
+        startDate: start,
+        endDate: end,
+      );
+
+      final a = result.data!.single;
+      final legacy =
+          'Apple Watch_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}';
+      expect(a.healthPlatformId, legacy);
+      expect(a.legacyPlatformId, legacy);
+    });
+
+    test(
+      'Android package-name source with empty sourceId maps cleanly',
+      () async {
+        final start = DateTime(2026, 7, 1, 8, 0);
+        final end = DateTime(2026, 7, 1, 9, 0);
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(
+            from: start,
+            to: end,
+            source: samsungHealthPackage,
+            uuid: 'hc-record-uuid',
+          ),
+        ];
+
+        final result = await build().fetchActivitiesResult(
+          startDate: start,
+          endDate: end,
+        );
+
+        final a = result.data!.single;
+        expect(a.healthPlatformId, 'hc-record-uuid');
+        expect(a.sourceName, 'com.sec.android.app.shealth');
+        expect(
+          a.legacyPlatformId,
+          'com.sec.android.app.shealth_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}',
         );
       },
     );

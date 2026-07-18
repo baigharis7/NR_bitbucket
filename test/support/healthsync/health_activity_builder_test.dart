@@ -16,6 +16,19 @@ void main() {
       expect(a.sourceType, 'apple_health');
     });
 
+    test('derives legacyPlatformId from source and times by default', () {
+      final a = aHealthActivity();
+      expect(
+        a.legacyPlatformId,
+        'Apple Health_${a.startTime.millisecondsSinceEpoch}_${a.endTime.millisecondsSinceEpoch}',
+      );
+    });
+
+    test('honours an explicit legacyPlatformId override', () {
+      final a = aHealthActivity(legacyPlatformId: 'legacy-x');
+      expect(a.legacyPlatformId, 'legacy-x');
+    });
+
     test('overrides scalar fields and allows explicit nulls', () {
       final a = aHealthActivity(
         healthPlatformId: 'x',

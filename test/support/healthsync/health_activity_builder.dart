@@ -8,6 +8,10 @@ const Object _unset = Object();
 /// interactor tests' canonical "Apple Health running" activity.
 class HealthActivityBuilder {
   final String healthPlatformId;
+
+  /// Explicit legacy id, or null to derive `'<sourceName>_<startMs>_<endMs>'`
+  /// at build time (mirrors production synthesis).
+  final String? legacyPlatformId;
   final String activityType;
   final DateTime startTime;
   final DateTime endTime;
@@ -20,6 +24,7 @@ class HealthActivityBuilder {
 
   HealthActivityBuilder({
     this.healthPlatformId = 'test-activity-id',
+    this.legacyPlatformId,
     this.activityType = 'RUNNING',
     DateTime? startTime,
     DateTime? endTime,
@@ -34,6 +39,7 @@ class HealthActivityBuilder {
 
   HealthActivityBuilder copyWith({
     String? healthPlatformId,
+    String? legacyPlatformId,
     String? activityType,
     DateTime? startTime,
     DateTime? endTime,
@@ -46,6 +52,7 @@ class HealthActivityBuilder {
   }) {
     return HealthActivityBuilder(
       healthPlatformId: healthPlatformId ?? this.healthPlatformId,
+      legacyPlatformId: legacyPlatformId ?? this.legacyPlatformId,
       activityType: activityType ?? this.activityType,
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
@@ -66,6 +73,9 @@ class HealthActivityBuilder {
 
   HealthActivity build() => HealthActivity(
     healthPlatformId: healthPlatformId,
+    legacyPlatformId:
+        legacyPlatformId ??
+        '${sourceName}_${startTime.millisecondsSinceEpoch}_${endTime.millisecondsSinceEpoch}',
     activityType: activityType,
     startTime: startTime,
     endTime: endTime,
@@ -82,6 +92,7 @@ class HealthActivityBuilder {
 /// accept an explicit `null`; omitting them keeps the canonical default.
 HealthActivity aHealthActivity({
   String? healthPlatformId,
+  String? legacyPlatformId,
   String? activityType,
   DateTime? startTime,
   DateTime? endTime,
@@ -94,6 +105,7 @@ HealthActivity aHealthActivity({
 }) => HealthActivityBuilder()
     .copyWith(
       healthPlatformId: healthPlatformId,
+      legacyPlatformId: legacyPlatformId,
       activityType: activityType,
       startTime: startTime,
       endTime: endTime,

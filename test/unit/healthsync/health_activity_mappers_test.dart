@@ -20,6 +20,7 @@ void main() {
 
     testActivity = HealthActivity(
       healthPlatformId: 'test_platform_id_123',
+      legacyPlatformId: 'legacy_test_platform_id_123',
       activityType: 'RUNNING',
       startTime: DateTime(2024, 1, 15, 10, 0),
       endTime: DateTime(2024, 1, 15, 11, 0),
@@ -71,6 +72,7 @@ void main() {
     test('infers high intensity from high heart rate', () {
       final highIntensityActivity = HealthActivity(
         healthPlatformId: 'test_id',
+        legacyPlatformId: 'legacy_test_id',
         activityType: 'RUNNING',
         startTime: DateTime(2024, 1, 15, 10, 0),
         endTime: DateTime(2024, 1, 15, 11, 0),
@@ -95,6 +97,7 @@ void main() {
     test('infers low intensity from low heart rate', () {
       final lowIntensityActivity = HealthActivity(
         healthPlatformId: 'test_id',
+        legacyPlatformId: 'legacy_test_id',
         activityType: 'WALKING',
         startTime: DateTime(2024, 1, 15, 10, 0),
         endTime: DateTime(2024, 1, 15, 11, 0),
@@ -119,6 +122,7 @@ void main() {
     test('uses activity type as fallback when sport not found', () {
       final unknownSportActivity = HealthActivity(
         healthPlatformId: 'test_id',
+        legacyPlatformId: 'legacy_test_id',
         activityType: 'UNKNOWN_SPORT',
         startTime: DateTime(2024, 1, 15, 10, 0),
         endTime: DateTime(2024, 1, 15, 11, 0),
@@ -188,6 +192,7 @@ void main() {
     test('handles null distance and heart rate', () {
       final activityWithNulls = HealthActivity(
         healthPlatformId: 'test_id',
+        legacyPlatformId: 'legacy_test_id',
         activityType: 'RUNNING',
         startTime: DateTime(2024, 1, 15, 10, 0),
         endTime: DateTime(2024, 1, 15, 11, 0),
@@ -218,6 +223,7 @@ void main() {
       // caller has computed a fallback eventKcals via SportKcalCalculationService.
       final activityNoCalories = HealthActivity(
         healthPlatformId: 'no_cal_id',
+        legacyPlatformId: 'legacy_no_cal_id',
         activityType: 'RUNNING',
         startTime: DateTime(2024, 1, 15, 10, 0),
         endTime: DateTime(2024, 1, 15, 10, 30),
