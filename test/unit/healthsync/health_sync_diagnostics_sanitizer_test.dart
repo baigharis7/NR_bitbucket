@@ -125,6 +125,31 @@ void main() {
     });
   });
 
+  group('HealthSyncDiagnostics.permissionFalseNegativeTolerated', () {
+    test('is a warning-severity event with empty metadata', () {
+      final event = HealthSyncDiagnostics.permissionFalseNegativeTolerated(
+        domain: HealthSyncDomain.workout,
+      );
+
+      expect(
+        event.type,
+        HealthSyncDiagnosticType.permissionFalseNegativeTolerated,
+      );
+      expect(event.severity, HealthSyncDiagnosticSeverity.warning);
+      expect(event.domain, HealthSyncDomain.workout);
+      expect(event.platform, isNull);
+      expect(event.metadata, isEmpty);
+    });
+
+    test('carries a coarse platform when provided', () {
+      final event = HealthSyncDiagnostics.permissionFalseNegativeTolerated(
+        domain: HealthSyncDomain.workout,
+        platform: HealthSyncPlatform.android,
+      );
+      expect(event.platform, HealthSyncPlatform.android);
+    });
+  });
+
   group('HealthSyncDiagnostics.sourceSelected', () {
     test('carries only counts and the selected category', () {
       final event = HealthSyncDiagnostics.sourceSelected(
