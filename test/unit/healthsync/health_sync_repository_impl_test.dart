@@ -13,6 +13,13 @@ import 'package:nutrenaissance_flutter/data/api/steps/steps_api.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_client.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_service.dart';
+import 'package:nutrenaissance_flutter/data/api/sleepevents/models/upload_sleep_event.dart';
+import 'package:nutrenaissance_flutter/data/api/steps/models/upload_step_event_response.dart';
+import 'package:nutrenaissance_flutter/data/local/models/profile/user_profile_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/sleepevents/sleep_event_entity.dart';
+import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_diagnostic_event.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sink.dart';
 
 import '../../support/healthsync/health_data_point_builder.dart';
 import '../../support/healthsync/health_source_fixtures.dart';
@@ -112,6 +119,15 @@ class _FakeService implements HealthPlatformService {
   Future<void> openHealthConnect() async => openCount++;
 }
 
+UserProfileEntity profileWithUserId(String? userId) => UserProfileEntity(
+  userId: userId,
+  commonName: 'Test User',
+  birthDate: 0,
+  sex: 0,
+  occupationActivityFactor: 1.0,
+  objectives: const [],
+);
+
 void main() {
   late _MockLocalStorage localStorage;
   late _MockPreferences prefs;
@@ -120,6 +136,7 @@ void main() {
   late _MockSyncQueue syncQueue;
   late _FakeClient client;
   late _FakeService service;
+  late InMemoryHealthSyncDiagnosticsSink diagnostics;
 
   HealthSyncRepositoryImpl build() => HealthSyncRepositoryImpl(
     localStorageRepository: localStorage,
@@ -129,7 +146,28 @@ void main() {
     syncQueue: syncQueue,
     healthPlatformClient: client,
     healthPlatformService: service,
+    diagnostics: diagnostics,
   );
+
+  setUpAll(() {
+    registerFallbackValue(
+      SleepEventEntity(eventDate: 0, eventId: 0, sleepMinutes: 0),
+    );
+    registerFallbackValue(
+      StepsEntity(eventId: 0, initialSteps: 0, actualSteps: 0),
+    );
+    registerFallbackValue(
+      UploadSleepEvent(userId: '', eventId: 0, eventDate: 0, sleepMinutes: 0),
+    );
+    registerFallbackValue(
+      UploadStepEventResponse(
+        userId: '',
+        eventId: 0,
+        initialSteps: 0,
+        actualSteps: 0,
+      ),
+    );
+  });
 
   setUp(() {
     localStorage = _MockLocalStorage();
@@ -139,6 +177,7 @@ void main() {
     syncQueue = _MockSyncQueue();
     client = _FakeClient();
     service = _FakeService();
+    diagnostics = InMemoryHealthSyncDiagnosticsSink();
   });
 
   group('isHealthSyncAvailable', () {
@@ -676,6 +715,292 @@ void main() {
       client.throwOnRead = Exception('boom');
       expect(await build().fetchTodayStepCount(DateTime(2026, 7, 1)), isNull);
     });
+  });
+
+  group('saveSleepEvent', () {
+    final date = DateTime(2026, 7, 18, 14, 30);
+    final midnight = DateTime(2026, 7, 18).millisecondsSinceEpoch;
+
+    setUp(() {
+      when(() => localStorage.saveSleepEvent(any())).thenAnswer((_) async {});
+      when(
+        () => sleepApi.uploadSleepEvent(any()),
+      ).thenAnswer((_) async => <String, dynamic>{});
+    });
+
+    test('valid user ID saves locally AND uploads with that ID', () async {
+      when(
+        () => localStorage.getProfile(),
+      ).thenAnswer((_) async => profileWithUserId('user-42'));
+
+      await build().saveSleepEvent(date: date, sleepHours: 7.5);
+      await pumpEventQueue();
+
+      final saved =
+          verify(
+                () => localStorage.saveSleepEvent(captureAny()),
+              ).captured.single
+              as SleepEventEntity;
+      expect(saved.userId, 'user-42');
+      expect(saved.eventDate, midnight);
+      expect(saved.eventId, midnight);
+      expect(saved.sleepMinutes, 450);
+
+      final uploaded =
+          verify(() => sleepApi.uploadSleepEvent(captureAny())).captured.single
+              as UploadSleepEvent;
+      expect(uploaded.userId, 'user-42');
+      expect(uploaded.eventId, midnight);
+      expect(uploaded.eventDate, midnight);
+      expect(uploaded.sleepMinutes, 450);
+
+      verifyNever(() => syncQueue.enqueue(any(), any()));
+      expect(diagnostics.events, isEmpty);
+    });
+
+    test(
+      'missing profile: local save still happens, upload API is NOT called',
+      () async {
+        when(() => localStorage.getProfile()).thenAnswer((_) async => null);
+
+        await build().saveSleepEvent(date: date, sleepHours: 8);
+        await pumpEventQueue();
+
+        final saved =
+            verify(
+                  () => localStorage.saveSleepEvent(captureAny()),
+                ).captured.single
+                as SleepEventEntity;
+        // Locked decision: the local entity keeps today's shape — empty
+        // string when identity is missing; the next periodic cycle re-saves
+        // the same midnight eventId with the repaired identity.
+        expect(saved.userId, '');
+        expect(saved.eventId, midnight);
+        expect(saved.sleepMinutes, 480);
+
+        verifyNever(() => sleepApi.uploadSleepEvent(any()));
+        verifyNever(() => syncQueue.enqueue(any(), any()));
+      },
+    );
+
+    test(
+      'empty-string userId: local save still happens, upload API is NOT called',
+      () async {
+        when(
+          () => localStorage.getProfile(),
+        ).thenAnswer((_) async => profileWithUserId(''));
+
+        await build().saveSleepEvent(date: date, sleepHours: 8);
+        await pumpEventQueue();
+
+        verify(() => localStorage.saveSleepEvent(any())).called(1);
+        verifyNever(() => sleepApi.uploadSleepEvent(any()));
+        verifyNever(() => syncQueue.enqueue(any(), any()));
+      },
+    );
+
+    test('missing user ID never enqueues /sleep-event even with the upload '
+        'primed to fail', () async {
+      when(() => localStorage.getProfile()).thenAnswer((_) async => null);
+      when(() => sleepApi.uploadSleepEvent(any())).thenAnswer(
+        (_) => Future<Map<String, dynamic>>.error(Exception('boom')),
+      );
+
+      await build().saveSleepEvent(date: date, sleepHours: 8);
+      await pumpEventQueue();
+
+      verifyNever(() => sleepApi.uploadSleepEvent(any()));
+      verifyNever(() => syncQueue.enqueue('/sleep-event', any()));
+    });
+
+    test(
+      'missing user ID emits identityMissing with the sleep domain',
+      () async {
+        when(() => localStorage.getProfile()).thenAnswer((_) async => null);
+
+        await build().saveSleepEvent(date: date, sleepHours: 8);
+
+        expect(diagnostics.events, hasLength(1));
+        final event = diagnostics.events.single;
+        expect(event.type, HealthSyncDiagnosticType.identityMissing);
+        expect(event.severity, HealthSyncDiagnosticSeverity.warning);
+        expect(event.domain, HealthSyncDomain.sleep);
+        expect(event.platform, isNull);
+        expect(event.metadata, isEmpty);
+      },
+    );
+
+    test(
+      'valid user ID upload failure still enqueues /sleep-event (regression)',
+      () async {
+        when(
+          () => localStorage.getProfile(),
+        ).thenAnswer((_) async => profileWithUserId('user-42'));
+        when(() => sleepApi.uploadSleepEvent(any())).thenAnswer(
+          (_) => Future<Map<String, dynamic>>.error(Exception('boom')),
+        );
+
+        await build().saveSleepEvent(date: date, sleepHours: 8);
+        await pumpEventQueue();
+
+        final enqueued =
+            verify(
+                  () => syncQueue.enqueue('/sleep-event', captureAny()),
+                ).captured.single
+                as UploadSleepEvent;
+        expect(enqueued.userId, 'user-42');
+        expect(enqueued.eventId, midnight);
+        expect(diagnostics.events, isEmpty);
+      },
+    );
+
+    test('omitting the diagnostics param defaults to the Noop sink', () async {
+      when(() => localStorage.getProfile()).thenAnswer((_) async => null);
+
+      final repo = HealthSyncRepositoryImpl(
+        localStorageRepository: localStorage,
+        preferencesRepository: prefs,
+        sleepEventsApi: sleepApi,
+        stepsApi: stepsApi,
+        syncQueue: syncQueue,
+        healthPlatformClient: client,
+        healthPlatformService: service,
+      );
+      // Must not throw: the guard still blocks the upload silently.
+      await repo.saveSleepEvent(date: date, sleepHours: 8);
+
+      verifyNever(() => sleepApi.uploadSleepEvent(any()));
+    });
+  });
+
+  group('saveStepEvent', () {
+    final date = DateTime(2026, 7, 18, 14, 30);
+    final midnight = DateTime(2026, 7, 18).millisecondsSinceEpoch;
+
+    setUp(() {
+      when(() => localStorage.saveSteps(any())).thenAnswer((_) async {});
+      when(
+        () => stepsApi.uploadSteps(any()),
+      ).thenAnswer((_) async => <String, dynamic>{});
+    });
+
+    test('valid user ID saves locally AND uploads with that ID', () async {
+      when(
+        () => localStorage.getProfile(),
+      ).thenAnswer((_) async => profileWithUserId('user-42'));
+
+      await build().saveStepEvent(date: date, stepCount: 4321);
+      await pumpEventQueue();
+
+      // StepsEntity carries no userId at all — identity is upload-only.
+      final saved =
+          verify(() => localStorage.saveSteps(captureAny())).captured.single
+              as StepsEntity;
+      expect(saved.eventId, midnight);
+      expect(saved.initialSteps, 0);
+      expect(saved.actualSteps, 4321);
+
+      final uploaded =
+          verify(() => stepsApi.uploadSteps(captureAny())).captured.single
+              as UploadStepEventResponse;
+      expect(uploaded.userId, 'user-42');
+      expect(uploaded.eventId, midnight);
+      expect(uploaded.initialSteps, 0);
+      expect(uploaded.actualSteps, 4321);
+
+      verifyNever(() => syncQueue.enqueue(any(), any()));
+      expect(diagnostics.events, isEmpty);
+    });
+
+    test(
+      'missing profile: local save still happens, upload API is NOT called',
+      () async {
+        when(() => localStorage.getProfile()).thenAnswer((_) async => null);
+
+        await build().saveStepEvent(date: date, stepCount: 4321);
+        await pumpEventQueue();
+
+        final saved =
+            verify(() => localStorage.saveSteps(captureAny())).captured.single
+                as StepsEntity;
+        expect(saved.eventId, midnight);
+        expect(saved.actualSteps, 4321);
+
+        verifyNever(() => stepsApi.uploadSteps(any()));
+        verifyNever(() => syncQueue.enqueue(any(), any()));
+      },
+    );
+
+    test(
+      'empty-string userId: local save still happens, upload API is NOT called',
+      () async {
+        when(
+          () => localStorage.getProfile(),
+        ).thenAnswer((_) async => profileWithUserId(''));
+
+        await build().saveStepEvent(date: date, stepCount: 4321);
+        await pumpEventQueue();
+
+        verify(() => localStorage.saveSteps(any())).called(1);
+        verifyNever(() => stepsApi.uploadSteps(any()));
+        verifyNever(() => syncQueue.enqueue(any(), any()));
+      },
+    );
+
+    test('missing user ID never enqueues /steps-count even with the upload '
+        'primed to fail', () async {
+      when(() => localStorage.getProfile()).thenAnswer((_) async => null);
+      when(() => stepsApi.uploadSteps(any())).thenAnswer(
+        (_) => Future<Map<String, dynamic>>.error(Exception('boom')),
+      );
+
+      await build().saveStepEvent(date: date, stepCount: 4321);
+      await pumpEventQueue();
+
+      verifyNever(() => stepsApi.uploadSteps(any()));
+      verifyNever(() => syncQueue.enqueue('/steps-count', any()));
+    });
+
+    test(
+      'missing user ID emits identityMissing with the steps domain',
+      () async {
+        when(() => localStorage.getProfile()).thenAnswer((_) async => null);
+
+        await build().saveStepEvent(date: date, stepCount: 4321);
+
+        expect(diagnostics.events, hasLength(1));
+        final event = diagnostics.events.single;
+        expect(event.type, HealthSyncDiagnosticType.identityMissing);
+        expect(event.severity, HealthSyncDiagnosticSeverity.warning);
+        expect(event.domain, HealthSyncDomain.steps);
+        expect(event.platform, isNull);
+        expect(event.metadata, isEmpty);
+      },
+    );
+
+    test(
+      'valid user ID upload failure still enqueues /steps-count (regression)',
+      () async {
+        when(
+          () => localStorage.getProfile(),
+        ).thenAnswer((_) async => profileWithUserId('user-42'));
+        when(() => stepsApi.uploadSteps(any())).thenAnswer(
+          (_) => Future<Map<String, dynamic>>.error(Exception('boom')),
+        );
+
+        await build().saveStepEvent(date: date, stepCount: 4321);
+        await pumpEventQueue();
+
+        final enqueued =
+            verify(
+                  () => syncQueue.enqueue('/steps-count', captureAny()),
+                ).captured.single
+                as UploadStepEventResponse;
+        expect(enqueued.userId, 'user-42');
+        expect(enqueued.eventId, midnight);
+        expect(diagnostics.events, isEmpty);
+      },
+    );
   });
 
   group('Health Connect navigation', () {

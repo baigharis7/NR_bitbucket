@@ -169,6 +169,31 @@ void main() {
     });
   });
 
+  group('HealthSyncDiagnostics.identityMissing', () {
+    test('is a warning-severity event with empty metadata', () {
+      final event = HealthSyncDiagnostics.identityMissing(
+        domain: HealthSyncDomain.sleep,
+      );
+      expect(event.type, HealthSyncDiagnosticType.identityMissing);
+      expect(event.severity, HealthSyncDiagnosticSeverity.warning);
+      expect(event.domain, HealthSyncDomain.sleep);
+      expect(event.platform, isNull);
+      // Privacy: the builder exposes no way to attach a record, a user
+      // identifier, or any other payload.
+      expect(event.metadata, isEmpty);
+    });
+
+    test('carries the coarse platform when provided', () {
+      final event = HealthSyncDiagnostics.identityMissing(
+        domain: HealthSyncDomain.steps,
+        platform: HealthSyncPlatform.android,
+      );
+      expect(event.domain, HealthSyncDomain.steps);
+      expect(event.platform, HealthSyncPlatform.android);
+      expect(event.metadata, isEmpty);
+    });
+  });
+
   group('HealthSyncDiagnostics.fetchSucceeded', () {
     test('is an info-severity event carrying only the count', () {
       final event = HealthSyncDiagnostics.fetchSucceeded(

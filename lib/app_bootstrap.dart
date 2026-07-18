@@ -610,6 +610,7 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
         healthPlatformClient: healthPlatformClient,
         healthPlatformService: healthPlatformService,
         syncQueue: syncQueueService,
+        diagnostics: const CrashlyticsHealthSyncDiagnosticsSink(),
       );
       final ProfileComputationService profileComputationService = ProfileComputationService(referenceDatabase);
       // Fetch reference data in the background (nutrients, nutrient loss, sport METs, objective-nutrients, nutrient-objective)
