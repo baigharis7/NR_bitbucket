@@ -10,12 +10,15 @@ import 'package:nutrenaissance_flutter/data/local/models/steps/steps_entity.dart
 import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_service.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_activity.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_fetch_result.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_diagnostic_event.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_metadata.dart';
 import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_client.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sanitizer.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sink.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/interval_union.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
@@ -30,6 +33,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   final SyncQueueService syncQueue;
   final HealthPlatformClient healthPlatformClient;
   final HealthPlatformService healthPlatformService;
+  final HealthSyncDiagnosticsSink diagnostics;
 
   HealthSyncRepositoryImpl({
     required this.localStorageRepository,
@@ -39,6 +43,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     required this.syncQueue,
     required this.healthPlatformClient,
     required this.healthPlatformService,
+    this.diagnostics = const NoopHealthSyncDiagnosticsSink(),
   });
 
   /// Permissions list derived from the service's read types (one READ each).
@@ -348,9 +353,36 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   static int _midnightMillis(DateTime date) =>
       DateTime(date.year, date.month, date.day).millisecondsSinceEpoch;
 
-  Future<String> _getUserId() async {
+  /// Resolves the current user ID, or `null` when no usable identity exists
+  /// (no stored profile, or a profile whose userId is null/empty). Callers
+  /// must treat `null` as "do not upload".
+  Future<String?> _getUserIdOrNull() async {
     final profile = await localStorageRepository.getProfile();
-    return profile?.userId ?? '';
+    final userId = profile?.userId;
+    if (userId == null || userId.isEmpty) return null;
+    return userId;
+  }
+
+  /// Central identity gate for sleep/step uploads — the ONLY path to the
+  /// upload APIs and, transitively, to the sync queue (each `catchError →
+  /// syncQueue.enqueue` fallback lives inside its [upload] closure, so a
+  /// payload with a missing user ID can never reach the API or the queue).
+  ///
+  /// When [userId] is null: emits an `identityMissing` diagnostic (severity
+  /// warning, no metadata; platform tagging is T15's) and returns without
+  /// invoking [upload]. When non-null: runs [upload] unchanged.
+  void _uploadIfIdentified({
+    required String? userId,
+    required HealthSyncDomain domain,
+    required void Function(String userId) upload,
+  }) {
+    if (userId == null) {
+      debugPrint(
+          '[HealthSync] ${domain.name} upload skipped: missing user ID');
+      diagnostics.add(HealthSyncDiagnostics.identityMissing(domain: domain));
+      return;
+    }
+    upload(userId);
   }
 
   // ── Sleep ──────────────────────────────────────────────────────────────
@@ -361,29 +393,38 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     required double sleepHours,
   }) async {
     final midnight = _midnightMillis(date);
-    final userId = await _getUserId();
+    final userId = await _getUserIdOrNull();
     final sleepMinutes = (sleepHours * 60).round();
 
-    // Save to Hive
+    // Always save to Hive, even without an identity: the record is
+    // day-bucketed (eventId == midnight), so the periodic cycle re-saves the
+    // same record with the repaired identity once the profile is back — the
+    // dashboard stays fresh and nothing is orphaned.
     final entity = SleepEventEntity(
-      userId: userId,
+      userId: userId ?? '',
       eventDate: midnight,
       eventId: midnight,
       sleepMinutes: sleepMinutes,
     );
     await localStorageRepository.saveSleepEvent(entity);
 
-    // Fire-and-forget to DynamoDB
-    final uploadModel = UploadSleepEvent(
+    _uploadIfIdentified(
       userId: userId,
-      eventId: midnight,
-      eventDate: midnight,
-      sleepMinutes: sleepMinutes,
+      domain: HealthSyncDomain.sleep,
+      upload: (userId) {
+        // Fire-and-forget to DynamoDB
+        final uploadModel = UploadSleepEvent(
+          userId: userId,
+          eventId: midnight,
+          eventDate: midnight,
+          sleepMinutes: sleepMinutes,
+        );
+        sleepEventsApi.uploadSleepEvent(uploadModel).catchError((error) {
+          syncQueue.enqueue('/sleep-event', uploadModel);
+          return <String, dynamic>{};
+        });
+      },
     );
-    sleepEventsApi.uploadSleepEvent(uploadModel).catchError((error) {
-      syncQueue.enqueue('/sleep-event', uploadModel);
-      return <String, dynamic>{};
-    });
   }
 
   @override
@@ -401,9 +442,10 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     required int stepCount,
   }) async {
     final midnight = _midnightMillis(date);
-    final userId = await _getUserId();
+    final userId = await _getUserIdOrNull();
 
-    // Save to Hive (reuses existing StepsEntity)
+    // Always save to Hive (reuses existing StepsEntity, which carries no
+    // userId — identity only matters for the upload).
     final entity = StepsEntity(
       eventId: midnight,
       initialSteps: 0,
@@ -411,17 +453,23 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     );
     await localStorageRepository.saveSteps(entity);
 
-    // Fire-and-forget to DynamoDB (reuses existing /steps-count endpoint)
-    final uploadModel = UploadStepEventResponse(
+    _uploadIfIdentified(
       userId: userId,
-      eventId: midnight,
-      initialSteps: 0,
-      actualSteps: stepCount,
+      domain: HealthSyncDomain.steps,
+      upload: (userId) {
+        // Fire-and-forget to DynamoDB (reuses existing /steps-count endpoint)
+        final uploadModel = UploadStepEventResponse(
+          userId: userId,
+          eventId: midnight,
+          initialSteps: 0,
+          actualSteps: stepCount,
+        );
+        stepsApi.uploadSteps(uploadModel).catchError((error) {
+          syncQueue.enqueue('/steps-count', uploadModel);
+          return <String, dynamic>{};
+        });
+      },
     );
-    stepsApi.uploadSteps(uploadModel).catchError((error) {
-      syncQueue.enqueue('/steps-count', uploadModel);
-      return <String, dynamic>{};
-    });
   }
 
   @override

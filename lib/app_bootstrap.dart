@@ -100,6 +100,7 @@ import 'package:nutrenaissance_flutter/data/repository/sportevents/sport_events_
 import 'package:nutrenaissance_flutter/data/repository/healthsync/health_sync_repository_impl.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_client.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sink.dart';
 import 'package:nutrenaissance_flutter/data/api/sleepevents/sleep_events_api.dart';
 import 'package:nutrenaissance_flutter/data/local/models/healthsync/health_sync_metadata_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sleepevents/sleep_event_entity.dart';
@@ -609,6 +610,7 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
         healthPlatformClient: healthPlatformClient,
         healthPlatformService: healthPlatformService,
         syncQueue: syncQueueService,
+        diagnostics: const CrashlyticsHealthSyncDiagnosticsSink(),
       );
       final ProfileComputationService profileComputationService = ProfileComputationService(referenceDatabase);
       // Fetch reference data in the background (nutrients, nutrient loss, sport METs, objective-nutrients, nutrient-objective)
