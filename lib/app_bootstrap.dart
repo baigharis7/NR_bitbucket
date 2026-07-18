@@ -98,6 +98,8 @@ import 'package:nutrenaissance_flutter/data/repository/recommendations/recommend
 import 'package:nutrenaissance_flutter/data/repository/routines/routines_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/sportevents/sport_events_repository_impl.dart';
 import 'package:nutrenaissance_flutter/data/repository/healthsync/health_sync_repository_impl.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_client.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_service.dart';
 import 'package:nutrenaissance_flutter/data/api/sleepevents/sleep_events_api.dart';
 import 'package:nutrenaissance_flutter/data/local/models/healthsync/health_sync_metadata_entity.dart';
 import 'package:nutrenaissance_flutter/data/local/models/sleepevents/sleep_event_entity.dart';
@@ -597,11 +599,15 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
       final LocalStorageRepository localStorageRepository = LocalStorageImpl();
       final SleepEventsApi sleepEventsApi = SleepEventsApi(prefsRepository, authenticationService, chuck);
       final StepsApi stepsApiForHealthSync = StepsApi(prefsRepository, authenticationService, chuck);
+      final healthPlatformClient = HealthPlatformClientImpl();
+      final healthPlatformService = HealthPlatformServiceImpl();
       final healthSyncRepository = HealthSyncRepositoryImpl(
         localStorageRepository: localStorageRepository,
         preferencesRepository: prefsRepository,
         sleepEventsApi: sleepEventsApi,
         stepsApi: stepsApiForHealthSync,
+        healthPlatformClient: healthPlatformClient,
+        healthPlatformService: healthPlatformService,
         syncQueue: syncQueueService,
       );
       final ProfileComputationService profileComputationService = ProfileComputationService(referenceDatabase);
