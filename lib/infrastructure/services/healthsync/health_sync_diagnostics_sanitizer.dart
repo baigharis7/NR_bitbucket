@@ -99,6 +99,22 @@ class HealthSyncDiagnostics {
     );
   }
 
+  /// Builds a `permissionFalseNegativeTolerated` event: the permission probe
+  /// reported false but the guarded read succeeded, so the sync proceeded.
+  /// Warning severity — worth watching in aggregate, not an error. Carries no
+  /// metadata beyond the coarse fields.
+  static HealthSyncDiagnosticEvent permissionFalseNegativeTolerated({
+    required HealthSyncDomain domain,
+    HealthSyncPlatform? platform,
+  }) {
+    return HealthSyncDiagnosticEvent(
+      type: HealthSyncDiagnosticType.permissionFalseNegativeTolerated,
+      severity: HealthSyncDiagnosticSeverity.warning,
+      domain: domain,
+      platform: platform,
+    );
+  }
+
   /// Builds a `platformUnavailable` event: HealthKit / Health Connect is
   /// missing or unusable on this device. No metadata beyond coarse fields.
   static HealthSyncDiagnosticEvent platformUnavailable({
