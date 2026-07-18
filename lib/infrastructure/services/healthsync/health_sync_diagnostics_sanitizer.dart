@@ -75,6 +75,22 @@ class HealthSyncDiagnostics {
     );
   }
 
+  /// Builds an `identityMissing` event: a warning that a day-bucketed record
+  /// was saved locally but its upload was skipped because no user ID was
+  /// available (profile absent or userId null/empty). Carries no metadata —
+  /// never the record, the user, or any identifier.
+  static HealthSyncDiagnosticEvent identityMissing({
+    required HealthSyncDomain domain,
+    HealthSyncPlatform? platform,
+  }) {
+    return HealthSyncDiagnosticEvent(
+      type: HealthSyncDiagnosticType.identityMissing,
+      severity: HealthSyncDiagnosticSeverity.warning,
+      domain: domain,
+      platform: platform,
+    );
+  }
+
   /// Returns a `yyyy-MM-dd` day bucket, stripping all time-of-day precision.
   static String dayBucket(DateTime dt) {
     final year = dt.year.toString().padLeft(4, '0');
