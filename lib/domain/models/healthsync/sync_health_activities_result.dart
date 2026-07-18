@@ -5,18 +5,14 @@ import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_com
 ///
 /// Lets callers distinguish "the platform read succeeded" (safe to treat the
 /// window as synced) from skips and failures, instead of inferring intent
-/// from an empty event list. Introduced by T8; T7 extends the result with a
-/// `permissionResolution` field and removes [skippedNoPermissions].
+/// from an empty event list. Introduced by T8; T7 added [permissionResolution]
+/// and replaced the probe-false abort with a guarded read.
 enum SyncHealthOutcome {
   /// Sync toggle is off.
   skippedDisabled,
 
   /// Less than the minimum interval since the last sync (`since == null`).
   skippedThrottled,
-
-  /// The hasPermissions probe reported false. T8 keeps this abort;
-  /// T7 replaces the branch with a guarded read and removes this value.
-  skippedNoPermissions,
 
   /// Missing prerequisites: empty userId or sportsInfo master file not loaded.
   skippedPreconditions,

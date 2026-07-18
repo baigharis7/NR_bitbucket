@@ -56,8 +56,16 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
   @override
   Future<SyncHealthActivitiesResult> execute({DateTime? since}) async {
     final syncedEvents = <SportEventComplete>[];
-    SyncHealthActivitiesResult resultWith(SyncHealthOutcome outcome) =>
-        SyncHealthActivitiesResult(syncedEvents: syncedEvents, outcome: outcome);
+    SyncHealthActivitiesResult resultWith(
+      SyncHealthOutcome outcome, {
+      SyncPermissionResolution permissionResolution =
+          SyncPermissionResolution.none,
+    }) =>
+        SyncHealthActivitiesResult(
+          syncedEvents: syncedEvents,
+          outcome: outcome,
+          permissionResolution: permissionResolution,
+        );
 
     try {
       // Check if sync is enabled
@@ -67,12 +75,15 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
         return resultWith(SyncHealthOutcome.skippedDisabled);
       }
 
-      // Check if we have permissions (probe abort kept as-is; T7 replaces
-      // this branch with a guarded read).
+      // Permission probes under-report: Health Connect's hasPermissions() is
+      // unreliable after app restarts, and HealthKit cannot report read
+      // grants at all (the plugin maps null → false). A false probe therefore
+      // proceeds to the guarded typed read below — the platform's actual
+      // answer (data, or a classified permissionDenied) outranks the probe.
       final hasPermissions = await healthSyncRepository.hasPermissions();
-      if (!hasPermissions) {
-        _log('Sync aborted: no permissions');
-        return resultWith(SyncHealthOutcome.skippedNoPermissions);
+      final probeReportedFalse = !hasPermissions;
+      if (probeReportedFalse) {
+        _log('Permission probe reported false — proceeding with guarded read');
       }
 
       // Check throttling - don't sync if we synced recently
@@ -125,6 +136,19 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
         endDate: endDate,
       );
 
+      final permissionResolution = _resolvePermission(
+        probeReportedFalse: probeReportedFalse,
+        fetchStatus: fetchResult.status,
+      );
+      if (permissionResolution ==
+          SyncPermissionResolution.toleratedFalseNegative) {
+        diagnostics.add(
+          HealthSyncDiagnostics.permissionFalseNegativeTolerated(
+            domain: HealthSyncDomain.workout,
+          ),
+        );
+      }
+
       switch (fetchResult.status) {
         case HealthFetchStatus.failed:
           _log('Sync aborted: fetch failed (${fetchResult.failureReason?.name})');
@@ -132,19 +156,28 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
             domain: HealthSyncDomain.workout,
             category: _categoryFor(fetchResult.failureReason),
           ));
-          return resultWith(SyncHealthOutcome.fetchFailed);
+          return resultWith(
+            SyncHealthOutcome.fetchFailed,
+            permissionResolution: permissionResolution,
+          );
         case HealthFetchStatus.permissionDenied:
           _log('Sync aborted: fetch reported permission denied');
           diagnostics.add(HealthSyncDiagnostics.permissionDenied(
             domain: HealthSyncDomain.workout,
           ));
-          return resultWith(SyncHealthOutcome.permissionDenied);
+          return resultWith(
+            SyncHealthOutcome.permissionDenied,
+            permissionResolution: permissionResolution,
+          );
         case HealthFetchStatus.platformUnavailable:
           _log('Sync aborted: health platform unavailable');
           diagnostics.add(HealthSyncDiagnostics.platformUnavailable(
             domain: HealthSyncDomain.workout,
           ));
-          return resultWith(SyncHealthOutcome.platformUnavailable);
+          return resultWith(
+            SyncHealthOutcome.platformUnavailable,
+            permissionResolution: permissionResolution,
+          );
         case HealthFetchStatus.successNoData:
           _log('Fetched 0 activities from health platform');
           diagnostics.add(HealthSyncDiagnostics.fetchNoData(
@@ -153,7 +186,10 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
           // The platform read genuinely succeeded — the window is clean.
           await healthSyncRepository.setLastSyncTime(DateTime.now());
           _log('Sync complete: no activities in window');
-          return resultWith(SyncHealthOutcome.syncedNoData);
+          return resultWith(
+            SyncHealthOutcome.syncedNoData,
+            permissionResolution: permissionResolution,
+          );
         case HealthFetchStatus.success:
         case HealthFetchStatus.partialSuccess:
           break; // Import below.
@@ -207,6 +243,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
 
       return resultWith(
         isPartial ? SyncHealthOutcome.syncedPartial : SyncHealthOutcome.synced,
+        permissionResolution: permissionResolution,
       );
     } catch (e, stack) {
       _log('Sync failed with error: $e');
@@ -323,4 +360,32 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
 
     return sportEvent;
   }
+}
+
+/// Pure permission-resolution policy: reconciles the hasPermissions() probe
+/// against the guarded read's actual [HealthFetchStatus].
+///
+/// - The platform refusing the read ([HealthFetchStatus.permissionDenied]) is
+///   a verified denial regardless of the probe — the platform's own answer
+///   outranks the probe in both directions.
+/// - A false probe followed by a successful read (success / successNoData /
+///   partialSuccess) is a tolerated false negative.
+/// - Everything else (real failures, platform unavailable, probe true +
+///   successful read) carries no permission signal.
+SyncPermissionResolution _resolvePermission({
+  required bool probeReportedFalse,
+  required HealthFetchStatus fetchStatus,
+}) {
+  if (fetchStatus == HealthFetchStatus.permissionDenied) {
+    return SyncPermissionResolution.verifiedDenial;
+  }
+  const successStatuses = {
+    HealthFetchStatus.success,
+    HealthFetchStatus.successNoData,
+    HealthFetchStatus.partialSuccess,
+  };
+  if (probeReportedFalse && successStatuses.contains(fetchStatus)) {
+    return SyncPermissionResolution.toleratedFalseNegative;
+  }
+  return SyncPermissionResolution.none;
 }

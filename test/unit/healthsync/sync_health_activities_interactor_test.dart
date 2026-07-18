@@ -87,22 +87,6 @@ void main() {
           ));
     });
 
-    test('returns skippedNoPermissions when user has no permissions', () async {
-      when(() => mockHealthSyncRepository.isHealthSyncEnabled())
-          .thenAnswer((_) async => true);
-      when(() => mockHealthSyncRepository.hasPermissions())
-          .thenAnswer((_) async => false);
-
-      final result = await interactor.execute();
-
-      expect(result.syncedEvents, isEmpty);
-      expect(result.outcome, SyncHealthOutcome.skippedNoPermissions);
-      verifyNever(() => mockHealthSyncRepository.fetchActivitiesResult(
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ));
-    });
-
     test('returns skippedThrottled when synced recently (throttling)', () async {
       when(() => mockHealthSyncRepository.isHealthSyncEnabled())
           .thenAnswer((_) async => true);
@@ -812,6 +796,217 @@ void main() {
           ),
           returnsNormally,
         );
+      });
+    });
+
+    group('permission tolerance (probe × fetch-outcome matrix)', () {
+      late InMemoryHealthSyncDiagnosticsSink sink;
+
+      setUp(() {
+        sink = InMemoryHealthSyncDiagnosticsSink();
+        interactor = SyncHealthActivitiesInteractorImpl(
+          healthSyncRepository: mockHealthSyncRepository,
+          localStorageRepository: mockLocalStorageRepository,
+          preferencesRepository: mockPreferencesRepository,
+          saveSportEventInteractor: mockSaveSportEventInteractor,
+          sportEventsRepository: mockSportEventsRepository,
+          sportKcalCalculationService: mockSportKcalCalculationService,
+          diagnostics: sink,
+        );
+      });
+
+      /// Preconditions up to (but not including) the fetch: sync enabled,
+      /// first sync (no throttling), valid user, sports master file present.
+      void stubPreconditions({required bool probeHasPermissions}) {
+        when(() => mockHealthSyncRepository.isHealthSyncEnabled())
+            .thenAnswer((_) async => true);
+        when(() => mockHealthSyncRepository.hasPermissions())
+            .thenAnswer((_) async => probeHasPermissions);
+        when(() => mockHealthSyncRepository.getLastSyncTime())
+            .thenAnswer((_) async => null);
+        when(() => mockPreferencesRepository.getSub()).thenReturn('user123');
+        when(() => mockLocalStorageRepository
+                .getMasterFile(MasterFilesType.sportsInfo))
+            .thenAnswer((_) async => testSportsInfo);
+        when(() => mockHealthSyncRepository.setLastSyncTime(any()))
+            .thenAnswer((_) async {});
+      }
+
+      void stubFetch(HealthFetchResult<List<HealthActivity>> result) {
+        when(() => mockHealthSyncRepository.fetchActivitiesResult(
+              startDate: any(named: 'startDate'),
+              endDate: any(named: 'endDate'),
+            )).thenAnswer((_) async => result);
+      }
+
+      void stubProcessing() {
+        when(() => mockHealthSyncRepository.isAlreadySynced(any()))
+            .thenAnswer((_) async => false);
+        when(() => mockSaveSportEventInteractor.execute(any(), any()))
+            .thenAnswer((_) async {});
+        when(() => mockSportEventsRepository.syncToBackend(any()))
+            .thenAnswer((_) {});
+        when(() => mockHealthSyncRepository.saveHealthSyncMetadata(any()))
+            .thenAnswer((_) async {});
+      }
+
+      bool toleratedEmitted() => sink.events.any((e) =>
+          e.type ==
+          HealthSyncDiagnosticType.permissionFalseNegativeTolerated);
+
+      test('probe false + success: imports, advances, tolerated', () async {
+        stubPreconditions(probeHasPermissions: false);
+        stubFetch(successResult([aHealthActivity()]));
+        stubProcessing();
+
+        final result = await interactor.execute();
+
+        expect(result.outcome, SyncHealthOutcome.synced);
+        expect(
+          result.permissionResolution,
+          SyncPermissionResolution.toleratedFalseNegative,
+        );
+        expect(result.syncedEvents, hasLength(1));
+        verify(() => mockSaveSportEventInteractor.execute(any(), any()))
+            .called(1);
+        verify(() => mockHealthSyncRepository.setLastSyncTime(any()))
+            .called(1);
+        expect(toleratedEmitted(), isTrue);
+      });
+
+      test('probe false + successNoData: advances, tolerated', () async {
+        stubPreconditions(probeHasPermissions: false);
+        stubFetch(noDataResult());
+
+        final result = await interactor.execute();
+
+        expect(result.outcome, SyncHealthOutcome.syncedNoData);
+        expect(
+          result.permissionResolution,
+          SyncPermissionResolution.toleratedFalseNegative,
+        );
+        expect(result.syncedEvents, isEmpty);
+        verify(() => mockHealthSyncRepository.setLastSyncTime(any()))
+            .called(1);
+        expect(toleratedEmitted(), isTrue);
+      });
+
+      test('probe false + partialSuccess: imports, advances, tolerated',
+          () async {
+        stubPreconditions(probeHasPermissions: false);
+        stubFetch(partialSuccessResult(
+          [aHealthActivity()],
+          reason: HealthFetchFailureReason.pluginError,
+        ));
+        stubProcessing();
+
+        final result = await interactor.execute();
+
+        expect(result.outcome, SyncHealthOutcome.syncedPartial);
+        expect(
+          result.permissionResolution,
+          SyncPermissionResolution.toleratedFalseNegative,
+        );
+        expect(result.syncedEvents, hasLength(1));
+        verify(() => mockHealthSyncRepository.setLastSyncTime(any()))
+            .called(1);
+        expect(toleratedEmitted(), isTrue);
+      });
+
+      test('probe false + permissionDenied: no import, no advance, verified',
+          () async {
+        stubPreconditions(probeHasPermissions: false);
+        stubFetch(permissionDeniedResult());
+
+        final result = await interactor.execute();
+
+        expect(result.outcome, SyncHealthOutcome.permissionDenied);
+        expect(
+          result.permissionResolution,
+          SyncPermissionResolution.verifiedDenial,
+        );
+        expect(result.syncedEvents, isEmpty);
+        verifyNever(() => mockSaveSportEventInteractor.execute(any(), any()));
+        verifyNever(() => mockHealthSyncRepository.setLastSyncTime(any()));
+        expect(toleratedEmitted(), isFalse);
+      });
+
+      test('probe false + failed: real failure is NOT permission attention',
+          () async {
+        stubPreconditions(probeHasPermissions: false);
+        stubFetch(failedResult());
+
+        final result = await interactor.execute();
+
+        expect(result.outcome, SyncHealthOutcome.fetchFailed);
+        expect(
+          result.permissionResolution,
+          SyncPermissionResolution.none,
+        );
+        verifyNever(() => mockHealthSyncRepository.setLastSyncTime(any()));
+        expect(toleratedEmitted(), isFalse);
+      });
+
+      test('probe false + platformUnavailable: not permission attention',
+          () async {
+        stubPreconditions(probeHasPermissions: false);
+        stubFetch(platformUnavailableResult());
+
+        final result = await interactor.execute();
+
+        expect(result.outcome, SyncHealthOutcome.platformUnavailable);
+        expect(
+          result.permissionResolution,
+          SyncPermissionResolution.none,
+        );
+        verifyNever(() => mockHealthSyncRepository.setLastSyncTime(any()));
+        expect(toleratedEmitted(), isFalse);
+      });
+
+      test(
+          'probe true + permissionDenied: platform-reported denial is '
+          'verified regardless of the probe', () async {
+        stubPreconditions(probeHasPermissions: true);
+        stubFetch(permissionDeniedResult());
+
+        final result = await interactor.execute();
+
+        expect(result.outcome, SyncHealthOutcome.permissionDenied);
+        expect(
+          result.permissionResolution,
+          SyncPermissionResolution.verifiedDenial,
+        );
+        verifyNever(() => mockHealthSyncRepository.setLastSyncTime(any()));
+      });
+
+      test('probe true + success: byte-for-byte T8 behavior, resolution none',
+          () async {
+        stubPreconditions(probeHasPermissions: true);
+        stubFetch(successResult([aHealthActivity()]));
+        stubProcessing();
+
+        final result = await interactor.execute();
+
+        expect(result.outcome, SyncHealthOutcome.synced);
+        expect(result.permissionResolution, SyncPermissionResolution.none);
+        expect(result.syncedEvents, hasLength(1));
+        verify(() => mockHealthSyncRepository.setLastSyncTime(any()))
+            .called(1);
+        expect(toleratedEmitted(), isFalse);
+      });
+
+      test('sync disabled: skippedDisabled, never fetches', () async {
+        when(() => mockHealthSyncRepository.isHealthSyncEnabled())
+            .thenAnswer((_) async => false);
+
+        final result = await interactor.execute();
+
+        expect(result.outcome, SyncHealthOutcome.skippedDisabled);
+        expect(result.permissionResolution, SyncPermissionResolution.none);
+        verifyNever(() => mockHealthSyncRepository.fetchActivitiesResult(
+              startDate: any(named: 'startDate'),
+              endDate: any(named: 'endDate'),
+            ));
       });
     });
   });
