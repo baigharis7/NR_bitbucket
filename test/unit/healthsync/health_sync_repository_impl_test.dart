@@ -11,6 +11,9 @@ import 'package:nutrenaissance_flutter/infrastructure/services/sync_queue_servic
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_client.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_service.dart';
 
+import '../../support/healthsync/health_data_point_builder.dart';
+import '../../support/healthsync/health_source_fixtures.dart';
+
 class _MockLocalStorage extends Mock implements LocalStorageRepository {}
 
 class _MockPreferences extends Mock implements PreferencesRepository {}
@@ -101,29 +104,6 @@ class _FakeService implements HealthPlatformService {
 
   @override
   Future<void> openHealthConnect() async => openCount++;
-}
-
-/// Builds a raw HealthDataPoint for tests. Mirrors the health package's
-/// required fields; unused metadata is defaulted.
-HealthDataPoint _point({
-  required HealthDataType type,
-  required HealthValue value,
-  required DateTime from,
-  required DateTime to,
-  String sourceName = 'TestSource',
-}) {
-  return HealthDataPoint(
-    uuid: '$type-${from.millisecondsSinceEpoch}',
-    value: value,
-    type: type,
-    unit: HealthDataUnit.NO_UNIT,
-    dateFrom: from,
-    dateTo: to,
-    sourcePlatform: HealthPlatformType.appleHealth,
-    sourceDeviceId: 'device',
-    sourceId: 'source-id',
-    sourceName: sourceName,
-  );
 }
 
 void main() {
@@ -231,36 +211,28 @@ void main() {
       service.distanceType = HealthDataType.DISTANCE_WALKING_RUNNING;
 
       client.dataByType[HealthDataType.WORKOUT] = [
-        _point(
-          type: HealthDataType.WORKOUT,
-          value: WorkoutHealthValue(
-            workoutActivityType: HealthWorkoutActivityType.RUNNING,
-          ),
-          from: start,
-          to: end,
-          sourceName: 'Apple Watch',
-        ),
+        workoutPoint(from: start, to: end, source: appleWatch),
       ];
       client.dataByType[HealthDataType.ACTIVE_ENERGY_BURNED] = [
-        _point(
+        numericPoint(
           type: HealthDataType.ACTIVE_ENERGY_BURNED,
-          value: NumericHealthValue(numericValue: 300),
+          value: 300,
           from: start,
           to: end,
         ),
       ];
       client.dataByType[HealthDataType.DISTANCE_WALKING_RUNNING] = [
-        _point(
+        numericPoint(
           type: HealthDataType.DISTANCE_WALKING_RUNNING,
-          value: NumericHealthValue(numericValue: 5000),
+          value: 5000,
           from: start,
           to: end,
         ),
       ];
       client.dataByType[HealthDataType.HEART_RATE] = [
-        _point(
+        numericPoint(
           type: HealthDataType.HEART_RATE,
-          value: NumericHealthValue(numericValue: 150),
+          value: 150,
           from: start,
           to: end,
         ),
@@ -306,15 +278,11 @@ void main() {
         final start = DateTime(2026, 7, 1, 8, 0);
         final end = DateTime(2026, 7, 1, 8, 30);
         client.dataByType[HealthDataType.WORKOUT] = [
-          _point(
-            type: HealthDataType.WORKOUT,
-            value: WorkoutHealthValue(
-              workoutActivityType: HealthWorkoutActivityType.RUNNING,
-              totalEnergyBurned: 120,
-              totalDistance: 2000,
-            ),
+          workoutPoint(
             from: start,
             to: end,
+            totalEnergyBurned: 120,
+            totalDistance: 2000,
           ),
         ];
 
@@ -348,36 +316,28 @@ void main() {
       service.distanceType = HealthDataType.DISTANCE_WALKING_RUNNING;
 
       client.dataByType[HealthDataType.WORKOUT] = [
-        _point(
-          type: HealthDataType.WORKOUT,
-          value: WorkoutHealthValue(
-            workoutActivityType: HealthWorkoutActivityType.RUNNING,
-          ),
-          from: start,
-          to: end,
-          sourceName: 'Apple Watch',
-        ),
+        workoutPoint(from: start, to: end, source: appleWatch),
       ];
       client.dataByType[HealthDataType.ACTIVE_ENERGY_BURNED] = [
-        _point(
+        numericPoint(
           type: HealthDataType.ACTIVE_ENERGY_BURNED,
-          value: NumericHealthValue(numericValue: 300),
+          value: 300,
           from: start,
           to: end,
         ),
       ];
       client.dataByType[HealthDataType.DISTANCE_WALKING_RUNNING] = [
-        _point(
+        numericPoint(
           type: HealthDataType.DISTANCE_WALKING_RUNNING,
-          value: NumericHealthValue(numericValue: 5000),
+          value: 5000,
           from: start,
           to: end,
         ),
       ];
       client.dataByType[HealthDataType.HEART_RATE] = [
-        _point(
+        numericPoint(
           type: HealthDataType.HEART_RATE,
-          value: NumericHealthValue(numericValue: 150),
+          value: 150,
           from: start,
           to: end,
         ),
@@ -439,15 +399,7 @@ void main() {
         final start = DateTime(2026, 7, 1, 8, 0);
         final end = DateTime(2026, 7, 1, 9, 0);
         client.dataByType[HealthDataType.WORKOUT] = [
-          _point(
-            type: HealthDataType.WORKOUT,
-            value: WorkoutHealthValue(
-              workoutActivityType: HealthWorkoutActivityType.RUNNING,
-            ),
-            from: start,
-            to: end,
-            sourceName: 'Apple Watch',
-          ),
+          workoutPoint(from: start, to: end, source: appleWatch),
         ];
 
         final activities = await build().fetchActivities(
@@ -477,9 +429,7 @@ void main() {
     test('sums non-overlapping sleep sessions', () async {
       final date = DateTime(2026, 7, 1);
       client.dataByType[HealthDataType.SLEEP_SESSION] = [
-        _point(
-          type: HealthDataType.SLEEP_SESSION,
-          value: NumericHealthValue(numericValue: 0),
+        sleepPoint(
           from: DateTime(2026, 6, 30, 23, 0),
           to: DateTime(2026, 7, 1, 6, 0),
         ),
@@ -502,15 +452,15 @@ void main() {
   group('fetchTodayStepCount', () {
     test('sums numeric step values', () async {
       client.dataByType[HealthDataType.STEPS] = [
-        _point(
+        numericPoint(
           type: HealthDataType.STEPS,
-          value: NumericHealthValue(numericValue: 1000),
+          value: 1000,
           from: DateTime(2026, 7, 1, 8),
           to: DateTime(2026, 7, 1, 9),
         ),
-        _point(
+        numericPoint(
           type: HealthDataType.STEPS,
-          value: NumericHealthValue(numericValue: 500),
+          value: 500,
           from: DateTime(2026, 7, 1, 10),
           to: DateTime(2026, 7, 1, 11),
         ),
