@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health/health.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nutrenaissance_flutter/data/repository/healthsync/health_sync_repository_impl.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/health_activity.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_fetch_result.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
@@ -39,6 +42,7 @@ class _FakeClient implements HealthPlatformClient {
   Object? throwOnAuthorize;
   Object? throwOnHasPermissions;
   Object? throwOnRead;
+  final Map<HealthDataType, Object> throwByType = {};
   final Map<HealthDataType, List<HealthDataPoint>> dataByType = {};
 
   List<HealthDataType>? lastAuthTypes;
@@ -78,6 +82,8 @@ class _FakeClient implements HealthPlatformClient {
   }) async {
     reads.add((types: types, start: startTime, end: endTime));
     if (throwOnRead != null) throw throwOnRead!;
+    final perType = throwByType[types.first];
+    if (perType != null) throw perType;
     return dataByType[types.first] ?? [];
   }
 }
@@ -420,17 +426,21 @@ void main() {
       expect(result.failureReason, isNull);
     });
 
-    test('client exception yields failed with pluginError reason', () async {
-      client.throwOnRead = Exception('boom');
-      final result = await build().fetchActivitiesResult(
-        startDate: DateTime(2026),
-        endDate: DateTime(2026),
-      );
-      expect(result.status, HealthFetchStatus.failed);
-      expect(result.isSuccess, isFalse);
-      expect(result.data, isNull);
-      expect(result.failureReason, HealthFetchFailureReason.pluginError);
-    });
+    test(
+      'generic client exception yields failed with unknown reason',
+      () async {
+        client.throwOnRead = Exception('boom');
+        final result = await build().fetchActivitiesResult(
+          startDate: DateTime(2026),
+          endDate: DateTime(2026),
+        );
+        expect(result.status, HealthFetchStatus.failed);
+        expect(result.isSuccess, isFalse);
+        expect(result.data, isNull);
+        expect(result.failureReason, HealthFetchFailureReason.unknown);
+        expect(result.failureMessage, Exception('x').runtimeType.toString());
+      },
+    );
 
     test(
       'fetchActivities delegates: same activity on data, [] on throw',
@@ -460,6 +470,196 @@ void main() {
           ),
           isEmpty,
         );
+      },
+    );
+  });
+
+  group('fetchActivitiesResult failure classification', () {
+    Future<HealthFetchResult<List<HealthActivity>>> fetch() =>
+        build().fetchActivitiesResult(
+          startDate: DateTime(2026, 7, 1),
+          endDate: DateTime(2026, 7, 2),
+        );
+
+    test(
+      'permission-worded primary-read error yields permissionDenied',
+      () async {
+        client.throwByType[HealthDataType.WORKOUT] = Exception(
+          'READ_WORKOUT permission denied',
+        );
+
+        final result = await fetch();
+
+        expect(result.status, HealthFetchStatus.permissionDenied);
+        expect(result.data, isNull);
+        expect(result.failureReason, HealthFetchFailureReason.permission);
+        expect(result.failureMessage, Exception('x').runtimeType.toString());
+      },
+    );
+
+    test(
+      'unavailable-worded primary-read error yields platformUnavailable',
+      () async {
+        client.throwByType[HealthDataType.WORKOUT] = Exception(
+          'Health Connect is unavailable',
+        );
+
+        final result = await fetch();
+
+        expect(result.status, HealthFetchStatus.platformUnavailable);
+        expect(result.data, isNull);
+        expect(
+          result.failureReason,
+          HealthFetchFailureReason.platformUnavailable,
+        );
+      },
+    );
+
+    test(
+      'TimeoutException on the primary read yields failed(timeout)',
+      () async {
+        client.throwByType[HealthDataType.WORKOUT] = TimeoutException('slow');
+
+        final result = await fetch();
+
+        expect(result.status, HealthFetchStatus.failed);
+        expect(result.failureReason, HealthFetchFailureReason.timeout);
+        expect(result.failureMessage, 'TimeoutException');
+      },
+    );
+
+    test(
+      'plugin-worded primary-read error yields failed(pluginError)',
+      () async {
+        client.throwByType[HealthDataType.WORKOUT] = Exception(
+          'MissingPluginException: no implementation found',
+        );
+
+        final result = await fetch();
+
+        expect(result.status, HealthFetchStatus.failed);
+        expect(result.failureReason, HealthFetchFailureReason.pluginError);
+      },
+    );
+
+    test(
+      'fetchActivities parity: classified failures still return []',
+      () async {
+        client.throwByType[HealthDataType.WORKOUT] = Exception(
+          'READ_WORKOUT permission denied',
+        );
+        expect(
+          await build().fetchActivities(
+            startDate: DateTime(2026, 7, 1),
+            endDate: DateTime(2026, 7, 2),
+          ),
+          isEmpty,
+        );
+      },
+    );
+  });
+
+  group('fetchActivitiesResult enrichment guards', () {
+    final start = DateTime(2026, 7, 1, 8, 0);
+    final end = DateTime(2026, 7, 1, 9, 0);
+
+    void seedWorkout() {
+      client.dataByType[HealthDataType.WORKOUT] = [
+        workoutPoint(
+          from: start,
+          to: end,
+          source: appleWatch,
+          totalEnergyBurned: 120,
+          totalDistance: 2000,
+        ),
+      ];
+    }
+
+    Future<HealthFetchResult<List<HealthActivity>>> fetch() =>
+        build().fetchActivitiesResult(startDate: start, endDate: end);
+
+    test('enrichment failure with workouts yields partialSuccess with the '
+        'mapped reason and workout built-in fallbacks', () async {
+      seedWorkout();
+      client.throwByType[HealthDataType.ACTIVE_ENERGY_BURNED] =
+          TimeoutException('slow');
+
+      final result = await fetch();
+
+      expect(result.status, HealthFetchStatus.partialSuccess);
+      expect(result.isSuccess, isFalse);
+      expect(result.failureReason, HealthFetchFailureReason.timeout);
+      expect(result.failureMessage, 'TimeoutException');
+      expect(result.data, hasLength(1));
+      final a = result.data!.single;
+      // Enrichment list was empty → _mapWorkoutsToActivities falls back to
+      // the workout record's built-in energy/distance; no HR data → null.
+      expect(a.caloriesBurned, 120);
+      expect(a.distance, 2000);
+      expect(a.avgHeartRate, isNull);
+    });
+
+    test('records the FIRST enrichment failure when several fail', () async {
+      seedWorkout();
+      // Reads run workout → energy → distance → heart rate; energy fails
+      // first with a permission-worded error, heart rate later with timeout.
+      client.throwByType[HealthDataType.ACTIVE_ENERGY_BURNED] = Exception(
+        'permission denied',
+      );
+      client.throwByType[HealthDataType.HEART_RATE] = TimeoutException('slow');
+
+      final result = await fetch();
+
+      expect(result.status, HealthFetchStatus.partialSuccess);
+      expect(result.failureReason, HealthFetchFailureReason.permission);
+    });
+
+    test(
+      'all four reads are attempted despite an enrichment failure',
+      () async {
+        seedWorkout();
+        client.throwByType[HealthDataType.ACTIVE_ENERGY_BURNED] = Exception(
+          'boom',
+        );
+
+        await fetch();
+
+        expect(client.reads.map((r) => r.types).toList(), [
+          [HealthDataType.WORKOUT],
+          [HealthDataType.ACTIVE_ENERGY_BURNED],
+          [HealthDataType.DISTANCE_DELTA],
+          [HealthDataType.HEART_RATE],
+        ]);
+      },
+    );
+
+    test(
+      'zero workouts with a failing enrichment read yields successNoData',
+      () async {
+        client.throwByType[HealthDataType.HEART_RATE] = Exception('boom');
+
+        final result = await fetch();
+
+        expect(result.status, HealthFetchStatus.successNoData);
+        expect(result.isSuccess, isTrue);
+        expect(result.data, isEmpty);
+        expect(result.failureReason, isNull);
+      },
+    );
+
+    test(
+      'fetchActivities parity: partialSuccess still returns the workouts',
+      () async {
+        seedWorkout();
+        client.throwByType[HealthDataType.HEART_RATE] = Exception('boom');
+
+        final activities = await build().fetchActivities(
+          startDate: start,
+          endDate: end,
+        );
+
+        expect(activities, hasLength(1));
+        expect(activities.single.activityType, 'RUNNING');
       },
     );
   });

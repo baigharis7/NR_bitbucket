@@ -20,6 +20,7 @@ import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sanitizer.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sink.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sanitizer.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/interval_union.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
@@ -122,32 +123,39 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     required DateTime endDate,
   }) async {
     try {
-      // Fetch workout data from health platform
+      // Primary read: WORKOUT. A throw here is classified into a typed
+      // failure status — without workouts there is nothing to import.
       final healthData = await healthPlatformClient.getHealthDataFromTypes(
         types: [HealthDataType.WORKOUT],
         startTime: startDate,
         endTime: endDate,
       );
 
-      // Also fetch associated data for enrichment
-      final energyData = await healthPlatformClient.getHealthDataFromTypes(
-        types: [HealthDataType.ACTIVE_ENERGY_BURNED],
-        startTime: startDate,
-        endTime: endDate,
-      );
+      // Enrichment reads are individually guarded: a failing read contributes
+      // an empty list and only degrades the result to partialSuccess when
+      // workouts were actually fetched. The FIRST failure's reason/message
+      // win; message carries only the runtime type name, never raw text.
+      HealthFetchFailureReason? enrichmentReason;
+      String? enrichmentMessage;
+      Future<List<HealthDataPoint>> guardedRead(HealthDataType type) async {
+        try {
+          return await healthPlatformClient.getHealthDataFromTypes(
+            types: [type],
+            startTime: startDate,
+            endTime: endDate,
+          );
+        } catch (e) {
+          if (enrichmentReason == null) {
+            enrichmentReason = _reasonFor(e);
+            enrichmentMessage = e.runtimeType.toString();
+          }
+          return const <HealthDataPoint>[];
+        }
+      }
 
-      final distanceType = healthPlatformService.distanceType;
-      final distanceData = await healthPlatformClient.getHealthDataFromTypes(
-        types: [distanceType],
-        startTime: startDate,
-        endTime: endDate,
-      );
-
-      final heartRateData = await healthPlatformClient.getHealthDataFromTypes(
-        types: [HealthDataType.HEART_RATE],
-        startTime: startDate,
-        endTime: endDate,
-      );
+      final energyData = await guardedRead(HealthDataType.ACTIVE_ENERGY_BURNED);
+      final distanceData = await guardedRead(healthPlatformService.distanceType);
+      final heartRateData = await guardedRead(HealthDataType.HEART_RATE);
 
       // Convert to HealthActivity list
       final activities = _mapWorkoutsToActivities(
@@ -158,14 +166,68 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       );
 
       if (activities.isEmpty) {
+        // Zero workouts: a clean empty window regardless of enrichment
+        // failures — there is nothing enrichment could have degraded.
         return HealthFetchResult.successNoData(activities);
+      }
+      if (enrichmentReason != null) {
+        return HealthFetchResult.partialSuccess(
+          activities,
+          reason: enrichmentReason,
+          message: enrichmentMessage,
+        );
       }
       return HealthFetchResult.success(activities);
     } catch (e) {
-      return HealthFetchResult.failed(
-        reason: HealthFetchFailureReason.pluginError,
-        message: e.runtimeType.toString(),
-      );
+      return _primaryFailure(e);
+    }
+  }
+
+  /// Maps a thrown primary-read (or mapping) error to a typed failure result
+  /// using the same signature-based classifier as diagnostics
+  /// ([HealthSyncDiagnostics.classify]) — one classifier in the codebase.
+  /// The message carries only the runtime type name (parity with the
+  /// previous behavior), never the raw error text.
+  HealthFetchResult<List<HealthActivity>> _primaryFailure(Object e) {
+    final message = e.runtimeType.toString();
+    switch (HealthSyncDiagnostics.classify(e)) {
+      case HealthSyncErrorCategory.permission:
+        return HealthFetchResult.permissionDenied(message: message);
+      case HealthSyncErrorCategory.platformUnavailable:
+        return HealthFetchResult.platformUnavailable(message: message);
+      case HealthSyncErrorCategory.timeout:
+        return HealthFetchResult.failed(
+          reason: HealthFetchFailureReason.timeout,
+          message: message,
+        );
+      case HealthSyncErrorCategory.network:
+      case HealthSyncErrorCategory.plugin:
+        return HealthFetchResult.failed(
+          reason: HealthFetchFailureReason.pluginError,
+          message: message,
+        );
+      case HealthSyncErrorCategory.unknown:
+        return HealthFetchResult.failed(
+          reason: HealthFetchFailureReason.unknown,
+          message: message,
+        );
+    }
+  }
+
+  /// Enrichment-failure reason for [HealthFetchResult.partialSuccess].
+  HealthFetchFailureReason _reasonFor(Object e) {
+    switch (HealthSyncDiagnostics.classify(e)) {
+      case HealthSyncErrorCategory.permission:
+        return HealthFetchFailureReason.permission;
+      case HealthSyncErrorCategory.platformUnavailable:
+        return HealthFetchFailureReason.platformUnavailable;
+      case HealthSyncErrorCategory.timeout:
+        return HealthFetchFailureReason.timeout;
+      case HealthSyncErrorCategory.network:
+      case HealthSyncErrorCategory.plugin:
+        return HealthFetchFailureReason.pluginError;
+      case HealthSyncErrorCategory.unknown:
+        return HealthFetchFailureReason.unknown;
     }
   }
 

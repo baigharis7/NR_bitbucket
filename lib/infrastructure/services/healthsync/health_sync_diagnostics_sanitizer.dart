@@ -23,19 +23,36 @@ enum HealthSyncSourceCategory { wearable, phone, thirdPartyApp, unknown }
 class HealthSyncDiagnostics {
   const HealthSyncDiagnostics._();
 
-  /// Builds a `fetchFailed` event. Only the classified [HealthSyncErrorCategory]
-  /// is retained in metadata — never the raw message or stacktrace.
+  /// Builds a `fetchFailed` event. Only a coarse [HealthSyncErrorCategory] is
+  /// retained in metadata — never the raw message or stacktrace. Provide
+  /// either the thrown [error] (classified via [classify]) or an
+  /// already-classified [category] when the caller no longer holds the
+  /// exception object (e.g. it only has a typed fetch result); [category]
+  /// wins when both are given. [phase] optionally tags which fetch phase
+  /// failed (e.g. 'enrichment') as coarse metadata.
   static HealthSyncDiagnosticEvent fetchFailed({
     required HealthSyncDomain domain,
-    required Object error,
+    Object? error,
+    HealthSyncErrorCategory? category,
+    String? phase,
     HealthSyncPlatform? platform,
   }) {
+    assert(
+      error != null || category != null,
+      'fetchFailed requires an error to classify or a pre-classified category',
+    );
+    final resolved =
+        category ??
+        (error != null ? classify(error) : HealthSyncErrorCategory.unknown);
     return HealthSyncDiagnosticEvent(
       type: HealthSyncDiagnosticType.fetchFailed,
       severity: HealthSyncDiagnosticSeverity.error,
       domain: domain,
       platform: platform,
-      metadata: {'errorCategory': classify(error).name},
+      metadata: {
+        'errorCategory': resolved.name,
+        if (phase != null) 'phase': phase,
+      },
     );
   }
 
@@ -48,6 +65,65 @@ class HealthSyncDiagnostics {
     return HealthSyncDiagnosticEvent(
       type: HealthSyncDiagnosticType.fetchNoData,
       severity: HealthSyncDiagnosticSeverity.info,
+      domain: domain,
+      platform: platform,
+    );
+  }
+
+  /// Builds a `fetchSucceeded` event carrying only the record [count].
+  static HealthSyncDiagnosticEvent fetchSucceeded({
+    required HealthSyncDomain domain,
+    required int count,
+    HealthSyncPlatform? platform,
+  }) {
+    return HealthSyncDiagnosticEvent(
+      type: HealthSyncDiagnosticType.fetchSucceeded,
+      severity: HealthSyncDiagnosticSeverity.info,
+      domain: domain,
+      platform: platform,
+      metadata: {'count': count},
+    );
+  }
+
+  /// Builds a `permissionDenied` event: a verified platform permission
+  /// denial for [domain]. No metadata beyond the coarse fields.
+  static HealthSyncDiagnosticEvent permissionDenied({
+    required HealthSyncDomain domain,
+    HealthSyncPlatform? platform,
+  }) {
+    return HealthSyncDiagnosticEvent(
+      type: HealthSyncDiagnosticType.permissionDenied,
+      severity: HealthSyncDiagnosticSeverity.warning,
+      domain: domain,
+      platform: platform,
+    );
+  }
+
+  /// Builds a `permissionFalseNegativeTolerated` event: the permission probe
+  /// reported false but the guarded read succeeded, so the sync proceeded.
+  /// Warning severity — worth watching in aggregate, not an error. Carries no
+  /// metadata beyond the coarse fields.
+  static HealthSyncDiagnosticEvent permissionFalseNegativeTolerated({
+    required HealthSyncDomain domain,
+    HealthSyncPlatform? platform,
+  }) {
+    return HealthSyncDiagnosticEvent(
+      type: HealthSyncDiagnosticType.permissionFalseNegativeTolerated,
+      severity: HealthSyncDiagnosticSeverity.warning,
+      domain: domain,
+      platform: platform,
+    );
+  }
+
+  /// Builds a `platformUnavailable` event: HealthKit / Health Connect is
+  /// missing or unusable on this device. No metadata beyond coarse fields.
+  static HealthSyncDiagnosticEvent platformUnavailable({
+    required HealthSyncDomain domain,
+    HealthSyncPlatform? platform,
+  }) {
+    return HealthSyncDiagnosticEvent(
+      type: HealthSyncDiagnosticType.platformUnavailable,
+      severity: HealthSyncDiagnosticSeverity.warning,
       domain: domain,
       platform: platform,
     );

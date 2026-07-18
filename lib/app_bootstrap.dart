@@ -1322,6 +1322,7 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
         saveSportEventInteractor: saveSportEventInteractor,
         sportEventsRepository: sportEventsRepository,
         sportKcalCalculationService: sportKcalCalculationService,
+        diagnostics: const CrashlyticsHealthSyncDiagnosticsSink(),
       );
 
       final healthSyncBloc = HealthSyncBloc(

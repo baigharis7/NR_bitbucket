@@ -9,6 +9,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/healthsync/sync_health_
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/toggle_health_sync_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/masterfiles/get_master_file_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/sportevents/get_today_sports_interactor.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/sync_health_activities_result.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
@@ -167,10 +168,6 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         }
       }
 
-      // If sync is enabled but permissions are missing, the user needs to
-      // re-grant permissions (e.g. after an app update added new data types).
-      final needsUpdate = isEnabled && isAvailable && !hasPermissions;
-
       // Calculate estimated steps from manual sport events
       final estimatedSteps = await _calculateEstimatedSteps(today);
 
@@ -179,12 +176,22 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         isAvailable: isAvailable,
         isSyncEnabled: isEnabled,
         hasPermissions: hasPermissions,
-        needsPermissionUpdate: needsUpdate,
         lastSyncTime: lastSyncTime,
         todaySleepHours: sleepHours,
         todayStepCount: stepCount,
         estimatedStepCount: estimatedSteps,
       ));
+
+      // A false probe alone is not attention-worthy: Health Connect
+      // under-reports after restarts and HealthKit cannot report read grants
+      // at all. Chain a verification sync instead — its permissionResolution
+      // (verified denial vs tolerated false negative) decides whether real
+      // permission attention is needed.
+      if (isEnabled && isAvailable && !hasPermissions) {
+        _hsLog('HealthSync init: probe reported no permissions — '
+            'chaining verification sync');
+        add(HealthSyncManualTrigger());
+      }
     } catch (e, stack) {
       CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncInitialization'});
       emit(state.copyWith(
@@ -304,11 +311,13 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
 
     try {
       _hsLog('HealthSync: manual trigger started');
-      final syncedActivities = await syncHealthActivitiesInteractor.execute(
+      final syncResult = await syncHealthActivitiesInteractor.execute(
         since: DateTime.now().subtract(const Duration(days: 7)),
       );
+      final syncedActivities = syncResult.syncedEvents;
       final lastSyncTime = await healthSyncRepository.getLastSyncTime();
-      _hsLog('HealthSync: synced ${syncedActivities.length} activities');
+      _hsLog('HealthSync: synced ${syncedActivities.length} activities '
+          '(outcome: ${syncResult.outcome.name})');
 
       if (syncedActivities.isNotEmpty) {
         DashboardEventBus.instance.notify(DataChangedCategory.sport);
@@ -319,15 +328,34 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       final fresh = await _fetchAndSave(today);
       final estimatedSteps = await _calculateEstimatedSteps(today);
 
+      // Map the sync's permission resolution onto UI attention. copyWith
+      // falls back with `?? this.x`, so passing null leaves a field untouched
+      // while an explicit false overrides it — tolerated syncs actively CLEAR
+      // needsPermissionUpdate; resolution-free syncs change neither field.
+      bool? hasPermissionsUpdate;
+      bool? needsPermissionUpdate;
+      switch (syncResult.permissionResolution) {
+        case SyncPermissionResolution.verifiedDenial:
+          hasPermissionsUpdate = false;
+          needsPermissionUpdate = true;
+        case SyncPermissionResolution.toleratedFalseNegative:
+          hasPermissionsUpdate = true;
+          needsPermissionUpdate = false;
+        case SyncPermissionResolution.none:
+          break;
+      }
+
       emit(state.copyWith(
         isLoading: false,
         isSyncing: false,
         lastSyncTime: lastSyncTime,
         syncedActivitiesCount: syncedActivities.length,
-        syncSuccess: true,
+        syncSuccess: syncResult.isSuccess,
         todaySleepHours: fresh.sleepHours,
         todayStepCount: fresh.stepCount,
         estimatedStepCount: estimatedSteps,
+        hasPermissions: hasPermissionsUpdate,
+        needsPermissionUpdate: needsPermissionUpdate,
       ));
     } catch (e, stack) {
       CrashlyticsService.record(e, stack, context: {'event': 'HealthSyncManualTrigger'});

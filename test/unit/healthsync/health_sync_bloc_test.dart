@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/sync_health_activities_result.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/presentation/healthsync/bloc/health_sync_bloc.dart';
@@ -88,6 +89,17 @@ void main() {
     when(() => mockGetTodaySportsInteractor.execute(dateTime: any(named: 'dateTime')))
         .thenAnswer((_) async => sportEvents ?? []);
   }
+
+  SyncHealthActivitiesResult syncResult({
+    List<SportEventComplete> events = const [],
+    SyncHealthOutcome outcome = SyncHealthOutcome.syncedNoData,
+    SyncPermissionResolution resolution = SyncPermissionResolution.none,
+  }) =>
+      SyncHealthActivitiesResult(
+        syncedEvents: events,
+        outcome: outcome,
+        permissionResolution: resolution,
+      );
 
   group('HealthSyncBloc', () {
     group('HealthSyncInitialization', () {
@@ -244,6 +256,11 @@ void main() {
           // because HC's hasPermissions check is unreliable on Android.
           stubSleepStepData(sleepHours: 7.0, stepCount: 5000);
           stubEstimatedSteps();
+          // Init now chains a HealthSyncManualTrigger (verification sync)
+          // whenever the probe reports isEnabled && isAvailable && !hasPermissions.
+          when(() => mockSyncHealthActivitiesInteractor.execute(
+                since: any(named: 'since'),
+              )).thenAnswer((_) async => syncResult());
         },
         build: buildBloc,
         // Constructor auto-dispatches HealthSyncInitialization — no act needed.
@@ -414,17 +431,20 @@ void main() {
         'emits correct state when manual sync succeeds',
         setUp: () {
           when(() => mockSyncHealthActivitiesInteractor.execute(since: any(named: 'since')))
-              .thenAnswer((_) async => [
-                SportEventComplete(
-                  userId: 'test',
-                  eventId: 1,
-                  eventDate: DateTime.now().millisecondsSinceEpoch,
-                  sportName: 'Running',
-                  source: 'apple_health',
-                  eventKcals: 200,
-                  info: [],
-                ),
-              ]);
+              .thenAnswer((_) async => SyncHealthActivitiesResult(
+                    syncedEvents: [
+                      SportEventComplete(
+                        userId: 'test',
+                        eventId: 1,
+                        eventDate: DateTime.now().millisecondsSinceEpoch,
+                        sportName: 'Running',
+                        source: 'apple_health',
+                        eventKcals: 200,
+                        info: [],
+                      ),
+                    ],
+                    outcome: SyncHealthOutcome.synced,
+                  ));
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => DateTime.now());
           stubSleepStepData();
@@ -445,7 +465,10 @@ void main() {
         'emits correct state when manual sync returns empty',
         setUp: () {
           when(() => mockSyncHealthActivitiesInteractor.execute(since: any(named: 'since')))
-              .thenAnswer((_) async => []);
+              .thenAnswer((_) async => const SyncHealthActivitiesResult(
+                    syncedEvents: [],
+                    outcome: SyncHealthOutcome.syncedNoData,
+                  ));
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => DateTime.now());
           stubSleepStepData();
@@ -490,7 +513,10 @@ void main() {
         'saves sleep/step data after successful sync',
         setUp: () {
           when(() => mockSyncHealthActivitiesInteractor.execute(since: any(named: 'since')))
-              .thenAnswer((_) async => []);
+              .thenAnswer((_) async => const SyncHealthActivitiesResult(
+                    syncedEvents: [],
+                    outcome: SyncHealthOutcome.syncedNoData,
+                  ));
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => DateTime.now());
           stubSleepStepData(sleepHours: 6.0, stepCount: 12000);
@@ -520,19 +546,71 @@ void main() {
         },
       );
 
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'reports syncSuccess false when the fetch failed (no green snackbar)',
+        setUp: () {
+          when(() => mockSyncHealthActivitiesInteractor.execute(
+                  since: any(named: 'since')))
+              .thenAnswer((_) async => const SyncHealthActivitiesResult(
+                    syncedEvents: [],
+                    outcome: SyncHealthOutcome.fetchFailed,
+                  ));
+          when(() => mockHealthSyncRepository.getLastSyncTime())
+              .thenAnswer((_) async => null);
+          stubSleepStepData();
+          stubEstimatedSteps();
+        },
+        build: buildBloc,
+        skip: 2,
+        act: (bloc) => bloc.add(HealthSyncManualTrigger()),
+        verify: (bloc) {
+          expect(bloc.state.syncSuccess, false);
+          expect(bloc.state.syncedActivitiesCount, 0);
+          expect(bloc.state.isSyncing, false);
+          expect(bloc.state.onError, isNull);
+        },
+      );
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'reports syncSuccess false on a permission-denied fetch',
+        setUp: () {
+          when(() => mockSyncHealthActivitiesInteractor.execute(
+                  since: any(named: 'since')))
+              .thenAnswer((_) async => const SyncHealthActivitiesResult(
+                    syncedEvents: [],
+                    outcome: SyncHealthOutcome.permissionDenied,
+                  ));
+          when(() => mockHealthSyncRepository.getLastSyncTime())
+              .thenAnswer((_) async => null);
+          stubSleepStepData();
+          stubEstimatedSteps();
+        },
+        build: buildBloc,
+        skip: 2,
+        act: (bloc) => bloc.add(HealthSyncManualTrigger()),
+        verify: (bloc) {
+          expect(bloc.state.syncSuccess, false);
+          expect(bloc.state.syncedActivitiesCount, 0);
+          expect(bloc.state.isSyncing, false);
+        },
+      );
+
       test('notifies DashboardEventBus with sport category when activities are synced', () async {
         when(() => mockSyncHealthActivitiesInteractor.execute(since: any(named: 'since')))
-            .thenAnswer((_) async => [
-                  SportEventComplete(
-                    userId: 'test',
-                    eventId: 1,
-                    eventDate: DateTime.now().millisecondsSinceEpoch,
-                    sportName: 'Running',
-                    source: 'apple_health',
-                    eventKcals: 200,
-                    info: [],
-                  ),
-                ]);
+            .thenAnswer((_) async => SyncHealthActivitiesResult(
+                  syncedEvents: [
+                    SportEventComplete(
+                      userId: 'test',
+                      eventId: 1,
+                      eventDate: DateTime.now().millisecondsSinceEpoch,
+                      sportName: 'Running',
+                      source: 'apple_health',
+                      eventKcals: 200,
+                      info: [],
+                    ),
+                  ],
+                  outcome: SyncHealthOutcome.synced,
+                ));
         when(() => mockHealthSyncRepository.getLastSyncTime())
             .thenAnswer((_) async => DateTime.now());
         stubSleepStepData();
@@ -553,7 +631,10 @@ void main() {
 
       test('does not notify DashboardEventBus when no activities are synced', () async {
         when(() => mockSyncHealthActivitiesInteractor.execute(since: any(named: 'since')))
-            .thenAnswer((_) async => []);
+            .thenAnswer((_) async => const SyncHealthActivitiesResult(
+                  syncedEvents: [],
+                  outcome: SyncHealthOutcome.syncedNoData,
+                ));
         when(() => mockHealthSyncRepository.getLastSyncTime())
             .thenAnswer((_) async => DateTime.now());
         stubSleepStepData();
@@ -567,6 +648,164 @@ void main() {
         await pumpEventQueue();
 
         expect(busEvents, isEmpty);
+
+        await sub.cancel();
+        await bloc.close();
+      });
+    });
+
+    group('permission attention (verified signals only)', () {
+      void stubManualTriggerCollaborators() {
+        when(() => mockHealthSyncRepository.getLastSyncTime())
+            .thenAnswer((_) async => DateTime(2026, 7, 18, 10));
+        stubSleepStepData();
+        stubEstimatedSteps();
+      }
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'verified denial raises attention and drops hasPermissions',
+        setUp: () {
+          stubManualTriggerCollaborators();
+          when(() => mockSyncHealthActivitiesInteractor.execute(
+                since: any(named: 'since'),
+              )).thenAnswer((_) async => syncResult(
+                outcome: SyncHealthOutcome.permissionDenied,
+                resolution: SyncPermissionResolution.verifiedDenial,
+              ));
+        },
+        build: buildBloc,
+        skip: 2, // skip auto-init states from constructor
+        act: (bloc) => bloc.add(HealthSyncManualTrigger()),
+        verify: (bloc) {
+          expect(bloc.state.needsPermissionUpdate, isTrue);
+          expect(bloc.state.hasPermissions, isFalse);
+          expect(bloc.state.syncSuccess, isFalse);
+          expect(bloc.state.isSyncing, isFalse);
+        },
+      );
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'tolerated false negative clears previously raised attention',
+        seed: () => HealthSyncState(
+          needsPermissionUpdate: true,
+          hasPermissions: false,
+        ),
+        setUp: () {
+          stubManualTriggerCollaborators();
+          when(() => mockSyncHealthActivitiesInteractor.execute(
+                since: any(named: 'since'),
+              )).thenAnswer((_) async => syncResult(
+                outcome: SyncHealthOutcome.syncedNoData,
+                resolution: SyncPermissionResolution.toleratedFalseNegative,
+              ));
+        },
+        build: buildBloc,
+        skip: 2,
+        act: (bloc) => bloc.add(HealthSyncManualTrigger()),
+        verify: (bloc) {
+          // Explicit false must actually clear the flag (copyWith override).
+          expect(bloc.state.needsPermissionUpdate, isFalse);
+          expect(bloc.state.hasPermissions, isTrue);
+          expect(bloc.state.syncSuccess, isTrue);
+        },
+      );
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'resolution none leaves attention and hasPermissions untouched',
+        seed: () => HealthSyncState(
+          needsPermissionUpdate: true,
+          hasPermissions: false,
+        ),
+        setUp: () {
+          stubManualTriggerCollaborators();
+          when(() => mockSyncHealthActivitiesInteractor.execute(
+                since: any(named: 'since'),
+              )).thenAnswer((_) async => syncResult(
+                outcome: SyncHealthOutcome.fetchFailed,
+                resolution: SyncPermissionResolution.none,
+              ));
+        },
+        build: buildBloc,
+        skip: 2,
+        act: (bloc) => bloc.add(HealthSyncManualTrigger()),
+        verify: (bloc) {
+          // A real fetch failure is not a permission verdict either way.
+          expect(bloc.state.needsPermissionUpdate, isTrue);
+          expect(bloc.state.hasPermissions, isFalse);
+        },
+      );
+
+      test(
+          'init with a false probe does not raise attention and chains a '
+          'verification sync', () async {
+        when(() => mockHealthSyncRepository.isHealthSyncAvailable())
+            .thenAnswer((_) async => true);
+        when(() => mockHealthSyncRepository.isHealthSyncEnabled())
+            .thenAnswer((_) async => true);
+        when(() => mockHealthSyncRepository.hasPermissions())
+            .thenAnswer((_) async => false);
+        when(() => mockHealthSyncRepository.getLastSyncTime())
+            .thenAnswer((_) async => DateTime(2026, 7, 18, 9));
+        stubSavedData();
+        stubSleepStepData();
+        stubEstimatedSteps();
+        when(() => mockSyncHealthActivitiesInteractor.execute(
+              since: any(named: 'since'),
+            )).thenAnswer((_) async => syncResult(
+              outcome: SyncHealthOutcome.syncedNoData,
+              resolution: SyncPermissionResolution.toleratedFalseNegative,
+            ));
+
+        final bloc = buildBloc();
+        final states = <HealthSyncState>[];
+        final sub = bloc.stream.listen(states.add);
+        await pumpEventQueue();
+
+        // The chained verification sync actually ran.
+        verify(() => mockSyncHealthActivitiesInteractor.execute(
+              since: any(named: 'since'),
+            )).called(1);
+        // No state — init's or the chained sync's — ever raised attention
+        // from the probe alone.
+        expect(
+          states.map((s) => s.needsPermissionUpdate),
+          everyElement(isFalse),
+        );
+        expect(bloc.state.hasPermissions, isTrue);
+
+        await sub.cancel();
+        await bloc.close();
+      });
+
+      test(
+          'no-spam regression: repeated tolerated syncs never raise '
+          'attention', () async {
+        when(() => mockHealthSyncRepository.getLastSyncTime())
+            .thenAnswer((_) async => DateTime(2026, 7, 18, 10));
+        stubSleepStepData();
+        stubEstimatedSteps();
+        when(() => mockSyncHealthActivitiesInteractor.execute(
+              since: any(named: 'since'),
+            )).thenAnswer((_) async => syncResult(
+              outcome: SyncHealthOutcome.syncedNoData,
+              resolution: SyncPermissionResolution.toleratedFalseNegative,
+            ));
+
+        final bloc = buildBloc();
+        await pumpEventQueue(); // let auto-init settle (errors are caught)
+
+        final states = <HealthSyncState>[];
+        final sub = bloc.stream.listen(states.add);
+        bloc.add(HealthSyncManualTrigger());
+        await pumpEventQueue();
+        bloc.add(HealthSyncManualTrigger());
+        await pumpEventQueue();
+
+        expect(states, isNotEmpty);
+        expect(
+          states.map((s) => s.needsPermissionUpdate),
+          everyElement(isFalse),
+        );
 
         await sub.cancel();
         await bloc.close();

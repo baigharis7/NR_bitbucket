@@ -24,12 +24,15 @@ abstract class HealthSyncRepository {
   });
 
   /// Typed workout fetch. Runs the same reads and mapping as [fetchActivities]
-  /// but reports the outcome explicitly: a non-empty mapped list →
-  /// [HealthFetchStatus.success]; an empty read → [HealthFetchStatus.successNoData];
-  /// a thrown client/plugin error → [HealthFetchStatus.failed] with
-  /// [HealthFetchFailureReason.pluginError]. Permission / platform-unavailable
-  /// detection is deferred to later tickets; this path never emits them, nor
-  /// [HealthFetchStatus.partialSuccess].
+  /// but reports the outcome explicitly. The WORKOUT read is primary: a throw
+  /// there is classified to [HealthFetchStatus.permissionDenied],
+  /// [HealthFetchStatus.platformUnavailable], or [HealthFetchStatus.failed]
+  /// with a [HealthFetchFailureReason]. The enrichment reads (energy,
+  /// distance, heart rate) are individually guarded: with workouts present,
+  /// a failing enrichment read degrades the result to
+  /// [HealthFetchStatus.partialSuccess] carrying the workouts plus the first
+  /// failure's reason; with zero workouts the result is
+  /// [HealthFetchStatus.successNoData] regardless of enrichment failures.
   Future<HealthFetchResult<List<HealthActivity>>> fetchActivitiesResult({
     required DateTime startDate,
     required DateTime endDate,
