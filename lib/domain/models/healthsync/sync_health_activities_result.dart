@@ -45,6 +45,27 @@ enum SyncHealthOutcome {
   error,
 }
 
+/// How the permission probe's answer was reconciled against the guarded typed
+/// read during this sync attempt.
+///
+/// Health Connect's `hasPermissions()` under-reports after app restarts, and
+/// HealthKit cannot report read grants at all (the plugin maps null → false),
+/// so a false probe is a hint, never a verdict. The platform's actual answer
+/// to the read outranks the probe in both directions.
+enum SyncPermissionResolution {
+  /// No permission signal: probe and read agreed, or the fetch failed for
+  /// non-permission reasons (real failures stay distinct from attention).
+  none,
+
+  /// Probe reported false but the guarded read succeeded — a tolerated false
+  /// negative. Workouts imported and lastSyncTime advanced normally.
+  toleratedFalseNegative,
+
+  /// The platform itself refused the read (classified permissionDenied) —
+  /// a real, actionable denial regardless of what the probe said.
+  verifiedDenial,
+}
+
 /// Immutable result of a workout-sync run.
 ///
 /// Plain immutable class — no `==`/`hashCode` override (the codebase uses
@@ -55,9 +76,12 @@ class SyncHealthActivitiesResult {
 
   final SyncHealthOutcome outcome;
 
+  final SyncPermissionResolution permissionResolution;
+
   const SyncHealthActivitiesResult({
     required this.syncedEvents,
     required this.outcome,
+    this.permissionResolution = SyncPermissionResolution.none,
   });
 
   /// True when the platform read succeeded and the sync window advanced.

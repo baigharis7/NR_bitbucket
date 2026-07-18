@@ -51,4 +51,41 @@ void main() {
       }
     });
   });
+
+  group('SyncPermissionResolution', () {
+    test('permissionResolution defaults to none', () {
+      const result = SyncHealthActivitiesResult(
+        syncedEvents: [],
+        outcome: SyncHealthOutcome.synced,
+      );
+      expect(result.permissionResolution, SyncPermissionResolution.none);
+    });
+
+    test('carries toleratedFalseNegative explicitly', () {
+      const result = SyncHealthActivitiesResult(
+        syncedEvents: [],
+        outcome: SyncHealthOutcome.syncedNoData,
+        permissionResolution: SyncPermissionResolution.toleratedFalseNegative,
+      );
+      expect(
+        result.permissionResolution,
+        SyncPermissionResolution.toleratedFalseNegative,
+      );
+      // isSuccess is driven by outcome only — tolerance does not change it.
+      expect(result.isSuccess, isTrue);
+    });
+
+    test('carries verifiedDenial explicitly', () {
+      const result = SyncHealthActivitiesResult(
+        syncedEvents: [],
+        outcome: SyncHealthOutcome.permissionDenied,
+        permissionResolution: SyncPermissionResolution.verifiedDenial,
+      );
+      expect(
+        result.permissionResolution,
+        SyncPermissionResolution.verifiedDenial,
+      );
+      expect(result.isSuccess, isFalse);
+    });
+  });
 }
