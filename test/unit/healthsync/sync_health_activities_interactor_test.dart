@@ -8,9 +8,14 @@ import 'package:nutrenaissance_flutter/domain/models/healthsync/health_activity.
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_metadata.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_simple.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/health_fetch_result.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_diagnostic_event.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/sync_health_activities_result.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sink.dart';
 
 import '../../mocks/health_sync_mocks.dart';
 import '../../support/healthsync/health_activity_builder.dart';
+import '../../support/healthsync/health_fetch_result_builders.dart';
 
 class FakeHealthActivity extends Fake implements HealthActivity {}
 class FakeSportEventComplete extends Fake implements SportEventComplete {}
@@ -26,6 +31,7 @@ void main() {
   late MockSportKcalCalculationService mockSportKcalCalculationService;
   late SyncHealthActivitiesInteractorImpl interactor;
   late SportsInfoEntity testSportsInfo;
+  late InMemoryHealthSyncDiagnosticsSink diagnostics;
 
   setUpAll(() {
     registerFallbackValue(FakeHealthActivity());
@@ -43,6 +49,7 @@ void main() {
     mockSaveSportEventInteractor = MockSaveSportEventInteractor();
     mockSportEventsRepository = MockSportEventsRepository();
     mockSportKcalCalculationService = MockSportKcalCalculationService();
+    diagnostics = InMemoryHealthSyncDiagnosticsSink();
 
     interactor = SyncHealthActivitiesInteractorImpl(
       healthSyncRepository: mockHealthSyncRepository,
@@ -51,6 +58,7 @@ void main() {
       saveSportEventInteractor: mockSaveSportEventInteractor,
       sportEventsRepository: mockSportEventsRepository,
       sportKcalCalculationService: mockSportKcalCalculationService,
+      diagnostics: diagnostics,
     );
 
     testSportsInfo = SportsInfoEntity(
@@ -65,20 +73,21 @@ void main() {
   });
 
   group('SyncHealthActivitiesInteractorImpl.execute', () {
-    test('returns empty list when sync is disabled', () async {
+    test('returns skippedDisabled when sync is disabled', () async {
       when(() => mockHealthSyncRepository.isHealthSyncEnabled())
           .thenAnswer((_) async => false);
 
       final result = await interactor.execute();
 
-      expect(result, isEmpty);
-      verifyNever(() => mockHealthSyncRepository.fetchActivities(
+      expect(result.syncedEvents, isEmpty);
+      expect(result.outcome, SyncHealthOutcome.skippedDisabled);
+      verifyNever(() => mockHealthSyncRepository.fetchActivitiesResult(
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           ));
     });
 
-    test('returns empty list when user has no permissions', () async {
+    test('returns skippedNoPermissions when user has no permissions', () async {
       when(() => mockHealthSyncRepository.isHealthSyncEnabled())
           .thenAnswer((_) async => true);
       when(() => mockHealthSyncRepository.hasPermissions())
@@ -86,32 +95,37 @@ void main() {
 
       final result = await interactor.execute();
 
-      expect(result, isEmpty);
-      verifyNever(() => mockHealthSyncRepository.fetchActivities(
+      expect(result.syncedEvents, isEmpty);
+      expect(result.outcome, SyncHealthOutcome.skippedNoPermissions);
+      verifyNever(() => mockHealthSyncRepository.fetchActivitiesResult(
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           ));
     });
 
-    test('returns empty list when synced recently (throttling)', () async {
+    test('returns skippedThrottled when synced recently (throttling)', () async {
       when(() => mockHealthSyncRepository.isHealthSyncEnabled())
           .thenAnswer((_) async => true);
       when(() => mockHealthSyncRepository.hasPermissions())
           .thenAnswer((_) async => true);
-      // Last sync was 5 minutes ago (within 15 min throttle)
+      // Last sync was 1 minute ago (within the 5 min throttle). Captured
+      // once, up front, so the comparison inside execute() isn't racing a
+      // lazily-evaluated DateTime.now() against its own clock.
+      final recentSync = DateTime.now().subtract(const Duration(minutes: 1));
       when(() => mockHealthSyncRepository.getLastSyncTime())
-          .thenAnswer((_) async => DateTime.now().subtract(const Duration(minutes: 5)));
+          .thenAnswer((_) async => recentSync);
 
       final result = await interactor.execute();
 
-      expect(result, isEmpty);
-      verifyNever(() => mockHealthSyncRepository.fetchActivities(
+      expect(result.syncedEvents, isEmpty);
+      expect(result.outcome, SyncHealthOutcome.skippedThrottled);
+      verifyNever(() => mockHealthSyncRepository.fetchActivitiesResult(
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           ));
     });
 
-    test('returns empty list when user ID is empty', () async {
+    test('returns skippedPreconditions when user ID is empty', () async {
       when(() => mockHealthSyncRepository.isHealthSyncEnabled())
           .thenAnswer((_) async => true);
       when(() => mockHealthSyncRepository.hasPermissions())
@@ -122,10 +136,11 @@ void main() {
 
       final result = await interactor.execute();
 
-      expect(result, isEmpty);
+      expect(result.syncedEvents, isEmpty);
+      expect(result.outcome, SyncHealthOutcome.skippedPreconditions);
     });
 
-    test('returns empty list when sports info not available', () async {
+    test('returns skippedPreconditions when sports info not available', () async {
       when(() => mockHealthSyncRepository.isHealthSyncEnabled())
           .thenAnswer((_) async => true);
       when(() => mockHealthSyncRepository.hasPermissions())
@@ -138,7 +153,8 @@ void main() {
 
       final result = await interactor.execute();
 
-      expect(result, isEmpty);
+      expect(result.syncedEvents, isEmpty);
+      expect(result.outcome, SyncHealthOutcome.skippedPreconditions);
     });
 
     test('fetches activities from last 7 days on first sync', () async {
@@ -151,19 +167,20 @@ void main() {
       when(() => mockPreferencesRepository.getSub()).thenReturn('user123');
       when(() => mockLocalStorageRepository.getMasterFile(MasterFilesType.sportsInfo))
           .thenAnswer((_) async => testSportsInfo);
-      when(() => mockHealthSyncRepository.fetchActivities(
+      when(() => mockHealthSyncRepository.fetchActivitiesResult(
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => []);
+          )).thenAnswer((_) async => noDataResult());
       when(() => mockHealthSyncRepository.setLastSyncTime(any()))
           .thenAnswer((_) async {});
 
-      await interactor.execute();
+      final result = await interactor.execute();
 
-      verify(() => mockHealthSyncRepository.fetchActivities(
+      verify(() => mockHealthSyncRepository.fetchActivitiesResult(
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).called(1);
+      expect(result.outcome, SyncHealthOutcome.syncedNoData);
     });
 
     test('deduplicates already synced activities', () async {
@@ -189,10 +206,10 @@ void main() {
       when(() => mockPreferencesRepository.getSub()).thenReturn('user123');
       when(() => mockLocalStorageRepository.getMasterFile(MasterFilesType.sportsInfo))
           .thenAnswer((_) async => testSportsInfo);
-      when(() => mockHealthSyncRepository.fetchActivities(
+      when(() => mockHealthSyncRepository.fetchActivitiesResult(
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => [activity]);
+          )).thenAnswer((_) async => successResult([activity]));
       // Activity is already synced
       when(() => mockHealthSyncRepository.isAlreadySynced('already_synced_id'))
           .thenAnswer((_) async => true);
@@ -201,7 +218,8 @@ void main() {
 
       final result = await interactor.execute();
 
-      expect(result, isEmpty);
+      expect(result.syncedEvents, isEmpty);
+      expect(result.outcome, SyncHealthOutcome.synced);
       verifyNever(() => mockSaveSportEventInteractor.execute(any(), any()));
     });
 
@@ -231,10 +249,10 @@ void main() {
       when(() => mockPreferencesRepository.getSub()).thenReturn('user123');
       when(() => mockLocalStorageRepository.getMasterFile(MasterFilesType.sportsInfo))
           .thenAnswer((_) async => testSportsInfo);
-      when(() => mockHealthSyncRepository.fetchActivities(
+      when(() => mockHealthSyncRepository.fetchActivitiesResult(
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => [activity]);
+          )).thenAnswer((_) async => successResult([activity]));
       when(() => mockHealthSyncRepository.isAlreadySynced('new_activity_id'))
           .thenAnswer((_) async => false);
 
@@ -259,9 +277,10 @@ void main() {
 
       final result = await interactor.execute();
 
-      expect(result, hasLength(1));
-      expect(result.first.source, 'apple_health');
-      expect(result.first.eventKcals, 500); // Preserves health platform calories
+      expect(result.syncedEvents, hasLength(1));
+      expect(result.outcome, SyncHealthOutcome.synced);
+      expect(result.syncedEvents.first.source, 'apple_health');
+      expect(result.syncedEvents.first.eventKcals, 500); // Preserves health platform calories
       expect(saveCalled, isTrue);
       expect(syncToBackendCalled, isTrue);
       expect(metadataSaved, isTrue);
@@ -280,12 +299,12 @@ void main() {
       when(() => mockPreferencesRepository.getSub()).thenReturn('user123');
       when(() => mockLocalStorageRepository.getMasterFile(MasterFilesType.sportsInfo))
           .thenAnswer((_) async => testSportsInfo);
-      when(() => mockHealthSyncRepository.fetchActivities(
+      when(() => mockHealthSyncRepository.fetchActivitiesResult(
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).thenAnswer((_) async {
         fetchActivitiesCalled = true;
-        return [];
+        return noDataResult();
       });
       when(() => mockHealthSyncRepository.setLastSyncTime(any()))
           .thenAnswer((_) async {});
@@ -296,13 +315,14 @@ void main() {
       expect(fetchActivitiesCalled, isTrue);
     });
 
-    test('handles errors gracefully and returns empty list', () async {
+    test('handles errors gracefully and returns error outcome', () async {
       when(() => mockHealthSyncRepository.isHealthSyncEnabled())
           .thenThrow(Exception('Test error'));
 
       final result = await interactor.execute();
 
-      expect(result, isEmpty);
+      expect(result.syncedEvents, isEmpty);
+      expect(result.outcome, SyncHealthOutcome.error);
     });
 
     test('computes kcal locally via METs when platform calories are missing', () async {
@@ -353,10 +373,10 @@ void main() {
           .thenAnswer((_) async => testSportsInfo);
       when(() => mockLocalStorageRepository.getProfile())
           .thenAnswer((_) async => profile);
-      when(() => mockHealthSyncRepository.fetchActivities(
+      when(() => mockHealthSyncRepository.fetchActivitiesResult(
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => [activity]);
+          )).thenAnswer((_) async => successResult([activity]));
       when(() => mockHealthSyncRepository.isAlreadySynced('no_calories_id'))
           .thenAnswer((_) async => false);
       when(() => mockSportKcalCalculationService.enrichSportEvent(
@@ -373,10 +393,11 @@ void main() {
 
       final result = await interactor.execute();
 
-      expect(result, hasLength(1));
-      expect(result.first.eventKcals, 336); // computed kcal flows through
-      expect(result.first.info, isNotEmpty);
-      expect(result.first.info!.first.kcal, 336); // info kcal stays in sync with eventKcals
+      expect(result.syncedEvents, hasLength(1));
+      expect(result.outcome, SyncHealthOutcome.synced);
+      expect(result.syncedEvents.first.eventKcals, 336); // computed kcal flows through
+      expect(result.syncedEvents.first.info, isNotEmpty);
+      expect(result.syncedEvents.first.info!.first.kcal, 336); // info kcal stays in sync with eventKcals
       verify(() => mockSportKcalCalculationService.enrichSportEvent(
             any(),
             userWeight: 80.0,
@@ -406,10 +427,10 @@ void main() {
       when(() => mockPreferencesRepository.getSub()).thenReturn('user123');
       when(() => mockLocalStorageRepository.getMasterFile(MasterFilesType.sportsInfo))
           .thenAnswer((_) async => testSportsInfo);
-      when(() => mockHealthSyncRepository.fetchActivities(
+      when(() => mockHealthSyncRepository.fetchActivitiesResult(
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => [activity]);
+          )).thenAnswer((_) async => successResult([activity]));
       when(() => mockHealthSyncRepository.isAlreadySynced('has_calories_id'))
           .thenAnswer((_) async => false);
       when(() => mockSaveSportEventInteractor.execute(any(), any()))
@@ -422,9 +443,10 @@ void main() {
 
       final result = await interactor.execute();
 
-      expect(result, hasLength(1));
-      expect(result.first.eventKcals, 420);
-      expect(result.first.info!.first.kcal, 420); // info kcal mirrors eventKcals
+      expect(result.syncedEvents, hasLength(1));
+      expect(result.outcome, SyncHealthOutcome.synced);
+      expect(result.syncedEvents.first.eventKcals, 420);
+      expect(result.syncedEvents.first.info!.first.kcal, 420); // info kcal mirrors eventKcals
       verifyNever(() => mockSportKcalCalculationService.enrichSportEvent(
             any(),
             userWeight: any(named: 'userWeight'),
@@ -455,10 +477,10 @@ void main() {
       when(() => mockPreferencesRepository.getSub()).thenReturn('user123');
       when(() => mockLocalStorageRepository.getMasterFile(MasterFilesType.sportsInfo))
           .thenAnswer((_) async => testSportsInfo);
-      when(() => mockHealthSyncRepository.fetchActivities(
+      when(() => mockHealthSyncRepository.fetchActivitiesResult(
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => [activity]);
+          )).thenAnswer((_) async => successResult([activity]));
       when(() => mockHealthSyncRepository.isAlreadySynced('zero_duration_id'))
           .thenAnswer((_) async => false);
       when(() => mockSaveSportEventInteractor.execute(any(), any()))
@@ -471,8 +493,9 @@ void main() {
 
       final result = await interactor.execute();
 
-      expect(result, hasLength(1));
-      expect(result.first.eventKcals, 0);
+      expect(result.syncedEvents, hasLength(1));
+      expect(result.outcome, SyncHealthOutcome.synced);
+      expect(result.syncedEvents.first.eventKcals, 0);
       verifyNever(() => mockSportKcalCalculationService.enrichSportEvent(
             any(),
             userWeight: any(named: 'userWeight'),
@@ -525,10 +548,10 @@ void main() {
       when(() => mockPreferencesRepository.getSub()).thenReturn('user123');
       when(() => mockLocalStorageRepository.getMasterFile(MasterFilesType.sportsInfo))
           .thenAnswer((_) async => testSportsInfo);
-      when(() => mockHealthSyncRepository.fetchActivities(
+      when(() => mockHealthSyncRepository.fetchActivitiesResult(
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
-          )).thenAnswer((_) async => [activity1, activity2]);
+          )).thenAnswer((_) async => successResult([activity1, activity2]));
       when(() => mockHealthSyncRepository.isAlreadySynced(any()))
           .thenAnswer((_) async => false);
 
@@ -551,9 +574,245 @@ void main() {
       final result = await interactor.execute();
 
       // Second activity should still be processed despite first failing
-      expect(result, hasLength(1));
-      expect(result.first.source, 'apple_health');
-      expect(result.first.eventKcals, 200); // Preserves health platform calories
+      expect(result.syncedEvents, hasLength(1));
+      expect(result.outcome, SyncHealthOutcome.synced);
+      expect(result.syncedEvents.first.source, 'apple_health');
+      expect(result.syncedEvents.first.eventKcals, 200); // Preserves health platform calories
+      verify(() => mockHealthSyncRepository.setLastSyncTime(any())).called(1);
+    });
+
+    group('typed fetch outcomes drive sync state', () {
+      void stubPreconditions() {
+        when(() => mockHealthSyncRepository.isHealthSyncEnabled())
+            .thenAnswer((_) async => true);
+        when(() => mockHealthSyncRepository.hasPermissions())
+            .thenAnswer((_) async => true);
+        when(() => mockHealthSyncRepository.getLastSyncTime())
+            .thenAnswer((_) async => null);
+        when(() => mockPreferencesRepository.getSub()).thenReturn('user123');
+        when(() => mockLocalStorageRepository
+                .getMasterFile(MasterFilesType.sportsInfo))
+            .thenAnswer((_) async => testSportsInfo);
+        when(() => mockHealthSyncRepository.setLastSyncTime(any()))
+            .thenAnswer((_) async {});
+      }
+
+      void stubFetch(HealthFetchResult<List<HealthActivity>> fetchResult) {
+        when(() => mockHealthSyncRepository.fetchActivitiesResult(
+              startDate: any(named: 'startDate'),
+              endDate: any(named: 'endDate'),
+            )).thenAnswer((_) async => fetchResult);
+      }
+
+      void stubProcessing() {
+        when(() => mockHealthSyncRepository.isAlreadySynced(any()))
+            .thenAnswer((_) async => false);
+        when(() => mockSaveSportEventInteractor.execute(any(), any()))
+            .thenAnswer((_) async {});
+        when(() => mockSportEventsRepository.syncToBackend(any()))
+            .thenAnswer((_) {});
+        when(() => mockHealthSyncRepository.saveHealthSyncMetadata(any()))
+            .thenAnswer((_) async {});
+      }
+
+      test(
+        'failed fetch: no import, no lastSyncTime advance, fetchFailed '
+        'diagnostic with the mapped category',
+        () async {
+          stubPreconditions();
+          stubFetch(failedResult(reason: HealthFetchFailureReason.timeout));
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, isEmpty);
+          expect(result.outcome, SyncHealthOutcome.fetchFailed);
+          expect(result.isSuccess, isFalse);
+          verifyNever(() => mockHealthSyncRepository.setLastSyncTime(any()));
+          verifyNever(() => mockHealthSyncRepository.isAlreadySynced(any()));
+          verifyNever(() => mockSaveSportEventInteractor.execute(any(), any()));
+
+          expect(diagnostics.events, hasLength(1));
+          final event = diagnostics.events.single;
+          expect(event.type, HealthSyncDiagnosticType.fetchFailed);
+          expect(event.domain, HealthSyncDomain.workout);
+          expect(event.metadata['errorCategory'], 'timeout');
+          expect(event.metadata.containsKey('phase'), isFalse);
+        },
+      );
+
+      test(
+        'permissionDenied fetch: no advance, matching outcome + diagnostic',
+        () async {
+          stubPreconditions();
+          stubFetch(permissionDeniedResult());
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, isEmpty);
+          expect(result.outcome, SyncHealthOutcome.permissionDenied);
+          expect(result.isSuccess, isFalse);
+          verifyNever(() => mockHealthSyncRepository.setLastSyncTime(any()));
+
+          expect(diagnostics.events, hasLength(1));
+          expect(
+            diagnostics.events.single.type,
+            HealthSyncDiagnosticType.permissionDenied,
+          );
+          expect(diagnostics.events.single.domain, HealthSyncDomain.workout);
+        },
+      );
+
+      test(
+        'platformUnavailable fetch: no advance, matching outcome + diagnostic',
+        () async {
+          stubPreconditions();
+          stubFetch(platformUnavailableResult());
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, isEmpty);
+          expect(result.outcome, SyncHealthOutcome.platformUnavailable);
+          verifyNever(() => mockHealthSyncRepository.setLastSyncTime(any()));
+
+          expect(diagnostics.events, hasLength(1));
+          expect(
+            diagnostics.events.single.type,
+            HealthSyncDiagnosticType.platformUnavailable,
+          );
+        },
+      );
+
+      test(
+        'successNoData: advances lastSyncTime, syncedNoData outcome, '
+        'fetchNoData diagnostic',
+        () async {
+          stubPreconditions();
+          stubFetch(noDataResult());
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, isEmpty);
+          expect(result.outcome, SyncHealthOutcome.syncedNoData);
+          expect(result.isSuccess, isTrue);
+          verify(() => mockHealthSyncRepository.setLastSyncTime(any()))
+              .called(1);
+
+          expect(diagnostics.events, hasLength(1));
+          expect(
+            diagnostics.events.single.type,
+            HealthSyncDiagnosticType.fetchNoData,
+          );
+        },
+      );
+
+      test(
+        'success: saves event, syncs backend, saves metadata, advances, '
+        'synced outcome, fetchSucceeded diagnostic',
+        () async {
+          stubPreconditions();
+          stubProcessing();
+          stubFetch(successResult([
+            aHealthActivity(healthPlatformId: 'typed_success_id'),
+          ]));
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, hasLength(1));
+          expect(result.outcome, SyncHealthOutcome.synced);
+          expect(result.isSuccess, isTrue);
+          verify(() => mockSaveSportEventInteractor.execute(any(), any()))
+              .called(1);
+          verify(() => mockSportEventsRepository.syncToBackend(any()))
+              .called(1);
+          verify(() => mockHealthSyncRepository.saveHealthSyncMetadata(any()))
+              .called(1);
+          verify(() => mockHealthSyncRepository.setLastSyncTime(any()))
+              .called(1);
+          verifyNever(() => mockHealthSyncRepository.fetchActivities(
+                startDate: any(named: 'startDate'),
+                endDate: any(named: 'endDate'),
+              ));
+
+          expect(diagnostics.events, hasLength(1));
+          final event = diagnostics.events.single;
+          expect(event.type, HealthSyncDiagnosticType.fetchSucceeded);
+          expect(event.domain, HealthSyncDomain.workout);
+          expect(event.metadata['count'], 1);
+        },
+      );
+
+      test(
+        'partialSuccess: imports, advances, syncedPartial outcome, '
+        'fetchSucceeded + phase-tagged fetchFailed diagnostics',
+        () async {
+          stubPreconditions();
+          stubProcessing();
+          stubFetch(partialSuccessResult(
+            [aHealthActivity(healthPlatformId: 'typed_partial_id')],
+            reason: HealthFetchFailureReason.pluginError,
+          ));
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, hasLength(1));
+          expect(result.outcome, SyncHealthOutcome.syncedPartial);
+          expect(result.isSuccess, isTrue);
+          verify(() => mockHealthSyncRepository.setLastSyncTime(any()))
+              .called(1);
+
+          expect(diagnostics.events, hasLength(2));
+          expect(
+            diagnostics.events[0].type,
+            HealthSyncDiagnosticType.fetchSucceeded,
+          );
+          expect(diagnostics.events[0].metadata['count'], 1);
+          expect(
+            diagnostics.events[1].type,
+            HealthSyncDiagnosticType.fetchFailed,
+          );
+          expect(diagnostics.events[1].metadata['errorCategory'], 'plugin');
+          expect(diagnostics.events[1].metadata['phase'], 'enrichment');
+        },
+      );
+
+      test(
+        'per-activity processing failure is still isolated and still advances',
+        () async {
+          stubPreconditions();
+          stubProcessing();
+          stubFetch(successResult([
+            aHealthActivity(healthPlatformId: 'first_fails'),
+            aHealthActivity(healthPlatformId: 'second_ok'),
+          ]));
+          var callCount = 0;
+          when(() => mockSaveSportEventInteractor.execute(any(), any()))
+              .thenAnswer((_) async {
+            callCount++;
+            if (callCount == 1) throw Exception('save failed');
+          });
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, hasLength(1));
+          expect(result.outcome, SyncHealthOutcome.synced);
+          verify(() => mockHealthSyncRepository.setLastSyncTime(any()))
+              .called(1);
+        },
+      );
+
+      test('constructs with the default Noop sink when none is injected', () {
+        expect(
+          () => SyncHealthActivitiesInteractorImpl(
+            healthSyncRepository: mockHealthSyncRepository,
+            localStorageRepository: mockLocalStorageRepository,
+            preferencesRepository: mockPreferencesRepository,
+            saveSportEventInteractor: mockSaveSportEventInteractor,
+            sportEventsRepository: mockSportEventsRepository,
+            sportKcalCalculationService: mockSportKcalCalculationService,
+          ),
+          returnsNormally,
+        );
+      });
     });
   });
 }

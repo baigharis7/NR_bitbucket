@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/models/masterfiles/sports_info_master.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/sync_health_activities_result.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/presentation/healthsync/bloc/health_sync_bloc.dart';
@@ -414,17 +415,20 @@ void main() {
         'emits correct state when manual sync succeeds',
         setUp: () {
           when(() => mockSyncHealthActivitiesInteractor.execute(since: any(named: 'since')))
-              .thenAnswer((_) async => [
-                SportEventComplete(
-                  userId: 'test',
-                  eventId: 1,
-                  eventDate: DateTime.now().millisecondsSinceEpoch,
-                  sportName: 'Running',
-                  source: 'apple_health',
-                  eventKcals: 200,
-                  info: [],
-                ),
-              ]);
+              .thenAnswer((_) async => SyncHealthActivitiesResult(
+                    syncedEvents: [
+                      SportEventComplete(
+                        userId: 'test',
+                        eventId: 1,
+                        eventDate: DateTime.now().millisecondsSinceEpoch,
+                        sportName: 'Running',
+                        source: 'apple_health',
+                        eventKcals: 200,
+                        info: [],
+                      ),
+                    ],
+                    outcome: SyncHealthOutcome.synced,
+                  ));
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => DateTime.now());
           stubSleepStepData();
@@ -445,7 +449,10 @@ void main() {
         'emits correct state when manual sync returns empty',
         setUp: () {
           when(() => mockSyncHealthActivitiesInteractor.execute(since: any(named: 'since')))
-              .thenAnswer((_) async => []);
+              .thenAnswer((_) async => const SyncHealthActivitiesResult(
+                    syncedEvents: [],
+                    outcome: SyncHealthOutcome.syncedNoData,
+                  ));
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => DateTime.now());
           stubSleepStepData();
@@ -490,7 +497,10 @@ void main() {
         'saves sleep/step data after successful sync',
         setUp: () {
           when(() => mockSyncHealthActivitiesInteractor.execute(since: any(named: 'since')))
-              .thenAnswer((_) async => []);
+              .thenAnswer((_) async => const SyncHealthActivitiesResult(
+                    syncedEvents: [],
+                    outcome: SyncHealthOutcome.syncedNoData,
+                  ));
           when(() => mockHealthSyncRepository.getLastSyncTime())
               .thenAnswer((_) async => DateTime.now());
           stubSleepStepData(sleepHours: 6.0, stepCount: 12000);
@@ -520,19 +530,71 @@ void main() {
         },
       );
 
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'reports syncSuccess false when the fetch failed (no green snackbar)',
+        setUp: () {
+          when(() => mockSyncHealthActivitiesInteractor.execute(
+                  since: any(named: 'since')))
+              .thenAnswer((_) async => const SyncHealthActivitiesResult(
+                    syncedEvents: [],
+                    outcome: SyncHealthOutcome.fetchFailed,
+                  ));
+          when(() => mockHealthSyncRepository.getLastSyncTime())
+              .thenAnswer((_) async => null);
+          stubSleepStepData();
+          stubEstimatedSteps();
+        },
+        build: buildBloc,
+        skip: 2,
+        act: (bloc) => bloc.add(HealthSyncManualTrigger()),
+        verify: (bloc) {
+          expect(bloc.state.syncSuccess, false);
+          expect(bloc.state.syncedActivitiesCount, 0);
+          expect(bloc.state.isSyncing, false);
+          expect(bloc.state.onError, isNull);
+        },
+      );
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'reports syncSuccess false on a permission-denied fetch',
+        setUp: () {
+          when(() => mockSyncHealthActivitiesInteractor.execute(
+                  since: any(named: 'since')))
+              .thenAnswer((_) async => const SyncHealthActivitiesResult(
+                    syncedEvents: [],
+                    outcome: SyncHealthOutcome.permissionDenied,
+                  ));
+          when(() => mockHealthSyncRepository.getLastSyncTime())
+              .thenAnswer((_) async => null);
+          stubSleepStepData();
+          stubEstimatedSteps();
+        },
+        build: buildBloc,
+        skip: 2,
+        act: (bloc) => bloc.add(HealthSyncManualTrigger()),
+        verify: (bloc) {
+          expect(bloc.state.syncSuccess, false);
+          expect(bloc.state.syncedActivitiesCount, 0);
+          expect(bloc.state.isSyncing, false);
+        },
+      );
+
       test('notifies DashboardEventBus with sport category when activities are synced', () async {
         when(() => mockSyncHealthActivitiesInteractor.execute(since: any(named: 'since')))
-            .thenAnswer((_) async => [
-                  SportEventComplete(
-                    userId: 'test',
-                    eventId: 1,
-                    eventDate: DateTime.now().millisecondsSinceEpoch,
-                    sportName: 'Running',
-                    source: 'apple_health',
-                    eventKcals: 200,
-                    info: [],
-                  ),
-                ]);
+            .thenAnswer((_) async => SyncHealthActivitiesResult(
+                  syncedEvents: [
+                    SportEventComplete(
+                      userId: 'test',
+                      eventId: 1,
+                      eventDate: DateTime.now().millisecondsSinceEpoch,
+                      sportName: 'Running',
+                      source: 'apple_health',
+                      eventKcals: 200,
+                      info: [],
+                    ),
+                  ],
+                  outcome: SyncHealthOutcome.synced,
+                ));
         when(() => mockHealthSyncRepository.getLastSyncTime())
             .thenAnswer((_) async => DateTime.now());
         stubSleepStepData();
@@ -553,7 +615,10 @@ void main() {
 
       test('does not notify DashboardEventBus when no activities are synced', () async {
         when(() => mockSyncHealthActivitiesInteractor.execute(since: any(named: 'since')))
-            .thenAnswer((_) async => []);
+            .thenAnswer((_) async => const SyncHealthActivitiesResult(
+                  syncedEvents: [],
+                  outcome: SyncHealthOutcome.syncedNoData,
+                ));
         when(() => mockHealthSyncRepository.getLastSyncTime())
             .thenAnswer((_) async => DateTime.now());
         stubSleepStepData();

@@ -304,11 +304,13 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
 
     try {
       _hsLog('HealthSync: manual trigger started');
-      final syncedActivities = await syncHealthActivitiesInteractor.execute(
+      final syncResult = await syncHealthActivitiesInteractor.execute(
         since: DateTime.now().subtract(const Duration(days: 7)),
       );
+      final syncedActivities = syncResult.syncedEvents;
       final lastSyncTime = await healthSyncRepository.getLastSyncTime();
-      _hsLog('HealthSync: synced ${syncedActivities.length} activities');
+      _hsLog('HealthSync: synced ${syncedActivities.length} activities '
+          '(outcome: ${syncResult.outcome.name})');
 
       if (syncedActivities.isNotEmpty) {
         DashboardEventBus.instance.notify(DataChangedCategory.sport);
@@ -324,7 +326,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
         isSyncing: false,
         lastSyncTime: lastSyncTime,
         syncedActivitiesCount: syncedActivities.length,
-        syncSuccess: true,
+        syncSuccess: syncResult.isSuccess,
         todaySleepHours: fresh.sleepHours,
         todayStepCount: fresh.stepCount,
         estimatedStepCount: estimatedSteps,
