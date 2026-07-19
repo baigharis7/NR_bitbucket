@@ -321,6 +321,17 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
+  Future<SportEventEntity?> findSportEventByEventId(int eventId) async {
+    final box = await _getSportEventsBox;
+    for (final value in box.values) {
+      if (value is SportEventEntity && value.eventId == eventId) {
+        return value;
+      }
+    }
+    return null;
+  }
+
+  @override
   Future<List> getFoodEventsOfToday({DateTime? dateTime}) async {
     List allFoodEvents = await _getFoodEventsBox.then((box) {
       return box.values.toList();
