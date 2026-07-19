@@ -50,6 +50,27 @@ void main() {
       );
     });
 
+    test('drops String-valued metadata but keeps int/bool metadata', () {
+      final line = CrashlyticsHealthSyncDiagnosticsSink.format(
+        const HealthSyncDiagnosticEvent(
+          type: HealthSyncDiagnosticType.fetchFailed,
+          severity: HealthSyncDiagnosticSeverity.error,
+          domain: HealthSyncDomain.workout,
+          platform: HealthSyncPlatform.android,
+          metadata: {
+            'errorCategory': 'permission', // String — must be dropped
+            'retryCount': 2, // int — must be kept
+            'isRetryable': true, // bool — must be kept
+          },
+        ),
+      );
+
+      expect(line, isNot(contains('errorCategory')));
+      expect(line, isNot(contains('permission')));
+      expect(line, contains('retryCount=2'));
+      expect(line, contains('isRetryable=true'));
+    });
+
     test('add does not throw when Firebase is absent', () {
       const sink = CrashlyticsHealthSyncDiagnosticsSink();
       expect(() => sink.add(_event()), returnsNormally);
