@@ -92,6 +92,10 @@ HealthSyncMetadataEntity mapToHealthSyncMetadataEntity(HealthSyncMetadata metada
     sportEventId: metadata.sportEventId,
     syncedAt: metadata.syncedAt.millisecondsSinceEpoch,
     sourceType: metadata.sourceType,
+    normalizedType: metadata.normalizedType,
+    startTimeMs: metadata.startTimeMs,
+    endTimeMs: metadata.endTimeMs,
+    sourceCategory: metadata.sourceCategory,
   );
 }
 
@@ -102,5 +106,9 @@ HealthSyncMetadata mapToHealthSyncMetadata(HealthSyncMetadataEntity entity) {
     sportEventId: entity.sportEventId,
     syncedAt: DateTime.fromMillisecondsSinceEpoch(entity.syncedAt),
     sourceType: entity.sourceType,
+    normalizedType: entity.normalizedType,
+    startTimeMs: entity.startTimeMs,
+    endTimeMs: entity.endTimeMs,
+    sourceCategory: entity.sourceCategory,
   );
 }

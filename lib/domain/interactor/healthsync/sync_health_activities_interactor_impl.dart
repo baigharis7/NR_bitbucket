@@ -17,6 +17,8 @@ import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_event
 import 'package:nutrenaissance_flutter/infrastructure/mappers/health_activity_mappers.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sanitizer.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sink.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_workout_deduplicator.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_workout_fingerprint.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/sport_kcal_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/health_activity_type_mapping.dart';
 
@@ -31,6 +33,10 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
   /// Destination for privacy-safe sync diagnostics. Defaults to a no-op;
   /// app_bootstrap injects the Crashlytics sink in production.
   final HealthSyncDiagnosticsSink diagnostics;
+
+  /// Pure workout dedupe decision service. Const default is the production
+  /// instance; injectable for tests.
+  final HealthWorkoutDeduplicator deduplicator;
 
   /// Minimum time between automatic syncs (5 minutes)
   static const Duration _minSyncInterval = Duration(minutes: 5);
@@ -51,6 +57,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     required this.sportEventsRepository,
     required this.sportKcalCalculationService,
     this.diagnostics = const NoopHealthSyncDiagnosticsSink(),
+    this.deduplicator = const HealthWorkoutDeduplicator(),
   });
 
   @override
@@ -214,16 +221,47 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
         ));
       }
 
-      final newActivities = await _deduplicateActivities(activities);
-      _log('After dedup: ${newActivities.length} new activities (${activities.length - newActivities.length} already synced)');
+      // Load the sync metadata ONCE and let the pure deduplicator decide per
+      // activity: import, import-but-suspected, or skip (exact/strong tier).
+      final existingMetadata = await healthSyncRepository.getSyncedMetadata();
+      final dedupeEntries = deduplicator.deduplicate(
+        incoming: activities,
+        existing: existingMetadata,
+      );
+      final toImport = dedupeEntries
+          .where((e) =>
+              e.decision == DedupeDecision.import ||
+              e.decision == DedupeDecision.importSuspected)
+          .toList();
+      final exactCount = dedupeEntries
+          .where((e) => e.decision == DedupeDecision.skipExactIdentity)
+          .length;
+      final strongCount = dedupeEntries
+          .where((e) => e.decision == DedupeDecision.skipStrongDuplicate)
+          .length;
+      final suspectedImportedCount = dedupeEntries
+          .where((e) => e.decision == DedupeDecision.importSuspected)
+          .length;
+      if (exactCount + strongCount + suspectedImportedCount > 0) {
+        // ONE aggregated event per run — counts only, never IDs or names.
+        diagnostics.add(HealthSyncDiagnostics.duplicateDiscarded(
+          domain: HealthSyncDomain.workout,
+          exactCount: exactCount,
+          strongCount: strongCount,
+          suspectedImportedCount: suspectedImportedCount,
+        ));
+      }
+      _log('After dedup: ${toImport.length} new activities (${activities.length - toImport.length} already synced)');
 
-      // Process each new activity
-      for (final activity in newActivities) {
+      // Process each new activity (per-activity isolation unchanged)
+      for (final entry in toImport) {
+        final activity = entry.activity;
         try {
           final sportEvent = await _processActivity(
             activity,
             userId,
             sportsInfo,
+            fingerprint: entry.fingerprint,
           );
           if (sportEvent != null) {
             _log('Synced: ${activity.activityType} (${activity.healthPlatformId}) → ${sportEvent.sportName}');
@@ -273,30 +311,15 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     }
   }
 
-  /// Filter out activities that have already been synced
-  Future<List<HealthActivity>> _deduplicateActivities(
-    List<HealthActivity> activities,
-  ) async {
-    final newActivities = <HealthActivity>[];
-    for (final activity in activities) {
-      final alreadySynced = await healthSyncRepository.isAlreadySynced(
-        activity.healthPlatformId,
-      );
-      if (!alreadySynced) {
-        newActivities.add(activity);
-      }
-    }
-    return newActivities;
-  }
-
   /// Process a single health activity: build sport event with health platform
   /// calories when available, otherwise compute via METs locally; save
   /// locally, sync to backend.
   Future<SportEventComplete?> _processActivity(
     HealthActivity activity,
     String userId,
-    SportsInfoEntity sportsInfo,
-  ) async {
+    SportsInfoEntity sportsInfo, {
+    required HealthWorkoutFingerprint fingerprint,
+  }) async {
     // Find matching sport ID
     int? sportId = HealthActivityTypeMapping.mapToSportId(
       activity.activityType,
@@ -349,12 +372,17 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     // Sync to DynamoDB (fire-and-forget, same as manual entry)
     sportEventsRepository.syncToBackend(sportEvent);
 
-    // Save sync metadata for deduplication
+    // Save sync metadata for deduplication — keyed by the canonical platform
+    // id, now also carrying the fingerprint fields for the strong tier.
     final metadata = HealthSyncMetadata(
       healthPlatformId: activity.healthPlatformId,
       sportEventId: sportEvent.eventId,
       syncedAt: DateTime.now(),
       sourceType: activity.sourceType,
+      normalizedType: fingerprint.normalizedType,
+      startTimeMs: fingerprint.startTime.millisecondsSinceEpoch,
+      endTimeMs: fingerprint.endTime.millisecondsSinceEpoch,
+      sourceCategory: fingerprint.sourceCategory.name,
     );
     await healthSyncRepository.saveHealthSyncMetadata(metadata);
 

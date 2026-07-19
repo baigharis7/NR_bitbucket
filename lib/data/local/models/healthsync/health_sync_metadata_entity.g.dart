@@ -22,13 +22,17 @@ class HealthSyncMetadataEntityAdapter
       sportEventId: fields[1] as int,
       syncedAt: fields[2] as int,
       sourceType: fields[3] as String,
+      normalizedType: fields[4] as String?,
+      startTimeMs: fields[5] as int?,
+      endTimeMs: fields[6] as int?,
+      sourceCategory: fields[7] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, HealthSyncMetadataEntity obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.healthPlatformId)
       ..writeByte(1)
@@ -36,7 +40,15 @@ class HealthSyncMetadataEntityAdapter
       ..writeByte(2)
       ..write(obj.syncedAt)
       ..writeByte(3)
-      ..write(obj.sourceType);
+      ..write(obj.sourceType)
+      ..writeByte(4)
+      ..write(obj.normalizedType)
+      ..writeByte(5)
+      ..write(obj.startTimeMs)
+      ..writeByte(6)
+      ..write(obj.endTimeMs)
+      ..writeByte(7)
+      ..write(obj.sourceCategory);
   }
 
   @override
@@ -61,6 +73,10 @@ HealthSyncMetadataEntity _$HealthSyncMetadataEntityFromJson(
       sportEventId: (json['sportEventId'] as num).toInt(),
       syncedAt: (json['syncedAt'] as num).toInt(),
       sourceType: json['sourceType'] as String,
+      normalizedType: json['normalizedType'] as String?,
+      startTimeMs: (json['startTimeMs'] as num?)?.toInt(),
+      endTimeMs: (json['endTimeMs'] as num?)?.toInt(),
+      sourceCategory: json['sourceCategory'] as String?,
     );
 
 Map<String, dynamic> _$HealthSyncMetadataEntityToJson(
@@ -70,4 +86,8 @@ Map<String, dynamic> _$HealthSyncMetadataEntityToJson(
       'sportEventId': instance.sportEventId,
       'syncedAt': instance.syncedAt,
       'sourceType': instance.sourceType,
+      'normalizedType': instance.normalizedType,
+      'startTimeMs': instance.startTimeMs,
+      'endTimeMs': instance.endTimeMs,
+      'sourceCategory': instance.sourceCategory,
     };

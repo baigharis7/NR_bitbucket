@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health/health.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:nutrenaissance_flutter/data/local/models/healthsync/health_sync_metadata_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/healthsync/health_sync_repository_impl.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_activity.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_fetch_result.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_metadata.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/data/api/sleepevents/sleep_events_api.dart';
@@ -167,6 +169,14 @@ void main() {
         actualSteps: 0,
       ),
     );
+    registerFallbackValue(
+      HealthSyncMetadataEntity(
+        healthPlatformId: '',
+        sportEventId: 0,
+        syncedAt: 0,
+        sourceType: '',
+      ),
+    );
   });
 
   setUp(() {
@@ -256,7 +266,12 @@ void main() {
       service.distanceType = HealthDataType.DISTANCE_WALKING_RUNNING;
 
       client.dataByType[HealthDataType.WORKOUT] = [
-        workoutPoint(from: start, to: end, source: appleWatch),
+        workoutPoint(
+          from: start,
+          to: end,
+          source: appleWatch,
+          uuid: 'wk-uuid-e2e',
+        ),
       ];
       client.dataByType[HealthDataType.ACTIVE_ENERGY_BURNED] = [
         numericPoint(
@@ -299,8 +314,9 @@ void main() {
       expect(a.avgHeartRate, 150);
       expect(a.sourceName, 'Apple Watch');
       expect(a.sourceType, 'apple_health');
+      expect(a.healthPlatformId, 'wk-uuid-e2e');
       expect(
-        a.healthPlatformId,
+        a.legacyPlatformId,
         'Apple Watch_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}',
       );
       // The four reads happen in the expected order, each single-typed (with
@@ -361,7 +377,12 @@ void main() {
       service.distanceType = HealthDataType.DISTANCE_WALKING_RUNNING;
 
       client.dataByType[HealthDataType.WORKOUT] = [
-        workoutPoint(from: start, to: end, source: appleWatch),
+        workoutPoint(
+          from: start,
+          to: end,
+          source: appleWatch,
+          uuid: 'wk-uuid-typed',
+        ),
       ];
       client.dataByType[HealthDataType.ACTIVE_ENERGY_BURNED] = [
         numericPoint(
@@ -408,8 +429,9 @@ void main() {
       expect(a.avgHeartRate, 150);
       expect(a.sourceName, 'Apple Watch');
       expect(a.sourceType, 'apple_health');
+      expect(a.healthPlatformId, 'wk-uuid-typed');
       expect(
-        a.healthPlatformId,
+        a.legacyPlatformId,
         'Apple Watch_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}',
       );
     });
@@ -448,7 +470,12 @@ void main() {
         final start = DateTime(2026, 7, 1, 8, 0);
         final end = DateTime(2026, 7, 1, 9, 0);
         client.dataByType[HealthDataType.WORKOUT] = [
-          workoutPoint(from: start, to: end, source: appleWatch),
+          workoutPoint(
+            from: start,
+            to: end,
+            source: appleWatch,
+            uuid: 'wk-uuid-delegate',
+          ),
         ];
 
         final activities = await build().fetchActivities(
@@ -457,10 +484,7 @@ void main() {
         );
         expect(activities, hasLength(1));
         expect(activities.single.activityType, 'RUNNING');
-        expect(
-          activities.single.healthPlatformId,
-          'Apple Watch_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}',
-        );
+        expect(activities.single.healthPlatformId, 'wk-uuid-delegate');
 
         client.throwOnRead = Exception('boom');
         expect(
@@ -469,6 +493,79 @@ void main() {
             endDate: DateTime(2026),
           ),
           isEmpty,
+        );
+      },
+    );
+
+    test('platform uuid becomes healthPlatformId; legacy id preserved', () async {
+      final start = DateTime(2026, 7, 1, 8, 0);
+      final end = DateTime(2026, 7, 1, 9, 0);
+      client.dataByType[HealthDataType.WORKOUT] = [
+        workoutPoint(
+          from: start,
+          to: end,
+          source: appleWatch,
+          uuid: 'platform-uuid-1',
+        ),
+      ];
+
+      final result = await build().fetchActivitiesResult(
+        startDate: start,
+        endDate: end,
+      );
+
+      final a = result.data!.single;
+      expect(a.healthPlatformId, 'platform-uuid-1');
+      expect(
+        a.legacyPlatformId,
+        'Apple Watch_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}',
+      );
+    });
+
+    test('empty uuid falls back to the synthesized legacy id', () async {
+      final start = DateTime(2026, 7, 1, 8, 0);
+      final end = DateTime(2026, 7, 1, 9, 0);
+      client.dataByType[HealthDataType.WORKOUT] = [
+        workoutPoint(from: start, to: end, source: appleWatch, uuid: ''),
+      ];
+
+      final result = await build().fetchActivitiesResult(
+        startDate: start,
+        endDate: end,
+      );
+
+      final a = result.data!.single;
+      final legacy =
+          'Apple Watch_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}';
+      expect(a.healthPlatformId, legacy);
+      expect(a.legacyPlatformId, legacy);
+    });
+
+    test(
+      'Android package-name source with empty sourceId maps cleanly',
+      () async {
+        final start = DateTime(2026, 7, 1, 8, 0);
+        final end = DateTime(2026, 7, 1, 9, 0);
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(
+            from: start,
+            to: end,
+            source: samsungHealthPackage,
+            uuid: 'hc-record-uuid',
+          ),
+        ];
+
+        final result = await build().fetchActivitiesResult(
+          startDate: start,
+          endDate: end,
+        );
+
+        final a = result.data!.single;
+        expect(a.healthPlatformId, 'hc-record-uuid');
+        expect(a.sourceName, 'com.sec.android.app.shealth');
+        expect(
+          a.legacyPlatformId,
+          'com.sec.android.app.shealth_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}',
         );
       },
     );
@@ -660,6 +757,78 @@ void main() {
 
         expect(activities, hasLength(1));
         expect(activities.single.activityType, 'RUNNING');
+      },
+    );
+  });
+
+  group('health sync metadata persistence', () {
+    test('saveHealthSyncMetadata persists the fingerprint fields', () async {
+      when(
+        () => localStorage.saveHealthSyncMetadata(any()),
+      ).thenAnswer((_) async {});
+
+      await build().saveHealthSyncMetadata(
+        HealthSyncMetadata(
+          healthPlatformId: 'uuid_1',
+          sportEventId: 11,
+          syncedAt: DateTime(2026, 7, 18, 10, 0),
+          sourceType: 'health_connect',
+          normalizedType: 'RUNNING',
+          startTimeMs: 1000000000000,
+          endTimeMs: 1000003600000,
+          sourceCategory: 'googleFit',
+        ),
+      );
+
+      final entity =
+          verify(
+                () => localStorage.saveHealthSyncMetadata(captureAny()),
+              ).captured.single
+              as HealthSyncMetadataEntity;
+      expect(entity.healthPlatformId, 'uuid_1');
+      expect(entity.sportEventId, 11);
+      expect(entity.sourceType, 'health_connect');
+      expect(entity.normalizedType, 'RUNNING');
+      expect(entity.startTimeMs, 1000000000000);
+      expect(entity.endTimeMs, 1000003600000);
+      expect(entity.sourceCategory, 'googleFit');
+    });
+
+    test(
+      'getSyncedMetadata reads fingerprint fields and legacy nulls',
+      () async {
+        when(() => localStorage.getHealthSyncMetadata()).thenAnswer(
+          (_) async => [
+            HealthSyncMetadataEntity(
+              healthPlatformId: 'uuid_1',
+              sportEventId: 11,
+              syncedAt: 1752800000000,
+              sourceType: 'health_connect',
+              normalizedType: 'RUNNING',
+              startTimeMs: 1000000000000,
+              endTimeMs: 1000003600000,
+              sourceCategory: 'googleFit',
+            ),
+            HealthSyncMetadataEntity(
+              healthPlatformId: 'Old Source_1_2',
+              sportEventId: 12,
+              syncedAt: 1752800000000,
+              sourceType: 'apple_health',
+            ),
+          ],
+        );
+
+        final metadata = await build().getSyncedMetadata();
+
+        expect(metadata, hasLength(2));
+        expect(metadata[0].normalizedType, 'RUNNING');
+        expect(metadata[0].startTimeMs, 1000000000000);
+        expect(metadata[0].endTimeMs, 1000003600000);
+        expect(metadata[0].sourceCategory, 'googleFit');
+        expect(metadata[1].normalizedType, isNull);
+        expect(metadata[1].startTimeMs, isNull);
+        expect(metadata[1].endTimeMs, isNull);
+        expect(metadata[1].sourceCategory, isNull);
       },
     );
   });

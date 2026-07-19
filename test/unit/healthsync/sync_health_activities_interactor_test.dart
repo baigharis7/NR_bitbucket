@@ -170,6 +170,7 @@ void main() {
     test('deduplicates already synced activities', () async {
       final activity = HealthActivity(
         healthPlatformId: 'already_synced_id',
+        legacyPlatformId: 'legacy_already_synced_id',
         activityType: 'RUNNING',
         startTime: DateTime.now().subtract(const Duration(hours: 1)),
         endTime: DateTime.now(),
@@ -194,9 +195,16 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).thenAnswer((_) async => successResult([activity]));
-      // Activity is already synced
-      when(() => mockHealthSyncRepository.isAlreadySynced('already_synced_id'))
-          .thenAnswer((_) async => true);
+      // Activity is already synced — its canonical id is a stored metadata key
+      when(() => mockHealthSyncRepository.getSyncedMetadata())
+          .thenAnswer((_) async => [
+                HealthSyncMetadata(
+                  healthPlatformId: 'already_synced_id',
+                  sportEventId: 1,
+                  syncedAt: DateTime(2026, 7, 9),
+                  sourceType: 'apple_health',
+                ),
+              ]);
       when(() => mockHealthSyncRepository.setLastSyncTime(any()))
           .thenAnswer((_) async {});
 
@@ -205,6 +213,12 @@ void main() {
       expect(result.syncedEvents, isEmpty);
       expect(result.outcome, SyncHealthOutcome.synced);
       verifyNever(() => mockSaveSportEventInteractor.execute(any(), any()));
+
+      final dupEvents = diagnostics.events
+          .where((e) => e.type == HealthSyncDiagnosticType.duplicateDiscarded)
+          .toList();
+      expect(dupEvents, hasLength(1));
+      expect(dupEvents.single.metadata['exactCount'], 1);
     });
 
     test('processes new activities successfully', () async {
@@ -237,8 +251,8 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).thenAnswer((_) async => successResult([activity]));
-      when(() => mockHealthSyncRepository.isAlreadySynced('new_activity_id'))
-          .thenAnswer((_) async => false);
+      when(() => mockHealthSyncRepository.getSyncedMetadata())
+          .thenAnswer((_) async => <HealthSyncMetadata>[]);
 
       var saveCalled = false;
       var metadataSaved = false;
@@ -313,6 +327,7 @@ void main() {
       // Synced workout with duration but no platform-supplied calories
       final activity = HealthActivity(
         healthPlatformId: 'no_calories_id',
+        legacyPlatformId: 'legacy_no_calories_id',
         activityType: 'RUNNING',
         startTime: DateTime(2024, 5, 1, 10, 0),
         endTime: DateTime(2024, 5, 1, 10, 30),
@@ -361,8 +376,8 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).thenAnswer((_) async => successResult([activity]));
-      when(() => mockHealthSyncRepository.isAlreadySynced('no_calories_id'))
-          .thenAnswer((_) async => false);
+      when(() => mockHealthSyncRepository.getSyncedMetadata())
+          .thenAnswer((_) async => <HealthSyncMetadata>[]);
       when(() => mockSportKcalCalculationService.enrichSportEvent(
             any(),
             userWeight: any(named: 'userWeight'),
@@ -391,6 +406,7 @@ void main() {
     test('does not call kcal service when platform calories are present', () async {
       final activity = HealthActivity(
         healthPlatformId: 'has_calories_id',
+        legacyPlatformId: 'legacy_has_calories_id',
         activityType: 'RUNNING',
         startTime: DateTime(2024, 5, 2, 10, 0),
         endTime: DateTime(2024, 5, 2, 11, 0),
@@ -415,8 +431,8 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).thenAnswer((_) async => successResult([activity]));
-      when(() => mockHealthSyncRepository.isAlreadySynced('has_calories_id'))
-          .thenAnswer((_) async => false);
+      when(() => mockHealthSyncRepository.getSyncedMetadata())
+          .thenAnswer((_) async => <HealthSyncMetadata>[]);
       when(() => mockSaveSportEventInteractor.execute(any(), any()))
           .thenAnswer((_) async {});
       when(() => mockSportEventsRepository.syncToBackend(any())).thenAnswer((_) {});
@@ -441,6 +457,7 @@ void main() {
     test('falls back to 0 kcal when both calories and duration are missing', () async {
       final activity = HealthActivity(
         healthPlatformId: 'zero_duration_id',
+        legacyPlatformId: 'legacy_zero_duration_id',
         activityType: 'RUNNING',
         startTime: DateTime(2024, 5, 3, 10, 0),
         endTime: DateTime(2024, 5, 3, 10, 0),
@@ -465,8 +482,8 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).thenAnswer((_) async => successResult([activity]));
-      when(() => mockHealthSyncRepository.isAlreadySynced('zero_duration_id'))
-          .thenAnswer((_) async => false);
+      when(() => mockHealthSyncRepository.getSyncedMetadata())
+          .thenAnswer((_) async => <HealthSyncMetadata>[]);
       when(() => mockSaveSportEventInteractor.execute(any(), any()))
           .thenAnswer((_) async {});
       when(() => mockSportEventsRepository.syncToBackend(any())).thenAnswer((_) {});
@@ -489,6 +506,7 @@ void main() {
     test('continues processing when individual activity fails', () async {
       final activity1 = HealthActivity(
         healthPlatformId: 'activity_1',
+        legacyPlatformId: 'legacy_activity_1',
         activityType: 'RUNNING',
         startTime: DateTime.now().subtract(const Duration(hours: 2)),
         endTime: DateTime.now().subtract(const Duration(hours: 1)),
@@ -502,6 +520,7 @@ void main() {
 
       final activity2 = HealthActivity(
         healthPlatformId: 'activity_2',
+        legacyPlatformId: 'legacy_activity_2',
         activityType: 'WALKING',
         startTime: DateTime.now().subtract(const Duration(hours: 1)),
         endTime: DateTime.now(),
@@ -536,8 +555,8 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           )).thenAnswer((_) async => successResult([activity1, activity2]));
-      when(() => mockHealthSyncRepository.isAlreadySynced(any()))
-          .thenAnswer((_) async => false);
+      when(() => mockHealthSyncRepository.getSyncedMetadata())
+          .thenAnswer((_) async => <HealthSyncMetadata>[]);
 
       // First activity save fails
       var callCount = 0;
@@ -589,8 +608,8 @@ void main() {
       }
 
       void stubProcessing() {
-        when(() => mockHealthSyncRepository.isAlreadySynced(any()))
-            .thenAnswer((_) async => false);
+        when(() => mockHealthSyncRepository.getSyncedMetadata())
+            .thenAnswer((_) async => <HealthSyncMetadata>[]);
         when(() => mockSaveSportEventInteractor.execute(any(), any()))
             .thenAnswer((_) async {});
         when(() => mockSportEventsRepository.syncToBackend(any()))
@@ -612,7 +631,7 @@ void main() {
           expect(result.outcome, SyncHealthOutcome.fetchFailed);
           expect(result.isSuccess, isFalse);
           verifyNever(() => mockHealthSyncRepository.setLastSyncTime(any()));
-          verifyNever(() => mockHealthSyncRepository.isAlreadySynced(any()));
+          verifyNever(() => mockHealthSyncRepository.getSyncedMetadata());
           verifyNever(() => mockSaveSportEventInteractor.execute(any(), any()));
 
           expect(diagnostics.events, hasLength(1));
@@ -766,7 +785,11 @@ void main() {
           stubProcessing();
           stubFetch(successResult([
             aHealthActivity(healthPlatformId: 'first_fails'),
-            aHealthActivity(healthPlatformId: 'second_ok'),
+            aHealthActivity(
+              healthPlatformId: 'second_ok',
+              startTime: DateTime(2026, 7, 1, 12, 0),
+              endTime: DateTime(2026, 7, 1, 13, 0),
+            ),
           ]));
           var callCount = 0;
           when(() => mockSaveSportEventInteractor.execute(any(), any()))
@@ -785,6 +808,216 @@ void main() {
       );
 
       test('constructs with the default Noop sink when none is injected', () {
+        expect(
+          () => SyncHealthActivitiesInteractorImpl(
+            healthSyncRepository: mockHealthSyncRepository,
+            localStorageRepository: mockLocalStorageRepository,
+            preferencesRepository: mockPreferencesRepository,
+            saveSportEventInteractor: mockSaveSportEventInteractor,
+            sportEventsRepository: mockSportEventsRepository,
+            sportKcalCalculationService: mockSportKcalCalculationService,
+          ),
+          returnsNormally,
+        );
+      });
+    });
+
+    group('fingerprint dedupe drives imports', () {
+      final start = DateTime(2026, 7, 10, 8, 0);
+      final end = DateTime(2026, 7, 10, 9, 0);
+
+      void stubPreconditions() {
+        when(() => mockHealthSyncRepository.isHealthSyncEnabled())
+            .thenAnswer((_) async => true);
+        when(() => mockHealthSyncRepository.hasPermissions())
+            .thenAnswer((_) async => true);
+        when(() => mockHealthSyncRepository.getLastSyncTime())
+            .thenAnswer((_) async => null);
+        when(() => mockPreferencesRepository.getSub()).thenReturn('user123');
+        when(() => mockLocalStorageRepository
+                .getMasterFile(MasterFilesType.sportsInfo))
+            .thenAnswer((_) async => testSportsInfo);
+        when(() => mockHealthSyncRepository.setLastSyncTime(any()))
+            .thenAnswer((_) async {});
+      }
+
+      void stubFetch(HealthFetchResult<List<HealthActivity>> fetchResult) {
+        when(() => mockHealthSyncRepository.fetchActivitiesResult(
+              startDate: any(named: 'startDate'),
+              endDate: any(named: 'endDate'),
+            )).thenAnswer((_) async => fetchResult);
+      }
+
+      void stubProcessing({
+        List<HealthSyncMetadata> existing = const [],
+      }) {
+        when(() => mockHealthSyncRepository.getSyncedMetadata())
+            .thenAnswer((_) async => existing);
+        when(() => mockSaveSportEventInteractor.execute(any(), any()))
+            .thenAnswer((_) async {});
+        when(() => mockSportEventsRepository.syncToBackend(any()))
+            .thenAnswer((_) {});
+        when(() => mockHealthSyncRepository.saveHealthSyncMetadata(any()))
+            .thenAnswer((_) async {});
+      }
+
+      Iterable<HealthSyncDiagnosticEvent> dupEvents() => diagnostics.events
+          .where((e) => e.type == HealthSyncDiagnosticType.duplicateDiscarded);
+
+      test(
+        'legacy-keyed metadata still blocks re-import after the uuid upgrade',
+        () async {
+          final legacyKey =
+              'Apple Health_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}';
+          stubPreconditions();
+          stubProcessing(existing: [
+            HealthSyncMetadata(
+              healthPlatformId: legacyKey,
+              sportEventId: 1,
+              syncedAt: DateTime(2026, 7, 9),
+              sourceType: 'apple_health',
+            ),
+          ]);
+          stubFetch(successResult([
+            aHealthActivity(
+              healthPlatformId: 'fresh-platform-uuid',
+              startTime: start,
+              endTime: end,
+            ),
+          ]));
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, isEmpty);
+          expect(result.outcome, SyncHealthOutcome.synced);
+          verifyNever(() => mockSaveSportEventInteractor.execute(any(), any()));
+          verify(() => mockHealthSyncRepository.setLastSyncTime(any()))
+              .called(1);
+
+          expect(dupEvents(), hasLength(1));
+          expect(dupEvents().single.metadata['exactCount'], 1);
+          expect(dupEvents().single.metadata['strongCount'], 0);
+          expect(dupEvents().single.metadata['suspectedImportedCount'], 0);
+        },
+      );
+
+      test('within-batch strong duplicate imports the first record only',
+          () async {
+        stubPreconditions();
+        stubProcessing();
+        stubFetch(successResult([
+          aHealthActivity(
+            healthPlatformId: 'uuid-watch',
+            startTime: start,
+            endTime: end,
+            sourceName: 'Apple Watch',
+          ),
+          aHealthActivity(
+            healthPlatformId: 'uuid-phone',
+            startTime: start.add(const Duration(minutes: 1)),
+            endTime: end.add(const Duration(minutes: 1)),
+            sourceName: 'com.sec.android.app.shealth',
+            sourceType: 'health_connect',
+          ),
+        ]));
+
+        final result = await interactor.execute();
+
+        expect(result.syncedEvents, hasLength(1));
+        verify(() => mockSaveSportEventInteractor.execute(any(), any()))
+            .called(1);
+        expect(dupEvents().single.metadata['strongCount'], 1);
+        expect(dupEvents().single.metadata['exactCount'], 0);
+      });
+
+      test('suspected overlap imports both and is counted', () async {
+        stubPreconditions();
+        stubProcessing();
+        stubFetch(successResult([
+          aHealthActivity(
+            healthPlatformId: 'uuid-a',
+            startTime: start,
+            endTime: end,
+          ),
+          aHealthActivity(
+            healthPlatformId: 'uuid-b',
+            startTime: start.add(const Duration(minutes: 5)),
+            endTime: end.add(const Duration(minutes: 3)),
+          ),
+        ]));
+
+        final result = await interactor.execute();
+
+        expect(result.syncedEvents, hasLength(2));
+        verify(() => mockSaveSportEventInteractor.execute(any(), any()))
+            .called(2);
+        expect(dupEvents().single.metadata['suspectedImportedCount'], 1);
+        expect(dupEvents().single.metadata['exactCount'], 0);
+        expect(dupEvents().single.metadata['strongCount'], 0);
+      });
+
+      test('same-window different-type imports both, no dedupe diagnostic',
+          () async {
+        stubPreconditions();
+        stubProcessing();
+        stubFetch(successResult([
+          aHealthActivity(
+            healthPlatformId: 'uuid-run',
+            activityType: 'RUNNING',
+            startTime: start,
+            endTime: end,
+          ),
+          aHealthActivity(
+            healthPlatformId: 'uuid-cycle',
+            activityType: 'CYCLING',
+            startTime: start,
+            endTime: end,
+          ),
+        ]));
+
+        final result = await interactor.execute();
+
+        expect(result.syncedEvents, hasLength(2));
+        expect(dupEvents(), isEmpty);
+      });
+
+      test(
+        'saves metadata with fingerprint fields, keyed by the canonical id, '
+        'and leaves eventId generation untouched (T14 scope)',
+        () async {
+          stubPreconditions();
+          stubProcessing();
+          stubFetch(successResult([
+            aHealthActivity(
+              healthPlatformId: 'uuid-meta',
+              startTime: start,
+              endTime: end,
+            ),
+          ]));
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, hasLength(1));
+          expect(
+            result.syncedEvents.single.eventId,
+            start.millisecondsSinceEpoch,
+          );
+
+          final saved = verify(() => mockHealthSyncRepository
+                  .saveHealthSyncMetadata(captureAny()))
+              .captured
+              .single as HealthSyncMetadata;
+          expect(saved.healthPlatformId, 'uuid-meta');
+          expect(saved.normalizedType, 'RUNNING');
+          expect(saved.startTimeMs, start.millisecondsSinceEpoch);
+          expect(saved.endTimeMs, end.millisecondsSinceEpoch);
+          expect(saved.sourceCategory, 'appleHealthApp');
+          verify(() => mockHealthSyncRepository.getSyncedMetadata()).called(1);
+        },
+      );
+
+      test('constructs with the default const deduplicator when none is '
+          'injected', () {
         expect(
           () => SyncHealthActivitiesInteractorImpl(
             healthSyncRepository: mockHealthSyncRepository,
@@ -840,8 +1073,8 @@ void main() {
       }
 
       void stubProcessing() {
-        when(() => mockHealthSyncRepository.isAlreadySynced(any()))
-            .thenAnswer((_) async => false);
+        when(() => mockHealthSyncRepository.getSyncedMetadata())
+            .thenAnswer((_) async => <HealthSyncMetadata>[]);
         when(() => mockSaveSportEventInteractor.execute(any(), any()))
             .thenAnswer((_) async {});
         when(() => mockSportEventsRepository.syncToBackend(any()))

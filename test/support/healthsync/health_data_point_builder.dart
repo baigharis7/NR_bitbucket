@@ -19,9 +19,11 @@ HealthDataPoint healthDataPoint({
   required DateTime from,
   required DateTime to,
   HealthSource source = _defaultSource,
+  String? uuid,
 }) {
   return HealthDataPoint(
     uuid:
+        uuid ??
         '$type-${from.millisecondsSinceEpoch}-${to.millisecondsSinceEpoch}-${source.id}',
     value: value,
     type: type,
@@ -45,6 +47,7 @@ HealthDataPoint workoutPoint({
   num? totalEnergyBurned,
   num? totalDistance,
   HealthSource source = _defaultSource,
+  String? uuid,
 }) {
   return healthDataPoint(
     type: HealthDataType.WORKOUT,
@@ -56,6 +59,7 @@ HealthDataPoint workoutPoint({
     from: from,
     to: to,
     source: source,
+    uuid: uuid,
   );
 }
 

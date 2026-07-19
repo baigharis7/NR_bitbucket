@@ -44,6 +44,19 @@ void main() {
         expect(p.sourceDeviceId, 'apple-watch-device');
       },
     );
+
+    test('honours an explicit uuid override, including empty', () {
+      final withUuid = workoutPoint(from: from, to: to, uuid: 'fixed-uuid');
+      expect(withUuid.uuid, 'fixed-uuid');
+      final emptyUuid = workoutPoint(from: from, to: to, uuid: '');
+      expect(emptyUuid.uuid, '');
+    });
+
+    test('defaults to a deterministic non-empty uuid', () {
+      final p = workoutPoint(from: from, to: to);
+      expect(p.uuid, isNotEmpty);
+      expect(p.uuid, workoutPoint(from: from, to: to).uuid);
+    });
   });
 
   group('numericPoint', () {

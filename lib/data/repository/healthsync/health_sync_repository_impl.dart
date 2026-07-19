@@ -301,13 +301,18 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
         }
       }
 
-      // Generate a unique ID from the workout properties
-      final workoutId = '${workout.sourceName}_${workout.dateFrom.millisecondsSinceEpoch}_${workout.dateTo.millisecondsSinceEpoch}';
+      // Canonical identity: the platform record UUID (Health Connect
+      // metadata.id / HealthKit HKObject.uuid) when present. The legacy
+      // synthesized id is ALWAYS computed too — it keys metadata written
+      // before the uuid upgrade, so existing users don't re-import.
+      final legacyId = '${workout.sourceName}_${workout.dateFrom.millisecondsSinceEpoch}_${workout.dateTo.millisecondsSinceEpoch}';
+      final workoutId = workout.uuid.isNotEmpty ? workout.uuid : legacyId;
 
       debugPrint('[HealthSync] Workout: $activityType, kcal=$caloriesBurned, dist=$distance, hr=$avgHeartRate, dur=${durationMinutes}m');
 
       activities.add(HealthActivity(
         healthPlatformId: workoutId,
+        legacyPlatformId: legacyId,
         activityType: activityType,
         startTime: startTime,
         endTime: endTime,
@@ -335,6 +340,10 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       sportEventId: metadata.sportEventId,
       syncedAt: metadata.syncedAt.millisecondsSinceEpoch,
       sourceType: metadata.sourceType,
+      normalizedType: metadata.normalizedType,
+      startTimeMs: metadata.startTimeMs,
+      endTimeMs: metadata.endTimeMs,
+      sourceCategory: metadata.sourceCategory,
     );
     await localStorageRepository.saveHealthSyncMetadata(entity);
   }
@@ -347,6 +356,10 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       sportEventId: e.sportEventId,
       syncedAt: DateTime.fromMillisecondsSinceEpoch(e.syncedAt),
       sourceType: e.sourceType,
+      normalizedType: e.normalizedType,
+      startTimeMs: e.startTimeMs,
+      endTimeMs: e.endTimeMs,
+      sourceCategory: e.sourceCategory,
     )).toList();
   }
 
