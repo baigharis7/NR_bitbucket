@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
@@ -296,6 +297,67 @@ void main() {
               .having((s) => s.todaySleepHours, 'todaySleepHours', null)
               .having((s) => s.todayStepCount, 'todayStepCount', null),
         ],
+      );
+    });
+
+    group('privacy: no raw health values reach debugPrint/Crashlytics', () {
+      late List<String> capturedLogs;
+      late DebugPrintCallback originalDebugPrint;
+
+      setUp(() {
+        capturedLogs = [];
+        originalDebugPrint = debugPrint;
+        debugPrint = (String? message, {int? wrapWidth}) {
+          if (message != null) capturedLogs.add(message);
+        };
+      });
+
+      tearDown(() {
+        debugPrint = originalDebugPrint;
+      });
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'init does not log the exact sleepHours/stepCount values',
+        setUp: () {
+          when(() => mockHealthSyncRepository.isHealthSyncAvailable())
+              .thenAnswer((_) async => true);
+          when(() => mockHealthSyncRepository.isHealthSyncEnabled())
+              .thenAnswer((_) async => true);
+          when(() => mockHealthSyncRepository.hasPermissions())
+              .thenAnswer((_) async => true);
+          when(() => mockHealthSyncRepository.getLastSyncTime())
+              .thenAnswer((_) async => DateTime(2024, 1, 15));
+          stubSavedData();
+          stubSleepStepData(sleepHours: 6.25, stepCount: 12345);
+          stubEstimatedSteps();
+        },
+        build: buildBloc,
+        verify: (_) {
+          final joined = capturedLogs.join('\n');
+          expect(joined, isNot(contains('6.25')));
+          expect(joined, isNot(contains('12345')));
+        },
+      );
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'loadForDate does not log the exact date/sleep/step values',
+        setUp: () {
+          when(() => mockHealthSyncRepository.getSavedSleepHours(any()))
+              .thenAnswer((_) async => 8.0);
+          when(() => mockHealthSyncRepository.getSavedStepCount(any()))
+              .thenAnswer((_) async => 15000);
+          stubEstimatedSteps();
+        },
+        build: buildBloc,
+        skip: 2,
+        act: (bloc) => bloc.add(HealthSyncLoadForDate(date: DateTime(2024, 3, 10))),
+        verify: (_) {
+          final joined = capturedLogs.join('\n');
+          expect(joined, isNot(contains('8.0')));
+          expect(joined, isNot(contains('15000')));
+          expect(joined, isNot(contains('2024-03-10')));
+          expect(joined, isNot(contains('2024, 3, 10')));
+        },
       );
     });
 
