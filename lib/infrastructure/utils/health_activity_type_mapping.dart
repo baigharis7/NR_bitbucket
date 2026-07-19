@@ -46,8 +46,10 @@ class HealthActivityTypeMappingResult {
   });
 }
 
-/// Utility class for mapping HealthKit/Health Connect workout types
-/// to the app's sport IDs from the master file.
+/// Utility class for deterministically mapping HealthKit/Health Connect
+/// workout types to the app's sport IDs from the master file. [mapToResult]
+/// is the single mapping entry point; it reports confidence and strategy and
+/// never falls back to an arbitrary master-file sport.
 class HealthActivityTypeMapping {
   /// Maps common health platform workout type strings to search keywords
   /// for finding matching sports in the master file.
@@ -96,9 +98,9 @@ class HealthActivityTypeMapping {
     'SURFING': ['surfing', 'surf'],
     'PADDLE_SPORTS': ['paddle', 'kayak', 'canoe', 'paddleboard'],
 
-    // Default/fallback
+    // Generic workout session (curated keywords; a literal OTHER type
+    // carries no information and resolves via the generic tier instead).
     'WORKOUT': ['exercise', 'ejercicio', 'workout', 'training', 'entrenamiento'],
-    'OTHER': ['other', 'otro', 'general'],
   };
 
   /// Ordered generic-sport names. The generic tier scans this list
@@ -147,14 +149,10 @@ class HealthActivityTypeMapping {
       }
     }
 
-    // Tier 2: curated keyword table, only for types that have an entry. The
-    // legacy 'OTHER' entry is excluded: OTHER carries no type information,
-    // so it resolves via the generic tier below. (The entry itself is
-    // deleted together with the legacy mapToSportId API — it is still
-    // dereferenced there until that method is removed.)
-    final keywords = normalizedType == 'OTHER'
-        ? null
-        : _workoutTypeKeywords[normalizedType];
+    // Tier 2: curated keyword table, only for types that have an entry.
+    // 'OTHER' has no table entry: it carries no type information, so it
+    // resolves via the generic tier below.
+    final keywords = _workoutTypeKeywords[normalizedType];
     if (keywords != null) {
       for (final keyword in keywords) {
         final lowerKeyword = keyword.toLowerCase();
@@ -194,53 +192,6 @@ class HealthActivityTypeMapping {
       strategy: HealthTypeMappingStrategy.none,
       platformType: normalizedType,
     );
-  }
-
-  /// Find the best matching sport ID from the master file for a given workout type.
-  /// Returns null if no good match is found (caller should use a generic fallback).
-  static int? mapToSportId(String workoutType, SportsInfoEntity sportsInfo) {
-    final keywords = _workoutTypeKeywords[workoutType.toUpperCase()] ??
-                     _workoutTypeKeywords['OTHER']!;
-
-    // Search through sports master file for a match
-    for (final keyword in keywords) {
-      final lowerKeyword = keyword.toLowerCase();
-      for (final sport in sportsInfo.data) {
-        final enLower = sport.en.toLowerCase();
-        final esLower = sport.es.toLowerCase();
-
-        if (enLower.contains(lowerKeyword) || esLower.contains(lowerKeyword)) {
-          return sport.id;
-        }
-      }
-    }
-
-    return null;
-  }
-
-  /// Find a fallback "general exercise" sport ID from the master file.
-  /// Used when no specific match is found.
-  static int? findFallbackSportId(SportsInfoEntity sportsInfo) {
-    // Try to find a generic exercise/workout entry
-    final fallbackKeywords = ['general', 'exercise', 'ejercicio', 'other', 'otro', 'training'];
-
-    for (final keyword in fallbackKeywords) {
-      for (final sport in sportsInfo.data) {
-        final enLower = sport.en.toLowerCase();
-        final esLower = sport.es.toLowerCase();
-
-        if (enLower.contains(keyword) || esLower.contains(keyword)) {
-          return sport.id;
-        }
-      }
-    }
-
-    // If no fallback found, return the first sport ID as a last resort
-    if (sportsInfo.data.isNotEmpty) {
-      return sportsInfo.data.first.id;
-    }
-
-    return null;
   }
 
   /// Find sport info by ID from the master file.
