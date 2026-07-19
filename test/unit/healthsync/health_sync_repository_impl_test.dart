@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health/health.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:nutrenaissance_flutter/data/local/models/healthsync/health_sync_metadata_entity.dart';
 import 'package:nutrenaissance_flutter/data/repository/healthsync/health_sync_repository_impl.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_activity.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_fetch_result.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_metadata.dart';
 import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_storage.dart';
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/data/api/sleepevents/sleep_events_api.dart';
@@ -165,6 +167,14 @@ void main() {
         eventId: 0,
         initialSteps: 0,
         actualSteps: 0,
+      ),
+    );
+    registerFallbackValue(
+      HealthSyncMetadataEntity(
+        healthPlatformId: '',
+        sportEventId: 0,
+        syncedAt: 0,
+        sourceType: '',
       ),
     );
   });
@@ -747,6 +757,78 @@ void main() {
 
         expect(activities, hasLength(1));
         expect(activities.single.activityType, 'RUNNING');
+      },
+    );
+  });
+
+  group('health sync metadata persistence', () {
+    test('saveHealthSyncMetadata persists the fingerprint fields', () async {
+      when(
+        () => localStorage.saveHealthSyncMetadata(any()),
+      ).thenAnswer((_) async {});
+
+      await build().saveHealthSyncMetadata(
+        HealthSyncMetadata(
+          healthPlatformId: 'uuid_1',
+          sportEventId: 11,
+          syncedAt: DateTime(2026, 7, 18, 10, 0),
+          sourceType: 'health_connect',
+          normalizedType: 'RUNNING',
+          startTimeMs: 1000000000000,
+          endTimeMs: 1000003600000,
+          sourceCategory: 'googleFit',
+        ),
+      );
+
+      final entity =
+          verify(
+                () => localStorage.saveHealthSyncMetadata(captureAny()),
+              ).captured.single
+              as HealthSyncMetadataEntity;
+      expect(entity.healthPlatformId, 'uuid_1');
+      expect(entity.sportEventId, 11);
+      expect(entity.sourceType, 'health_connect');
+      expect(entity.normalizedType, 'RUNNING');
+      expect(entity.startTimeMs, 1000000000000);
+      expect(entity.endTimeMs, 1000003600000);
+      expect(entity.sourceCategory, 'googleFit');
+    });
+
+    test(
+      'getSyncedMetadata reads fingerprint fields and legacy nulls',
+      () async {
+        when(() => localStorage.getHealthSyncMetadata()).thenAnswer(
+          (_) async => [
+            HealthSyncMetadataEntity(
+              healthPlatformId: 'uuid_1',
+              sportEventId: 11,
+              syncedAt: 1752800000000,
+              sourceType: 'health_connect',
+              normalizedType: 'RUNNING',
+              startTimeMs: 1000000000000,
+              endTimeMs: 1000003600000,
+              sourceCategory: 'googleFit',
+            ),
+            HealthSyncMetadataEntity(
+              healthPlatformId: 'Old Source_1_2',
+              sportEventId: 12,
+              syncedAt: 1752800000000,
+              sourceType: 'apple_health',
+            ),
+          ],
+        );
+
+        final metadata = await build().getSyncedMetadata();
+
+        expect(metadata, hasLength(2));
+        expect(metadata[0].normalizedType, 'RUNNING');
+        expect(metadata[0].startTimeMs, 1000000000000);
+        expect(metadata[0].endTimeMs, 1000003600000);
+        expect(metadata[0].sourceCategory, 'googleFit');
+        expect(metadata[1].normalizedType, isNull);
+        expect(metadata[1].startTimeMs, isNull);
+        expect(metadata[1].endTimeMs, isNull);
+        expect(metadata[1].sourceCategory, isNull);
       },
     );
   });

@@ -319,5 +319,49 @@ void main() {
       );
       expect(result.sourceType, original.sourceType);
     });
+
+    test('round-trips the fingerprint fields', () {
+      final original = HealthSyncMetadata(
+        healthPlatformId: 'uuid_abc',
+        sportEventId: 7,
+        syncedAt: DateTime(2026, 7, 18, 9, 30),
+        sourceType: 'health_connect',
+        normalizedType: 'RUNNING',
+        startTimeMs: 1000000000000,
+        endTimeMs: 1000003600000,
+        sourceCategory: 'samsungHealth',
+      );
+
+      final entity = mapToHealthSyncMetadataEntity(original);
+      expect(entity.normalizedType, 'RUNNING');
+      expect(entity.startTimeMs, 1000000000000);
+      expect(entity.endTimeMs, 1000003600000);
+      expect(entity.sourceCategory, 'samsungHealth');
+
+      final result = mapToHealthSyncMetadata(entity);
+      expect(result.normalizedType, 'RUNNING');
+      expect(result.startTimeMs, 1000000000000);
+      expect(result.endTimeMs, 1000003600000);
+      expect(result.sourceCategory, 'samsungHealth');
+    });
+
+    test('legacy records without fingerprint fields round-trip as nulls', () {
+      final legacy = HealthSyncMetadata(
+        healthPlatformId: 'legacy_key',
+        sportEventId: 8,
+        syncedAt: DateTime(2026, 7, 18, 9, 30),
+        sourceType: 'apple_health',
+      );
+
+      final entity = mapToHealthSyncMetadataEntity(legacy);
+      expect(entity.normalizedType, isNull);
+      expect(entity.startTimeMs, isNull);
+      expect(entity.endTimeMs, isNull);
+      expect(entity.sourceCategory, isNull);
+
+      final result = mapToHealthSyncMetadata(entity);
+      expect(result.normalizedType, isNull);
+      expect(result.sourceCategory, isNull);
+    });
   });
 }

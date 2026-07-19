@@ -340,6 +340,10 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       sportEventId: metadata.sportEventId,
       syncedAt: metadata.syncedAt.millisecondsSinceEpoch,
       sourceType: metadata.sourceType,
+      normalizedType: metadata.normalizedType,
+      startTimeMs: metadata.startTimeMs,
+      endTimeMs: metadata.endTimeMs,
+      sourceCategory: metadata.sourceCategory,
     );
     await localStorageRepository.saveHealthSyncMetadata(entity);
   }
@@ -352,6 +356,10 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       sportEventId: e.sportEventId,
       syncedAt: DateTime.fromMillisecondsSinceEpoch(e.syncedAt),
       sourceType: e.sourceType,
+      normalizedType: e.normalizedType,
+      startTimeMs: e.startTimeMs,
+      endTimeMs: e.endTimeMs,
+      sourceCategory: e.sourceCategory,
     )).toList();
   }
 

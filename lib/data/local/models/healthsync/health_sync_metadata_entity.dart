@@ -23,11 +23,29 @@ class HealthSyncMetadataEntity extends HiveObject {
   /// Source type: 'apple_health' or 'health_connect'
   @HiveField(3) String sourceType;
 
+  /// T9 fingerprint fields — ADDITIVE nullable HiveFields, no migration.
+  /// Old binary records read back with nulls (Hive tolerates missing
+  /// trailing fields) and are excluded from strong-tier matching.
+  @HiveField(4) String? normalizedType;
+
+  /// Workout start (epoch ms). Null pre-upgrade.
+  @HiveField(5) int? startTimeMs;
+
+  /// Workout end (epoch ms). Null pre-upgrade.
+  @HiveField(6) int? endTimeMs;
+
+  /// Coarse source category name (HealthSourceCategory.name). Null pre-upgrade.
+  @HiveField(7) String? sourceCategory;
+
   HealthSyncMetadataEntity({
     required this.healthPlatformId,
     required this.sportEventId,
     required this.syncedAt,
     required this.sourceType,
+    this.normalizedType,
+    this.startTimeMs,
+    this.endTimeMs,
+    this.sourceCategory,
   });
 
   factory HealthSyncMetadataEntity.fromJson(Map<String, dynamic> json) =>
