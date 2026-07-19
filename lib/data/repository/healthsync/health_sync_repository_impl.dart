@@ -672,7 +672,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
         ));
       }
 
-      debugPrint('[HealthSync] fetchTodayStepCount: ${result.total} steps');
+      debugPrint('[HealthSync] fetchTodayStepCount completed');
       return result.total;
     } catch (e) {
       // Return null on error — same rationale as fetchTodaySleepHours.

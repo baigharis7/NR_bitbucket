@@ -281,6 +281,22 @@ void main() {
   });
 
   group('fetchActivities', () {
+    test('privacy: fetchTodayStepCount logs no exact step total', () async {
+      final captured = <String>[];
+      final DebugPrintCallback original = debugPrint;
+      debugPrint = (String? message, {int? wrapWidth}) {
+        if (message != null) captured.add(message);
+      };
+      try {
+        client.stepsInIntervalResult = 4321;
+        final total = await build().fetchTodayStepCount(DateTime(2026, 7, 1));
+        expect(total, 4321);
+        expect(captured.join('\n'), isNot(contains('4321')));
+      } finally {
+        debugPrint = original;
+      }
+    });
+
     test('privacy: workout mapping logs no exact kcal/distance/heart-rate '
         'values to debugPrint', () async {
       final captured = <String>[];
