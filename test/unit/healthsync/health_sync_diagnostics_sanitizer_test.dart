@@ -169,6 +169,27 @@ void main() {
     });
   });
 
+  group('HealthSyncDiagnostics.duplicateDiscarded', () {
+    test('is an info-severity event carrying only the three counts', () {
+      final event = HealthSyncDiagnostics.duplicateDiscarded(
+        domain: HealthSyncDomain.workout,
+        exactCount: 2,
+        strongCount: 1,
+        suspectedImportedCount: 3,
+      );
+
+      expect(event.type, HealthSyncDiagnosticType.duplicateDiscarded);
+      expect(event.severity, HealthSyncDiagnosticSeverity.info);
+      expect(event.domain, HealthSyncDomain.workout);
+      expect(event.platform, isNull);
+      expect(event.metadata, {
+        'exactCount': 2,
+        'strongCount': 1,
+        'suspectedImportedCount': 3,
+      });
+    });
+  });
+
   group('HealthSyncDiagnostics.identityMissing', () {
     test('is a warning-severity event with empty metadata', () {
       final event = HealthSyncDiagnostics.identityMissing(

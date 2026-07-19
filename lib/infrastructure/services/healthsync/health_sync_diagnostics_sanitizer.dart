@@ -151,6 +151,30 @@ class HealthSyncDiagnostics {
     );
   }
 
+  /// Builds a `duplicateDiscarded` event: ONE aggregated event per sync run
+  /// when the workout deduplicator skipped anything (exact identity or
+  /// strong fingerprint) or imported a suspected duplicate. Carries only the
+  /// three counts — never workout IDs, raw source names, or timestamps.
+  static HealthSyncDiagnosticEvent duplicateDiscarded({
+    required HealthSyncDomain domain,
+    required int exactCount,
+    required int strongCount,
+    required int suspectedImportedCount,
+    HealthSyncPlatform? platform,
+  }) {
+    return HealthSyncDiagnosticEvent(
+      type: HealthSyncDiagnosticType.duplicateDiscarded,
+      severity: HealthSyncDiagnosticSeverity.info,
+      domain: domain,
+      platform: platform,
+      metadata: {
+        'exactCount': exactCount,
+        'strongCount': strongCount,
+        'suspectedImportedCount': suspectedImportedCount,
+      },
+    );
+  }
+
   /// Builds an `identityMissing` event: a warning that a day-bucketed record
   /// was saved locally but its upload was skipped because no user ID was
   /// available (profile absent or userId null/empty). Carries no metadata —
