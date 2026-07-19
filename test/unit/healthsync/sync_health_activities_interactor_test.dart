@@ -1960,6 +1960,7 @@ void main() {
       // The collision must still be logged, but without the raw id value.
       expect(joined, contains('collision guard'));
       expect(joined, isNot(matches(RegExp(r'eventId \d'))));
+      expect(joined, isNot(contains('$expectedEventId')));
     });
   });
 }
