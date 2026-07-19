@@ -1409,10 +1409,15 @@ void main() {
 
       test(
         'an occupied eventId skips the activity with an eventIdCollision '
-        'diagnostic and never overwrites the existing local event',
+        'diagnostic, never overwrites the existing local event, and never '
+        'pays for kcal resolution (guard runs before the kcal block)',
         () async {
+          // No platform calories: if the guard did NOT run before the kcal
+          // block, this activity would force a getProfile() + METs
+          // enrichment call before being skipped.
           final activity = aHealthActivity(
             healthPlatformId: 'colliding_activity',
+            caloriesBurned: null,
           );
           final fingerprint = HealthWorkoutFingerprint.fromActivity(activity);
           final collidingId = idFactory.eventIdFor(fingerprint);
@@ -1438,6 +1443,13 @@ void main() {
           verifyNever(
             () => mockHealthSyncRepository.saveHealthSyncMetadata(any()),
           );
+          // Collision guard runs before the kcal-resolution block: the
+          // profile lookup and METs enrichment are never reached.
+          verifyNever(() => mockLocalStorageRepository.getProfile());
+          verifyNever(() => mockSportKcalCalculationService.enrichSportEvent(
+                any(),
+                userWeight: any(named: 'userWeight'),
+              ));
 
           final collisionEvents = diagnostics.events
               .where((e) => e.type == HealthSyncDiagnosticType.eventIdCollision)
