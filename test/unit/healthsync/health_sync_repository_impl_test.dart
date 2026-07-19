@@ -1038,9 +1038,11 @@ void main() {
       expect(total, 4200);
       expect(client.stepsInIntervalCalls, hasLength(1));
       expect(client.stepsInIntervalCalls.single.start, DateTime(2026, 7, 1));
+      // Half-open day window: [midnight, next-midnight) — no 1-second gap
+      // before midnight, and DST-safe via calendar-day arithmetic.
       expect(
         client.stepsInIntervalCalls.single.end,
-        DateTime(2026, 7, 1, 23, 59, 59),
+        DateTime(2026, 7, 2),
       );
     });
 

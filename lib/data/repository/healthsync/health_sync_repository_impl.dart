@@ -630,7 +630,9 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   Future<int?> fetchTodayStepCount(DateTime date) async {
     try {
       final startTime = DateTime(date.year, date.month, date.day);
-      final endTime = DateTime(date.year, date.month, date.day, 23, 59, 59);
+      // Half-open day window [midnight, next-midnight): closes the 1-second
+      // gap before midnight; calendar-day arithmetic keeps it DST-safe.
+      final endTime = DateTime(date.year, date.month, date.day + 1);
 
       final stepsData = await healthPlatformClient.getHealthDataFromTypes(
         types: [HealthDataType.STEPS],
