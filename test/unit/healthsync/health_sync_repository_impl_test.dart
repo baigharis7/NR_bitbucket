@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health/health.dart';
@@ -875,6 +876,111 @@ void main() {
       client.throwOnRead = Exception('boom');
       expect(await build().fetchTodaySleepHours(DateTime(2026, 7, 1)), isNull);
     });
+
+    test(
+      'drops a lower-priority planned/scheduled session in favor of a '
+      'higher-priority real session, and emits sourceSelected with the '
+      'discarded count',
+      () async {
+        client.dataByType[HealthDataType.SLEEP_SESSION] = [
+          // Samsung Health's own "scheduled sleep" goal window — lower
+          // priority than a dedicated wearable.
+          sleepPoint(
+            from: DateTime(2026, 6, 30, 22, 0),
+            to: DateTime(2026, 7, 1, 8, 0),
+            source: samsungHealth,
+          ),
+          // Apple Watch's real recorded sleep — higher priority.
+          sleepPoint(
+            from: DateTime(2026, 6, 30, 23, 0),
+            to: DateTime(2026, 7, 1, 6, 0),
+            source: appleWatch,
+          ),
+        ];
+
+        final hours = await build().fetchTodaySleepHours(
+          DateTime(2026, 7, 1),
+        );
+
+        // Apple Watch's own session wins; Samsung's planned window is
+        // discarded rather than summed in.
+        expect(hours, closeTo(7.0, 0.001));
+        expect(diagnostics.events, hasLength(1));
+        final event = diagnostics.events.single;
+        expect(event.type, HealthSyncDiagnosticType.sourceSelected);
+        expect(event.domain, HealthSyncDomain.sleep);
+        expect(event.metadata['sourceCount'], 2);
+        expect(event.metadata['discardedCount'], 1);
+        expect(event.metadata['selectedCategory'], 'wearable');
+        expect(event.metadata.keys, {
+          'sourceCount',
+          'discardedCount',
+          'selectedCategory',
+        });
+      },
+    );
+
+    test(
+      'overlapping same-source sessions are unioned, not summed '
+      '(regression)',
+      () async {
+        client.dataByType[HealthDataType.SLEEP_SESSION] = [
+          sleepPoint(
+            from: DateTime(2026, 6, 30, 23, 0),
+            to: DateTime(2026, 7, 1, 6, 0),
+            source: appleWatch,
+          ),
+          sleepPoint(
+            from: DateTime(2026, 7, 1, 5, 30),
+            to: DateTime(2026, 7, 1, 6, 30),
+            source: appleWatch,
+          ),
+        ];
+
+        final hours = await build().fetchTodaySleepHours(
+          DateTime(2026, 7, 1),
+        );
+
+        // Union of [23:00,06:00) and [05:30,06:30) = [23:00,06:30) = 7.5h,
+        // NOT the naive sum of 7h + 1h = 8h.
+        expect(hours, closeTo(7.5, 0.001));
+      },
+    );
+
+    test(
+      'privacy: no raw source name or ISO timestamp is logged per sleep '
+      'session, and the sourceSelected diagnostic carries only sanitized '
+      'metadata',
+      () async {
+        // The old per-session Crashlytics loop (source=/from=/to=) and its
+        // raw summary line must be gone from source — not just unreached.
+        final source = File(
+          'lib/data/repository/healthsync/health_sync_repository_impl.dart',
+        ).readAsStringSync();
+        expect(source.contains('HealthSync sleep session'), isFalse);
+        expect(source.contains('HealthSync sleep merged'), isFalse);
+        expect(source.contains('point.sourceName'), isFalse);
+
+        client.dataByType[HealthDataType.SLEEP_SESSION] = [
+          sleepPoint(
+            from: DateTime(2026, 6, 30, 23, 0),
+            to: DateTime(2026, 7, 1, 6, 0),
+            source: appleWatch,
+          ),
+        ];
+
+        await build().fetchTodaySleepHours(DateTime(2026, 7, 1));
+
+        expect(diagnostics.events, hasLength(1));
+        final event = diagnostics.events.single;
+        expect(event.type, HealthSyncDiagnosticType.sourceSelected);
+        expect(event.metadata.keys, {
+          'sourceCount',
+          'discardedCount',
+          'selectedCategory',
+        });
+      },
+    );
   });
 
   group('fetchTodayStepCount', () {
