@@ -47,12 +47,18 @@ class _FakeClient implements HealthPlatformClient {
   final Map<HealthDataType, Object> throwByType = {};
   final Map<HealthDataType, List<HealthDataPoint>> dataByType = {};
 
+  /// Defaults to `null` so existing tests exercise the pre-aggregate fallback
+  /// path; set to stub the platform's own source-deduped step total.
+  int? stepsInIntervalResult;
+
   List<HealthDataType>? lastAuthTypes;
   List<HealthDataAccess>? lastAuthPermissions;
   List<HealthDataType>? lastCheckTypes;
   List<HealthDataAccess>? lastCheckPermissions;
   final List<({List<HealthDataType> types, DateTime start, DateTime end})>
   reads = [];
+  final List<({DateTime start, DateTime end, bool includeManualEntry})>
+  stepsInIntervalCalls = [];
 
   @override
   Future<bool> requestAuthorization(
@@ -87,6 +93,20 @@ class _FakeClient implements HealthPlatformClient {
     final perType = throwByType[types.first];
     if (perType != null) throw perType;
     return dataByType[types.first] ?? [];
+  }
+
+  @override
+  Future<int?> getTotalStepsInInterval({
+    required DateTime startTime,
+    required DateTime endTime,
+    bool includeManualEntry = true,
+  }) async {
+    stepsInIntervalCalls.add((
+      start: startTime,
+      end: endTime,
+      includeManualEntry: includeManualEntry,
+    ));
+    return stepsInIntervalResult;
   }
 }
 
@@ -876,14 +896,96 @@ void main() {
       expect(await build().fetchTodayStepCount(DateTime(2026, 7, 1)), 1500);
     });
 
-    test('returns 0 for an empty successful read', () async {
+    test('returns 0 for an empty successful read and emits no sourceSelected '
+        'diagnostic (nothing was selected)', () async {
       expect(await build().fetchTodayStepCount(DateTime(2026, 7, 1)), 0);
+      expect(diagnostics.events, isEmpty);
     });
 
     test('returns null when the client throws', () async {
       client.throwOnRead = Exception('boom');
       expect(await build().fetchTodayStepCount(DateTime(2026, 7, 1)), isNull);
     });
+
+    test('platform aggregate present returns the aggregate total, not the raw '
+        'sum of overlapping records', () async {
+      client.stepsInIntervalResult = 4200;
+      client.dataByType[HealthDataType.STEPS] = [
+        numericPoint(
+          type: HealthDataType.STEPS,
+          value: 1000,
+          from: DateTime(2026, 7, 1, 8),
+          to: DateTime(2026, 7, 1, 9),
+          source: appleWatch,
+        ),
+        numericPoint(
+          type: HealthDataType.STEPS,
+          value: 900,
+          from: DateTime(2026, 7, 1, 8, 5),
+          to: DateTime(2026, 7, 1, 9, 5),
+          source: iphone,
+        ),
+      ];
+
+      final total = await build().fetchTodayStepCount(DateTime(2026, 7, 1));
+
+      expect(total, 4200);
+      expect(client.stepsInIntervalCalls, hasLength(1));
+      expect(client.stepsInIntervalCalls.single.start, DateTime(2026, 7, 1));
+      expect(
+        client.stepsInIntervalCalls.single.end,
+        DateTime(2026, 7, 1, 23, 59, 59),
+      );
+    });
+
+    test('aggregate null with overlapping cross-source records falls back to '
+        'the highest-priority source total and emits a sourceSelected '
+        'diagnostic', () async {
+      client.stepsInIntervalResult = null;
+      client.dataByType[HealthDataType.STEPS] = [
+        numericPoint(
+          type: HealthDataType.STEPS,
+          value: 1000,
+          from: DateTime(2026, 7, 1, 8),
+          to: DateTime(2026, 7, 1, 9),
+          source: appleWatch,
+        ),
+        numericPoint(
+          type: HealthDataType.STEPS,
+          value: 900,
+          from: DateTime(2026, 7, 1, 8, 5),
+          to: DateTime(2026, 7, 1, 9, 5),
+          source: iphone,
+        ),
+      ];
+
+      final total = await build().fetchTodayStepCount(DateTime(2026, 7, 1));
+
+      // Apple Watch outranks the iPhone's own Apple Health app entry.
+      expect(total, 1000);
+      expect(diagnostics.events, hasLength(1));
+      final event = diagnostics.events.single;
+      expect(event.type, HealthSyncDiagnosticType.sourceSelected);
+      expect(event.domain, HealthSyncDomain.steps);
+      expect(event.metadata['sourceCount'], 2);
+      expect(event.metadata['discardedCount'], 1);
+      expect(event.metadata['selectedCategory'], 'wearable');
+      expect(event.metadata.keys, {
+        'sourceCount',
+        'discardedCount',
+        'selectedCategory',
+      });
+    });
+
+    test(
+      'empty successful read with no platform aggregate returns 0 and emits '
+      'no sourceSelected diagnostic',
+      () async {
+        client.stepsInIntervalResult = null;
+        expect(await build().fetchTodayStepCount(DateTime(2026, 7, 1)), 0);
+        expect(diagnostics.events, isEmpty);
+      },
+    );
   });
 
   group('saveSleepEvent', () {

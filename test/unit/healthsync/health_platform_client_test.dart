@@ -121,6 +121,39 @@ void main() {
     },
   );
 
+  test(
+    'getTotalStepsInInterval delegates range + includeManualEntry and returns total',
+    () async {
+      final client = HealthPlatformClientImpl(healthFactory: () => health);
+      final start = DateTime(2026, 7, 1);
+      final end = DateTime(2026, 7, 2);
+      when(
+        () => health.getTotalStepsInInterval(
+          any(),
+          any(),
+          includeManualEntry: any(named: 'includeManualEntry'),
+        ),
+      ).thenAnswer((_) async => 4200);
+
+      final result = await client.getTotalStepsInInterval(
+        startTime: start,
+        endTime: end,
+      );
+
+      expect(result, 4200);
+      final captured = verify(
+        () => health.getTotalStepsInInterval(
+          captureAny(),
+          captureAny(),
+          includeManualEntry: captureAny(named: 'includeManualEntry'),
+        ),
+      ).captured;
+      expect(captured[0], start);
+      expect(captured[1], end);
+      expect(captured[2], isTrue);
+    },
+  );
+
   test('plugin exceptions propagate to the caller', () async {
     final client = HealthPlatformClientImpl(healthFactory: () => health);
     when(

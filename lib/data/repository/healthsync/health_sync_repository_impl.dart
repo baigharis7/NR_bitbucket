@@ -17,10 +17,12 @@ import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_stor
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_client.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_source_priority.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_source_resolver.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_step_aggregator.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sanitizer.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sink.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
-import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sanitizer.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/interval_union.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
@@ -35,6 +37,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   final HealthPlatformClient healthPlatformClient;
   final HealthPlatformService healthPlatformService;
   final HealthSyncDiagnosticsSink diagnostics;
+  final HealthStepAggregator stepAggregator;
 
   HealthSyncRepositoryImpl({
     required this.localStorageRepository,
@@ -45,6 +48,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     required this.healthPlatformClient,
     required this.healthPlatformService,
     this.diagnostics = const NoopHealthSyncDiagnosticsSink(),
+    this.stepAggregator = const HealthStepAggregator(),
   });
 
   /// Permissions list derived from the service's read types (one READ each).
@@ -628,21 +632,60 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
         startTime: startTime,
         endTime: endTime,
       );
+      final platformTotal = await healthPlatformClient.getTotalStepsInInterval(
+        startTime: startTime,
+        endTime: endTime,
+      );
 
-      int totalSteps = 0;
-      for (final point in stepsData) {
-        final value = point.value;
-        if (value is NumericHealthValue) {
-          totalSteps += value.numericValue.round();
-        }
+      final records = <StepRecord>[
+        for (final p in stepsData)
+          if (p.value is NumericHealthValue)
+            StepRecord(
+              steps: (p.value as NumericHealthValue).numericValue.round(),
+              start: p.dateFrom,
+              end: p.dateTo,
+              sourceCategory: HealthSourceResolver.resolve(
+                sourceName: p.sourceName,
+                sourceType: _sourceTypeOf(p.sourcePlatform),
+              ),
+            ),
+      ];
+      final result = stepAggregator.aggregate(
+        platformAggregateTotal: platformTotal,
+        records: records,
+      );
+      // Only emit when a source was actually selected — an empty read (no
+      // records, no platform aggregate) has nothing to report.
+      if (result.selectedCategory != null) {
+        diagnostics.add(HealthSyncDiagnostics.sourceSelected(
+          domain: HealthSyncDomain.steps,
+          sourceCount: result.perSourceTotals.length,
+          discardedCount: result.discardedCount,
+          selectedCategory: coarseSourceCategory(result.selectedCategory!),
+        ));
       }
 
-      debugPrint('[HealthSync] fetchTodayStepCount: $totalSteps steps');
-      return totalSteps;
+      debugPrint('[HealthSync] fetchTodayStepCount: ${result.total} steps');
+      return result.total;
     } catch (e) {
       // Return null on error — same rationale as fetchTodaySleepHours.
       debugPrint('[HealthSync] fetchTodayStepCount ERROR: $e');
       return null;
+    }
+  }
+
+  /// Maps the `health` package's [HealthPlatformType] to the app-level
+  /// source-type tag ([HealthSourceResolver]'s `sourceType`). LOCKED — T11
+  /// reuses this helper verbatim. The switch is exhaustive over the two
+  /// current enum values with no default, so a future [HealthPlatformType]
+  /// addition is a compile error here — deliberate, to force an explicit
+  /// mapping decision rather than a silent 'health_connect' default.
+  String _sourceTypeOf(HealthPlatformType p) {
+    switch (p) {
+      case HealthPlatformType.appleHealth:
+        return 'apple_health';
+      case HealthPlatformType.googleHealthConnect:
+        return 'health_connect';
     }
   }
 }
