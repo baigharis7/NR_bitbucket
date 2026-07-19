@@ -40,14 +40,27 @@ class CrashlyticsHealthSyncDiagnosticsSink
   }
 
   /// Builds the compact one-line representation logged to Crashlytics.
-  /// Metadata keys are sorted for deterministic output.
+  /// Metadata keys are sorted for deterministic output. D11: only `int`- or
+  /// `bool`-valued metadata entries are serialized — `String`-valued entries
+  /// (coarse category/token labels like errorCategory, selectedCategory,
+  /// sourceCategory, activityType, reason, outcome) are dropped here, even
+  /// though they're already privacy-safe on the event object itself. This
+  /// keeps the in-memory/test sink and any future debug export at full
+  /// detail while restricting what actually reaches the third-party
+  /// Crashlytics service to numeric/boolean signal.
   static String format(HealthSyncDiagnosticEvent event) {
     final buffer = StringBuffer('HealthSyncDiagnostic')
       ..write(' type=${event.type.name}')
       ..write(' severity=${event.severity.name}')
       ..write(' domain=${event.domain.name}')
       ..write(' platform=${event.platform?.name ?? 'unknown'}');
-    final keys = event.metadata.keys.toList()..sort();
+    final keys = event.metadata.keys
+        .where((k) {
+          final value = event.metadata[k];
+          return value is int || value is bool;
+        })
+        .toList()
+      ..sort();
     for (final key in keys) {
       buffer.write(' $key=${event.metadata[key]}');
     }

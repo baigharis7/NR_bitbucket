@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_diagnostic_event.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/sync_health_activities_result.dart';
 
 /// Coarse error categories derived from an exception without retaining the raw
 /// message or stacktrace. Used only as sanitized diagnostic metadata.
@@ -249,6 +250,63 @@ class HealthSyncDiagnostics {
       severity: HealthSyncDiagnosticSeverity.warning,
       domain: domain,
       platform: platform,
+    );
+  }
+
+  /// Builds a `syncStarted` event: a sync attempt has passed all skip-checks
+  /// and is about to perform the guarded platform read. Debug severity — this
+  /// fires on every non-skipped attempt and is a bookend marker only, no
+  /// metadata.
+  static HealthSyncDiagnosticEvent syncStarted({
+    required HealthSyncDomain domain,
+    HealthSyncPlatform? platform,
+  }) {
+    return HealthSyncDiagnosticEvent(
+      type: HealthSyncDiagnosticType.syncStarted,
+      severity: HealthSyncDiagnosticSeverity.debug,
+      domain: domain,
+      platform: platform,
+    );
+  }
+
+  /// Builds a `syncSkipped` event: a sync attempt never reached the platform
+  /// read because a precondition failed. [reason] is one of the
+  /// skip-shaped [SyncHealthOutcome] values (`skippedDisabled`,
+  /// `skippedThrottled`, `skippedPreconditions`) carried as a coarse metadata
+  /// label — dropped from the production Crashlytics line by the sink's
+  /// int/bool-only filter (D11), but retained on the event object for the
+  /// in-memory sink and tests.
+  static HealthSyncDiagnosticEvent syncSkipped({
+    required HealthSyncDomain domain,
+    required SyncHealthOutcome reason,
+    HealthSyncPlatform? platform,
+  }) {
+    return HealthSyncDiagnosticEvent(
+      type: HealthSyncDiagnosticType.syncSkipped,
+      severity: HealthSyncDiagnosticSeverity.info,
+      domain: domain,
+      platform: platform,
+      metadata: {'reason': reason.name},
+    );
+  }
+
+  /// Builds a `syncCompleted` event: a bookend fired on every terminal path
+  /// once a sync attempt actually started (fetchFailed, permissionDenied,
+  /// platformUnavailable, syncedNoData, synced, syncedPartial, error).
+  /// Always info severity regardless of [outcome] — the paired
+  /// outcome-specific event (already emitted alongside this one) carries the
+  /// real warning/error severity, so this bookend doesn't duplicate it.
+  static HealthSyncDiagnosticEvent syncCompleted({
+    required HealthSyncDomain domain,
+    required SyncHealthOutcome outcome,
+    HealthSyncPlatform? platform,
+  }) {
+    return HealthSyncDiagnosticEvent(
+      type: HealthSyncDiagnosticType.syncCompleted,
+      severity: HealthSyncDiagnosticSeverity.info,
+      domain: domain,
+      platform: platform,
+      metadata: {'outcome': outcome.name},
     );
   }
 

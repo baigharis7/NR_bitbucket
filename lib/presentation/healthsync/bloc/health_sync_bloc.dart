@@ -162,7 +162,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
           // A null means the fetch errored — keep the previously saved value.
           if (fresh.sleepHours != null) sleepHours = fresh.sleepHours;
           if (fresh.stepCount != null) stepCount = fresh.stepCount;
-          _hsLog('HealthSync init: sleepHours=$sleepHours, stepCount=$stepCount');
+          debugPrint('[HealthSync] init: sleep/step data loaded');
         } catch (e) {
           _hsLog('HealthSync init: fetch failed (permissions likely revoked), using saved data');
         }
@@ -376,7 +376,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       final sleepHours = await healthSyncRepository.getSavedSleepHours(event.date);
       final stepCount = await healthSyncRepository.getSavedStepCount(event.date);
       final estimatedSteps = await _calculateEstimatedSteps(event.date);
-      _hsLog('HealthSync loadForDate: ${event.date}, sleep=$sleepHours, steps=$stepCount, estimated=$estimatedSteps');
+      debugPrint('[HealthSync] loadForDate: data loaded');
 
       emit(state.copyWith(
         todaySleepHours: sleepHours,
@@ -469,7 +469,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
   ) async {
     final date = event.date ?? DateTime.now();
     final estimated = await _calculateEstimatedSteps(date);
-    _hsLog('HealthSync: estimated steps from sport events = $estimated');
+    debugPrint('[HealthSync] estimated steps recalculated');
     emit(state.copyWith(estimatedStepCount: estimated));
   }
 }

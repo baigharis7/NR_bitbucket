@@ -93,6 +93,9 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           ));
+      expect(diagnostics.events, hasLength(1));
+      expect(diagnostics.events.single.type, HealthSyncDiagnosticType.syncSkipped);
+      expect(diagnostics.events.single.metadata['reason'], 'skippedDisabled');
     });
 
     test('returns skippedThrottled when synced recently (throttling)', () async {
@@ -115,6 +118,9 @@ void main() {
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
           ));
+      expect(diagnostics.events, hasLength(1));
+      expect(diagnostics.events.single.type, HealthSyncDiagnosticType.syncSkipped);
+      expect(diagnostics.events.single.metadata['reason'], 'skippedThrottled');
     });
 
     test('returns skippedPreconditions when user ID is empty', () async {
@@ -130,6 +136,9 @@ void main() {
 
       expect(result.syncedEvents, isEmpty);
       expect(result.outcome, SyncHealthOutcome.skippedPreconditions);
+      expect(diagnostics.events, hasLength(1));
+      expect(diagnostics.events.single.type, HealthSyncDiagnosticType.syncSkipped);
+      expect(diagnostics.events.single.metadata['reason'], 'skippedPreconditions');
     });
 
     test('returns skippedPreconditions when sports info not available', () async {
@@ -147,6 +156,9 @@ void main() {
 
       expect(result.syncedEvents, isEmpty);
       expect(result.outcome, SyncHealthOutcome.skippedPreconditions);
+      expect(diagnostics.events, hasLength(1));
+      expect(diagnostics.events.single.type, HealthSyncDiagnosticType.syncSkipped);
+      expect(diagnostics.events.single.metadata['reason'], 'skippedPreconditions');
     });
 
     test('fetches activities from last 7 days on first sync', () async {
@@ -642,12 +654,15 @@ void main() {
           verifyNever(() => mockHealthSyncRepository.getSyncedMetadata());
           verifyNever(() => mockSaveSportEventInteractor.execute(any(), any()));
 
-          expect(diagnostics.events, hasLength(1));
-          final event = diagnostics.events.single;
+          expect(diagnostics.events, hasLength(3));
+          expect(diagnostics.events[0].type, HealthSyncDiagnosticType.syncStarted);
+          final event = diagnostics.events[1];
           expect(event.type, HealthSyncDiagnosticType.fetchFailed);
           expect(event.domain, HealthSyncDomain.workout);
           expect(event.metadata['errorCategory'], 'timeout');
           expect(event.metadata.containsKey('phase'), isFalse);
+          expect(diagnostics.events[2].type, HealthSyncDiagnosticType.syncCompleted);
+          expect(diagnostics.events[2].metadata['outcome'], 'fetchFailed');
         },
       );
 
@@ -664,12 +679,15 @@ void main() {
           expect(result.isSuccess, isFalse);
           verifyNever(() => mockHealthSyncRepository.setLastSyncTime(any()));
 
-          expect(diagnostics.events, hasLength(1));
+          expect(diagnostics.events, hasLength(3));
+          expect(diagnostics.events[0].type, HealthSyncDiagnosticType.syncStarted);
           expect(
-            diagnostics.events.single.type,
+            diagnostics.events[1].type,
             HealthSyncDiagnosticType.permissionDenied,
           );
-          expect(diagnostics.events.single.domain, HealthSyncDomain.workout);
+          expect(diagnostics.events[1].domain, HealthSyncDomain.workout);
+          expect(diagnostics.events[2].type, HealthSyncDiagnosticType.syncCompleted);
+          expect(diagnostics.events[2].metadata['outcome'], 'permissionDenied');
         },
       );
 
@@ -685,11 +703,14 @@ void main() {
           expect(result.outcome, SyncHealthOutcome.platformUnavailable);
           verifyNever(() => mockHealthSyncRepository.setLastSyncTime(any()));
 
-          expect(diagnostics.events, hasLength(1));
+          expect(diagnostics.events, hasLength(3));
+          expect(diagnostics.events[0].type, HealthSyncDiagnosticType.syncStarted);
           expect(
-            diagnostics.events.single.type,
+            diagnostics.events[1].type,
             HealthSyncDiagnosticType.platformUnavailable,
           );
+          expect(diagnostics.events[2].type, HealthSyncDiagnosticType.syncCompleted);
+          expect(diagnostics.events[2].metadata['outcome'], 'platformUnavailable');
         },
       );
 
@@ -708,11 +729,14 @@ void main() {
           verify(() => mockHealthSyncRepository.setLastSyncTime(any()))
               .called(1);
 
-          expect(diagnostics.events, hasLength(1));
+          expect(diagnostics.events, hasLength(3));
+          expect(diagnostics.events[0].type, HealthSyncDiagnosticType.syncStarted);
           expect(
-            diagnostics.events.single.type,
+            diagnostics.events[1].type,
             HealthSyncDiagnosticType.fetchNoData,
           );
+          expect(diagnostics.events[2].type, HealthSyncDiagnosticType.syncCompleted);
+          expect(diagnostics.events[2].metadata['outcome'], 'syncedNoData');
         },
       );
 
@@ -744,11 +768,14 @@ void main() {
                 endDate: any(named: 'endDate'),
               ));
 
-          expect(diagnostics.events, hasLength(1));
-          final event = diagnostics.events.single;
+          expect(diagnostics.events, hasLength(3));
+          expect(diagnostics.events[0].type, HealthSyncDiagnosticType.syncStarted);
+          final event = diagnostics.events[1];
           expect(event.type, HealthSyncDiagnosticType.fetchSucceeded);
           expect(event.domain, HealthSyncDomain.workout);
           expect(event.metadata['count'], 1);
+          expect(diagnostics.events[2].type, HealthSyncDiagnosticType.syncCompleted);
+          expect(diagnostics.events[2].metadata['outcome'], 'synced');
         },
       );
 
@@ -771,18 +798,21 @@ void main() {
           verify(() => mockHealthSyncRepository.setLastSyncTime(any()))
               .called(1);
 
-          expect(diagnostics.events, hasLength(2));
-          expect(
-            diagnostics.events[0].type,
-            HealthSyncDiagnosticType.fetchSucceeded,
-          );
-          expect(diagnostics.events[0].metadata['count'], 1);
+          expect(diagnostics.events, hasLength(4));
+          expect(diagnostics.events[0].type, HealthSyncDiagnosticType.syncStarted);
           expect(
             diagnostics.events[1].type,
+            HealthSyncDiagnosticType.fetchSucceeded,
+          );
+          expect(diagnostics.events[1].metadata['count'], 1);
+          expect(
+            diagnostics.events[2].type,
             HealthSyncDiagnosticType.fetchFailed,
           );
-          expect(diagnostics.events[1].metadata['errorCategory'], 'plugin');
-          expect(diagnostics.events[1].metadata['phase'], 'enrichment');
+          expect(diagnostics.events[2].metadata['errorCategory'], 'plugin');
+          expect(diagnostics.events[2].metadata['phase'], 'enrichment');
+          expect(diagnostics.events[3].type, HealthSyncDiagnosticType.syncCompleted);
+          expect(diagnostics.events[3].metadata['outcome'], 'syncedPartial');
         },
       );
 
@@ -812,6 +842,34 @@ void main() {
           expect(result.outcome, SyncHealthOutcome.synced);
           verify(() => mockHealthSyncRepository.setLastSyncTime(any()))
               .called(1);
+        },
+      );
+
+      test(
+        'exception after syncStarted still gets a syncCompleted(error) '
+        'bookend',
+        () async {
+          stubPreconditions();
+          stubFetch(successResult(
+            [aHealthActivity(healthPlatformId: 'post_start_boom_id')],
+          ));
+          when(() => mockHealthSyncRepository.getSyncedMetadata())
+              .thenThrow(Exception('boom'));
+
+          final result = await interactor.execute();
+
+          expect(result.outcome, SyncHealthOutcome.error);
+          expect(
+            diagnostics.events.map((e) => e.type),
+            containsAllInOrder([
+              HealthSyncDiagnosticType.syncStarted,
+              HealthSyncDiagnosticType.fetchSucceeded,
+            ]),
+          );
+          final completed = diagnostics.events.singleWhere(
+            (e) => e.type == HealthSyncDiagnosticType.syncCompleted,
+          );
+          expect(completed.metadata['outcome'], 'error');
         },
       );
 

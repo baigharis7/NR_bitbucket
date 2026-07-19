@@ -80,12 +80,17 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
           outcome: outcome,
           permissionResolution: permissionResolution,
         );
+    var syncStartedEmitted = false;
 
     try {
       // Check if sync is enabled
       final isEnabled = await healthSyncRepository.isHealthSyncEnabled();
       if (!isEnabled) {
         _log('Sync aborted: sync not enabled');
+        diagnostics.add(HealthSyncDiagnostics.syncSkipped(
+          domain: HealthSyncDomain.workout,
+          reason: SyncHealthOutcome.skippedDisabled,
+        ));
         return resultWith(SyncHealthOutcome.skippedDisabled);
       }
 
@@ -106,6 +111,10 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
         final timeSinceLastSync = DateTime.now().difference(lastSyncTime);
         if (timeSinceLastSync < _minSyncInterval) {
           _log('Sync throttled: last sync ${timeSinceLastSync.inMinutes}m ago');
+          diagnostics.add(HealthSyncDiagnostics.syncSkipped(
+            domain: HealthSyncDomain.workout,
+            reason: SyncHealthOutcome.skippedThrottled,
+          ));
           return resultWith(SyncHealthOutcome.skippedThrottled);
         }
       }
@@ -127,6 +136,10 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
       final userId = preferencesRepository.getSub();
       if (userId.isEmpty) {
         _log('Sync aborted: empty userId');
+        diagnostics.add(HealthSyncDiagnostics.syncSkipped(
+          domain: HealthSyncDomain.workout,
+          reason: SyncHealthOutcome.skippedPreconditions,
+        ));
         return resultWith(SyncHealthOutcome.skippedPreconditions);
       }
 
@@ -136,6 +149,10 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
       ) as SportsInfoEntity?;
       if (sportsInfo == null) {
         _log('Sync aborted: sportsInfo master file not loaded');
+        diagnostics.add(HealthSyncDiagnostics.syncSkipped(
+          domain: HealthSyncDomain.workout,
+          reason: SyncHealthOutcome.skippedPreconditions,
+        ));
         return resultWith(SyncHealthOutcome.skippedPreconditions);
       }
 
@@ -145,6 +162,10 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
       // the whole waking period (first step → last step). The step counter
       // widget gets its data from fetchTodayStepCount, and real walking
       // workouts come through HealthDataType.WORKOUT here.
+      diagnostics.add(HealthSyncDiagnostics.syncStarted(
+        domain: HealthSyncDomain.workout,
+      ));
+      syncStartedEmitted = true;
       final fetchResult = await healthSyncRepository.fetchActivitiesResult(
         startDate: startDate,
         endDate: endDate,
@@ -170,6 +191,10 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
             domain: HealthSyncDomain.workout,
             category: _categoryFor(fetchResult.failureReason),
           ));
+          diagnostics.add(HealthSyncDiagnostics.syncCompleted(
+            domain: HealthSyncDomain.workout,
+            outcome: SyncHealthOutcome.fetchFailed,
+          ));
           return resultWith(
             SyncHealthOutcome.fetchFailed,
             permissionResolution: permissionResolution,
@@ -179,6 +204,10 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
           diagnostics.add(HealthSyncDiagnostics.permissionDenied(
             domain: HealthSyncDomain.workout,
           ));
+          diagnostics.add(HealthSyncDiagnostics.syncCompleted(
+            domain: HealthSyncDomain.workout,
+            outcome: SyncHealthOutcome.permissionDenied,
+          ));
           return resultWith(
             SyncHealthOutcome.permissionDenied,
             permissionResolution: permissionResolution,
@@ -187,6 +216,10 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
           _log('Sync aborted: health platform unavailable');
           diagnostics.add(HealthSyncDiagnostics.platformUnavailable(
             domain: HealthSyncDomain.workout,
+          ));
+          diagnostics.add(HealthSyncDiagnostics.syncCompleted(
+            domain: HealthSyncDomain.workout,
+            outcome: SyncHealthOutcome.platformUnavailable,
           ));
           return resultWith(
             SyncHealthOutcome.platformUnavailable,
@@ -200,6 +233,10 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
           // The platform read genuinely succeeded — the window is clean.
           await healthSyncRepository.setLastSyncTime(DateTime.now());
           _log('Sync complete: no activities in window');
+          diagnostics.add(HealthSyncDiagnostics.syncCompleted(
+            domain: HealthSyncDomain.workout,
+            outcome: SyncHealthOutcome.syncedNoData,
+          ));
           return resultWith(
             SyncHealthOutcome.syncedNoData,
             permissionResolution: permissionResolution,
@@ -286,12 +323,22 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
       await healthSyncRepository.setLastSyncTime(DateTime.now());
       _log('Sync complete: ${syncedEvents.length} activities saved');
 
+      diagnostics.add(HealthSyncDiagnostics.syncCompleted(
+        domain: HealthSyncDomain.workout,
+        outcome: isPartial ? SyncHealthOutcome.syncedPartial : SyncHealthOutcome.synced,
+      ));
       return resultWith(
         isPartial ? SyncHealthOutcome.syncedPartial : SyncHealthOutcome.synced,
         permissionResolution: permissionResolution,
       );
     } catch (e, stack) {
       _log('Sync failed with error: $e');
+      if (syncStartedEmitted) {
+        diagnostics.add(HealthSyncDiagnostics.syncCompleted(
+          domain: HealthSyncDomain.workout,
+          outcome: SyncHealthOutcome.error,
+        ));
+      }
       CrashlyticsService.record(e, stack, context: {'event': 'SyncHealthActivities'});
       return resultWith(SyncHealthOutcome.error);
     }
