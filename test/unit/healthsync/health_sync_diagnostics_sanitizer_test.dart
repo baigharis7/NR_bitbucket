@@ -66,6 +66,15 @@ void main() {
         HealthSyncErrorCategory.plugin,
       );
     });
+
+    test('a network-worded error with an incidental "plugin" mention still classifies as network', () {
+      expect(
+        HealthSyncDiagnostics.classify(
+          Exception('socket connection to plugin data service failed'),
+        ),
+        HealthSyncErrorCategory.network,
+      );
+    });
   });
 
   group('HealthSyncDiagnostics.dayBucket', () {
