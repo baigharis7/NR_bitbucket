@@ -47,12 +47,18 @@ class _FakeClient implements HealthPlatformClient {
   final Map<HealthDataType, Object> throwByType = {};
   final Map<HealthDataType, List<HealthDataPoint>> dataByType = {};
 
+  /// Defaults to `null` so existing tests exercise the pre-aggregate fallback
+  /// path; set to stub the platform's own source-deduped step total.
+  int? stepsInIntervalResult;
+
   List<HealthDataType>? lastAuthTypes;
   List<HealthDataAccess>? lastAuthPermissions;
   List<HealthDataType>? lastCheckTypes;
   List<HealthDataAccess>? lastCheckPermissions;
   final List<({List<HealthDataType> types, DateTime start, DateTime end})>
   reads = [];
+  final List<({DateTime start, DateTime end, bool includeManualEntry})>
+  stepsInIntervalCalls = [];
 
   @override
   Future<bool> requestAuthorization(
@@ -87,6 +93,20 @@ class _FakeClient implements HealthPlatformClient {
     final perType = throwByType[types.first];
     if (perType != null) throw perType;
     return dataByType[types.first] ?? [];
+  }
+
+  @override
+  Future<int?> getTotalStepsInInterval({
+    required DateTime startTime,
+    required DateTime endTime,
+    bool includeManualEntry = true,
+  }) async {
+    stepsInIntervalCalls.add((
+      start: startTime,
+      end: endTime,
+      includeManualEntry: includeManualEntry,
+    ));
+    return stepsInIntervalResult;
   }
 }
 

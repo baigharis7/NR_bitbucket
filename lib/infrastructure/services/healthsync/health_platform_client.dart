@@ -26,6 +26,16 @@ abstract class HealthPlatformClient {
     required DateTime startTime,
     required DateTime endTime,
   });
+
+  /// Platform-aggregated step total for `[startTime, endTime)`, source-deduped
+  /// by the platform: Android reads Health Connect's own aggregate (which
+  /// de-dups overlapping cross-source records), iOS uses an `HKStatisticsQuery`
+  /// cumulative sum. May return `null` if the platform has no data/permission.
+  Future<int?> getTotalStepsInInterval({
+    required DateTime startTime,
+    required DateTime endTime,
+    bool includeManualEntry = true,
+  });
 }
 
 /// Production [HealthPlatformClient] that delegates to the `health` package.
@@ -70,6 +80,19 @@ class HealthPlatformClientImpl implements HealthPlatformClient {
       types: types,
       startTime: startTime,
       endTime: endTime,
+    );
+  }
+
+  @override
+  Future<int?> getTotalStepsInInterval({
+    required DateTime startTime,
+    required DateTime endTime,
+    bool includeManualEntry = true,
+  }) {
+    return _healthInstance.getTotalStepsInInterval(
+      startTime,
+      endTime,
+      includeManualEntry: includeManualEntry,
     );
   }
 }
