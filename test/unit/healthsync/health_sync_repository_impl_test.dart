@@ -904,6 +904,84 @@ void main() {
       client.throwOnRead = Exception('boom');
       expect(await build().fetchTodayStepCount(DateTime(2026, 7, 1)), isNull);
     });
+
+    test('platform aggregate present returns the aggregate total, not the raw '
+        'sum of overlapping records', () async {
+      client.stepsInIntervalResult = 4200;
+      client.dataByType[HealthDataType.STEPS] = [
+        numericPoint(
+          type: HealthDataType.STEPS,
+          value: 1000,
+          from: DateTime(2026, 7, 1, 8),
+          to: DateTime(2026, 7, 1, 9),
+          source: appleWatch,
+        ),
+        numericPoint(
+          type: HealthDataType.STEPS,
+          value: 900,
+          from: DateTime(2026, 7, 1, 8, 5),
+          to: DateTime(2026, 7, 1, 9, 5),
+          source: iphone,
+        ),
+      ];
+
+      final total = await build().fetchTodayStepCount(DateTime(2026, 7, 1));
+
+      expect(total, 4200);
+      expect(client.stepsInIntervalCalls, hasLength(1));
+      expect(client.stepsInIntervalCalls.single.start, DateTime(2026, 7, 1));
+      expect(
+        client.stepsInIntervalCalls.single.end,
+        DateTime(2026, 7, 1, 23, 59, 59),
+      );
+    });
+
+    test('aggregate null with overlapping cross-source records falls back to '
+        'the highest-priority source total and emits a sourceSelected '
+        'diagnostic', () async {
+      client.stepsInIntervalResult = null;
+      client.dataByType[HealthDataType.STEPS] = [
+        numericPoint(
+          type: HealthDataType.STEPS,
+          value: 1000,
+          from: DateTime(2026, 7, 1, 8),
+          to: DateTime(2026, 7, 1, 9),
+          source: appleWatch,
+        ),
+        numericPoint(
+          type: HealthDataType.STEPS,
+          value: 900,
+          from: DateTime(2026, 7, 1, 8, 5),
+          to: DateTime(2026, 7, 1, 9, 5),
+          source: iphone,
+        ),
+      ];
+
+      final total = await build().fetchTodayStepCount(DateTime(2026, 7, 1));
+
+      // Apple Watch outranks the iPhone's own Apple Health app entry.
+      expect(total, 1000);
+      expect(diagnostics.events, hasLength(1));
+      final event = diagnostics.events.single;
+      expect(event.type, HealthSyncDiagnosticType.sourceSelected);
+      expect(event.domain, HealthSyncDomain.steps);
+      expect(event.metadata['sourceCount'], 2);
+      expect(event.metadata['discardedCount'], 1);
+      expect(event.metadata['selectedCategory'], 'wearable');
+      expect(event.metadata.keys, {
+        'sourceCount',
+        'discardedCount',
+        'selectedCategory',
+      });
+    });
+
+    test(
+      'empty successful read with no platform aggregate returns 0',
+      () async {
+        client.stepsInIntervalResult = null;
+        expect(await build().fetchTodayStepCount(DateTime(2026, 7, 1)), 0);
+      },
+    );
   });
 
   group('saveSleepEvent', () {
