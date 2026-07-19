@@ -327,13 +327,31 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     SportsInfoEntity sportsInfo, {
     required HealthWorkoutFingerprint fingerprint,
   }) async {
-    // Find matching sport ID
-    int? sportId = HealthActivityTypeMapping.mapToSportId(
+    // Resolve the sport deterministically (exact name → curated keyword →
+    // configured generic sport → unmapped). Unknown types can no longer
+    // land on an arbitrary first master-file sport.
+    final mapping = HealthActivityTypeMapping.mapToResult(
       activity.activityType,
       sportsInfo,
     );
-    sportId ??= HealthActivityTypeMapping.findFallbackSportId(sportsInfo);
-    if (sportId == null) return null;
+    final sportId = mapping.sportId;
+    if (sportId == null) {
+      // Unmapped: controlled skip with a diagnostic and WITHOUT writing
+      // sync metadata, so a future re-scan (e.g. after a master-file
+      // update adds a generic sport) gets another mapping chance.
+      diagnostics.add(HealthSyncDiagnostics.typeMappingUnmapped(
+        domain: HealthSyncDomain.workout,
+        activityType: mapping.platformType,
+      ));
+      return null;
+    }
+    if (mapping.confidence == HealthTypeMappingConfidence.genericImported) {
+      // Imported, but only via the generic tier — visible in aggregate.
+      diagnostics.add(HealthSyncDiagnostics.typeMappingFallback(
+        domain: HealthSyncDomain.workout,
+        activityType: mapping.platformType,
+      ));
+    }
 
     // Local collision guard (T14): saveSportEvent silently overwrites by
     // eventId, so an occupied id must SKIP — never replace an existing local

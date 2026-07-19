@@ -197,6 +197,45 @@ class HealthSyncDiagnostics {
     );
   }
 
+  /// Builds a `typeMappingFallback` event: an activity type with no specific
+  /// mapping was imported under the configured generic sport. Info severity —
+  /// the import succeeded deterministically; the event gives aggregate
+  /// visibility into mapping-table gaps. [activityType] is the normalized
+  /// platform activity-category token (e.g. 'TAI_CHI') — a coarse
+  /// enum-derived value, never a raw source name, timestamp, or identifier.
+  static HealthSyncDiagnosticEvent typeMappingFallback({
+    required HealthSyncDomain domain,
+    required String activityType,
+    HealthSyncPlatform? platform,
+  }) {
+    return HealthSyncDiagnosticEvent(
+      type: HealthSyncDiagnosticType.typeMappingFallback,
+      severity: HealthSyncDiagnosticSeverity.info,
+      domain: domain,
+      platform: platform,
+      metadata: {'activityType': activityType},
+    );
+  }
+
+  /// Builds a `typeMappingUnmapped` event: an activity type had no specific
+  /// mapping AND the master file has no generic sport, so the activity was
+  /// skipped (no import, no metadata write). Warning severity — a real
+  /// workout was dropped by policy. Same coarse [activityType] metadata as
+  /// [typeMappingFallback].
+  static HealthSyncDiagnosticEvent typeMappingUnmapped({
+    required HealthSyncDomain domain,
+    required String activityType,
+    HealthSyncPlatform? platform,
+  }) {
+    return HealthSyncDiagnosticEvent(
+      type: HealthSyncDiagnosticType.typeMappingUnmapped,
+      severity: HealthSyncDiagnosticSeverity.warning,
+      domain: domain,
+      platform: platform,
+      metadata: {'activityType': activityType},
+    );
+  }
+
   /// Builds an `identityMissing` event: a warning that a day-bucketed record
   /// was saved locally but its upload was skipped because no user ID was
   /// available (profile absent or userId null/empty). Carries no metadata —

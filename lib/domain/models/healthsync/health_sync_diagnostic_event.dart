@@ -14,6 +14,8 @@ enum HealthSyncDiagnosticType {
   sourceSelected,
   duplicateDiscarded,
   eventIdCollision,
+  typeMappingFallback,
+  typeMappingUnmapped,
   identityMissing,
   backgroundSyncSkipped,
 }

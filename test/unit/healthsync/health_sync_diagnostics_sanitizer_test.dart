@@ -278,4 +278,36 @@ void main() {
       expect(event.metadata, {'sourceCategory': 'appleWatch'});
     });
   });
+
+  group('HealthSyncDiagnostics.typeMappingFallback', () {
+    test('is an info-severity event carrying only the coarse activity type',
+        () {
+      final event = HealthSyncDiagnostics.typeMappingFallback(
+        domain: HealthSyncDomain.workout,
+        activityType: 'TAI_CHI',
+      );
+
+      expect(event.type, HealthSyncDiagnosticType.typeMappingFallback);
+      expect(event.severity, HealthSyncDiagnosticSeverity.info);
+      expect(event.domain, HealthSyncDomain.workout);
+      expect(event.platform, isNull);
+      expect(event.metadata, {'activityType': 'TAI_CHI'});
+    });
+  });
+
+  group('HealthSyncDiagnostics.typeMappingUnmapped', () {
+    test('is a warning-severity event carrying only the coarse activity type',
+        () {
+      final event = HealthSyncDiagnostics.typeMappingUnmapped(
+        domain: HealthSyncDomain.workout,
+        activityType: 'TAI_CHI',
+      );
+
+      expect(event.type, HealthSyncDiagnosticType.typeMappingUnmapped);
+      expect(event.severity, HealthSyncDiagnosticSeverity.warning);
+      expect(event.domain, HealthSyncDomain.workout);
+      expect(event.platform, isNull);
+      expect(event.metadata, {'activityType': 'TAI_CHI'});
+    });
+  });
 }
