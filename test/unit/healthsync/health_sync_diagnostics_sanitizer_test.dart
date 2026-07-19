@@ -35,6 +35,30 @@ void main() {
         HealthSyncErrorCategory.unknown,
       );
     });
+
+    test(
+      'an exception-class-name signal (MissingPluginException) wins over '
+      'a generic "unavailable" word in the same message',
+      () {
+        expect(
+          HealthSyncDiagnostics.classify(
+            Exception(
+              'MissingPluginException: Health Connect is unavailable',
+            ),
+          ),
+          HealthSyncErrorCategory.plugin,
+        );
+      },
+    );
+
+    test('permission still wins over an exception-class-name signal', () {
+      expect(
+        HealthSyncDiagnostics.classify(
+          Exception('PlatformException: permission denied'),
+        ),
+        HealthSyncErrorCategory.permission,
+      );
+    });
   });
 
   group('HealthSyncDiagnostics.dayBucket', () {
