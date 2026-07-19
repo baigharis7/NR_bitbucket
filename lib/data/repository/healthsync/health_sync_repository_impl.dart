@@ -675,9 +675,10 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
 
   /// Maps the `health` package's [HealthPlatformType] to the app-level
   /// source-type tag ([HealthSourceResolver]'s `sourceType`). LOCKED — T11
-  /// reuses this helper verbatim. Any non-Apple-Health platform maps to
-  /// 'health_connect' so a future platform addition degrades safely rather
-  /// than throwing.
+  /// reuses this helper verbatim. The switch is exhaustive over the two
+  /// current enum values with no default, so a future [HealthPlatformType]
+  /// addition is a compile error here — deliberate, to force an explicit
+  /// mapping decision rather than a silent 'health_connect' default.
   String _sourceTypeOf(HealthPlatformType p) {
     switch (p) {
       case HealthPlatformType.appleHealth:
