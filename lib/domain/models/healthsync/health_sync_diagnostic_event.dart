@@ -13,6 +13,7 @@ enum HealthSyncDiagnosticType {
   platformUnavailable,
   sourceSelected,
   duplicateDiscarded,
+  eventIdCollision,
   identityMissing,
   backgroundSyncSkipped,
 }
