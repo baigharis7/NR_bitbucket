@@ -38,8 +38,8 @@ void main() {
     });
 
     test(
-      'an exception-class-name signal (MissingPluginException) wins over '
-      'a generic "unavailable" word in the same message',
+      'a message with both an exception-class-name signal and an '
+      '"unavailable" word classifies by the word — platformUnavailable',
       () {
         expect(
           HealthSyncDiagnostics.classify(
@@ -47,7 +47,7 @@ void main() {
               'MissingPluginException: Health Connect is unavailable',
             ),
           ),
-          HealthSyncErrorCategory.plugin,
+          HealthSyncErrorCategory.platformUnavailable,
         );
       },
     );

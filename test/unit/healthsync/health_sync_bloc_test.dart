@@ -359,6 +359,28 @@ void main() {
           expect(joined, isNot(contains('2024, 3, 10')));
         },
       );
+
+      blocTest<HealthSyncBloc, HealthSyncState>(
+        'recalculating estimated steps does not log the exact value',
+        setUp: () {
+          stubEstimatedSteps(sportEvents: [
+            SportEventComplete(
+              userId: 'test',
+              eventId: 1,
+              eventDate: DateTime.now().millisecondsSinceEpoch,
+              source: 'manual',
+              info: [SportEventInfo(id: 61, minutes: 30)], // Running 10 METs: (10-1)*32*30 = 8640
+            ),
+          ]);
+        },
+        build: buildBloc,
+        skip: 2,
+        act: (bloc) => bloc.add(HealthSyncRecalculateEstimatedSteps()),
+        verify: (_) {
+          final joined = capturedLogs.join('\n');
+          expect(joined, isNot(contains('8640')));
+        },
+      );
     });
 
     group('HealthSyncRequestPermissions', () {

@@ -326,21 +326,6 @@ class HealthSyncDiagnostics {
       return HealthSyncErrorCategory.timeout;
     }
     final signature = '${error.runtimeType} $error'.toLowerCase();
-    // A literal exception-class-name match is a higher-confidence signal
-    // than a generic English-word substring match, so it's checked before
-    // the word-based categories below (order-sensitivity fix, T15).
-    if (signature.contains('missingplugin') ||
-        signature.contains('platformexception')) {
-      // ...but a verified permission/denial word still outranks a bare
-      // PlatformException wrapper — Health Connect delivers permission
-      // denials AS a PlatformException, so check permission first.
-      if (signature.contains('permission') ||
-          signature.contains('unauthor') ||
-          signature.contains('denied')) {
-        return HealthSyncErrorCategory.permission;
-      }
-      return HealthSyncErrorCategory.plugin;
-    }
     if (signature.contains('permission') ||
         signature.contains('unauthor') ||
         signature.contains('denied')) {
@@ -360,7 +345,9 @@ class HealthSyncDiagnostics {
         signature.contains('connection')) {
       return HealthSyncErrorCategory.network;
     }
-    if (signature.contains('plugin')) {
+    if (signature.contains('platformexception') ||
+        signature.contains('missingplugin') ||
+        signature.contains('plugin')) {
       return HealthSyncErrorCategory.plugin;
     }
     return HealthSyncErrorCategory.unknown;

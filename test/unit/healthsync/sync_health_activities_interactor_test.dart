@@ -845,6 +845,34 @@ void main() {
         },
       );
 
+      test(
+        'exception after syncStarted still gets a syncCompleted(error) '
+        'bookend',
+        () async {
+          stubPreconditions();
+          stubFetch(successResult(
+            [aHealthActivity(healthPlatformId: 'post_start_boom_id')],
+          ));
+          when(() => mockHealthSyncRepository.getSyncedMetadata())
+              .thenThrow(Exception('boom'));
+
+          final result = await interactor.execute();
+
+          expect(result.outcome, SyncHealthOutcome.error);
+          expect(
+            diagnostics.events.map((e) => e.type),
+            containsAllInOrder([
+              HealthSyncDiagnosticType.syncStarted,
+              HealthSyncDiagnosticType.fetchSucceeded,
+            ]),
+          );
+          final completed = diagnostics.events.singleWhere(
+            (e) => e.type == HealthSyncDiagnosticType.syncCompleted,
+          );
+          expect(completed.metadata['outcome'], 'error');
+        },
+      );
+
       test('constructs with the default Noop sink when none is injected', () {
         expect(
           () => SyncHealthActivitiesInteractorImpl(

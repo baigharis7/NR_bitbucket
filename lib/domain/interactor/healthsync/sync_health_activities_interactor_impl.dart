@@ -80,6 +80,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
           outcome: outcome,
           permissionResolution: permissionResolution,
         );
+    var syncStartedEmitted = false;
 
     try {
       // Check if sync is enabled
@@ -164,6 +165,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
       diagnostics.add(HealthSyncDiagnostics.syncStarted(
         domain: HealthSyncDomain.workout,
       ));
+      syncStartedEmitted = true;
       final fetchResult = await healthSyncRepository.fetchActivitiesResult(
         startDate: startDate,
         endDate: endDate,
@@ -331,6 +333,12 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
       );
     } catch (e, stack) {
       _log('Sync failed with error: $e');
+      if (syncStartedEmitted) {
+        diagnostics.add(HealthSyncDiagnostics.syncCompleted(
+          domain: HealthSyncDomain.workout,
+          outcome: SyncHealthOutcome.error,
+        ));
+      }
       CrashlyticsService.record(e, stack, context: {'event': 'SyncHealthActivities'});
       return resultWith(SyncHealthOutcome.error);
     }

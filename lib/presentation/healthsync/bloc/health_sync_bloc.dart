@@ -469,7 +469,7 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
   ) async {
     final date = event.date ?? DateTime.now();
     final estimated = await _calculateEstimatedSteps(date);
-    _hsLog('HealthSync: estimated steps from sport events = $estimated');
+    debugPrint('[HealthSync] estimated steps recalculated');
     emit(state.copyWith(estimatedStepCount: estimated));
   }
 }
