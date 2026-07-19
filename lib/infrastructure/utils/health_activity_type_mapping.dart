@@ -104,8 +104,9 @@ class HealthActivityTypeMapping {
   };
 
   /// Ordered generic-sport names. The generic tier scans this list
-  /// list-order-first (for each name, over all sports), so the outcome never
-  /// depends on master-file ordering.
+  /// list-order-first (for each name, over all sports); among sports matching
+  /// the same highest-priority name, the lowest sport id wins — so the
+  /// outcome never depends on master-file ordering.
   static const List<String> _genericSportNames = [
     'other',
     'otro',
@@ -126,7 +127,8 @@ class HealthActivityTypeMapping {
   /// 2. Curated keywords — only for types that HAVE a table entry; there is
   ///    no unknown-type keyword fallback → [HealthTypeMappingConfidence.keyword].
   /// 3. Generic — [_genericSportNames], list-order-first contains-match on
-  ///    en/es → [HealthTypeMappingConfidence.genericImported].
+  ///    en/es, lowest sport id breaking ties within the same matched name →
+  ///    [HealthTypeMappingConfidence.genericImported].
   /// 4. Unmapped — `sportId` null; there is deliberately NO first-sport last
   ///    resort → [HealthTypeMappingConfidence.unmapped].
   static HealthActivityTypeMappingResult mapToResult(
@@ -170,18 +172,27 @@ class HealthActivityTypeMapping {
       }
     }
 
-    // Tier 3: deterministic generic-sport lookup.
+    // Tier 3: deterministic generic-sport lookup. Token priority comes from
+    // list order (first token with ANY match wins); among sports matching
+    // that SAME token, the winner is the lowest sport id — a stable
+    // tie-break independent of master-file order.
     for (final name in _genericSportNames) {
+      SportInfoEntity? lowestIdMatch;
       for (final sport in sportsInfo.data) {
         if (sport.en.toLowerCase().contains(name) ||
             sport.es.toLowerCase().contains(name)) {
-          return HealthActivityTypeMappingResult(
-            sportId: sport.id,
-            confidence: HealthTypeMappingConfidence.genericImported,
-            strategy: HealthTypeMappingStrategy.genericFallback,
-            platformType: normalizedType,
-          );
+          if (lowestIdMatch == null || sport.id < lowestIdMatch.id) {
+            lowestIdMatch = sport;
+          }
         }
+      }
+      if (lowestIdMatch != null) {
+        return HealthActivityTypeMappingResult(
+          sportId: lowestIdMatch.id,
+          confidence: HealthTypeMappingConfidence.genericImported,
+          strategy: HealthTypeMappingStrategy.genericFallback,
+          platformType: normalizedType,
+        );
       }
     }
 

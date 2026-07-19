@@ -279,5 +279,35 @@ void main() {
       expect(a.sportId, 61);
       expect(b.sportId, 61);
     });
+
+    test('generic tie-break among same-token matches is the lowest sport id, '
+        'independent of master-file order', () {
+      final sports = [
+        SportInfoEntity(id: 5, en: 'Other', es: 'Otro', mets: 4),
+        SportInfoEntity(
+          id: 3,
+          en: 'Other Workout',
+          es: 'Otro Entrenamiento',
+          mets: 4,
+        ),
+      ];
+      final forward = SportsInfoEntity(id: 1, v: 1, data: sports);
+      final reversed = SportsInfoEntity(
+        id: 1,
+        v: 1,
+        data: sports.reversed.toList(),
+      );
+
+      final a = HealthActivityTypeMapping.mapToResult('TAI_CHI', forward);
+      final b = HealthActivityTypeMapping.mapToResult('TAI_CHI', reversed);
+
+      // Both sports match the same highest-priority generic token ('other'),
+      // so the tie-break must pick the lowest id (3) regardless of which
+      // order they appear in the master file.
+      expect(a.sportId, 3);
+      expect(b.sportId, 3);
+      expect(a.confidence, HealthTypeMappingConfidence.genericImported);
+      expect(b.confidence, HealthTypeMappingConfidence.genericImported);
+    });
   });
 }
