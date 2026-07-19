@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_diagnostic_event.dart';
+import 'package:nutrenaissance_flutter/domain/models/healthsync/sync_health_activities_result.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sanitizer.dart';
 
 void main() {
@@ -348,6 +349,60 @@ void main() {
       expect(event.domain, HealthSyncDomain.workout);
       expect(event.platform, isNull);
       expect(event.metadata, {'activityType': 'TAI_CHI'});
+    });
+  });
+
+  group('HealthSyncDiagnostics.syncStarted', () {
+    test('is a debug-severity event with empty metadata', () {
+      final event = HealthSyncDiagnostics.syncStarted(
+        domain: HealthSyncDomain.workout,
+        platform: HealthSyncPlatform.android,
+      );
+
+      expect(event.type, HealthSyncDiagnosticType.syncStarted);
+      expect(event.severity, HealthSyncDiagnosticSeverity.debug);
+      expect(event.domain, HealthSyncDomain.workout);
+      expect(event.platform, HealthSyncPlatform.android);
+      expect(event.metadata, isEmpty);
+    });
+  });
+
+  group('HealthSyncDiagnostics.syncSkipped', () {
+    test('carries the coarse reason as metadata', () {
+      final event = HealthSyncDiagnostics.syncSkipped(
+        domain: HealthSyncDomain.workout,
+        reason: SyncHealthOutcome.skippedThrottled,
+      );
+
+      expect(event.type, HealthSyncDiagnosticType.syncSkipped);
+      expect(event.severity, HealthSyncDiagnosticSeverity.info);
+      expect(event.domain, HealthSyncDomain.workout);
+      expect(event.metadata, {'reason': 'skippedThrottled'});
+    });
+  });
+
+  group('HealthSyncDiagnostics.syncCompleted', () {
+    test('carries the coarse outcome as metadata', () {
+      final event = HealthSyncDiagnostics.syncCompleted(
+        domain: HealthSyncDomain.workout,
+        outcome: SyncHealthOutcome.synced,
+      );
+
+      expect(event.type, HealthSyncDiagnosticType.syncCompleted);
+      expect(event.severity, HealthSyncDiagnosticSeverity.info);
+      expect(event.domain, HealthSyncDomain.workout);
+      expect(event.metadata, {'outcome': 'synced'});
+    });
+
+    test('is info severity even for a failure outcome — the paired specific '
+        'event already carries warning/error severity', () {
+      final event = HealthSyncDiagnostics.syncCompleted(
+        domain: HealthSyncDomain.workout,
+        outcome: SyncHealthOutcome.fetchFailed,
+      );
+
+      expect(event.severity, HealthSyncDiagnosticSeverity.info);
+      expect(event.metadata, {'outcome': 'fetchFailed'});
     });
   });
 }
