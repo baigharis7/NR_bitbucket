@@ -1926,8 +1926,35 @@ void main() {
       expect(joined, isNot(contains('517'))); // computed kcal value
       expect(joined,
           isNot(contains('uuid-privacy-sentinel-42'))); // raw platform id
+      expect(joined, isNot(contains('duration='))); // exact duration
       // The sync window must be logged coarsely, never as exact timestamps.
       expect(joined, isNot(matches(RegExp(r'Sync window.*\d{4}-\d{2}-\d{2}'))));
+    });
+
+    test('a platform-kcal import logs no exact kcal value', () async {
+      final activity = HealthActivity(
+        healthPlatformId: 'uuid-platform-kcal-privacy',
+        legacyPlatformId: 'legacy-platform-kcal-privacy',
+        activityType: 'RUNNING',
+        startTime: DateTime(2026, 7, 1, 8, 0),
+        endTime: DateTime(2026, 7, 1, 9, 0),
+        durationMinutes: 60,
+        caloriesBurned: 421, // platform value → platform kcal-source path
+        distance: 5000,
+        avgHeartRate: null,
+        sourceName: 'Apple Health',
+        sourceType: 'apple_health',
+      );
+      stubHappyPath();
+      stubFetch([activity]);
+      when(() => mockLocalStorageRepository.getProfile())
+          .thenAnswer((_) async => null);
+
+      final result = await interactor.execute();
+      expect(result.outcome, SyncHealthOutcome.synced);
+
+      final joined = capturedLogs.join('\n');
+      expect(joined, isNot(contains('421'))); // exact platform kcal
     });
 
     test('the eventId collision guard logs no raw event id value', () async {

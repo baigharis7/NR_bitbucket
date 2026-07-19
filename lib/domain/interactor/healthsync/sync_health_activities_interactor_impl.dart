@@ -430,7 +430,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     int effectiveKcal;
     if (activity.caloriesBurned != null) {
       effectiveKcal = activity.caloriesBurned!.round();
-      _log('kcal source: platform ($effectiveKcal kcal) for ${activity.activityType}');
+      _log('kcal source: platform for ${activity.activityType}');
     } else if (activity.durationMinutes > 0) {
       final simple = mapHealthActivityToSportEventSimple(
         activity: activity,

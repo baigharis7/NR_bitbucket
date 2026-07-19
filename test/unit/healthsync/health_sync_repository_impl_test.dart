@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health/health.dart';
 import 'package:mocktail/mocktail.dart';
@@ -280,6 +281,38 @@ void main() {
   });
 
   group('fetchActivities', () {
+    test('privacy: workout mapping logs no exact kcal/distance/heart-rate '
+        'values to debugPrint', () async {
+      final captured = <String>[];
+      final DebugPrintCallback original = debugPrint;
+      debugPrint = (String? message, {int? wrapWidth}) {
+        if (message != null) captured.add(message);
+      };
+      try {
+        final start = DateTime(2026, 7, 1, 8, 0);
+        final end = DateTime(2026, 7, 1, 9, 0);
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(from: start, to: end, source: appleWatch, uuid: 'wk-priv'),
+        ];
+        client.dataByType[HealthDataType.ACTIVE_ENERGY_BURNED] = [
+          numericPoint(
+            type: HealthDataType.ACTIVE_ENERGY_BURNED,
+            value: 437,
+            from: start,
+            to: end,
+          ),
+        ];
+
+        await build().fetchActivities(startDate: start, endDate: end);
+
+        final joined = captured.join('\n');
+        expect(joined, isNot(contains('kcal=')));
+        expect(joined, isNot(contains('437'))); // exact enriched kcal
+      } finally {
+        debugPrint = original;
+      }
+    });
+
     test('maps a workout with enrichment and service source type', () async {
       final start = DateTime(2026, 7, 1, 8, 0);
       final end = DateTime(2026, 7, 1, 9, 0);

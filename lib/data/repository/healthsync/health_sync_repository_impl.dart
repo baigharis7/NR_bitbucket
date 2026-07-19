@@ -314,7 +314,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       final legacyId = '${workout.sourceName}_${workout.dateFrom.millisecondsSinceEpoch}_${workout.dateTo.millisecondsSinceEpoch}';
       final workoutId = workout.uuid.isNotEmpty ? workout.uuid : legacyId;
 
-      debugPrint('[HealthSync] Workout: $activityType, kcal=$caloriesBurned, dist=$distance, hr=$avgHeartRate, dur=${durationMinutes}m');
+      debugPrint('[HealthSync] Workout mapped: $activityType');
 
       activities.add(HealthActivity(
         healthPlatformId: workoutId,
