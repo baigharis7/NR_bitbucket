@@ -272,7 +272,8 @@ class HealthSyncDiagnostics {
     // than a generic English-word substring match, so it's checked before
     // the word-based categories below (order-sensitivity fix, T15).
     if (signature.contains('missingplugin') ||
-        signature.contains('platformexception')) {
+        signature.contains('platformexception') ||
+        signature.contains('plugin')) {
       // ...but a verified permission/denial word still outranks a bare
       // PlatformException wrapper — Health Connect delivers permission
       // denials AS a PlatformException, so check permission first.

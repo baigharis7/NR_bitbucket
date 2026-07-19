@@ -59,6 +59,13 @@ void main() {
         HealthSyncErrorCategory.permission,
       );
     });
+
+    test('a bare "plugin"-worded error still classifies as plugin', () {
+      expect(
+        HealthSyncDiagnostics.classify(Exception('custom plugin failure')),
+        HealthSyncErrorCategory.plugin,
+      );
+    });
   });
 
   group('HealthSyncDiagnostics.dayBucket', () {
