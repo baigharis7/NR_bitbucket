@@ -830,6 +830,234 @@ void main() {
       });
     });
 
+    group('deterministic type mapping drives import policy', () {
+      void stubPreconditions({SportsInfoEntity? sportsInfo}) {
+        when(() => mockHealthSyncRepository.isHealthSyncEnabled())
+            .thenAnswer((_) async => true);
+        when(() => mockHealthSyncRepository.hasPermissions())
+            .thenAnswer((_) async => true);
+        when(() => mockHealthSyncRepository.getLastSyncTime())
+            .thenAnswer((_) async => null);
+        when(() => mockPreferencesRepository.getSub()).thenReturn('user123');
+        when(() => mockLocalStorageRepository
+                .getMasterFile(MasterFilesType.sportsInfo))
+            .thenAnswer((_) async => sportsInfo ?? testSportsInfo);
+        when(() => mockHealthSyncRepository.setLastSyncTime(any()))
+            .thenAnswer((_) async {});
+      }
+
+      void stubFetch(HealthFetchResult<List<HealthActivity>> fetchResult) {
+        when(() => mockHealthSyncRepository.fetchActivitiesResult(
+              startDate: any(named: 'startDate'),
+              endDate: any(named: 'endDate'),
+            )).thenAnswer((_) async => fetchResult);
+      }
+
+      void stubProcessing() {
+        when(() => mockHealthSyncRepository.getSyncedMetadata())
+            .thenAnswer((_) async => <HealthSyncMetadata>[]);
+        when(() => mockSaveSportEventInteractor.execute(any(), any()))
+            .thenAnswer((_) async {});
+        when(() => mockSportEventsRepository.syncToBackend(any()))
+            .thenAnswer((_) {});
+        when(() => mockHealthSyncRepository.saveHealthSyncMetadata(any()))
+            .thenAnswer((_) async {});
+      }
+
+      test(
+        'unmapped type: controlled skip — no save, no backend, no metadata '
+        'write, typeMappingUnmapped diagnostic, window still advances',
+        () async {
+          final noGenericSportsInfo = SportsInfoEntity(
+            id: 1,
+            v: 1,
+            data: [
+              SportInfoEntity(id: 1, en: 'Running', es: 'Correr', mets: 8),
+              SportInfoEntity(id: 7, en: 'Tennis', es: 'Tenis', mets: 7),
+            ],
+          );
+          stubPreconditions(sportsInfo: noGenericSportsInfo);
+          stubProcessing();
+          stubFetch(successResult([
+            aHealthActivity(
+              healthPlatformId: 'exotic_unmapped',
+              activityType: 'TAI_CHI',
+            ),
+          ]));
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, isEmpty);
+          expect(result.outcome, SyncHealthOutcome.synced);
+          verifyNever(() => mockSaveSportEventInteractor.execute(any(), any()));
+          verifyNever(() => mockSportEventsRepository.syncToBackend(any()));
+          verifyNever(
+              () => mockHealthSyncRepository.saveHealthSyncMetadata(any()));
+          // The platform read succeeded — the per-activity skip must not
+          // block the window from advancing (unchanged 'Skipped' semantics).
+          verify(() => mockHealthSyncRepository.setLastSyncTime(any()))
+              .called(1);
+
+          final unmapped = diagnostics.events.singleWhere(
+            (e) => e.type == HealthSyncDiagnosticType.typeMappingUnmapped,
+          );
+          expect(unmapped.severity, HealthSyncDiagnosticSeverity.warning);
+          expect(unmapped.domain, HealthSyncDomain.workout);
+          expect(unmapped.metadata, {'activityType': 'TAI_CHI'});
+          expect(
+            diagnostics.events.where(
+              (e) => e.type == HealthSyncDiagnosticType.typeMappingFallback,
+            ),
+            isEmpty,
+          );
+        },
+      );
+
+      test(
+        'generic fallback: imports under the generic sport with a '
+        'typeMappingFallback diagnostic; platform kcal still wins',
+        () async {
+          stubPreconditions();
+          stubProcessing();
+          stubFetch(successResult([
+            aHealthActivity(
+              healthPlatformId: 'exotic_generic',
+              activityType: 'TAI_CHI',
+              caloriesBurned: 250,
+            ),
+          ]));
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, hasLength(1));
+          expect(result.outcome, SyncHealthOutcome.synced);
+          expect(result.syncedEvents.single.sportName, 'General Exercise');
+          expect(result.syncedEvents.single.eventKcals, 250);
+          verify(() => mockSaveSportEventInteractor.execute(any(), any()))
+              .called(1);
+          verify(() => mockHealthSyncRepository.saveHealthSyncMetadata(any()))
+              .called(1);
+          verifyNever(() => mockSportKcalCalculationService.enrichSportEvent(
+                any(),
+                userWeight: any(named: 'userWeight'),
+              ));
+
+          final fallback = diagnostics.events.singleWhere(
+            (e) => e.type == HealthSyncDiagnosticType.typeMappingFallback,
+          );
+          expect(fallback.severity, HealthSyncDiagnosticSeverity.info);
+          expect(fallback.domain, HealthSyncDomain.workout);
+          expect(fallback.metadata, {'activityType': 'TAI_CHI'});
+        },
+      );
+
+      test(
+        'generic fallback without platform kcal: MET path runs with the '
+        'generic sport id (any mapped confidence may use METs)',
+        () async {
+          stubPreconditions();
+          stubProcessing();
+          when(() => mockLocalStorageRepository.getProfile())
+              .thenAnswer((_) async => null); // default 70.0 kg weight path
+          final enriched = SportEventComplete(
+            userId: 'user123',
+            eventId: 1,
+            eventDate: DateTime(2026, 7, 1).millisecondsSinceEpoch,
+            sportName: 'General Exercise',
+            source: 'apple_health',
+            eventKcals: 147,
+            info: [],
+          );
+          when(() => mockSportKcalCalculationService.enrichSportEvent(
+                any(),
+                userWeight: any(named: 'userWeight'),
+              )).thenAnswer((_) async => enriched);
+          stubFetch(successResult([
+            aHealthActivity(
+              healthPlatformId: 'exotic_met',
+              activityType: 'TAI_CHI',
+              caloriesBurned: null,
+              durationMinutes: 30,
+            ),
+          ]));
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, hasLength(1));
+          expect(result.syncedEvents.single.eventKcals, 147);
+          final simple = verify(
+            () => mockSportKcalCalculationService.enrichSportEvent(
+              captureAny(),
+              userWeight: any(named: 'userWeight'),
+            ),
+          ).captured.single as SportEventSimple;
+          expect(simple.info!.first.id, 9); // the generic sport feeds METs
+        },
+      );
+
+      test(
+        'generic sport absent from the MET table: the existing 0-kcal path '
+        'still applies (enrichment yields no kcal, event saves with 0)',
+        () async {
+          stubPreconditions();
+          stubProcessing();
+          when(() => mockLocalStorageRepository.getProfile())
+              .thenAnswer((_) async => null);
+          // SportKcalCalculationService yields 0/absent kcal when the drift
+          // SportMets table lacks the sport id — unchanged service behavior,
+          // represented here by an enrichment result without kcal.
+          final enriched = SportEventComplete(
+            userId: 'user123',
+            eventId: 1,
+            eventDate: DateTime(2026, 7, 1).millisecondsSinceEpoch,
+            sportName: 'General Exercise',
+            source: 'apple_health',
+            info: [],
+          );
+          when(() => mockSportKcalCalculationService.enrichSportEvent(
+                any(),
+                userWeight: any(named: 'userWeight'),
+              )).thenAnswer((_) async => enriched);
+          stubFetch(successResult([
+            aHealthActivity(
+              healthPlatformId: 'exotic_no_mets',
+              activityType: 'TAI_CHI',
+              caloriesBurned: null,
+              durationMinutes: 30,
+            ),
+          ]));
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, hasLength(1));
+          expect(result.syncedEvents.single.eventKcals, 0);
+        },
+      );
+
+      test(
+        'explicit-name/keyword mapping imports silently — no typeMapping* '
+        'diagnostics on the happy path',
+        () async {
+          stubPreconditions();
+          stubProcessing();
+          stubFetch(successResult([
+            aHealthActivity(healthPlatformId: 'plain_running'),
+          ]));
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, hasLength(1));
+          expect(result.outcome, SyncHealthOutcome.synced);
+          expect(
+            diagnostics.events.where((e) =>
+                e.type == HealthSyncDiagnosticType.typeMappingFallback ||
+                e.type == HealthSyncDiagnosticType.typeMappingUnmapped),
+            isEmpty,
+          );
+        },
+      );
+    });
+
     group('fingerprint dedupe drives imports', () {
       final start = DateTime(2026, 7, 10, 8, 0);
       final end = DateTime(2026, 7, 10, 9, 0);
