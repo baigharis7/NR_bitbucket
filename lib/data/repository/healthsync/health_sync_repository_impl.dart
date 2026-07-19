@@ -17,13 +17,13 @@ import 'package:nutrenaissance_flutter/domain/repository/localstorage/local_stor
 import 'package:nutrenaissance_flutter/domain/repository/preferences/preferences_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_client.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_platform_service.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sleep_aggregator.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_source_priority.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_source_resolver.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_step_aggregator.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sanitizer.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sink.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
-import 'package:nutrenaissance_flutter/infrastructure/utils/interval_union.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
 /// Implementation of HealthSyncRepository using the health package.
@@ -38,6 +38,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   final HealthPlatformService healthPlatformService;
   final HealthSyncDiagnosticsSink diagnostics;
   final HealthStepAggregator stepAggregator;
+  final HealthSleepAggregator sleepAggregator;
 
   HealthSyncRepositoryImpl({
     required this.localStorageRepository,
@@ -49,6 +50,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     required this.healthPlatformService,
     this.diagnostics = const NoopHealthSyncDiagnosticsSink(),
     this.stepAggregator = const HealthStepAggregator(),
+    this.sleepAggregator = const HealthSleepAggregator(),
   });
 
   /// Permissions list derived from the service's read types (one READ each).
@@ -584,33 +586,36 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
 
       if (sleepData.isEmpty) return 0.0;
 
-      // Log every session with source so we can diagnose bogus entries on
-      // testers' devices (e.g. Samsung Health "scheduled sleep" goal windows
-      // showing up as 8h SLEEP_SESSION records when actual sleep was 6h45m).
-      for (final point in sleepData) {
-        final mins = point.dateTo.difference(point.dateFrom).inMinutes;
-        CrashlyticsService.instance.log(
-          'HealthSync sleep session: source=${point.sourceName} '
-          'from=${point.dateFrom.toIso8601String()} '
-          'to=${point.dateTo.toIso8601String()} mins=$mins',
-        );
+      // Multiple connected apps (Samsung Health, Google Fit, smartwatch) can
+      // each log the same night, and a source may also leave a stale
+      // "scheduled sleep" goal window unclosed. Trust a single
+      // highest-priority source rather than summing across sources, and
+      // union that source's own sessions rather than naively summing them.
+      final sessions = <SleepSession>[
+        for (final p in sleepData)
+          SleepSession(
+            start: p.dateFrom,
+            end: p.dateTo,
+            sourceCategory: HealthSourceResolver.resolve(
+              sourceName: p.sourceName,
+              sourceType: _sourceTypeOf(p.sourcePlatform),
+            ),
+          ),
+      ];
+      final result = sleepAggregator.aggregate(sessions: sessions);
+      // Only emit when a source was actually selected — mirrors
+      // fetchTodayStepCount's guard.
+      if (result.selectedCategory != null) {
+        diagnostics.add(HealthSyncDiagnostics.sourceSelected(
+          domain: HealthSyncDomain.sleep,
+          sourceCount: result.sourceCount,
+          discardedCount: result.discardedCount,
+          selectedCategory: coarseSourceCategory(result.selectedCategory!),
+        ));
       }
 
-      // Multiple connected apps (Samsung Health, Google Fit, smartwatch) can
-      // each log the same night, producing overlapping SLEEP_SESSION records.
-      // Naively summing them double-counts. Union the intervals first, then
-      // sum non-overlapping durations.
-      final totalMinutes = sumNonOverlappingMinutes(
-        sleepData.map((p) => TimeInterval(p.dateFrom, p.dateTo)),
-      );
-      final totalHours = totalMinutes / 60.0;
-
-      debugPrint('[HealthSync] fetchTodaySleepHours: ${sleepData.length} sessions, '
-          'merged total=$totalHours hours');
-      CrashlyticsService.instance.log(
-        'HealthSync sleep merged: ${sleepData.length} sessions → $totalHours hours',
-      );
-      return totalHours;
+      debugPrint('[HealthSync] fetchTodaySleepHours: ${sleepData.length} sessions');
+      return result.hours;
     } catch (e) {
       // Return null on error so callers can distinguish a real fetch failure
       // from "user has 0 sleep recorded so far today" and preserve any
