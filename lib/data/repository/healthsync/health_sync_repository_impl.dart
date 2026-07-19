@@ -23,7 +23,6 @@ import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sanitizer.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sink.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
-import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sanitizer.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/interval_union.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
@@ -655,14 +654,16 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
         platformAggregateTotal: platformTotal,
         records: records,
       );
-      diagnostics.add(HealthSyncDiagnostics.sourceSelected(
-        domain: HealthSyncDomain.steps,
-        sourceCount: result.perSourceTotals.length,
-        discardedCount: result.discardedCount,
-        selectedCategory: coarseSourceCategory(
-          result.selectedCategory ?? HealthSourceCategory.unknown,
-        ),
-      ));
+      // Only emit when a source was actually selected — an empty read (no
+      // records, no platform aggregate) has nothing to report.
+      if (result.selectedCategory != null) {
+        diagnostics.add(HealthSyncDiagnostics.sourceSelected(
+          domain: HealthSyncDomain.steps,
+          sourceCount: result.perSourceTotals.length,
+          discardedCount: result.discardedCount,
+          selectedCategory: coarseSourceCategory(result.selectedCategory!),
+        ));
+      }
 
       debugPrint('[HealthSync] fetchTodayStepCount: ${result.total} steps');
       return result.total;

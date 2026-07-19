@@ -6,9 +6,18 @@ import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health
 /// domain that reuses this class — do not reorder without updating all
 /// callers.
 ///
-/// Highest priority first: a device worn on the body outranks a phone-side
-/// app, which outranks a third-party account sync, which outranks an
-/// unrecognized source.
+/// Highest priority first: dedicated body-worn wearables (Apple Watch,
+/// Garmin, Fitbit, Polar) — the device most likely to have actually counted
+/// the steps. Next, Samsung Health, since on Android it commonly carries a
+/// paired Galaxy Watch's data and should outrank the phone's own platform
+/// app. Then the platform's own apps (Health Connect app, Apple Health app).
+/// Then Google Fit, which typically just mirrors/aggregates other sources
+/// rather than measuring anything itself. Unknown sources rank last.
+///
+/// Note: the coarse [HealthSyncSourceCategory] buckets (wearable /
+/// thirdPartyApp / phone / unknown) used for diagnostics labelling are
+/// derived from this fine-grained order for display purposes only — they
+/// are NOT the priority signal used here.
 class HealthSourcePriority {
   const HealthSourcePriority();
 

@@ -896,8 +896,10 @@ void main() {
       expect(await build().fetchTodayStepCount(DateTime(2026, 7, 1)), 1500);
     });
 
-    test('returns 0 for an empty successful read', () async {
+    test('returns 0 for an empty successful read and emits no sourceSelected '
+        'diagnostic (nothing was selected)', () async {
       expect(await build().fetchTodayStepCount(DateTime(2026, 7, 1)), 0);
+      expect(diagnostics.events, isEmpty);
     });
 
     test('returns null when the client throws', () async {
@@ -976,10 +978,12 @@ void main() {
     });
 
     test(
-      'empty successful read with no platform aggregate returns 0',
+      'empty successful read with no platform aggregate returns 0 and emits '
+      'no sourceSelected diagnostic',
       () async {
         client.stepsInIntervalResult = null;
         expect(await build().fetchTodayStepCount(DateTime(2026, 7, 1)), 0);
+        expect(diagnostics.events, isEmpty);
       },
     );
   });
