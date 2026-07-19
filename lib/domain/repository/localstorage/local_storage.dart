@@ -45,6 +45,13 @@ abstract class LocalStorageRepository extends LocalStorageHelper {
   Future<List<UserRda>> getUserRdas();
   Future<void> saveSportEvent(SportEventEntity sportEventEntity, bool isEdit);
   Future<void> removeSportEvent(SportEventComplete sportEventComplete);
+
+  /// Returns the first local sport event whose [SportEventEntity.eventId]
+  /// matches, or null. Mirrors the eventId scan [saveSportEvent] uses for its
+  /// overwrite path — callers (the health-sync collision guard) use it to
+  /// detect an occupied id BEFORE saving, since saveSportEvent silently
+  /// overwrites by eventId.
+  Future<SportEventEntity?> findSportEventByEventId(int eventId);
   Future<List> getFoodEventsOfToday({DateTime? dateTime});
   Future<List> getWeekFoodEvents();
   Future<List> getRecentFoodEvents();

@@ -175,6 +175,28 @@ class HealthSyncDiagnostics {
     );
   }
 
+  /// Builds an `eventIdCollision` event: an imported workout's deterministic
+  /// eventId was already occupied by an existing local sport event, so the
+  /// activity was skipped instead of overwriting it (saveSportEvent would
+  /// otherwise silently replace by eventId). Metadata carries only the coarse
+  /// [sourceCategory] token (a HealthSourceCategory name) — never raw source
+  /// names, event ids, or timestamps.
+  static HealthSyncDiagnosticEvent eventIdCollision({
+    required HealthSyncDomain domain,
+    String? sourceCategory,
+    HealthSyncPlatform? platform,
+  }) {
+    return HealthSyncDiagnosticEvent(
+      type: HealthSyncDiagnosticType.eventIdCollision,
+      severity: HealthSyncDiagnosticSeverity.warning,
+      domain: domain,
+      platform: platform,
+      metadata: {
+        if (sourceCategory != null) 'sourceCategory': sourceCategory,
+      },
+    );
+  }
+
   /// Builds an `identityMissing` event: a warning that a day-bucketed record
   /// was saved locally but its upload was skipped because no user ID was
   /// available (profile absent or userId null/empty). Carries no metadata —

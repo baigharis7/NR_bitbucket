@@ -19,6 +19,7 @@ import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sink.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_workout_deduplicator.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_workout_fingerprint.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/imported_workout_event_id_factory.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/sport_kcal_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/health_activity_type_mapping.dart';
 
@@ -37,6 +38,11 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
   /// Pure workout dedupe decision service. Const default is the production
   /// instance; injectable for tests.
   final HealthWorkoutDeduplicator deduplicator;
+
+  /// Deterministic collision-safe event ids for imported workouts (T14).
+  /// Pure and const-constructible; injected for symmetry with the
+  /// deduplicator, defaulting to the real instance.
+  final ImportedWorkoutEventIdFactory eventIdFactory;
 
   /// Minimum time between automatic syncs (5 minutes)
   static const Duration _minSyncInterval = Duration(minutes: 5);
@@ -58,6 +64,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     required this.sportKcalCalculationService,
     this.diagnostics = const NoopHealthSyncDiagnosticsSink(),
     this.deduplicator = const HealthWorkoutDeduplicator(),
+    this.eventIdFactory = const ImportedWorkoutEventIdFactory(),
   });
 
   @override
@@ -267,7 +274,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
             _log('Synced: ${activity.activityType} (${activity.healthPlatformId}) → ${sportEvent.sportName}');
             syncedEvents.add(sportEvent);
           } else {
-            _log('Skipped: ${activity.activityType} — no matching sportId');
+            _log('Skipped: ${activity.activityType} — not imported');
           }
         } catch (e) {
           _log('Error processing ${activity.activityType}: $e');
@@ -328,6 +335,30 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     sportId ??= HealthActivityTypeMapping.findFallbackSportId(sportsInfo);
     if (sportId == null) return null;
 
+    // Local collision guard (T14): saveSportEvent silently overwrites by
+    // eventId, so an occupied id must SKIP — never replace an existing local
+    // event. Post-dedupe, a hit is either the residual same-second
+    // hash-suffix collision between two genuinely different workouts
+    // (~1/1000) or a stale local event whose metadata was lost; skipping is
+    // the non-destructive choice in both cases. No local save, no backend
+    // sync, no metadata write. The generated id depends only on the
+    // fingerprint, so this guard runs before the kcal-resolution block below
+    // — a colliding activity is skipped without paying for a profile lookup
+    // or METs enrichment.
+    final eventId = eventIdFactory.eventIdFor(fingerprint);
+    final existingEvent = await localStorageRepository.findSportEventByEventId(
+      eventId,
+    );
+    if (existingEvent != null) {
+      _log('Skipped: eventId $eventId already occupied locally '
+          'for ${activity.activityType} — collision guard');
+      diagnostics.add(HealthSyncDiagnostics.eventIdCollision(
+        domain: HealthSyncDomain.workout,
+        sourceCategory: fingerprint.sourceCategory.name,
+      ));
+      return null;
+    }
+
     // Resolve effective kcal: prefer health-platform value, otherwise compute
     // locally via the same MET formula used by the manual entry path
     // (sport-event-amplify Lambda port).
@@ -360,7 +391,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     final sportEvent = mapHealthActivityToSportEventComplete(
       activity: activity,
       userId: userId,
-      eventId: activity.startTime.millisecondsSinceEpoch,
+      eventId: eventId,
       sportId: sportId,
       sportsInfo: sportsInfo,
       eventKcals: effectiveKcal,

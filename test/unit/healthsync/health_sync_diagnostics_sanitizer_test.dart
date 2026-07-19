@@ -255,4 +255,27 @@ void main() {
       expect(event.metadata, isEmpty);
     });
   });
+
+  group('HealthSyncDiagnostics.eventIdCollision', () {
+    test('is a warning-severity event with empty metadata by default', () {
+      final event = HealthSyncDiagnostics.eventIdCollision(
+        domain: HealthSyncDomain.workout,
+      );
+
+      expect(event.type, HealthSyncDiagnosticType.eventIdCollision);
+      expect(event.severity, HealthSyncDiagnosticSeverity.warning);
+      expect(event.domain, HealthSyncDomain.workout);
+      expect(event.platform, isNull);
+      expect(event.metadata, isEmpty);
+    });
+
+    test('carries only the coarse source category when provided', () {
+      final event = HealthSyncDiagnostics.eventIdCollision(
+        domain: HealthSyncDomain.workout,
+        sourceCategory: 'appleWatch',
+      );
+
+      expect(event.metadata, {'sourceCategory': 'appleWatch'});
+    });
+  });
 }

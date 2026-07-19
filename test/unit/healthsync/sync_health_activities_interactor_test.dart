@@ -11,7 +11,10 @@ import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_sim
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_fetch_result.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/health_sync_diagnostic_event.dart';
 import 'package:nutrenaissance_flutter/domain/models/healthsync/sync_health_activities_result.dart';
+import 'package:nutrenaissance_flutter/data/local/models/sportevents/sport_event_entity.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sink.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_workout_fingerprint.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/imported_workout_event_id_factory.dart';
 
 import '../../mocks/health_sync_mocks.dart';
 import '../../support/healthsync/health_activity_builder.dart';
@@ -50,6 +53,11 @@ void main() {
     mockSportEventsRepository = MockSportEventsRepository();
     mockSportKcalCalculationService = MockSportKcalCalculationService();
     diagnostics = InMemoryHealthSyncDiagnosticsSink();
+
+    // Default: no local event occupies any generated id (collision tests
+    // override per-id).
+    when(() => mockLocalStorageRepository.findSportEventByEventId(any()))
+        .thenAnswer((_) async => null);
 
     interactor = SyncHealthActivitiesInteractorImpl(
       healthSyncRepository: mockHealthSyncRepository,
@@ -983,24 +991,25 @@ void main() {
 
       test(
         'saves metadata with fingerprint fields, keyed by the canonical id, '
-        'and leaves eventId generation untouched (T14 scope)',
+        'and mirrors the factory-generated eventId (T14)',
         () async {
+          final activity = aHealthActivity(
+            healthPlatformId: 'uuid-meta',
+            startTime: start,
+            endTime: end,
+          );
           stubPreconditions();
           stubProcessing();
-          stubFetch(successResult([
-            aHealthActivity(
-              healthPlatformId: 'uuid-meta',
-              startTime: start,
-              endTime: end,
-            ),
-          ]));
+          stubFetch(successResult([activity]));
 
           final result = await interactor.execute();
 
           expect(result.syncedEvents, hasLength(1));
           expect(
             result.syncedEvents.single.eventId,
-            start.millisecondsSinceEpoch,
+            const ImportedWorkoutEventIdFactory().eventIdFor(
+              HealthWorkoutFingerprint.fromActivity(activity),
+            ),
           );
 
           final saved = verify(() => mockHealthSyncRepository
@@ -1240,6 +1249,294 @@ void main() {
               startDate: any(named: 'startDate'),
               endDate: any(named: 'endDate'),
             ));
+      });
+    });
+
+    group('imported event ids and the local collision guard', () {
+      const idFactory = ImportedWorkoutEventIdFactory();
+
+      void stubHappyPath({
+        List<HealthSyncMetadata> existingMetadata = const [],
+      }) {
+        when(() => mockHealthSyncRepository.isHealthSyncEnabled())
+            .thenAnswer((_) async => true);
+        when(() => mockHealthSyncRepository.hasPermissions())
+            .thenAnswer((_) async => true);
+        when(() => mockHealthSyncRepository.getLastSyncTime())
+            .thenAnswer((_) async => null);
+        when(() => mockPreferencesRepository.getSub()).thenReturn('user123');
+        when(() => mockLocalStorageRepository
+                .getMasterFile(MasterFilesType.sportsInfo))
+            .thenAnswer((_) async => testSportsInfo);
+        when(() => mockHealthSyncRepository.getSyncedMetadata())
+            .thenAnswer((_) async => existingMetadata);
+        when(() => mockSaveSportEventInteractor.execute(any(), any()))
+            .thenAnswer((_) async {});
+        when(() => mockSportEventsRepository.syncToBackend(any()))
+            .thenAnswer((_) {});
+        when(() => mockHealthSyncRepository.saveHealthSyncMetadata(any()))
+            .thenAnswer((_) async {});
+        when(() => mockHealthSyncRepository.setLastSyncTime(any()))
+            .thenAnswer((_) async {});
+      }
+
+      void stubFetch(List<HealthActivity> activities) {
+        when(() => mockHealthSyncRepository.fetchActivitiesResult(
+              startDate: any(named: 'startDate'),
+              endDate: any(named: 'endDate'),
+            )).thenAnswer((_) async => successResult(activities));
+      }
+
+      SportEventEntity localEventWith(int eventId, {String source = 'manual'}) {
+        return SportEventEntity(
+          userId: 'user123',
+          eventDate: DateTime(2026, 7, 1).millisecondsSinceEpoch,
+          sportName: 'Padel',
+          info: [],
+          eventKcals: 300,
+          eventId: eventId,
+          source: source,
+        );
+      }
+
+      test(
+        'a new import carries the deterministic factory eventId in the saved '
+        'event, the backend payload, and the metadata mapping',
+        () async {
+          final activity = aHealthActivity(
+            healthPlatformId: 'factory_id_activity',
+            startTime: DateTime(2026, 7, 1, 8, 0, 0),
+            endTime: DateTime(2026, 7, 1, 9, 0, 0),
+          );
+          final expectedEventId = idFactory.eventIdFor(
+            HealthWorkoutFingerprint.fromActivity(activity),
+          );
+          stubHappyPath();
+          stubFetch([activity]);
+
+          final result = await interactor.execute();
+
+          expect(result.outcome, SyncHealthOutcome.synced);
+          expect(result.syncedEvents.single.eventId, expectedEventId);
+          // No longer raw start-millis: the seconds bucket is the start time,
+          // the suffix is the fingerprint hash.
+          expect(
+            expectedEventId ~/ 1000,
+            activity.startTime.millisecondsSinceEpoch ~/ 1000,
+          );
+
+          final backendPayload = verify(
+            () => mockSportEventsRepository.syncToBackend(captureAny()),
+          ).captured.single as SportEventComplete;
+          expect(backendPayload.eventId, expectedEventId);
+
+          final savedMetadata = verify(
+            () => mockHealthSyncRepository.saveHealthSyncMetadata(captureAny()),
+          ).captured.single as HealthSyncMetadata;
+          expect(savedMetadata.sportEventId, expectedEventId);
+          expect(savedMetadata.healthPlatformId, 'factory_id_activity');
+        },
+      );
+
+      test(
+        'previously synced workouts are deduped by metadata before id '
+        'generation — no eventId churn for existing data',
+        () async {
+          final activity = aHealthActivity(
+            healthPlatformId: 'already_synced_platform_id',
+          );
+          stubHappyPath(existingMetadata: [
+            HealthSyncMetadata(
+              healthPlatformId: 'already_synced_platform_id',
+              sportEventId: 1234567890123,
+              syncedAt: DateTime(2026, 6, 30),
+              sourceType: 'apple_health',
+            ),
+          ]);
+          stubFetch([activity]);
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, isEmpty);
+          expect(result.outcome, SyncHealthOutcome.synced);
+          // Deduped before any id work: neither the guard nor any save ran.
+          verifyNever(
+            () => mockLocalStorageRepository.findSportEventByEventId(any()),
+          );
+          verifyNever(() => mockSaveSportEventInteractor.execute(any(), any()));
+          verifyNever(
+            () => mockHealthSyncRepository.saveHealthSyncMetadata(any()),
+          );
+        },
+      );
+
+      test(
+        'two different workouts with identical startTime import as two '
+        'distinct local events with distinct deterministic ids',
+        () async {
+          final start = DateTime(2026, 7, 1, 8, 0, 0);
+          final running = aHealthActivity(
+            healthPlatformId: 'same_second_running',
+            activityType: 'RUNNING',
+            startTime: start,
+            endTime: start.add(const Duration(minutes: 60)),
+            durationMinutes: 60,
+          );
+          final cycling = aHealthActivity(
+            healthPlatformId: 'same_second_cycling',
+            activityType: 'CYCLING',
+            startTime: start,
+            endTime: start.add(const Duration(minutes: 45)),
+            durationMinutes: 45,
+          );
+          stubHappyPath();
+          stubFetch([running, cycling]);
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, hasLength(2));
+          final ids = result.syncedEvents.map((e) => e.eventId).toSet();
+          expect(ids, hasLength(2)); // distinct despite the identical start
+          // Both share the second bucket; the hash suffix disambiguates.
+          expect(
+            result.syncedEvents.map((e) => e.eventId ~/ 1000).toSet(),
+            {start.millisecondsSinceEpoch ~/ 1000},
+          );
+          verify(() => mockSaveSportEventInteractor.execute(any(), any()))
+              .called(2);
+        },
+      );
+
+      test(
+        'an occupied eventId skips the activity with an eventIdCollision '
+        'diagnostic, never overwrites the existing local event, and never '
+        'pays for kcal resolution (guard runs before the kcal block)',
+        () async {
+          // No platform calories: if the guard did NOT run before the kcal
+          // block, this activity would force a getProfile() + METs
+          // enrichment call before being skipped.
+          final activity = aHealthActivity(
+            healthPlatformId: 'colliding_activity',
+            caloriesBurned: null,
+          );
+          final fingerprint = HealthWorkoutFingerprint.fromActivity(activity);
+          final collidingId = idFactory.eventIdFor(fingerprint);
+          stubHappyPath();
+          stubFetch([activity]);
+          when(() => mockLocalStorageRepository
+                  .findSportEventByEventId(collidingId))
+              .thenAnswer((_) async => localEventWith(collidingId));
+
+          final result = await interactor.execute();
+
+          // The ACTIVITY is skipped; the sync itself still succeeds and the
+          // window advances (the platform read was genuine).
+          expect(result.syncedEvents, isEmpty);
+          expect(result.outcome, SyncHealthOutcome.synced);
+          verify(() => mockHealthSyncRepository.setLastSyncTime(any()))
+              .called(1);
+
+          // No local save, no backend sync, no metadata write: the occupying
+          // manual event is untouched and nothing half-imports.
+          verifyNever(() => mockSaveSportEventInteractor.execute(any(), any()));
+          verifyNever(() => mockSportEventsRepository.syncToBackend(any()));
+          verifyNever(
+            () => mockHealthSyncRepository.saveHealthSyncMetadata(any()),
+          );
+          // Collision guard runs before the kcal-resolution block: the
+          // profile lookup and METs enrichment are never reached.
+          verifyNever(() => mockLocalStorageRepository.getProfile());
+          verifyNever(() => mockSportKcalCalculationService.enrichSportEvent(
+                any(),
+                userWeight: any(named: 'userWeight'),
+              ));
+
+          final collisionEvents = diagnostics.events
+              .where((e) => e.type == HealthSyncDiagnosticType.eventIdCollision)
+              .toList();
+          expect(collisionEvents, hasLength(1));
+          expect(collisionEvents.single.domain, HealthSyncDomain.workout);
+          expect(
+            collisionEvents.single.severity,
+            HealthSyncDiagnosticSeverity.warning,
+          );
+          expect(
+            collisionEvents.single.metadata,
+            {'sourceCategory': fingerprint.sourceCategory.name},
+          );
+        },
+      );
+
+      test(
+        'metadata-wiped self-collision: the re-import targets its own old id, '
+        'skips, and creates no duplicate',
+        () async {
+          // The activity was imported before, its metadata was wiped (so
+          // dedupe cannot catch it), but its old event is still local. The
+          // deterministic id reproduces the SAME id, so the guard converts
+          // yesterday's silent self-overwrite into a clean skip.
+          final activity = aHealthActivity(
+            healthPlatformId: 'metadata_wiped_activity',
+          );
+          final selfId = idFactory.eventIdFor(
+            HealthWorkoutFingerprint.fromActivity(activity),
+          );
+          stubHappyPath(); // no metadata — the wipe
+          stubFetch([activity]);
+          when(() => mockLocalStorageRepository.findSportEventByEventId(selfId))
+              .thenAnswer(
+            (_) async => localEventWith(selfId, source: 'apple_health'),
+          );
+
+          final result = await interactor.execute();
+
+          expect(result.syncedEvents, isEmpty);
+          expect(result.outcome, SyncHealthOutcome.synced);
+          verifyNever(() => mockSaveSportEventInteractor.execute(any(), any()));
+          expect(
+            diagnostics.events
+                .where(
+                  (e) => e.type == HealthSyncDiagnosticType.eventIdCollision,
+                )
+                .length,
+            1,
+          );
+        },
+      );
+
+      test('a collision on one activity does not block the rest of the batch',
+          () async {
+        final start1 = DateTime(2026, 7, 1, 8, 0, 0);
+        final start2 = DateTime(2026, 7, 1, 10, 0, 0);
+        final blocked = aHealthActivity(
+          healthPlatformId: 'blocked_activity',
+          startTime: start1,
+          endTime: start1.add(const Duration(hours: 1)),
+        );
+        final imported = aHealthActivity(
+          healthPlatformId: 'imported_activity',
+          startTime: start2,
+          endTime: start2.add(const Duration(hours: 1)),
+        );
+        final blockedId = idFactory.eventIdFor(
+          HealthWorkoutFingerprint.fromActivity(blocked),
+        );
+        stubHappyPath();
+        stubFetch([blocked, imported]);
+        when(() =>
+                mockLocalStorageRepository.findSportEventByEventId(blockedId))
+            .thenAnswer((_) async => localEventWith(blockedId));
+
+        final result = await interactor.execute();
+
+        expect(result.syncedEvents, hasLength(1));
+        expect(
+          result.syncedEvents.single.eventId,
+          idFactory.eventIdFor(HealthWorkoutFingerprint.fromActivity(imported)),
+        );
+        expect(result.outcome, SyncHealthOutcome.synced);
+        verify(() => mockSaveSportEventInteractor.execute(any(), any()))
+            .called(1);
       });
     });
   });
