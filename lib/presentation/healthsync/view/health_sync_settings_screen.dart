@@ -236,6 +236,15 @@ class _HealthSyncSettingsScreenState extends State<HealthSyncSettingsScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              // Honest sync expectations: on open, while in
+                              // use, and manual Sync Now — no background sync.
+                              _buildInfoTile(
+                                context,
+                                icon: Icons.info_outline,
+                                label: AppLocalizations.of(context)!.health_sync_update_hint,
+                              ),
+                              const SizedBox(height: Dimens.height12),
+
                               // Last sync time
                               if (state.lastSyncTime != null) ...[
                                 _buildInfoTile(

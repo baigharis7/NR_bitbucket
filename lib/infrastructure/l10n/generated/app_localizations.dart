@@ -3569,7 +3569,7 @@ abstract class AppLocalizations {
   /// No description provided for @health_sync_description.
   ///
   /// In en, this message translates to:
-  /// **'Connect to automatically import your workouts, steps, and active calories'**
+  /// **'Connect to import your workouts, steps, and active calories from your health apps'**
   String get health_sync_description;
 
   /// No description provided for @health_sync_connect.
@@ -3710,11 +3710,11 @@ abstract class AppLocalizations {
   /// **'Enable Health Data Sync'**
   String get health_sync_enable_link;
 
-  /// No description provided for @health_sync_toggle_description.
+  /// No description provided for @health_sync_update_hint.
   ///
   /// In en, this message translates to:
-  /// **'Enable data synchronization with other health apps'**
-  String get health_sync_toggle_description;
+  /// **'Your health data updates when you open NutreNaissance and while you\'re using it. You can also tap Sync Now at any time.'**
+  String get health_sync_update_hint;
 
   /// No description provided for @health_sync_hc_install_message.
   ///
