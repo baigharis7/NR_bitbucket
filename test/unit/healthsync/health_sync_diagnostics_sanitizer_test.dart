@@ -227,6 +227,25 @@ void main() {
         'exactCount': 2,
         'strongCount': 1,
         'suspectedImportedCount': 3,
+        'tombstoneBlockedCount': 0,
+      });
+    });
+
+    test('carries an explicit tombstoneBlockedCount and no other new keys '
+        '(counts only)', () {
+      final event = HealthSyncDiagnostics.duplicateDiscarded(
+        domain: HealthSyncDomain.workout,
+        exactCount: 0,
+        strongCount: 0,
+        suspectedImportedCount: 0,
+        tombstoneBlockedCount: 4,
+      );
+
+      expect(event.metadata, {
+        'exactCount': 0,
+        'strongCount': 0,
+        'suspectedImportedCount': 0,
+        'tombstoneBlockedCount': 4,
       });
     });
   });

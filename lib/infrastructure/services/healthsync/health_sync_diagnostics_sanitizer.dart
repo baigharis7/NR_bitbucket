@@ -153,14 +153,19 @@ class HealthSyncDiagnostics {
   }
 
   /// Builds a `duplicateDiscarded` event: ONE aggregated event per sync run
-  /// when the workout deduplicator skipped anything (exact identity or
-  /// strong fingerprint) or imported a suspected duplicate. Carries only the
-  /// three counts — never workout IDs, raw source names, or timestamps.
+  /// when the workout deduplicator skipped anything (exact identity, strong
+  /// fingerprint, or a tombstone-attributed block) or imported a suspected
+  /// duplicate. Carries only counts — never workout IDs, raw source names,
+  /// or timestamps. [tombstoneBlockedCount] (D10/T18, additive 2026-07-20)
+  /// counts `skipDeletedTombstone` entries — blocks attributable only to a
+  /// tombstoned metadata row (the user deleted this imported workout); the
+  /// metadata map always includes this key for a stable event shape.
   static HealthSyncDiagnosticEvent duplicateDiscarded({
     required HealthSyncDomain domain,
     required int exactCount,
     required int strongCount,
     required int suspectedImportedCount,
+    int tombstoneBlockedCount = 0,
     HealthSyncPlatform? platform,
   }) {
     return HealthSyncDiagnosticEvent(
@@ -172,6 +177,7 @@ class HealthSyncDiagnostics {
         'exactCount': exactCount,
         'strongCount': strongCount,
         'suspectedImportedCount': suspectedImportedCount,
+        'tombstoneBlockedCount': tombstoneBlockedCount,
       },
     );
   }
