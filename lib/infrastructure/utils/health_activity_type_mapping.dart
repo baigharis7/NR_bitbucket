@@ -58,6 +58,8 @@ class HealthActivityTypeMapping {
     'RUNNING': ['running', 'correr', 'jogging', 'carrera'],
     'WALKING': ['walking', 'caminar', 'walk', 'hiking', 'senderismo'],
     'CYCLING': ['cycling', 'ciclismo', 'bicycle', 'bicicleta', 'bike'],
+    // Android Health Connect delivers BIKING where HealthKit uses CYCLING.
+    'BIKING': ['cycling', 'ciclismo', 'bicycle', 'bicicleta', 'bike'],
     'SWIMMING': ['swimming', 'natación', 'swim', 'nadar'],
 
     // Gym activities

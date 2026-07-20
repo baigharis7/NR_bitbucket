@@ -119,6 +119,18 @@ void main() {
       });
     });
 
+    test('maps Android Health Connect BIKING to Cycling via the keyword '
+        'tier (Android delivers BIKING where HealthKit uses CYCLING)', () {
+      final result = HealthActivityTypeMapping.mapToResult(
+        'BIKING',
+        testSportsInfo,
+      );
+      expect(result.sportId, 4); // Cycling / Ciclismo
+      expect(result.confidence, HealthTypeMappingConfidence.keyword);
+      expect(result.strategy, HealthTypeMappingStrategy.keywordScan);
+      expect(result.platformType, 'BIKING');
+    });
+
     test('resolves strength and HIIT through the curated keyword tier', () {
       final strength = HealthActivityTypeMapping.mapToResult(
         'TRADITIONAL_STRENGTH_TRAINING',
