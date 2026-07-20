@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/sports_info_entity.dart';
@@ -1824,6 +1825,169 @@ void main() {
         verify(() => mockSaveSportEventInteractor.execute(any(), any()))
             .called(1);
       });
+    });
+  });
+
+  group('privacy: no raw health values reach debugPrint/Crashlytics', () {
+    late List<String> capturedLogs;
+    late DebugPrintCallback originalDebugPrint;
+
+    setUp(() {
+      capturedLogs = [];
+      originalDebugPrint = debugPrint;
+      debugPrint = (String? message, {int? wrapWidth}) {
+        if (message != null) capturedLogs.add(message);
+      };
+    });
+
+    tearDown(() {
+      debugPrint = originalDebugPrint;
+    });
+
+    void stubHappyPath() {
+      when(() => mockHealthSyncRepository.isHealthSyncEnabled())
+          .thenAnswer((_) async => true);
+      when(() => mockHealthSyncRepository.hasPermissions())
+          .thenAnswer((_) async => true);
+      when(() => mockHealthSyncRepository.getLastSyncTime())
+          .thenAnswer((_) async => null);
+      when(() => mockPreferencesRepository.getSub()).thenReturn('user123');
+      when(() => mockLocalStorageRepository
+              .getMasterFile(MasterFilesType.sportsInfo))
+          .thenAnswer((_) async => testSportsInfo);
+      when(() => mockHealthSyncRepository.getSyncedMetadata())
+          .thenAnswer((_) async => <HealthSyncMetadata>[]);
+      when(() => mockSaveSportEventInteractor.execute(any(), any()))
+          .thenAnswer((_) async {});
+      when(() => mockSportEventsRepository.syncToBackend(any()))
+          .thenAnswer((_) {});
+      when(() => mockHealthSyncRepository.saveHealthSyncMetadata(any()))
+          .thenAnswer((_) async {});
+      when(() => mockHealthSyncRepository.setLastSyncTime(any()))
+          .thenAnswer((_) async {});
+    }
+
+    void stubFetch(List<HealthActivity> activities) {
+      when(() => mockHealthSyncRepository.fetchActivitiesResult(
+            startDate: any(named: 'startDate'),
+            endDate: any(named: 'endDate'),
+          )).thenAnswer((_) async => successResult(activities));
+    }
+
+    test(
+        'a MET-computed import logs no exact weight, kcal, raw platform id, '
+        'or exact sync-window timestamps', () async {
+      final activity = HealthActivity(
+        healthPlatformId: 'uuid-privacy-sentinel-42',
+        legacyPlatformId: 'legacy-privacy-sentinel',
+        activityType: 'RUNNING',
+        startTime: DateTime(2026, 7, 1, 8, 0),
+        endTime: DateTime(2026, 7, 1, 9, 0),
+        durationMinutes: 60,
+        caloriesBurned: null, // forces the METs-computed kcal path
+        distance: 5000,
+        avgHeartRate: null,
+        sourceName: 'Apple Health',
+        sourceType: 'apple_health',
+      );
+      final profile = UserProfileEntity(
+        userId: 'user123',
+        commonName: 'Test',
+        birthDate: 0,
+        sex: 0,
+        occupationActivityFactor: 1.4,
+        objectives: const [],
+        physicalCharacteristics:
+            PhysicalCharacteristics(height: 175.0, weight: 81.5),
+      );
+      final enriched = SportEventComplete(
+        userId: 'user123',
+        eventId: activity.startTime.millisecondsSinceEpoch,
+        eventDate: DateTime(2026, 7, 1).millisecondsSinceEpoch,
+        sportName: 'Running',
+        source: 'apple_health',
+        eventKcals: 517,
+        info: [],
+      );
+      stubHappyPath();
+      stubFetch([activity]);
+      when(() => mockLocalStorageRepository.getProfile())
+          .thenAnswer((_) async => profile);
+      when(() => mockSportKcalCalculationService.enrichSportEvent(
+            any(),
+            userWeight: any(named: 'userWeight'),
+          )).thenAnswer((_) async => enriched);
+
+      final result = await interactor.execute();
+      expect(result.outcome, SyncHealthOutcome.synced);
+
+      final joined = capturedLogs.join('\n');
+      expect(joined, isNot(contains('81.5'))); // exact user weight
+      expect(joined, isNot(contains('517'))); // computed kcal value
+      expect(joined,
+          isNot(contains('uuid-privacy-sentinel-42'))); // raw platform id
+      expect(joined, isNot(contains('duration='))); // exact duration
+      // The sync window must be logged coarsely, never as exact timestamps.
+      expect(joined, isNot(matches(RegExp(r'Sync window.*\d{4}-\d{2}-\d{2}'))));
+    });
+
+    test('a platform-kcal import logs no exact kcal value', () async {
+      final activity = HealthActivity(
+        healthPlatformId: 'uuid-platform-kcal-privacy',
+        legacyPlatformId: 'legacy-platform-kcal-privacy',
+        activityType: 'RUNNING',
+        startTime: DateTime(2026, 7, 1, 8, 0),
+        endTime: DateTime(2026, 7, 1, 9, 0),
+        durationMinutes: 60,
+        caloriesBurned: 421, // platform value → platform kcal-source path
+        distance: 5000,
+        avgHeartRate: null,
+        sourceName: 'Apple Health',
+        sourceType: 'apple_health',
+      );
+      stubHappyPath();
+      stubFetch([activity]);
+      when(() => mockLocalStorageRepository.getProfile())
+          .thenAnswer((_) async => null);
+
+      final result = await interactor.execute();
+      expect(result.outcome, SyncHealthOutcome.synced);
+
+      final joined = capturedLogs.join('\n');
+      expect(joined, isNot(contains('421'))); // exact platform kcal
+    });
+
+    test('the eventId collision guard logs no raw event id value', () async {
+      final activity = aHealthActivity(
+        healthPlatformId: 'collision-privacy-id',
+        startTime: DateTime(2026, 7, 1, 8, 0, 0),
+        endTime: DateTime(2026, 7, 1, 9, 0, 0),
+      );
+      final expectedEventId = const ImportedWorkoutEventIdFactory()
+          .eventIdFor(HealthWorkoutFingerprint.fromActivity(activity));
+      stubHappyPath();
+      stubFetch([activity]);
+      when(() => mockLocalStorageRepository.getProfile())
+          .thenAnswer((_) async => null);
+      when(() => mockLocalStorageRepository
+              .findSportEventByEventId(expectedEventId))
+          .thenAnswer((_) async => SportEventEntity(
+                userId: 'user123',
+                eventDate: DateTime(2026, 7, 1).millisecondsSinceEpoch,
+                sportName: 'Padel',
+                info: [],
+                eventKcals: 300,
+                eventId: expectedEventId,
+                source: 'manual',
+              ));
+
+      await interactor.execute();
+
+      final joined = capturedLogs.join('\n');
+      // The collision must still be logged, but without the raw id value.
+      expect(joined, contains('collision guard'));
+      expect(joined, isNot(matches(RegExp(r'eventId \d'))));
+      expect(joined, isNot(contains('$expectedEventId')));
     });
   });
 }

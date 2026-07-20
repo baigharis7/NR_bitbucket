@@ -314,7 +314,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       final legacyId = '${workout.sourceName}_${workout.dateFrom.millisecondsSinceEpoch}_${workout.dateTo.millisecondsSinceEpoch}';
       final workoutId = workout.uuid.isNotEmpty ? workout.uuid : legacyId;
 
-      debugPrint('[HealthSync] Workout: $activityType, kcal=$caloriesBurned, dist=$distance, hr=$avgHeartRate, dur=${durationMinutes}m');
+      debugPrint('[HealthSync] Workout mapped: $activityType');
 
       activities.add(HealthActivity(
         healthPlatformId: workoutId,
@@ -630,7 +630,9 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   Future<int?> fetchTodayStepCount(DateTime date) async {
     try {
       final startTime = DateTime(date.year, date.month, date.day);
-      final endTime = DateTime(date.year, date.month, date.day, 23, 59, 59);
+      // Half-open day window [midnight, next-midnight): closes the 1-second
+      // gap before midnight; calendar-day arithmetic keeps it DST-safe.
+      final endTime = DateTime(date.year, date.month, date.day + 1);
 
       final stepsData = await healthPlatformClient.getHealthDataFromTypes(
         types: [HealthDataType.STEPS],
@@ -670,7 +672,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
         ));
       }
 
-      debugPrint('[HealthSync] fetchTodayStepCount: ${result.total} steps');
+      debugPrint('[HealthSync] fetchTodayStepCount completed');
       return result.total;
     } catch (e) {
       // Return null on error — same rationale as fetchTodaySleepHours.

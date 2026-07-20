@@ -130,7 +130,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
         startDate = DateTime.now().subtract(_defaultLookback);
       }
       final endDate = DateTime.now();
-      _log('Sync window: $startDate → $endDate');
+      _log('Sync window: ${endDate.difference(startDate).inHours}h lookback');
 
       // Get user ID
       final userId = preferencesRepository.getSub();
@@ -308,7 +308,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
             fingerprint: entry.fingerprint,
           );
           if (sportEvent != null) {
-            _log('Synced: ${activity.activityType} (${activity.healthPlatformId}) → ${sportEvent.sportName}');
+            _log('Synced: ${activity.activityType} → ${sportEvent.sportName}');
             syncedEvents.add(sportEvent);
           } else {
             _log('Skipped: ${activity.activityType} — not imported');
@@ -415,7 +415,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
       eventId,
     );
     if (existingEvent != null) {
-      _log('Skipped: eventId $eventId already occupied locally '
+      _log('Skipped: eventId already occupied locally '
           'for ${activity.activityType} — collision guard');
       diagnostics.add(HealthSyncDiagnostics.eventIdCollision(
         domain: HealthSyncDomain.workout,
@@ -430,7 +430,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
     int effectiveKcal;
     if (activity.caloriesBurned != null) {
       effectiveKcal = activity.caloriesBurned!.round();
-      _log('kcal source: platform ($effectiveKcal kcal) for ${activity.activityType}');
+      _log('kcal source: platform for ${activity.activityType}');
     } else if (activity.durationMinutes > 0) {
       final simple = mapHealthActivityToSportEventSimple(
         activity: activity,
@@ -445,8 +445,7 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
         userWeight: userWeight,
       );
       effectiveKcal = enriched.eventKcals ?? 0;
-      _log('kcal source: METs-computed ($effectiveKcal kcal, weight=${userWeight}kg, '
-          'duration=${activity.durationMinutes}m) for ${activity.activityType}');
+      _log('kcal source: METs-computed for ${activity.activityType}');
     } else {
       effectiveKcal = 0;
       _log('kcal source: zero (no platform value, no duration) for ${activity.activityType}');
