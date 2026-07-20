@@ -379,11 +379,6 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   }
 
   @override
-  Future<void> deleteSyncMetadataBySportEventId(int sportEventId) async {
-    await localStorageRepository.deleteHealthSyncMetadataBySportEventId(sportEventId);
-  }
-
-  @override
   Future<void> tombstoneSyncMetadataBySportEventId(int sportEventId) async {
     await localStorageRepository.tombstoneHealthSyncMetadataBySportEventId(sportEventId);
   }

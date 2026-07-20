@@ -73,10 +73,10 @@ class SportItemsBloc extends Bloc<SportItemsEvents, SportItemsState> {
         await deleteSportEventInteractor.execute(event.sportEventComplete.userId, event.sportEventComplete.eventId);
         try {
           await removeSportEventInteractor.execute(event.sportEventComplete);
-          // Clean up health sync metadata so the activity can be re-synced
+          // Tombstone the sync metadata so the deleted workout is not re-imported (D10)
           final source = event.sportEventComplete.source;
           if (source != null && source != 'manual') {
-            await healthSyncRepository?.deleteSyncMetadataBySportEventId(event.sportEventComplete.eventId);
+            await healthSyncRepository?.tombstoneSyncMetadataBySportEventId(event.sportEventComplete.eventId);
           }
           DashboardEventBus.instance.notify(DataChangedCategory.sport);
           state.sportEvents = await getTodaySportsInteractor.execute(dateTime: state.dateTime);

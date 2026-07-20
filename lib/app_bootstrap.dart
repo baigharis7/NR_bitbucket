@@ -1036,6 +1036,7 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
         deleteFoodEventInteractor: deleteFoodEventInteractor,
         removeSportEventInteractor: removeSportEventInteractor,
         deleteSportEventInteractor: deleteSportEventInteractor,
+        healthSyncRepository: healthSyncRepository,
       );
 
       final favoriteFoodsBloc = FavoriteFoodsBloc(

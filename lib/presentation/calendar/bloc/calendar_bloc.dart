@@ -13,6 +13,7 @@ import 'package:nutrenaissance_flutter/domain/models/foodevents/food_event_compl
 import 'package:nutrenaissance_flutter/domain/models/liquidevents/liquid_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/sportevents/sport_event_complete.dart';
 import 'package:nutrenaissance_flutter/domain/models/watervents/water_event_master.dart';
+import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/extensions/extensions.dart';
 import 'package:nutrenaissance_flutter/infrastructure/helpers/date_time_helper.dart';
@@ -39,6 +40,7 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
   final DeleteFoodEventInteractor deleteFoodEventInteractor;
   final RemoveSportEventInteractor removeSportEventInteractor;
   final DeleteSportEventInteractor deleteSportEventInteractor;
+  final HealthSyncRepository? healthSyncRepository;
   late final StreamSubscription<DataChangedCategory> _eventBusSubscription;
 
   CalendarBloc({
@@ -48,6 +50,7 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
     required this.deleteFoodEventInteractor,
     required this.removeSportEventInteractor,
     required this.deleteSportEventInteractor,
+    this.healthSyncRepository,
   }) : super(CalendarState(
     isLoading: false,
     allCalendarEvents: CalendarEvents.empty(),
@@ -107,6 +110,10 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
 
         try {
           await removeSportEventInteractor.execute(event.sportEventComplete);
+          final source = event.sportEventComplete.source;
+          if (source != null && source != 'manual') {
+            await healthSyncRepository?.tombstoneSyncMetadataBySportEventId(event.sportEventComplete.eventId);
+          }
           DashboardEventBus.instance.notify(DataChangedCategory.sport);
           add(RefreshEventsAction(selectedDay: DateTime.fromMillisecondsSinceEpoch(event.sportEventComplete.eventDate)));
           event.onFinish.call();

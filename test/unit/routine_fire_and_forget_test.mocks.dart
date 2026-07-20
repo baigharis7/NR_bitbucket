@@ -796,6 +796,17 @@ class MockLocalStorageRepository extends _i1.Mock
       ) as _i7.Future<void>);
 
   @override
+  _i7.Future<_i24.SportEventEntity?> findSportEventByEventId(int? eventId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #findSportEventByEventId,
+          [eventId],
+        ),
+        returnValue: _i7.Future<_i24.SportEventEntity?>.value(),
+        returnValueForMissingStub: _i7.Future<_i24.SportEventEntity?>.value(),
+      ) as _i7.Future<_i24.SportEventEntity?>);
+
+  @override
   _i7.Future<List<dynamic>> getFoodEventsOfToday({DateTime? dateTime}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1675,10 +1686,11 @@ class MockLocalStorageRepository extends _i1.Mock
       ) as _i7.Future<bool>);
 
   @override
-  _i7.Future<void> deleteHealthSyncMetadataBySportEventId(int? sportEventId) =>
+  _i7.Future<void> tombstoneHealthSyncMetadataBySportEventId(
+          int? sportEventId) =>
       (super.noSuchMethod(
         Invocation.method(
-          #deleteHealthSyncMetadataBySportEventId,
+          #tombstoneHealthSyncMetadataBySportEventId,
           [sportEventId],
         ),
         returnValue: _i7.Future<void>.value(),
