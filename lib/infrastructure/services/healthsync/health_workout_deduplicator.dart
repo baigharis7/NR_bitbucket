@@ -134,11 +134,12 @@ class HealthWorkoutDeduplicator {
         endMs: fingerprint.endTime.millisecondsSinceEpoch,
       );
 
-      // Decision precedence (locked, D10/T18): exact(live) -> strong(live or
-      // accepted) -> exact(tombstoned) collapses into the same label as
-      // strong(tombstoned) below — both are skipDeletedTombstone — but exact
-      // identity is still decided before strong, matching the pre-tombstone
-      // ordering byte-for-byte when nothing is tombstoned.
+      // Decision precedence (locked, D10/T18): exact(live) ->
+      // exact(tombstoned) -> strong(live or accepted) -> strong(tombstoned)
+      // -> suspected(any window) -> import. The exact tier stays fully ahead
+      // of the strong tier (as pre-tombstone); tombstoned matches in either
+      // tier get the same skipDeletedTombstone label. With zero tombstoned
+      // rows this reduces byte-for-byte to the pre-tombstone ordering.
       final DedupeDecision decision;
       if (liveKeys.contains(activity.healthPlatformId) ||
           liveKeys.contains(activity.legacyPlatformId)) {
