@@ -245,7 +245,7 @@ void main() {
     );
 
     blocTest<JournalSportBloc, JournalSportState>(
-      'DeleteSportEventAction deletes remotely and locally on success for a health-synced event',
+      'DeleteSportEventAction sends eventId to the remote delete for a non-manual source',
       build: () {
         when(mockGetUserId.execute()).thenReturn('user123');
         when(mockDeleteSportEvent.execute(any, any)).thenAnswer((_) async {});
