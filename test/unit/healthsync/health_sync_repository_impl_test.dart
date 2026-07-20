@@ -980,6 +980,20 @@ void main() {
     );
   });
 
+  group('tombstoneSyncMetadataBySportEventId', () {
+    test('delegates to LocalStorageRepository', () async {
+      when(
+        () => localStorage.tombstoneHealthSyncMetadataBySportEventId(any()),
+      ).thenAnswer((_) async {});
+
+      await build().tombstoneSyncMetadataBySportEventId(42);
+
+      verify(
+        () => localStorage.tombstoneHealthSyncMetadataBySportEventId(42),
+      ).called(1);
+    });
+  });
+
   group('fetchTodaySleepHours', () {
     test('sums non-overlapping sleep sessions', () async {
       final date = DateTime(2026, 7, 1);

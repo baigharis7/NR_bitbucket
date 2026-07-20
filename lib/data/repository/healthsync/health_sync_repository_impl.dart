@@ -384,6 +384,11 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   }
 
   @override
+  Future<void> tombstoneSyncMetadataBySportEventId(int sportEventId) async {
+    await localStorageRepository.tombstoneHealthSyncMetadataBySportEventId(sportEventId);
+  }
+
+  @override
   Future<void> setHealthSyncEnabled(bool enabled) async {
     await preferencesRepository.setBoolPref(PrefsKeys.healthSyncEnabledV2, enabled);
     CrashlyticsService.instance.log('HealthSync pref write: enabled=$enabled');

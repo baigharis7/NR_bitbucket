@@ -50,6 +50,11 @@ abstract class HealthSyncRepository {
   /// Delete sync metadata for a sport event so it can be re-synced.
   Future<void> deleteSyncMetadataBySportEventId(int sportEventId);
 
+  /// Tombstone sync metadata for a sport event: stamps `deletedAt` on
+  /// matching rows instead of removing them, so a later re-import of the
+  /// same health platform activity is recognized and blocked.
+  Future<void> tombstoneSyncMetadataBySportEventId(int sportEventId);
+
   /// Enable or disable health data sync.
   Future<void> setHealthSyncEnabled(bool enabled);
 
