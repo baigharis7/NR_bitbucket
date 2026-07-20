@@ -1,8 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/toggle_health_sync_interactor_impl.dart';
+import 'package:workmanager_platform_interface/workmanager_platform_interface.dart';
 
 import '../../mocks/health_sync_mocks.dart';
+import '../../support/healthsync/recording_workmanager_platform.dart';
 
 /// T6 (Option A): the toggle interactor owns only availability/permission
 /// checks and the enabled pref — it must not schedule any background work.
@@ -93,5 +95,29 @@ void main() {
     final result = await interactor.execute(true);
 
     expect(result, isFalse);
+  });
+
+  test('neither enable nor disable touches WorkManager (Option A guard)',
+      () async {
+    // Observe the platform seam directly so even a reintroduced
+    // fire-and-forget call with a swallowed error would be caught.
+    final workmanager = RecordingWorkmanagerPlatform();
+    final previousPlatform = WorkmanagerPlatform.instance;
+    WorkmanagerPlatform.instance = workmanager;
+    addTearDown(() => WorkmanagerPlatform.instance = previousPlatform);
+
+    when(() => repository.isHealthSyncAvailable())
+        .thenAnswer((_) async => true);
+    when(() => repository.hasPermissions()).thenAnswer((_) async => true);
+    when(() => repository.setHealthSyncEnabled(any()))
+        .thenAnswer((_) async {});
+
+    await interactor.execute(true);
+    await interactor.execute(false);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(workmanager.calls, isEmpty,
+        reason: 'Option A: the toggle owns prefs/permissions only — '
+            'no background scheduling or cancellation');
   });
 }
