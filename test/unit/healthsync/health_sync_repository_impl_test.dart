@@ -928,6 +928,33 @@ void main() {
     );
 
     test(
+      'saveHealthSyncMetadata carries a non-null deletedAt through to the entity',
+      () async {
+        when(
+          () => localStorage.saveHealthSyncMetadata(any()),
+        ).thenAnswer((_) async {});
+
+        final deletedAt = DateTime(2026, 7, 19, 9, 30);
+        await build().saveHealthSyncMetadata(
+          HealthSyncMetadata(
+            healthPlatformId: 'uuid_2b',
+            sportEventId: 22,
+            syncedAt: DateTime(2026, 7, 18, 10, 0),
+            sourceType: 'health_connect',
+            deletedAt: deletedAt,
+          ),
+        );
+
+        final entity =
+            verify(
+                  () => localStorage.saveHealthSyncMetadata(captureAny()),
+                ).captured.single
+                as HealthSyncMetadataEntity;
+        expect(entity.deletedAtMs, deletedAt.millisecondsSinceEpoch);
+      },
+    );
+
+    test(
       'getSyncedMetadata maps a tombstoned entity to isDeleted true',
       () async {
         when(() => localStorage.getHealthSyncMetadata()).thenAnswer(
