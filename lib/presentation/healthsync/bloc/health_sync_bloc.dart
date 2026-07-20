@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrenaissance_flutter/data/local/models/masterfiles/master_files_type.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/check_health_sync_status_interactor.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/health_sync_background_service.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/request_health_permissions_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/sync_health_activities_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/toggle_health_sync_interactor.dart';
@@ -136,12 +135,6 @@ class HealthSyncBloc extends Bloc<HealthSyncEvent, HealthSyncState> {
       // handle permission failures gracefully by returning empty results.
       if (isEnabled && isAvailable) {
         _startPeriodicSync();
-        // Re-register the WorkManager background task in case it was lost
-        // after an app update or device restart.  Fire-and-forget — failure
-        // here (e.g. missing platform plugin) should not block init.
-        HealthSyncBackgroundService.registerPeriodicSync().catchError((e) {
-          _hsLog('HealthSync init: background service registration failed: $e');
-        });
       } else {
         _stopPeriodicSync();
       }

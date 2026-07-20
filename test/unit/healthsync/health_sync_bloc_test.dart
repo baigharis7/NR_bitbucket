@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,8 +9,10 @@ import 'package:nutrenaissance_flutter/domain/models/healthsync/sync_health_acti
 import 'package:nutrenaissance_flutter/infrastructure/errors/error_types.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/dashboard_event_bus.dart';
 import 'package:nutrenaissance_flutter/presentation/healthsync/bloc/health_sync_bloc.dart';
+import 'package:workmanager_platform_interface/workmanager_platform_interface.dart';
 
 import '../../mocks/health_sync_mocks.dart';
+import '../../support/healthsync/recording_workmanager_platform.dart';
 
 void main() {
   late MockHealthSyncRepository mockHealthSyncRepository;
@@ -133,6 +133,47 @@ void main() {
               .having((s) => s.lastSyncTime, 'lastSyncTime', isNotNull),
         ],
       );
+
+      test(
+          'schedules no WorkManager work when initialization runs with sync '
+          'enabled (Option A guard)', () async {
+        // A recording platform (not the throwing placeholder) is essential:
+        // the removed registration was fire-and-forget with a swallowed
+        // error, so a reintroduced call would never fail a test — it can
+        // only be caught by observing the platform seam directly.
+        final workmanager = RecordingWorkmanagerPlatform();
+        final previousPlatform = WorkmanagerPlatform.instance;
+        WorkmanagerPlatform.instance = workmanager;
+        addTearDown(() => WorkmanagerPlatform.instance = previousPlatform);
+
+        when(() => mockHealthSyncRepository.isHealthSyncAvailable())
+            .thenAnswer((_) async => true);
+        when(() => mockHealthSyncRepository.isHealthSyncEnabled())
+            .thenAnswer((_) async => true);
+        when(() => mockHealthSyncRepository.hasPermissions())
+            .thenAnswer((_) async => true);
+        when(() => mockHealthSyncRepository.getLastSyncTime())
+            .thenAnswer((_) async => DateTime(2024, 1, 15, 10, 30));
+        stubSavedData();
+        stubSleepStepData();
+        stubEstimatedSteps();
+
+        final bloc = buildBloc();
+        await expectLater(
+          bloc.stream,
+          emitsThrough(isA<HealthSyncState>()
+              .having((s) => s.isLoading, 'isLoading', false)
+              .having((s) => s.isSyncEnabled, 'isSyncEnabled', true)),
+        );
+        // Drain pending microtasks so any fire-and-forget scheduling call
+        // would have reached the platform before the assertion.
+        await Future<void>.delayed(Duration.zero);
+
+        expect(workmanager.registrationCalls, isEmpty,
+            reason: 'Option A: nothing may schedule closed-app background '
+                'sync from bloc initialization');
+        await bloc.close();
+      });
 
       blocTest<HealthSyncBloc, HealthSyncState>(
         'emits error state when initialization fails',

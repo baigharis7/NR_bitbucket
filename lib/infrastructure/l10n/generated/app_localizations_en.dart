@@ -1927,7 +1927,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get health_sync_description =>
-      'Connect to automatically import your workouts, steps, and active calories';
+      'Connect to import your workouts, steps, and active calories from your health apps';
 
   @override
   String get health_sync_connect => 'Connect Now';
@@ -2006,8 +2006,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get health_sync_enable_link => 'Enable Health Data Sync';
 
   @override
-  String get health_sync_toggle_description =>
-      'Enable data synchronization with other health apps';
+  String get health_sync_update_hint =>
+      'Your health data updates when you open NutreNaissance and while you\'re using it. You can also tap Sync Now at any time.';
 
   @override
   String get health_sync_hc_install_message =>

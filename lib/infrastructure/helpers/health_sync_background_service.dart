@@ -1,77 +1,43 @@
 import 'package:workmanager/workmanager.dart';
 
-/// Background service for periodic health data sync using WorkManager.
-/// Handles registration and cancellation of background sync tasks.
+/// Decommissioned background health sync (Option A decision, 2026-07-20).
+///
+/// The app deliberately schedules NO closed-app background sync: earlier
+/// builds registered an hourly WorkManager task whose dispatcher was a
+/// no-op TODO, creating a false sense of background reliability. Health
+/// data actually syncs in the foreground only — on app open, via the
+/// periodic in-app refresh, and on manual Sync Now — and the product copy
+/// now says exactly that.
+///
+/// Everything left in this file exists solely to clean up after those
+/// older builds:
+/// - [decommissionLegacyTasks] cancels the legacy hourly task once at
+///   startup so upgraded installs stop waking the app for nothing.
+/// - [callbackDispatcher] stays as a registered entry point so a stale
+///   pre-upgrade task that fires before cancellation completes harmlessly
+///   instead of crashing the background isolate.
 class HealthSyncBackgroundService {
   static const String healthSyncTaskName = 'com.nutrenaissance.healthSync';
-  static const String healthSyncTaskTag = 'healthSyncTask';
 
-  /// Initialize WorkManager. Should be called from main.dart.
-  static Future<void> initialize() async {
-    await Workmanager().initialize(
-      callbackDispatcher,
-      isInDebugMode: false,
-    );
-  }
-
-  /// Register a periodic background sync task (~1 hour frequency).
-  /// Called when health sync is enabled.
-  static Future<void> registerPeriodicSync() async {
-    await Workmanager().registerPeriodicTask(
-      healthSyncTaskName,
-      healthSyncTaskTag,
-      frequency: const Duration(hours: 1),
-      constraints: Constraints(
-        networkType: NetworkType.connected,
-        requiresBatteryNotLow: true,
-      ),
-      existingWorkPolicy: ExistingPeriodicWorkPolicy.keep,
-      backoffPolicy: BackoffPolicy.linear,
-      backoffPolicyDelay: const Duration(minutes: 10),
-    );
-  }
-
-  /// Cancel the periodic background sync task.
-  /// Called when health sync is disabled.
-  static Future<void> cancelPeriodicSync() async {
+  /// Cancels the periodic task that older builds registered. WorkManager is
+  /// initialized first so the dispatcher handle is valid for any stale task
+  /// that fires in the meantime. Called once from app bootstrap.
+  static Future<void> decommissionLegacyTasks() async {
+    await Workmanager().initialize(callbackDispatcher);
     await Workmanager().cancelByUniqueName(healthSyncTaskName);
-  }
-
-  /// Cancel all registered tasks (useful for cleanup).
-  static Future<void> cancelAllTasks() async {
-    await Workmanager().cancelAll();
   }
 }
 
-/// Top-level callback function for WorkManager.
-/// This runs in an isolate, so it must re-initialize all dependencies.
+/// Handles a background task invocation by succeeding without touching any
+/// data. Current builds never schedule a task, so this only runs when a
+/// stale pre-upgrade task fires before [HealthSyncBackgroundService
+/// .decommissionLegacyTasks] has cancelled it.
+Future<bool> handleDecommissionedBackgroundTask(String task) async => true;
+
+/// Top-level callback for WorkManager. Runs in a background isolate.
 @pragma('vm:entry-point')
 void callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) async {
-    if (task == HealthSyncBackgroundService.healthSyncTaskTag) {
-      try {
-        // Note: Background sync requires re-initializing dependencies in the isolate.
-        // This is a simplified implementation. In production, you'd need to:
-        // 1. Initialize Hive in the isolate
-        // 2. Create all necessary repositories
-        // 3. Run the sync logic
-        //
-        // For now, we'll skip the actual sync in background and rely on
-        // foreground sync when the app is opened. This is a common pattern
-        // for Flutter apps where background execution has limitations.
-
-        // TODO: Implement full background sync with isolate-safe dependencies
-        // This requires careful handling of:
-        // - Hive initialization in isolate
-        // - Health package initialization
-        // - API calls with token refresh
-        // - Error handling and retry logic
-
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }
-    return false;
-  });
+  Workmanager().executeTask(
+    (task, inputData) => handleDecommissionedBackgroundTask(task),
+  );
 }

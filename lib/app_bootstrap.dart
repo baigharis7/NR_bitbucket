@@ -1335,9 +1335,10 @@ class _AppBootstrapState extends State<AppBootstrap> with WidgetsBindingObserver
         getMasterFileInteractor: getMasterFileInteractor,
       );
 
-      // Initialize WorkManager for background health sync (non-blocking)
-      HealthSyncBackgroundService.initialize().catchError((e) {
-        debugPrint('WorkManager initialization failed: $e');
+      // No closed-app background sync exists (Option A) — cancel the legacy
+      // hourly WorkManager task older builds registered (non-blocking).
+      HealthSyncBackgroundService.decommissionLegacyTasks().catchError((e) {
+        debugPrint('WorkManager legacy-task cleanup failed: $e');
       });
 
       // --- Build the full widget tree ---
