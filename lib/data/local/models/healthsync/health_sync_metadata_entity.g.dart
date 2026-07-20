@@ -26,13 +26,14 @@ class HealthSyncMetadataEntityAdapter
       startTimeMs: fields[5] as int?,
       endTimeMs: fields[6] as int?,
       sourceCategory: fields[7] as String?,
+      deletedAtMs: fields[8] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, HealthSyncMetadataEntity obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.healthPlatformId)
       ..writeByte(1)
@@ -48,7 +49,9 @@ class HealthSyncMetadataEntityAdapter
       ..writeByte(6)
       ..write(obj.endTimeMs)
       ..writeByte(7)
-      ..write(obj.sourceCategory);
+      ..write(obj.sourceCategory)
+      ..writeByte(8)
+      ..write(obj.deletedAtMs);
   }
 
   @override
@@ -77,6 +80,7 @@ HealthSyncMetadataEntity _$HealthSyncMetadataEntityFromJson(
       startTimeMs: (json['startTimeMs'] as num?)?.toInt(),
       endTimeMs: (json['endTimeMs'] as num?)?.toInt(),
       sourceCategory: json['sourceCategory'] as String?,
+      deletedAtMs: (json['deletedAtMs'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$HealthSyncMetadataEntityToJson(
@@ -90,4 +94,5 @@ Map<String, dynamic> _$HealthSyncMetadataEntityToJson(
       'startTimeMs': instance.startTimeMs,
       'endTimeMs': instance.endTimeMs,
       'sourceCategory': instance.sourceCategory,
+      'deletedAtMs': instance.deletedAtMs,
     };

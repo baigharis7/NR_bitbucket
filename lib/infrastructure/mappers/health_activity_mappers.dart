@@ -96,6 +96,7 @@ HealthSyncMetadataEntity mapToHealthSyncMetadataEntity(HealthSyncMetadata metada
     startTimeMs: metadata.startTimeMs,
     endTimeMs: metadata.endTimeMs,
     sourceCategory: metadata.sourceCategory,
+    deletedAtMs: metadata.deletedAt?.millisecondsSinceEpoch,
   );
 }
 
@@ -110,5 +111,8 @@ HealthSyncMetadata mapToHealthSyncMetadata(HealthSyncMetadataEntity entity) {
     startTimeMs: entity.startTimeMs,
     endTimeMs: entity.endTimeMs,
     sourceCategory: entity.sourceCategory,
+    deletedAt: entity.deletedAtMs == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(entity.deletedAtMs!),
   );
 }

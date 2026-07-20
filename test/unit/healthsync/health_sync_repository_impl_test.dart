@@ -901,6 +901,56 @@ void main() {
         expect(metadata[1].sourceCategory, isNull);
       },
     );
+
+    test(
+      'saveHealthSyncMetadata writes deletedAtMs null for a fresh import',
+      () async {
+        when(
+          () => localStorage.saveHealthSyncMetadata(any()),
+        ).thenAnswer((_) async {});
+
+        await build().saveHealthSyncMetadata(
+          HealthSyncMetadata(
+            healthPlatformId: 'uuid_2',
+            sportEventId: 21,
+            syncedAt: DateTime(2026, 7, 18, 10, 0),
+            sourceType: 'health_connect',
+          ),
+        );
+
+        final entity =
+            verify(
+                  () => localStorage.saveHealthSyncMetadata(captureAny()),
+                ).captured.single
+                as HealthSyncMetadataEntity;
+        expect(entity.deletedAtMs, isNull);
+      },
+    );
+
+    test(
+      'getSyncedMetadata maps a tombstoned entity to isDeleted true',
+      () async {
+        when(() => localStorage.getHealthSyncMetadata()).thenAnswer(
+          (_) async => [
+            HealthSyncMetadataEntity(
+              healthPlatformId: 'uuid_3',
+              sportEventId: 31,
+              syncedAt: 1752800000000,
+              sourceType: 'apple_health',
+              deletedAtMs: 1752900000000,
+            ),
+          ],
+        );
+
+        final metadata = await build().getSyncedMetadata();
+
+        expect(metadata.single.isDeleted, isTrue);
+        expect(
+          metadata.single.deletedAt,
+          DateTime.fromMillisecondsSinceEpoch(1752900000000),
+        );
+      },
+    );
   });
 
   group('fetchTodaySleepHours', () {
