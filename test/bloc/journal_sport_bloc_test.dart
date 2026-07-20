@@ -239,7 +239,29 @@ void main() {
         isA<JournalSportState>().having((s) => s.isLoading, 'isLoading', false),
       ],
       verify: (bloc) {
-        verify(mockDeleteSportEvent.execute('user123', 1000)).called(1);
+        verify(mockDeleteSportEvent.execute('user123', 1)).called(1);
+        verify(mockRemoveSportEvent.execute(any)).called(1);
+      },
+    );
+
+    blocTest<JournalSportBloc, JournalSportState>(
+      'DeleteSportEventAction deletes remotely and locally on success for a health-synced event',
+      build: () {
+        when(mockGetUserId.execute()).thenReturn('user123');
+        when(mockDeleteSportEvent.execute(any, any)).thenAnswer((_) async {});
+        when(mockRemoveSportEvent.execute(any)).thenAnswer((_) async {});
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(DeleteSportEventAction(
+        sportEventComplete: SportEventComplete(userId: 'user123', eventId: 42, eventDate: 86400000, info: [], source: 'health_connect'),
+        onFinish: () {},
+      )),
+      expect: () => [
+        isA<JournalSportState>().having((s) => s.isLoading, 'isLoading', true),
+        isA<JournalSportState>().having((s) => s.isLoading, 'isLoading', false),
+      ],
+      verify: (bloc) {
+        verify(mockDeleteSportEvent.execute('user123', 42)).called(1);
         verify(mockRemoveSportEvent.execute(any)).called(1);
       },
     );

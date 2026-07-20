@@ -169,7 +169,7 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
 
       final userId = getUserIdInteractor.execute();
       try {
-        await deleteSportEventInteractor.execute(userId, event.sportEventComplete.eventDate);
+        await deleteSportEventInteractor.execute(userId, event.sportEventComplete.eventId);
           try {
             final removeFromLocalResult = await removeSportEventInteractor.execute(event.sportEventComplete);
               // Clean up health sync metadata so the activity can be re-synced
