@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/healthsync/toggle_health_sync_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
-import 'package:nutrenaissance_flutter/infrastructure/helpers/health_sync_background_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 
 class ToggleHealthSyncInteractorImpl implements ToggleHealthSyncInteractor {
@@ -31,10 +30,8 @@ class ToggleHealthSyncInteractorImpl implements ToggleHealthSyncInteractor {
         }
 
         await healthSyncRepository.setHealthSyncEnabled(true);
-        await HealthSyncBackgroundService.registerPeriodicSync();
       } else {
         await healthSyncRepository.setHealthSyncEnabled(false);
-        await HealthSyncBackgroundService.cancelPeriodicSync();
       }
 
       return true;
