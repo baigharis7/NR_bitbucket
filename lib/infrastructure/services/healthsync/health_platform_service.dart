@@ -29,6 +29,14 @@ abstract class HealthPlatformService {
   /// Source type recorded on imported activities.
   String get importedSourceType;
 
+  /// Whether [WorkoutHealthValue.totalEnergyBurned]/[totalDistance] are true
+  /// per-session totals. iOS: yes — genuine HKWorkout totals. Android: no —
+  /// the health plugin computes them by window-summing TotalCaloriesBurned /
+  /// Distance records over the session window, so overlapping workouts
+  /// cross-contaminate; they are only safe when the workout overlaps no
+  /// other fetched workout.
+  bool get workoutTotalsAreSessionScoped;
+
   /// Whether health sync is available on this device. May throw; callers
   /// preserve the current catch-to-false behavior.
   Future<bool> isHealthSyncAvailable();
@@ -104,6 +112,10 @@ class HealthPlatformServiceImpl implements HealthPlatformService {
   String get importedSourceType => _hostPlatform == HealthHostPlatform.ios
       ? 'apple_health'
       : 'health_connect';
+
+  @override
+  bool get workoutTotalsAreSessionScoped =>
+      _hostPlatform == HealthHostPlatform.ios;
 
   @override
   Future<bool> isHealthSyncAvailable() async {

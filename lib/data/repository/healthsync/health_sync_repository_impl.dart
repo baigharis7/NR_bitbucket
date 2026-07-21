@@ -23,6 +23,7 @@ import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_step_aggregator.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sanitizer.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_sync_diagnostics_sink.dart';
+import 'package:nutrenaissance_flutter/infrastructure/services/healthsync/health_workout_record_attribution.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/crashlytics_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/utils/prefs_keys.dart';
 
@@ -244,65 +245,100 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     List<HealthDataPoint> distanceData,
     List<HealthDataPoint> heartRateData,
   ) {
+    final workoutPoints =
+        workouts.where((w) => w.type == HealthDataType.WORKOUT).toList();
+    final windows = [
+      for (final w in workoutPoints)
+        WorkoutAttributionWindow(
+          start: w.dateFrom,
+          end: w.dateTo,
+          sourceName: w.sourceName,
+        ),
+    ];
+
+    // T20: each enrichment record is attributed to at most ONE workout
+    // (exclusive best-fit) instead of being summed into every overlapping
+    // window. For a workout that overlaps no other workout this yields
+    // exactly the same sums as the previous per-window loops.
+    final energySums = List<double?>.filled(windows.length, null);
+    for (final energy in energyData) {
+      final value = energy.value;
+      if (value is! NumericHealthValue) continue;
+      final i = HealthWorkoutRecordAttribution.attributeIndex(
+        recordStart: energy.dateFrom,
+        recordEnd: energy.dateTo,
+        recordSourceName: energy.sourceName,
+        windows: windows,
+      );
+      if (i == null) continue;
+      energySums[i] = (energySums[i] ?? 0) + value.numericValue;
+    }
+
+    final distanceSums = List<double?>.filled(windows.length, null);
+    for (final dist in distanceData) {
+      final value = dist.value;
+      if (value is! NumericHealthValue) continue;
+      final i = HealthWorkoutRecordAttribution.attributeIndex(
+        recordStart: dist.dateFrom,
+        recordEnd: dist.dateTo,
+        recordSourceName: dist.sourceName,
+        windows: windows,
+      );
+      if (i == null) continue;
+      distanceSums[i] = (distanceSums[i] ?? 0) + value.numericValue;
+    }
+
+    final heartRatesByWindow =
+        List.generate(windows.length, (_) => <double>[], growable: false);
+    for (final hr in heartRateData) {
+      final value = hr.value;
+      if (value is! NumericHealthValue) continue;
+      final i = HealthWorkoutRecordAttribution.attributeIndex(
+        recordStart: hr.dateFrom,
+        recordEnd: hr.dateTo,
+        recordSourceName: hr.sourceName,
+        windows: windows,
+      );
+      if (i == null) continue;
+      heartRatesByWindow[i].add(value.numericValue.toDouble());
+    }
+
     final activities = <HealthActivity>[];
-
-    for (final workout in workouts) {
-      if (workout.type != HealthDataType.WORKOUT) continue;
-
+    for (var i = 0; i < workoutPoints.length; i++) {
+      final workout = workoutPoints[i];
       final startTime = workout.dateFrom;
       final endTime = workout.dateTo;
       final durationMinutes = endTime.difference(startTime).inMinutes;
 
-      // Find associated energy burned during this workout window
-      double? caloriesBurned;
-      for (final energy in energyData) {
-        if (_isOverlapping(energy.dateFrom, energy.dateTo, startTime, endTime)) {
-          final value = energy.value;
-          if (value is NumericHealthValue) {
-            caloriesBurned = (caloriesBurned ?? 0) + value.numericValue;
-          }
-        }
-      }
+      double? caloriesBurned = energySums[i];
+      double? distance = distanceSums[i];
 
-      // Find associated distance during this workout window
-      double? distance;
-      for (final dist in distanceData) {
-        if (_isOverlapping(dist.dateFrom, dist.dateTo, startTime, endTime)) {
-          final value = dist.value;
-          if (value is NumericHealthValue) {
-            distance = (distance ?? 0) + value.numericValue;
-          }
-        }
-      }
-
-      // Calculate average heart rate during this workout window
       int? avgHeartRate;
-      final heartRates = <double>[];
-      for (final hr in heartRateData) {
-        if (_isOverlapping(hr.dateFrom, hr.dateTo, startTime, endTime)) {
-          final value = hr.value;
-          if (value is NumericHealthValue) {
-            heartRates.add(value.numericValue.toDouble());
-          }
-        }
-      }
+      final heartRates = heartRatesByWindow[i];
       if (heartRates.isNotEmpty) {
-        avgHeartRate = (heartRates.reduce((a, b) => a + b) / heartRates.length).round();
+        avgHeartRate =
+            (heartRates.reduce((a, b) => a + b) / heartRates.length).round();
       }
 
-      // Get workout type name and built-in energy/distance from the workout record itself
+      // Built-in totals fallback. On iOS these are genuine per-session
+      // HKWorkout totals; on Android the plugin fabricates them by
+      // window-summing records over the session window, so they are only
+      // safe when this workout overlaps no other fetched workout (T20).
       final workoutValue = workout.value;
       String activityType = 'WORKOUT';
       if (workoutValue is WorkoutHealthValue) {
         activityType = workoutValue.workoutActivityType.name;
-
-        // Use workout's built-in energy if separate energy data wasn't found
-        if (caloriesBurned == null && workoutValue.totalEnergyBurned != null) {
+        final builtInTotalsTrusted =
+            healthPlatformService.workoutTotalsAreSessionScoped ||
+                !_overlapsAnotherWorkout(windows, i);
+        if (caloriesBurned == null &&
+            workoutValue.totalEnergyBurned != null &&
+            builtInTotalsTrusted) {
           caloriesBurned = workoutValue.totalEnergyBurned!.toDouble();
         }
-
-        // Use workout's built-in distance if separate distance data wasn't found
-        if (distance == null && workoutValue.totalDistance != null) {
+        if (distance == null &&
+            workoutValue.totalDistance != null &&
+            builtInTotalsTrusted) {
           distance = workoutValue.totalDistance!.toDouble();
         }
       }
@@ -332,6 +368,18 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     }
 
     return activities;
+  }
+
+  /// Whether workout [index] overlaps any OTHER fetched workout window.
+  bool _overlapsAnotherWorkout(List<WorkoutAttributionWindow> windows, int index) {
+    final w = windows[index];
+    for (var i = 0; i < windows.length; i++) {
+      if (i == index) continue;
+      if (_isOverlapping(windows[i].start, windows[i].end, w.start, w.end)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /// Check if two time ranges overlap

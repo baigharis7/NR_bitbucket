@@ -73,6 +73,22 @@ void main() {
         ]),
       );
     });
+
+    test(
+      'iOS workout totals are session-scoped (genuine per-session HKWorkout totals)',
+      () {
+        final s = build(host: HealthHostPlatform.ios);
+        expect(s.workoutTotalsAreSessionScoped, isTrue);
+      },
+    );
+
+    test(
+      'Android workout totals are NOT session-scoped (plugin window-sums them)',
+      () {
+        final s = build(host: HealthHostPlatform.android);
+        expect(s.workoutTotalsAreSessionScoped, isFalse);
+      },
+    );
   });
 
   group('isHealthSyncAvailable', () {

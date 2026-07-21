@@ -125,6 +125,8 @@ class _FakeService implements HealthPlatformService {
   HealthDataType distanceType = HealthDataType.DISTANCE_DELTA;
   @override
   String importedSourceType = 'health_connect';
+  @override
+  bool workoutTotalsAreSessionScoped = false;
   bool availableResult = true;
   Object? throwOnAvailable;
   int installCount = 0;
@@ -829,6 +831,352 @@ void main() {
         expect(activities.single.activityType, 'RUNNING');
       },
     );
+  });
+
+  group('workout enrichment attribution (T20)', () {
+    // Windows: drifted duplicate pair, each with its own energy+distance
+    // record spanning its own window.
+    test(
+      'drifted duplicate pair: each activity keeps its own records, not the sum',
+      () async {
+        final start = DateTime(2026, 7, 21, 10);
+        final end = start.add(const Duration(minutes: 60));
+        final dStart = start.add(const Duration(minutes: 1));
+        final dEnd = end.add(const Duration(minutes: 1));
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(from: start, to: end, uuid: 'a'),
+          workoutPoint(from: dStart, to: dEnd, uuid: 'b'),
+        ];
+        client.dataByType[HealthDataType.ACTIVE_ENERGY_BURNED] = [
+          numericPoint(
+            type: HealthDataType.ACTIVE_ENERGY_BURNED,
+            value: 320,
+            from: start,
+            to: end,
+          ),
+          numericPoint(
+            type: HealthDataType.ACTIVE_ENERGY_BURNED,
+            value: 320,
+            from: dStart,
+            to: dEnd,
+          ),
+        ];
+        client.dataByType[HealthDataType.DISTANCE_DELTA] = [
+          numericPoint(
+            type: HealthDataType.DISTANCE_DELTA,
+            value: 5200,
+            from: start,
+            to: end,
+          ),
+          numericPoint(
+            type: HealthDataType.DISTANCE_DELTA,
+            value: 5200,
+            from: dStart,
+            to: dEnd,
+          ),
+        ];
+        final result = await build().fetchActivitiesResult(
+          startDate: start.subtract(const Duration(hours: 1)),
+          endDate: dEnd.add(const Duration(hours: 1)),
+        );
+        final activities = result.data!;
+        expect(activities, hasLength(2));
+        expect(
+          activities[0].caloriesBurned,
+          320,
+          reason: 'own record only, never 640',
+        );
+        expect(activities[1].caloriesBurned, 320);
+        expect(
+          activities[0].distance,
+          5200,
+          reason: 'own record only, never 10400',
+        );
+        expect(activities[1].distance, 5200);
+      },
+    );
+
+    test(
+      "same-start pair: min-union tie-break keeps each workout's own distance",
+      () async {
+        final start = DateTime(2026, 7, 21, 10);
+        final runEnd = start.add(const Duration(minutes: 60));
+        final bikeEnd = start.add(const Duration(minutes: 30));
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(
+            from: start,
+            to: runEnd,
+            activity: HealthWorkoutActivityType.RUNNING,
+            uuid: 'run',
+          ),
+          workoutPoint(
+            from: start,
+            to: bikeEnd,
+            activity: HealthWorkoutActivityType.BIKING,
+            uuid: 'bike',
+          ),
+        ];
+        client.dataByType[HealthDataType.DISTANCE_DELTA] = [
+          numericPoint(
+            type: HealthDataType.DISTANCE_DELTA,
+            value: 9000,
+            from: start,
+            to: runEnd,
+          ),
+          numericPoint(
+            type: HealthDataType.DISTANCE_DELTA,
+            value: 10000,
+            from: start,
+            to: bikeEnd,
+          ),
+        ];
+        final activities = (await build().fetchActivitiesResult(
+          startDate: start.subtract(const Duration(hours: 1)),
+          endDate: runEnd.add(const Duration(hours: 1)),
+        )).data!;
+        expect(activities[0].distance, 9000, reason: 'never 19000');
+        expect(
+          activities[1].distance,
+          10000,
+          reason:
+              'the [start, start+30] record overlaps both by 30 min; '
+              'tightest window must win',
+        );
+      },
+    );
+
+    test(
+      'Android overlap: built-in totals are DISTRUSTED (plugin window-sums) '
+      '-> null -> MET downstream',
+      () async {
+        service.workoutTotalsAreSessionScoped = false; // Android
+        final start = DateTime(2026, 7, 21, 10);
+        final end = start.add(const Duration(minutes: 60));
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(
+            from: start,
+            to: end,
+            totalEnergyBurned: 640,
+            totalDistance: 10400,
+            uuid: 'a',
+          ),
+          workoutPoint(
+            from: start.add(const Duration(minutes: 1)),
+            to: end.add(const Duration(minutes: 1)),
+            totalEnergyBurned: 640,
+            totalDistance: 10400,
+            uuid: 'b',
+          ),
+        ];
+        // No separate energy/distance records at all.
+        final activities = (await build().fetchActivitiesResult(
+          startDate: start.subtract(const Duration(hours: 1)),
+          endDate: end.add(const Duration(hours: 2)),
+        )).data!;
+        expect(
+          activities[0].caloriesBurned,
+          isNull,
+          reason: 'the 640 IS the contamination — QA reproduction',
+        );
+        expect(activities[0].distance, isNull);
+        expect(activities[1].caloriesBurned, isNull);
+      },
+    );
+
+    test(
+      'iOS overlap: built-in totals are genuine per-session values and stay used',
+      () async {
+        service.workoutTotalsAreSessionScoped = true; // iOS
+        final start = DateTime(2026, 7, 21, 10);
+        final end = start.add(const Duration(minutes: 60));
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(
+            from: start,
+            to: end,
+            totalEnergyBurned: 320,
+            totalDistance: 5200,
+            uuid: 'a',
+          ),
+          workoutPoint(
+            from: start.add(const Duration(minutes: 1)),
+            to: end.add(const Duration(minutes: 1)),
+            totalEnergyBurned: 320,
+            totalDistance: 5200,
+            uuid: 'b',
+          ),
+        ];
+        // No separate energy/distance records at all.
+        final activities = (await build().fetchActivitiesResult(
+          startDate: start.subtract(const Duration(hours: 1)),
+          endDate: end.add(const Duration(hours: 2)),
+        )).data!;
+        expect(activities, hasLength(2));
+        expect(
+          activities[0].caloriesBurned,
+          320,
+          reason: 'iOS totals are genuine per-session HKWorkout values, '
+              'trusted even though workouts overlap',
+        );
+        expect(activities[0].distance, 5200);
+        expect(activities[1].caloriesBurned, 320);
+        expect(activities[1].distance, 5200);
+      },
+    );
+
+    test(
+      'single workout, multiple in-window records: sum identical to today '
+      '(parity)',
+      () async {
+        final start = DateTime(2026, 7, 21, 10);
+        final end = start.add(const Duration(minutes: 60));
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(from: start, to: end, uuid: 'solo'),
+        ];
+        client.dataByType[HealthDataType.ACTIVE_ENERGY_BURNED] = [
+          numericPoint(
+            type: HealthDataType.ACTIVE_ENERGY_BURNED,
+            value: 100,
+            from: start.add(const Duration(minutes: 5)),
+            to: start.add(const Duration(minutes: 10)),
+          ),
+          numericPoint(
+            type: HealthDataType.ACTIVE_ENERGY_BURNED,
+            value: 150,
+            from: start.add(const Duration(minutes: 20)),
+            to: start.add(const Duration(minutes: 30)),
+          ),
+          // Fully outside the workout window — must not be counted.
+          numericPoint(
+            type: HealthDataType.ACTIVE_ENERGY_BURNED,
+            value: 999,
+            from: end.add(const Duration(minutes: 10)),
+            to: end.add(const Duration(minutes: 20)),
+          ),
+        ];
+        final activities = (await build().fetchActivitiesResult(
+          startDate: start.subtract(const Duration(hours: 1)),
+          endDate: end.add(const Duration(hours: 1)),
+        )).data!;
+        expect(activities, hasLength(1));
+        expect(activities.single.caloriesBurned, 250);
+      },
+    );
+
+    test(
+      'single workout, no records, built-in present: fallback fires on '
+      'Android too (parity)',
+      () async {
+        service.workoutTotalsAreSessionScoped = false;
+        final start = DateTime(2026, 7, 21, 10);
+        final end = start.add(const Duration(minutes: 60));
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(
+            from: start,
+            to: end,
+            totalEnergyBurned: 400,
+            totalDistance: 8000,
+            uuid: 'solo',
+          ),
+        ];
+        final activities = (await build().fetchActivitiesResult(
+          startDate: start.subtract(const Duration(hours: 1)),
+          endDate: end.add(const Duration(hours: 1)),
+        )).data!;
+        expect(activities, hasLength(1));
+        expect(activities.single.caloriesBurned, 400);
+        expect(activities.single.distance, 8000);
+      },
+    );
+
+    test('no records and no built-ins yields null kcal/distance (MET-path '
+        'input parity)', () async {
+      final start = DateTime(2026, 7, 21, 10);
+      final end = start.add(const Duration(minutes: 60));
+      client.dataByType[HealthDataType.WORKOUT] = [
+        workoutPoint(from: start, to: end, uuid: 'solo'),
+      ];
+      final activities = (await build().fetchActivitiesResult(
+        startDate: start.subtract(const Duration(hours: 1)),
+        endDate: end.add(const Duration(hours: 1)),
+      )).data!;
+      expect(activities, hasLength(1));
+      expect(activities.single.caloriesBurned, isNull);
+      expect(activities.single.distance, isNull);
+    });
+
+    test(
+      'built-in totalEnergyBurned == 0 counts as present (zero-semantics '
+      'parity)',
+      () async {
+        service.workoutTotalsAreSessionScoped = true;
+        final start = DateTime(2026, 7, 21, 10);
+        final end = start.add(const Duration(minutes: 60));
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(from: start, to: end, totalEnergyBurned: 0, uuid: 'solo'),
+        ];
+        final activities = (await build().fetchActivitiesResult(
+          startDate: start.subtract(const Duration(hours: 1)),
+          endDate: end.add(const Duration(hours: 1)),
+        )).data!;
+        expect(activities, hasLength(1));
+        expect(activities.single.caloriesBurned, 0.0);
+      },
+    );
+
+    test('heart rate: same-start pair samples split by attribution', () async {
+      final start = DateTime(2026, 7, 21, 10);
+      final runEnd = start.add(const Duration(minutes: 60));
+      final bikeEnd = start.add(const Duration(minutes: 30));
+      client.dataByType[HealthDataType.WORKOUT] = [
+        workoutPoint(
+          from: start,
+          to: runEnd,
+          activity: HealthWorkoutActivityType.RUNNING,
+          uuid: 'run',
+        ),
+        workoutPoint(
+          from: start,
+          to: bikeEnd,
+          activity: HealthWorkoutActivityType.BIKING,
+          uuid: 'bike',
+        ),
+      ];
+      client.dataByType[HealthDataType.HEART_RATE] = [
+        // Zero-duration sample at minute 15: contained in both windows;
+        // BIKING [0,30] is the tighter (smaller-union) window.
+        numericPoint(
+          type: HealthDataType.HEART_RATE,
+          value: 150,
+          from: start.add(const Duration(minutes: 15)),
+          to: start.add(const Duration(minutes: 15)),
+        ),
+        // Zero-duration sample at minute 45: BIKING already ended at
+        // minute 30, so only RUNNING [0,60] contains it.
+        numericPoint(
+          type: HealthDataType.HEART_RATE,
+          value: 100,
+          from: start.add(const Duration(minutes: 45)),
+          to: start.add(const Duration(minutes: 45)),
+        ),
+      ];
+      final activities = (await build().fetchActivitiesResult(
+        startDate: start.subtract(const Duration(hours: 1)),
+        endDate: runEnd.add(const Duration(hours: 1)),
+      )).data!;
+      expect(activities, hasLength(2));
+      // Today both samples would land in RUNNING (and minute-15 also in
+      // BIKING), averaging RUNNING to 125 and BIKING to 150.
+      expect(
+        activities[0].avgHeartRate,
+        100,
+        reason: 'only RUNNING contains minute 45',
+      );
+      expect(
+        activities[1].avgHeartRate,
+        150,
+        reason: 'BIKING is the tighter window at minute 15',
+      );
+    });
   });
 
   group('health sync metadata persistence', () {
