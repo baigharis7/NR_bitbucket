@@ -103,7 +103,7 @@ class CalendarBloc extends BaseBloc<CalendarActions, CalendarState> {
     on<RemoveSportEventAction>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       try {
-        await deleteSportEventInteractor.execute(getUserIdInteractor.execute(), event.sportEventComplete.eventDate);
+        await deleteSportEventInteractor.execute(getUserIdInteractor.execute(), event.sportEventComplete.eventId);
 
         try {
           await removeSportEventInteractor.execute(event.sportEventComplete);

@@ -152,7 +152,7 @@ void main() {
         onFinish: () {},
       )),
       verify: (bloc) {
-        verify(mockDeleteSportEvent.execute('user123', 1000)).called(1);
+        verify(mockDeleteSportEvent.execute('user123', 1)).called(1);
         verify(mockRemoveSportEvent.execute(any)).called(1);
       },
     );
