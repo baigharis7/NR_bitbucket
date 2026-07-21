@@ -3,8 +3,12 @@
 /// cross-contamination of overlapping workouts.
 ///
 /// Candidacy uses the exact overlap predicate the repository has always used
-/// (strict open interval: `start1 < end2 && end1 > start2`), so a single
-/// non-overlapping workout receives exactly the records it receives today.
+/// (strict open interval: `start1 < end2 && end1 > start2`). Parity with the
+/// pre-T20 per-window sums holds for a workout whose overlapping enrichment
+/// records overlap no other workout window; a record that bridges multiple
+/// workout windows (even ones that do not overlap each other) is now
+/// attributed to its single best-fit window instead of being summed into
+/// every window it touches.
 class WorkoutAttributionWindow {
   final DateTime start;
   final DateTime end;
@@ -33,8 +37,8 @@ class HealthWorkoutRecordAttribution {
     required List<WorkoutAttributionWindow> windows,
   }) {
     int? best;
-    int bestOverlapMs = -1;
-    int bestUnionMs = 0;
+    int bestOverlapUs = -1;
+    int bestUnionUs = 0;
     bool bestSourceMatch = false;
 
     for (var i = 0; i < windows.length; i++) {
@@ -43,31 +47,31 @@ class HealthWorkoutRecordAttribution {
           recordStart.isBefore(w.end) && recordEnd.isAfter(w.start);
       if (!overlaps) continue;
 
-      final overlapMs = _minMs(recordEnd, w.end) - _maxMs(recordStart, w.start);
-      final unionMs = _maxMs(recordEnd, w.end) - _minMs(recordStart, w.start);
+      final overlapUs = _minUs(recordEnd, w.end) - _maxUs(recordStart, w.start);
+      final unionUs = _maxUs(recordEnd, w.end) - _minUs(recordStart, w.start);
       final sourceMatch = w.sourceName == recordSourceName;
 
       final wins =
           best == null ||
-          overlapMs > bestOverlapMs ||
-          (overlapMs == bestOverlapMs &&
-              (unionMs < bestUnionMs ||
-                  (unionMs == bestUnionMs &&
+          overlapUs > bestOverlapUs ||
+          (overlapUs == bestOverlapUs &&
+              (unionUs < bestUnionUs ||
+                  (unionUs == bestUnionUs &&
                       ((sourceMatch && !bestSourceMatch) ||
                           (sourceMatch == bestSourceMatch &&
                               w.start.isBefore(windows[best].start))))));
       if (wins) {
         best = i;
-        bestOverlapMs = overlapMs;
-        bestUnionMs = unionMs;
+        bestOverlapUs = overlapUs;
+        bestUnionUs = unionUs;
         bestSourceMatch = sourceMatch;
       }
     }
     return best;
   }
 
-  static int _minMs(DateTime a, DateTime b) =>
-      a.isBefore(b) ? a.millisecondsSinceEpoch : b.millisecondsSinceEpoch;
-  static int _maxMs(DateTime a, DateTime b) =>
-      a.isAfter(b) ? a.millisecondsSinceEpoch : b.millisecondsSinceEpoch;
+  static int _minUs(DateTime a, DateTime b) =>
+      a.isBefore(b) ? a.microsecondsSinceEpoch : b.microsecondsSinceEpoch;
+  static int _maxUs(DateTime a, DateTime b) =>
+      a.isAfter(b) ? a.microsecondsSinceEpoch : b.microsecondsSinceEpoch;
 }

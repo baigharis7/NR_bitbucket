@@ -87,5 +87,50 @@ void main() {
       final windows = [w(0, 60), w(0, 60)];
       expect(attr(0, 60, windows), 0);
     });
+
+    test('microsecond precision: larger overlap by microseconds wins '
+        '(millisecond truncation would tie)', () {
+      final epoch = base.microsecondsSinceEpoch;
+      DateTime us(int offsetUs) =>
+          DateTime.fromMicrosecondsSinceEpoch(epoch + offsetUs);
+      final windows = [
+        // True overlap with the record is 1000us, but truncated to
+        // milliseconds this window's end (1000us) and the record's end
+        // (1900us) both floor to the same millisecond boundary as window 1.
+        WorkoutAttributionWindow(start: us(0), end: us(1000), sourceName: 'A'),
+        // True overlap with the record is 1900us — larger than window 0's
+        // 1000us — so this window must win under microsecond arithmetic.
+        WorkoutAttributionWindow(start: us(0), end: us(1999), sourceName: 'A'),
+      ];
+      final result = HealthWorkoutRecordAttribution.attributeIndex(
+        recordStart: us(0),
+        recordEnd: us(1900),
+        recordSourceName: 'A',
+        windows: windows,
+      );
+      expect(
+        result,
+        1,
+        reason:
+            'window 1 has the larger true overlap (1900us vs 1000us); '
+            'millisecond-truncated arithmetic ties both windows at 1ms '
+            'and falls through to the lower-index tiebreak, wrongly '
+            'picking window 0',
+      );
+    });
+
+    test(
+      'bridging record is attributed to its single best-fit window, not '
+      'summed into both non-overlapping workouts (T20 exclusive attribution)',
+      () {
+        // Windows [0,10] and [20,40] do NOT overlap each other, but record
+        // [5,35] bridges both. Overlap with window0 is 5 (10-5); overlap
+        // with window1 is 15 (35-20). Exclusive attribution must route the
+        // record to window1 only, instead of double-counting it into both
+        // (as the pre-T20 per-window loops would have done).
+        final windows = [w(0, 10), w(20, 40)];
+        expect(attr(5, 35, windows), 1);
+      },
+    );
   });
 }

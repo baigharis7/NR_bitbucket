@@ -258,8 +258,10 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
 
     // T20: each enrichment record is attributed to at most ONE workout
     // (exclusive best-fit) instead of being summed into every overlapping
-    // window. For a workout that overlaps no other workout this yields
-    // exactly the same sums as the previous per-window loops.
+    // window. Parity with the previous per-window loops holds for a workout
+    // whose overlapping enrichment records overlap no other workout window;
+    // a record bridging multiple workout windows is now attributed to its
+    // single best fit instead of being double-counted.
     final energySums = List<double?>.filled(windows.length, null);
     for (final energy in energyData) {
       final value = energy.value;

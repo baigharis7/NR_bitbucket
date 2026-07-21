@@ -980,6 +980,7 @@ void main() {
         );
         expect(activities[0].distance, isNull);
         expect(activities[1].caloriesBurned, isNull);
+        expect(activities[1].distance, isNull);
       },
     );
 
