@@ -75,14 +75,20 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   @override
   Future<bool> requestPermissions() async {
     try {
-      final types = healthPlatformService.readTypes;
+      // Includes optionalReadTypes (best-effort, e.g. TOTAL_CALORIES_BURNED)
+      // so authorization is requested up front; hasPermissions() gating
+      // below is intentionally NOT widened to match.
+      final types = [
+        ...healthPlatformService.readTypes,
+        ...healthPlatformService.optionalReadTypes,
+      ];
       debugPrint(
           '[HealthSync] requestAuthorization types=${types.map((t) => t.name).join(",")}');
       CrashlyticsService.instance.log(
           'HealthSync: requestAuthorization types=${types.map((t) => t.name).join(",")}');
       final authorized = await healthPlatformClient.requestAuthorization(
         types,
-        permissions: _permissions,
+        permissions: types.map((_) => HealthDataAccess.READ).toList(),
       );
       debugPrint('[HealthSync] requestAuthorization result=$authorized');
       CrashlyticsService.instance
@@ -164,12 +170,35 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       final distanceData = await guardedRead(healthPlatformService.distanceType);
       final heartRateData = await guardedRead(HealthDataType.HEART_RATE);
 
+      // Optional reads (e.g. Android TOTAL_CALORIES_BURNED): best-effort,
+      // individually guarded like the enrichment reads above, but a failure
+      // here NEVER sets enrichmentReason/enrichmentMessage — the result must
+      // never degrade to partialSuccess because of an optional read.
+      final totalCaloriesData = <HealthDataPoint>[];
+      for (final type in healthPlatformService.optionalReadTypes) {
+        try {
+          final points = await healthPlatformClient.getHealthDataFromTypes(
+            types: [type],
+            startTime: startDate,
+            endTime: endDate,
+          );
+          totalCaloriesData.addAll(points);
+        } catch (e) {
+          diagnostics.add(HealthSyncDiagnostics.fetchFailed(
+            domain: HealthSyncDomain.workout,
+            category: HealthSyncDiagnostics.classify(e),
+            phase: 'enrichment-optional',
+          ));
+        }
+      }
+
       // Convert to HealthActivity list
       final activities = _mapWorkoutsToActivities(
         healthData,
         energyData,
         distanceData,
         heartRateData,
+        totalCaloriesData,
       );
 
       if (activities.isEmpty) {
@@ -244,6 +273,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
     List<HealthDataPoint> energyData,
     List<HealthDataPoint> distanceData,
     List<HealthDataPoint> heartRateData,
+    List<HealthDataPoint> totalCaloriesData,
   ) {
     final workoutPoints =
         workouts.where((w) => w.type == HealthDataType.WORKOUT).toList();
@@ -288,6 +318,24 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       );
       if (i == null) continue;
       distanceSums[i] = (distanceSums[i] ?? 0) + value.numericValue;
+    }
+
+    // T21: attributed total-calories tier — same shape as the energy/distance
+    // loops above. Applied downstream only when kcal is still null after the
+    // built-in totals fallback (tier 3, behind attributed active-energy and
+    // the built-in totals).
+    final totalCaloriesSums = List<double?>.filled(windows.length, null);
+    for (final totalCalories in totalCaloriesData) {
+      final value = totalCalories.value;
+      if (value is! NumericHealthValue) continue;
+      final i = HealthWorkoutRecordAttribution.attributeIndex(
+        recordStart: totalCalories.dateFrom,
+        recordEnd: totalCalories.dateTo,
+        recordSourceName: totalCalories.sourceName,
+        windows: windows,
+      );
+      if (i == null) continue;
+      totalCaloriesSums[i] = (totalCaloriesSums[i] ?? 0) + value.numericValue;
     }
 
     final heartRatesByWindow =
@@ -344,6 +392,12 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
           distance = workoutValue.totalDistance!.toDouble();
         }
       }
+      // T21: attributed platform total-calories, only if still null after
+      // attributed active-energy (above) and the built-in totals fallback.
+      // Knowingly a TOTAL-energy figure (includes the window's basal/BMR
+      // share), not active-only like tier 1 — accepted trade-off: the
+      // platform-recorded total beats the MET estimate it replaces.
+      caloriesBurned ??= totalCaloriesSums[i];
 
       // Canonical identity: the platform record UUID (Health Connect
       // metadata.id / HealthKit HKObject.uuid) when present. The legacy

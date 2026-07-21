@@ -23,6 +23,12 @@ abstract class HealthPlatformService {
   /// Platform-specific health data types to read and request permission for.
   List<HealthDataType> get readTypes;
 
+  /// Best-effort read types: included in the authorization request but NEVER
+  /// part of [readTypes]/`hasPermissions` gating. Reads of these types are
+  /// individually guarded, and a read failure must not degrade the fetch
+  /// result.
+  List<HealthDataType> get optionalReadTypes;
+
   /// Platform-specific distance data type used for workout enrichment.
   HealthDataType get distanceType;
 
@@ -101,6 +107,12 @@ class HealthPlatformServiceImpl implements HealthPlatformService {
       HealthDataType.DISTANCE_WALKING_RUNNING,
     if (_hostPlatform == HealthHostPlatform.android)
       HealthDataType.DISTANCE_DELTA,
+  ];
+
+  @override
+  List<HealthDataType> get optionalReadTypes => [
+    if (_hostPlatform == HealthHostPlatform.android)
+      HealthDataType.TOTAL_CALORIES_BURNED,
   ];
 
   @override

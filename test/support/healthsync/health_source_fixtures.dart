@@ -83,3 +83,9 @@ const HealthSource garminPackage = HealthSource(
   deviceId: 'garmin-device',
   platform: HealthPlatformType.googleHealthConnect,
 );
+const HealthSource nutrenaissancePackage = HealthSource(
+  name: 'com.nutrenaissance.flutter',
+  id: '',
+  deviceId: 'device',
+  platform: HealthPlatformType.googleHealthConnect,
+);
