@@ -394,6 +394,9 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       }
       // T21: attributed platform total-calories, only if still null after
       // attributed active-energy (above) and the built-in totals fallback.
+      // Knowingly a TOTAL-energy figure (includes the window's basal/BMR
+      // share), not active-only like tier 1 — accepted trade-off: the
+      // platform-recorded total beats the MET estimate it replaces.
       caloriesBurned ??= totalCaloriesSums[i];
 
       // Canonical identity: the platform record UUID (Health Connect
