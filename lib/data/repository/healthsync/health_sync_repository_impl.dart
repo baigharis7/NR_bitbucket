@@ -75,14 +75,20 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   @override
   Future<bool> requestPermissions() async {
     try {
-      final types = healthPlatformService.readTypes;
+      // Includes optionalReadTypes (best-effort, e.g. TOTAL_CALORIES_BURNED)
+      // so authorization is requested up front; hasPermissions() gating
+      // below is intentionally NOT widened to match.
+      final types = [
+        ...healthPlatformService.readTypes,
+        ...healthPlatformService.optionalReadTypes,
+      ];
       debugPrint(
           '[HealthSync] requestAuthorization types=${types.map((t) => t.name).join(",")}');
       CrashlyticsService.instance.log(
           'HealthSync: requestAuthorization types=${types.map((t) => t.name).join(",")}');
       final authorized = await healthPlatformClient.requestAuthorization(
         types,
-        permissions: _permissions,
+        permissions: types.map((_) => HealthDataAccess.READ).toList(),
       );
       debugPrint('[HealthSync] requestAuthorization result=$authorized');
       CrashlyticsService.instance

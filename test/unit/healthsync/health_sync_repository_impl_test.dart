@@ -122,6 +122,8 @@ class _FakeService implements HealthPlatformService {
     HealthDataType.STEPS,
   ];
   @override
+  List<HealthDataType> optionalReadTypes = const [];
+  @override
   HealthDataType distanceType = HealthDataType.DISTANCE_DELTA;
   @override
   String importedSourceType = 'health_connect';
@@ -253,6 +255,27 @@ void main() {
     });
 
     test(
+      'requestPermissions appends optionalReadTypes with matching READ access',
+      () async {
+        service.readTypes = [HealthDataType.WORKOUT, HealthDataType.STEPS];
+        service.optionalReadTypes = [HealthDataType.TOTAL_CALORIES_BURNED];
+        client.authorizeResult = true;
+        final result = await build().requestPermissions();
+        expect(result, isTrue);
+        expect(client.lastAuthTypes, [
+          HealthDataType.WORKOUT,
+          HealthDataType.STEPS,
+          HealthDataType.TOTAL_CALORIES_BURNED,
+        ]);
+        expect(client.lastAuthPermissions, [
+          HealthDataAccess.READ,
+          HealthDataAccess.READ,
+          HealthDataAccess.READ,
+        ]);
+      },
+    );
+
+    test(
       'hasPermissions delegates full readTypes + READ-per-type and returns the result',
       () async {
         service.readTypes = [
@@ -265,6 +288,28 @@ void main() {
         expect(client.lastCheckTypes, service.readTypes);
         expect(client.lastCheckPermissions, [
           HealthDataAccess.READ,
+          HealthDataAccess.READ,
+          HealthDataAccess.READ,
+        ]);
+      },
+    );
+
+    test(
+      'hasPermissions gating pin: passes exactly readTypes, never optionalReadTypes',
+      () async {
+        service.readTypes = [HealthDataType.WORKOUT, HealthDataType.STEPS];
+        service.optionalReadTypes = [HealthDataType.TOTAL_CALORIES_BURNED];
+        client.hasPermissionsResult = true;
+        await build().hasPermissions();
+        expect(client.lastCheckTypes, [
+          HealthDataType.WORKOUT,
+          HealthDataType.STEPS,
+        ]);
+        expect(
+          client.lastCheckTypes,
+          isNot(contains(HealthDataType.TOTAL_CALORIES_BURNED)),
+        );
+        expect(client.lastCheckPermissions, [
           HealthDataAccess.READ,
           HealthDataAccess.READ,
         ]);

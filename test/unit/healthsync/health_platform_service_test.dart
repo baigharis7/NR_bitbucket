@@ -89,6 +89,21 @@ void main() {
         expect(s.workoutTotalsAreSessionScoped, isFalse);
       },
     );
+
+    test('Android optional read types include TOTAL_CALORIES_BURNED', () {
+      final s = build(host: HealthHostPlatform.android);
+      expect(s.optionalReadTypes, [HealthDataType.TOTAL_CALORIES_BURNED]);
+    });
+
+    test('iOS optional read types are empty', () {
+      final s = build(host: HealthHostPlatform.ios);
+      expect(s.optionalReadTypes, isEmpty);
+    });
+
+    test('unsupported host optional read types are empty', () {
+      final s = build(host: HealthHostPlatform.unsupported);
+      expect(s.optionalReadTypes, isEmpty);
+    });
   });
 
   group('isHealthSyncAvailable', () {
