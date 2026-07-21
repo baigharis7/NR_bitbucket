@@ -1225,6 +1225,340 @@ void main() {
     });
   });
 
+  group('attributed total-calories tier (T21)', () {
+    // Captured device dataset (T21 shapes doc), reproduced verbatim: four
+    // workouts with fabricated built-in totals, no ACTIVE_ENERGY_BURNED
+    // points, and separate TOTAL_CALORIES_BURNED / DISTANCE_DELTA records
+    // each spanning exactly their own workout's window.
+    final w0Start = DateTime(2026, 7, 21, 11, 38, 44, 842);
+    final w0End = DateTime(2026, 7, 21, 12, 38, 44, 842);
+    final w1Start = w0Start;
+    final w1End = DateTime(2026, 7, 21, 12, 8, 44, 842);
+    final w2Start = DateTime(2026, 7, 21, 15, 38, 44, 842);
+    final w2End = DateTime(2026, 7, 21, 16, 38, 44, 842);
+    final w3Start = DateTime(2026, 7, 21, 15, 39, 44, 842);
+    final w3End = DateTime(2026, 7, 21, 16, 39, 44, 842);
+
+    test(
+      'captured device dataset: attributed total-calories fill kcal after '
+      'built-in totals are distrusted by overlap',
+      () async {
+        service.optionalReadTypes = const [HealthDataType.TOTAL_CALORIES_BURNED];
+        service.workoutTotalsAreSessionScoped = false;
+
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(
+            from: w0Start,
+            to: w0End,
+            activity: HealthWorkoutActivityType.RUNNING,
+            totalEnergyBurned: 700,
+            totalDistance: 19000,
+            source: nutrenaissancePackage,
+            uuid: 'w0',
+          ),
+          workoutPoint(
+            from: w1Start,
+            to: w1End,
+            activity: HealthWorkoutActivityType.BIKING,
+            totalEnergyBurned: 700,
+            totalDistance: 19000,
+            source: nutrenaissancePackage,
+            uuid: 'w1',
+          ),
+          workoutPoint(
+            from: w2Start,
+            to: w2End,
+            activity: HealthWorkoutActivityType.RUNNING,
+            totalEnergyBurned: 800,
+            totalDistance: 16000,
+            source: nutrenaissancePackage,
+            uuid: 'w2',
+          ),
+          workoutPoint(
+            from: w3Start,
+            to: w3End,
+            activity: HealthWorkoutActivityType.RUNNING,
+            totalEnergyBurned: 400,
+            totalDistance: 8000,
+            source: nutrenaissancePackage,
+            uuid: 'w3',
+          ),
+        ];
+        client.dataByType[HealthDataType.TOTAL_CALORIES_BURNED] = [
+          numericPoint(
+            type: HealthDataType.TOTAL_CALORIES_BURNED,
+            value: 500,
+            from: w0Start,
+            to: w0End,
+            source: nutrenaissancePackage,
+          ),
+          numericPoint(
+            type: HealthDataType.TOTAL_CALORIES_BURNED,
+            value: 200,
+            from: w1Start,
+            to: w1End,
+            source: nutrenaissancePackage,
+          ),
+          numericPoint(
+            type: HealthDataType.TOTAL_CALORIES_BURNED,
+            value: 400,
+            from: w2Start,
+            to: w2End,
+            source: nutrenaissancePackage,
+          ),
+          numericPoint(
+            type: HealthDataType.TOTAL_CALORIES_BURNED,
+            value: 400,
+            from: w3Start,
+            to: w3End,
+            source: nutrenaissancePackage,
+          ),
+        ];
+        client.dataByType[HealthDataType.DISTANCE_DELTA] = [
+          numericPoint(
+            type: HealthDataType.DISTANCE_DELTA,
+            value: 9000,
+            from: w0Start,
+            to: w0End,
+            source: nutrenaissancePackage,
+          ),
+          numericPoint(
+            type: HealthDataType.DISTANCE_DELTA,
+            value: 10000,
+            from: w1Start,
+            to: w1End,
+            source: nutrenaissancePackage,
+          ),
+          numericPoint(
+            type: HealthDataType.DISTANCE_DELTA,
+            value: 8000,
+            from: w2Start,
+            to: w2End,
+            source: nutrenaissancePackage,
+          ),
+          numericPoint(
+            type: HealthDataType.DISTANCE_DELTA,
+            value: 8000,
+            from: w3Start,
+            to: w3End,
+            source: nutrenaissancePackage,
+          ),
+        ];
+
+        final result = await build().fetchActivitiesResult(
+          startDate: w0Start.subtract(const Duration(hours: 1)),
+          endDate: w3End.add(const Duration(hours: 1)),
+        );
+
+        expect(
+          result.status,
+          HealthFetchStatus.success,
+          reason: 'the optional read must never degrade the result',
+        );
+        final activities = result.data!;
+        expect(activities, hasLength(4));
+        expect(
+          activities.map((a) => a.caloriesBurned).toList(),
+          [500.0, 200.0, 400.0, 400.0],
+        );
+        expect(
+          activities.map((a) => a.distance).toList(),
+          [9000.0, 10000.0, 8000.0, 8000.0],
+        );
+      },
+    );
+
+    test(
+      'active-energy precedence: tier 1 wins and total-calories are ignored',
+      () async {
+        service.optionalReadTypes = const [HealthDataType.TOTAL_CALORIES_BURNED];
+        final start = DateTime(2026, 7, 21, 10);
+        final end = start.add(const Duration(minutes: 60));
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(from: start, to: end, uuid: 'solo'),
+        ];
+        client.dataByType[HealthDataType.ACTIVE_ENERGY_BURNED] = [
+          numericPoint(
+            type: HealthDataType.ACTIVE_ENERGY_BURNED,
+            value: 300,
+            from: start,
+            to: end,
+          ),
+        ];
+        client.dataByType[HealthDataType.TOTAL_CALORIES_BURNED] = [
+          numericPoint(
+            type: HealthDataType.TOTAL_CALORIES_BURNED,
+            value: 999,
+            from: start,
+            to: end,
+          ),
+        ];
+
+        final activities = (await build().fetchActivitiesResult(
+          startDate: start.subtract(const Duration(hours: 1)),
+          endDate: end.add(const Duration(hours: 1)),
+        )).data!;
+
+        expect(activities, hasLength(1));
+        expect(
+          activities.single.caloriesBurned,
+          300,
+          reason: 'attributed active-energy always wins over total-calories',
+        );
+      },
+    );
+
+    test(
+      'non-overlap parity: a lone workout keeps its built-in totals even '
+      'though a total-calories record is readable (bit-identical to today)',
+      () async {
+        service.optionalReadTypes = const [HealthDataType.TOTAL_CALORIES_BURNED];
+        service.workoutTotalsAreSessionScoped = false;
+        final start = DateTime(2026, 7, 21, 10);
+        final end = start.add(const Duration(minutes: 60));
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(
+            from: start,
+            to: end,
+            totalEnergyBurned: 400,
+            totalDistance: 8000,
+            uuid: 'solo',
+          ),
+        ];
+        client.dataByType[HealthDataType.TOTAL_CALORIES_BURNED] = [
+          numericPoint(
+            type: HealthDataType.TOTAL_CALORIES_BURNED,
+            value: 999,
+            from: start,
+            to: end,
+          ),
+        ];
+
+        final activities = (await build().fetchActivitiesResult(
+          startDate: start.subtract(const Duration(hours: 1)),
+          endDate: end.add(const Duration(hours: 1)),
+        )).data!;
+
+        expect(activities, hasLength(1));
+        expect(
+          activities.single.caloriesBurned,
+          400,
+          reason: 'built-in fallback is trusted (no overlap) and wins '
+              'over the readable total-calories record',
+        );
+      },
+    );
+
+    test(
+      'optional-read failure: kcal stays null, result stays success (NOT '
+      'partialSuccess), with exactly one enrichment-optional diagnostic',
+      () async {
+        service.optionalReadTypes = const [HealthDataType.TOTAL_CALORIES_BURNED];
+        service.workoutTotalsAreSessionScoped = false;
+        client.throwByType[HealthDataType.TOTAL_CALORIES_BURNED] = Exception(
+          'boom',
+        );
+
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(from: w0Start, to: w0End, uuid: 'w0'),
+          workoutPoint(from: w1Start, to: w1End, uuid: 'w1'),
+        ];
+
+        final result = await build().fetchActivitiesResult(
+          startDate: w0Start.subtract(const Duration(hours: 1)),
+          endDate: w1End.add(const Duration(hours: 1)),
+        );
+
+        expect(result.status, HealthFetchStatus.success);
+        expect(result.isSuccess, isTrue);
+        final activities = result.data!;
+        expect(activities, hasLength(2));
+        expect(activities[0].caloriesBurned, isNull);
+        expect(activities[1].caloriesBurned, isNull);
+
+        final fetchFailedEvents = diagnostics.events
+            .where((e) => e.type == HealthSyncDiagnosticType.fetchFailed)
+            .toList();
+        expect(fetchFailedEvents, hasLength(1));
+        expect(fetchFailedEvents.single.metadata['phase'], 'enrichment-optional');
+        expect(fetchFailedEvents.single.domain, HealthSyncDomain.workout);
+      },
+    );
+
+    test(
+      'existing-read degradation unchanged: an ACTIVE_ENERGY throw still '
+      'yields partialSuccess exactly as today, unaffected by the optional '
+      'read',
+      () async {
+        service.optionalReadTypes = const [HealthDataType.TOTAL_CALORIES_BURNED];
+        final start = DateTime(2026, 7, 21, 10);
+        final end = start.add(const Duration(minutes: 60));
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(
+            from: start,
+            to: end,
+            totalEnergyBurned: 120,
+            totalDistance: 2000,
+            uuid: 'solo',
+          ),
+        ];
+        client.throwByType[HealthDataType.ACTIVE_ENERGY_BURNED] =
+            TimeoutException('slow');
+
+        final result = await build().fetchActivitiesResult(
+          startDate: start.subtract(const Duration(hours: 1)),
+          endDate: end.add(const Duration(hours: 1)),
+        );
+
+        expect(result.status, HealthFetchStatus.partialSuccess);
+        expect(result.failureReason, HealthFetchFailureReason.timeout);
+        final a = result.data!.single;
+        expect(a.caloriesBurned, 120);
+        expect(a.distance, 2000);
+      },
+    );
+
+    test(
+      'iOS parity: empty optionalReadTypes attempts no total-calories read '
+      'and mapping is unchanged',
+      () async {
+        service.optionalReadTypes = const [];
+        service.workoutTotalsAreSessionScoped = true;
+        service.distanceType = HealthDataType.DISTANCE_WALKING_RUNNING;
+        final start = DateTime(2026, 7, 21, 10);
+        final end = start.add(const Duration(minutes: 60));
+        client.dataByType[HealthDataType.WORKOUT] = [
+          workoutPoint(
+            from: start,
+            to: end,
+            totalEnergyBurned: 120,
+            totalDistance: 2000,
+            uuid: 'solo',
+          ),
+        ];
+
+        final activities = (await build().fetchActivitiesResult(
+          startDate: start.subtract(const Duration(hours: 1)),
+          endDate: end.add(const Duration(hours: 1)),
+        )).data!;
+
+        expect(
+          client.reads.map((r) => r.types).toList(),
+          [
+            [HealthDataType.WORKOUT],
+            [HealthDataType.ACTIVE_ENERGY_BURNED],
+            [HealthDataType.DISTANCE_WALKING_RUNNING],
+            [HealthDataType.HEART_RATE],
+          ],
+          reason: 'no TOTAL_CALORIES_BURNED read is attempted on iOS',
+        );
+        expect(activities, hasLength(1));
+        expect(activities.single.caloriesBurned, 120);
+        expect(activities.single.distance, 2000);
+      },
+    );
+  });
+
   group('health sync metadata persistence', () {
     test('saveHealthSyncMetadata persists the fingerprint fields', () async {
       when(
