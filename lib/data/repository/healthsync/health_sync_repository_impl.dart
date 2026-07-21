@@ -350,6 +350,7 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       startTimeMs: metadata.startTimeMs,
       endTimeMs: metadata.endTimeMs,
       sourceCategory: metadata.sourceCategory,
+      deletedAtMs: metadata.deletedAt?.millisecondsSinceEpoch,
     );
     await localStorageRepository.saveHealthSyncMetadata(entity);
   }
@@ -366,6 +367,9 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
       startTimeMs: e.startTimeMs,
       endTimeMs: e.endTimeMs,
       sourceCategory: e.sourceCategory,
+      deletedAt: e.deletedAtMs == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(e.deletedAtMs!),
     )).toList();
   }
 
@@ -375,8 +379,8 @@ class HealthSyncRepositoryImpl implements HealthSyncRepository {
   }
 
   @override
-  Future<void> deleteSyncMetadataBySportEventId(int sportEventId) async {
-    await localStorageRepository.deleteHealthSyncMetadataBySportEventId(sportEventId);
+  Future<void> tombstoneSyncMetadataBySportEventId(int sportEventId) async {
+    await localStorageRepository.tombstoneHealthSyncMetadataBySportEventId(sportEventId);
   }
 
   @override

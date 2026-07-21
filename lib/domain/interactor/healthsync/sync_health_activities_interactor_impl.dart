@@ -286,13 +286,21 @@ class SyncHealthActivitiesInteractorImpl implements SyncHealthActivitiesInteract
       final suspectedImportedCount = dedupeEntries
           .where((e) => e.decision == DedupeDecision.importSuspected)
           .length;
-      if (exactCount + strongCount + suspectedImportedCount > 0) {
+      final tombstoneBlockedCount = dedupeEntries
+          .where((e) => e.decision == DedupeDecision.skipDeletedTombstone)
+          .length;
+      if (exactCount +
+              strongCount +
+              suspectedImportedCount +
+              tombstoneBlockedCount >
+          0) {
         // ONE aggregated event per run — counts only, never IDs or names.
         diagnostics.add(HealthSyncDiagnostics.duplicateDiscarded(
           domain: HealthSyncDomain.workout,
           exactCount: exactCount,
           strongCount: strongCount,
           suspectedImportedCount: suspectedImportedCount,
+          tombstoneBlockedCount: tombstoneBlockedCount,
         ));
       }
       _log('After dedup: ${toImport.length} new activities (${activities.length - toImport.length} already synced)');

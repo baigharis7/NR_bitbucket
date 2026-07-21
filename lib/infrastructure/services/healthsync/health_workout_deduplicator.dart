@@ -24,6 +24,15 @@ enum DedupeDecision {
   /// metadata or an already-accepted batch entry — cross-source/same-source
   /// duplicate of an imported workout. Source equality is irrelevant.
   skipStrongDuplicate,
+
+  /// Contract extended additively 2026-07-20 (cleanup follow-up design): an
+  /// exact-identity or strong-fingerprint block that is attributable ONLY to
+  /// a tombstoned metadata row ([HealthSyncMetadata.isDeleted]) — the user
+  /// deleted this imported workout, so re-import is blocked but labeled
+  /// distinctly from a live duplicate. Never widens the suspected tier: a
+  /// tombstoned window that only overlaps at the suspected level still
+  /// imports as [importSuspected].
+  skipDeletedTombstone,
 }
 
 /// One incoming activity paired with its fingerprint and dedupe decision.
@@ -76,11 +85,34 @@ class HealthWorkoutDeduplicator {
   }) {
     // Exact tier: every stored key blocks re-import — canonical uuids AND
     // pre-upgrade legacy synthesized keys live in the same key space.
-    final existingKeys = <String>{for (final m in existing) m.healthPlatformId};
-
-    final existingWindows = <_Window>[
+    // Partitioned by tombstone state (D10/T18) so the caller can label a
+    // deleted-workout block distinctly from a live duplicate, without
+    // changing which activities get blocked.
+    final liveKeys = <String>{
       for (final m in existing)
-        if (m.normalizedType != null &&
+        if (!m.isDeleted) m.healthPlatformId,
+    };
+    final tombstonedKeys = <String>{
+      for (final m in existing)
+        if (m.isDeleted) m.healthPlatformId,
+    };
+
+    final liveWindows = <_Window>[
+      for (final m in existing)
+        if (!m.isDeleted &&
+            m.normalizedType != null &&
+            m.startTimeMs != null &&
+            m.endTimeMs != null)
+          _Window(
+            normalizedType: m.normalizedType!,
+            startMs: m.startTimeMs!,
+            endMs: m.endTimeMs!,
+          ),
+    ];
+    final tombstonedWindows = <_Window>[
+      for (final m in existing)
+        if (m.isDeleted &&
+            m.normalizedType != null &&
             m.startTimeMs != null &&
             m.endTimeMs != null)
           _Window(
@@ -102,14 +134,26 @@ class HealthWorkoutDeduplicator {
         endMs: fingerprint.endTime.millisecondsSinceEpoch,
       );
 
+      // Decision precedence (locked, D10/T18): exact(live) ->
+      // exact(tombstoned) -> strong(live or accepted) -> strong(tombstoned)
+      // -> suspected(any window) -> import. The exact tier stays fully ahead
+      // of the strong tier (as pre-tombstone); tombstoned matches in either
+      // tier get the same skipDeletedTombstone label. With zero tombstoned
+      // rows this reduces byte-for-byte to the pre-tombstone ordering.
       final DedupeDecision decision;
-      if (existingKeys.contains(activity.healthPlatformId) ||
-          existingKeys.contains(activity.legacyPlatformId)) {
+      if (liveKeys.contains(activity.healthPlatformId) ||
+          liveKeys.contains(activity.legacyPlatformId)) {
         decision = DedupeDecision.skipExactIdentity;
-      } else if (existingWindows.any((c) => _isStrongMatch(window, c)) ||
+      } else if (tombstonedKeys.contains(activity.healthPlatformId) ||
+          tombstonedKeys.contains(activity.legacyPlatformId)) {
+        decision = DedupeDecision.skipDeletedTombstone;
+      } else if (liveWindows.any((c) => _isStrongMatch(window, c)) ||
           acceptedWindows.any((c) => _isStrongMatch(window, c))) {
         decision = DedupeDecision.skipStrongDuplicate;
-      } else if (existingWindows.any((c) => _isSuspectedOverlap(window, c)) ||
+      } else if (tombstonedWindows.any((c) => _isStrongMatch(window, c))) {
+        decision = DedupeDecision.skipDeletedTombstone;
+      } else if (liveWindows.any((c) => _isSuspectedOverlap(window, c)) ||
+          tombstonedWindows.any((c) => _isSuspectedOverlap(window, c)) ||
           acceptedWindows.any((c) => _isSuspectedOverlap(window, c))) {
         decision = DedupeDecision.importSuspected;
       } else {

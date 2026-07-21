@@ -1808,16 +1808,16 @@ class LocalStorageImpl extends LocalStorageRepository {
   }
 
   @override
-  Future<void> deleteHealthSyncMetadataBySportEventId(int sportEventId) async {
+  Future<void> tombstoneHealthSyncMetadataBySportEventId(int sportEventId) async {
     final box = await _openHealthSyncMetadataBox();
-    final keysToDelete = <String>[];
+    final now = DateTime.now().millisecondsSinceEpoch;
     for (final entry in box.toMap().entries) {
       final entity = entry.value as HealthSyncMetadataEntity;
-      if (entity.sportEventId == sportEventId) {
-        keysToDelete.add(entry.key as String);
+      if (entity.sportEventId == sportEventId && entity.deletedAtMs == null) {
+        entity.deletedAtMs = now;
+        await box.put(entry.key, entity);
       }
     }
-    await box.deleteAll(keysToDelete);
   }
 
   Future<Box> _openSleepEventsBox() async =>

@@ -22,6 +22,7 @@ import 'package:nutrenaissance_flutter/domain/interactor/supplements/get_recent_
 import 'package:nutrenaissance_flutter/domain/repository/foodevents/food_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/sportevents/sport_events_repository.dart';
 import 'package:nutrenaissance_flutter/domain/repository/supplements/supplements_repository.dart';
+import 'package:nutrenaissance_flutter/domain/repository/healthsync/health_sync_repository.dart';
 // SupplementsBloc
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/upload_supplement_event_interactor.dart';
 import 'package:nutrenaissance_flutter/domain/interactor/supplements/save_supplement_event_interactor.dart';
@@ -288,5 +289,7 @@ import 'package:shared_preferences/shared_preferences.dart';
   MockSpec<FoodEventsRepository>(),
   MockSpec<SportEventsRepository>(),
   MockSpec<SupplementsRepository>(),
+  // Health sync tombstone-on-delete (T18)
+  MockSpec<HealthSyncRepository>(),
 ])
 void main() {}

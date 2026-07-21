@@ -172,10 +172,10 @@ class JournalSportBloc extends BaseBloc<JournalSportActions, JournalSportState> 
         await deleteSportEventInteractor.execute(userId, event.sportEventComplete.eventId);
           try {
             final removeFromLocalResult = await removeSportEventInteractor.execute(event.sportEventComplete);
-              // Clean up health sync metadata so the activity can be re-synced
+              // Tombstone the sync metadata so the deleted workout is not re-imported (D10)
               final source = event.sportEventComplete.source;
               if (source != null && source != 'manual') {
-                await healthSyncRepository?.deleteSyncMetadataBySportEventId(event.sportEventComplete.eventId);
+                await healthSyncRepository?.tombstoneSyncMetadataBySportEventId(event.sportEventComplete.eventId);
               }
               event.onFinish.call();
               emit(state.copyWith(isLoading: false, onError: null));

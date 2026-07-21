@@ -10,19 +10,23 @@ void main() {
   final start = DateTime(2026, 7, 10, 8, 0);
   final end = DateTime(2026, 7, 10, 9, 0);
 
-  HealthSyncMetadata legacyMetadata({required String healthPlatformId}) =>
-      HealthSyncMetadata(
-        healthPlatformId: healthPlatformId,
-        sportEventId: 1,
-        syncedAt: DateTime(2026, 7, 9),
-        sourceType: 'health_connect',
-      );
+  HealthSyncMetadata legacyMetadata({
+    required String healthPlatformId,
+    DateTime? deletedAt,
+  }) => HealthSyncMetadata(
+    healthPlatformId: healthPlatformId,
+    sportEventId: 1,
+    syncedAt: DateTime(2026, 7, 9),
+    sourceType: 'health_connect',
+    deletedAt: deletedAt,
+  );
 
   HealthSyncMetadata fingerprintMetadata({
     required String healthPlatformId,
     String normalizedType = 'RUNNING',
     required DateTime startTime,
     required DateTime endTime,
+    DateTime? deletedAt,
   }) => HealthSyncMetadata(
     healthPlatformId: healthPlatformId,
     sportEventId: 1,
@@ -32,6 +36,7 @@ void main() {
     startTimeMs: startTime.millisecondsSinceEpoch,
     endTimeMs: endTime.millisecondsSinceEpoch,
     sourceCategory: 'unknown',
+    deletedAt: deletedAt,
   );
 
   List<DedupeEntry> run(
@@ -283,6 +288,276 @@ void main() {
       expect(
         entries.map((e) => e.decision),
         everyElement(DedupeDecision.import),
+      );
+    });
+  });
+
+  group('tombstone tier (D10/T18 — tombstoned metadata blocks re-import '
+      'distinctly)', () {
+    final tombstonedAt = DateTime(2026, 7, 15);
+
+    test('exact match against a tombstoned canonical id blocks as '
+        'skipDeletedTombstone, not skipExactIdentity', () {
+      final entries = run(
+        [
+          aHealthActivity(
+            healthPlatformId: 'uuid-1',
+            startTime: start,
+            endTime: end,
+          ),
+        ],
+        existing: [
+          legacyMetadata(healthPlatformId: 'uuid-1', deletedAt: tombstonedAt),
+        ],
+      );
+      expect(entries.single.decision, DedupeDecision.skipDeletedTombstone);
+    });
+
+    test('tombstoned legacy row blocks by legacyPlatformId exact key, but a '
+        'same-window record with a different id/source is NOT blocked by it '
+        '(legacy rows can\'t strong-match — unchanged limitation)', () {
+      final legacyKey =
+          'Apple Health_${start.millisecondsSinceEpoch}_${end.millisecondsSinceEpoch}';
+      final entries = run(
+        [
+          aHealthActivity(
+            healthPlatformId: 'new-uuid',
+            startTime: start,
+            endTime: end,
+          ),
+          aHealthActivity(
+            healthPlatformId: 'other-uuid',
+            legacyPlatformId: 'unrelated-legacy-key',
+            startTime: start,
+            endTime: end,
+            sourceName: 'com.garmin.android.apps.connectmobile',
+            sourceType: 'health_connect',
+          ),
+        ],
+        existing: [
+          legacyMetadata(healthPlatformId: legacyKey, deletedAt: tombstonedAt),
+        ],
+      );
+      expect(entries[0].activity.healthPlatformId, 'new-uuid');
+      expect(entries[0].decision, DedupeDecision.skipDeletedTombstone);
+      expect(entries[1].activity.healthPlatformId, 'other-uuid');
+      expect(entries[1].decision, DedupeDecision.import);
+    });
+
+    test('strong match against a tombstoned fingerprint window blocks as '
+        'skipDeletedTombstone (strategy example 7)', () {
+      final entries = run(
+        [
+          aHealthActivity(
+            healthPlatformId: 'uuid-2',
+            startTime: start.add(const Duration(minutes: 1)),
+            endTime: end.add(const Duration(seconds: 90)),
+            sourceName: 'com.sec.android.app.shealth',
+            sourceType: 'health_connect',
+          ),
+        ],
+        existing: [
+          fingerprintMetadata(
+            healthPlatformId: 'uuid-1',
+            startTime: start,
+            endTime: end,
+            deletedAt: tombstonedAt,
+          ),
+        ],
+      );
+      expect(entries.single.decision, DedupeDecision.skipDeletedTombstone);
+    });
+
+    test('suspected overlap against a tombstoned window still imports as '
+        'suspected — tombstone must not widen blocking', () {
+      final entries = run(
+        [
+          aHealthActivity(
+            healthPlatformId: 'uuid-b',
+            startTime: start.add(const Duration(minutes: 5)),
+            endTime: end.add(const Duration(minutes: 3)),
+          ),
+        ],
+        existing: [
+          fingerprintMetadata(
+            healthPlatformId: 'uuid-a',
+            startTime: start,
+            endTime: end,
+            deletedAt: tombstonedAt,
+          ),
+        ],
+      );
+      expect(entries.single.decision, DedupeDecision.importSuspected);
+    });
+
+    test('live (non-tombstoned) exact and strong matches behave exactly as '
+        'before', () {
+      final exactEntries = run(
+        [
+          aHealthActivity(
+            healthPlatformId: 'uuid-1',
+            startTime: start,
+            endTime: end,
+          ),
+        ],
+        existing: [legacyMetadata(healthPlatformId: 'uuid-1', deletedAt: null)],
+      );
+      expect(exactEntries.single.decision, DedupeDecision.skipExactIdentity);
+
+      final strongEntries = run(
+        [
+          aHealthActivity(
+            healthPlatformId: 'uuid-2',
+            startTime: start.add(const Duration(minutes: 1)),
+            endTime: end.add(const Duration(seconds: 90)),
+            sourceName: 'com.sec.android.app.shealth',
+            sourceType: 'health_connect',
+          ),
+        ],
+        existing: [
+          fingerprintMetadata(
+            healthPlatformId: 'uuid-1',
+            startTime: start,
+            endTime: end,
+            deletedAt: null,
+          ),
+        ],
+      );
+      expect(strongEntries.single.decision, DedupeDecision.skipStrongDuplicate);
+    });
+
+    test('precedence: exact match on a tombstoned key wins over a strong '
+        'match on a live window (exact tier decided first; blocked either '
+        'way)', () {
+      final entries = run(
+        [
+          aHealthActivity(
+            healthPlatformId: 'uuid-tomb',
+            startTime: start,
+            endTime: end,
+          ),
+        ],
+        existing: [
+          legacyMetadata(healthPlatformId: 'uuid-tomb', deletedAt: tombstonedAt),
+          fingerprintMetadata(
+            healthPlatformId: 'uuid-live',
+            startTime: start,
+            endTime: end,
+          ),
+        ],
+      );
+      expect(entries.single.decision, DedupeDecision.skipDeletedTombstone);
+    });
+
+    test('zero-tombstone regression: a representative mixed batch produces '
+        'bit-identical decisions to the pre-tombstone behavior', () {
+      // W1: exact dup via legacy key.
+      final w1Start = DateTime(2026, 7, 10, 8, 0);
+      final w1End = DateTime(2026, 7, 10, 9, 0);
+      // W2: strong dup (cross-source drift within tolerance) vs live metadata.
+      final w2ExistingStart = DateTime(2026, 7, 10, 10, 0);
+      final w2ExistingEnd = DateTime(2026, 7, 10, 11, 0);
+      final w2IncomingStart = w2ExistingStart.add(const Duration(minutes: 1));
+      final w2IncomingEnd = w2ExistingEnd.add(const Duration(seconds: 90));
+      // W3: suspected overlap vs live metadata (outside strong tolerance).
+      final w3ExistingStart = DateTime(2026, 7, 10, 12, 0);
+      final w3ExistingEnd = DateTime(2026, 7, 10, 13, 0);
+      final w3IncomingStart = w3ExistingStart.add(const Duration(minutes: 5));
+      final w3IncomingEnd = w3ExistingEnd.add(const Duration(minutes: 3));
+      // W4: fresh import, no conflicts anywhere.
+      final w4Start = DateTime(2026, 7, 10, 14, 0);
+      final w4End = DateTime(2026, 7, 10, 15, 0);
+      // W5: batch-internal dup — two incoming records, same workout, only
+      // the first (sorted) one is accepted.
+      final w5Start = DateTime(2026, 7, 10, 16, 0);
+      final w5End = DateTime(2026, 7, 10, 17, 0);
+
+      final w1Incoming = aHealthActivity(
+        healthPlatformId: 'w1-fresh-uuid',
+        startTime: w1Start,
+        endTime: w1End,
+      );
+      final legacyKey =
+          'Apple Health_${w1Start.millisecondsSinceEpoch}_${w1End.millisecondsSinceEpoch}';
+
+      final w2Incoming = aHealthActivity(
+        healthPlatformId: 'w2-cross-source',
+        startTime: w2IncomingStart,
+        endTime: w2IncomingEnd,
+        sourceName: 'com.sec.android.app.shealth',
+        sourceType: 'health_connect',
+      );
+
+      final w3Incoming = aHealthActivity(
+        healthPlatformId: 'w3-suspected',
+        startTime: w3IncomingStart,
+        endTime: w3IncomingEnd,
+      );
+
+      final w4Incoming = aHealthActivity(
+        healthPlatformId: 'w4-fresh',
+        startTime: w4Start,
+        endTime: w4End,
+      );
+
+      final w5First = aHealthActivity(
+        healthPlatformId: 'w5-early',
+        startTime: w5Start,
+        endTime: w5End,
+      );
+      final w5Second = aHealthActivity(
+        healthPlatformId: 'w5-late',
+        startTime: w5Start,
+        endTime: w5End,
+        sourceName: 'com.garmin.android.apps.connectmobile',
+        sourceType: 'health_connect',
+      );
+
+      final entries = run(
+        [
+          w1Incoming,
+          w2Incoming,
+          w3Incoming,
+          w4Incoming,
+          w5First,
+          w5Second,
+        ],
+        existing: [
+          legacyMetadata(healthPlatformId: legacyKey),
+          fingerprintMetadata(
+            healthPlatformId: 'w2-existing',
+            startTime: w2ExistingStart,
+            endTime: w2ExistingEnd,
+          ),
+          fingerprintMetadata(
+            healthPlatformId: 'w3-existing',
+            startTime: w3ExistingStart,
+            endTime: w3ExistingEnd,
+          ),
+        ],
+      );
+
+      expect(
+        entries.map((e) => e.activity.healthPlatformId).toList(),
+        [
+          'w1-fresh-uuid',
+          'w2-cross-source',
+          'w3-suspected',
+          'w4-fresh',
+          'w5-early',
+          'w5-late',
+        ],
+      );
+      expect(
+        entries.map((e) => e.decision).toList(),
+        [
+          DedupeDecision.skipExactIdentity,
+          DedupeDecision.skipStrongDuplicate,
+          DedupeDecision.importSuspected,
+          DedupeDecision.import,
+          DedupeDecision.import,
+          DedupeDecision.skipStrongDuplicate,
+        ],
       );
     });
   });

@@ -37,6 +37,10 @@ class HealthSyncMetadataEntity extends HiveObject {
   /// Coarse source category name (HealthSourceCategory.name). Null pre-upgrade.
   @HiveField(7) String? sourceCategory;
 
+  /// D10 tombstone — additive nullable HiveField, no migration; null = live,
+  /// non-null = user deleted the imported event, blocks re-import.
+  @HiveField(8) int? deletedAtMs;
+
   HealthSyncMetadataEntity({
     required this.healthPlatformId,
     required this.sportEventId,
@@ -46,6 +50,7 @@ class HealthSyncMetadataEntity extends HiveObject {
     this.startTimeMs,
     this.endTimeMs,
     this.sourceCategory,
+    this.deletedAtMs,
   });
 
   factory HealthSyncMetadataEntity.fromJson(Map<String, dynamic> json) =>

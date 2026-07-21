@@ -1251,6 +1251,40 @@ void main() {
         expect(dupEvents().single.metadata['strongCount'], 0);
       });
 
+      test('a tombstone-only skip emits duplicateDiscarded with '
+          'tombstoneBlockedCount == 1 and does not import the activity',
+          () async {
+        stubPreconditions();
+        stubProcessing(existing: [
+          HealthSyncMetadata(
+            healthPlatformId: 'uuid-deleted',
+            sportEventId: 1,
+            syncedAt: DateTime(2026, 7, 9),
+            sourceType: 'apple_health',
+            deletedAt: DateTime(2026, 7, 15),
+          ),
+        ]);
+        stubFetch(successResult([
+          aHealthActivity(
+            healthPlatformId: 'uuid-deleted',
+            startTime: start,
+            endTime: end,
+          ),
+        ]));
+
+        final result = await interactor.execute();
+
+        expect(result.syncedEvents, isEmpty);
+        expect(result.outcome, SyncHealthOutcome.synced);
+        verifyNever(() => mockSaveSportEventInteractor.execute(any(), any()));
+
+        expect(dupEvents(), hasLength(1));
+        expect(dupEvents().single.metadata['tombstoneBlockedCount'], 1);
+        expect(dupEvents().single.metadata['exactCount'], 0);
+        expect(dupEvents().single.metadata['strongCount'], 0);
+        expect(dupEvents().single.metadata['suspectedImportedCount'], 0);
+      });
+
       test('same-window different-type imports both, no dedupe diagnostic',
           () async {
         stubPreconditions();

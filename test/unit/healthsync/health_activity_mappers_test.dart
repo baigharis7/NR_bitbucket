@@ -358,10 +358,33 @@ void main() {
       expect(entity.startTimeMs, isNull);
       expect(entity.endTimeMs, isNull);
       expect(entity.sourceCategory, isNull);
+      expect(entity.deletedAtMs, isNull);
 
       final result = mapToHealthSyncMetadata(entity);
       expect(result.normalizedType, isNull);
       expect(result.sourceCategory, isNull);
+      expect(result.deletedAt, isNull);
+      expect(result.isDeleted, isFalse);
+    });
+
+    test('round-trips a tombstoned deletedAt instant', () {
+      final original = HealthSyncMetadata(
+        healthPlatformId: 'tombstoned_key',
+        sportEventId: 55,
+        syncedAt: DateTime(2026, 7, 18, 9, 30),
+        sourceType: 'apple_health',
+        deletedAt: DateTime(2026, 7, 19, 14, 0, 5),
+      );
+
+      final entity = mapToHealthSyncMetadataEntity(original);
+      expect(
+        entity.deletedAtMs,
+        DateTime(2026, 7, 19, 14, 0, 5).millisecondsSinceEpoch,
+      );
+
+      final result = mapToHealthSyncMetadata(entity);
+      expect(result.deletedAt, DateTime(2026, 7, 19, 14, 0, 5));
+      expect(result.isDeleted, isTrue);
     });
   });
 }

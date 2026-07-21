@@ -28,6 +28,13 @@ class HealthSyncMetadata {
   /// source display name. Null pre-upgrade.
   final String? sourceCategory;
 
+  /// D10 tombstone — null = live, non-null = the user deleted the imported
+  /// event and this platform ID is blocked from re-import.
+  final DateTime? deletedAt;
+
+  /// True once [deletedAt] has been set.
+  bool get isDeleted => deletedAt != null;
+
   HealthSyncMetadata({
     required this.healthPlatformId,
     required this.sportEventId,
@@ -37,5 +44,6 @@ class HealthSyncMetadata {
     this.startTimeMs,
     this.endTimeMs,
     this.sourceCategory,
+    this.deletedAt,
   });
 }

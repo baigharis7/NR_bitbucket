@@ -29,6 +29,7 @@ void main() {
   late MockRemoveSportEventInteractor mockRemoveSportEvent;
   late MockEraseDBLocalEventsInteractor mockEraseDBLocalEvents;
   late MockSynchronizeEventsInteractor mockSynchronizeEvents;
+  late MockHealthSyncRepository mockHealthSyncRepository;
 
   setUp(() {
     mockGetMasterFile = MockGetMasterFileInteractor();
@@ -47,9 +48,10 @@ void main() {
     mockRemoveSportEvent = MockRemoveSportEventInteractor();
     mockEraseDBLocalEvents = MockEraseDBLocalEventsInteractor();
     mockSynchronizeEvents = MockSynchronizeEventsInteractor();
+    mockHealthSyncRepository = MockHealthSyncRepository();
   });
 
-  JournalSportBloc buildBloc() => JournalSportBloc(
+  JournalSportBloc buildBloc({bool withHealthSyncRepository = true}) => JournalSportBloc(
         getMasterFileInteractor: mockGetMasterFile,
         getUserKcalInteractor: mockGetUserKcal,
         getTodaySportsInteractor: mockGetTodaySports,
@@ -66,6 +68,7 @@ void main() {
         removeSportEventInteractor: mockRemoveSportEvent,
         eraseDBLocalEventsInteractor: mockEraseDBLocalEvents,
         synchronizeEventsInteractor: mockSynchronizeEvents,
+        healthSyncRepository: withHealthSyncRepository ? mockHealthSyncRepository : null,
       );
 
   group('JournalSportBloc', () {
@@ -264,6 +267,76 @@ void main() {
         verify(mockDeleteSportEvent.execute('user123', 42)).called(1);
         verify(mockRemoveSportEvent.execute(any)).called(1);
       },
+    );
+
+    blocTest<JournalSportBloc, JournalSportState>(
+      'DeleteSportEventAction tombstones health sync metadata for a health-synced event',
+      build: () {
+        when(mockGetUserId.execute()).thenReturn('user123');
+        when(mockDeleteSportEvent.execute(any, any)).thenAnswer((_) async {});
+        when(mockRemoveSportEvent.execute(any)).thenAnswer((_) async {});
+        when(mockHealthSyncRepository.tombstoneSyncMetadataBySportEventId(any)).thenAnswer((_) async {});
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(DeleteSportEventAction(
+        sportEventComplete: SportEventComplete(userId: 'user123', eventId: 42, eventDate: 86400000, info: [], source: 'health_connect'),
+        onFinish: () {},
+      )),
+      verify: (bloc) {
+        verify(mockHealthSyncRepository.tombstoneSyncMetadataBySportEventId(42)).called(1);
+      },
+    );
+
+    blocTest<JournalSportBloc, JournalSportState>(
+      'DeleteSportEventAction never tombstones a manual event',
+      build: () {
+        when(mockGetUserId.execute()).thenReturn('user123');
+        when(mockDeleteSportEvent.execute(any, any)).thenAnswer((_) async {});
+        when(mockRemoveSportEvent.execute(any)).thenAnswer((_) async {});
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(DeleteSportEventAction(
+        sportEventComplete: SportEventComplete(userId: 'user123', eventId: 42, eventDate: 86400000, info: [], source: 'manual'),
+        onFinish: () {},
+      )),
+      verify: (bloc) {
+        verifyNever(mockHealthSyncRepository.tombstoneSyncMetadataBySportEventId(any));
+      },
+    );
+
+    blocTest<JournalSportBloc, JournalSportState>(
+      'DeleteSportEventAction never tombstones a null-source event',
+      build: () {
+        when(mockGetUserId.execute()).thenReturn('user123');
+        when(mockDeleteSportEvent.execute(any, any)).thenAnswer((_) async {});
+        when(mockRemoveSportEvent.execute(any)).thenAnswer((_) async {});
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(DeleteSportEventAction(
+        sportEventComplete: SportEventComplete(userId: 'user123', eventId: 42, eventDate: 86400000, info: []),
+        onFinish: () {},
+      )),
+      verify: (bloc) {
+        verifyNever(mockHealthSyncRepository.tombstoneSyncMetadataBySportEventId(any));
+      },
+    );
+
+    blocTest<JournalSportBloc, JournalSportState>(
+      'DeleteSportEventAction does not crash for a health-synced event when healthSyncRepository is null',
+      build: () {
+        when(mockGetUserId.execute()).thenReturn('user123');
+        when(mockDeleteSportEvent.execute(any, any)).thenAnswer((_) async {});
+        when(mockRemoveSportEvent.execute(any)).thenAnswer((_) async {});
+        return buildBloc(withHealthSyncRepository: false);
+      },
+      act: (bloc) => bloc.add(DeleteSportEventAction(
+        sportEventComplete: SportEventComplete(userId: 'user123', eventId: 42, eventDate: 86400000, info: [], source: 'health_connect'),
+        onFinish: () {},
+      )),
+      expect: () => [
+        isA<JournalSportState>().having((s) => s.isLoading, 'isLoading', true),
+        isA<JournalSportState>().having((s) => s.isLoading, 'isLoading', false).having((s) => s.onError, 'onError', null),
+      ],
     );
 
     blocTest<JournalSportBloc, JournalSportState>(
