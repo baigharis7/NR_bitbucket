@@ -23,6 +23,7 @@ import 'package:nutrenaissance_flutter/presentation/barcodescanning/view/bar_cod
 import 'package:nutrenaissance_flutter/infrastructure/services/fcm_service.dart';
 import 'package:nutrenaissance_flutter/infrastructure/services/midnight_service.dart';
 import 'package:nutrenaissance_flutter/presentation/healthsync/bloc/health_sync_bloc.dart';
+import 'package:nutrenaissance_flutter/presentation/healthsync/step_display_resolver.dart';
 import 'package:nutrenaissance_flutter/presentation/routinestabs/bloc/routines_tab_bloc.dart';
 import 'package:nutrenaissance_flutter/presentation/healthsync/view/health_sync_settings_screen.dart';
 import 'package:nutrenaissance_flutter/presentation/common/view/loading_screen.dart';
@@ -407,7 +408,7 @@ class _DashboardScreen extends State<DashboardScreen>
                             prev.todayStepCount != curr.todayStepCount ||
                             prev.estimatedStepCount != curr.estimatedStepCount,
                         builder: (context, healthState) {
-                          final totalSteps = (healthState.todayStepCount ?? 0) + healthState.estimatedStepCount;
+                          final totalSteps = resolveDisplayedStepCount(healthState);
                           final showSleep = healthState.isSyncEnabled;
                           final showSteps = healthState.isSyncEnabled || totalSteps > 0;
 
