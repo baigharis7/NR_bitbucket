@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:chuck_interceptor/chuck_interceptor.dart';
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart' show kDebugMode, visibleForTesting;
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:nutrenaissance_flutter/data/api/masterfiles/master_files_api.dart';
@@ -65,12 +65,35 @@ class SplashProvider extends ChangeNotifier {
   late GetUserIdInteractor getUserIdInteractor;
   late FcmApi fcmApi;
 
-  SplashProvider();
+  /// Nullable mirror of [fcmApi]. The injected constructor leaves it null, so
+  /// token registration is simply skipped instead of throwing a late-init error.
+  FcmApi? _fcmApi;
+
+  /// True when the collaborators came from outside, which means [init] must not
+  /// build its own — and must not touch Hive, Drift, Cognito or the master-file
+  /// refresh. Only [SplashProvider.withCollaborators] sets it.
+  final bool _collaboratorsInjected;
+
+  SplashProvider() : _collaboratorsInjected = false;
+
+  /// Test-only seam for the navigation flow. [init] builds its own
+  /// collaborators in production (see the TODO inside it — main() already wires
+  /// equivalents), which makes the flow impossible to exercise without Hive,
+  /// Drift and a network stack. This constructor supplies them directly so the
+  /// launch path can be tested, including the case where the network hangs.
+  @visibleForTesting
+  SplashProvider.withCollaborators({
+    required SynchronizeEventsInteractor synchronizeEvents,
+    required GetProfileInteractor getProfile,
+    required LocalStorageRepository localStorage,
+  }) : _collaboratorsInjected = true {
+    synchronizeEventsInteractor = synchronizeEvents;
+    getProfileInteractor = getProfile;
+    localStorageRepository = localStorage;
+  }
 
   void init({required Function toLogin, required Function toDashboard}) async {
     try {
-      // Singleton — already initialized by AppBootstrap before this screen mounts
-      final authenticationService = CognitoAuthenticationService.instance;
       final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
       final Preferences prefs = PreferencesImpl(sharedPreferences);
@@ -87,43 +110,59 @@ class SplashProvider extends ChangeNotifier {
         return;
       }
 
-      Chuck chuck = Chuck(
-        // Debug-only: showNotification's default @mipmap/ic_launcher icon
-        // crashes Android (PlatformException invalid_icon), and the
-        // shake-to-open inspector must not be reachable in release builds.
-        showNotification: kDebugMode,
-        showInspectorOnShake: kDebugMode,
-        darkTheme: false,
-        maxCallsCount: 1000,
-      );
+      if (!_collaboratorsInjected) {
+        // Singleton — already initialized by AppBootstrap before this screen mounts
+        final authenticationService = CognitoAuthenticationService.instance;
 
-      // TODO: These services are already created in main() — pass them in via constructor instead of duplicating
-      profileApi = ProfileApi(prefsRepository, authenticationService, chuck);
-      localStorageRepository = LocalStorageImpl();
-      final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
-      final syncQueueService = SyncQueueService(prefsRepository, authenticationService, chuck, syncQueueBox);
-      final referenceDatabase = await openReferenceDatabase();
-      final profileComputationService = ProfileComputationService(referenceDatabase);
-      profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository, profileComputationService: profileComputationService, syncQueue: syncQueueService);
-      getProfileInteractor = GetProfileInteractorImpl(profileRepository: profileRepository);
-      eraseDBLocalEventsInteractor = EraseDBLocalEventsInteractorImpl(localStorageRepository: localStorageRepository);
-      eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService, chuck);
-      eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
-      synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
-      fcmApi = FcmApi(prefsRepository, authenticationService, chuck);
+        Chuck chuck = Chuck(
+          // Debug-only: showNotification's default @mipmap/ic_launcher icon
+          // crashes Android (PlatformException invalid_icon), and the
+          // shake-to-open inspector must not be reachable in release builds.
+          showNotification: kDebugMode,
+          showInspectorOnShake: kDebugMode,
+          darkTheme: false,
+          maxCallsCount: 1000,
+        );
 
-      // Sync, FCM registration, and master files update — non-critical, don't block navigation
-      try {
-        await synchronizeEventsInteractor.execute(userId, fullSync: false);
-        final fcmToken = FcmService.instance.token;
-        if (fcmToken != null) {
-          fcmApi.registerToken(userId, fcmToken, Platform.isIOS ? 'ios' : 'android')
-              .catchError((_) {});
-        }
-      } catch (_) {}
+        // TODO: These services are already created in main() — pass them in via constructor instead of duplicating
+        profileApi = ProfileApi(prefsRepository, authenticationService, chuck);
+        localStorageRepository = LocalStorageImpl();
+        final syncQueueBox = await Hive.openBox<SyncQueueEntry>('syncQueue');
+        final syncQueueService = SyncQueueService(prefsRepository, authenticationService, chuck, syncQueueBox);
+        final referenceDatabase = await openReferenceDatabase();
+        final profileComputationService = ProfileComputationService(referenceDatabase);
+        profileRepository = ProfileRepositoryImpl(profileApi: profileApi, localStorageRepository: localStorageRepository, profileComputationService: profileComputationService, syncQueue: syncQueueService);
+        getProfileInteractor = GetProfileInteractorImpl(profileRepository: profileRepository);
+        eraseDBLocalEventsInteractor = EraseDBLocalEventsInteractorImpl(localStorageRepository: localStorageRepository);
+        eventsSyncApi = EventsSyncApi(prefsRepository, authenticationService, chuck);
+        eventsSynchronizationRequestRepository = EventsSynchronizationRequestRepositoryImpl(localStorageRepository: localStorageRepository, eventsSyncApi: eventsSyncApi);
+        synchronizeEventsInteractor = SynchronizeEventsInteractorImpl(eventsSynchronizationRequestRepository: eventsSynchronizationRequestRepository);
+        fcmApi = FcmApi(prefsRepository, authenticationService, chuck);
+        _fcmApi = fcmApi;
 
-      // Check for master file updates in the background (non-blocking)
-      _refreshMasterFiles(prefsRepository, authenticationService, localStorageRepository, referenceDatabase);
+        // Check for master file updates in the background (non-blocking)
+        _refreshMasterFiles(prefsRepository, authenticationService, localStorageRepository, referenceDatabase);
+      }
+
+      // Sync and FCM registration are non-critical and must never block
+      // navigation. Awaiting the sync did exactly that: ApiHelper sets no
+      // request timeout, so a connection that hangs instead of failing
+      // (degraded connectivity, captive portal, carrier SOS) left the splash on
+      // screen for as long as the OS socket held on — and a try/catch cannot
+      // catch a hang, only an error. Apple rejected builds 239-243 under
+      // Guideline 2.1(a) for a launch that showed no content. Fire and forget
+      // instead, mirroring _refreshMasterFiles above: the sync notifies
+      // DashboardEventBus per category, so the UI picks up whatever arrives
+      // after navigation.
+      synchronizeEventsInteractor.execute(userId, fullSync: false).catchError((_) {});
+
+      final fcmToken = FcmService.instance.token;
+      final fcmApiForRegistration = _fcmApi;
+      if (fcmToken != null && fcmApiForRegistration != null) {
+        fcmApiForRegistration
+            .registerToken(userId, fcmToken, Platform.isIOS ? 'ios' : 'android')
+            .catchError((_) {});
+      }
 
       final profile = await getProfileInteractor.execute();
       // Defense-in-depth against incomplete logouts: if the Hive profile
