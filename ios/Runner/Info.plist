@@ -57,7 +57,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>NutreNaissance needs access to your camera to take photos of meals and recipes.</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>NutreNaissance needs access to your health data to sync your workouts, steps, and active energy data.</string>
+	<string>NutreNaissance needs access to your health data to sync your workouts, steps, distance, active energy, total energy, heart rate and sleep.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>NutreNaissance needs write access to log your nutrition and activity data to Apple Health.</string>
 </dict>
